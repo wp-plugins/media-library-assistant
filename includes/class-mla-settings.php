@@ -201,9 +201,7 @@ class MLASettings {
 		$page_values = array(
 			 'messages' => '',
 			'options_list' => '',
-			'mla_admin_action' => MLA::MLA_ADMIN_SINGLE_EDIT_UPDATE,
-			'page' => self::MLA_SETTINGS_SLUG,
-			'_wpnonce' => wp_nonce_field( MLA::MLA_ADMIN_NONCE ) 
+			'_wpnonce' => wp_nonce_field( MLA::MLA_ADMIN_NONCE, '_wpnonce', true, false ) 
 		);
 		
 		/*

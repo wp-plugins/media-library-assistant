@@ -274,7 +274,7 @@ class MLA_List_Table extends WP_List_Table {
 	 *
 	 * @since 0.1
 	 * 
-	 * @param	array	A singular attachment (post) object
+	 * @param	object	A singular attachment (post) object
 	 * @param	string	Current column name
 	 *
 	 * @return	array	Names and URLs of row-level actions
@@ -1022,7 +1022,7 @@ class MLA_List_Table extends WP_List_Table {
 	 * @return	array	Mime type names
 	 */
 	private function _avail_mime_types( $num_posts ) {
-		$availible = array( );
+		$available = array( );
 		
 		foreach ( $num_posts as $mime_type => $number ) {
 			if ( ( $number > 0 ) && ( $mime_type <> 'trash' ) )

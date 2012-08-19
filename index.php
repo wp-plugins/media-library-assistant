@@ -3,15 +3,15 @@
  * Provides several enhancements to the handling of images and files held in the WordPress Media Library
  *
  * @package Media Library Assistant
- * @version 0.1
+ * @version 0.11
  */
 
 /*
 Plugin Name: Media Library Assistant
-Plugin URI: hhttp://home.comcast.net/~dlingren/
+Plugin URI: http://home.comcast.net/~dlingren/
 Description: Provides several enhancements to the handling of images and files held in the WordPress Media Library.
 Author: David Lingren
-Version: 0.1
+Version: 0.11
 Author URI: http://home.comcast.net/~dlingren/
 */
 

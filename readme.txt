@@ -2,9 +2,9 @@
 Contributors: dglingren
 Donate link: 
 Tags: attachments, documents, gallery, image, images, media, library, media library, media-tags, media tags, tags, media categories, categories
-Requires at least: 3.1
+Requires at least: 3.3
 Tested up to: 3.4.1
-Stable tag: 0.1
+Stable tag: 0.11
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -63,10 +63,18 @@ All of the MLA source code has been annotated with "DocBlocks", a special type o
 
 == Changelog ==
 
+= 0.11 =
+* Fix: Changed admin URL references from relative (/wp-admin/...) to absolute, using admin_url().
+* Fix: Changed wp_nonce_field() calls to suppress duplicate output of nonce field variables.
+* Fix: Changed the minimum WordPress version required to 3.3.
+
 = 0.1 =
 * Initial release.
 
 == Upgrade Notice ==
+
+= 0.11 =
+You should upgrade to this version if you are getting "404 Not Found" errors when updating single items.
 
 = 0.1 =
 Initial release.

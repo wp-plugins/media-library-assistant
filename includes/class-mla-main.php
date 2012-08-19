@@ -38,7 +38,7 @@ class MLA {
 	 *
 	 * @var	string
 	 */
-	const CURRENT_MLA_VERSION = '0.1';
+	const CURRENT_MLA_VERSION = '0.11';
 
 	/**
 	 * Minimum version of PHP required for this plugin
@@ -56,7 +56,7 @@ class MLA {
 	 *
 	 * @var	string
 	 */
-	const MIN_WORDPRESS_VERSION = '3.3.0';
+	const MIN_WORDPRESS_VERSION = '3.3';
 
 	/**
 	 * Slug for registering and enqueueing plugin style sheet
@@ -536,7 +536,7 @@ class MLA {
 			$MLAListTable->views();
 			
 			//	 Forms are NOT created automatically, so you need to wrap the table in one to use features like bulk actions
-			echo "<form id=\"mla-filter\" action=\"/wp-admin/upload.php\" method=\"get\">\r\n";
+			echo '<form id="mla-filter" action="' . admin_url( 'upload.php' ) . "\" method=\"get\">\r\n";
 			
 			/*
 			 * We also need to ensure that the form posts back to our current page and remember all the view arguments
@@ -777,10 +777,9 @@ class MLA {
 			'features' => $features,
 			'inserts' => $inserts,
 			'mla_admin_action' => self::MLA_ADMIN_SINGLE_EDIT_UPDATE,
-			'page' => self::ADMIN_PAGE_SLUG,
-			'month' => $month,
+			'form_url' => admin_url( 'upload.php' ) . '?page=' . self::ADMIN_PAGE_SLUG . $month,
 			'view_args' => $view_args,
-			'_wpnonce' => wp_nonce_field( self::MLA_ADMIN_NONCE ),
+			'_wpnonce' => wp_nonce_field( self::MLA_ADMIN_NONCE, '_wpnonce', true, false ),
 			'side_info_column' => $side_info_column 
 		);
 		

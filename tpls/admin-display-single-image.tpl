@@ -6,7 +6,7 @@
 	</div>
 </div>
 <!-- template="page" -->
-<form method="post" action="/wp-admin/upload.php?page=[+page+][+month+]" class="mla-display-single-item" id="mla-display-single-item-id">
+<form method="post" action="[+form_url+]" class="mla-display-single-item" id="mla-display-single-item-id">
 <input type="hidden" id="type-of-[+ID+]" value="[+post_mime_type+]" />
 <input type="hidden" name="attachments[[+ID+]][menu_order]" value="[+menu_order+]" />
 <input type="hidden" name="mla_admin_action" value="[+mla_admin_action+]" />
