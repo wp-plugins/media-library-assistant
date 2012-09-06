@@ -36,10 +36,11 @@ class MLAData {
 	 *
 	 * @param	string 	$filepath	Complete path and name of the template file
 	 *
-	 * @return	string		For files that do not contain template divider comments
-	 * 			array		For files containing template divider comments
-	 *			false		If file does not exist
-	 *			NULL		If file could not be loaded
+	 * @return	string|array|false|NULL
+	 *  		string for files that do not contain template divider comments,
+	 * 			array for files containing template divider comments,
+	 *			false if file does not exist,
+	 *			NULL if file could not be loaded.
 	 */
 	public static function mla_load_template( $filepath ) {
 		if ( !file_exists( $filepath ) )
@@ -64,15 +65,49 @@ class MLAData {
 			$template_key = preg_split( '#"#', $value[0] );
 			$template_key = $template_key[1];
 			$template_value = substr( $template, $value[1] + strlen( $value[0] ), $current_offset - ( $value[1] + strlen( $value[0] ) ) );
-			$template_array[ $template_key ] = $template_value;
+			/*
+			 * Trim exactly one newline sequence from the start of the value
+			 */
+			if ( 0 === strpos( $template_value, "\r\n" ) )
+				$offset = 2;
+			elseif ( 0 === strpos( $template_value, "\n\r" ) )
+				$offset = 2;
+			elseif ( 0 === strpos( $template_value, "\n" ) )
+				$offset = 1;
+			elseif ( 0 === strpos( $template_value, "\r" ) )
+				$offset = 1;
+			else
+				$offset = 0;
+
+			$template_value = substr( $template_value, $offset );
+				
+			/*
+			 * Trim exactly one newline sequence from the end of the value
+			 */
+			$length = strlen( $template_value );
+			if ( $length > 2)
+				$postfix = substr( $template_value, ($length - 2), 2 );
+			else
+				$postfix = $template_value;
+				
+			if ( 0 === strpos( $postfix, "\r\n" ) )
+				$length -= 2;
+			elseif ( 0 === strpos( $postfix, "\n\r" ) )
+				$length -= 2;
+			elseif ( 0 === strpos( $postfix, "\n" ) )
+				$length -= 1;
+			elseif ( 0 === strpos( $postfix, "\r" ) )
+				$length -= 1;
+				
+			$template_array[ $template_key ] = substr( $template_value, 0, $length );
 			$current_offset = $value[1];
-		}
+		} // foreach $matches
 		
 		return $template_array;
 	}
 	
 	/**
-	 * Expand a template, replacing place holders with their values.
+	 * Expand a template, replacing place holders with their values
 	 *
 	 * A simple parsing function for basic templating.
 	 *
@@ -93,7 +128,7 @@ class MLAData {
 	}
 	
 	/**
-	 * Sanitize and expand query arguments from request variables.
+	 * Sanitize and expand query arguments from request variables
 	 *
 	 * Prepare the arguments for WP_Query.
 	 * Modeled after wp_edit_attachments_query in wp-admin/post.php
@@ -174,9 +209,9 @@ class MLAData {
 	}
 	
 	/**
-	 * Retrieve attachment objects for list table display.
+	 * Retrieve attachment objects for list table display
 	 *
-	 * Supports prepare_items in class-mla-list-table.php
+	 * Supports prepare_items in class-mla-list-table.php.
 	 * Modeled after wp_edit_attachments_query in wp-admin/post.php
 	 *
 	 * @since 0.1
@@ -208,6 +243,12 @@ class MLAData {
 			$request['posts_per_page'] = $count;
 		}
 		
+		/*
+		 * Ignore old paged value; use offset
+		 */
+		if (isset($request['paged']))
+			unset($request['paged']);
+		
 		$results = new WP_Query( $request );
 		
 		if ( isset( $request['detached'] ) )
@@ -235,7 +276,7 @@ class MLAData {
 			 * Add references
 			 */
 			$references = self::mla_fetch_attachment_references( $attachment->ID, $attachment->post_parent );
-			$attachments[ $index ]->references = $references;
+			$attachments[ $index ]->mla_references = $references;
 		}
 		
 		return $attachments;
@@ -260,7 +301,7 @@ class MLAData {
 	}
 	
 	/** 
-	 * Retrieve an Attachment array given a $post_id. 
+	 * Retrieve an Attachment array given a $post_id
 	 *
 	 * The (associative) array will contain every field that can be found in
 	 * the posts and postmeta tables, and all references to the attachment.
@@ -268,7 +309,7 @@ class MLAData {
 	 * @since 0.1
 	 * 
 	 * @param	int		$post_id The ID of the attachment post. 
-	 * @return	Null on failure else associative array. 
+	 * @return	NULL|array NULL on failure else associative array. 
 	 */
 	function mla_get_attachment_by_id( $post_id ) {
 		global $wpdb, $post;
@@ -307,7 +348,7 @@ class MLAData {
 	}
 	
 	/**
-	 * Find Featured Image and inserted image/link references to an attachment.
+	 * Find Featured Image and inserted image/link references to an attachment
 	 * 
 	 * Searches all post and page content to see if the attachment is used 
 	 * as a Featured Image or inserted in the post as an image or link.
@@ -436,7 +477,7 @@ class MLAData {
 	}
 	
 	/**
-	 * Returns information about an attachment's parent, if found.
+	 * Returns information about an attachment's parent, if found
 	 *
 	 * @since 0.1
 	 *
@@ -460,7 +501,7 @@ class MLAData {
 	}
 	
 	/**
-	 * Fetch and filter meta data for an attachment.
+	 * Fetch and filter meta data for an attachment
 	 * 
 	 * Returns a filtered array of a post's meta data. Internal values beginning with '_'
 	 * are stripped out or converted to an 'mla_' equivalent. Array data is replaced with
@@ -509,6 +550,5 @@ class MLAData {
 		
 		return $results;
 	}
-	
 } // class MLAData
 ?>

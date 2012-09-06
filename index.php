@@ -2,8 +2,11 @@
 /**
  * Provides several enhancements to the handling of images and files held in the WordPress Media Library
  *
+ * This file contains several tests for name conflicts with other plugins. Only if the tests are passed
+ * will the rest of the plugin be loaded and run.
+ *
  * @package Media Library Assistant
- * @version 0.11
+ * @version 0.20
  */
 
 /*
@@ -11,64 +14,95 @@ Plugin Name: Media Library Assistant
 Plugin URI: http://home.comcast.net/~dlingren/
 Description: Provides several enhancements to the handling of images and files held in the WordPress Media Library.
 Author: David Lingren
-Version: 0.11
+Version: 0.20
 Author URI: http://home.comcast.net/~dlingren/
 */
 
 /**
- * Provides path information to the plugin root in file system format.
+ * Accumulates error messages from name conflict tests
+ *
+ * @since 0.20
  */
-define('MLA_PLUGIN_PATH', plugin_dir_path(__FILE__));
+$mla_name_conflict_error_messages = '';
+ 
+if ( defined( 'MLA_PLUGIN_PATH' ) ) {
+	$mla_name_conflict_error_messages .= '<li>constant MLA_PLUGIN_PATH</li>';
+}
+else {
+	/**
+	 * Provides path information to the plugin root in file system format.
+	 */
+	define( 'MLA_PLUGIN_PATH', plugin_dir_path( __FILE__ ) );
+}
+ 
+if ( defined( 'MLA_PLUGIN_URL' ) ) {
+	$mla_name_conflict_error_messages .= '<li>constant MLA_PLUGIN_URL</li>';
+}
+else {
+	/**
+	 * Provides path information to the plugin root in URL format.
+	 */
+	define( 'MLA_PLUGIN_URL', plugin_dir_url( __FILE__ ) );
+}
 
 /**
- * Provides path information to the plugin root in URL format.
+ * Defines classes, functions and constants for name conflict tests. There are no global functions
+ * or other constants in this version; everything is wrapped in classes to minimize potential conflicts.
+ *
+ * @since 0.20
  */
-define('MLA_PLUGIN_URL', plugin_dir_url(__FILE__));
-
-if (!defined('MLA_OPTION_PREFIX'))
-	/**
-	 * Gives a unique prefix for plugin options; can be set in wp-config.php
-	 */
-	define('MLA_OPTION_PREFIX', 'mla_');
+$mla_name_conflict_candidates =
+	array (
+		'MLA' => 'class',
+		'MLAData' => 'class',
+		'MLAObjects' => 'class',
+		'MLASettings' => 'class',
+		'MLAShortcodes' => 'class',
+		'MLATest' => 'class',
+		'MLA_List_Table' => 'class',
+	);
 
 /*
- * Template file and database access functions.
+ * Check for conflicting names, i.e., already defined by some other plugin or theme
  */
-require_once('includes/class-mla-data.php');
+foreach ( $mla_name_conflict_candidates as $value => $type ) {
+	switch ($type) {
+		case 'class':
+			if ( class_exists( $value ) )
+				$mla_name_conflict_error_messages .= "<li>class {$value}</li>";
+			break;
+		case 'function':
+			if ( function_exists( $value ) )
+				$mla_name_conflict_error_messages .= "<li>function {$value}</li>";
+			break;
+		case 'constant':
+			if ( defined( $value ) )
+				$mla_name_conflict_error_messages .= "<li>constant {$value}</li>";
+			break;
+		default:
+	} // switch $type
+}
 
-add_action('init', 'MLAData::initialize');
+/**
+ * Displays name conflict error messages at the top of the Dashboard
+ *
+ * @since 0.20
+ */
+function mla_name_conflict_reporting_action () {
+	global $mla_name_conflict_error_messages;
+	
+	echo '<div class="error"><p><strong>The Media Library Assistant cannot load.</strong> Another plugin or theme has declared conflicting class, function or constant names:</p>'."\r\n";
+	echo "<ul>{$mla_name_conflict_error_messages}</ul>\r\n";
+	echo '<p>You most resolve these conflicts before this plugin can safely load.</p></div>'."\r\n";
+}
 
 /*
- * Custom list table package that extends the core WP_List_Table class.
+ * Load the plugin or display conflict message(s)
  */
-require_once('includes/class-mla-list-table.php');
-
-/*
- * Custom Taxonomies and WordPress objects.
- */
-require_once('includes/mla-objects.php');
-
-/*
- * Shortcodes
- */
-require_once('includes/mla-shortcodes.php');
-
-/*
- * Basic library of run-time tests.
- */
-require_once('tests/class-mla-tests.php');
-
-/*
- * Plugin settings and management page
- */
-require_once('includes/class-mla-settings.php');
-
-add_action('init', 'MLASettings::initialize');
- 
-/*
- * Main program
- */
-require_once('includes/class-mla-main.php');
-
-add_action('init', 'MLA::initialize');
+if ( empty( $mla_name_conflict_error_messages ) ) {
+	require_once('includes/mla-plugin-loader.php');
+}
+else {
+	add_action( 'admin_notices', 'mla_name_conflict_reporting_action' );
+}
 ?>

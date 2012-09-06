@@ -20,6 +20,7 @@ The Media Library Assistant provides several enhancements for managing the Media
 * Allows you to edit the attachment name/slug and to "unattach" items
 * Supports custom taxonomies, including pre-defined support for Attachment Categories and Attachment Tags
 * Provides additional view filters for mime types and Attachment Categories
+* Has an inline "Quick Edit" action for many common fields.
 
 The Assistant is designed to work like the standard Media Library pages, so the learning curve is short and gentle. Contextual help is provided on every new screen to highlight new features.
 
@@ -63,6 +64,18 @@ All of the MLA source code has been annotated with "DocBlocks", a special type o
 
 == Changelog ==
 
+= 0.20 =
+* New: Quick Edit action for inline editing of attachment metadata
+* New: Post Author can be changed
+* New: Hyperlink to phpDocs documentation added to Settings page
+* New: Shortcode documentation added to settings page
+* New: Some book credits added to the "Other Notes" section
+* Change: Minified version of JavaScript files are loaded unless 'SCRIPT_DEBUG' is defined as true in wp-config.php
+* Change: Global functions moved into classes to minimize the chance of name conflicts
+* Change: All class, function and constant names are now checked for conflicts with other plugins and themes
+* Fix: Retain pagination values, e.g., page 3 of 5, when returning from row-level actions
+* Fix: Retain orderby and order values, e.g., descending sort on date, when returning from row-level actions
+
 = 0.11 =
 * Fix: Changed admin URL references from relative (/wp-admin/...) to absolute, using admin_url().
 * Fix: Changed wp_nonce_field() calls to suppress duplicate output of nonce field variables.
@@ -73,8 +86,20 @@ All of the MLA source code has been annotated with "DocBlocks", a special type o
 
 == Upgrade Notice ==
 
+= 0.20 =
+You should upgrade to this version if you need "Quick Edit" functionality.
+
 = 0.11 =
 You should upgrade to this version if you are getting "404 Not Found" errors when updating single items.
 
 = 0.1 =
 Initial release.
+
+= Other Notes =
+
+I have used and learned much from the following books (among many):
+
+* Professional WordPress; Design and Development, by Hal Stern, David Damstra and Brad Williams (Apr 5, 2010) ISBN-13: 978-0470560549
+* Professional WordPress Plugin Development, by Brad Williams, Ozh Richard and Justin Tadlock (Mar 15, 2011) ISBN-13: 978-0470916223
+* WordPress 3 Plugin Development Essentials, by Brian Bondari and Everett Griffiths (Mar 24, 2011) ISBN-13: 978-1849513524
+* WordPress and Ajax, by Ronald Huereca (Jan 13, 2011) ISBN-13: 978-1451598650

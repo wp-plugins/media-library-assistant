@@ -1,8 +1,6 @@
-var tagBox;
+// These functions are adapted from wp-admin/js/post.js
 
-var postL10n = {
-	comma: ','
-}
+var tagBox;
 
 // return an array with any duplicate, whitespace or values removed
 function array_unique_noempty(a) {
@@ -17,20 +15,20 @@ function array_unique_noempty(a) {
 
 (function($){
 
-tagBox = {
-	clean : function(tags) {
-		var comma = postL10n.comma;
-		if ( ',' !== comma )
-			tags = tags.replace(new RegExp(comma, 'g'), ',');
-		tags = tags.replace(/\s*,\s*/g, ',').replace(/,+/g, ',').replace(/[,\s]+$/, '').replace(/^[,\s]+/, '');
-		if ( ',' !== comma )
-			tags = tags.replace(/,/g, comma);
-		return tags;
-	},
+	tagBox = {
+		clean : function(tags) {
+			var comma = mla_single_edit_vars.comma;
+			if ( ',' !== comma )
+				tags = tags.replace(new RegExp(comma, 'g'), ',');
+			tags = tags.replace(/\s*,\s*/g, ',').replace(/,+/g, ',').replace(/[,\s]+$/, '').replace(/^[,\s]+/, '');
+			if ( ',' !== comma )
+				tags = tags.replace(/,/g, comma);
+			return tags;
+		},
 
 	parseTags : function(el) {
 		var id = el.id, num = id.split('-check-num-')[1], taxbox = $(el).closest('.tagsdiv'),
-			thetags = taxbox.find('.the-tags'), comma = postL10n.comma,
+			thetags = taxbox.find('.the-tags'), comma = mla_single_edit_vars.comma,
 			current_tags = thetags.val().split(comma), new_tags = [];
 		delete current_tags[num];
 
@@ -58,7 +56,7 @@ tagBox = {
 
 		disabled = thetags.prop('disabled');
 
-		current_tags = thetags.val().split(postL10n.comma);
+		current_tags = thetags.val().split(mla_single_edit_vars.comma);
 		tagchecklist.empty();
 
 		$.each( current_tags, function( key, val ) {
@@ -88,7 +86,7 @@ tagBox = {
 		a = a || false;
 		var tags = $('.the-tags', el),
 			newtag = $('input.newtag', el),
-			comma = postL10n.comma,
+			comma = mla_single_edit_vars.comma,
 			newtags, text;
 
 		text = a ? $(a).text() : newtag.val();
@@ -157,7 +155,7 @@ tagBox = {
 			}
 		}).each(function(){
 			var tax = $(this).closest('div.tagsdiv').attr('id');
-			$(this).suggest( ajaxurl + '?action=ajax-tag-search&tax=' + tax, { delay: 500, minchars: 2, multiple: true, multipleSep: postL10n.comma + ' ' } );
+			$(this).suggest( ajaxurl + '?action=ajax-tag-search&tax=' + tax, { delay: 500, minchars: 2, multiple: true, multipleSep: mla_single_edit_vars.comma + ' ' } );
 		});
 
 	    // save tags on post save/publish

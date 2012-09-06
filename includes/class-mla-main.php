@@ -38,7 +38,7 @@ class MLA {
 	 *
 	 * @var	string
 	 */
-	const CURRENT_MLA_VERSION = '0.11';
+	const CURRENT_MLA_VERSION = '0.20';
 
 	/**
 	 * Minimum version of PHP required for this plugin
@@ -68,13 +68,40 @@ class MLA {
 	const STYLESHEET_SLUG = 'mla-style';
 
 	/**
-	 * Slug for localizing and enqueueing plugin JavaScript
+	 * Slug for localizing and enqueueing JavaScript - edit single item page
 	 *
 	 * @since 0.1
 	 *
 	 * @var	string
 	 */
-	const JAVASCRIPT_SLUG = 'mla-scripts';
+	const JAVASCRIPT_SINGLE_EDIT_SLUG = 'mla-single-edit-scripts';
+
+	/**
+	 * Object name for localizing JavaScript - edit single item page
+	 *
+	 * @since 0.1
+	 *
+	 * @var	string
+	 */
+	const JAVASCRIPT_SINGLE_EDIT_OBJECT = 'mla_single_edit_vars';
+
+	/**
+	 * Slug for localizing and enqueueing JavaScript - MLA List Table
+	 *
+	 * @since 0.20
+	 *
+	 * @var	string
+	 */
+	const JAVASCRIPT_INLINE_EDIT_SLUG = 'mla-inline-edit-scripts';
+
+	/**
+	 * Object name for localizing JavaScript - MLA List Table
+	 *
+	 * @since 0.20
+	 *
+	 * @var	string
+	 */
+	const JAVASCRIPT_INLINE_EDIT_OBJECT = 'mla_inline_edit_vars';
 
 	/**
 	 * Slug for adding plugin submenu
@@ -104,10 +131,22 @@ class MLA {
 		MLATest::min_php_version( self::MIN_PHP_VERSION, self::PLUGIN_NAME );
 		MLATest::min_WordPress_version( self::MIN_WORDPRESS_VERSION, self::PLUGIN_NAME );
 		
+		add_action( 'admin_init', 'MLA::mla_admin_init_action' );
 		add_action( 'admin_enqueue_scripts', 'MLA::mla_admin_enqueue_scripts_action' );
 		add_action( 'admin_menu', 'MLA::mla_admin_menu_action' );
 		add_filter( 'set-screen-option', 'MLA::mla_set_screen_option_filter', 10, 3 ); // $status, $option, $value
 		add_filter( 'screen_options_show_screen', 'MLA::mla_screen_options_show_screen_filter', 10, 2 ); // $show_screen, $this
+	}
+	
+	/**
+	 * Load the plugin's Ajax handler
+	 *
+	 * @since 0.20
+	 *
+	 * @return	nothing
+	 */
+	public static function mla_admin_init_action() {
+		add_action( 'wp_ajax_' . self::JAVASCRIPT_INLINE_EDIT_SLUG, 'MLA::mla_inline_edit_action' );
 	}
 	
 	/**
@@ -122,20 +161,30 @@ class MLA {
 	public static function mla_admin_enqueue_scripts_action( $page_hook ) {
 		if ( 'media_page_mla-menu' != $page_hook )
 			return;
-		
+
 		wp_register_style( self::STYLESHEET_SLUG, MLA_PLUGIN_URL . 'css/mla-style.css', false, self::CURRENT_MLA_VERSION );
 		wp_enqueue_style( self::STYLESHEET_SLUG );
+
+		$suffix = defined('SCRIPT_DEBUG') && SCRIPT_DEBUG ? '.dev' : '';
 		
 		if ( isset( $_REQUEST['mla_admin_action'] ) && ( $_REQUEST['mla_admin_action'] == self::MLA_ADMIN_SINGLE_EDIT_DISPLAY ) ) {
-			wp_enqueue_script( self::JAVASCRIPT_SLUG, MLA_PLUGIN_URL . 'js/mla-scripts.js', array(
-				 'wp-lists',
-				'suggest',
-				'jquery' 
-			), self::CURRENT_MLA_VERSION, false );
+			wp_enqueue_script( self::JAVASCRIPT_SINGLE_EDIT_SLUG, MLA_PLUGIN_URL . "js/mla-single-edit-scripts{$suffix}.js", 
+				array( 'wp-lists', 'suggest', 'jquery' ), self::CURRENT_MLA_VERSION, false );
 			$script_variables = array(
-				 'Ajax_Url' => admin_url( 'admin-ajax.php' ) 
+				'comma' => _x( ',', 'tag delimiter' ),
+				'Ajax_Url' => admin_url( 'admin-ajax.php' ) 
 			);
-			wp_localize_script( self::JAVASCRIPT_SLUG, 'mlascripts', $script_variables );
+			wp_localize_script( self::JAVASCRIPT_SINGLE_EDIT_SLUG, self::JAVASCRIPT_SINGLE_EDIT_OBJECT, $script_variables );
+		}
+		else {
+			wp_enqueue_script( self::JAVASCRIPT_INLINE_EDIT_SLUG, MLA_PLUGIN_URL . "js/mla-inline-edit-scripts{$suffix}.js", 
+				array( 'wp-lists', 'suggest', 'jquery' ), self::CURRENT_MLA_VERSION, false );
+			$script_variables = array(
+				'comma' => _x( ',', 'tag delimiter' ),
+				'ajax_action' => self::JAVASCRIPT_INLINE_EDIT_SLUG,
+				'ajax_nonce' => wp_create_nonce( self::MLA_ADMIN_NONCE ) 
+			);
+			wp_localize_script( self::JAVASCRIPT_INLINE_EDIT_SLUG, self::JAVASCRIPT_INLINE_EDIT_OBJECT, $script_variables );
 		}
 	}
 	
@@ -464,15 +513,13 @@ class MLA {
 			
 			switch ( $_REQUEST['mla_admin_action'] ) {
 				case self::MLA_ADMIN_SINGLE_DELETE:
-					echo "</h2>\r\n";
 					$page_content = self::_delete_single_item( $_REQUEST['mla_item_ID'] );
 					break;
 				case self::MLA_ADMIN_SINGLE_EDIT_DISPLAY:
-					echo " - Edit single item</h2>\r\n";
+					echo " - Edit single item</h2>";
 					$page_content = self::_display_single_item( $_REQUEST['mla_item_ID'] );
 					break;
 				case self::MLA_ADMIN_SINGLE_EDIT_UPDATE:
-					echo "</h2>\r\n";
 					if ( !empty( $_REQUEST['update'] ) ) {
 						$page_content = self::_update_single_item( $_REQUEST['mla_item_ID'], $_REQUEST['attachments'][ $_REQUEST['mla_item_ID'] ], $_REQUEST['tax_input'] );
 					} else {
@@ -483,15 +530,12 @@ class MLA {
 					}
 					break;
 				case self::MLA_ADMIN_SINGLE_RESTORE:
-					echo "</h2>\r\n";
 					$page_content = self::_restore_single_item( $_REQUEST['mla_item_ID'] );
 					break;
 				case self::MLA_ADMIN_SINGLE_TRASH:
-					echo "</h2>\r\n";
 					$page_content = self::_trash_single_item( $_REQUEST['mla_item_ID'] );
 					break;
 				default:
-					echo "</h2>\r\n";
 					$page_content = array(
 						 'message' => sprintf( 'Unknown mla_admin_action - "%1$s"', $_REQUEST['mla_admin_action'] ),
 						'body' => '' 
@@ -500,13 +544,13 @@ class MLA {
 			} // switch ($_REQUEST['mla_admin_action'])
 		} // (!empty($_REQUEST['mla_admin_action'])
 		
-		if ( !empty( $page_content['message'] ) ) {
-			echo "  <div style=\"background:#ECECEC;border:1px solid #CCC;padding:0 10px;margin-top:5px;border-radius:5px;-moz-border-radius:5px;-webkit-border-radius:5px;\"><p>\r\n";
-			echo '    ' . $page_content['message'] . "\r\n";
-			echo "  </p></div>\r\n"; // id="message"
-		}
-		
 		if ( !empty( $page_content['body'] ) ) {
+			if ( !empty( $page_content['message'] ) ) {
+				echo "  <div style=\"background:#ECECEC;border:1px solid #CCC;padding:0 10px;margin-top:5px;border-radius:5px;-moz-border-radius:5px;-webkit-border-radius:5px;\"><p>\r\n";
+				echo '    ' . $page_content['message'] . "\r\n";
+				echo "  </p></div>\r\n"; // id="message"
+			}
+			
 			echo $page_content['body'];
 		} else {
 			/*
@@ -527,6 +571,12 @@ class MLA {
 				echo ' - ' . $_REQUEST['heading_suffix'] . "</h2>\r\n";
 			} else
 				echo "</h2>\r\n";
+			
+			if ( !empty( $page_content['message'] ) ) {
+				echo "  <div style=\"background:#ECECEC;border:1px solid #CCC;padding:0 10px;margin-top:5px;border-radius:5px;-moz-border-radius:5px;-webkit-border-radius:5px;\"><p>\r\n";
+				echo '    ' . $page_content['message'] . "\r\n";
+				echo "  </p></div>\r\n"; // id="message"
+			}
 			
 			//	Create an instance of our package class...
 			$MLAListTable = new MLA_List_Table();
@@ -560,16 +610,229 @@ class MLA {
 			
 			//	 Now we can render the completed list table
 			$MLAListTable->display();
-			echo "</form>\r\n</div>\r\n";
+			echo "</form><!-- id=mla-filter -->\r\n";
+			
+			/*
+			 * Insert the hidden form and table for inline edits (quick & bulk)
+			 */
+			echo self::_build_inline_edit_form($MLAListTable);
+			
+			echo "<div id=\"ajax-response\"></div>\r\n";
+			echo "<br class=\"clear\" />\r\n";
+			echo "</div><!-- class=wrap -->\r\n";
 		}
 	}
 	
 	/**
-	 * Get the current action selected from the bulk actions dropdown.
+	 * Ajax handler for inline editing (quick and bulk edit)
+	 *
+	 * Adapted from wp_ajax_inline_save in /wp-admin/includes/ajax-actions.php
+	 *
+	 * @since 0.20
+	 *
+	 * @return	string	echo HTML <tr> markup for updated row or error message, then die()
+	 */
+	public static function mla_inline_edit_action() {
+		set_current_screen( $_REQUEST['screen'] );
+
+		check_ajax_referer( self::MLA_ADMIN_NONCE, 'nonce' );
+		
+		if ( empty( $_REQUEST['post_ID'] ) ) {
+			echo 'Error: no post ID found';
+			die();
+		}
+		else
+			$post_id = $_REQUEST['post_ID'];
+			
+		if ( ! current_user_can( 'edit_post', $post_id ) )
+			wp_die( __( 'You are not allowed to edit this Attachment.' ) );
+
+		if ( ! empty( $_REQUEST['tax_input'] ) ) {
+			/*
+			 * Flat taxonomy strings must be cleaned up and duplicates removed
+			 */
+			$tax_output = array ();
+			$tax_input = $_REQUEST['tax_input'];
+			foreach ( $tax_input as $tax_name => $tax_value ) {
+				if ( ! is_array( $tax_value ) ) {
+					$comma = _x( ',', 'tag delimiter' );
+					if ( ',' != $comma )
+						$tax_value = str_replace( $comma, ',', $tax_value );
+					
+					$tax_value = preg_replace( '#\s*,\s*#', ',', $tax_value );
+					$tax_value = preg_replace( '#,+#', ',', $tax_value );
+					$tax_value = preg_replace( '#[,\s]+$#', '', $tax_value );
+					$tax_value = preg_replace( '#^[,\s]+#', '', $tax_value );
+					
+					if ( ',' != $comma )
+						$tax_value = str_replace( ',', $comma, $tax_value );
+					
+					$tax_array = array ();
+					$dedup_array = explode( $comma, $tax_value );
+					foreach ( $dedup_array as $tax_value )
+						$tax_array [$tax_value] = $tax_value;
+						
+					$tax_value = implode( $comma, $tax_array );
+				} // ! array( $tax_value )
+				
+				$tax_output[$tax_name] = $tax_value;
+			} // foreach $tax_input
+		} // ! empty( $_REQUEST['tax_input'] )
+		else
+			$tax_output = NULL;
+		
+		$results = self::_update_single_item( $post_id, $_REQUEST, $tax_output );
+		$new_item = (object) MLAData::mla_get_attachment_by_id( $post_id );
+
+		//	Create an instance of our package class and echo the new HTML
+		$MLAListTable = new MLA_List_Table();
+		$MLAListTable->single_row( $new_item );
+		die(); // this is required to return a proper result
+	}
+	
+	/**
+	 * Build the hidden row templates for inline editing (quick and bulk edit).
+	 *
+	 * inspired by inline_edit() in wp-admin\includes\class-wp-posts-list-table.php.
+	 *
+	 * @since 0.20
+	 *
+	 * @param	object	MLA List Table object
+	 *
+	 * @return	string	HTML <form> markup for hidden rows
+	 */
+	private static function _build_inline_edit_form( $MLAListTable ) {
+		$taxonomies = get_object_taxonomies( 'attachment', 'objects' );
+		
+		$hierarchical_taxonomies = array();
+		$flat_taxonomies = array();
+		foreach ( $taxonomies as $tax_name => $tax_object ) {
+			if ( $tax_object->hierarchical && $tax_object->show_ui ) {
+				$hierarchical_taxonomies[$tax_name] = $tax_object;
+			} elseif ( $tax_object->show_ui ) {
+				$flat_taxonomies[$tax_name] = $tax_object;
+			}
+		}
+
+		$page_template_array = MLAData::mla_load_template( MLA_PLUGIN_PATH . 'tpls/admin-inline-edit-form.tpl' );
+		if ( ! array( $page_template_array ) ) {
+			error_log( "ERROR: MLA::_build_inline_edit_form \$page_template_array = " . var_export( $page_template_array, true ), 0 );
+			return '';
+		}
+		
+		if ( $authors = self::_authors_dropdown() ) {
+			$authors_dropdown  = '              <label class="inline-edit-author">' . "\r\n";
+			$authors_dropdown .= '                <span class="title">' . __( 'Author' ) . '</span>' . "\r\n";
+			$authors_dropdown .= $authors . "\r\n";
+			$authors_dropdown .= '              </label>' . "\r\n";
+		}
+		else
+			$authors_dropdown = '';
+
+		/*
+		 * The middle column contains the hierarchical taxonomies, e.g., Attachment Category
+		 */
+		$middle_column = '';
+		
+		if ( count( $hierarchical_taxonomies ) ) {
+			$category_blocks = '';
+
+			foreach ( $hierarchical_taxonomies as $tax_name => $tax_object ) {
+				ob_start();
+				wp_terms_checklist( NULL, array( 'taxonomy' => $tax_name ) );
+				$tax_checklist = ob_get_contents();
+				ob_end_clean();
+
+				$page_values = array(
+					'tax_html' => esc_html( $tax_object->labels->name ),
+					'tax_attr' => esc_attr( $tax_name ),
+					'tax_checklist' => $tax_checklist
+				);
+				$category_blocks .= MLAData::mla_parse_template( $page_template_array['category_block'], $page_values );
+			} // foreach $hierarchical_taxonomies
+
+			$page_values = array(
+				'category_blocks' => $category_blocks
+			);
+			$middle_column = MLAData::mla_parse_template( $page_template_array['category_fieldset'], $page_values );
+		} // count( $hierarchical_taxonomies )
+		
+		/*
+		 * The right-hand column contains the flat taxonomies, e.g., Attachment Tag
+		 */
+		$right_column = '';
+		
+		if ( count( $flat_taxonomies ) ) {
+			$tag_blocks = '';
+
+			foreach ( $flat_taxonomies as $tax_name => $tax_object ) {
+				if ( current_user_can( $tax_object->cap->assign_terms ) ) {
+					$page_values = array(
+						'tax_html' => esc_html( $tax_object->labels->name ),
+						'tax_attr' => esc_attr( $tax_name )
+					);
+					$tag_blocks .= MLAData::mla_parse_template( $page_template_array['tag_block'], $page_values );
+				}
+			} // foreach $flat_taxonomies
+
+			$page_values = array(
+				'tag_blocks' => $tag_blocks
+			);
+			$right_column = MLAData::mla_parse_template( $page_template_array['tag_fieldset'], $page_values );
+		} // count( $flat_taxonomies )
+		
+		$page_values = array(
+			'colspan' => count( $MLAListTable->get_columns() ),
+			'authors' => $authors_dropdown,
+			'middle_column' => $middle_column,
+			'right_column' => $right_column,
+		);
+		$page_template = MLAData::mla_parse_template( $page_template_array['page'], $page_values );
+		return $page_template;
+	}
+	
+	/**
+	 * Get the edit Authors dropdown box, if user has suitable permissions
+	 *
+	 * @since 0.20
+	 *
+	 * @param	integer User ID of the current author
+	 * @param	string HTML name attribute
+	 * @param	string HTML class attribute
+	 *
+	 * @return string|false HTML markup for the dropdown field or False
+	 */
+	private static function _authors_dropdown( $author = 0, $name = 'post_author', $class = 'authors' ) {
+		$post_type_object = get_post_type_object('attachment');
+		if ( is_super_admin() || current_user_can( $post_type_object->cap->edit_others_posts ) ) {
+			$users_opt = array(
+				'hide_if_only_one_author' => false,
+				'who' => 'authors',
+				'name' => $name,
+				'class'=> $class,
+				'multi' => 1,
+				'echo' => 0
+			);
+			
+			if ( $author > 0 ) {
+				$users_opt['selected'] = $author;
+				$users_opt['include_selected'] = true;
+			}
+
+			if ( $authors = wp_dropdown_users( $users_opt ) ) {
+				return $authors;
+			}
+		}
+		
+		return false;
+	}
+	
+	/**
+	 * Get the current action selected from the bulk actions dropdown
 	 *
 	 * @since 0.1
 	 *
-	 * @return string|bool The action name or False if no action was selected
+	 * @return string|false The action name or False if no action was selected
 	 */
 	private static function _current_bulk_action( )
 	{
@@ -598,7 +861,7 @@ class MLA {
 	 * @since 0.1
 	 * 
 	 * @param	array The form POST data.
-	 * @return	array success/failure message and null content
+	 * @return	array success/failure message and NULL content
 	 */
 	private static function _delete_single_item( $post_id ) {
 		if ( !current_user_can( 'delete_post', $post_id ) )
@@ -630,7 +893,7 @@ class MLA {
 	 */
 	private static function _display_single_item( $post_id ) {
 		global $post;
-		
+
 		/*
 		 * This function sets the global $post
 		 */
@@ -642,6 +905,12 @@ class MLA {
 				'body' => '' 
 			);
 		
+		if ( ! current_user_can( 'edit_post', $post_id ) )
+			return array(
+				 'message' => 'You are not allowed to edit this Attachment.',
+				'body' => '' 
+			);
+
 		if ( !empty( $post_data['mla_wp_attachment_metadata'] ) ) {
 			$page_template_array = MLAData::mla_load_template( MLA_PLUGIN_PATH . 'tpls/admin-display-single-image.tpl' );
 			$width = $post_data['mla_wp_attachment_metadata']['width'];
@@ -661,10 +930,12 @@ class MLA {
 			 $page_template_array 
 		) ) {
 			$page_template = $page_template_array['page'];
+			$authors_template = $page_template_array['authors'];
 			$postbox_template = $page_template_array['postbox'];
 		} else {
 			error_log( "ERROR: MLA::_display_single_item \$page_template_array = " . var_export( $page_template_array, true ), 0 );
 			$page_template = $page_template_array;
+			$authors_template = '';
 			$postbox_template = '';
 		}
 		
@@ -683,6 +954,16 @@ class MLA {
 			}
 		}
 		
+		if ( $authors = self::_authors_dropdown( $post_data['post_author'], 'attachments[' . $post_data['ID'] . '][post_author]' ) ) {
+			$args = array (
+				'ID' => $post_data['ID'],
+				'authors' => $authors
+				);
+			$authors = MLAData::mla_parse_template( $authors_template, $args );
+		}
+		else
+			$authors = '';
+
 		$features = '';
 		
 		foreach ( $post_data['mla_references']['features'] as $feature_id => $feature ) {
@@ -710,12 +991,21 @@ class MLA {
 		} // foreach $file
 		
 		/*
-		 * WordPress doesn't look in hidden fields to set the month filter dropdown
+		 * WordPress doesn't look in hidden fields to set the month filter dropdown or pagination filter
 		 */
 		if ( isset( $_REQUEST['m'] ) )
-			$month = '&m=' . $_REQUEST['m'];
+			$url_args = '&m=' . $_REQUEST['m'];
 		else
-			$month = '';
+			$url_args = '';
+			
+		if ( isset( $_REQUEST['post_mime_type'] ) )
+			$url_args .= '&post_mime_type=' . $_REQUEST['post_mime_type'];
+		
+		if ( isset( $_REQUEST['order'] ) )
+			$url_args .= '&order=' . $_REQUEST['order'];
+		
+		if ( isset( $_REQUEST['orderby'] ) )
+			$url_args .= '&orderby=' . $_REQUEST['orderby'];
 		
 		/*
 		 * Add the current view arguments
@@ -724,13 +1014,14 @@ class MLA {
 			$view_args = '<input type="hidden" name="detached" value="' . $_REQUEST['detached'] . "\" />\r\n";
 		elseif ( isset( $_REQUEST['status'] ) )
 			$view_args = '<input type="hidden" name="status" value="' . $_REQUEST['status'] . "\" />\r\n";
-		elseif ( isset( $_REQUEST['post_mime_type'] ) )
-			$view_args = '<input type="hidden" name="post_mime_type" value="' . $_REQUEST['post_mime_type'] . "\" />\r\n";
 		else
 			$view_args = '';
 		
 		if ( isset( $_REQUEST['att_cat'] ) )
 			$view_args .= sprintf( '<input type="hidden" name="att_cat" value="%1$s" />', $_REQUEST['att_cat'] ) . "\r\n";
+		
+		if ( isset( $_REQUEST['paged'] ) )
+			$view_args .= sprintf( '<input type="hidden" name="paged" value="%1$s" />', $_REQUEST['paged'] ) . "\r\n";
 		
 		$side_info_column = '';
 		$taxonomies = get_object_taxonomies( 'attachment', 'objects' );
@@ -738,7 +1029,7 @@ class MLA {
 		foreach ( $taxonomies as $tax_name => $tax_object ) {
 			ob_start();
 			
-			if ( $tax_object->hierarchical ) {
+			if ( $tax_object->hierarchical && $tax_object->show_ui ) {
 				$box = array(
 					 'id' => $tax_name . 'div',
 					'title' => $tax_object->labels->name,
@@ -749,7 +1040,7 @@ class MLA {
 					'inside_html' => '' 
 				);
 				post_categories_meta_box( $post, $box );
-			} else {
+			} elseif ( $tax_object->show_ui ) {
 				$box = array(
 					 'id' => 'tagsdiv-' . $tax_name,
 					'title' => $tax_object->labels->name,
@@ -774,18 +1065,18 @@ class MLA {
 			'height' => $height,
 			'image_meta' => $image_meta,
 			'parent_info' => $parent_info,
+			'authors' => $authors,
 			'features' => $features,
 			'inserts' => $inserts,
 			'mla_admin_action' => self::MLA_ADMIN_SINGLE_EDIT_UPDATE,
-			'form_url' => admin_url( 'upload.php' ) . '?page=' . self::ADMIN_PAGE_SLUG . $month,
+			'form_url' => admin_url( 'upload.php' ) . '?page=' . self::ADMIN_PAGE_SLUG . $url_args,
 			'view_args' => $view_args,
-			'_wpnonce' => wp_nonce_field( self::MLA_ADMIN_NONCE, '_wpnonce', true, false ),
+			'wpnonce' => wp_nonce_field( self::MLA_ADMIN_NONCE, '_wpnonce', true, false ),
 			'side_info_column' => $side_info_column 
 		);
-		
 		$page_template = MLAData::mla_parse_template( $page_template, $post_data );
 		return array(
-			 'message' => '',
+			'message' => '',
 			'body' => MLAData::mla_parse_template( $page_template, $page_values ) 
 		);
 	}
@@ -799,9 +1090,9 @@ class MLA {
 	 * @param	int		The ID of the attachment to be updated
 	 * @param	array	Field name => value pairs
 	 * @param	array	Attachment Category and Tag values
-	 * @return	array	success/failure message and null content
+	 * @return	array	success/failure message and NULL content
 	 */
-	private static function _update_single_item( $post_id, $new_data, $tax_input = null ) {
+	private static function _update_single_item( $post_id, $new_data, $tax_input = NULL ) {
 		$post_data = MLAData::mla_get_attachment_by_id( $post_id );
 		
 		if ( !isset( $post_data ) )
@@ -881,7 +1172,16 @@ class MLA {
 					$message .= sprintf( 'Changing Parent from "%1$s" to "%2$s"<br>', $post_data[ $key ], $value );
 					$updates[ $key ] = $value;
 					break;
+				case 'post_author':
+					if ( $value == $post_data[ $key ] )
+						break;
+					$from_user = get_userdata( $post_data[ $key ] );
+					$to_user = get_userdata( $value );
+					$message .= sprintf( 'Changing Author from "%1$s" to "%2$s"<br>', $from_user->display_name, $to_user->display_name );
+					$updates[ $key ] = $value;
+					break;
 				default:
+					// Ignore anything else
 			} // switch $key
 		} // foreach $new_data
 		
@@ -933,7 +1233,7 @@ class MLA {
 	 * 
 	 * @param	array	The form POST data
 	 *
-	 * @return	array	success/failure message and null content
+	 * @return	array	success/failure message and NULL content
 	 */
 	private static function _restore_single_item( $post_id ) {
 		if ( !current_user_can( 'delete_post', $post_id ) )
@@ -968,7 +1268,7 @@ class MLA {
 	 * @since 0.1
 	 * 
 	 * @param	array	The form POST data
-	 * @return	array	success/failure message and null content
+	 * @return	array	success/failure message and NULL content
 	 */
 	private static function _trash_single_item( $post_id ) {
 		if ( !current_user_can( 'delete_post', $post_id ) )
@@ -988,6 +1288,5 @@ class MLA {
 			'body' => '' 
 		);
 	}
-	
 } // class MLA
 ?>

@@ -3,7 +3,7 @@
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <meta name="viewport" content="width=device-width; initial-scale=1.0; maximum-scale=1.0; user-scalable=0;">
 <meta charset="utf-8">
-<title>Media Library Assistant » \MLATest</title>
+<title>Media Library Assistant » \MLAShortcodes</title>
 <meta name="author" content="Mike van Riel">
 <meta name="description" content="">
 <link href="../css/template.css" rel="stylesheet" media="all">
@@ -52,23 +52,22 @@
 <ul class="side-nav nav nav-list">
 <li class="nav-header">
 <i class="icon-custom icon-method"></i> Methods</li>
-<li class="method public "><a href="#min_WordPress_version" title="min_WordPress_version :: Test that your WordPress version is at least that of the $min_version"><span class="description">Test that your WordPress version is at least that of the $min_version</span><pre>min_WordPress_version()</pre></a></li>
-<li class="method public "><a href="#min_php_version" title="min_php_version :: Test that your PHP version is at least that of the $min_php_version"><span class="description">Test that your PHP version is at least that of the $min_php_version</span><pre>min_php_version()</pre></a></li>
+<li class="method public "><a href="#initialize" title="initialize :: Initialization function, similar to __construct()"><span class="description">Initialization function, similar to __construct()</span><pre>initialize()</pre></a></li>
+<li class="method public "><a href="#mla_attachment_list_shortcode" title="mla_attachment_list_shortcode :: WordPress Shortcode; renders a complete list of all attachments and references to them"><span class="description">WordPress Shortcode; renders a complete list of all attachments and references to them</span><pre>mla_attachment_list_shortcode()</pre></a></li>
 </ul>
 </div>
 <div class="span8">
-<a name="%5CMLATest" id="\MLATest"></a><ul class="breadcrumb">
+<a name="%5CMLAShortcodes" id="\MLAShortcodes"></a><ul class="breadcrumb">
 <li>
 <a href="../index.html"><i class="icon-custom icon-class"></i></a><span class="divider">\</span>
 </li>
 <li><a href="../namespaces/global.html">global</a></li>
 <li class="active">
-<span class="divider">\</span><a href="../classes/MLATest.html">MLATest</a>
+<span class="divider">\</span><a href="../classes/MLAShortcodes.html">MLAShortcodes</a>
 </li>
 </ul>
-<div href="../classes/MLATest.html" class="element class">
-<p class="short_description">Class MLA (Media Library Assistant) Test provides basic run-time tests
-to ensure the plugin can run in the current WordPress envrionment.</p>
+<div href="../classes/MLAShortcodes.html" class="element class">
+<p class="short_description">Class MLA (Media Library Assistant) Shortcodes defines the shortcodes available to MLA users</p>
 <div class="details">
 <p class="long_description"></p>
 <table class="table table-bordered">
@@ -78,37 +77,26 @@ to ensure the plugin can run in the current WordPress envrionment.</p>
 </tr>
 <tr>
 <th>since</th>
-<td>0.1</td>
+<td>0.20</td>
 </tr>
 </table>
 <h3>
 <i class="icon-custom icon-method"></i> Methods</h3>
-<a name="min_WordPress_version" id="min_WordPress_version"></a><div class="element clickable method public min_WordPress_version" data-toggle="collapse" data-target=".min_WordPress_version .collapse">
-<h2>Test that your WordPress version is at least that of the $min_version</h2>
-<pre>min_WordPress_version(string $min_version, string $plugin_name) : \none</pre>
+<a name="initialize" id="initialize"></a><div class="element clickable method public initialize" data-toggle="collapse" data-target=".initialize .collapse">
+<h2>Initialization function, similar to __construct()</h2>
+<pre>initialize() </pre>
 <div class="labels"></div>
 <div class="row collapse"><div class="detail-description">
 <p class="long_description"></p>
 <table class="table table-bordered"><tr>
 <th>since</th>
-<td>0.1</td>
+<td>0.20</td>
 </tr></table>
-<h3>Parameters</h3>
-<div class="subelement argument">
-<h4>$min_version</h4>
-<code>string</code><p>representing the minimum required version of WordPress, e.g. '3.3.0'</p>
-</div>
-<div class="subelement argument">
-<h4>$plugin_name</h4>
-<code>string</code><p>Name of the plugin for messaging purposes</p></div>
-<h3>Returns</h3>
-<div class="subelement response">
-<code>\none</code>Exit with messaging if version is too old</div>
 </div></div>
 </div>
-<a name="min_php_version" id="min_php_version"></a><div class="element clickable method public min_php_version" data-toggle="collapse" data-target=".min_php_version .collapse">
-<h2>Test that your PHP version is at least that of the $min_php_version</h2>
-<pre>min_php_version(string $min_version, string $plugin_name) : \none</pre>
+<a name="mla_attachment_list_shortcode" id="mla_attachment_list_shortcode"></a><div class="element clickable method public mla_attachment_list_shortcode" data-toggle="collapse" data-target=".mla_attachment_list_shortcode .collapse">
+<h2>WordPress Shortcode; renders a complete list of all attachments and references to them</h2>
+<pre>mla_attachment_list_shortcode() : string</pre>
 <div class="labels"></div>
 <div class="row collapse"><div class="detail-description">
 <p class="long_description"></p>
@@ -116,17 +104,9 @@ to ensure the plugin can run in the current WordPress envrionment.</p>
 <th>since</th>
 <td>0.1</td>
 </tr></table>
-<h3>Parameters</h3>
-<div class="subelement argument">
-<h4>$min_version</h4>
-<code>string</code><p>representing the minimum required version of PHP, e.g. '5.3.2'</p>
-</div>
-<div class="subelement argument">
-<h4>$plugin_name</h4>
-<code>string</code><p>Name of the plugin for messaging purposes</p></div>
 <h3>Returns</h3>
 <div class="subelement response">
-<code>\none</code>Exit with messaging if PHP version is too old</div>
+<code>string</code>HTML markup for the attachment list</div>
 </div></div>
 </div>
 </div>

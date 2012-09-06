@@ -14,7 +14,9 @@ if ( !class_exists( 'WP_List_Table' ) ) {
 }
 
 /**
- * Class MLA (Media Library Assistant) List Table extends the core WP_List_Table class
+ * Class MLA (Media Library Assistant) List Table implements the "Assistant" admin submenu
+ *
+ * Extends the core WP_List_Table class.
  *
  * @package Media Library Assistant
  * @since 0.1
@@ -220,6 +222,10 @@ class MLA_List_Table extends WP_List_Table {
 		) );
 		
 		$this->currently_hidden = self::get_hidden_columns();
+		
+		/*
+		 * NOTE: There are two add_filter calls at the end of this source file.
+		 */
 	}
 	
 	/**
@@ -291,6 +297,15 @@ class MLA_List_Table extends WP_List_Table {
 				 'page' => $_REQUEST['page'],
 				'mla_item_ID' => $item->ID 
 			);
+
+			if ( isset( $_REQUEST['paged'] ) )
+				$view_args['paged'] = $_REQUEST['paged'];
+			
+			if ( isset( $_REQUEST['order'] ) )
+				$view_args['order'] = $_REQUEST['order'];
+			
+			if ( isset( $_REQUEST['orderby'] ) )
+				$view_args['orderby'] = $_REQUEST['orderby'];
 			
 			if ( isset( $_REQUEST['detached'] ) )
 				$view_args['detached'] = $_REQUEST['detached'];
@@ -304,22 +319,24 @@ class MLA_List_Table extends WP_List_Table {
 			
 			if ( isset( $_REQUEST['att_cat'] ) )
 				$view_args['att_cat'] = $_REQUEST['att_cat'];
-			
+
 			if ( current_user_can( 'edit_post', $item->ID ) ) {
 				if ( $this->is_trash )
-					$actions['restore'] = '<a class="submitdelete" href="' . add_query_arg( $view_args, wp_nonce_url( '?mla_admin_action=' . MLA::MLA_ADMIN_SINGLE_RESTORE, MLA::MLA_ADMIN_NONCE ) ) . '">Restore</a>';
-				else
-					$actions['edit'] = '<a href="' . add_query_arg( $view_args, wp_nonce_url( '?mla_admin_action=' . MLA::MLA_ADMIN_SINGLE_EDIT_DISPLAY, MLA::MLA_ADMIN_NONCE ) ) . '">Edit</a>';
+					$actions['restore'] = '<a class="submitdelete" href="' . add_query_arg( $view_args, wp_nonce_url( '?mla_admin_action=' . MLA::MLA_ADMIN_SINGLE_RESTORE, MLA::MLA_ADMIN_NONCE ) ) . '" title="Restore this item from the Trash">Restore</a>';
+				else {
+					$actions['edit'] = '<a href="' . add_query_arg( $view_args, wp_nonce_url( '?mla_admin_action=' . MLA::MLA_ADMIN_SINGLE_EDIT_DISPLAY, MLA::MLA_ADMIN_NONCE ) ) . '" title="Edit this item">Edit</a>';
+					$actions['inline hide-if-no-js'] = '<a class="editinline" href="#" title="Edit this item inline">Quick Edit</a>';
+				}
 			} // edit_post
 			
 			if ( current_user_can( 'delete_post', $item->ID ) ) {
 				if ( !$this->is_trash && EMPTY_TRASH_DAYS && MEDIA_TRASH )
-					$actions['trash'] = '<a class="submitdelete" href="' . add_query_arg( $view_args, wp_nonce_url( '?mla_admin_action=' . MLA::MLA_ADMIN_SINGLE_TRASH, MLA::MLA_ADMIN_NONCE ) ) . '">Move to Trash</a>';
+					$actions['trash'] = '<a class="submitdelete" href="' . add_query_arg( $view_args, wp_nonce_url( '?mla_admin_action=' . MLA::MLA_ADMIN_SINGLE_TRASH, MLA::MLA_ADMIN_NONCE ) ) . '" title="Move this item to the Trash">Move to Trash</a>';
 				else {
 					// If using trash for posts and pages but not for attachments, warn before permanently deleting 
 					$delete_ays = EMPTY_TRASH_DAYS && !MEDIA_TRASH ? ' onclick="return showNotice.warn();"' : '';
 					
-					$actions['delete'] = '<a class="submitdelete"' . $delete_ays . ' href="' . add_query_arg( $view_args, wp_nonce_url( '?mla_admin_action=' . MLA::MLA_ADMIN_SINGLE_DELETE, MLA::MLA_ADMIN_NONCE ) ) . '">Delete Permanently</a>';
+					$actions['delete'] = '<a class="submitdelete"' . $delete_ays . ' href="' . add_query_arg( $view_args, wp_nonce_url( '?mla_admin_action=' . MLA::MLA_ADMIN_SINGLE_DELETE, MLA::MLA_ADMIN_NONCE ) ) . '" title="Delete this item Permanently">Delete Permanently</a>';
 				}
 			} // delete_post
 			
@@ -327,6 +344,46 @@ class MLA_List_Table extends WP_List_Table {
 		} // $this->rollover_id != $item->ID
 		
 		return $actions;
+	}
+	
+	/**
+	 * Add hidden fields with the data for use in the inline editor
+	 *
+	 * @since 0.20
+	 * 
+	 * @param	object	A singular attachment (post) object
+	 *
+	 * @return	string	HTML <div> with row data
+	 */
+	private function _build_inline_data( $item ) {
+		$inline_data = "\r\n" . '<div class="hidden" id="inline_' . $item->ID . "\">\r\n";
+		$inline_data .= '	<div class="post_title">' . $item->post_title . "</div>\r\n";
+		$inline_data .= '	<div class="post_name">' . $item->post_name . "</div>\r\n";
+		
+		if ( !empty( $item->mla_wp_attachment_metadata ) ) {
+			if ( isset( $item->mla_wp_attachment_image_alt ) )
+				$inline_data .= '	<div class="image_alt">' . $item->mla_wp_attachment_image_alt . "</div>\r\n";
+			else
+				$inline_data .= '	<div class="image_alt">' . "</div>\r\n";
+		}
+		
+		$inline_data .= '	<div class="post_parent">' . $item->post_parent . "</div>\r\n";
+		$inline_data .= '	<div class="post_author">' . $item->post_author . "</div>\r\n";
+		
+		$taxonomies = get_object_taxonomies( 'attachment', 'objects' );
+		
+		foreach ( $taxonomies as $tax_name => $tax_object ) {
+			if ( $tax_object->hierarchical && $tax_object->show_ui ) {
+				$inline_data .= '	<div class="mla_category" id="' . $tax_name . '_' . $item->ID . '">'
+					. implode( ',', wp_get_object_terms( $item->ID, $tax_name, array( 'fields' => 'ids' ) ) ) . "</div>\r\n";
+			} elseif ( $tax_object->show_ui ) {
+				$inline_data .= '	<div class="mla_tags" id="'.$tax_name.'_'.$item->ID. '">'
+					. esc_html( str_replace( ',', ', ', get_terms_to_edit( $item->ID, $tax_name ) ) ) . "</div>\r\n";
+			}
+		}
+		
+		$inline_data .= "</div>\r\n";
+		return $inline_data;
 	}
 	
 	/**
@@ -341,7 +398,7 @@ class MLA_List_Table extends WP_List_Table {
 		$row_actions = self::_build_rollover_actions( $item, 'ID_parent' );
 		
 		if ( !empty( $row_actions ) ) {
-			return sprintf( '%1$s<br><span style="color:silver">(parent:%2$s)</span><br>%3$s', /*%1$s*/ $item->ID, /*%2$s*/ $item->post_parent, /*%3$s*/ $this->row_actions( $row_actions ) );
+			return sprintf( '%1$s<br><span style="color:silver">(parent:%2$s)</span><br>%3$s%4$s', /*%1$s*/ $item->ID, /*%2$s*/ $item->post_parent, /*%3$s*/ $this->row_actions( $row_actions ), /*%4$s*/ $this->_build_inline_data( $item ) );
 		} else {
 			return sprintf( '%1$s<br><span style="color:silver">(parent:%2$s)</span>', /*%1$s*/ $item->ID, /*%2$s*/ $item->post_parent );
 		}
@@ -357,13 +414,13 @@ class MLA_List_Table extends WP_List_Table {
 	 */
 	function column_title_name( $item ) {
 		$errors = '';
-		if ( !$item->references['found_reference'] )
+		if ( !$item->mla_references['found_reference'] )
 			$errors .= '(ORPHAN) ';
 		
-		if ( $item->references['is_unattached'] )
+		if ( $item->mla_references['is_unattached'] )
 			$errors .= '(UNATTACHED) ';
 		else {
-			if ( !$item->references['found_parent'] )
+			if ( !$item->mla_references['found_parent'] )
 				$errors .= '(BAD PARENT) ';
 		}
 		
@@ -435,9 +492,7 @@ class MLA_List_Table extends WP_List_Table {
 	function column_featured( $item ) {
 		$value = '';
 		
-		foreach ( $item->references['features'] as $feature_id => $feature ) {
-			//			error_log("\$feature = ".var_export($feature, true), 0);
-			
+		foreach ( $item->mla_references['features'] as $feature_id => $feature ) {
 			if ( $feature_id == $item->post_parent )
 				$parent = 'PARENT ';
 			else
@@ -460,9 +515,7 @@ class MLA_List_Table extends WP_List_Table {
 	function column_inserted( $item ) {
 		$value = '';
 		
-		foreach ( $item->references['inserts'] as $file => $inserts ) {
-			//			error_log("\$file = ".var_export($file, true), 0);
-			//			error_log("\$inserts = ".var_export($inserts, true), 0);
+		foreach ( $item->mla_references['inserts'] as $file => $inserts ) {
 			$value .= sprintf( '<strong>%1$s</strong><br>', $file );
 			
 			foreach ( $inserts as $insert ) {
@@ -526,7 +579,7 @@ class MLA_List_Table extends WP_List_Table {
 	 * @return	string	HTML markup to be placed inside the column
 	 */
 	function column_base_file( $item ) {
-		return $item->references['base_file'];
+		return $item->mla_references['base_file'];
 	}
 	
 	/**
@@ -705,7 +758,7 @@ class MLA_List_Table extends WP_List_Table {
 	 * @since 0.1
 	 * 
 	 * @return	array	Sortable column information,e.g.,
-	 * 					'slugs'=>array('data_values',bool)
+	 * 					'slugs'=>array('data_values',boolean)
 	 */
 	function get_sortable_columns( ) {
 		$columns = MLA_List_Table::$default_sortable_columns;
@@ -909,7 +962,6 @@ class MLA_List_Table extends WP_List_Table {
 		/*
 		 * REQUIRED for pagination.
 		 */
-		$current_page = $this->get_pagenum();
 		$total_items = $this->_count_list_table_items( $_REQUEST );
 		$user = get_current_user_id();
 		$screen = get_current_screen();
@@ -920,12 +972,6 @@ class MLA_List_Table extends WP_List_Table {
 		}
 		
 		/*
-		 * REQUIRED. Assign sorted and paginated data to the items property, where 
-		 * it can be used by the rest of the class.
-		 */
-		$this->items = MLAData::mla_query_list_table_items( $_REQUEST, $orderby, $order, ( ( $current_page - 1 ) * $per_page ), $per_page );
-		
-		/*
 		 * REQUIRED. We also have to register our pagination options & calculations.
 		 */
 		$this->set_pagination_args( array(
@@ -933,8 +979,34 @@ class MLA_List_Table extends WP_List_Table {
 			'per_page' => $per_page, //WE have to determine how many items to show on a page
 			'total_pages' => ceil( $total_items / $per_page ) //WE have to calculate the total number of pages
 		) );
+
+		$current_page = $this->get_pagenum();
+
+		/*
+		 * REQUIRED. Assign sorted and paginated data to the items property, where 
+		 * it can be used by the rest of the class.
+		 */
+		$this->items = MLAData::mla_query_list_table_items( $_REQUEST, $orderby, $order, ( ( $current_page - 1 ) * $per_page ), $per_page );
 	}
 	
+	/**
+	 * Generates (echoes) content for a single row of the table
+	 *
+	 * @since .20
+	 *
+	 * @param object $item The current item
+	 *
+	 * @return nothing Echoes the row HTML
+	 */
+	function single_row( $item ) {
+		static $row_class = '';
+		$row_class = ( $row_class == '' ? ' class="alternate"' : '' );
+
+		echo '<tr id="attachment-' . $item->ID . '"' . $row_class . '>';
+		echo parent::single_row_columns( $item );
+		echo '</tr>';
+	}
+
 	/**
 	 * Get possible mime types for view preparation.
 	 * Modeled after get_post_mime_types in wp-admin/includes/post.php,
@@ -1039,7 +1111,7 @@ class MLA_List_Table extends WP_List_Table {
 	 *
 	 * @param	array	Query variables, e.g., from $_REQUEST
 	 *
-	 * @return	int		Number of attachment posts
+	 * @return	integer	Number of attachment posts
 	 */
 	private function _count_list_table_items( $request )
 	{

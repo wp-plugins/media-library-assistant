@@ -61,3 +61,34 @@ textarea[readonly] {
 .mla-media-item .describe textarea {
 	width: 100%
 }
+
+/*
+ * MLA Inline editing - adapted from load-styles.php
+ */
+#wpbody-content .quick-edit-row-attachment .inline-edit-col-left {
+	width: 40%
+}
+
+#wpbody-content .quick-edit-row-attachment .inline-edit-col-center {
+	width: 20%
+}
+
+#wpbody-content .quick-edit-row-attachment .inline-edit-col-right {
+	width: 39%
+}
+
+.inline-edit-row fieldset.inline-edit-col-left label span.title{
+	width: 6em
+}
+
+.inline-edit-row fieldset.inline-edit-col-left label span.input-text-wrap{
+	margin-left: 6em
+}
+
+.inline-edit-row fieldset.inline-edit-col-left label.inline-edit-post-parent span.input-text-wrap{
+	width: 5em
+}
+
+.inline-edit-row fieldset.inline-edit-col-right label span.title{
+	width: 99%
+}

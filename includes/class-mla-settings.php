@@ -182,11 +182,11 @@ class MLASettings {
 	}
 	
 	/**
-	 * Render the "Media Library Assistant" subpage in the Settings section
+	 * Render (echo) the "Media Library Assistant" subpage in the Settings section
 	 *
 	 * @since 0.1
 	 *
-	 * @return	HTML markup for the settings subpage
+	 * @return	nothing Echoes HTML markup for the settings subpage
 	 */
 	public static function mla_render_settings_page( ) {
 		if ( !current_user_can( 'manage_options' ) ) {
@@ -199,9 +199,13 @@ class MLASettings {
 		 */
 		$page_template_array = MLAData::mla_load_template( MLA_PLUGIN_PATH . 'tpls/admin-display-settings-page.tpl' );
 		$page_values = array(
-			 'messages' => '',
+			'messages' => '',
+			'shortcode_list' => '',
 			'options_list' => '',
-			'_wpnonce' => wp_nonce_field( MLA::MLA_ADMIN_NONCE, '_wpnonce', true, false ) 
+			'mla_admin_action' => MLA::MLA_ADMIN_SINGLE_EDIT_UPDATE,
+			'page' => self::MLA_SETTINGS_SLUG,
+			'_wpnonce' => wp_nonce_field( MLA::MLA_ADMIN_NONCE, '_wpnonce', true, false ),
+			'phpDocs_url' => MLA_PLUGIN_URL . 'phpDocs/index.html'
 		);
 		
 		/*
@@ -231,12 +235,23 @@ class MLASettings {
 		);
 		
 		/* 
-		 * $shortcodes documents the name and description of theme shortcodes
+		 * $shortcodes documents the name and description of plugin shortcodes
 		 */
 		$shortcodes = array( 
 			// array("name" => "shortcode", "description" => "This shortcode...")
+			array( 'name' => 'mla_attachment_list', 'description' => 'renders a complete list of all attachments and references to them.' )
 		);
 		
+		$shortcode_list = '';
+		foreach ( $shortcodes as $shortcode ) {
+			$shortcode_values = array ( 'name' => $shortcode['name'], 'description' => $shortcode['description'] );
+			$shortcode_list .= MLAData::mla_parse_template( $page_template_array['shortcodeitem'], $shortcode_values );
+		}
+		
+		if ( ! empty( $shortcode_list ) ) {
+			$shortcode_values = array ( 'shortcode_list' => $shortcode_list );
+			$page_values['shortcode_list'] = MLAData::mla_parse_template( $page_template_array['shortcodelist'], $shortcode_values );
+		}
 		
 		$options_list = '';
 		foreach ( self::$mla_options as $key => $value ) {
@@ -358,7 +373,7 @@ class MLASettings {
 			}
 		}
 		
-		if ( !empty( $page_content['message'] ) )
+		if ( ! empty( $page_content['message'] ) )
 			$page_values['messages'] = MLAData::mla_parse_template( $page_template_array['messages'], array(
 				 'messages' => $page_content['message'] 
 			) );
@@ -403,7 +418,7 @@ class MLASettings {
 						error_log( 'ERROR: _save_settings unknown type(1): ' . var_export( $value, true ), 0 );
 				}
 				
-				$message .= '<br>update_option(' . $key . ')';
+				$message .= '<br>update_option(' . $key . ")\r\n";
 			} else {
 				switch ( $value['type'] ) {
 					case 'checkbox':
@@ -427,12 +442,12 @@ class MLASettings {
 						error_log( 'ERROR: _save_settings unknown type(2): ' . var_export( $value, true ), 0 );
 				}
 				
-				$message .= '<br>delete_option(' . $key . ')';
+				$message .= '<br>delete_option(' . $key . ")\r\n";
 			}
 		}
 		
 		$page_content = array(
-			'message' => 'Settings saved.',
+			'message' => "<br>Settings saved.\r\n",
 			'body' => '' 
 		);
 		

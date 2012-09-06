@@ -3,7 +3,7 @@
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <meta name="viewport" content="width=device-width; initial-scale=1.0; maximum-scale=1.0; user-scalable=0;">
 <meta charset="utf-8">
-<title>phpDocumentor » \MLAData</title>
+<title>Media Library Assistant » \MLAData</title>
 <meta name="author" content="Mike van Riel">
 <meta name="description" content="">
 <link href="../css/template.css" rel="stylesheet" media="all">
@@ -15,13 +15,10 @@
 <body>
 <div class="navbar navbar-fixed-top">
 <div class="navbar-inner"><div class="container">
-<a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse"><span class="icon-bar"></span><span class="icon-bar"></span><span class="icon-bar"></span></a><a class="brand" href="../index.html">phpDocumentor</a><div class="nav-collapse"><ul class="nav">
+<a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse"><span class="icon-bar"></span><span class="icon-bar"></span><span class="icon-bar"></span></a><a class="brand" href="../index.html">Media Library Assistant</a><div class="nav-collapse"><ul class="nav">
 <li class="dropdown">
 <a href="#api" class="dropdown-toggle" data-toggle="dropdown">
-                                    API Documentation <b class="caret"></b></a><ul class="dropdown-menu">
-<li><a>Packages</a></li>
-<li><a href="../packages/Media%20Library%20Assistant.html"><i class="icon-folder-open"></i> Media Library Assistant</a></li>
-</ul>
+                                    API Documentation <b class="caret"></b></a><ul class="dropdown-menu"></ul>
 </li>
 <li class="dropdown" id="charts-menu">
 <a href="#charts" class="dropdown-toggle" data-toggle="dropdown">
@@ -56,16 +53,16 @@
 <li class="nav-header">
 <i class="icon-custom icon-method"></i> Methods</li>
 <li class="method public "><a href="#initialize" title="initialize :: Initialization function, similar to __construct()"><span class="description">Initialization function, similar to __construct()</span><pre>initialize()</pre></a></li>
-<li class="method public "><a href="#mla_fetch_attachment_references" title="mla_fetch_attachment_references :: Find Featured Image and inserted image/link references to an attachment."><span class="description">Find Featured Image and inserted image/link references to an attachment.</span><pre>mla_fetch_attachment_references()</pre></a></li>
-<li class="method public "><a href="#mla_get_attachment_by_id" title="mla_get_attachment_by_id :: Retrieve an Attachment array given a $post_id."><span class="description">Retrieve an Attachment array given a $post_id.</span><pre>mla_get_attachment_by_id()</pre></a></li>
+<li class="method public "><a href="#mla_fetch_attachment_references" title="mla_fetch_attachment_references :: Find Featured Image and inserted image/link references to an attachment"><span class="description">Find Featured Image and inserted image/link references to an attachment</span><pre>mla_fetch_attachment_references()</pre></a></li>
+<li class="method public "><a href="#mla_get_attachment_by_id" title="mla_get_attachment_by_id :: Retrieve an Attachment array given a $post_id"><span class="description">Retrieve an Attachment array given a $post_id</span><pre>mla_get_attachment_by_id()</pre></a></li>
 <li class="method public "><a href="#mla_load_template" title="mla_load_template :: Load an HTML template from a file"><span class="description">Load an HTML template from a file</span><pre>mla_load_template()</pre></a></li>
-<li class="method public "><a href="#mla_parse_template" title="mla_parse_template :: Expand a template, replacing place holders with their values."><span class="description">Expand a template, replacing place holders with their values.</span><pre>mla_parse_template()</pre></a></li>
-<li class="method public "><a href="#mla_prepare_list_table_query" title="mla_prepare_list_table_query :: Sanitize and expand query arguments from request variables."><span class="description">Sanitize and expand query arguments from request variables.</span><pre>mla_prepare_list_table_query()</pre></a></li>
-<li class="method public "><a href="#mla_query_list_table_items" title="mla_query_list_table_items :: Retrieve attachment objects for list table display."><span class="description">Retrieve attachment objects for list table display.</span><pre>mla_query_list_table_items()</pre></a></li>
+<li class="method public "><a href="#mla_parse_template" title="mla_parse_template :: Expand a template, replacing place holders with their values"><span class="description">Expand a template, replacing place holders with their values</span><pre>mla_parse_template()</pre></a></li>
+<li class="method public "><a href="#mla_prepare_list_table_query" title="mla_prepare_list_table_query :: Sanitize and expand query arguments from request variables"><span class="description">Sanitize and expand query arguments from request variables</span><pre>mla_prepare_list_table_query()</pre></a></li>
+<li class="method public "><a href="#mla_query_list_table_items" title="mla_query_list_table_items :: Retrieve attachment objects for list table display"><span class="description">Retrieve attachment objects for list table display</span><pre>mla_query_list_table_items()</pre></a></li>
 <li class="method public "><a href="#mla_query_list_table_items_helper" title="mla_query_list_table_items_helper :: Adds a WHERE clause for detached items"><span class="description">Adds a WHERE clause for detached items</span><pre>mla_query_list_table_items_helper()</pre></a></li>
 <li class="nav-header private">» Private</li>
-<li class="method private "><a href="#_fetch_attachment_metadata" title="_fetch_attachment_metadata :: Fetch and filter meta data for an attachment."><span class="description">Fetch and filter meta data for an attachment.</span><pre>_fetch_attachment_metadata()</pre></a></li>
-<li class="method private "><a href="#_fetch_attachment_parent_data" title="_fetch_attachment_parent_data :: Returns information about an attachment's parent, if found."><span class="description">Returns information about an attachment's parent, if found.</span><pre>_fetch_attachment_parent_data()</pre></a></li>
+<li class="method private "><a href="#_fetch_attachment_metadata" title="_fetch_attachment_metadata :: Fetch and filter meta data for an attachment"><span class="description">Fetch and filter meta data for an attachment</span><pre>_fetch_attachment_metadata()</pre></a></li>
+<li class="method private "><a href="#_fetch_attachment_parent_data" title="_fetch_attachment_parent_data :: Returns information about an attachment's parent, if found"><span class="description">Returns information about an attachment's parent, if found</span><pre>_fetch_attachment_parent_data()</pre></a></li>
 </ul>
 </div>
 <div class="span8">
@@ -108,7 +105,7 @@ Templates separate HTML markup from PHP code for easier maintenance and localiza
 </div></div>
 </div>
 <a name="mla_fetch_attachment_references" id="mla_fetch_attachment_references"></a><div class="element clickable method public mla_fetch_attachment_references" data-toggle="collapse" data-target=".mla_fetch_attachment_references .collapse">
-<h2>Find Featured Image and inserted image/link references to an attachment.</h2>
+<h2>Find Featured Image and inserted image/link references to an attachment</h2>
 <pre>mla_fetch_attachment_references(int $ID, int $parent) : array</pre>
 <div class="labels"></div>
 <div class="row collapse"><div class="detail-description">
@@ -132,8 +129,8 @@ as a Featured Image or inserted in the post as an image or link.</p></p>
 </div></div>
 </div>
 <a name="mla_get_attachment_by_id" id="mla_get_attachment_by_id"></a><div class="element clickable method public mla_get_attachment_by_id" data-toggle="collapse" data-target=".mla_get_attachment_by_id .collapse">
-<h2>Retrieve an Attachment array given a $post_id.</h2>
-<pre>mla_get_attachment_by_id(int $post_id) : Null</pre>
+<h2>Retrieve an Attachment array given a $post_id</h2>
+<pre>mla_get_attachment_by_id(int $post_id) : NULL | array</pre>
 <div class="labels"></div>
 <div class="row collapse"><div class="detail-description">
 <p class="long_description"><p>The (associative) array will contain every field that can be found in
@@ -148,12 +145,12 @@ the posts and postmeta tables, and all references to the attachment.</p></p>
 <code>int</code><p>The ID of the attachment post.</p></div>
 <h3>Returns</h3>
 <div class="subelement response">
-<code>Null</code>on failure else associative array.</div>
+<code>NULL</code><code>array</code>NULL on failure else associative array.</div>
 </div></div>
 </div>
 <a name="mla_load_template" id="mla_load_template"></a><div class="element clickable method public mla_load_template" data-toggle="collapse" data-target=".mla_load_template .collapse">
 <h2>Load an HTML template from a file</h2>
-<pre>mla_load_template(string $filepath) : string</pre>
+<pre>mla_load_template(string $filepath) : string | array | false | NULL</pre>
 <div class="labels"></div>
 <div class="row collapse"><div class="detail-description">
 <p class="long_description"><p>Loads a template to a string or a multi-part template to an array.
@@ -169,11 +166,11 @@ where "key" becomes the key part of the array.</p></p>
 <code>string</code><p>Complete path and name of the template file</p></div>
 <h3>Returns</h3>
 <div class="subelement response">
-<code>string</code>For files that do not contain template divider comments array For files containing template divider comments false If file does not exist NULL If file could not be loaded</div>
+<code>string</code><code>array</code><code>false</code><code>NULL</code>string for files that do not contain template divider comments, array for files containing template divider comments, false if file does not exist, NULL if file could not be loaded.</div>
 </div></div>
 </div>
 <a name="mla_parse_template" id="mla_parse_template"></a><div class="element clickable method public mla_parse_template" data-toggle="collapse" data-target=".mla_parse_template .collapse">
-<h2>Expand a template, replacing place holders with their values.</h2>
+<h2>Expand a template, replacing place holders with their values</h2>
 <pre>mla_parse_template(string $tpl, array $hash) : string</pre>
 <div class="labels"></div>
 <div class="row collapse"><div class="detail-description">
@@ -197,7 +194,7 @@ where "key" becomes the key part of the array.</p></p>
 </div></div>
 </div>
 <a name="mla_prepare_list_table_query" id="mla_prepare_list_table_query"></a><div class="element clickable method public mla_prepare_list_table_query" data-toggle="collapse" data-target=".mla_prepare_list_table_query .collapse">
-<h2>Sanitize and expand query arguments from request variables.</h2>
+<h2>Sanitize and expand query arguments from request variables</h2>
 <pre>mla_prepare_list_table_query(array $request) : array</pre>
 <div class="labels"></div>
 <div class="row collapse"><div class="detail-description">
@@ -219,11 +216,11 @@ NOTE: The caller must remove the 'posts_where' filter, if required.</p></p>
 </div></div>
 </div>
 <a name="mla_query_list_table_items" id="mla_query_list_table_items"></a><div class="element clickable method public mla_query_list_table_items" data-toggle="collapse" data-target=".mla_query_list_table_items .collapse">
-<h2>Retrieve attachment objects for list table display.</h2>
+<h2>Retrieve attachment objects for list table display</h2>
 <pre>mla_query_list_table_items(array $request, string $orderby, string $order, int $offset, int $count) : array</pre>
 <div class="labels"></div>
 <div class="row collapse"><div class="detail-description">
-<p class="long_description"><p>Supports prepare_items in class-mla-list-table.php
+<p class="long_description"><p>Supports prepare_items in class-mla-list-table.php.
 Modeled after wp_edit_attachments_query in wp-admin/post.php</p></p>
 <table class="table table-bordered"><tr>
 <th>since</th>
@@ -272,7 +269,7 @@ Defined as public so callers can remove it after the query</p></p>
 </div></div>
 </div>
 <a name="_fetch_attachment_metadata" id="_fetch_attachment_metadata"></a><div class="element clickable method private _fetch_attachment_metadata" data-toggle="collapse" data-target="._fetch_attachment_metadata .collapse">
-<h2>Fetch and filter meta data for an attachment.</h2>
+<h2>Fetch and filter meta data for an attachment</h2>
 <pre>_fetch_attachment_metadata(int $post_id) : array</pre>
 <div class="labels"></div>
 <div class="row collapse"><div class="detail-description">
@@ -293,7 +290,7 @@ a string containing the first array element.</p></p>
 </div></div>
 </div>
 <a name="_fetch_attachment_parent_data" id="_fetch_attachment_parent_data"></a><div class="element clickable method private _fetch_attachment_parent_data" data-toggle="collapse" data-target="._fetch_attachment_parent_data .collapse">
-<h2>Returns information about an attachment's parent, if found.</h2>
+<h2>Returns information about an attachment's parent, if found</h2>
 <pre>_fetch_attachment_parent_data(int $parent_id) : array</pre>
 <div class="labels"></div>
 <div class="row collapse"><div class="detail-description">
@@ -319,7 +316,7 @@ a string containing the first array element.</p></p>
 <div class="row"><footer class="span12">
             Template is built using <a href="http://twitter.github.com/bootstrap/">Twitter Bootstrap 2</a> and icons provided by <a href="http://glyphicons.com/">Glyphicons</a>.<br>
             Documentation is powered by <a href="http://www.phpdoc.org/">phpDocumentor 2.0.0a8</a> and<br>
-            generated on 2012-08-10T14:31:50-07:00.<br></footer></div>
+            generated on 2012-09-06T12:09:19-07:00.<br></footer></div>
 </div>
 </body>
 </html>

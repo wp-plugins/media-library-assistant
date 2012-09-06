@@ -19,10 +19,10 @@
 <p>If you have enabled Trash support (define MEDIA_TRASH in wp-config.php) you can use bulk actions to move items to and from the Trash or delete them permamently.</p>
 <!-- template="mla-available-actions" -->
 <!-- title="Available Actions" order="5" -->
-<p>Hovering over a row reveals action links such as Edit, Move to Trash and Delete Permanently. Clicking Edit displays a simple screen to edit that individual file&#8217;s metadata. Clicking Move to Trash will assign the file to the Trash pile but will not affect pages or posts to which it is attached. Clicking Delete Permanently will delete the file from the media library (as well as from any posts to which it is currently attached).</p>
+<p>Hovering over a row reveals action links such as Edit, Quick Edit, Move to Trash and Delete Permanently. Clicking Edit displays a simple screen to edit that individual file&#8217;s metadata. Clicking Quick Edit displays an inline form to edit the file's metadata without leaving the menu screen. Clicking Move to Trash will assign the file to the Trash pile but will not affect pages or posts to which it is attached. Clicking Delete Permanently will delete the file from the media library (as well as from any posts to which it is currently attached).</p>
 <!-- template="mla-attaching-files" -->
 <!-- title="Attaching Files" order="6" -->
-<p>If a media file has not been attached to any post, you will see that in the Attached To column. You can click on the Edit action to attach the file.</p>
+<p>If a media file has not been attached to any post, you will see (unattached) in the Attached To column. You can click on the Edit or Quick Edit action to attach the file by assigning a value to the Parent ID field.</p>
 <!-- template="sidebar" -->
 <p><strong>For more information:</strong></p>
 <p><a href="http://codex.wordpress.org/Media_Library_Screen" target="_blank">Documentation on Media Library</a></p>

@@ -3,7 +3,7 @@
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <meta name="viewport" content="width=device-width; initial-scale=1.0; maximum-scale=1.0; user-scalable=0;">
 <meta charset="utf-8">
-<title>phpDocumentor » \MLA</title>
+<title>Media Library Assistant » \MLA</title>
 <meta name="author" content="Mike van Riel">
 <meta name="description" content="">
 <link href="../css/template.css" rel="stylesheet" media="all">
@@ -15,13 +15,10 @@
 <body>
 <div class="navbar navbar-fixed-top">
 <div class="navbar-inner"><div class="container">
-<a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse"><span class="icon-bar"></span><span class="icon-bar"></span><span class="icon-bar"></span></a><a class="brand" href="../index.html">phpDocumentor</a><div class="nav-collapse"><ul class="nav">
+<a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse"><span class="icon-bar"></span><span class="icon-bar"></span><span class="icon-bar"></span></a><a class="brand" href="../index.html">Media Library Assistant</a><div class="nav-collapse"><ul class="nav">
 <li class="dropdown">
 <a href="#api" class="dropdown-toggle" data-toggle="dropdown">
-                                    API Documentation <b class="caret"></b></a><ul class="dropdown-menu">
-<li><a>Packages</a></li>
-<li><a href="../packages/Media%20Library%20Assistant.html"><i class="icon-folder-open"></i> Media Library Assistant</a></li>
-</ul>
+                                    API Documentation <b class="caret"></b></a><ul class="dropdown-menu"></ul>
 </li>
 <li class="dropdown" id="charts-menu">
 <a href="#charts" class="dropdown-toggle" data-toggle="dropdown">
@@ -59,14 +56,18 @@
 <li class="method public "><a href="#mla_add_help_tab" title="mla_add_help_tab :: Add contextual help tabs to all the MLA pages"><span class="description">Add contextual help tabs to all the MLA pages</span><pre>mla_add_help_tab()</pre></a></li>
 <li class="method public "><a href="#mla_add_menu_options" title='mla_add_menu_options :: Add the "XX Entries per page" filter to the Screen Options tab'><span class="description">Add the "XX Entries per page" filter to the Screen Options tab</span><pre>mla_add_menu_options()</pre></a></li>
 <li class="method public "><a href="#mla_admin_enqueue_scripts_action" title="mla_admin_enqueue_scripts_action :: Load the plugin's Style Sheet and Javascript files"><span class="description">Load the plugin's Style Sheet and Javascript files</span><pre>mla_admin_enqueue_scripts_action()</pre></a></li>
+<li class="method public "><a href="#mla_admin_init_action" title="mla_admin_init_action :: Load the plugin's Ajax handler"><span class="description">Load the plugin's Ajax handler</span><pre>mla_admin_init_action()</pre></a></li>
 <li class="method public "><a href="#mla_admin_menu_action" title="mla_admin_menu_action :: Add the submenu pages"><span class="description">Add the submenu pages</span><pre>mla_admin_menu_action()</pre></a></li>
 <li class="method public "><a href="#mla_edit_tags_redirect" title="mla_edit_tags_redirect :: Redirect to the Edit Tags/Categories page"><span class="description">Redirect to the Edit Tags/Categories page</span><pre>mla_edit_tags_redirect()</pre></a></li>
+<li class="method public "><a href="#mla_inline_edit_action" title="mla_inline_edit_action :: Ajax handler for inline editing (quick and bulk edit)"><span class="description">Ajax handler for inline editing (quick and bulk edit)</span><pre>mla_inline_edit_action()</pre></a></li>
 <li class="method public "><a href="#mla_modify_parent_menu" title="mla_modify_parent_menu :: Cleanup menus for Edit Tags/Categories page"><span class="description">Cleanup menus for Edit Tags/Categories page</span><pre>mla_modify_parent_menu()</pre></a></li>
 <li class="method public "><a href="#mla_render_admin_page" title='mla_render_admin_page :: Render the "Assistant" subpage in the Media section, using the list_table package'><span class="description">Render the "Assistant" subpage in the Media section, using the list_table package</span><pre>mla_render_admin_page()</pre></a></li>
 <li class="method public "><a href="#mla_screen_options_show_screen_filter" title="mla_screen_options_show_screen_filter :: Only show screen options on the table-list screen"><span class="description">Only show screen options on the table-list screen</span><pre>mla_screen_options_show_screen_filter()</pre></a></li>
 <li class="method public "><a href="#mla_set_screen_option_filter" title='mla_set_screen_option_filter :: Save the "Entries per page" option set by this user'><span class="description">Save the "Entries per page" option set by this user</span><pre>mla_set_screen_option_filter()</pre></a></li>
 <li class="nav-header private">» Private</li>
-<li class="method private "><a href="#_current_bulk_action" title="_current_bulk_action :: Get the current action selected from the bulk actions dropdown."><span class="description">Get the current action selected from the bulk actions dropdown.</span><pre>_current_bulk_action()</pre></a></li>
+<li class="method private "><a href="#_authors_dropdown" title="_authors_dropdown :: Get the edit Authors dropdown box, if user has suitable permissions"><span class="description">Get the edit Authors dropdown box, if user has suitable permissions</span><pre>_authors_dropdown()</pre></a></li>
+<li class="method private "><a href="#_build_inline_edit_form" title="_build_inline_edit_form :: Build the hidden row templates for inline editing (quick and bulk edit)."><span class="description">Build the hidden row templates for inline editing (quick and bulk edit).</span><pre>_build_inline_edit_form()</pre></a></li>
+<li class="method private "><a href="#_current_bulk_action" title="_current_bulk_action :: Get the current action selected from the bulk actions dropdown"><span class="description">Get the current action selected from the bulk actions dropdown</span><pre>_current_bulk_action()</pre></a></li>
 <li class="method private "><a href="#_delete_single_item" title="_delete_single_item :: Delete a single item permanently."><span class="description">Delete a single item permanently.</span><pre>_delete_single_item()</pre></a></li>
 <li class="method private "><a href="#_display_single_item" title="_display_single_item :: Display a single item sub page; prepare the form to
 change the meta data for a single attachment."><span class="description">Display a single item sub page; prepare the form to
@@ -84,7 +85,10 @@ for a single attachment.</span><pre>_update_single_item()</pre></a></li>
 <i class="icon-custom icon-constant"></i> Constants</li>
 <li class="constant  "><a href="#ADMIN_PAGE_SLUG" title="ADMIN_PAGE_SLUG :: Slug for adding plugin submenu"><span class="description">Slug for adding plugin submenu</span><pre>ADMIN_PAGE_SLUG</pre></a></li>
 <li class="constant  "><a href="#CURRENT_MLA_VERSION" title="CURRENT_MLA_VERSION :: Current version number"><span class="description">Current version number</span><pre>CURRENT_MLA_VERSION</pre></a></li>
-<li class="constant  "><a href="#JAVASCRIPT_SLUG" title="JAVASCRIPT_SLUG :: Slug for localizing and enqueueing plugin JavaScript"><span class="description">Slug for localizing and enqueueing plugin JavaScript</span><pre>JAVASCRIPT_SLUG</pre></a></li>
+<li class="constant  "><a href="#JAVASCRIPT_INLINE_EDIT_OBJECT" title="JAVASCRIPT_INLINE_EDIT_OBJECT :: Object name for localizing JavaScript - MLA List Table"><span class="description">Object name for localizing JavaScript - MLA List Table</span><pre>JAVASCRIPT_INLINE_EDIT_OBJECT</pre></a></li>
+<li class="constant  "><a href="#JAVASCRIPT_INLINE_EDIT_SLUG" title="JAVASCRIPT_INLINE_EDIT_SLUG :: Slug for localizing and enqueueing JavaScript - MLA List Table"><span class="description">Slug for localizing and enqueueing JavaScript - MLA List Table</span><pre>JAVASCRIPT_INLINE_EDIT_SLUG</pre></a></li>
+<li class="constant  "><a href="#JAVASCRIPT_SINGLE_EDIT_OBJECT" title="JAVASCRIPT_SINGLE_EDIT_OBJECT :: Object name for localizing JavaScript - edit single item page"><span class="description">Object name for localizing JavaScript - edit single item page</span><pre>JAVASCRIPT_SINGLE_EDIT_OBJECT</pre></a></li>
+<li class="constant  "><a href="#JAVASCRIPT_SINGLE_EDIT_SLUG" title="JAVASCRIPT_SINGLE_EDIT_SLUG :: Slug for localizing and enqueueing JavaScript - edit single item page"><span class="description">Slug for localizing and enqueueing JavaScript - edit single item page</span><pre>JAVASCRIPT_SINGLE_EDIT_SLUG</pre></a></li>
 <li class="constant  "><a href="#MIN_PHP_VERSION" title="MIN_PHP_VERSION :: Minimum version of PHP required for this plugin"><span class="description">Minimum version of PHP required for this plugin</span><pre>MIN_PHP_VERSION</pre></a></li>
 <li class="constant  "><a href="#MIN_WORDPRESS_VERSION" title="MIN_WORDPRESS_VERSION :: Minimum version of WordPress required for this plugin"><span class="description">Minimum version of WordPress required for this plugin</span><pre>MIN_WORDPRESS_VERSION</pre></a></li>
 <li class="constant  "><a href="#MLA_ADMIN_NONCE" title="MLA_ADMIN_NONCE :: Action name; uniquely identifies the nonce"><span class="description">Action name; uniquely identifies the nonce</span><pre>MLA_ADMIN_NONCE</pre></a></li>
@@ -178,6 +182,20 @@ of images and files held in the WordPress Media Library.</p>
 <div class="subelement response"><code>\nothing</code></div>
 </div></div>
 </div>
+<a name="mla_admin_init_action" id="mla_admin_init_action"></a><div class="element clickable method public mla_admin_init_action" data-toggle="collapse" data-target=".mla_admin_init_action .collapse">
+<h2>Load the plugin's Ajax handler</h2>
+<pre>mla_admin_init_action() : \nothing</pre>
+<div class="labels"></div>
+<div class="row collapse"><div class="detail-description">
+<p class="long_description"></p>
+<table class="table table-bordered"><tr>
+<th>since</th>
+<td>0.20</td>
+</tr></table>
+<h3>Returns</h3>
+<div class="subelement response"><code>\nothing</code></div>
+</div></div>
+</div>
 <a name="mla_admin_menu_action" id="mla_admin_menu_action"></a><div class="element clickable method public mla_admin_menu_action" data-toggle="collapse" data-target=".mla_admin_menu_action .collapse">
 <h2>Add the submenu pages</h2>
 <pre>mla_admin_menu_action() </pre>
@@ -205,6 +223,21 @@ This filter is the only way to redirect them to the correct WordPress page.</p><
 <th>since</th>
 <td>0.1</td>
 </tr></table>
+</div></div>
+</div>
+<a name="mla_inline_edit_action" id="mla_inline_edit_action"></a><div class="element clickable method public mla_inline_edit_action" data-toggle="collapse" data-target=".mla_inline_edit_action .collapse">
+<h2>Ajax handler for inline editing (quick and bulk edit)</h2>
+<pre>mla_inline_edit_action() : string</pre>
+<div class="labels"></div>
+<div class="row collapse"><div class="detail-description">
+<p class="long_description"><p>Adapted from wp_ajax_inline_save in /wp-admin/includes/ajax-actions.php</p></p>
+<table class="table table-bordered"><tr>
+<th>since</th>
+<td>0.20</td>
+</tr></table>
+<h3>Returns</h3>
+<div class="subelement response">
+<code>string</code>echo HTML <tr> markup for updated row or error message, then die()</div>
 </div></div>
 </div>
 <a name="mla_modify_parent_menu" id="mla_modify_parent_menu"></a><div class="element clickable method public mla_modify_parent_menu" data-toggle="collapse" data-target=".mla_modify_parent_menu .collapse">
@@ -290,9 +323,53 @@ to the right WordPress page for editing/adding taxonomy terms.</p></p>
 <code>string</code>New value if this is our option, otherwise nothing</div>
 </div></div>
 </div>
+<a name="_authors_dropdown" id="_authors_dropdown"></a><div class="element clickable method private _authors_dropdown" data-toggle="collapse" data-target="._authors_dropdown .collapse">
+<h2>Get the edit Authors dropdown box, if user has suitable permissions</h2>
+<pre>_authors_dropdown(integer $author, string $name, string $class) : string | false</pre>
+<div class="labels"></div>
+<div class="row collapse"><div class="detail-description">
+<p class="long_description"></p>
+<table class="table table-bordered"><tr>
+<th>since</th>
+<td>0.20</td>
+</tr></table>
+<h3>Parameters</h3>
+<div class="subelement argument">
+<h4>$author</h4>
+<code>integer</code><p>User ID of the current author</p></div>
+<div class="subelement argument">
+<h4>$name</h4>
+<code>string</code><p>HTML name attribute</p></div>
+<div class="subelement argument">
+<h4>$class</h4>
+<code>string</code><p>HTML class attribute</p></div>
+<h3>Returns</h3>
+<div class="subelement response">
+<code>string</code><code>false</code>HTML markup for the dropdown field or False</div>
+</div></div>
+</div>
+<a name="_build_inline_edit_form" id="_build_inline_edit_form"></a><div class="element clickable method private _build_inline_edit_form" data-toggle="collapse" data-target="._build_inline_edit_form .collapse">
+<h2>Build the hidden row templates for inline editing (quick and bulk edit).</h2>
+<pre>_build_inline_edit_form(object $MLAListTable) : string</pre>
+<div class="labels"></div>
+<div class="row collapse"><div class="detail-description">
+<p class="long_description"><p>inspired by inline_edit() in wp-admin\includes\class-wp-posts-list-table.php.</p></p>
+<table class="table table-bordered"><tr>
+<th>since</th>
+<td>0.20</td>
+</tr></table>
+<h3>Parameters</h3>
+<div class="subelement argument">
+<h4>$MLAListTable</h4>
+<code>object</code><p>MLA List Table object</p></div>
+<h3>Returns</h3>
+<div class="subelement response">
+<code>string</code>HTML <form> markup for hidden rows</div>
+</div></div>
+</div>
 <a name="_current_bulk_action" id="_current_bulk_action"></a><div class="element clickable method private _current_bulk_action" data-toggle="collapse" data-target="._current_bulk_action .collapse">
-<h2>Get the current action selected from the bulk actions dropdown.</h2>
-<pre>_current_bulk_action() : string | bool</pre>
+<h2>Get the current action selected from the bulk actions dropdown</h2>
+<pre>_current_bulk_action() : string | false</pre>
 <div class="labels"></div>
 <div class="row collapse"><div class="detail-description">
 <p class="long_description"></p>
@@ -302,7 +379,7 @@ to the right WordPress page for editing/adding taxonomy terms.</p></p>
 </tr></table>
 <h3>Returns</h3>
 <div class="subelement response">
-<code>string</code><code>bool</code>The action name or False if no action was selected</div>
+<code>string</code><code>false</code>The action name or False if no action was selected</div>
 </div></div>
 </div>
 <a name="_delete_single_item" id="_delete_single_item"></a><div class="element clickable method private _delete_single_item" data-toggle="collapse" data-target="._delete_single_item .collapse">
@@ -321,7 +398,7 @@ to the right WordPress page for editing/adding taxonomy terms.</p></p>
 <code>array</code><p>The form POST data.</p></div>
 <h3>Returns</h3>
 <div class="subelement response">
-<code>array</code>success/failure message and null content</div>
+<code>array</code>success/failure message and NULL content</div>
 </div></div>
 </div>
 <a name="_display_single_item" id="_display_single_item"></a><div class="element clickable method private _display_single_item" data-toggle="collapse" data-target="._display_single_item .collapse">
@@ -360,7 +437,7 @@ change the meta data for a single attachment.</h2>
 <code>array</code><p>The form POST data</p></div>
 <h3>Returns</h3>
 <div class="subelement response">
-<code>array</code>success/failure message and null content</div>
+<code>array</code>success/failure message and NULL content</div>
 </div></div>
 </div>
 <a name="_trash_single_item" id="_trash_single_item"></a><div class="element clickable method private _trash_single_item" data-toggle="collapse" data-target="._trash_single_item .collapse">
@@ -379,7 +456,7 @@ change the meta data for a single attachment.</h2>
 <code>array</code><p>The form POST data</p></div>
 <h3>Returns</h3>
 <div class="subelement response">
-<code>array</code>success/failure message and null content</div>
+<code>array</code>success/failure message and NULL content</div>
 </div></div>
 </div>
 <a name="_update_single_item" id="_update_single_item"></a><div class="element clickable method private _update_single_item" data-toggle="collapse" data-target="._update_single_item .collapse">
@@ -406,7 +483,7 @@ for a single attachment.</h2>
 <code>array</code><p>Attachment Category and Tag values</p></div>
 <h3>Returns</h3>
 <div class="subelement response">
-<code>array</code>success/failure message and null content</div>
+<code>array</code>success/failure message and NULL content</div>
 </div></div>
 </div>
 <h3>
@@ -449,9 +526,45 @@ for a single attachment.</h2>
 </tr></table>
 </div></div>
 </div>
-<a name="JAVASCRIPT_SLUG" id="JAVASCRIPT_SLUG"> </a><div class="element clickable constant  JAVASCRIPT_SLUG" data-toggle="collapse" data-target=".JAVASCRIPT_SLUG .collapse">
-<h2>Slug for localizing and enqueueing plugin JavaScript</h2>
-<pre>JAVASCRIPT_SLUG : string</pre>
+<a name="JAVASCRIPT_INLINE_EDIT_OBJECT" id="JAVASCRIPT_INLINE_EDIT_OBJECT"> </a><div class="element clickable constant  JAVASCRIPT_INLINE_EDIT_OBJECT" data-toggle="collapse" data-target=".JAVASCRIPT_INLINE_EDIT_OBJECT .collapse">
+<h2>Object name for localizing JavaScript - MLA List Table</h2>
+<pre>JAVASCRIPT_INLINE_EDIT_OBJECT : string</pre>
+<div class="labels"></div>
+<div class="row collapse"><div class="detail-description">
+<p class="long_description"></p>
+<table class="table table-bordered"><tr>
+<th>since</th>
+<td>0.20</td>
+</tr></table>
+</div></div>
+</div>
+<a name="JAVASCRIPT_INLINE_EDIT_SLUG" id="JAVASCRIPT_INLINE_EDIT_SLUG"> </a><div class="element clickable constant  JAVASCRIPT_INLINE_EDIT_SLUG" data-toggle="collapse" data-target=".JAVASCRIPT_INLINE_EDIT_SLUG .collapse">
+<h2>Slug for localizing and enqueueing JavaScript - MLA List Table</h2>
+<pre>JAVASCRIPT_INLINE_EDIT_SLUG : string</pre>
+<div class="labels"></div>
+<div class="row collapse"><div class="detail-description">
+<p class="long_description"></p>
+<table class="table table-bordered"><tr>
+<th>since</th>
+<td>0.20</td>
+</tr></table>
+</div></div>
+</div>
+<a name="JAVASCRIPT_SINGLE_EDIT_OBJECT" id="JAVASCRIPT_SINGLE_EDIT_OBJECT"> </a><div class="element clickable constant  JAVASCRIPT_SINGLE_EDIT_OBJECT" data-toggle="collapse" data-target=".JAVASCRIPT_SINGLE_EDIT_OBJECT .collapse">
+<h2>Object name for localizing JavaScript - edit single item page</h2>
+<pre>JAVASCRIPT_SINGLE_EDIT_OBJECT : string</pre>
+<div class="labels"></div>
+<div class="row collapse"><div class="detail-description">
+<p class="long_description"></p>
+<table class="table table-bordered"><tr>
+<th>since</th>
+<td>0.1</td>
+</tr></table>
+</div></div>
+</div>
+<a name="JAVASCRIPT_SINGLE_EDIT_SLUG" id="JAVASCRIPT_SINGLE_EDIT_SLUG"> </a><div class="element clickable constant  JAVASCRIPT_SINGLE_EDIT_SLUG" data-toggle="collapse" data-target=".JAVASCRIPT_SINGLE_EDIT_SLUG .collapse">
+<h2>Slug for localizing and enqueueing JavaScript - edit single item page</h2>
+<pre>JAVASCRIPT_SINGLE_EDIT_SLUG : string</pre>
 <div class="labels"></div>
 <div class="row collapse"><div class="detail-description">
 <p class="long_description"></p>
@@ -588,7 +701,7 @@ for a single attachment.</h2>
 <div class="row"><footer class="span12">
             Template is built using <a href="http://twitter.github.com/bootstrap/">Twitter Bootstrap 2</a> and icons provided by <a href="http://glyphicons.com/">Glyphicons</a>.<br>
             Documentation is powered by <a href="http://www.phpdoc.org/">phpDocumentor 2.0.0a8</a> and<br>
-            generated on 2012-08-10T14:31:50-07:00.<br></footer></div>
+            generated on 2012-09-06T12:09:19-07:00.<br></footer></div>
 </div>
 </body>
 </html>

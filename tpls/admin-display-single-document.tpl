@@ -1,3 +1,8 @@
+<!-- template="authors" -->
+		<tr class='post_author'>
+			<th valign='top' scope='row' class='label'><label for='attachments[[+ID+]][post_author]'><span class='alignleft'>Author</span><br class='clear' /></label></th>
+			<td class='field'>[+authors+]</td>
+		</tr>
 <!-- template="postbox" -->
 <div id="[+id+]" class="postbox" >
 <div class="handlediv" title="Click to toggle"><br /></div><h3 class='hndle'><span>[+title+]</span></h3>
@@ -11,7 +16,7 @@
 <input type="hidden" name="attachments[[+ID+]][menu_order]" value="[+menu_order+]" />
 <input type="hidden" name="mla_admin_action" value="[+mla_admin_action+]" />
 <input type="hidden" name="mla_item_ID" value="[+ID+]" />
-[+view_args+][+_wpnonce+]
+[+view_args+][+wpnonce+]
 <p class="submit" style="padding-bottom: 0;">
 <input name="update" type="submit" class="button-primary" value="Update" />&nbsp;
 <input name="cancel" type="submit" class="button-primary" value="Cancel" />
@@ -54,6 +59,7 @@
 			<th valign='top' scope='row' class='label'><label for='attachments[[+ID+]][parent_info]'><span class='alignleft'>Parent Info</span><br class='clear' /></label></th>
 			<td class='field'><table><tr><td style="width: 50px; vertical-align:top" ><input type='text' class='text' name='attachments[[+ID+]][post_parent]' value='[+post_parent+]' /></td><td><input type='text' class='text' readonly='readonly' name='attachments[[+ID+]][parent_info]' value='[+parent_info+]' /></td></tr><tr><td colspan="2"><p class='help'>ID, type and title of parent, if any.</p></td></tr></table></td>
 		</tr>
+[+authors+]
 		<tr class='image_url'>
 			<th valign='top' scope='row' class='label'><label for='attachments[[+ID+]][image_url]'><span class='alignleft'>File URL</span><br class='clear' /></label></th>
 			<td class='field'><input type='text' class='text urlfield' readonly='readonly' name='attachments[[+ID+]][url]' value='[+guid+]' /><br /><p class='help'>Location of the uploaded file.</p></td>

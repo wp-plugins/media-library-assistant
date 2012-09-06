@@ -58,11 +58,21 @@
 <p>
 [+messages+]
 </p></div>
+<!-- template="shortcodelist" -->
+<div id="mla-shortcode-list" style="width: 90%; padding-left: 5%; ">
+<p>Shortcodes made available by this plugin:</p>
+<ol>
+[+shortcode_list+]
+</ol>
+</div>
+<!-- template="shortcodeitem" -->
+<li><code>[[+name+]]</code> - [+description+]</li>
 <!-- template="page" -->
 <div class="wrap">
 <div id="icon-options-general" class="icon32"><br/></div>
 <h2>Media Library Assistant Settings</h2>
 [+messages+]
+[+shortcode_list+]
 <form method="post" class="mla-display-settings-page" id="mla-display-settings-page-id">
     <table class="optiontable">
 [+options_list+]
@@ -72,4 +82,9 @@
         <input name="reset" type="submit" class="button-primary" value="Delete all options and restore default settings"  style="float:right;"/>
     </p>
 </form>
+<h3>Plugin Documentation</h3>
+<p>
+If you are a developer interested in how this plugin is put together, you should
+have a look at the <a title="Consult the phpDocs documentation" href="[+phpDocs_url+]" target="_blank">phpDocs documentation</a>.
+</p>
 </div>

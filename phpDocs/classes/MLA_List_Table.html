@@ -3,7 +3,7 @@
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <meta name="viewport" content="width=device-width; initial-scale=1.0; maximum-scale=1.0; user-scalable=0;">
 <meta charset="utf-8">
-<title>phpDocumentor » \MLA_List_Table</title>
+<title>Media Library Assistant » \MLA_List_Table</title>
 <meta name="author" content="Mike van Riel">
 <meta name="description" content="">
 <link href="../css/template.css" rel="stylesheet" media="all">
@@ -15,13 +15,10 @@
 <body>
 <div class="navbar navbar-fixed-top">
 <div class="navbar-inner"><div class="container">
-<a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse"><span class="icon-bar"></span><span class="icon-bar"></span><span class="icon-bar"></span></a><a class="brand" href="../index.html">phpDocumentor</a><div class="nav-collapse"><ul class="nav">
+<a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse"><span class="icon-bar"></span><span class="icon-bar"></span><span class="icon-bar"></span></a><a class="brand" href="../index.html">Media Library Assistant</a><div class="nav-collapse"><ul class="nav">
 <li class="dropdown">
 <a href="#api" class="dropdown-toggle" data-toggle="dropdown">
-                                    API Documentation <b class="caret"></b></a><ul class="dropdown-menu">
-<li><a>Packages</a></li>
-<li><a href="../packages/Media%20Library%20Assistant.html"><i class="icon-folder-open"></i> Media Library Assistant</a></li>
-</ul>
+                                    API Documentation <b class="caret"></b></a><ul class="dropdown-menu"></ul>
 </li>
 <li class="dropdown" id="charts-menu">
 <a href="#charts" class="dropdown-toggle" data-toggle="dropdown">
@@ -94,8 +91,10 @@ and the value is db column to sort by.</span><pre>get_sortable_columns()</pre></
 <li class="method public "><a href="#mla_manage_columns" title="mla_manage_columns :: Handler for filter 'manage_media_page_mla-menu_columns'"><span class="description">Handler for filter 'manage_media_page_mla-menu_columns'</span><pre>mla_manage_columns()</pre></a></li>
 <li class="method public "><a href="#mla_manage_hidden_columns" title="mla_manage_hidden_columns :: Handler for filter 'get_user_option_managemedia_page_mla-menucolumnshidden'"><span class="description">Handler for filter 'get_user_option_managemedia_page_mla-menucolumnshidden'</span><pre>mla_manage_hidden_columns()</pre></a></li>
 <li class="method public "><a href="#prepare_items" title="prepare_items :: Prepares the list of items for displaying."><span class="description">Prepares the list of items for displaying.</span><pre>prepare_items()</pre></a></li>
+<li class="method public "><a href="#single_row" title="single_row :: Generates (echoes) content for a single row of the table"><span class="description">Generates (echoes) content for a single row of the table</span><pre>single_row()</pre></a></li>
 <li class="nav-header private">» Private</li>
 <li class="method private "><a href="#_avail_mime_types" title="_avail_mime_types :: Get mime types with one or more attachments for view preparation."><span class="description">Get mime types with one or more attachments for view preparation.</span><pre>_avail_mime_types()</pre></a></li>
+<li class="method private "><a href="#_build_inline_data" title="_build_inline_data :: Add hidden fields with the data for use in the inline editor"><span class="description">Add hidden fields with the data for use in the inline editor</span><pre>_build_inline_data()</pre></a></li>
 <li class="method private "><a href="#_build_rollover_actions" title="_build_rollover_actions :: Add rollover actions to exactly one of the following displayed columns:
 'ID_parent', 'title_name', 'post_title', 'post_name'"><span class="description">Add rollover actions to exactly one of the following displayed columns:
 'ID_parent', 'title_name', 'post_title', 'post_name'</span><pre>_build_rollover_actions()</pre></a></li>
@@ -123,9 +122,9 @@ and the value is db column to sort by.</span><pre>get_sortable_columns()</pre></
 </li>
 </ul>
 <div href="../classes/MLA_List_Table.html" class="element class">
-<p class="short_description">Class MLA (Media Library Assistant) List Table extends the core WP_List_Table class</p>
+<p class="short_description">Class MLA (Media Library Assistant) List Table implements the "Assistant" admin submenu</p>
 <div class="details">
-<p class="long_description"></p>
+<p class="long_description"><p>Extends the core WP_List_Table class.</p></p>
 <table class="table table-bordered">
 <tr>
 <th>package</th>
@@ -619,7 +618,7 @@ if set.</p></p>
 </tr></table>
 <h3>Returns</h3>
 <div class="subelement response">
-<code>array</code>Sortable column information,e.g., 'slugs'=>array('data_values',bool)</div>
+<code>array</code>Sortable column information,e.g., 'slugs'=>array('data_values',boolean)</div>
 </div></div>
 </div>
 <a name="get_views" id="get_views"></a><div class="element clickable method public get_views" data-toggle="collapse" data-target=".get_views .collapse">
@@ -697,6 +696,25 @@ $this->set_pagination_args().</p></p>
 </tr></table>
 </div></div>
 </div>
+<a name="single_row" id="single_row"></a><div class="element clickable method public single_row" data-toggle="collapse" data-target=".single_row .collapse">
+<h2>Generates (echoes) content for a single row of the table</h2>
+<pre>single_row(object $item) : \nothing</pre>
+<div class="labels"></div>
+<div class="row collapse"><div class="detail-description">
+<p class="long_description"></p>
+<table class="table table-bordered"><tr>
+<th>since</th>
+<td>.20</td>
+</tr></table>
+<h3>Parameters</h3>
+<div class="subelement argument">
+<h4>$item</h4>
+<code>object</code><p>The current item</p></div>
+<h3>Returns</h3>
+<div class="subelement response">
+<code>\nothing</code>Echoes the row HTML</div>
+</div></div>
+</div>
 <a name="_avail_mime_types" id="_avail_mime_types"></a><div class="element clickable method private _avail_mime_types" data-toggle="collapse" data-target="._avail_mime_types .collapse">
 <h2>Get mime types with one or more attachments for view preparation.</h2>
 <pre>_avail_mime_types(array $num_posts) : array</pre>
@@ -717,10 +735,30 @@ with additional entries.</p></p>
 <code>array</code>Mime type names</div>
 </div></div>
 </div>
+<a name="_build_inline_data" id="_build_inline_data"></a><div class="element clickable method private _build_inline_data" data-toggle="collapse" data-target="._build_inline_data .collapse">
+<h2>Add hidden fields with the data for use in the inline editor</h2>
+<pre>_build_inline_data(object $item) : string</pre>
+<div class="labels"></div>
+<div class="row collapse"><div class="detail-description">
+<p class="long_description"></p>
+<table class="table table-bordered"><tr>
+<th>since</th>
+<td>0.20</td>
+</tr></table>
+<h3>Parameters</h3>
+<div class="subelement argument">
+<h4>$item</h4>
+<code>object</code><p>A singular attachment (post) object</p>
+</div>
+<h3>Returns</h3>
+<div class="subelement response">
+<code>string</code>HTML <div> with row data</div>
+</div></div>
+</div>
 <a name="_build_rollover_actions" id="_build_rollover_actions"></a><div class="element clickable method private _build_rollover_actions" data-toggle="collapse" data-target="._build_rollover_actions .collapse">
 <h2>Add rollover actions to exactly one of the following displayed columns:
 'ID_parent', 'title_name', 'post_title', 'post_name'</h2>
-<pre>_build_rollover_actions(array $item, string $column) : array</pre>
+<pre>_build_rollover_actions(object $item, string $column) : array</pre>
 <div class="labels"></div>
 <div class="row collapse"><div class="detail-description">
 <p class="long_description"></p>
@@ -731,7 +769,7 @@ with additional entries.</p></p>
 <h3>Parameters</h3>
 <div class="subelement argument">
 <h4>$item</h4>
-<code>array</code><p>A singular attachment (post) object</p>
+<code>object</code><p>A singular attachment (post) object</p>
 </div>
 <div class="subelement argument">
 <h4>$column</h4>
@@ -743,7 +781,7 @@ with additional entries.</p></p>
 </div>
 <a name="_count_list_table_items" id="_count_list_table_items"></a><div class="element clickable method private _count_list_table_items" data-toggle="collapse" data-target="._count_list_table_items .collapse">
 <h2>Get the total number of attachment posts</h2>
-<pre>_count_list_table_items(array $request) : int</pre>
+<pre>_count_list_table_items(array $request) : integer</pre>
 <div class="labels"></div>
 <div class="row collapse"><div class="detail-description">
 <p class="long_description"></p>
@@ -758,7 +796,7 @@ with additional entries.</p></p>
 </div>
 <h3>Returns</h3>
 <div class="subelement response">
-<code>int</code>Number of attachment posts</div>
+<code>integer</code>Number of attachment posts</div>
 </div></div>
 </div>
 <a name="_default_hidden_columns" id="_default_hidden_columns"></a><div class="element clickable method private _default_hidden_columns" data-toggle="collapse" data-target="._default_hidden_columns .collapse">
@@ -877,7 +915,7 @@ sorted by that column. This is computed each time the table is displayed.</p></p
 <div class="row"><footer class="span12">
             Template is built using <a href="http://twitter.github.com/bootstrap/">Twitter Bootstrap 2</a> and icons provided by <a href="http://glyphicons.com/">Glyphicons</a>.<br>
             Documentation is powered by <a href="http://www.phpdoc.org/">phpDocumentor 2.0.0a8</a> and<br>
-            generated on 2012-08-10T14:31:50-07:00.<br></footer></div>
+            generated on 2012-09-06T12:09:19-07:00.<br></footer></div>
 </div>
 </body>
 </html>
