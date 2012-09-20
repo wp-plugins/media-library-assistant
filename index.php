@@ -11,7 +11,7 @@
 
 /*
 Plugin Name: Media Library Assistant
-Plugin URI: http://home.comcast.net/~dlingren/
+Plugin URI: http://fairtradejudaica.org/media-library-assistant-a-wordpress-plugin/
 Description: Provides several enhancements to the handling of images and files held in the WordPress Media Library.
 Author: David Lingren
 Version: 0.30
