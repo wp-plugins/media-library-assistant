@@ -34,6 +34,7 @@
 <p><strong>File name:</strong> [+file_name+]</p>
 <p><strong>File type:</strong> [+post_mime_type+]</p>
 <p><strong>Upload date:</strong> [+post_date+]</p>
+<p><strong>Last modified:</strong> [+post_modified+]</p>
 </td>
 </tr>
 </thead>
@@ -41,15 +42,15 @@
 <tr class="post_title form-required">
 <th valign="top" scope="row" class="label"><label for="attachments[[+ID+]][post_title]"><span class="alignleft">Title</span>
 <span class="alignright"><abbr title="required" class="required">*required</abbr></span><br class="clear" /></label></th>
-<td class='field'><input type='text' class='text' id='attachments[[+ID+]][post_title]' name='attachments[[+ID+]][post_title]' value='[+post_title+]'  aria-required='true'  /></td>
+<td class='field'><input type='text' class='text' id='attachments[[+ID+]][post_title]' name='attachments[[+ID+]][post_title]' value='[+post_title_attr+]'  aria-required='true'  /></td>
 </tr>
 		<tr class='post_name form-required'>
 			<th valign='top' scope='row' class='label'><label for='attachments[[+ID+]][post_name]'><span class='alignleft'>Name/Slug</span><span class="alignright"><abbr title="required" class="required">*required</abbr></span><br class='clear' /></label></th>
-			<td class='field'><input type='text' class='text' id='attachments[[+ID+]][post_name]' name='attachments[[+ID+]][post_name]' value='[+post_name+]'  /><p class='help'>Must be unique; will be validated.</p></td>
+			<td class='field'><input type='text' class='text' id='attachments[[+ID+]][post_name]' name='attachments[[+ID+]][post_name]' value='[+post_name_attr+]'  /><p class='help'>Must be unique; will be validated.</p></td>
 		</tr>
 		<tr class='post_excerpt'>
 			<th valign='top' scope='row' class='label'><label for='attachments[[+ID+]][post_excerpt]'><span class='alignleft'>Caption</span><br class='clear' /></label></th>
-			<td class='field'><input type='text' class='text' id='attachments[[+ID+]][post_excerpt]' name='attachments[[+ID+]][post_excerpt]' value='[+post_excerpt+]'  /></td>
+			<td class='field'><input type='text' class='text' id='attachments[[+ID+]][post_excerpt]' name='attachments[[+ID+]][post_excerpt]' value='[+post_excerpt_attr+]'  /></td>
 		</tr>
 		<tr class='post_content'>
 			<th valign='top' scope='row' class='label'><label for='attachments[[+ID+]][post_content]'><span class='alignleft'>Description</span><br class='clear' /></label></th>
@@ -62,7 +63,7 @@
 [+authors+]
 		<tr class='image_url'>
 			<th valign='top' scope='row' class='label'><label for='attachments[[+ID+]][image_url]'><span class='alignleft'>File URL</span><br class='clear' /></label></th>
-			<td class='field'><input type='text' class='text urlfield' readonly='readonly' name='attachments[[+ID+]][url]' value='[+guid+]' /><br /><p class='help'>Location of the uploaded file.</p></td>
+			<td class='field'><input type='text' class='text urlfield' readonly='readonly' name='attachments[[+ID+]][url]' value='[+guid_attr+]' /><br /><p class='help'>Location of the uploaded file.</p></td>
 		</tr>
 		<tr class='features'>
 			<th valign='top' scope='row' class='label'><label for='attachments[[+ID+]][features]'><span class='alignleft'>Featured in</span><br class='clear' /></label></th>

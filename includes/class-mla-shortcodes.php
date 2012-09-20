@@ -17,6 +17,8 @@ class MLAShortcodes {
 	 * Initialization function, similar to __construct()
 	 *
 	 * @since 0.20
+	 *
+	 * @return	void
 	 */
 	public static function initialize() {
 		add_shortcode( 'mla_attachment_list', 'MLAShortcodes::mla_attachment_list_shortcode' );
@@ -27,7 +29,7 @@ class MLAShortcodes {
 	 *
 	 * @since 0.1
 	 *
-	 * @return	string	HTML markup for the attachment list
+	 * @return	void	echoes HTML markup for the attachment list
 	 */
 	public static function mla_attachment_list_shortcode( /* $atts */ ) {
 		global $wpdb;

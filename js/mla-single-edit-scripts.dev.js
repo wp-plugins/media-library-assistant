@@ -199,8 +199,8 @@ jQuery(document).ready( function($) {
 		taxonomyParts.shift();
 		taxonomy = taxonomyParts.join('-');
  		settingName = taxonomy + '_tab';
- 		if ( taxonomy == 'category' )
- 			settingName = 'cats';
+// 		if ( taxonomy == 'category' )
+// 			settingName = 'cats';
 
 		// TODO: move to jQuery 1.3+, support for multiple hierarchical taxonomies, see wp-lists.dev.js
 		$('a', '#' + taxonomy + '-tabs').click( function(){

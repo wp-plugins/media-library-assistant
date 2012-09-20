@@ -22,7 +22,7 @@ class MLATest {
 	 * @param 	string	representing the minimum required version of PHP, e.g. '5.3.2'
 	 * @param  	string	Name of the plugin for messaging purposes
 	 *
-	 * @return none		Exit with messaging if PHP version is too old
+	 * @return void		Exit with messaging if PHP version is too old
 	 */
 	public static function min_php_version( $min_version, $plugin_name )
 	{
@@ -42,7 +42,7 @@ class MLATest {
 	 * @param string	representing the minimum required version of WordPress, e.g. '3.3.0'
 	 * @param string	Name of the plugin for messaging purposes
 	 *
-	 * @return none		Exit with messaging if version is too old
+	 * @return void		Exit with messaging if version is too old
 	 */
 	public static function min_WordPress_version( $min_version, $plugin_name )
 	{

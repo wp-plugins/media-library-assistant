@@ -23,11 +23,6 @@ require_once( MLA_PLUGIN_PATH . 'includes/class-mla-data.php' );
 add_action( 'init', 'MLAData::initialize' );
 
 /*
- * Custom list table package that extends the core WP_List_Table class.
- */
-require_once( MLA_PLUGIN_PATH . 'includes/class-mla-list-table.php' );
-
-/*
  * Custom Taxonomies and WordPress objects.
  */
 require_once( MLA_PLUGIN_PATH . 'includes/class-mla-objects.php' );
@@ -53,6 +48,11 @@ require_once( MLA_PLUGIN_PATH . 'includes/class-mla-settings.php' );
 
 add_action( 'init', 'MLASettings::initialize' );
  
+/*
+ * Custom list table package that extends the core WP_List_Table class.
+ */
+require_once( MLA_PLUGIN_PATH . 'includes/class-mla-list-table.php' );
+
 /*
  * Main program
  */

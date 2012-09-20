@@ -58,7 +58,7 @@
 <li class="method public "><a href="#mla_admin_enqueue_scripts_action" title="mla_admin_enqueue_scripts_action :: Load the plugin's Style Sheet and Javascript files"><span class="description">Load the plugin's Style Sheet and Javascript files</span><pre>mla_admin_enqueue_scripts_action()</pre></a></li>
 <li class="method public "><a href="#mla_admin_init_action" title="mla_admin_init_action :: Load the plugin's Ajax handler"><span class="description">Load the plugin's Ajax handler</span><pre>mla_admin_init_action()</pre></a></li>
 <li class="method public "><a href="#mla_admin_menu_action" title="mla_admin_menu_action :: Add the submenu pages"><span class="description">Add the submenu pages</span><pre>mla_admin_menu_action()</pre></a></li>
-<li class="method public "><a href="#mla_edit_tags_redirect" title="mla_edit_tags_redirect :: Redirect to the Edit Tags/Categories page"><span class="description">Redirect to the Edit Tags/Categories page</span><pre>mla_edit_tags_redirect()</pre></a></li>
+<li class="method public "><a href="#mla_edit_tax_redirect" title="mla_edit_tax_redirect :: Redirect to the Edit Tags/Categories page"><span class="description">Redirect to the Edit Tags/Categories page</span><pre>mla_edit_tax_redirect()</pre></a></li>
 <li class="method public "><a href="#mla_inline_edit_action" title="mla_inline_edit_action :: Ajax handler for inline editing (quick and bulk edit)"><span class="description">Ajax handler for inline editing (quick and bulk edit)</span><pre>mla_inline_edit_action()</pre></a></li>
 <li class="method public "><a href="#mla_modify_parent_menu" title="mla_modify_parent_menu :: Cleanup menus for Edit Tags/Categories page"><span class="description">Cleanup menus for Edit Tags/Categories page</span><pre>mla_modify_parent_menu()</pre></a></li>
 <li class="method public "><a href="#mla_render_admin_page" title='mla_render_admin_page :: Render the "Assistant" subpage in the Media section, using the list_table package'><span class="description">Render the "Assistant" subpage in the Media section, using the list_table package</span><pre>mla_render_admin_page()</pre></a></li>
@@ -66,9 +66,9 @@
 <li class="method public "><a href="#mla_set_screen_option_filter" title='mla_set_screen_option_filter :: Save the "Entries per page" option set by this user'><span class="description">Save the "Entries per page" option set by this user</span><pre>mla_set_screen_option_filter()</pre></a></li>
 <li class="nav-header private">» Private</li>
 <li class="method private "><a href="#_authors_dropdown" title="_authors_dropdown :: Get the edit Authors dropdown box, if user has suitable permissions"><span class="description">Get the edit Authors dropdown box, if user has suitable permissions</span><pre>_authors_dropdown()</pre></a></li>
-<li class="method private "><a href="#_build_inline_edit_form" title="_build_inline_edit_form :: Build the hidden row templates for inline editing (quick and bulk edit)."><span class="description">Build the hidden row templates for inline editing (quick and bulk edit).</span><pre>_build_inline_edit_form()</pre></a></li>
+<li class="method private "><a href="#_build_inline_edit_form" title="_build_inline_edit_form :: Build the hidden row templates for inline editing (quick and bulk edit)"><span class="description">Build the hidden row templates for inline editing (quick and bulk edit)</span><pre>_build_inline_edit_form()</pre></a></li>
 <li class="method private "><a href="#_current_bulk_action" title="_current_bulk_action :: Get the current action selected from the bulk actions dropdown"><span class="description">Get the current action selected from the bulk actions dropdown</span><pre>_current_bulk_action()</pre></a></li>
-<li class="method private "><a href="#_delete_single_item" title="_delete_single_item :: Delete a single item permanently."><span class="description">Delete a single item permanently.</span><pre>_delete_single_item()</pre></a></li>
+<li class="method private "><a href="#_delete_single_item" title="_delete_single_item :: Delete a single item permanently"><span class="description">Delete a single item permanently</span><pre>_delete_single_item()</pre></a></li>
 <li class="method private "><a href="#_display_single_item" title="_display_single_item :: Display a single item sub page; prepare the form to
 change the meta data for a single attachment."><span class="description">Display a single item sub page; prepare the form to
 change the meta data for a single attachment.</span><pre>_display_single_item()</pre></a></li>
@@ -130,7 +130,7 @@ of images and files held in the WordPress Media Library.</p>
 <i class="icon-custom icon-method"></i> Methods</h3>
 <a name="initialize" id="initialize"></a><div class="element clickable method public initialize" data-toggle="collapse" data-target=".initialize .collapse">
 <h2>Initialization function, similar to __construct()</h2>
-<pre>initialize() </pre>
+<pre>initialize() : void</pre>
 <div class="labels"></div>
 <div class="row collapse"><div class="detail-description">
 <p class="long_description"></p>
@@ -142,7 +142,7 @@ of images and files held in the WordPress Media Library.</p>
 </div>
 <a name="mla_add_help_tab" id="mla_add_help_tab"></a><div class="element clickable method public mla_add_help_tab" data-toggle="collapse" data-target=".mla_add_help_tab .collapse">
 <h2>Add contextual help tabs to all the MLA pages</h2>
-<pre>mla_add_help_tab() </pre>
+<pre>mla_add_help_tab() : void</pre>
 <div class="labels"></div>
 <div class="row collapse"><div class="detail-description">
 <p class="long_description"></p>
@@ -154,7 +154,7 @@ of images and files held in the WordPress Media Library.</p>
 </div>
 <a name="mla_add_menu_options" id="mla_add_menu_options"></a><div class="element clickable method public mla_add_menu_options" data-toggle="collapse" data-target=".mla_add_menu_options .collapse">
 <h2>Add the "XX Entries per page" filter to the Screen Options tab</h2>
-<pre>mla_add_menu_options() </pre>
+<pre>mla_add_menu_options() : void</pre>
 <div class="labels"></div>
 <div class="row collapse"><div class="detail-description">
 <p class="long_description"></p>
@@ -166,7 +166,7 @@ of images and files held in the WordPress Media Library.</p>
 </div>
 <a name="mla_admin_enqueue_scripts_action" id="mla_admin_enqueue_scripts_action"></a><div class="element clickable method public mla_admin_enqueue_scripts_action" data-toggle="collapse" data-target=".mla_admin_enqueue_scripts_action .collapse">
 <h2>Load the plugin's Style Sheet and Javascript files</h2>
-<pre>mla_admin_enqueue_scripts_action(string $page_hook) : \nothing</pre>
+<pre>mla_admin_enqueue_scripts_action(string $page_hook) : void</pre>
 <div class="labels"></div>
 <div class="row collapse"><div class="detail-description">
 <p class="long_description"></p>
@@ -178,13 +178,11 @@ of images and files held in the WordPress Media Library.</p>
 <div class="subelement argument">
 <h4>$page_hook</h4>
 <code>string</code><p>Name of the page being loaded</p></div>
-<h3>Returns</h3>
-<div class="subelement response"><code>\nothing</code></div>
 </div></div>
 </div>
 <a name="mla_admin_init_action" id="mla_admin_init_action"></a><div class="element clickable method public mla_admin_init_action" data-toggle="collapse" data-target=".mla_admin_init_action .collapse">
 <h2>Load the plugin's Ajax handler</h2>
-<pre>mla_admin_init_action() : \nothing</pre>
+<pre>mla_admin_init_action() : void</pre>
 <div class="labels"></div>
 <div class="row collapse"><div class="detail-description">
 <p class="long_description"></p>
@@ -192,13 +190,11 @@ of images and files held in the WordPress Media Library.</p>
 <th>since</th>
 <td>0.20</td>
 </tr></table>
-<h3>Returns</h3>
-<div class="subelement response"><code>\nothing</code></div>
 </div></div>
 </div>
 <a name="mla_admin_menu_action" id="mla_admin_menu_action"></a><div class="element clickable method public mla_admin_menu_action" data-toggle="collapse" data-target=".mla_admin_menu_action .collapse">
 <h2>Add the submenu pages</h2>
-<pre>mla_admin_menu_action() </pre>
+<pre>mla_admin_menu_action() : void</pre>
 <div class="labels"></div>
 <div class="row collapse"><div class="detail-description">
 <p class="long_description"><p>Add a submenu page in the "Media" section,
@@ -212,9 +208,9 @@ add settings link in the Plugins section entry for MLA.</p></p>
 </tr></table>
 </div></div>
 </div>
-<a name="mla_edit_tags_redirect" id="mla_edit_tags_redirect"></a><div class="element clickable method public mla_edit_tags_redirect" data-toggle="collapse" data-target=".mla_edit_tags_redirect .collapse">
+<a name="mla_edit_tax_redirect" id="mla_edit_tax_redirect"></a><div class="element clickable method public mla_edit_tax_redirect" data-toggle="collapse" data-target=".mla_edit_tax_redirect .collapse">
 <h2>Redirect to the Edit Tags/Categories page</h2>
-<pre>mla_edit_tags_redirect() </pre>
+<pre>mla_edit_tax_redirect() : void</pre>
 <div class="labels"></div>
 <div class="row collapse"><div class="detail-description">
 <p class="long_description"><p>The custom taxonomy add/edit submenu entries go to "upload.php" by default.
@@ -227,7 +223,7 @@ This filter is the only way to redirect them to the correct WordPress page.</p><
 </div>
 <a name="mla_inline_edit_action" id="mla_inline_edit_action"></a><div class="element clickable method public mla_inline_edit_action" data-toggle="collapse" data-target=".mla_inline_edit_action .collapse">
 <h2>Ajax handler for inline editing (quick and bulk edit)</h2>
-<pre>mla_inline_edit_action() : string</pre>
+<pre>mla_inline_edit_action() : void</pre>
 <div class="labels"></div>
 <div class="row collapse"><div class="detail-description">
 <p class="long_description"><p>Adapted from wp_ajax_inline_save in /wp-admin/includes/ajax-actions.php</p></p>
@@ -235,9 +231,6 @@ This filter is the only way to redirect them to the correct WordPress page.</p><
 <th>since</th>
 <td>0.20</td>
 </tr></table>
-<h3>Returns</h3>
-<div class="subelement response">
-<code>string</code>echo HTML <tr> markup for updated row or error message, then die()</div>
 </div></div>
 </div>
 <a name="mla_modify_parent_menu" id="mla_modify_parent_menu"></a><div class="element clickable method public mla_modify_parent_menu" data-toggle="collapse" data-target=".mla_modify_parent_menu .collapse">
@@ -264,7 +257,7 @@ to the right WordPress page for editing/adding taxonomy terms.</p></p>
 </div>
 <a name="mla_render_admin_page" id="mla_render_admin_page"></a><div class="element clickable method public mla_render_admin_page" data-toggle="collapse" data-target=".mla_render_admin_page .collapse">
 <h2>Render the "Assistant" subpage in the Media section, using the list_table package</h2>
-<pre>mla_render_admin_page() </pre>
+<pre>mla_render_admin_page() : void</pre>
 <div class="labels"></div>
 <div class="row collapse"><div class="detail-description">
 <p class="long_description"></p>
@@ -299,7 +292,7 @@ to the right WordPress page for editing/adding taxonomy terms.</p></p>
 </div>
 <a name="mla_set_screen_option_filter" id="mla_set_screen_option_filter"></a><div class="element clickable method public mla_set_screen_option_filter" data-toggle="collapse" data-target=".mla_set_screen_option_filter .collapse">
 <h2>Save the "Entries per page" option set by this user</h2>
-<pre>mla_set_screen_option_filter(boolean $status, string $option, string $value) : string</pre>
+<pre>mla_set_screen_option_filter(boolean $status, string $option, string $value) : string | void</pre>
 <div class="labels"></div>
 <div class="row collapse"><div class="detail-description">
 <p class="long_description"></p>
@@ -320,7 +313,7 @@ to the right WordPress page for editing/adding taxonomy terms.</p></p>
 <code>string</code><p>New value of the option</p></div>
 <h3>Returns</h3>
 <div class="subelement response">
-<code>string</code>New value if this is our option, otherwise nothing</div>
+<code>string</code><code>void</code>New value if this is our option, otherwise nothing</div>
 </div></div>
 </div>
 <a name="_authors_dropdown" id="_authors_dropdown"></a><div class="element clickable method private _authors_dropdown" data-toggle="collapse" data-target="._authors_dropdown .collapse">
@@ -349,7 +342,7 @@ to the right WordPress page for editing/adding taxonomy terms.</p></p>
 </div></div>
 </div>
 <a name="_build_inline_edit_form" id="_build_inline_edit_form"></a><div class="element clickable method private _build_inline_edit_form" data-toggle="collapse" data-target="._build_inline_edit_form .collapse">
-<h2>Build the hidden row templates for inline editing (quick and bulk edit).</h2>
+<h2>Build the hidden row templates for inline editing (quick and bulk edit)</h2>
 <pre>_build_inline_edit_form(object $MLAListTable) : string</pre>
 <div class="labels"></div>
 <div class="row collapse"><div class="detail-description">
@@ -383,7 +376,7 @@ to the right WordPress page for editing/adding taxonomy terms.</p></p>
 </div></div>
 </div>
 <a name="_delete_single_item" id="_delete_single_item"></a><div class="element clickable method private _delete_single_item" data-toggle="collapse" data-target="._delete_single_item .collapse">
-<h2>Delete a single item permanently.</h2>
+<h2>Delete a single item permanently</h2>
 <pre>_delete_single_item(array $post_id) : array</pre>
 <div class="labels"></div>
 <div class="row collapse"><div class="detail-description">
@@ -395,7 +388,7 @@ to the right WordPress page for editing/adding taxonomy terms.</p></p>
 <h3>Parameters</h3>
 <div class="subelement argument">
 <h4>$post_id</h4>
-<code>array</code><p>The form POST data.</p></div>
+<code>array</code><p>The form POST data</p></div>
 <h3>Returns</h3>
 <div class="subelement response">
 <code>array</code>success/failure message and NULL content</div>
@@ -418,7 +411,7 @@ change the meta data for a single attachment.</h2>
 <code>int</code><p>The WordPress Post ID of the attachment item</p></div>
 <h3>Returns</h3>
 <div class="subelement response">
-<code>array</code>message and/or HTML content.</div>
+<code>array</code>message and/or HTML content</div>
 </div></div>
 </div>
 <a name="_restore_single_item" id="_restore_single_item"></a><div class="element clickable method private _restore_single_item" data-toggle="collapse" data-target="._restore_single_item .collapse">
@@ -701,7 +694,7 @@ for a single attachment.</h2>
 <div class="row"><footer class="span12">
             Template is built using <a href="http://twitter.github.com/bootstrap/">Twitter Bootstrap 2</a> and icons provided by <a href="http://glyphicons.com/">Glyphicons</a>.<br>
             Documentation is powered by <a href="http://www.phpdoc.org/">phpDocumentor 2.0.0a8</a> and<br>
-            generated on 2012-09-06T12:09:19-07:00.<br></footer></div>
+            generated on 2012-09-19T20:36:48-07:00.<br></footer></div>
 </div>
 </body>
 </html>

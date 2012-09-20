@@ -60,17 +60,23 @@ add settings link in the Plugins section entry for MLA.</span><pre>mla_admin_men
 <li class="method public "><a href="#mla_delete_option" title="mla_delete_option :: Delete the stored value of a defined MLA option"><span class="description">Delete the stored value of a defined MLA option</span><pre>mla_delete_option()</pre></a></li>
 <li class="method public "><a href="#mla_get_option" title="mla_get_option :: Return the stored value or default value of a defined MLA option"><span class="description">Return the stored value or default value of a defined MLA option</span><pre>mla_get_option()</pre></a></li>
 <li class="method public "><a href="#mla_render_settings_page" title='mla_render_settings_page :: Render (echo) the "Media Library Assistant" subpage in the Settings section'><span class="description">Render (echo) the "Media Library Assistant" subpage in the Settings section</span><pre>mla_render_settings_page()</pre></a></li>
+<li class="method public "><a href="#mla_taxonomy_support" title="mla_taxonomy_support :: Determine MLA support for a taxonomy, handling the special case where the
+settings are being updated or reset."><span class="description">Determine MLA support for a taxonomy, handling the special case where the
+settings are being updated or reset.</span><pre>mla_taxonomy_support()</pre></a></li>
 <li class="method public "><a href="#mla_update_option" title="mla_update_option :: Add or update the stored value of a defined MLA option"><span class="description">Add or update the stored value of a defined MLA option</span><pre>mla_update_option()</pre></a></li>
 <li class="nav-header private">» Private</li>
 <li class="method private "><a href="#_reset_settings" title="_reset_settings :: Delete saved settings, restoring default values"><span class="description">Delete saved settings, restoring default values</span><pre>_reset_settings()</pre></a></li>
 <li class="method private "><a href="#_save_settings" title="_save_settings :: Save settings to the options table"><span class="description">Save settings to the options table</span><pre>_save_settings()</pre></a></li>
+<li class="method private "><a href="#_taxonomy_handler" title="_taxonomy_handler :: Render and manage other taxonomy support options, e.g., Categories and Post Tags"><span class="description">Render and manage other taxonomy support options, e.g., Categories and Post Tags</span><pre>_taxonomy_handler()</pre></a></li>
+<li class="method private "><a href="#_version_upgrade" title="_version_upgrade :: Database and option update check, for installing new versions"><span class="description">Database and option update check, for installing new versions</span><pre>_version_upgrade()</pre></a></li>
 <li class="nav-header">
 <i class="icon-custom icon-property"></i> Properties</li>
 <li class="nav-header private">» Private</li>
 <li class="property private "><a href="#%24mla_options" title="$mla_options :: $mla_options defines the database options and admin page areas for setting/updating them."><span class="description">$mla_options defines the database options and admin page areas for setting/updating them.</span><pre>$mla_options</pre></a></li>
 <li class="nav-header">
 <i class="icon-custom icon-constant"></i> Constants</li>
-<li class="constant  "><a href="#MLA_SETTINGS_SLUG" title="MLA_SETTINGS_SLUG :: Provides a unique name for the settings page."><span class="description">Provides a unique name for the settings page.</span><pre>MLA_SETTINGS_SLUG</pre></a></li>
+<li class="constant  "><a href="#MLA_SETTINGS_SLUG" title="MLA_SETTINGS_SLUG :: Provides a unique name for the settings page"><span class="description">Provides a unique name for the settings page</span><pre>MLA_SETTINGS_SLUG</pre></a></li>
+<li class="constant  "><a href="#MLA_VERSION_OPTION" title="MLA_VERSION_OPTION :: Provides a unique name for the current version option"><span class="description">Provides a unique name for the current version option</span><pre>MLA_VERSION_OPTION</pre></a></li>
 </ul>
 </div>
 <div class="span8">
@@ -102,7 +108,7 @@ and provides the settings page to edit them.</p>
 <i class="icon-custom icon-method"></i> Methods</h3>
 <a name="initialize" id="initialize"></a><div class="element clickable method public initialize" data-toggle="collapse" data-target=".initialize .collapse">
 <h2>Initialization function, similar to __construct()</h2>
-<pre>initialize() </pre>
+<pre>initialize() : void</pre>
 <div class="labels"></div>
 <div class="row collapse"><div class="detail-description">
 <p class="long_description"></p>
@@ -138,7 +144,7 @@ and provides the settings page to edit them.</p>
 <a name="mla_admin_menu_action" id="mla_admin_menu_action"></a><div class="element clickable method public mla_admin_menu_action" data-toggle="collapse" data-target=".mla_admin_menu_action .collapse">
 <h2>Add settings page in the "Settings" section,
 add settings link in the Plugins section entry for MLA.</h2>
-<pre>mla_admin_menu_action() </pre>
+<pre>mla_admin_menu_action() : void</pre>
 <div class="labels"></div>
 <div class="row collapse"><div class="detail-description">
 <p class="long_description"></p>
@@ -188,7 +194,7 @@ add settings link in the Plugins section entry for MLA.</h2>
 </div>
 <a name="mla_render_settings_page" id="mla_render_settings_page"></a><div class="element clickable method public mla_render_settings_page" data-toggle="collapse" data-target=".mla_render_settings_page .collapse">
 <h2>Render (echo) the "Media Library Assistant" subpage in the Settings section</h2>
-<pre>mla_render_settings_page() : \nothing</pre>
+<pre>mla_render_settings_page() : void</pre>
 <div class="labels"></div>
 <div class="row collapse"><div class="detail-description">
 <p class="long_description"></p>
@@ -196,9 +202,30 @@ add settings link in the Plugins section entry for MLA.</h2>
 <th>since</th>
 <td>0.1</td>
 </tr></table>
+</div></div>
+</div>
+<a name="mla_taxonomy_support" id="mla_taxonomy_support"></a><div class="element clickable method public mla_taxonomy_support" data-toggle="collapse" data-target=".mla_taxonomy_support .collapse">
+<h2>Determine MLA support for a taxonomy, handling the special case where the
+settings are being updated or reset.</h2>
+<pre>mla_taxonomy_support(string $tax_name, string $support_type) : boolean | string</pre>
+<div class="labels"></div>
+<div class="row collapse"><div class="detail-description">
+<p class="long_description"></p>
+<table class="table table-bordered"><tr>
+<th>since</th>
+<td>0.30</td>
+</tr></table>
+<h3>Parameters</h3>
+<div class="subelement argument">
+<h4>$tax_name</h4>
+<code>string</code><p>Taxonomy name, e.g., attachment_category</p></div>
+<div class="subelement argument">
+<h4>$support_type</h4>
+<code>string</code><p>'support' (the default), 'quick-edit' or 'filter'</p>
+</div>
 <h3>Returns</h3>
 <div class="subelement response">
-<code>\nothing</code>Echoes HTML markup for the settings subpage</div>
+<code>boolean</code><code>string</code>true if the taxonomy is supported in this way else false string if $tax_name is '' and $support_type is 'filter', returns the taxonomy to filter by</div>
 </div></div>
 </div>
 <a name="mla_update_option" id="mla_update_option"></a><div class="element clickable method public mla_update_option" data-toggle="collapse" data-target=".mla_update_option .collapse">
@@ -240,7 +267,7 @@ add settings link in the Plugins section entry for MLA.</h2>
 </div>
 <h3>Returns</h3>
 <div class="subelement response">
-<code>array</code>Message(s) reflecting the results of the operation.</div>
+<code>array</code>Message(s) reflecting the results of the operation</div>
 </div></div>
 </div>
 <a name="_save_settings" id="_save_settings"></a><div class="element clickable method private _save_settings" data-toggle="collapse" data-target="._save_settings .collapse">
@@ -260,7 +287,50 @@ add settings link in the Plugins section entry for MLA.</h2>
 </div>
 <h3>Returns</h3>
 <div class="subelement response">
-<code>array</code>Message(s) reflecting the results of the operation.</div>
+<code>array</code>Message(s) reflecting the results of the operation</div>
+</div></div>
+</div>
+<a name="_taxonomy_handler" id="_taxonomy_handler"></a><div class="element clickable method private _taxonomy_handler" data-toggle="collapse" data-target="._taxonomy_handler .collapse">
+<h2>Render and manage other taxonomy support options, e.g., Categories and Post Tags</h2>
+<pre>_taxonomy_handler(string $action, string $key, array $value, array $args) : string</pre>
+<div class="labels"></div>
+<div class="row collapse"><div class="detail-description">
+<p class="long_description"></p>
+<table class="table table-bordered"><tr>
+<th>since</th>
+<td>0.30</td>
+</tr></table>
+<h3>Parameters</h3>
+<div class="subelement argument">
+<h4>$action</h4>
+<code>string</code><p>'render', 'update', 'delete', or 'reset'</p>
+</div>
+<div class="subelement argument">
+<h4>$key</h4>
+<code>string</code><p>option name, e.g., 'taxonomy_support'</p>
+</div>
+<div class="subelement argument">
+<h4>$value</h4>
+<code>array</code><p>option parameters</p></div>
+<div class="subelement argument">
+<h4>$args</h4>
+<code>array</code><p>The $page_template_array for 'render' else $_REQUEST</p>
+</div>
+<h3>Returns</h3>
+<div class="subelement response">
+<code>string</code>HTML table row markup for 'render' else message(s) reflecting the results of the operation.</div>
+</div></div>
+</div>
+<a name="_version_upgrade" id="_version_upgrade"></a><div class="element clickable method private _version_upgrade" data-toggle="collapse" data-target="._version_upgrade .collapse">
+<h2>Database and option update check, for installing new versions</h2>
+<pre>_version_upgrade() : void</pre>
+<div class="labels"></div>
+<div class="row collapse"><div class="detail-description">
+<p class="long_description"></p>
+<table class="table table-bordered"><tr>
+<th>since</th>
+<td>0.30</td>
+</tr></table>
 </div></div>
 </div>
 <h3>
@@ -274,19 +344,34 @@ add settings link in the Plugins section entry for MLA.</h2>
 <p>array key => HTML id/name attribute and option database key (OMIT MLA_OPTION_PREFIX)</p>
 
 <p>name => admin page label or heading text
-type => 'checkbox', 'header', 'radio', 'select', 'text', 'textarea'
+type => 'checkbox', 'header', 'radio', 'select', 'text', 'textarea', 'custom', 'hidden'
 std => default value
 help => help text
 size => text size, default 40
 cols => textbox columns, default 90
 rows => textbox rows, default 5
-options => array of radio or select option values</p></p></div></div>
+options => array of radio or select option values
+texts => array of radio or select option display texts
+render => rendering function for 'custom' options. Usage:
+    $options_list .= ['render']( 'render', $key, $value, $page_template_array );
+update => update function for 'custom' options; returns nothing. Usage:
+    $message = ['update']( 'update', $key, $value, $_REQUEST );
+delete => delete function for 'custom' options; returns nothing. Usage:
+    $message = ['delete']( 'delete', $key, $value, $_REQUEST );
+reset => reset function for 'custom' options; returns nothing. Usage:
+    $message = ['reset']( 'reset', $key, $value, $_REQUEST );</p></p></div></div>
 </div>
 <h3>
 <i class="icon-custom icon-constant"></i> Constants</h3>
 <a name="MLA_SETTINGS_SLUG" id="MLA_SETTINGS_SLUG"> </a><div class="element clickable constant  MLA_SETTINGS_SLUG" data-toggle="collapse" data-target=".MLA_SETTINGS_SLUG .collapse">
-<h2>Provides a unique name for the settings page.</h2>
+<h2>Provides a unique name for the settings page</h2>
 <pre>MLA_SETTINGS_SLUG </pre>
+<div class="labels"></div>
+<div class="row collapse"><div class="detail-description"><p class="long_description"></p></div></div>
+</div>
+<a name="MLA_VERSION_OPTION" id="MLA_VERSION_OPTION"> </a><div class="element clickable constant  MLA_VERSION_OPTION" data-toggle="collapse" data-target=".MLA_VERSION_OPTION .collapse">
+<h2>Provides a unique name for the current version option</h2>
+<pre>MLA_VERSION_OPTION </pre>
 <div class="labels"></div>
 <div class="row collapse"><div class="detail-description"><p class="long_description"></p></div></div>
 </div>
@@ -297,7 +382,7 @@ options => array of radio or select option values</p></p></div></div>
 <div class="row"><footer class="span12">
             Template is built using <a href="http://twitter.github.com/bootstrap/">Twitter Bootstrap 2</a> and icons provided by <a href="http://glyphicons.com/">Glyphicons</a>.<br>
             Documentation is powered by <a href="http://www.phpdoc.org/">phpDocumentor 2.0.0a8</a> and<br>
-            generated on 2012-09-06T12:09:19-07:00.<br></footer></div>
+            generated on 2012-09-19T20:36:48-07:00.<br></footer></div>
 </div>
 </body>
 </html>

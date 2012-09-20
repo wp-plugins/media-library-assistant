@@ -34,6 +34,7 @@
 <p><strong>File name:</strong> [+file_name+]</p>
 <p><strong>File type:</strong> [+post_mime_type+]</p>
 <p><strong>Upload date:</strong> [+post_date+]</p>
+<p><strong>Last modified:</strong> [+post_modified+]</p>
 <p><strong>Dimensions:</strong> <span id="media-dims-[+ID+]">[+width+]&nbsp;&times;&nbsp;[+height+]</span></p>
 </td>
 </tr>
@@ -42,19 +43,19 @@
 <tr class="post_title form-required">
 <th valign="top" scope="row" class="label"><label for="attachments[[+ID+]][post_title]"><span class="alignleft">Title</span>
 <span class="alignright"><abbr title="required"	class="required">*required</abbr></span><br class="clear" /></label></th>
-<td class='field'><input type='text' class='text' id='attachments[[+ID+]][post_title]' name='attachments[[+ID+]][post_title]' value='[+post_title+]'  aria-required='true'  /></td>
+<td class='field'><input type='text' class='text' id='attachments[[+ID+]][post_title]' name='attachments[[+ID+]][post_title]' value='[+post_title_attr+]'  aria-required='true'  /></td>
 </tr>
 		<tr class='post_name form-required'>
 			<th valign='top' scope='row' class='label'><label for='attachments[[+ID+]][post_name]'><span class='alignleft'>Name/Slug</span><span class="alignright"><abbr title="required" class="required">*required</abbr></span><br class='clear' /></label></th>
-			<td class='field'><input type='text' class='text' id='attachments[[+ID+]][post_name]' name='attachments[[+ID+]][post_name]' value='[+post_name+]'  /><p class='help'>Must be unique; will be validated.</p></td>
+			<td class='field'><input type='text' class='text' id='attachments[[+ID+]][post_name]' name='attachments[[+ID+]][post_name]' value='[+post_name_attr+]'  /><p class='help'>Must be unique; will be validated.</p></td>
 		</tr>
 		<tr class='image_alt'>
 			<th valign='top' scope='row' class='label'><label for='attachments[[+ID+]][image_alt]'><span class='alignleft'>Alternate Text</span><br class='clear' /></label></th>
-			<td class='field'><input type='text' class='text' id='attachments[[+ID+]][image_alt]' name='attachments[[+ID+]][image_alt]' value='[+mla_wp_attachment_image_alt+]'  /><p class='help'>Alt text for the image, e.g. &#8220;The Mona Lisa&#8221;</p></td>
+			<td class='field'><input type='text' class='text' id='attachments[[+ID+]][image_alt]' name='attachments[[+ID+]][image_alt]' value='[+image_alt_attr+]'  /><p class='help'>Alt text for the image, e.g. &#8220;The Mona Lisa&#8221;</p></td>
 		</tr>
 		<tr class='post_excerpt'>
 			<th valign='top' scope='row' class='label'><label for='attachments[[+ID+]][post_excerpt]'><span class='alignleft'>Caption</span><br class='clear' /></label></th>
-			<td class='field'><input type='text' class='text' id='attachments[[+ID+]][post_excerpt]' name='attachments[[+ID+]][post_excerpt]' value='[+post_excerpt+]'  /></td>
+			<td class='field'><input type='text' class='text' id='attachments[[+ID+]][post_excerpt]' name='attachments[[+ID+]][post_excerpt]' value='[+post_excerpt_attr+]'  /></td>
 		</tr>
 		<tr class='post_content'>
 			<th valign='top' scope='row' class='label'><label for='attachments[[+ID+]][post_content]'><span class='alignleft'>Description</span><br class='clear' /></label></th>
@@ -67,7 +68,7 @@
 [+authors+]
 		<tr class='image_url'>
 			<th valign='top' scope='row' class='label'><label for='attachments[[+ID+]][image_url]'><span class='alignleft'>File URL</span><br class='clear' /></label></th>
-			<td class='field'><input type='text' class='text urlfield' readonly='readonly' name='attachments[[+ID+]][image_url]' value='[+guid+]' /><br /><p class='help'>Location of the uploaded file.</p></td>
+			<td class='field'><input type='text' class='text urlfield' readonly='readonly' name='attachments[[+ID+]][image_url]' value='[+guid_attr+]' /><br /><p class='help'>Location of the uploaded file.</p></td>
 		</tr>
 		<tr class='image_meta'>
 			<th valign='top' scope='row' class='label'><label for='attachments[[+ID+]][image_meta]'><span class='alignleft'>Image Metadata</span><br class='clear' /></label></th>

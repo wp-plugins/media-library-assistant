@@ -38,7 +38,7 @@ class MLA {
 	 *
 	 * @var	string
 	 */
-	const CURRENT_MLA_VERSION = '0.20';
+	const CURRENT_MLA_VERSION = '0.30';
 
 	/**
 	 * Minimum version of PHP required for this plugin
@@ -125,6 +125,8 @@ class MLA {
 	 * Initialization function, similar to __construct()
 	 *
 	 * @since 0.1
+	 *
+	 * @return	void
 	 */
 	public static function initialize( )
 	{
@@ -143,7 +145,7 @@ class MLA {
 	 *
 	 * @since 0.20
 	 *
-	 * @return	nothing
+	 * @return	void
 	 */
 	public static function mla_admin_init_action() {
 		add_action( 'wp_ajax_' . self::JAVASCRIPT_INLINE_EDIT_SLUG, 'MLA::mla_inline_edit_action' );
@@ -156,7 +158,7 @@ class MLA {
 	 *
 	 * @param	string	Name of the page being loaded
 	 *
-	 * @return	nothing
+	 * @return	void
 	 */
 	public static function mla_admin_enqueue_scripts_action( $page_hook ) {
 		if ( 'media_page_mla-menu' != $page_hook )
@@ -198,6 +200,8 @@ class MLA {
 	 * add settings link in the Plugins section entry for MLA.
 	 *
 	 * @since 0.1
+	 *
+	 * @return	void
 	 */
 	public static function mla_admin_menu_action( ) {
 		$hook = add_submenu_page( 'upload.php', 'Media Library Assistant', 'Assistant', 'upload_files', self::ADMIN_PAGE_SLUG, 'MLA::mla_render_admin_page' );
@@ -208,13 +212,13 @@ class MLA {
 		$taxonomies = get_object_taxonomies( 'attachment', 'objects' );
 		if ( !empty( $taxonomies ) ) {
 			foreach ( $taxonomies as $tax_name => $tax_object ) {
-				$hook = add_submenu_page( 'upload.php', $tax_object->label, $tax_object->label, 'manage_categories', 'mla-edit-tags-' . $tax_name, 'MLA::mla_edit_tags_redirect' );
-				add_action( 'load-' . $hook, 'MLA::mla_edit_tags_redirect' );
+				$hook = add_submenu_page( 'upload.php', $tax_object->label, $tax_object->label, 'manage_categories', 'mla-edit-tax-' . $tax_name, 'MLA::mla_edit_tax_redirect' );
+				add_action( 'load-' . $hook, 'MLA::mla_edit_tax_redirect' );
 				/*
-				 * The hook we need for taxonomy edits is slightly different
+				 * The page_hook we need for taxonomy edits is slightly different
 				 */
 				$hook = 'edit-' . $tax_name;
-				self::$page_hooks[ $hook ] = $hook;
+				self::$page_hooks[ $hook ] = 't_' . $tax_name;
 			}
 			
 			add_action( 'load-edit-tags.php', 'MLA::mla_add_help_tab' );
@@ -227,6 +231,8 @@ class MLA {
 	 * Add the "XX Entries per page" filter to the Screen Options tab
 	 *
 	 * @since 0.1
+	 *
+	 * @return	void
 	 */
 	public static function mla_add_menu_options( ) {
 		$option = 'per_page';
@@ -266,7 +272,7 @@ class MLA {
 	 * @param	string	Name of the option being changed
 	 * @param	string	New value of the option
 	 *
-	 * @return	string	New value if this is our option, otherwise nothing
+	 * @return	string|void	New value if this is our option, otherwise nothing
 	 */
 	public static function mla_set_screen_option_filter( $status, $option, $value )
 	{
@@ -335,11 +341,15 @@ class MLA {
 	 * This filter is the only way to redirect them to the correct WordPress page.
 	 *
 	 * @since 0.1
+	 *
+	 * @return	void
 	 */
-	public static function mla_edit_tags_redirect( )
+	public static function mla_edit_tax_redirect( )
 	{
-		if ( isset( $_REQUEST['page'] ) && ( substr( $_REQUEST['page'], 0, 14 ) == 'mla-edit-tags-' ) ) {
-			$taxonomy = substr( $_REQUEST['page'], 14 );
+		$screen = get_current_screen();
+
+		if ( isset( $_REQUEST['page'] ) && ( substr( $_REQUEST['page'], 0, 13 ) == 'mla-edit-tax-' ) ) {
+			$taxonomy = substr( $_REQUEST['page'], 13 );
 			wp_redirect( admin_url( 'edit-tags.php?taxonomy=' . $taxonomy . '&post_type=attachment' ), 302 );
 			exit;
 		}
@@ -349,11 +359,13 @@ class MLA {
 	 * Add contextual help tabs to all the MLA pages
 	 *
 	 * @since 0.1
+	 *
+	 * @return	void
 	 */
 	public static function mla_add_help_tab( )
 	{
 		$screen = get_current_screen();
-		
+
 		/*
 		 * Is this one of our pages?
 		 */
@@ -372,6 +384,26 @@ class MLA {
 					$file_suffix = self::MLA_ADMIN_SINGLE_EDIT_DISPLAY;
 					break;
 			} // switch
+		} // isset( $_REQUEST['mla_admin_action'] )
+		else {
+			/*
+			 * Use a generic page for edit taxonomy screens
+			 */
+			if ( 't_' == substr( self::$page_hooks[ $file_suffix ], 0, 2 ) ) {
+				$taxonomy = substr( self::$page_hooks[ $file_suffix ], 2 );
+				switch ( $taxonomy ) {
+					case 'attachment_category':
+					case 'attachment_tag':
+						break;
+					default:
+						$tax_object = get_taxonomy( $taxonomy );
+						error_log('mla_add_help_tab $tax_object = ' . var_export($tax_object, true), 0);
+						if ( $tax_object->hierarchical )
+							$file_suffix = 'edit-hierarchical-taxonomy';
+						else
+							$file_suffix = 'edit-flat-taxonomy';
+				} // $taxonomy switch
+			} // is taxonomy
 		}
 		
 		$template_array = MLAData::mla_load_template( MLA_PLUGIN_PATH . 'tpls/help-for-' . $file_suffix . '.tpl' );
@@ -430,7 +462,7 @@ class MLA {
 			
 			foreach ( $taxonomies as $tax_name => $tax_object ) {
 				if ( $_REQUEST['taxonomy'] == $tax_name ) {
-					$mla_page = 'mla-edit-tags-' . $tax_name;
+					$mla_page = 'mla-edit-tax-' . $tax_name;
 					$real_page = 'edit-tags.php?taxonomy=' . $tax_name . '&post_type=attachment';
 					
 					foreach ( $submenu['upload.php'] as $submenu_index => $submenu_entry ) {
@@ -450,8 +482,12 @@ class MLA {
 	 * Render the "Assistant" subpage in the Media section, using the list_table package
 	 *
 	 * @since 0.1
+	 *
+	 * @return	void
 	 */
 	public static function mla_render_admin_page( ) {
+//		error_log('mla_render_admin_page $_REQUEST = ' . var_export($_REQUEST, true), 0);
+		
 		$bulk_action = self::_current_bulk_action();
 		
 		echo "<div class=\"wrap\">\r\n";
@@ -468,6 +504,17 @@ class MLA {
 			'body' => '' 
 		);
 		
+		/*
+		 * The category taxonomy is a special case because post_categories_meta_box() changes the input name
+		 */
+		if ( !isset( $_REQUEST['tax_input'] ) )
+			$_REQUEST['tax_input'] = array ();
+				
+		if ( isset( $_REQUEST['post_category'] ) ) {
+			$_REQUEST['tax_input']['category'] = $_REQUEST['post_category'];
+			unset ( $_REQUEST['post_category'] );
+		}
+			
 		/*
 		 * Process bulk actions that affect an array of items
 		 */
@@ -605,8 +652,8 @@ class MLA {
 			if ( isset( $_REQUEST['m'] ) ) // filter by date
 				echo sprintf( '<input type="hidden" name="m" value="%1$s" />', $_REQUEST['m'] ) . "\r\n";
 			
-			if ( isset( $_REQUEST['att_cat'] ) ) // filter by category
-				echo sprintf( '<input type="hidden" name="att_cat" value="%1$s" />', $_REQUEST['att_cat'] ) . "\r\n";
+			if ( isset( $_REQUEST['mla_filter_term'] ) ) // filter by taxonomy term
+				echo sprintf( '<input type="hidden" name="att_cat" value="%1$s" />', $_REQUEST['mla_filter_term'] ) . "\r\n";
 			
 			//	 Now we can render the completed list table
 			$MLAListTable->display();
@@ -630,7 +677,7 @@ class MLA {
 	 *
 	 * @since 0.20
 	 *
-	 * @return	string	echo HTML <tr> markup for updated row or error message, then die()
+	 * @return	void	echo HTML <tr> markup for updated row or error message, then die()
 	 */
 	public static function mla_inline_edit_action() {
 		set_current_screen( $_REQUEST['screen'] );
@@ -691,7 +738,7 @@ class MLA {
 	}
 	
 	/**
-	 * Build the hidden row templates for inline editing (quick and bulk edit).
+	 * Build the hidden row templates for inline editing (quick and bulk edit)
 	 *
 	 * inspired by inline_edit() in wp-admin\includes\class-wp-posts-list-table.php.
 	 *
@@ -707,9 +754,9 @@ class MLA {
 		$hierarchical_taxonomies = array();
 		$flat_taxonomies = array();
 		foreach ( $taxonomies as $tax_name => $tax_object ) {
-			if ( $tax_object->hierarchical && $tax_object->show_ui ) {
+			if ( $tax_object->hierarchical && $tax_object->show_ui && MLASettings::mla_taxonomy_support($tax_name, 'quick-edit') ) {
 				$hierarchical_taxonomies[$tax_name] = $tax_object;
-			} elseif ( $tax_object->show_ui ) {
+			} elseif ( $tax_object->show_ui && MLASettings::mla_taxonomy_support($tax_name, 'quick-edit') ) {
 				$flat_taxonomies[$tax_name] = $tax_object;
 			}
 		}
@@ -856,11 +903,12 @@ class MLA {
 	}
 	
 	/**
-	 * Delete a single item permanently.
+	 * Delete a single item permanently
 	 * 
 	 * @since 0.1
 	 * 
-	 * @param	array The form POST data.
+	 * @param	array The form POST data
+	 *
 	 * @return	array success/failure message and NULL content
 	 */
 	private static function _delete_single_item( $post_id ) {
@@ -889,7 +937,8 @@ class MLA {
 	 * @since 0.1
 	 * 
 	 * @param	int		The WordPress Post ID of the attachment item
-	 * @return	array	message and/or HTML content. 
+	 *
+	 * @return	array	message and/or HTML content
 	 */
 	private static function _display_single_item( $post_id ) {
 		global $post;
@@ -1017,8 +1066,8 @@ class MLA {
 		else
 			$view_args = '';
 		
-		if ( isset( $_REQUEST['att_cat'] ) )
-			$view_args .= sprintf( '<input type="hidden" name="att_cat" value="%1$s" />', $_REQUEST['att_cat'] ) . "\r\n";
+		if ( isset( $_REQUEST['mla_filter_term'] ) )
+			$view_args .= sprintf( '<input type="hidden" name="att_cat" value="%1$s" />', $_REQUEST['mla_filter_term'] ) . "\r\n";
 		
 		if ( isset( $_REQUEST['paged'] ) )
 			$view_args .= sprintf( '<input type="hidden" name="paged" value="%1$s" />', $_REQUEST['paged'] ) . "\r\n";
@@ -1063,8 +1112,12 @@ class MLA {
 			'file_name' => $post_data['mla_references']['file'],
 			'width' => $width,
 			'height' => $height,
+			'post_title_attr' => esc_attr( $post_data['post_title'] ),
+			'post_name_attr' => esc_attr( $post_data['post_name'] ),
+			'post_excerpt_attr' => esc_attr( $post_data['post_excerpt'] ),
 			'image_meta' => $image_meta,
-			'parent_info' => $parent_info,
+			'parent_info' => esc_attr( $parent_info ),
+			'guid_attr' => esc_attr( $post_data['guid'] ),
 			'authors' => $authors,
 			'features' => $features,
 			'inserts' => $inserts,
@@ -1074,6 +1127,11 @@ class MLA {
 			'wpnonce' => wp_nonce_field( self::MLA_ADMIN_NONCE, '_wpnonce', true, false ),
 			'side_info_column' => $side_info_column 
 		);
+		
+		if ( !empty( $post_data['mla_wp_attachment_metadata'] ) ) {
+			$page_values['image_alt_attr'] = esc_attr( $post_data['mla_wp_attachment_image_alt'] );
+		}
+
 		$page_template = MLAData::mla_parse_template( $page_template, $post_data );
 		return array(
 			'message' => '',
@@ -1090,9 +1148,12 @@ class MLA {
 	 * @param	int		The ID of the attachment to be updated
 	 * @param	array	Field name => value pairs
 	 * @param	array	Attachment Category and Tag values
+	 *
 	 * @return	array	success/failure message and NULL content
 	 */
 	private static function _update_single_item( $post_id, $new_data, $tax_input = NULL ) {
+//		error_log('_update_single_item $tax_input = ' . var_export($tax_input, true), 0);
+		
 		$post_data = MLAData::mla_get_attachment_by_id( $post_id );
 		
 		if ( !isset( $post_data ) )
@@ -1104,6 +1165,9 @@ class MLA {
 		$message = '';
 		$updates = array( 'ID' => $post_id );
 		
+		$new_data = stripslashes_deep( $new_data );
+//		error_log('after stripslashes_deep, $new_data = ' . var_export($new_data, true), 0);
+
 		foreach ( $new_data as $key => $value ) {
 			switch ( $key ) {
 				case 'post_title':
@@ -1268,6 +1332,7 @@ class MLA {
 	 * @since 0.1
 	 * 
 	 * @param	array	The form POST data
+	 *
 	 * @return	array	success/failure message and NULL content
 	 */
 	private static function _trash_single_item( $post_id ) {

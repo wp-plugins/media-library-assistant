@@ -1,13 +1,13 @@
 <?php
 /**
- * Database and template file access for MLA needs.
+ * Database and template file access for MLA needs
  *
  * @package Media Library Assistant
  * @since 0.1
  */
 
 /**
- * Class MLA (Media Library Assistant) Data provides database and template file access for MLA needs.
+ * Class MLA (Media Library Assistant) Data provides database and template file access for MLA needs
  *
  * The _template functions are inspired by the book "WordPress 3 Plugin Development Essentials."
  * Templates separate HTML markup from PHP code for easier maintenance and localization.
@@ -34,7 +34,7 @@ class MLAData {
 	 *
 	 * @since 0.1
 	 *
-	 * @param	string 	$filepath	Complete path and name of the template file
+	 * @param	string 	Complete path and name of the template file
 	 *
 	 * @return	string|array|false|NULL
 	 *  		string for files that do not contain template divider comments,
@@ -113,10 +113,10 @@ class MLAData {
 	 *
 	 * @since 0.1
 	 *
-	 * @param	string	$tpl	A formatting string containing [+placeholders+]
-	 * @param	array	$hash	An associative array containing keys and values e.g. array('key' => 'value');
+	 * @param	string	A formatting string containing [+placeholders+]
+	 * @param	array	An associative array containing keys and values e.g. array('key' => 'value')
 	 *
-	 * @return	string	Placeholders corresponding to the keys of the hash will be replaced with their values.
+	 * @return	string	Placeholders corresponding to the keys of the hash will be replaced with their values
 	 */
 	public static function mla_parse_template( $tpl, $hash ) {
 		foreach ( $hash as $key => $value ) {
@@ -128,84 +128,19 @@ class MLAData {
 	}
 	
 	/**
-	 * Sanitize and expand query arguments from request variables
+	 * Get the total number of attachment posts
 	 *
-	 * Prepare the arguments for WP_Query.
-	 * Modeled after wp_edit_attachments_query in wp-admin/post.php
-	 * NOTE: The caller must remove the 'posts_where' filter, if required.
+	 * @since 0.30
 	 *
-	 * @since 0.1
+	 * @param	array	Query variables, e.g., from $_REQUEST
 	 *
-	 * @param	array	$request	query parameters from web page, usually found in $_REQUEST
-	 *
-	 * @return	array	revised arguments suitable for WP_Query
+	 * @return	integer	Number of attachment posts
 	 */
-	function mla_prepare_list_table_query( $request ) {
-		/*
-		 * ['m'] - filter by year and month of post, e.g., 201204
-		 */
-		$request['m'] = isset( $request['m'] ) ? (int) $request['m'] : 0;
-		
-		/*
-		 * ['att_cat'] - filter by attachment_category taxonomy
-		 *
-		 * cat = '0' is "All Categories", i.e., no filtering
-		 * cat = '-1' is "No Categories"
-		 */
-		if ( isset( $request['att_cat'] ) && ( $request['att_cat'] != '0' ) ) {
-			if ( $request['att_cat'] == '-1' ) {
-				$term_list = get_terms( 'attachment_category', array(
-					'fields' => 'ids',
-					'hide_empty' => true 
-				) );
-				$request['tax_query'] = array(
-					array(
-						'taxonomy' => 'attachment_category',
-						'field' => 'id',
-						'terms' => $term_list,
-						'operator' => 'NOT IN' 
-					) 
-				);
-			} else {
-				$request['tax_query'] = array(
-					array(
-						'taxonomy' => 'attachment_category',
-						'field' => 'id',
-						'terms' => array(
-							(int) $request['att_cat'] 
-						) 
-					) 
-				);
-			}
-		}
-		
-		if ( isset( $request['attachment_category'] ) ) {
-			$request['tax_query'] = array(
-				array(
-					'taxonomy' => 'attachment_category',
-					'field' => 'slug',
-					'terms' => $request['attachment_category'],
-					'include_children' => false 
-				) 
-			);
-			
-			unset( $request['attachment_category'] );
-		}
-		
-		$request['post_type'] = 'attachment';
-		$states = 'inherit';
-		if ( current_user_can( 'read_private_posts' ) )
-			$states .= ',private';
-		
-		$request['post_status'] = isset( $request['status'] ) && 'trash' == $request['status'] ? 'trash' : $states;
-		
-		/*
-		 * The caller must remove this filter if it is added.
-		 */
-		if ( isset( $request['detached'] ) )
-			add_filter( 'posts_where', 'MLAData::mla_query_list_table_items_helper' );
-		
-		return $request;
+	public static function mla_count_list_table_items( $request )
+	{
+		$request = self::_prepare_list_table_query( $request );
+		$results = self::_execute_list_table_query( $request );
+		return $results->found_posts;
 	}
 	
 	/**
@@ -216,44 +151,38 @@ class MLAData {
 	 *
 	 * @since 0.1
 	 *
-	 * @param	array	$request	query parameters from web page, usually found in $_REQUEST
-	 * @param	string	$orderby	database column to sort by
-	 * @param	string	$order		ASC or DESC
-	 * @param	int		$offset		number of rows to skip over to reach desired page
-	 * @param	int		$count		number of rows on each page
+	 * @param	array	query parameters from web page, usually found in $_REQUEST
+	 * @param	int		number of rows to skip over to reach desired page
+	 * @param	int		number of rows on each page
 	 *
 	 * @return	array	attachment objects (posts) including parent data, meta data and references
 	 */
-	public static function mla_query_list_table_items( $request, $orderby, $order, $offset, $count ) {
-		$request = self::mla_prepare_list_table_query( $request );
+	public static function mla_query_list_table_items( $request, $offset, $count ) {
+		$request = self::_prepare_list_table_query( $request );
 		
 		/*
-		 * There are two columns defined that end up sorting on post_title,
-		 * so we can't use the database column to identify the column but
-		 * we actually sort on the database column.
+		 * We have to handle custom field/post_meta values here
+		 * because they need a JOIN clause supplied by WP_Query
 		 */
-		if ( $orderby == 'title_name' )
-			$orderby = 'post_title';
-		
-		$request['orderby'] = $orderby;
-		$request['order'] = strtoupper( $order );
-		
+		switch ( self::$query_parameters['orderby'] ) {
+			case '_wp_attachment_image_alt':
+				$request['meta_key'] = '_wp_attachment_image_alt';
+				$request['orderby'] = 'meta_value';
+				$request['order'] = self::$query_parameters['order'];
+				break;
+			case '_wp_attached_file':
+				$request['meta_key'] = '_wp_attached_file';
+				$request['orderby'] = 'meta_value';
+				$request['order'] = self::$query_parameters['order'];
+				break;
+		} // $orderby
+
 		if ( ( (int) $count ) > 0 ) {
 			$request['offset'] = $offset;
 			$request['posts_per_page'] = $count;
 		}
 		
-		/*
-		 * Ignore old paged value; use offset
-		 */
-		if (isset($request['paged']))
-			unset($request['paged']);
-		
-		$results = new WP_Query( $request );
-		
-		if ( isset( $request['detached'] ) )
-			remove_filter( 'posts_where', 'MLAData::mla_query_list_table_items_helper' );
-		
+		$results = self::_execute_list_table_query( $request );
 		$attachments = $results->posts;
 		
 		foreach ( $attachments as $index => $attachment ) {
@@ -283,21 +212,208 @@ class MLAData {
 	}
 	
 	/**
-	 * Adds a WHERE clause for detached items
-	 * 
-	 * Modeled after _edit_attachments_query_helper in wp-admin/post.php
-	 * Defined as public so callers can remove it after the query
+	 * WP_Query filter "parameters"
+	 *
+	 * This array defines parameters for the query's join, where and orderby filters.
+	 * The parameters are set up in the _prepare_list_table_query function, and
+	 * any further logic required to translate those values is contained in the filters.
+	 *
+	 * @since 0.30
+	 *
+	 * @var	array
+	 */
+	private static $query_parameters = array( );
+
+	/**
+	 * Sanitize and expand query arguments from request variables
+	 *
+	 * Prepare the arguments for WP_Query.
+	 * Modeled after wp_edit_attachments_query in wp-admin/post.php
 	 *
 	 * @since 0.1
 	 *
-	 * @param	string	$where	query clause before modification
+	 * @param	array	query parameters from web page, usually found in $_REQUEST
+	 *
+	 * @return	array	revised arguments suitable for WP_Query
+	 */
+	private static function _prepare_list_table_query( $request ) {
+//		error_log('_prepare_list_table_query $request = ' . var_export($request, true), 0);
+		
+		self::$query_parameters = array( );
+		self::$query_parameters['detached'] = isset( $_REQUEST['detached'] );
+		self::$query_parameters['orderby'] = ( !empty( $request['orderby'] ) ) ? $request['orderby'] : MLASettings::mla_get_option( 'default_orderby' ); //If no sort, default from settings option
+		self::$query_parameters['order'] = ( !empty( $request['order'] ) ) ? strtoupper( $request['order'] ) : MLASettings::mla_get_option( 'default_order' ); //If no order, default from settings option
+
+		/*
+		 * Ignore incoming paged value; use offset and count instead
+		 */
+		if (isset($request['paged']))
+			unset($request['paged']);
+			
+		/*
+		 * ['m'] - filter by year and month of post, e.g., 201204
+		 */
+		$request['m'] = isset( $request['m'] ) ? (int) $request['m'] : 0;
+		
+		/*
+		 * ['mla_filter_term'] - filter by taxonomy
+		 *
+		 * cat = '0' is "All Categories", i.e., no filtering
+		 * cat = '-1' is "No Categories"
+		 */
+		if ( isset( $request['mla_filter_term'] ) && ( $request['mla_filter_term'] != '0' ) ) {
+			$tax_filter =  MLASettings::mla_taxonomy_support('', 'filter');
+			if ( $request['mla_filter_term'] == '-1' ) {
+				$term_list = get_terms( $tax_filter, array(
+					'fields' => 'ids',
+					'hide_empty' => true 
+				) );
+				$request['tax_query'] = array(
+					array(
+						'taxonomy' => $tax_filter,
+						'field' => 'id',
+						'terms' => $term_list,
+						'operator' => 'NOT IN' 
+					) 
+				);
+			} else {
+				$request['tax_query'] = array(
+					array(
+						'taxonomy' => $tax_filter,
+						'field' => 'id',
+						'terms' => array(
+							(int) $request['mla_filter_term'] 
+						) 
+					) 
+				);
+			}
+		}
+		
+		if ( isset( $request['mla-tax'] ) ) {
+			$request['tax_query'] = array(
+				array(
+					'taxonomy' => $request['mla-tax'],
+					'field' => 'slug',
+					'terms' => $request['mla-term'],
+					'include_children' => false 
+				) 
+			);
+		}
+		
+		$request['post_type'] = 'attachment';
+		$states = 'inherit';
+		if ( current_user_can( 'read_private_posts' ) )
+			$states .= ',private';
+		
+		$request['post_status'] = isset( $request['status'] ) && 'trash' == $request['status'] ? 'trash' : $states;
+		return $request;
+	}
+
+	/**
+	 * Add filters, run query, remove filters
+	 *
+	 * @since 0.30
+	 *
+	 * @param	array	query parameters from web page, usually found in $_REQUEST
+	 *
+	 * @return	object	WP_Query object with query results
+	 */
+	private static function _execute_list_table_query( $request ) {
+		add_filter( 'posts_join', 'MLAData::mla_query_posts_join_filter' );
+		add_filter( 'posts_where', 'MLAData::mla_query_posts_where_filter' );
+		add_filter( 'posts_orderby', 'MLAData::mla_query_posts_orderby_filter' );
+		$results = new WP_Query( $request );
+		remove_filter( 'posts_orderby', 'MLAData::mla_query_posts_orderby_filter' );
+		remove_filter( 'posts_where', 'MLAData::mla_query_posts_where_filter' );
+		remove_filter( 'posts_join', 'MLAData::mla_query_posts_join_filter' );
+
+//		error_log( '_execute_list_table_query SQL ' . var_export( $results->request, true ), 0 );
+//		error_log( '_execute_list_table_query results ' . var_export( $results, true ), 0 );
+		return $results;
+	}
+	
+	/**
+	 * Adds a JOIN clause, if required
+	 * 
+	 * Defined as public because it's a filter.
+	 *
+	 * @since 0.30
+	 *
+	 * @param	string	query clause before modification
 	 *
 	 * @return	string	query clause after "detached" item modification
 	 */
-	public static function mla_query_list_table_items_helper( $where ) {
+	public static function mla_query_posts_join_filter( $join_clause ) {
 		global $table_prefix;
+//		error_log( 'mla_query_posts_join_filter original ' . var_export( $join_clause, true ), 0 );
 		
-		return $where .= " AND {$table_prefix}posts.post_parent < 1";
+//		return ' LEFT JOIN mladev_postmeta ON (mladev_posts.ID = mladev_postmeta.post_id)';
+		return $join_clause;
+	}
+
+	/**
+	 * Adds a WHERE clause for detached items
+	 * 
+	 * Modeled after _edit_attachments_query_helper in wp-admin/post.php.
+	 * Defined as public because it's a filter.
+	 *
+	 * @since 0.1
+	 *
+	 * @param	string	query clause before modification
+	 *
+	 * @return	string	query clause after "detached" item modification
+	 */
+	public static function mla_query_posts_where_filter( $where_clause ) {
+		global $table_prefix;
+//		error_log( 'mla_query_posts_where_filter original ' . var_export( $where_clause, true ), 0 );
+
+		if ( self::$query_parameters['detached'] )
+			$where_clause .= " AND {$table_prefix}posts.post_parent < 1";
+			
+//		error_log( 'mla_query_posts_where_filter UPDATED ' . var_export( $where_clause, true ), 0 );
+		return $where_clause;
+	}
+
+	/**
+	 * Adds a ORDERBY clause, if required
+	 * 
+	 * Expands the range of sort options because the logic in WP_Query is limited.
+	 * Defined as public because it's a filter.
+	 *
+	 * @since 0.30
+	 *
+	 * @param	string	query clause before modification
+	 *
+	 * @return	string	updated query clause
+	 */
+	public static function mla_query_posts_orderby_filter( $orderby_clause ) {
+		global $table_prefix;
+//		error_log( 'mla_query_posts_orderby_filter original ' . var_export( $orderby_clause, true ), 0 );
+
+		if ( isset( self::$query_parameters['orderby'] ) ) {
+			switch ( self::$query_parameters['orderby'] ) {
+				/*
+				 * There are two columns defined that end up sorting on post_title,
+				 * so we can't use the database column to identify the column but
+				 * we actually sort on the database column.
+				 */
+				case 'title_name':
+					$orderby = "{$table_prefix}posts.post_title";
+					break;
+				case '_wp_attached_file':
+				case '_wp_attachment_image_alt':
+					$orderby = '';
+					break;
+				default:
+					$orderby = "{$table_prefix}posts." . self::$query_parameters['orderby'];
+			} // $query_parameters['orderby']
+			
+			if ( ! empty( $orderby ) )
+				$orderby_clause = $orderby . ' ' . self::$query_parameters['order'];
+		} // isset
+
+//		error_log( 'mla_query_posts_orderby_filter UPDATED ' . var_export( $orderby_clause, true ), 0 );
+		return $orderby_clause;
 	}
 	
 	/** 
@@ -308,8 +424,8 @@ class MLAData {
 	 * 
 	 * @since 0.1
 	 * 
-	 * @param	int		$post_id The ID of the attachment post. 
-	 * @return	NULL|array NULL on failure else associative array. 
+	 * @param	int		The ID of the attachment post
+	 * @return	NULL|array NULL on failure else associative array
 	 */
 	function mla_get_attachment_by_id( $post_id ) {
 		global $wpdb, $post;
@@ -325,6 +441,7 @@ class MLAData {
 			return NULL;
 		}
 		
+//		error_log('mla_get_attachment_by_id item ' . var_export($item, true), 0);
 		$post_data = (array) $item;
 		$post = $item;
 		setup_postdata( $item );
@@ -344,6 +461,7 @@ class MLAData {
 		 */
 		$post_data['mla_references'] = self::mla_fetch_attachment_references( $post_id, $post_data['post_parent'] );
 		
+//		error_log('post data ' . var_export($post_data, true), 0);
 		return $post_data;
 	}
 	
@@ -355,8 +473,8 @@ class MLAData {
 	 *
 	 * @since 0.1
 	 *
-	 * @param	int		$ID		post ID of attachment
-	 * @param	int		$parent	post ID of attachment's parent, if any
+	 * @param	int	post ID of attachment
+	 * @param	int	post ID of attachment's parent, if any
 	 *
 	 * @return	array	Reference information; see $references array comments
 	 */
@@ -481,7 +599,7 @@ class MLAData {
 	 *
 	 * @since 0.1
 	 *
-	 * @param	int		$parent_id	post ID of attachment's parent, if any
+	 * @param	int		post ID of attachment's parent, if any
 	 *
 	 * @return	array	Parent information; post_date, post_title and post_type
 	 */
@@ -509,14 +627,14 @@ class MLAData {
 	 *
 	 * @since 0.1
 	 *
-	 * @param	int		$post_id	post ID of attachment
+	 * @param	int		post ID of attachment
 	 *
 	 * @return	array	Meta data variables
 	 */
 	private static function _fetch_attachment_metadata( $post_id ) {
 		$results = array();
 		$post_meta = get_metadata( 'post', $post_id );
-		
+			
 		if ( is_array( $post_meta ) ) {
 			foreach ( $post_meta as $post_meta_key => $post_meta_value ) {
 				if ( '_' == $post_meta_key{0} ) {

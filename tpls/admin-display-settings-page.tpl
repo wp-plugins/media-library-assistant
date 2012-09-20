@@ -23,7 +23,7 @@
         </td></tr>
 <!-- template="radio-option" -->
         <tr valign="top"><td style="text-align:right;">
-            <input type="radio" name="[+key+]" [+checked+] value="[+value+]" />
+            <input type="radio" name="[+key+]" [+checked+] value="[+option+]" />
         </td><td>
             &nbsp;[+value+]
         </td></tr>
@@ -36,20 +36,20 @@
             </select><div style="font-size:8pt;padding-bottom:10px;">&nbsp;&nbsp;[+help+]</div>
         </td></tr>
 <!-- template="select-option" -->
-                <option [+selected+] value="[+value+]">[+value+]</option>
+                <option [+selected+] value="[+value+]">[+text+]</option>
 <!-- template="text" -->
         <tr valign="top"><th scope="row" style="text-align:right;">
-[+value+]
+            [+value+]
         </th><td style="text-align:left;">
             <input name="[+key+]" id="[+key+]" type="text" size="[+size+]" value="[+text+]" />
             <div style="font-size:8pt;padding-bottom:10px;">&nbsp;&nbsp;[+help+]</div>
         </td></tr>
 <!-- template="textarea" -->
         <tr valign="top"><th scope="row" style="text-align:right;">
-[+value+]
+            [+value+]
         </th><td style="text-align:left;">
             <textarea name="[+key+]" id="[+key+]" rows="[+rows+]" cols="[+cols+]">
-[+text+]
+            [+text+]
             </textarea>
             <div style="font-size:8pt;padding-bottom:10px;">&nbsp;&nbsp;[+help+]</div>
         </td></tr>
@@ -67,10 +67,51 @@
 </div>
 <!-- template="shortcodeitem" -->
 <li><code>[[+name+]]</code> - [+description+]</li>
+<!-- template="taxonomytable" -->
+        <tr valign="top">
+		<td colspan="2" style="text-align:left;">
+          <table class="taxonomytable">
+		  <thead>
+		  <tr>
+		    <th scope="col" style="text-align:center">
+			Support
+			</th>
+		    <th scope="col" style="text-align:center">
+			Quick Edit
+			</th>
+		    <th scope="col" style="text-align:center">
+			List Filter
+			</th>
+		    <th scope="col" style="text-align:left">
+			Taxonomy
+			</th>
+			</tr>
+			</thead>
+			<tbody>
+[+taxonomy_rows+]
+			</tbody>
+          </table>
+          <div style="font-size:8pt;padding-bottom:10px;">[+help+]</div>
+        </td></tr>
+<!-- template="taxonomyrow" -->
+        <tr valign="top">
+		<td style="text-align:center;">
+            <input type="checkbox" name="tax_support[[+key+]]" id="tax_support_[+key+]" [+support_checked+] value="checked" />
+        </td>
+		<td style="text-align:center;">
+            <input type="checkbox" name="tax_quick_edit[[+key+]]" id="tax_quick_edit_[+key+]" [+quick_edit_checked+] value="checked" />
+        </td>
+		<td style="text-align:center;">
+            <input type="radio" name="tax_filter" id="tax_filter_[+key+]" [+filter_checked+] value="[+key+]" />
+        </td>
+		<td>
+            &nbsp;[+name+]
+        </td>
+		</tr>
 <!-- template="page" -->
 <div class="wrap">
 <div id="icon-options-general" class="icon32"><br/></div>
-<h2>Media Library Assistant Settings</h2>
+<h2>Media Library Assistant [+version+] Settings</h2>
 [+messages+]
 [+shortcode_list+]
 <form method="post" class="mla-display-settings-page" id="mla-display-settings-page-id">
@@ -78,8 +119,8 @@
 [+options_list+]
 	</table>
     <p class="submit" style="padding-bottom: 0;">
-        <input name="save" type="submit" class="button-primary" value="Save Changes" />
-        <input name="reset" type="submit" class="button-primary" value="Delete all options and restore default settings"  style="float:right;"/>
+        <input name="mla-options-save" type="submit" class="button-primary" value="Save Changes" />
+        <input name="mla-options-reset" type="submit" class="button-primary" value="Delete all options and restore default settings"  style="float:right;"/>
     </p>
 </form>
 <h3>Plugin Documentation</h3>

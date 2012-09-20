@@ -7,7 +7,7 @@
  */
 
 /* 
- * The WP_List_Table class isn't automatically available to plugins.
+ * The WP_List_Table class isn't automatically available to plugins
  */
 if ( !class_exists( 'WP_List_Table' ) ) {
 	require_once( ABSPATH . 'wp-admin/includes/class-wp-list-table.php' );
@@ -49,7 +49,7 @@ class MLA_List_Table extends WP_List_Table {
 	private $currently_hidden = array( );
 	
 	/*
-	 * These arrays help define the table columns.
+	 * These arrays define the table columns.
 	 */
 	
 	/**
@@ -63,6 +63,8 @@ class MLA_List_Table extends WP_List_Table {
 	 * column in your table you must create a column_cb() method. If you don't need
 	 * bulk actions or checkboxes, simply leave the 'cb' entry out of your array.
 	 *
+	 * Taxonomy columns are added to this array by mla_admin_init_action.
+	 * 
 	 * @since 0.1
 	 *
 	 * @var	array
@@ -80,16 +82,17 @@ class MLA_List_Table extends WP_List_Table {
 		'alt_text' => 'ALT Text',
 		'caption' => 'Caption',
 		'description' => 'Description',
+		'post_mime_type' => 'MIME Type',
 		'base_file' => 'Base File',
 		'date' => 'Date',
+		'modified' => 'Last Modified',
 		'author' => 'Author',
-		'attached_to' => 'Attached to',
-		'categories'=> 'Att. Categories',
-		'tags' => 'Att. Tags'
+		'attached_to' => 'Attached to'
+		// taxonomy columns added by mla_admin_init_action
 	);
 	
 	/**
-	 * Default values for hdden columns
+	 * Default values for hidden columns
 	 *
 	 * This array is used when the user-level option is not set, i.e.,
 	 * the user has not altered the selection of hidden columns.
@@ -97,6 +100,8 @@ class MLA_List_Table extends WP_List_Table {
 	 * The value on the right-hand side must match the column slug, e.g.,
 	 * array(0 => 'ID_parent, 1 => 'title_name').
 	 *
+	 * Taxonomy columns are added to this array by mla_admin_init_action.
+	 * 
 	 * @since 0.1
 	 *
 	 * @var	array
@@ -112,12 +117,13 @@ class MLA_List_Table extends WP_List_Table {
 		3 => 'alt_text',
 		4 => 'caption',
 		5 => 'description',
-		6 => 'base_file',
-		7 => 'date',
-		8 => 'author',
-		9 => 'attached_to',
-		10 => 'categories',
-		11 => 'tags'
+		6 => 'post_mime_type',
+		7 => 'base_file',
+		8 => 'date',
+		9 => 'modified',
+		10 => 'author',
+		11 => 'attached_to',
+		// taxonomy columns added by mla_admin_init_action
 	);
 	
 	/**
@@ -136,22 +142,23 @@ class MLA_List_Table extends WP_List_Table {
 	 * @var	array
 	 */
 	private static $default_sortable_columns = array(
-		'ID_parent'   => array('ID',false),
-		'title_name'  => array('title_name',false),
-		'post_title'  => array('post_title',false),
-		'post_name'  => array('name',false),
-		'parent'  => array('parent',false),
+		'ID_parent' => array('ID',false),
+		'title_name' => array('title_name',false),
+		'post_title' => array('post_title',false),
+		'post_name' => array('post_name',false),
+		'parent' => array('post_parent',false),
 		// 'featured'   => array('featured',false),
 		// 'inserted' => array('inserted',false),
-		// 'alt_text' => array('alt_text',false),
+		// 'alt_text' => array('_wp_attachment_image_alt',false),
 		'caption' => array('post_excerpt',false),
 		'description' => array('post_content',false),
-		// 'base_file' => array('base_file',false),
+		'post_mime_type' => array('post_mime_type',false),
+		'base_file' => array('_wp_attached_file',false),
 		'date' => array('post_date',false),
+		'modified' => array('post_modified',false),
 		'author' => array('post_author',false),
 		'attached_to' => array('post_parent',false),
-		// 'categories' => array('categories',false),
-		// 'tags' => array('tags',false),
+		// sortable taxonomy columns, if any, added by mla_admin_init_action
         );
 
 	/**
@@ -164,6 +171,25 @@ class MLA_List_Table extends WP_List_Table {
 	private static function _default_hidden_columns( )
 	{
 		return MLA_List_Table::$default_hidden_columns;
+	}
+	
+	/**
+	 * Return the names and display values of the sortable columns
+	 *
+	 * @since 0.30
+	 *
+	 * @return	array	name => array( orderby value, heading ) for sortable columns
+	 */
+	public static function mla_get_sortable_columns( )
+	{
+		$results = array ( ) ;
+			
+		foreach ( MLA_List_Table::$default_sortable_columns as $key => $value ) {
+			$value[1] = MLA_List_Table::$default_columns[ $key ];
+			$results[ $key ] = $value;
+		}
+		
+		return $results;
 	}
 	
 	/**
@@ -181,7 +207,7 @@ class MLA_List_Table extends WP_List_Table {
 	 *
 	 * @return	array	updated list of hidden columns
 	 */
-	public static function mla_manage_hidden_columns( $result, $option, $user_data ) {
+	public static function mla_manage_hidden_columns_filter( $result, $option, $user_data ) {
 		if ( $result )
 			return $result;
 		else
@@ -199,9 +225,31 @@ class MLA_List_Table extends WP_List_Table {
 	 *
 	 * @return	array	list of table columns
 	 */
-	public static function mla_manage_columns( )
+	public static function mla_manage_columns_filter( )
 	{
 		return MLA_List_Table::$default_columns;
+	}
+	
+	/**
+	 * Adds support for taxonomy columns
+	 *
+	 * Called in the admin_init action because the list_table object isn't
+	 * created in time to affect the "screen options" setup.
+	 *
+	 * @since 0.30
+	 *
+	 * @return	void
+	 */
+	public static function mla_admin_init_action( )
+	{
+		$tax_options =  MLASettings::mla_get_option( 'taxonomy_support' );
+		
+		foreach ($tax_options['tax_support'] as $tax_name => $value ) {
+			$tax_object = get_taxonomy( $tax_name );
+			MLA_List_Table::$default_columns[ 't_' . $tax_name ] = $tax_object->labels->name;
+			MLA_List_Table::$default_hidden_columns [] = $tax_name;
+			// MLA_List_Table::$default_sortable_columns [] = none at this time
+		}
 	}
 	
 	/**
@@ -209,14 +257,16 @@ class MLA_List_Table extends WP_List_Table {
 	 * calls the parent constructor to set some default configs.
 	 *
 	 * @since 0.1
+	 *
+	 * @return	void
 	 */
 	function __construct( ) {
-		$this->detached = isset( $_REQUEST['detached'] ) || isset( $_REQUEST['find_detached'] );
+		$this->detached = isset( $_REQUEST['detached'] ); // || isset( $_REQUEST['find_detached'] );
 		$this->is_trash = isset( $_REQUEST['status'] ) && $_REQUEST['status'] == 'trash';
 		
 		//Set parent defaults
 		parent::__construct( array(
-			 'singular' => 'attachment', //singular name of the listed records
+			'singular' => 'attachment', //singular name of the listed records
 			'plural' => 'attachments', //plural name of the listed records
 			'ajax' => true //does this table support ajax?
 		) );
@@ -224,14 +274,17 @@ class MLA_List_Table extends WP_List_Table {
 		$this->currently_hidden = self::get_hidden_columns();
 		
 		/*
+		 * NOTE: There is one add_action call at the end of this source file.
 		 * NOTE: There are two add_filter calls at the end of this source file.
 		 */
 	}
 	
 	/**
-	 * Called when the parent class can't find a method specifically built
-	 * for a given column. All our columns should have a specific method,
-	 * so this function returns a troubleshooting message.
+	 * Supply a column value if no column-specific function has been defined
+	 *
+	 * Called when the parent class can't find a method specifically built for a
+	 * given column. The taxonomy columns are handled here. All other columns should
+	 * have a specific method, so this function returns a troubleshooting message.
 	 *
 	 * @since 0.1
 	 *
@@ -240,8 +293,36 @@ class MLA_List_Table extends WP_List_Table {
 	 * @return	string	Text or HTML to be placed inside the column
 	 */
 	function column_default( $item, $column_name ) {
-		//Show the whole array for troubleshooting purposes
-		return 'column_default: ' . $column_name . ', ' . print_r( $item, true );
+		if ( 't_' == substr( $column_name, 0, 2 ) ) {
+			$taxonomy = substr( $column_name, 2 );
+			$tax_object = get_taxonomy( $taxonomy );
+			$terms = wp_get_object_terms( $item->ID, $taxonomy );
+			
+			if ( !is_wp_error( $terms ) ) {
+				if ( empty( $terms ) )
+					return 'none';
+				else {
+					$list = array( );
+					foreach ( $terms as $term ) {
+						$list[ ] = sprintf( '<a href="%s">%s</a>', esc_url( add_query_arg( array(
+							 'page' => 'mla-menu',
+							'mla-tax' => $taxonomy,
+							'mla-term' => $term->slug,
+							'heading_suffix' => urlencode( $tax_object->label . ':' . $term->name ) 
+						), 'upload.php' ) ), esc_html( sanitize_term_field( 'name', $term->name, $term->term_id, 'category', 'display' ) ) );
+					} // foreach $term
+					
+					return join( ', ', $list );
+				} // !empty $terms
+			} // if !is_wp_error
+			else {
+				return 'not supported';
+			}
+		}
+		else {
+			//Show the whole array for troubleshooting purposes
+			return 'column_default: ' . $column_name . ', ' . print_r( $item, true );
+		}
 	}
 	
 	/**
@@ -317,8 +398,8 @@ class MLA_List_Table extends WP_List_Table {
 			if ( isset( $_REQUEST['m'] ) )
 				$view_args['m'] = $_REQUEST['m'];
 			
-			if ( isset( $_REQUEST['att_cat'] ) )
-				$view_args['att_cat'] = $_REQUEST['att_cat'];
+			if ( isset( $_REQUEST['mla_filter_term'] ) )
+				$view_args['mla_filter_term'] = $_REQUEST['mla_filter_term'];
 
 			if ( current_user_can( 'edit_post', $item->ID ) ) {
 				if ( $this->is_trash )
@@ -373,10 +454,10 @@ class MLA_List_Table extends WP_List_Table {
 		$taxonomies = get_object_taxonomies( 'attachment', 'objects' );
 		
 		foreach ( $taxonomies as $tax_name => $tax_object ) {
-			if ( $tax_object->hierarchical && $tax_object->show_ui ) {
+			if ( $tax_object->hierarchical && $tax_object->show_ui && MLASettings::mla_taxonomy_support($tax_name, 'quick-edit') ) {
 				$inline_data .= '	<div class="mla_category" id="' . $tax_name . '_' . $item->ID . '">'
 					. implode( ',', wp_get_object_terms( $item->ID, $tax_name, array( 'fields' => 'ids' ) ) ) . "</div>\r\n";
-			} elseif ( $tax_object->show_ui ) {
+			} elseif ( $tax_object->show_ui && MLASettings::mla_taxonomy_support($tax_name, 'quick-edit') ) {
 				$inline_data .= '	<div class="mla_tags" id="'.$tax_name.'_'.$item->ID. '">'
 					. esc_html( str_replace( ',', ', ', get_terms_to_edit( $item->ID, $tax_name ) ) ) . "</div>\r\n";
 			}
@@ -573,6 +654,18 @@ class MLA_List_Table extends WP_List_Table {
 	/**
 	 * Supply the content for a custom column
 	 *
+	 * @since 0.30
+	 * 
+	 * @param	array	A singular attachment (post) object
+	 * @return	string	HTML markup to be placed inside the column
+	 */
+	function column_post_mime_type( $item ) {
+		return $item->post_mime_type;
+	}
+	
+	/**
+	 * Supply the content for a custom column
+	 *
 	 * @since 0.1
 	 * 
 	 * @param	array	A singular attachment (post) object
@@ -614,7 +707,36 @@ class MLA_List_Table extends WP_List_Table {
 	/**
 	 * Supply the content for a custom column
 	 *
-	 * @since 0.1
+	 * @since 0.30
+	 * 
+	 * @param	array	A singular attachment (post) object
+	 * @return	string	HTML markup to be placed inside the column
+	 */
+	function column_modified( $item ) {
+		if ( '0000-00-00 00:00:00' == $item->post_modified ) {
+			$t_time = $h_time = __( 'Unpublished' );
+		} else {
+			$t_time = get_the_time( __( 'Y/m/d g:i:s A' ), $item );
+			$m_time = $item->post_modified;
+			$time = get_post_time( 'G', true, $item, false );
+			
+			if ( ( abs( $t_diff = time() - $time ) ) < 86400 ) {
+				if ( $t_diff < 0 )
+					$h_time = sprintf( __( '%s from now' ), human_time_diff( $time ) );
+				else
+					$h_time = sprintf( __( '%s ago' ), human_time_diff( $time ) );
+			} else {
+				$h_time = mysql2date( __( 'Y/m/d' ), $m_time );
+			}
+		}
+		
+		return $h_time;
+	}
+	
+	/**
+	 * Supply the content for a custom column
+	 *
+	 * @since 0.30
 	 * 
 	 * @param	array	A singular attachment (post) object
 	 * @return	string	HTML markup to be placed inside the column
@@ -656,80 +778,14 @@ class MLA_List_Table extends WP_List_Table {
 	}
 	
 	/**
-	 * Supply the content for a custom column
-	 *
-	 * @since 0.1
-	 * 
-	 * @param	array	A singular attachment (post) object
-	 * @return	string	HTML markup to be placed inside the column
-	 */
-	function column_categories( $item ) {
-		if ( ( 'checked' == MLASettings::mla_get_option( 'attachment_category' ) ) && ( is_object_in_taxonomy( 'attachment', 'attachment_category' ) ) ) {
-			$terms = wp_get_object_terms( $item->ID, 'attachment_category' );
-			if ( !is_wp_error( $terms ) ) {
-				if ( empty( $terms ) )
-					return 'none';
-				else {
-					$list = array( );
-					foreach ( $terms as $term ) {
-						$list[ ] = sprintf( '<a href="%s">%s</a>', esc_url( add_query_arg( array(
-							 'page' => 'mla-menu',
-							'att_cat' => $term->term_id,
-							'heading_suffix' => urlencode( $term->name ) 
-						), 'upload.php' ) ), esc_html( sanitize_term_field( 'name', $term->name, $term->term_id, 'category', 'display' ) ) );
-					} // foreach $term
-					
-					return join( ', ', $list );
-				} // !empty $terms
-			} // if !is_wp_error
-		} // 'checked'
-		else {
-			return 'not supported';
-		}
-	}
-	
-	/**
-	 * Supply the content for a custom column
-	 *
-	 * @since 0.1
-	 * 
-	 * @param	array	A singular attachment (post) object
-	 * @return	string	HTML markup to be placed inside the column
-	 */
-	function column_tags( $item ) {
-		if ( ( 'checked' == MLASettings::mla_get_option( 'attachment_tag' ) ) && ( is_object_in_taxonomy( 'attachment', 'attachment_tag' ) ) ) {
-			$terms = wp_get_object_terms( $item->ID, 'attachment_tag' );
-			if ( !is_wp_error( $terms ) ) {
-				if ( empty( $terms ) )
-					return 'none';
-				else {
-					$list = array( );
-					foreach ( $terms as $term ) {
-						$list[ ] = sprintf( '<a href="%s">%s</a>', esc_url( add_query_arg( array(
-							 'page' => 'mla-menu',
-							'attachment_tag' => $term->slug,
-							'heading_suffix' => urlencode( $term->name ) 
-						), 'upload.php' ) ), esc_html( sanitize_term_field( 'name', $term->name, $term->term_id, 'category', 'display' ) ) );
-					} // foreach $term
-					
-					return join( ', ', $list );
-				} // !empty $terms
-			} // if !is_wp_error
-		} // 'checked'
-		else {
-			return 'not supported';
-		}
-	}
-	
-	/**
-	 * This method dictates the table's columns and titles.
+	 * This method dictates the table's columns and titles
 	 *
 	 * @since 0.1
 	 * 
 	 * @return	array	Column information: 'slugs'=>'Visible Titles'
 	 */
 	function get_columns( ) {
-		return $columns = MLA_List_Table::mla_manage_columns();
+		return $columns = MLA_List_Table::mla_manage_columns_filter();
 	}
 	
 	/**
@@ -775,7 +831,7 @@ class MLA_List_Table extends WP_List_Table {
 		} else {
 			$columns['title_name'][ 1 ] = true;
 		}
-		
+
 		return $columns;
 	}
 	
@@ -809,9 +865,9 @@ class MLA_List_Table extends WP_List_Table {
 				 'm' => $_REQUEST['m'] 
 			), $base_url );
 		
-		if ( isset( $_REQUEST['att_cat'] ) )
+		if ( isset( $_REQUEST['mla_filter_term'] ) )
 			$base_url = add_query_arg( array(
-				 'att_cat' => $_REQUEST['att_cat'] 
+				 'mla_filter_term' => $_REQUEST['mla_filter_term'] 
 			), $base_url );
 		
 		foreach ( $matches as $type => $reals )
@@ -867,8 +923,6 @@ class MLA_List_Table extends WP_List_Table {
 		} else {
 			// $actions['edit'] = 'Edit';
 			// $actions['attach'] = 'Attach';
-			// $actions['catagorize'] = 'Catagorize';
-			// $actions['tag'] = 'Tag';
 			
 			if ( EMPTY_TRASH_DAYS && MEDIA_TRASH )
 				$actions['trash'] = 'Move to Trash';
@@ -880,8 +934,9 @@ class MLA_List_Table extends WP_List_Table {
 	}
 	
 	/**
-	 * Extra controls to be displayed between bulk actions and pagination.
-	 * Modeled after class-wp-posts-list-table.php in wp-admin/includes
+	 * Extra controls to be displayed between bulk actions and pagination
+	 *
+	 * Modeled after class-wp-posts-list-table.php in wp-admin/includes.
 	 *
 	 * @since 0.1
 	 * 
@@ -896,10 +951,12 @@ class MLA_List_Table extends WP_List_Table {
 		if ( 'top' == $which ) {
 			$this->months_dropdown( 'attachment' );
 			
-			if ( ( 'checked' == MLASettings::mla_get_option( 'attachment_category' ) ) && ( is_object_in_taxonomy( 'attachment', 'attachment_category' ) ) ) {
+			$tax_filter =  MLASettings::mla_taxonomy_support('', 'filter');
+			if ( ( '' != $tax_filter ) && ( is_object_in_taxonomy( 'attachment', $tax_filter ) ) ) {
+				$tax_object = get_taxonomy( $tax_filter );
 				$dropdown_options = array(
-					'show_option_all' => 'All Categories',
-					'show_option_none' => 'No Categories',
+					'show_option_all' => 'All ' . $tax_object->labels->name,
+					'show_option_none' => 'No ' . $tax_object->labels->name,
 					'orderby' => 'ID',
 					'order' => 'ASC',
 					'show_count' => false,
@@ -910,13 +967,13 @@ class MLA_List_Table extends WP_List_Table {
 					'echo' => true,
 					'depth' => 3,
 					'tab_index' => 0,
-					'name' => 'att_cat',
+					'name' => 'mla_filter_term',
 					'id' => 'name',
 					'class' => 'postform',
-					'selected' => isset( $_REQUEST['att_cat'] ) ? $_REQUEST['att_cat'] : 0,
+					'selected' => isset( $_REQUEST['mla_filter_term'] ) ? $_REQUEST['mla_filter_term'] : 0,
 					'hierarchical' => true,
 					'pad_counts' => false,
-					'taxonomy' => 'attachment_category',
+					'taxonomy' => $tax_filter,
 					'hide_if_empty' => false 
 				);
 				
@@ -936,7 +993,7 @@ class MLA_List_Table extends WP_List_Table {
 	}
 	
 	/**
-	 * Prepares the list of items for displaying.
+	 * Prepares the list of items for displaying
 	 *
 	 * This is where you prepare your data for display. This method will usually
 	 * be used to query the database, sort and filter the data, and generally
@@ -944,6 +1001,8 @@ class MLA_List_Table extends WP_List_Table {
 	 * $this->set_pagination_args().
 	 *
 	 * @since 0.1
+	 *
+	 * @return	void
 	 */
 	function prepare_items( ) {
 		$this->_column_headers = array(
@@ -953,16 +1012,9 @@ class MLA_List_Table extends WP_List_Table {
 		);
 		
 		/*
-		 * Use sort and pagination data to build a custom query.
-		 */
-		
-		$orderby = ( !empty( $_REQUEST['orderby'] ) ) ? $_REQUEST['orderby'] : 'post_title'; //If no sort, default to title
-		$order = ( !empty( $_REQUEST['order'] ) ) ? $_REQUEST['order'] : 'asc'; //If no order, default to asc
-		
-		/*
 		 * REQUIRED for pagination.
 		 */
-		$total_items = $this->_count_list_table_items( $_REQUEST );
+		$total_items = MLAData::mla_count_list_table_items( $_REQUEST );
 		$user = get_current_user_id();
 		$screen = get_current_screen();
 		$option = $screen->get_option( 'per_page', 'option' );
@@ -986,7 +1038,7 @@ class MLA_List_Table extends WP_List_Table {
 		 * REQUIRED. Assign sorted and paginated data to the items property, where 
 		 * it can be used by the rest of the class.
 		 */
-		$this->items = MLAData::mla_query_list_table_items( $_REQUEST, $orderby, $order, ( ( $current_page - 1 ) * $per_page ), $per_page );
+		$this->items = MLAData::mla_query_list_table_items( $_REQUEST, ( ( $current_page - 1 ) * $per_page ), $per_page );
 	}
 	
 	/**
@@ -994,9 +1046,9 @@ class MLA_List_Table extends WP_List_Table {
 	 *
 	 * @since .20
 	 *
-	 * @param object $item The current item
+	 * @param object the current item
 	 *
-	 * @return nothing Echoes the row HTML
+	 * @return void Echoes the row HTML
 	 */
 	function single_row( $item ) {
 		static $row_class = '';
@@ -1008,7 +1060,8 @@ class MLA_List_Table extends WP_List_Table {
 	}
 
 	/**
-	 * Get possible mime types for view preparation.
+	 * Get possible mime types for view preparation
+	 *
 	 * Modeled after get_post_mime_types in wp-admin/includes/post.php,
 	 * with additional entries.
 	 *
@@ -1083,7 +1136,8 @@ class MLA_List_Table extends WP_List_Table {
 	}
 	
 	/**
-	 * Get mime types with one or more attachments for view preparation.
+	 * Get mime types with one or more attachments for view preparation
+	 *
 	 * Modeled after get_available_post_mime_types in wp-admin/includes/post.php,
 	 * with additional entries.
 	 *
@@ -1103,33 +1157,14 @@ class MLA_List_Table extends WP_List_Table {
 		
 		return $available;
 	}
-	
-	/**
-	 * Get the total number of attachment posts
-	 *
-	 * @since 0.1
-	 *
-	 * @param	array	Query variables, e.g., from $_REQUEST
-	 *
-	 * @return	integer	Number of attachment posts
-	 */
-	private function _count_list_table_items( $request )
-	{
-		$request = MLAData::mla_prepare_list_table_query( $request );
-		unset( $request['paged'] ); // ignore pagination here - we need the total count
-		$results = new WP_Query( $request );
-		
-		if ( isset( $request['detached'] ) )
-			remove_filter( 'posts_where', 'MLAData::mla_query_list_table_items_helper' );
-		
-		return $results->found_posts;
-	}
 } // class MLA_List_Table
 
 /*
  * Filters are added here, when the source file is loaded, because the MLA_List_Table
  * object is created too late to be useful.
  */
-add_filter( 'get_user_option_managemedia_page_mla-menucolumnshidden', 'MLA_List_Table::mla_manage_hidden_columns', 10, 3 );
-add_filter( 'manage_media_page_mla-menu_columns', 'MLA_List_Table::mla_manage_columns', 10, 0 );
+add_action( 'admin_init', 'MLA_List_Table::mla_admin_init_action' );
+ 
+add_filter( 'get_user_option_managemedia_page_mla-menucolumnshidden', 'MLA_List_Table::mla_manage_hidden_columns_filter', 10, 3 );
+add_filter( 'manage_media_page_mla-menu_columns', 'MLA_List_Table::mla_manage_columns_filter', 10, 0 );
 ?>

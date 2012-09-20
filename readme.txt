@@ -1,28 +1,32 @@
 === Plugin Name ===
 Contributors: dglingren
-Donate link: 
+Donate link: http://fairtradejudaica.org/make-a-difference/donate/
 Tags: attachments, documents, gallery, image, images, media, library, media library, media-tags, media tags, tags, media categories, categories
 Requires at least: 3.3
-Tested up to: 3.4.1
-Stable tag: 0.20
+Tested up to: 3.4.2
+Stable tag: 0.30
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
-Provides admin pages with several enhancements to the handling of images and files held in the WordPress Media Library.
+Provides several enhancements to the WordPress Media Library,
+such as full taxonomy support, quick edit action and where-used reporting.
 
 == Description ==
 
 The Media Library Assistant provides several enhancements for managing the Media Library, including:
 
+* Has an inline "Quick Edit" action for many common fields.
+* Complete support for ALL taxonomies, including the standard Categories and Tags, your custom taxonomies and the Assistant's pre-defined Att. Categories and Att. Tags. You can add taxonomy columns to the Assistant listing, filter on any taxonomy, assign terms and list the attachments for a term.
 * Shows which posts use a media item as the "featured image"
 * Shows which posts use a media item as an inserted image or link
 * Displays more attachment information such as parent information, file URL and image metadata
-* Allows you to edit the attachment name/slug and to "unattach" items
-* Supports custom taxonomies, including pre-defined support for Attachment Categories and Attachment Tags
-* Provides additional view filters for mime types and Attachment Categories
-* Has an inline "Quick Edit" action for many common fields.
+* Allows you to edit the attachment author, the name/slug and to "unattach" items
+* Provides additional view filters for mime types and taxonomies
+* Provides many more listing columns (more than 15) to choose from
 
 The Assistant is designed to work like the standard Media Library pages, so the learning curve is short and gentle. Contextual help is provided on every new screen to highlight new features.
+
+This plugin was inspired by my work on the WordPress web site for our nonprofit, Fair Trade Judaica. If you find the Media Library Assistant plugin useful and would like to support a great cause, consider a <strong>tax-deductible</strong> donation to our work. Thank you!
 
 == Installation ==
 
@@ -35,13 +39,26 @@ The Assistant is designed to work like the standard Media Library pages, so the 
 
 == Frequently Asked Questions ==
 
-= Does the Assistant use the WordPress post Categories and Tags? =
+= Can the Assistant use the standard WordPress post Categories and Tags? =
 
-Not at this time. The pre-defined Attachment Categories and Attachment Tags are WordPress custom taxonomies, with all of the API support that implies. You can activate or deactivate the pre-defined taxonomies at any time by visiting the Media Library Assistant Settings page.
+Yes! You can activate or deactivate support for Categories and Tags at any time by visiting the Media Library Assistant Settings page.
+
+= Do I have to use the WordPress post Categories and Tags? =
+
+No! The Assistant supplies pre-defined Att. Categories and Att. Tags; these are WordPress custom taxonomies, with all of the API support that implies. You can activate or deactivate the pre-defined taxonomies at any time by visiting the Media Library Assistant Settings page.
 
 = Can I add my own custom taxonomies to the Assistant? =
 
-Yes. Any custom taxonomy you register with the Attachment post type will appear in the Assistant UI.
+Yes. Any custom taxonomy you register with the Attachment post type will appear in the Assistant UI. Use the Media Library Assistant Settings page to add support for your taxonomies to the Assistant UI.
+
+= Why don't the "Posts" counts in the taxonomy edit screens match the search results when you click on them? =
+
+This is a known WordPress problem with multiple support tickets already in Trac, e.g., 
+Ticket #20708(closed defect (bug): duplicate) Wrong posts count in taxonomy table,
+Ticket #14084(assigned defect (bug)) Custom taxonomy count includes draft & trashed posts,
+and Ticket #14076(closed defect (bug): duplicate) Misleading post count on taxonomy screen.
+
+For example, if you add Tags support to the Assistant and then assign tag values to your attachments, the "Posts" column in the "Tags" edit screen under the Posts admin section includes attachments in the count. If you click on the number in that column, only posts and pages are displayed. There are similar issues with custom post types and taxonomies (whether you use the Assistant or not). The "Attachments" column in the edit screens added by the Assistant shows the correct count because it works in a different way.
 
 = How do I "unattach" an item? =
 
@@ -57,12 +74,21 @@ All of the MLA source code has been annotated with "DocBlocks", a special type o
 
 == Screenshots ==
 
-1. The Media Library Assistant submenu showing the available columns, incluging "Featured in", "Inserted in", "Att. Categories" and "Att. Tags"
+1. The Media Library Assistant submenu showing the available columns, including "Featured in", "Inserted in", "Att. Categories" and "Att. Tags"
 2. The enhanced Edit page showing additional fields, categories and tags
-3. The Attachment Categories edit taxonomy page
-4. The Settings page, to customize support of Attachment Categories and Attachment Tags
+3. A typical edit taxonomy page, showing the "Attachments" column
+4. The Settings page, to customize support of Att. Categories, Att. Tags and other taxonomies and the default sort order
 
 == Changelog ==
+
+= 0.30 =
+* New: Complete support for all taxonomies registered with WordPress, including the standard Categories and Tags, your custom taxonomies and the Assistant's pre-defined Att. Categories and Att. Tags. You can add taxonomy columns to the Assistant admin screen, filter the listing on any taxonomy, assign terms to attachments and list the attachments for a taxonomy term.
+* New: MIME Type and Last Modified Date added to columns listing
+* New: Last Modified Date added to single item edit screen
+* New: Default column and sort order added to Settings page
+* New: Plugin version number added to Settings page header
+* Fix: Text fields such as Title, Alternate Text and Caption containing single quotes are no longer truncated on the Edit single item screen
+* Fix: Sortable columns and sort order updated.
 
 = 0.20 =
 * New: Quick Edit action for inline editing of attachment metadata
@@ -86,6 +112,9 @@ All of the MLA source code has been annotated with "DocBlocks", a special type o
 
 == Upgrade Notice ==
 
+= 0.30 =
+Upgrade to support ALL taxonomies, including the standard Categories and Tags, your custom taxonomies and the Assistant's pre-defined Att. Categories and Att. Tags. Add taxonomy columns to the Assistant admin screen, filter on any taxonomy, assign terms and list the attachments for a term. 
+
 = 0.20 =
 You should upgrade to this version if you need "Quick Edit" functionality.
 
@@ -95,7 +124,7 @@ You should upgrade to this version if you are getting "404 Not Found" errors whe
 = 0.1 =
 Initial release.
 
-= Other Notes =
+== Other Notes ==
 
 I have used and learned much from the following books (among many):
 

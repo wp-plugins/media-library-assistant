@@ -53,18 +53,12 @@
 <li class="nav-header">
 <i class="icon-custom icon-method"></i> Methods</li>
 <li class="method public "><a href="#initialize" title="initialize :: Initialization function, similar to __construct()"><span class="description">Initialization function, similar to __construct()</span><pre>initialize()</pre></a></li>
-<li class="method public "><a href="#mla_attachment_category_column_filter" title='mla_attachment_category_column_filter :: WordPress Filter for Attachment Category "Attachments" column,
-which returns a count of the attachments assigned a given category'><span class="description">WordPress Filter for Attachment Category "Attachments" column,
-which returns a count of the attachments assigned a given category</span><pre>mla_attachment_category_column_filter()</pre></a></li>
-<li class="method public "><a href="#mla_attachment_category_get_columns_filter" title='mla_attachment_category_get_columns_filter :: WordPress Filter for Attachment Category "Attachments" column,
-which replaces the "Posts" column with an equivalent "Attachments" column.'><span class="description">WordPress Filter for Attachment Category "Attachments" column,
-which replaces the "Posts" column with an equivalent "Attachments" column.</span><pre>mla_attachment_category_get_columns_filter()</pre></a></li>
-<li class="method public "><a href="#mla_attachment_tag_column_filter" title='mla_attachment_tag_column_filter :: WordPress Filter for Attachment Tag "Attachments" column,
-which returns a count of the attachments assigned a given tag'><span class="description">WordPress Filter for Attachment Tag "Attachments" column,
-which returns a count of the attachments assigned a given tag</span><pre>mla_attachment_tag_column_filter()</pre></a></li>
-<li class="method public "><a href="#mla_attachment_tag_get_columns_filter" title='mla_attachment_tag_get_columns_filter :: WordPress Filter for Attachment Tag "Attachments" column,
-which replaces the "Posts" column with an equivalent "Attachments" column.'><span class="description">WordPress Filter for Attachment Tag "Attachments" column,
-which replaces the "Posts" column with an equivalent "Attachments" column.</span><pre>mla_attachment_tag_get_columns_filter()</pre></a></li>
+<li class="method public "><a href="#mla_taxonomy_column_filter" title='mla_taxonomy_column_filter :: WordPress Filter for edit taxonomy "Attachments" column,
+which returns a count of the attachments assigned a given term'><span class="description">WordPress Filter for edit taxonomy "Attachments" column,
+which returns a count of the attachments assigned a given term</span><pre>mla_taxonomy_column_filter()</pre></a></li>
+<li class="method public "><a href="#mla_taxonomy_get_columns_filter" title='mla_taxonomy_get_columns_filter :: WordPress Filter for edit taxonomy "Attachments" column,
+which replaces the "Posts" column with an equivalent "Attachments" column.'><span class="description">WordPress Filter for edit taxonomy "Attachments" column,
+which replaces the "Posts" column with an equivalent "Attachments" column.</span><pre>mla_taxonomy_get_columns_filter()</pre></a></li>
 <li class="nav-header private">» Private</li>
 <li class="method private "><a href="#_build_taxonomies" title="_build_taxonomies :: Registers Attachment Categories and Attachment Tags custom taxonomies, adds taxonomy-related filters"><span class="description">Registers Attachment Categories and Attachment Tags custom taxonomies, adds taxonomy-related filters</span><pre>_build_taxonomies()</pre></a></li>
 </ul>
@@ -97,7 +91,7 @@ which replaces the "Posts" column with an equivalent "Attachments" column.</span
 <i class="icon-custom icon-method"></i> Methods</h3>
 <a name="initialize" id="initialize"></a><div class="element clickable method public initialize" data-toggle="collapse" data-target=".initialize .collapse">
 <h2>Initialization function, similar to __construct()</h2>
-<pre>initialize() </pre>
+<pre>initialize() : void</pre>
 <div class="labels"></div>
 <div class="row collapse"><div class="detail-description">
 <p class="long_description"></p>
@@ -107,67 +101,22 @@ which replaces the "Posts" column with an equivalent "Attachments" column.</span
 </tr></table>
 </div></div>
 </div>
-<a name="mla_attachment_category_column_filter" id="mla_attachment_category_column_filter"></a><div class="element clickable method public mla_attachment_category_column_filter" data-toggle="collapse" data-target=".mla_attachment_category_column_filter .collapse">
-<h2>WordPress Filter for Attachment Category "Attachments" column,
-which returns a count of the attachments assigned a given category</h2>
-<pre>mla_attachment_category_column_filter(string $place_holder, array $column_name, array $term_id) : array</pre>
+<a name="mla_taxonomy_column_filter" id="mla_taxonomy_column_filter"></a><div class="element clickable method public mla_taxonomy_column_filter" data-toggle="collapse" data-target=".mla_taxonomy_column_filter .collapse">
+<h2>WordPress Filter for edit taxonomy "Attachments" column,
+which returns a count of the attachments assigned a given term</h2>
+<pre>mla_taxonomy_column_filter(string $place_holder, array $column_name, array $term_id) : array</pre>
 <div class="labels"></div>
 <div class="row collapse"><div class="detail-description">
 <p class="long_description"></p>
 <table class="table table-bordered"><tr>
 <th>since</th>
-<td>0.1</td>
+<td>0.30</td>
 </tr></table>
 <h3>Parameters</h3>
 <div class="subelement argument">
 <h4>$place_holder</h4>
-<code>string</code><p>unknown, undocumented parameter.</p></div>
-<div class="subelement argument">
-<h4>$column_name</h4>
-<code>array</code><p>name of the column.</p></div>
-<div class="subelement argument">
-<h4>$term_id</h4>
-<code>array</code><p>ID of the term for which the count is desired.</p></div>
-<h3>Returns</h3>
-<div class="subelement response">
-<code>array</code>HTML markup for the column content; number of attachments in the category and alink to retrieve a list of them.</div>
-</div></div>
+<code>string</code><p>current column value; always ''</p>
 </div>
-<a name="mla_attachment_category_get_columns_filter" id="mla_attachment_category_get_columns_filter"></a><div class="element clickable method public mla_attachment_category_get_columns_filter" data-toggle="collapse" data-target=".mla_attachment_category_get_columns_filter .collapse">
-<h2>WordPress Filter for Attachment Category "Attachments" column,
-which replaces the "Posts" column with an equivalent "Attachments" column.</h2>
-<pre>mla_attachment_category_get_columns_filter(array $columns) : array</pre>
-<div class="labels"></div>
-<div class="row collapse"><div class="detail-description">
-<p class="long_description"></p>
-<table class="table table-bordered"><tr>
-<th>since</th>
-<td>0.1</td>
-</tr></table>
-<h3>Parameters</h3>
-<div class="subelement argument">
-<h4>$columns</h4>
-<code>array</code><p>column definitions for the Attachment Category list table.</p></div>
-<h3>Returns</h3>
-<div class="subelement response">
-<code>array</code>updated column definitions for the Attachment Category list table.</div>
-</div></div>
-</div>
-<a name="mla_attachment_tag_column_filter" id="mla_attachment_tag_column_filter"></a><div class="element clickable method public mla_attachment_tag_column_filter" data-toggle="collapse" data-target=".mla_attachment_tag_column_filter .collapse">
-<h2>WordPress Filter for Attachment Tag "Attachments" column,
-which returns a count of the attachments assigned a given tag</h2>
-<pre>mla_attachment_tag_column_filter(string $place_holder, array $column_name, array $term_id) : array</pre>
-<div class="labels"></div>
-<div class="row collapse"><div class="detail-description">
-<p class="long_description"></p>
-<table class="table table-bordered"><tr>
-<th>since</th>
-<td>0.1</td>
-</tr></table>
-<h3>Parameters</h3>
-<div class="subelement argument">
-<h4>$place_holder</h4>
-<code>string</code><p>unknown, undocumented parameter</p></div>
 <div class="subelement argument">
 <h4>$column_name</h4>
 <code>array</code><p>name of the column</p></div>
@@ -176,32 +125,32 @@ which returns a count of the attachments assigned a given tag</h2>
 <code>array</code><p>ID of the term for which the count is desired</p></div>
 <h3>Returns</h3>
 <div class="subelement response">
-<code>array</code>HTML markup for the column content; number of attachments with the tag and alink to retrieve a list of them.</div>
+<code>array</code>HTML markup for the column content; number of attachments in the category and alink to retrieve a list of them</div>
 </div></div>
 </div>
-<a name="mla_attachment_tag_get_columns_filter" id="mla_attachment_tag_get_columns_filter"></a><div class="element clickable method public mla_attachment_tag_get_columns_filter" data-toggle="collapse" data-target=".mla_attachment_tag_get_columns_filter .collapse">
-<h2>WordPress Filter for Attachment Tag "Attachments" column,
+<a name="mla_taxonomy_get_columns_filter" id="mla_taxonomy_get_columns_filter"></a><div class="element clickable method public mla_taxonomy_get_columns_filter" data-toggle="collapse" data-target=".mla_taxonomy_get_columns_filter .collapse">
+<h2>WordPress Filter for edit taxonomy "Attachments" column,
 which replaces the "Posts" column with an equivalent "Attachments" column.</h2>
-<pre>mla_attachment_tag_get_columns_filter(array $columns) : array</pre>
+<pre>mla_taxonomy_get_columns_filter(array $columns) : array</pre>
 <div class="labels"></div>
 <div class="row collapse"><div class="detail-description">
 <p class="long_description"></p>
 <table class="table table-bordered"><tr>
 <th>since</th>
-<td>0.1</td>
+<td>0.30</td>
 </tr></table>
 <h3>Parameters</h3>
 <div class="subelement argument">
 <h4>$columns</h4>
-<code>array</code><p>column definitions for the Attachment Category list table.</p></div>
+<code>array</code><p>column definitions for the edit taxonomy list table</p></div>
 <h3>Returns</h3>
 <div class="subelement response">
-<code>array</code>updated column definitions for the Attachment Category list table.</div>
+<code>array</code>updated column definitions for the edit taxonomy list table</div>
 </div></div>
 </div>
 <a name="_build_taxonomies" id="_build_taxonomies"></a><div class="element clickable method private _build_taxonomies" data-toggle="collapse" data-target="._build_taxonomies .collapse">
 <h2>Registers Attachment Categories and Attachment Tags custom taxonomies, adds taxonomy-related filters</h2>
-<pre>_build_taxonomies() </pre>
+<pre>_build_taxonomies() : void</pre>
 <div class="labels"></div>
 <div class="row collapse"><div class="detail-description">
 <p class="long_description"></p>
@@ -218,7 +167,7 @@ which replaces the "Posts" column with an equivalent "Attachments" column.</h2>
 <div class="row"><footer class="span12">
             Template is built using <a href="http://twitter.github.com/bootstrap/">Twitter Bootstrap 2</a> and icons provided by <a href="http://glyphicons.com/">Glyphicons</a>.<br>
             Documentation is powered by <a href="http://www.phpdoc.org/">phpDocumentor 2.0.0a8</a> and<br>
-            generated on 2012-09-06T12:09:19-07:00.<br></footer></div>
+            generated on 2012-09-19T20:36:48-07:00.<br></footer></div>
 </div>
 </body>
 </html>

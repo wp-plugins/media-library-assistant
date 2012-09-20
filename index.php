@@ -6,7 +6,7 @@
  * will the rest of the plugin be loaded and run.
  *
  * @package Media Library Assistant
- * @version 0.20
+ * @version 0.30
  */
 
 /*
@@ -14,8 +14,8 @@ Plugin Name: Media Library Assistant
 Plugin URI: http://home.comcast.net/~dlingren/
 Description: Provides several enhancements to the handling of images and files held in the WordPress Media Library.
 Author: David Lingren
-Version: 0.20
-Author URI: http://home.comcast.net/~dlingren/
+Version: 0.30
+Author URI: http://fairtradejudaica.org/our-story/staff/
 */
 
 /**
