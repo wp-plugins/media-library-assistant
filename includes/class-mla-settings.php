@@ -212,7 +212,8 @@ class MLASettings {
 		self::mla_delete_option( 'attachment_tag' );
 		} // version is less than .30
 		
-	self::mla_update_option( self::MLA_VERSION_OPTION, MLA::CURRENT_MLA_VERSION );
+		self::mla_update_option( self::MLA_VERSION_OPTION, MLA::CURRENT_MLA_VERSION );
+		self::mla_activation_hook();
 	}
 	
 	/**
@@ -232,13 +233,23 @@ class MLASettings {
 		$result = $wpdb->query(
 			$wpdb->prepare(
 				"
-				CREATE OR REPLACE VIEW {$view_name} AS
-				SELECT post_id, meta_value
-				FROM {$table_name}
-				WHERE {$table_name}.meta_key = '_wp_attachment_image_alt'
+				SHOW TABLES LIKE '{$view_name}'
 				"
 			)
 		);
+
+		if ( 0 == $result ) {
+			$result = $wpdb->query(
+				$wpdb->prepare(
+					"
+					CREATE OR REPLACE VIEW {$view_name} AS
+					SELECT post_id, meta_value
+					FROM {$table_name}
+					WHERE {$table_name}.meta_key = '_wp_attachment_image_alt'
+					"
+				)
+			);
+		}
 	}
 	
 	/**
@@ -254,25 +265,23 @@ class MLASettings {
 		global $wpdb, $table_prefix;
 		
 		$view_name = $table_prefix . MLA_OPTION_PREFIX . self::MLA_ALT_TEXT_VIEW_SUFFIX;
-		$table_name = $table_prefix . 'postmeta';
 		$result = $wpdb->query(
 			$wpdb->prepare(
 				"
-				CREATE OR REPLACE VIEW {$view_name} AS
-				SELECT post_id, meta_value
-				FROM {$table_name}
-				WHERE {$table_name}.meta_key = '_wp_attachment_image_alt'
+				SHOW TABLES LIKE '{$view_name}'
 				"
 			)
 		);
 
-		$result = $wpdb->query(
-			$wpdb->prepare(
-				"
-				DROP VIEW {self::$mla_alt_text_view}
-				"
-			)
-		);
+		if ( $result) {		
+			$result = $wpdb->query(
+				$wpdb->prepare(
+					"
+					DROP VIEW {$view_name}
+					"
+				)
+			);
+		}
 	}
 	
 	/**
@@ -287,6 +296,8 @@ class MLASettings {
 		$hook = add_submenu_page( 'options-general.php', 'Media Library Assistant Settings', 'Media Library Assistant', 'manage_options', self::MLA_SETTINGS_SLUG, 'MLASettings::mla_render_settings_page' );
 		
 		add_filter( 'plugin_action_links', 'MLASettings::mla_add_plugin_settings_link', 10, 2 );
+		
+		
 	}
 	
 	/**

@@ -83,6 +83,9 @@ All of the MLA source code has been annotated with "DocBlocks", a special type o
 
 == Changelog ==
 
+= 0.41 =
+* Fix: SQL View now created for automatic plugin upgrades
+
 = 0.40 =
 * New: Bulk Edit area; update author or parent, add, remove or replace taxonomy terms for several attachments at once
 * New: ALT Text is now a sortable column, and shows attachments with no ALT Text value
@@ -123,6 +126,9 @@ All of the MLA source code has been annotated with "DocBlocks", a special type o
 * Initial release.
 
 == Upgrade Notice ==
+
+= 0.41 =
+Upgrade for the new Bulk Edit area; add, remove or replace taxonomy terms for several attachments at once. Sort your media listing on ALT Text, exclude revisions from where-used reporting.
 
 = 0.40 =
 Upgrade for the new Bulk Edit area; add, remove or replace taxonomy terms for several attachments at once. Sort your media listing on ALT Text, exclude revisions from where-used reporting.
