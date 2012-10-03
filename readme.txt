@@ -4,7 +4,7 @@ Donate link: http://fairtradejudaica.org/make-a-difference/donate/
 Tags: attachments, documents, gallery, image, images, media, library, media library, media-tags, media tags, tags, media categories, categories
 Requires at least: 3.3
 Tested up to: 3.4.2
-Stable tag: 0.40
+Stable tag: 0.30
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
