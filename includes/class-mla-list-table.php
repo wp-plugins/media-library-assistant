@@ -149,7 +149,7 @@ class MLA_List_Table extends WP_List_Table {
 		'parent' => array('post_parent',false),
 		// 'featured'   => array('featured',false),
 		// 'inserted' => array('inserted',false),
-		// 'alt_text' => array('_wp_attachment_image_alt',false),
+		'alt_text' => array('_wp_attachment_image_alt',false),
 		'caption' => array('post_excerpt',false),
 		'description' => array('post_content',false),
 		'post_mime_type' => array('post_mime_type',false),
@@ -171,6 +171,105 @@ class MLA_List_Table extends WP_List_Table {
 	private static function _default_hidden_columns( )
 	{
 		return MLA_List_Table::$default_hidden_columns;
+	}
+	
+	/**
+	 * Get mime types with one or more attachments for view preparation
+	 *
+	 * Modeled after get_available_post_mime_types in wp-admin/includes/post.php,
+	 * with additional entries.
+	 *
+	 * @since 0.1
+	 *
+	 * @param	array	Number of posts for each mime type
+	 *
+	 * @return	array	Mime type names
+	 */
+	private function _avail_mime_types( $num_posts ) {
+		$available = array( );
+		
+		foreach ( $num_posts as $mime_type => $number ) {
+			if ( ( $number > 0 ) && ( $mime_type <> 'trash' ) )
+				$available[ ] = $mime_type;
+		}
+		
+		return $available;
+	}
+	
+	/**
+	 * Get possible mime types for view preparation
+	 *
+	 * Modeled after get_post_mime_types in wp-admin/includes/post.php,
+	 * with additional entries.
+	 *
+	 * @since 0.1
+	 *
+	 * @return	array	Mime type names and HTML markup for views
+	 */
+	public static function mla_get_attachment_mime_types( )
+	{
+		return array(
+			'image' => array(
+				0 => 'Images',
+				1 => 'Manage Images',
+				2 => array(
+					 0 => 'Image <span class="count">(%s)</span>',
+					1 => 'Images <span class="count">(%s)</span>',
+					'singular' => 'Image <span class="count">(%s)</span>',
+					'plural' => 'Images <span class="count">(%s)</span>',
+					'context' => NULL,
+					'domain' => NULL 
+				) 
+			),
+			'audio' => array(
+				 0 => 'Audio',
+				1 => 'Manage Audio',
+				2 => array(
+					 0 => 'Audio <span class="count">(%s)</span>',
+					1 => 'Audio <span class="count">(%s)</span>',
+					'singular' => 'Audio <span class="count">(%s)</span>',
+					'plural' => 'Audio <span class="count">(%s)</span>',
+					'context' => NULL,
+					'domain' => NULL 
+				) 
+			),
+			'video' => array(
+				 0 => 'Video',
+				1 => 'Manage Video',
+				2 => array(
+					 0 => 'Video <span class="count">(%s)</span>',
+					1 => 'Video <span class="count">(%s)</span>',
+					'singular' => 'Video <span class="count">(%s)</span>',
+					'plural' => 'Video <span class="count">(%s)</span>',
+					'context' => NULL,
+					'domain' => NULL 
+				) 
+			),
+			'text' => array(
+				 0 => 'Text',
+				1 => 'Manage Text',
+				2 => array(
+					 0 => 'Text <span class="count">(%s)</span>',
+					1 => 'Text <span class="count">(%s)</span>',
+					'singular' => 'Text <span class="count">(%s)</span>',
+					'plural' => 'Text <span class="count">(%s)</span>',
+					'context' => NULL,
+					'domain' => NULL 
+				) 
+			),
+			'application' => array(
+				 0 => 'Applications',
+				1 => 'Manage Applications',
+				2 => array(
+					 0 => 'Application <span class="count">(%s)</span>',
+					1 => 'Applications <span class="count">(%s)</span>',
+					'singular' => 'Application <span class="count">(%s)</span>',
+					'plural' => 'Applications <span class="count">(%s)</span>',
+					'context' => NULL,
+					'domain' => NULL 
+				) 
+			) 
+		);
 	}
 	
 	/**
@@ -438,12 +537,12 @@ class MLA_List_Table extends WP_List_Table {
 	 */
 	private function _build_inline_data( $item ) {
 		$inline_data = "\r\n" . '<div class="hidden" id="inline_' . $item->ID . "\">\r\n";
-		$inline_data .= '	<div class="post_title">' . $item->post_title . "</div>\r\n";
-		$inline_data .= '	<div class="post_name">' . $item->post_name . "</div>\r\n";
+		$inline_data .= '	<div class="post_title">' . esc_attr( $item->post_title ) . "</div>\r\n";
+		$inline_data .= '	<div class="post_name">' . esc_attr( $item->post_name ) . "</div>\r\n";
 		
 		if ( !empty( $item->mla_wp_attachment_metadata ) ) {
 			if ( isset( $item->mla_wp_attachment_image_alt ) )
-				$inline_data .= '	<div class="image_alt">' . $item->mla_wp_attachment_image_alt . "</div>\r\n";
+				$inline_data .= '	<div class="image_alt">' . esc_attr( $item->mla_wp_attachment_image_alt ) . "</div>\r\n";
 			else
 				$inline_data .= '	<div class="image_alt">' . "</div>\r\n";
 		}
@@ -506,11 +605,13 @@ class MLA_List_Table extends WP_List_Table {
 		}
 		
 		$row_actions = self::_build_rollover_actions( $item, 'title_name' );
+		$post_title = esc_attr( $item->post_title );
+		$post_name = esc_attr( $item->post_name );
 		
 		if ( !empty( $row_actions ) ) {
-			return sprintf( '%1$s<br>%2$s<br>%3$s%4$s', /*%1$s*/ $item->post_title, /*%2$s*/ $item->post_name, /*%3$s*/ $errors, /*%4$s*/ $this->row_actions( $row_actions ) );
+			return sprintf( '%1$s<br>%2$s<br>%3$s%4$s', /*%1$s*/ $post_title, /*%2$s*/ $post_name, /*%3$s*/ $errors, /*%4$s*/ $this->row_actions( $row_actions ) );
 		} else {
-			return sprintf( '%1$s<br>%2$s<br>%3$s', /*%1$s*/ $item->post_title, /*%2$s*/ $item->post_name, /*%3$s*/ $errors );
+			return sprintf( '%1$s<br>%2$s<br>%3$s', /*%1$s*/ $post_title, /*%2$s*/ $post_name, /*%3$s*/ $errors );
 		}
 	}
 	
@@ -526,9 +627,9 @@ class MLA_List_Table extends WP_List_Table {
 		$row_actions = self::_build_rollover_actions( $item, 'post_title' );
 		
 		if ( !empty( $row_actions ) ) {
-			return sprintf( '%1$s<br>%2$s', /*%1$s*/ $item->post_title, /*%2$s*/ $this->row_actions( $row_actions ) );
+			return sprintf( '%1$s<br>%2$s', /*%1$s*/ esc_attr( $item->post_title ), /*%2$s*/ $this->row_actions( $row_actions ) );
 		} else {
-			return $item->post_title;
+			return esc_attr( $item->post_title );
 		}
 	}
 	
@@ -544,9 +645,9 @@ class MLA_List_Table extends WP_List_Table {
 		$row_actions = self::_build_rollover_actions( $item, 'post_name' );
 		
 		if ( !empty( $row_actions ) ) {
-			return sprintf( '%1$s<br>%2$s', /*%1$s*/ $item->post_name, /*%2$s*/ $this->row_actions( $row_actions ) );
+			return sprintf( '%1$s<br>%2$s', /*%1$s*/ esc_attr( $item->post_name ), /*%2$s*/ $this->row_actions( $row_actions ) );
 		} else {
-			return $item->post_name;
+			return esc_attr( $item->post_name );
 		}
 	}
 	
@@ -579,7 +680,7 @@ class MLA_List_Table extends WP_List_Table {
 			else
 				$parent = '';
 			
-			$value .= sprintf( '%1$s (%2$s %3$s), %4$s', /*%1$s*/ $parent, /*%2$s*/ $feature->post_type, /*%3$s*/ $feature_id, /*%4$s*/ $feature->post_title ) . "<br>\r\n";
+			$value .= sprintf( '%1$s (%2$s %3$s), %4$s', /*%1$s*/ $parent, /*%2$s*/ esc_attr( $feature->post_type ), /*%3$s*/ $feature_id, /*%4$s*/ esc_attr( $feature->post_title ) ) . "<br>\r\n";
 		} // foreach $feature
 		
 		return $value;
@@ -605,7 +706,7 @@ class MLA_List_Table extends WP_List_Table {
 				else
 					$parent = '&nbsp;&nbsp;';
 				
-				$value .= sprintf( '%1$s (%2$s %3$s), %4$s', /*%1$s*/ $parent, /*%2$s*/ $insert->post_type, /*%3$s*/ $insert->ID, /*%4$s*/ $insert->post_title ) . "<br>\r\n";
+				$value .= sprintf( '%1$s (%2$s %3$s), %4$s', /*%1$s*/ $parent, /*%2$s*/ esc_attr( $insert->post_type ), /*%3$s*/ $insert->ID, /*%4$s*/ esc_attr( $insert->post_title ) ) . "<br>\r\n";
 			} // foreach $insert
 		} // foreach $file
 		
@@ -622,7 +723,7 @@ class MLA_List_Table extends WP_List_Table {
 	 */
 	function column_alt_text( $item ) {
 		if ( isset( $item->mla_wp_attachment_image_alt ) )
-			return $item->mla_wp_attachment_image_alt;
+			return esc_attr( $item->mla_wp_attachment_image_alt );
 		else
 			return '';
 	}
@@ -636,7 +737,7 @@ class MLA_List_Table extends WP_List_Table {
 	 * @return	string	HTML markup to be placed inside the column
 	 */
 	function column_caption( $item ) {
-		return $item->post_excerpt;
+		return esc_attr( $item->post_excerpt );
 	}
 	
 	/**
@@ -648,7 +749,7 @@ class MLA_List_Table extends WP_List_Table {
 	 * @return	string	HTML markup to be placed inside the column
 	 */
 	function column_description( $item ) {
-		return $item->post_content;
+		return esc_textarea( $item->post_content );
 	}
 	
 	/**
@@ -765,7 +866,7 @@ class MLA_List_Table extends WP_List_Table {
 			$parent_date = '';
 		
 		if ( isset( $item->parent_title ) )
-			$parent_title = $item->parent_title;
+			$parent_title = esc_attr( $item->parent_title );
 		else
 			$parent_title = '(Unattached)';
 		
@@ -849,9 +950,16 @@ class MLA_List_Table extends WP_List_Table {
 		$type_links = array( );
 		$_num_posts = (array) wp_count_attachments();
 		$_total_posts = array_sum( $_num_posts ) - $_num_posts['trash'];
-		$total_orphans = $wpdb->get_var( "SELECT COUNT( * ) FROM $wpdb->posts WHERE post_type = 'attachment' AND post_status != 'trash' AND post_parent < 1" );
+		$total_orphans = $wpdb->get_var(
+			$wpdb->prepare(
+				"
+				SELECT COUNT( * ) FROM {$wpdb->posts}
+				WHERE post_type = 'attachment' AND post_status != 'trash' AND post_parent < 1
+				"
+			)
+		);
 		
-		$post_mime_types = $this->_mime_types();
+		$post_mime_types = self::mla_get_attachment_mime_types();
 		$avail_post_mime_types = $this->_avail_mime_types( $_num_posts );
 		$matches = wp_match_mime_types( array_keys( $post_mime_types ), array_keys( $_num_posts ) );
 		
@@ -891,7 +999,7 @@ class MLA_List_Table extends WP_List_Table {
 					 'post_mime_type' => $mime_type 
 				), $base_url ) . "'$class>" . sprintf( translate_nooped_plural( $label[ 2 ], $num_posts[ $mime_type ] ), number_format_i18n( $num_posts[ $mime_type ] ) ) . '</a>';
 			}
-		} // foreach post_mimie_types
+		} // foreach post_mime_type
 		
 		$type_links['detached'] = '<a href="' . add_query_arg( array(
 			 'detached' => '1' 
@@ -921,7 +1029,7 @@ class MLA_List_Table extends WP_List_Table {
 			$actions['restore'] = 'Restore';
 			$actions['delete'] = 'Delete Permanently';
 		} else {
-			// $actions['edit'] = 'Edit';
+			$actions['edit'] = 'Edit';
 			// $actions['attach'] = 'Attach';
 			
 			if ( EMPTY_TRASH_DAYS && MEDIA_TRASH )
@@ -1057,105 +1165,6 @@ class MLA_List_Table extends WP_List_Table {
 		echo '<tr id="attachment-' . $item->ID . '"' . $row_class . '>';
 		echo parent::single_row_columns( $item );
 		echo '</tr>';
-	}
-
-	/**
-	 * Get possible mime types for view preparation
-	 *
-	 * Modeled after get_post_mime_types in wp-admin/includes/post.php,
-	 * with additional entries.
-	 *
-	 * @since 0.1
-	 *
-	 * @return	array	Mime type names and HTML markup for views
-	 */
-	private function _mime_types( )
-	{
-		return array(
-			'image' => array(
-				0 => 'Images',
-				1 => 'Manage Images',
-				2 => array(
-					 0 => 'Image <span class="count">(%s)</span>',
-					1 => 'Images <span class="count">(%s)</span>',
-					'singular' => 'Image <span class="count">(%s)</span>',
-					'plural' => 'Images <span class="count">(%s)</span>',
-					'context' => NULL,
-					'domain' => NULL 
-				) 
-			),
-			'audio' => array(
-				 0 => 'Audio',
-				1 => 'Manage Audio',
-				2 => array(
-					 0 => 'Audio <span class="count">(%s)</span>',
-					1 => 'Audio <span class="count">(%s)</span>',
-					'singular' => 'Audio <span class="count">(%s)</span>',
-					'plural' => 'Audio <span class="count">(%s)</span>',
-					'context' => NULL,
-					'domain' => NULL 
-				) 
-			),
-			'video' => array(
-				 0 => 'Video',
-				1 => 'Manage Video',
-				2 => array(
-					 0 => 'Video <span class="count">(%s)</span>',
-					1 => 'Video <span class="count">(%s)</span>',
-					'singular' => 'Video <span class="count">(%s)</span>',
-					'plural' => 'Video <span class="count">(%s)</span>',
-					'context' => NULL,
-					'domain' => NULL 
-				) 
-			),
-			'text' => array(
-				 0 => 'Text',
-				1 => 'Manage Text',
-				2 => array(
-					 0 => 'Text <span class="count">(%s)</span>',
-					1 => 'Text <span class="count">(%s)</span>',
-					'singular' => 'Text <span class="count">(%s)</span>',
-					'plural' => 'Text <span class="count">(%s)</span>',
-					'context' => NULL,
-					'domain' => NULL 
-				) 
-			),
-			'application' => array(
-				 0 => 'Applications',
-				1 => 'Manage Applications',
-				2 => array(
-					 0 => 'Application <span class="count">(%s)</span>',
-					1 => 'Applications <span class="count">(%s)</span>',
-					'singular' => 'Application <span class="count">(%s)</span>',
-					'plural' => 'Applications <span class="count">(%s)</span>',
-					'context' => NULL,
-					'domain' => NULL 
-				) 
-			) 
-		);
-	}
-	
-	/**
-	 * Get mime types with one or more attachments for view preparation
-	 *
-	 * Modeled after get_available_post_mime_types in wp-admin/includes/post.php,
-	 * with additional entries.
-	 *
-	 * @since 0.1
-	 *
-	 * @param	array	Number of posts for each mime type
-	 *
-	 * @return	array	Mime type names
-	 */
-	private function _avail_mime_types( $num_posts ) {
-		$available = array( );
-		
-		foreach ( $num_posts as $mime_type => $number ) {
-			if ( ( $number > 0 ) && ( $mime_type <> 'trash' ) )
-				$available[ ] = $mime_type;
-		}
-		
-		return $available;
 	}
 } // class MLA_List_Table
 

@@ -38,7 +38,7 @@ class MLA {
 	 *
 	 * @var	string
 	 */
-	const CURRENT_MLA_VERSION = '0.30';
+	const CURRENT_MLA_VERSION = '0.40';
 
 	/**
 	 * Minimum version of PHP required for this plugin
@@ -113,6 +113,60 @@ class MLA {
 	const ADMIN_PAGE_SLUG = 'mla-menu';
 	
 	/**
+	 * Action name; uniquely identifies the nonce
+	 *
+	 * @since 0.1
+	 *
+	 * @var	string
+	 */
+	const MLA_ADMIN_NONCE = 'mla_admin';
+	
+	/**
+	 * mla_admin_action value for permanently deleting a single item
+	 *
+	 * @since 0.1
+	 *
+	 * @var	string
+	 */
+	const MLA_ADMIN_SINGLE_DELETE = 'single_item_delete';
+	
+	/**
+	 * mla_admin_action value for displaying a single item
+	 *
+	 * @since 0.1
+	 *
+	 * @var	string
+	 */
+	const MLA_ADMIN_SINGLE_EDIT_DISPLAY = 'single_item_edit_display';
+	
+	/**
+	 * mla_admin_action value for updating a single item
+	 *
+	 * @since 0.1
+	 *
+	 * @var	string
+	 */
+	const MLA_ADMIN_SINGLE_EDIT_UPDATE = 'single_item_edit_update';
+	
+	/**
+	 * mla_admin_action value for restoring a single item from the trash
+	 *
+	 * @since 0.1
+	 *
+	 * @var	string
+	 */
+	const MLA_ADMIN_SINGLE_RESTORE = 'single_item_restore';
+	
+	/**
+	 * mla_admin_action value for moving a single item to the trash
+	 *
+	 * @since 0.1
+	 *
+	 * @var	string
+	 */
+	const MLA_ADMIN_SINGLE_TRASH = 'single_item_trash';
+	
+	/**
 	 * Holds screen ids to match help text to corresponding screen
 	 *
 	 * @since 0.1
@@ -161,7 +215,7 @@ class MLA {
 	 * @return	void
 	 */
 	public static function mla_admin_enqueue_scripts_action( $page_hook ) {
-		if ( 'media_page_mla-menu' != $page_hook )
+		if ( ( 'media_page_mla-menu' != $page_hook ) && ( 'settings_page_mla-settings-menu' != $page_hook ) )
 			return;
 
 		wp_register_style( self::STYLESHEET_SLUG, MLA_PLUGIN_URL . 'css/mla-style.css', false, self::CURRENT_MLA_VERSION );
@@ -182,6 +236,9 @@ class MLA {
 			wp_enqueue_script( self::JAVASCRIPT_INLINE_EDIT_SLUG, MLA_PLUGIN_URL . "js/mla-inline-edit-scripts{$suffix}.js", 
 				array( 'wp-lists', 'suggest', 'jquery' ), self::CURRENT_MLA_VERSION, false );
 			$script_variables = array(
+				'error' => 'Error while saving the changes.',
+				'ntdeltitle' => 'Remove From Bulk Edit',
+				'notitle' => '(no title)',
 				'comma' => _x( ',', 'tag delimiter' ),
 				'ajax_action' => self::JAVASCRIPT_INLINE_EDIT_SLUG,
 				'ajax_nonce' => wp_create_nonce( self::MLA_ADMIN_NONCE ) 
@@ -281,60 +338,6 @@ class MLA {
 	}
 	
 	/**
-	 * Action name; uniquely identifies the nonce
-	 *
-	 * @since 0.1
-	 *
-	 * @var	string
-	 */
-	const MLA_ADMIN_NONCE = 'mla_admin';
-	
-	/**
-	 * mla_admin_action value for permanently deleting a single item
-	 *
-	 * @since 0.1
-	 *
-	 * @var	string
-	 */
-	const MLA_ADMIN_SINGLE_DELETE = 'single_item_delete';
-	
-	/**
-	 * mla_admin_action value for displaying a single item
-	 *
-	 * @since 0.1
-	 *
-	 * @var	string
-	 */
-	const MLA_ADMIN_SINGLE_EDIT_DISPLAY = 'single_item_edit_display';
-	
-	/**
-	 * mla_admin_action value for updating a single item
-	 *
-	 * @since 0.1
-	 *
-	 * @var	string
-	 */
-	const MLA_ADMIN_SINGLE_EDIT_UPDATE = 'single_item_edit_update';
-	
-	/**
-	 * mla_admin_action value for restoring a single item from the trash
-	 *
-	 * @since 0.1
-	 *
-	 * @var	string
-	 */
-	const MLA_ADMIN_SINGLE_RESTORE = 'single_item_restore';
-	
-	/**
-	 * mla_admin_action value for moving a single item to the trash
-	 *
-	 * @since 0.1
-	 *
-	 * @var	string
-	 */
-	const MLA_ADMIN_SINGLE_TRASH = 'single_item_trash';
-	
-	/**
 	 * Redirect to the Edit Tags/Categories page
 	 *
 	 * The custom taxonomy add/edit submenu entries go to "upload.php" by default.
@@ -397,7 +400,7 @@ class MLA {
 						break;
 					default:
 						$tax_object = get_taxonomy( $taxonomy );
-						error_log('mla_add_help_tab $tax_object = ' . var_export($tax_object, true), 0);
+
 						if ( $tax_object->hierarchical )
 							$file_suffix = 'edit-hierarchical-taxonomy';
 						else
@@ -431,7 +434,7 @@ class MLA {
 					'content' => $content 
 				);
 			} else {
-				// error_log('mla_add_help_tab discarding '.var_export($id, true), 0);
+				error_log( 'ERROR: mla_add_help_tab discarding '.var_export( $id, true ), 0 );
 			}
 		}
 		
@@ -486,8 +489,6 @@ class MLA {
 	 * @return	void
 	 */
 	public static function mla_render_admin_page( ) {
-//		error_log('mla_render_admin_page $_REQUEST = ' . var_export($_REQUEST, true), 0);
-		
 		$bulk_action = self::_current_bulk_action();
 		
 		echo "<div class=\"wrap\">\r\n";
@@ -529,7 +530,16 @@ class MLA {
 						case 'delete':
 							$item_content = self::_delete_single_item( $post_id );
 							break;
-						//case 'edit':
+						case 'edit':
+							$new_data = array ( ) ;
+							if ( ! empty( $_REQUEST['post_parent'] ) )
+								$new_data['post_parent'] = $_REQUEST['post_parent'];
+							
+							if ( ! empty( $_REQUEST['post_author'] ) )
+								$new_data['post_author'] = $_REQUEST['post_author'];
+							
+							$item_content = self::_update_single_item( $post_id, $new_data, $_REQUEST['tax_input'], $_REQUEST['tax_action'] );
+							break;
 						case 'restore':
 							$item_content = self::_restore_single_item( $post_id );
 							break;
@@ -593,7 +603,7 @@ class MLA {
 		
 		if ( !empty( $page_content['body'] ) ) {
 			if ( !empty( $page_content['message'] ) ) {
-				echo "  <div style=\"background:#ECECEC;border:1px solid #CCC;padding:0 10px;margin-top:5px;border-radius:5px;-moz-border-radius:5px;-webkit-border-radius:5px;\"><p>\r\n";
+				echo "  <div  class=\"mla_messages\"><p>\r\n";
 				echo '    ' . $page_content['message'] . "\r\n";
 				echo "  </p></div>\r\n"; // id="message"
 			}
@@ -620,7 +630,7 @@ class MLA {
 				echo "</h2>\r\n";
 			
 			if ( !empty( $page_content['message'] ) ) {
-				echo "  <div style=\"background:#ECECEC;border:1px solid #CCC;padding:0 10px;margin-top:5px;border-radius:5px;-moz-border-radius:5px;-webkit-border-radius:5px;\"><p>\r\n";
+				echo "  <div class=\"mla_messages\"><p>\r\n";
 				echo '    ' . $page_content['message'] . "\r\n";
 				echo "  </p></div>\r\n"; // id="message"
 			}
@@ -651,9 +661,6 @@ class MLA {
 			
 			if ( isset( $_REQUEST['m'] ) ) // filter by date
 				echo sprintf( '<input type="hidden" name="m" value="%1$s" />', $_REQUEST['m'] ) . "\r\n";
-			
-			if ( isset( $_REQUEST['mla_filter_term'] ) ) // filter by taxonomy term
-				echo sprintf( '<input type="hidden" name="att_cat" value="%1$s" />', $_REQUEST['mla_filter_term'] ) . "\r\n";
 			
 			//	 Now we can render the completed list table
 			$MLAListTable->display();
@@ -779,38 +786,53 @@ class MLA {
 		/*
 		 * The middle column contains the hierarchical taxonomies, e.g., Attachment Category
 		 */
-		$middle_column = '';
+		$quick_middle_column = '';
+		$bulk_middle_column = '';
 		
 		if ( count( $hierarchical_taxonomies ) ) {
-			$category_blocks = '';
+			$quick_category_blocks = '';
+			$bulk_category_blocks = '';
 
 			foreach ( $hierarchical_taxonomies as $tax_name => $tax_object ) {
-				ob_start();
-				wp_terms_checklist( NULL, array( 'taxonomy' => $tax_name ) );
-				$tax_checklist = ob_get_contents();
-				ob_end_clean();
-
-				$page_values = array(
-					'tax_html' => esc_html( $tax_object->labels->name ),
-					'tax_attr' => esc_attr( $tax_name ),
-					'tax_checklist' => $tax_checklist
-				);
-				$category_blocks .= MLAData::mla_parse_template( $page_template_array['category_block'], $page_values );
+				if ( current_user_can( $tax_object->cap->assign_terms ) ) {
+				  ob_start();
+				  wp_terms_checklist( NULL, array( 'taxonomy' => $tax_name ) );
+				  $tax_checklist = ob_get_contents();
+				  ob_end_clean();
+  
+				  $page_values = array(
+					  'tax_html' => esc_html( $tax_object->labels->name ),
+					  'tax_attr' => esc_attr( $tax_name ),
+					  'tax_checklist' => $tax_checklist
+				  );
+				  $category_block = MLAData::mla_parse_template( $page_template_array['category_block'], $page_values );
+				  $taxonomy_options = MLAData::mla_parse_template( $page_template_array['taxonomy_options'], $page_values );
+  
+				  $quick_category_blocks .= $category_block;
+				  $bulk_category_blocks .= $category_block . $taxonomy_options;
+				} // current_user_can
 			} // foreach $hierarchical_taxonomies
 
 			$page_values = array(
-				'category_blocks' => $category_blocks
+				'category_blocks' => $quick_category_blocks
 			);
-			$middle_column = MLAData::mla_parse_template( $page_template_array['category_fieldset'], $page_values );
+			$quick_middle_column = MLAData::mla_parse_template( $page_template_array['category_fieldset'], $page_values );
+
+			$page_values = array(
+				'category_blocks' => $bulk_category_blocks
+			);
+			$bulk_middle_column = MLAData::mla_parse_template( $page_template_array['category_fieldset'], $page_values );
 		} // count( $hierarchical_taxonomies )
 		
 		/*
 		 * The right-hand column contains the flat taxonomies, e.g., Attachment Tag
 		 */
-		$right_column = '';
+		$quick_right_column = '';
+		$bulk_right_column = '';
 		
 		if ( count( $flat_taxonomies ) ) {
-			$tag_blocks = '';
+			$quick_tag_blocks = '';
+			$bulk_tag_blocks = '';
 
 			foreach ( $flat_taxonomies as $tax_name => $tax_object ) {
 				if ( current_user_can( $tax_object->cap->assign_terms ) ) {
@@ -818,21 +840,32 @@ class MLA {
 						'tax_html' => esc_html( $tax_object->labels->name ),
 						'tax_attr' => esc_attr( $tax_name )
 					);
-					$tag_blocks .= MLAData::mla_parse_template( $page_template_array['tag_block'], $page_values );
-				}
+					$tag_block = MLAData::mla_parse_template( $page_template_array['tag_block'], $page_values );
+					$taxonomy_options = MLAData::mla_parse_template( $page_template_array['taxonomy_options'], $page_values );
+
+				$quick_tag_blocks .= $tag_block;
+				$bulk_tag_blocks .= $tag_block . $taxonomy_options;
+				} // current_user_can
 			} // foreach $flat_taxonomies
 
 			$page_values = array(
-				'tag_blocks' => $tag_blocks
+				'tag_blocks' => $quick_tag_blocks
 			);
-			$right_column = MLAData::mla_parse_template( $page_template_array['tag_fieldset'], $page_values );
+			$quick_right_column = MLAData::mla_parse_template( $page_template_array['tag_fieldset'], $page_values );
+
+			$page_values = array(
+				'tag_blocks' => $bulk_tag_blocks
+			);
+			$bulk_right_column = MLAData::mla_parse_template( $page_template_array['tag_fieldset'], $page_values );
 		} // count( $flat_taxonomies )
 		
 		$page_values = array(
 			'colspan' => count( $MLAListTable->get_columns() ),
 			'authors' => $authors_dropdown,
-			'middle_column' => $middle_column,
-			'right_column' => $right_column,
+			'quick_middle_column' => $quick_middle_column,
+			'quick_right_column' => $quick_right_column,
+			'bulk_middle_column' => $bulk_middle_column,
+			'bulk_right_column' => $bulk_right_column,
 		);
 		$page_template = MLAData::mla_parse_template( $page_template_array['page'], $page_values );
 		return $page_template;
@@ -975,9 +1008,7 @@ class MLA {
 			$image_meta = '';
 		}
 		
-		if ( array(
-			 $page_template_array 
-		) ) {
+		if ( array( $page_template_array ) ) {
 			$page_template = $page_template_array['page'];
 			$authors_template = $page_template_array['authors'];
 			$postbox_template = $page_template_array['postbox'];
@@ -1066,9 +1097,6 @@ class MLA {
 		else
 			$view_args = '';
 		
-		if ( isset( $_REQUEST['mla_filter_term'] ) )
-			$view_args .= sprintf( '<input type="hidden" name="att_cat" value="%1$s" />', $_REQUEST['mla_filter_term'] ) . "\r\n";
-		
 		if ( isset( $_REQUEST['paged'] ) )
 			$view_args .= sprintf( '<input type="hidden" name="paged" value="%1$s" />', $_REQUEST['paged'] ) . "\r\n";
 		
@@ -1081,7 +1109,7 @@ class MLA {
 			if ( $tax_object->hierarchical && $tax_object->show_ui ) {
 				$box = array(
 					 'id' => $tax_name . 'div',
-					'title' => $tax_object->labels->name,
+					'title' => esc_html( $tax_object->labels->name ),
 					'callback' => 'categories_meta_box',
 					'args' => array(
 						 'taxonomy' => $tax_name 
@@ -1092,7 +1120,7 @@ class MLA {
 			} elseif ( $tax_object->show_ui ) {
 				$box = array(
 					 'id' => 'tagsdiv-' . $tax_name,
-					'title' => $tax_object->labels->name,
+					'title' => esc_html( $tax_object->labels->name ),
 					'callback' => 'post_tags_meta_box',
 					'args' => array(
 						 'taxonomy' => $tax_name 
@@ -1108,19 +1136,27 @@ class MLA {
 		}
 		
 		$page_values = array(
+			'ID' => $post_data['ID'],
+			'post_mime_type' => $post_data['post_mime_type'],
+			'menu_order' => $post_data['menu_order'],
+			'post_date' => $post_data['post_date'],
+			'post_modified' => $post_data['post_modified'],
+			'post_parent' => $post_data['post_parent'],
 			'attachment_icon' => wp_get_attachment_image( $post_id, array( 160, 120 ), true ),
-			'file_name' => $post_data['mla_references']['file'],
+			'file_name' => esc_html( $post_data['mla_references']['file'] ),
 			'width' => $width,
 			'height' => $height,
 			'post_title_attr' => esc_attr( $post_data['post_title'] ),
 			'post_name_attr' => esc_attr( $post_data['post_name'] ),
+			'image_alt_attr' => '',
 			'post_excerpt_attr' => esc_attr( $post_data['post_excerpt'] ),
-			'image_meta' => $image_meta,
+			'post_content' => esc_textarea( $post_data['post_content'] ),
+			'image_meta' => esc_textarea( $image_meta ),
 			'parent_info' => esc_attr( $parent_info ),
 			'guid_attr' => esc_attr( $post_data['guid'] ),
 			'authors' => $authors,
-			'features' => $features,
-			'inserts' => $inserts,
+			'features' => esc_textarea( $features ),
+			'inserts' => esc_textarea( $inserts ),
 			'mla_admin_action' => self::MLA_ADMIN_SINGLE_EDIT_UPDATE,
 			'form_url' => admin_url( 'upload.php' ) . '?page=' . self::ADMIN_PAGE_SLUG . $url_args,
 			'view_args' => $view_args,
@@ -1132,7 +1168,6 @@ class MLA {
 			$page_values['image_alt_attr'] = esc_attr( $post_data['mla_wp_attachment_image_alt'] );
 		}
 
-		$page_template = MLAData::mla_parse_template( $page_template, $post_data );
 		return array(
 			'message' => '',
 			'body' => MLAData::mla_parse_template( $page_template, $page_values ) 
@@ -1147,13 +1182,12 @@ class MLA {
 	 * 
 	 * @param	int		The ID of the attachment to be updated
 	 * @param	array	Field name => value pairs
-	 * @param	array	Attachment Category and Tag values
+	 * @param	array	Taxonomy term values
+	 * @param	array	Taxonomy actions (add, remove, replace)
 	 *
 	 * @return	array	success/failure message and NULL content
 	 */
-	private static function _update_single_item( $post_id, $new_data, $tax_input = NULL ) {
-//		error_log('_update_single_item $tax_input = ' . var_export($tax_input, true), 0);
-		
+	private static function _update_single_item( $post_id, $new_data, $tax_input = NULL, $tax_actions = NULL ) {
 		$post_data = MLAData::mla_get_attachment_by_id( $post_id );
 		
 		if ( !isset( $post_data ) )
@@ -1164,21 +1198,22 @@ class MLA {
 		
 		$message = '';
 		$updates = array( 'ID' => $post_id );
-		
 		$new_data = stripslashes_deep( $new_data );
-//		error_log('after stripslashes_deep, $new_data = ' . var_export($new_data, true), 0);
 
 		foreach ( $new_data as $key => $value ) {
 			switch ( $key ) {
 				case 'post_title':
 					if ( $value == $post_data[ $key ] )
 						break;
-					$message .= sprintf( 'Changing Title from "%1$s" to "%2$s"<br>', $post_data[ $key ], $value );
+						
+					$message .= sprintf( 'Changing Title from "%1$s" to "%2$s"<br>', esc_attr( $post_data[ $key ] ), esc_attr( $value ) );
 					$updates[ $key ] = $value;
 					break;
 				case 'post_name':
 					if ( $value == $post_data[ $key ] )
 						break;
+					
+					$value = sanitize_title( $value );
 					
 					/*
 					 * Make sure new slug is unique
@@ -1194,7 +1229,7 @@ class MLA {
 					if ( $my_posts ) {
 						$message .= sprintf( 'ERROR: Could not change Name/Slug "%1$s"; name already exists<br>', $value );
 					} else {
-						$message .= sprintf( 'Changing Name/Slug from "%1$s" to "%2$s"<br>', $post_data[ $key ], $value );
+						$message .= sprintf( 'Changing Name/Slug from "%1$s" to "%2$s"<br>', esc_attr( $post_data[ $key ] ), $value );
 						$updates[ $key ] = $value;
 					}
 					break;
@@ -1208,37 +1243,45 @@ class MLA {
 					
 					if ( empty( $value ) ) {
 						if ( delete_post_meta( $post_id, '_wp_attachment_image_alt', $value ) )
-							$message .= sprintf( 'Deleting Alternate Text, was "%1$s"<br>', $post_data[ $key ] );
+							$message .= sprintf( 'Deleting Alternate Text, was "%1$s"<br>', esc_attr( $post_data[ $key ] ) );
 						else
-							$message .= sprintf( 'ERROR: Could not delete Alternate Text, remains "%1$s"<br>', $post_data[ $key ] );
+							$message .= sprintf( 'ERROR: Could not delete Alternate Text, remains "%1$s"<br>', esc_attr( $post_data[ $key ] ) );
 					} else {
 						if ( update_post_meta( $post_id, '_wp_attachment_image_alt', $value ) )
-							$message .= sprintf( 'Changing Alternate Text from "%1$s" to "%2$s"<br>', $post_data[ $key ], $value );
+							$message .= sprintf( 'Changing Alternate Text from "%1$s" to "%2$s"<br>', esc_attr( $post_data[ $key ] ), esc_attr( $value ) );
 						else
-							$message .= sprintf( 'ERROR: Could not change Alternate Text from "%1$s" to "%2$s"<br>', $post_data[ $key ], $value );
+							$message .= sprintf( 'ERROR: Could not change Alternate Text from "%1$s" to "%2$s"<br>', esc_attr( $post_data[ $key ] ), esc_attr( $value ) );
 					}
 					break;
 				case 'post_excerpt':
 					if ( $value == $post_data[ $key ] )
 						break;
-					$message .= sprintf( 'Changing Caption from "%1$s" to "%2$s"<br>', $post_data[ $key ], $value );
+						
+					$message .= sprintf( 'Changing Caption from "%1$s" to "%2$s"<br>', esc_attr( $post_data[ $key ] ), esc_attr( $value ) );
 					$updates[ $key ] = $value;
 					break;
 				case 'post_content':
 					if ( $value == $post_data[ $key ] )
 						break;
-					$message .= sprintf( 'Changing Description from "%1$s" to "%2$s"<br>', $post_data[ $key ], $value );
+						
+					$message .= sprintf( 'Changing Description from "%1$s" to "%2$s"<br>', esc_textarea( $post_data[ $key ] ), esc_textarea( $value ) );
 					$updates[ $key ] = $value;
 					break;
 				case 'post_parent':
 					if ( $value == $post_data[ $key ] )
 						break;
+						
+					$value = absint( $value );
+					
 					$message .= sprintf( 'Changing Parent from "%1$s" to "%2$s"<br>', $post_data[ $key ], $value );
 					$updates[ $key ] = $value;
 					break;
 				case 'post_author':
 					if ( $value == $post_data[ $key ] )
 						break;
+						
+					$value = absint( $value );
+					
 					$from_user = get_userdata( $post_data[ $key ] );
 					$to_user = get_userdata( $value );
 					$message .= sprintf( 'Changing Author from "%1$s" to "%2$s"<br>', $from_user->display_name, $to_user->display_name );
@@ -1251,25 +1294,51 @@ class MLA {
 		
 		if ( !empty( $tax_input ) ) {
 			foreach ( $tax_input as $taxonomy => $tags ) {
-			  $taxonomy_obj = get_taxonomy( $taxonomy );
-			  $terms_before = wp_get_post_terms( $post_id, $taxonomy, array(
-				   "fields" => "all" 
-			  ) );
-			  if ( is_array( $tags ) ) // array = hierarchical, string = non-hierarchical.
-				  $tags = array_filter( $tags );
-			  
-			  if ( current_user_can( $taxonomy_obj->cap->assign_terms ) ) {
-				  $result = wp_set_post_terms( $post_id, $tags, $taxonomy );
-			  }
-			  
-			  $terms_after = wp_get_post_terms( $post_id, $taxonomy, array(
-				   "fields" => "all" 
-			  ) );
-			  
-			  if ( $terms_before != $terms_after )
-				  $message .= sprintf( 'Changing "%1$s" terms<br>', $taxonomy );
-			}
-		}
+				if ( !empty( $tax_actions ) ) 
+					$tax_action = $tax_actions[ $taxonomy ];
+				else
+					$tax_action = 'replace';
+					
+				$taxonomy_obj = get_taxonomy( $taxonomy );
+
+				if ( current_user_can( $taxonomy_obj->cap->assign_terms ) ) {
+					$terms_before = wp_get_post_terms( $post_id, $taxonomy, array(
+						'fields' => 'ids' // all' 
+					) );
+					if ( is_array( $tags ) ) // array = hierarchical, string = non-hierarchical.
+						$tags = array_filter( $tags );
+					
+					switch ( $tax_action ) {
+						case 'add':
+							$action_name = 'Adding';
+							$result = wp_set_post_terms( $post_id, $tags, $taxonomy, true );
+							break;
+						case 'remove':
+							$action_name = 'Removing';
+							$tags = self::_remove_tags( $terms_before, $tags, $taxonomy_obj );
+							$result = wp_set_post_terms( $post_id, $tags, $taxonomy );
+							break;
+						case 'replace':
+							$action_name = 'Replacing';
+							$result = wp_set_post_terms( $post_id, $tags, $taxonomy );
+							break;
+						default:
+							$action_name = 'Ignoring';
+							// ignore anything else
+					}
+					
+					$terms_after = wp_get_post_terms( $post_id, $taxonomy, array(
+						'fields' => 'ids' // all' 
+					) );
+					
+					if ( $terms_before != $terms_after )
+						$message .= sprintf( '%1$s "%2$s" terms<br>', $action_name, $taxonomy );
+				} // current_user_can
+				else {
+					$message .= sprintf( 'You cannot assign "%1$s" terms<br>', $action_name, $taxonomy );
+				}
+			} // foreach $tax_input
+		} // !empty $tax_input
 		
 		if ( empty( $message ) )
 			return array(
@@ -1288,6 +1357,50 @@ class MLA {
 					'body' => '' 
 				);
 		}
+	}
+	
+	/**
+	 * Remove tags from a term ids list
+	 * 
+	 * @since 0.40
+	 * 
+	 * @param	array	The term ids currently assigned
+	 * @param	array | string	The term ids (array) or names (string) to remove
+	 * @param	object	The taxonomy object
+	 *
+	 * @return	array	Term ids of the surviving tags
+	 */
+	private static function _remove_tags( $terms_before, $tags, $taxonomy_obj ) {
+		if ( ! is_array( $tags ) ) {
+			/*
+			 * Convert names to term ids
+			 */
+			$comma = _x( ',', 'tag delimiter' );
+			if ( ',' !== $comma )
+				$tags = str_replace( $comma, ',', $tags );
+			$terms = explode( ',', trim( $tags, " \n\t\r\0\x0B," ) );
+
+			$tags = array ( );
+			foreach ( (array) $terms as $term) {
+				if ( !strlen(trim($term)) )
+					continue;
+
+				// Skip if a non-existent term name is passed.
+				if ( ! $term_info = term_exists($term, $taxonomy_obj->name ) )
+					continue;
+
+				if ( is_wp_error($term_info) )
+					continue;
+
+				$tags[] = $term_info['term_id'];
+			} // foreach term
+		} // not an array
+		
+		$tags = array_map( 'intval', $tags );
+		$tags = array_unique( $tags );
+		$terms_after = array_diff( array_map( 'intval', $terms_before ), $tags );
+
+		return $terms_after;
 	}
 	
 	/**

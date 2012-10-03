@@ -87,6 +87,7 @@ and the value is db column to sort by."><span class="description">Returns an arr
 and the value is db column to sort by.</span><pre>get_sortable_columns()</pre></a></li>
 <li class="method public "><a href="#get_views" title="get_views :: Returns an associative array listing all the views that can be used with this table."><span class="description">Returns an associative array listing all the views that can be used with this table.</span><pre>get_views()</pre></a></li>
 <li class="method public "><a href="#mla_admin_init_action" title="mla_admin_init_action :: Adds support for taxonomy columns"><span class="description">Adds support for taxonomy columns</span><pre>mla_admin_init_action()</pre></a></li>
+<li class="method public "><a href="#mla_get_attachment_mime_types" title="mla_get_attachment_mime_types :: Get possible mime types for view preparation"><span class="description">Get possible mime types for view preparation</span><pre>mla_get_attachment_mime_types()</pre></a></li>
 <li class="method public "><a href="#mla_get_sortable_columns" title="mla_get_sortable_columns :: Return the names and display values of the sortable columns"><span class="description">Return the names and display values of the sortable columns</span><pre>mla_get_sortable_columns()</pre></a></li>
 <li class="method public "><a href="#mla_manage_columns_filter" title="mla_manage_columns_filter :: Handler for filter 'manage_media_page_mla-menu_columns'"><span class="description">Handler for filter 'manage_media_page_mla-menu_columns'</span><pre>mla_manage_columns_filter()</pre></a></li>
 <li class="method public "><a href="#mla_manage_hidden_columns_filter" title="mla_manage_hidden_columns_filter :: Handler for filter 'get_user_option_managemedia_page_mla-menucolumnshidden'"><span class="description">Handler for filter 'get_user_option_managemedia_page_mla-menucolumnshidden'</span><pre>mla_manage_hidden_columns_filter()</pre></a></li>
@@ -99,7 +100,6 @@ and the value is db column to sort by.</span><pre>get_sortable_columns()</pre></
 'ID_parent', 'title_name', 'post_title', 'post_name'"><span class="description">Add rollover actions to exactly one of the following displayed columns:
 'ID_parent', 'title_name', 'post_title', 'post_name'</span><pre>_build_rollover_actions()</pre></a></li>
 <li class="method private "><a href="#_default_hidden_columns" title="_default_hidden_columns :: Access the default list of hidden columns"><span class="description">Access the default list of hidden columns</span><pre>_default_hidden_columns()</pre></a></li>
-<li class="method private "><a href="#_mime_types" title="_mime_types :: Get possible mime types for view preparation"><span class="description">Get possible mime types for view preparation</span><pre>_mime_types()</pre></a></li>
 <li class="nav-header">
 <i class="icon-custom icon-property"></i> Properties</li>
 <li class="nav-header private">» Private</li>
@@ -648,6 +648,22 @@ created in time to affect the "screen options" setup.</p></p>
 </tr></table>
 </div></div>
 </div>
+<a name="mla_get_attachment_mime_types" id="mla_get_attachment_mime_types"></a><div class="element clickable method public mla_get_attachment_mime_types" data-toggle="collapse" data-target=".mla_get_attachment_mime_types .collapse">
+<h2>Get possible mime types for view preparation</h2>
+<pre>mla_get_attachment_mime_types() : array</pre>
+<div class="labels"></div>
+<div class="row collapse"><div class="detail-description">
+<p class="long_description"><p>Modeled after get_post_mime_types in wp-admin/includes/post.php,
+with additional entries.</p></p>
+<table class="table table-bordered"><tr>
+<th>since</th>
+<td>0.1</td>
+</tr></table>
+<h3>Returns</h3>
+<div class="subelement response">
+<code>array</code>Mime type names and HTML markup for views</div>
+</div></div>
+</div>
 <a name="mla_get_sortable_columns" id="mla_get_sortable_columns"></a><div class="element clickable method public mla_get_sortable_columns" data-toggle="collapse" data-target=".mla_get_sortable_columns .collapse">
 <h2>Return the names and display values of the sortable columns</h2>
 <pre>mla_get_sortable_columns() : array</pre>
@@ -818,22 +834,6 @@ with additional entries.</p></p>
 <code>array</code>default list of hidden columns</div>
 </div></div>
 </div>
-<a name="_mime_types" id="_mime_types"></a><div class="element clickable method private _mime_types" data-toggle="collapse" data-target="._mime_types .collapse">
-<h2>Get possible mime types for view preparation</h2>
-<pre>_mime_types() : array</pre>
-<div class="labels"></div>
-<div class="row collapse"><div class="detail-description">
-<p class="long_description"><p>Modeled after get_post_mime_types in wp-admin/includes/post.php,
-with additional entries.</p></p>
-<table class="table table-bordered"><tr>
-<th>since</th>
-<td>0.1</td>
-</tr></table>
-<h3>Returns</h3>
-<div class="subelement response">
-<code>array</code>Mime type names and HTML markup for views</div>
-</div></div>
-</div>
 <h3>
 <i class="icon-custom icon-property"></i> Properties</h3>
 <a name="%24currently_hidden" id="$currently_hidden"> </a><div class="element clickable property private $currently_hidden" data-toggle="collapse" data-target=".$currently_hidden .collapse">
@@ -923,7 +923,7 @@ sorted by that column. This is computed each time the table is displayed.</p></p
 <div class="row"><footer class="span12">
             Template is built using <a href="http://twitter.github.com/bootstrap/">Twitter Bootstrap 2</a> and icons provided by <a href="http://glyphicons.com/">Glyphicons</a>.<br>
             Documentation is powered by <a href="http://www.phpdoc.org/">phpDocumentor 2.0.0a8</a> and<br>
-            generated on 2012-09-19T20:36:48-07:00.<br></footer></div>
+            generated on 2012-10-02T19:39:45-07:00.<br></footer></div>
 </div>
 </body>
 </html>

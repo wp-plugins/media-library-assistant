@@ -39,12 +39,6 @@ inlineEditAttachment = {
 			return false;
 		});
 
-		$('#bulk-title-div').parents('fieldset').after(
-			$('#inline-edit fieldset.inline-edit-categories').clone()
-		).siblings( 'fieldset:last' ).prepend(
-			$('#inline-edit label.inline-edit-tags').clone()
-		);
-
 		// hiearchical taxonomies expandable?
 		$('span.catshow').click(function(){
 			$(this).hide().next().show().parent().next().addClass("cat-hover");
@@ -58,6 +52,7 @@ inlineEditAttachment = {
 
 		$('#doaction, #doaction2').click(function(e){
 			var n = $(this).attr('id').substr(2);
+
 			if ( $('select[name="'+n+'"]').val() == 'edit' ) {
 				e.preventDefault();
 				t.setBulk();
@@ -90,8 +85,8 @@ inlineEditAttachment = {
 			if ( $(this).prop('checked') ) {
 				c = false;
 				var id = $(this).val(), theTitle;
-				theTitle = $('#inline_'+id+' .post_title').text() || inlineEditL10n.notitle;
-				te += '<div id="ttle'+id+'"><a id="_'+id+'" class="ntdelbutton" title="'+inlineEditL10n.ntdeltitle+'">X</a>'+theTitle+'</div>';
+				theTitle = $('#inline_'+id+' .post_title').text() || mla_inline_edit_vars.notitle;
+				te += '<div id="ttle'+id+'"><a id="_'+id+'" class="ntdelbutton" title="'+mla_inline_edit_vars.ntdeltitle+'">X</a>'+theTitle+'</div>';
 			}
 		});
 
@@ -104,6 +99,17 @@ inlineEditAttachment = {
 
 			$('table.widefat input[value="' + id + '"]').prop('checked', false);
 			$('#ttle'+id).remove();
+		});
+
+			// support multi taxonomies?
+//			tax = 'post_tag';
+//			$('tr.inline-editor textarea[name="tax_input['+tax+']"]').suggest( ajaxurl + '?action=ajax-tag-search&tax=' + tax, { delay: 500, minchars: 2, multiple: true, multipleSep: mla_inline_edit_vars.comma + ' ' } );
+
+		//flat taxonomies
+		$('textarea.mla_tags').each(function(){
+			var taxname = $(this).attr('name').replace(']', '').replace('tax_input[', '');
+
+			$(this).suggest( ajaxurl + '?action=ajax-tag-search&tax=' + taxname, { delay: 500, minchars: 2, multiple: true, multipleSep: mla_inline_edit_vars.comma + ' ' } );
 		});
 
 		$('html, body').animate( { scrollTop: 0 }, 'fast' );
@@ -212,7 +218,7 @@ inlineEditAttachment = {
 						$('#edit-'+id+' .inline-edit-save .error').html(r).show();
 					}
 				} else {
-					$('#edit-'+id+' .inline-edit-save .error').html(inlineEditL10n.error).show();
+					$('#edit-'+id+' .inline-edit-save .error').html(mla_inline_edit_vars.error).show();
 				}
 			}
 		, 'html');

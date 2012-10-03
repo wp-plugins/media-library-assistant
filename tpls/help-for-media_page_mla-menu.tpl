@@ -1,6 +1,6 @@
 <!-- template="mla-overview" -->
 <!-- title="Overview" order="1" -->
-<p>All the files you&#8217;ve uploaded are listed in the Media Library Assistant table, ordered by the Title field. You can change the sort order by clicking on one of the blue column names.</p>
+<p>All the files you&#8217;ve uploaded are listed in the Media Library Assistant table, ordered by the Title field. You can change the sort order by clicking on one of the blue column names. You can change the default sort order on the Settings screen.</p>
 <p>You can use the Screen Options tab to customize the display of this screen. You can choose any combination of the sixteen (16) columns available for display. You can also choose how many items appear on each page of the display.</p>
 <p>You can narrow the list by file type/status using the text link filters at the top of the screen. You also can refine the list by month using the dropdown menu above the media table.</p>
 <p>If you have selected &#8220;Attachment Categories&#8221; support, you can filter the list by selecting &#8220;All Categories&#8221;, &#8220;No Categories&#8221; or a specific category from the drop down list. If you select a category that has child categories beneath it, attachments in any of the child categories will also appear in the filtered list.</p>
@@ -20,9 +20,13 @@
 <p>The &#8220;Bulk Actions&#8221; dropdown list works with the check box column to let you make changes to many items at once. Click the check box in the column title row to select all items on the page, or click the check box in a row to select items individually.</p>
 <p>Once you&#8217;ve selected the items you want, pick an action from the dropdown list and click Apply to perform the action on the selected items. The available actions will vary depending on the file type/status view you have picked.</p>
 <p>If you have enabled Trash support (define MEDIA_TRASH in wp-config.php) you can use bulk actions to move items to and from the Trash or delete them permamently.</p>
+<p>When using Bulk Edit, you can change the metadata (author, parent, taxonomy terms) for all selected attachments at once. To remove an attachment from the grouping, just click the x next to its name in the left column of the Bulk Edit area.</p>
+<p>Bulk Edit support for taxonomy terms allows you to <strong>add, remove or completely replace</strong> terms for the selected attachments. Below each taxonomy edit box are three radio buttons that let you select the action you&#8217;d like to perform.</p>
+<p>The taxonomies that appear in the Bulk Edit area can be a subset of the taxonomies supported on the single item edit screen. You can select which taxonomies appear by entering your choice(s) on the Media Libray Assistant Settings screen.</p>
 <!-- template="mla-available-actions" -->
 <!-- title="Available Actions" order="5" -->
-<p>Hovering over a row reveals action links such as Edit, Quick Edit, Move to Trash and Delete Permanently. Clicking Edit displays a simple screen to edit that individual file&#8217;s metadata. Clicking Quick Edit displays an inline form to edit the file's metadata without leaving the menu screen. Clicking Move to Trash will assign the file to the Trash pile but will not affect pages or posts to which it is attached. Clicking Delete Permanently will delete the file from the media library (as well as from any posts to which it is currently attached).</p>
+<p>Hovering over a row reveals action links such as Edit, Quick Edit, Move to Trash and Delete Permanently. Clicking Edit displays a simple screen to edit that individual file&#8217;s metadata. Clicking Move to Trash will assign the file to the Trash pile but will not affect pages or posts to which it is attached. Clicking Delete Permanently will delete the file from the media library (as well as from any posts to which it is currently attached). Clicking Quick Edit displays an inline form to edit the file's metadata without leaving the menu screen.</p>
+<p>The taxonomies that appear in the Quick Edit area can be a subset of the taxonomies supported on the single item edit screen. You can select which taxonomies appear by entering your choice(s) on the Media Libray Assistant Settings screen.</p>
 <!-- template="mla-attaching-files" -->
 <!-- title="Attaching Files" order="6" -->
 <p>If a media file has not been attached to any post, you will see (unattached) in the Attached To column. You can click on the Edit or Quick Edit action to attach the file by assigning a value to the Parent ID field.</p>

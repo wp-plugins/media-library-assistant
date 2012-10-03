@@ -15,6 +15,20 @@
  */
 class MLASettings {
 	/**
+	 * Provides a unique name for the ALT Text SQL VIEW
+	 *
+	 * @since 0.40
+	 *
+	 * @var	array
+	 */
+	public static $mla_alt_text_view = null;
+	
+	/**
+	 * Provides a unique suffix for the ALT Text SQL VIEW
+	 */
+	const MLA_ALT_TEXT_VIEW_SUFFIX = 'alt_text_view';
+	
+	/**
 	 * Provides a unique name for the settings page
 	 */
 	const MLA_SETTINGS_SLUG = 'mla-settings-menu';
@@ -72,12 +86,22 @@ class MLASettings {
 				'std' => 'checked',
 				'help' => 'Check this option to add support for Attachment Tags.'),
 	
+		'where_used_heading' =>
+			array('name' => 'Where-used Reporting',
+				'type' => 'header'),
+		
+		'exclude_revisions' =>
+			array('name' => 'Exclude Revisions',
+				'type' => 'checkbox',
+				'std' => 'checked',
+				'help' => 'Check this option to exclude revisions from where-used reporting.'),
+	
 		'taxonomy_heading' =>
 			array('name' => 'Taxonomy Support',
 				'type' => 'header'),
 		
 		'taxonomy_support' =>
-			array('help' => 'Check the "Support" box to add the taxonomy to the Assistant.<br>Check the "Quick Edit" box to display the taxonomy in the Quick Edit panel.<br>Use the "List Filter" option to select the taxonomy on which to filter the Assistant table listing.',
+			array('help' => 'Check the "Support" box to add the taxonomy to the Assistant.<br>Check the "Inline Edit" box to display the taxonomy in the Quick Edit and Bulk Edit areas.<br>Use the "List Filter" option to select the taxonomy on which to filter the Assistant table listing.',
 				'std' =>  array (
 					'tax_support' => array (
 				    	'attachment_category' => 'checked',
@@ -145,6 +169,9 @@ class MLASettings {
 	 * @return	void
 	 */
 	public static function initialize( ) {
+		global $table_prefix;
+		
+		self::$mla_alt_text_view = $table_prefix . MLA_OPTION_PREFIX . self::MLA_ALT_TEXT_VIEW_SUFFIX;
 		add_action( 'admin_menu', 'MLASettings::mla_admin_menu_action' );
 		self::_version_upgrade();
 	}
@@ -186,6 +213,66 @@ class MLASettings {
 		} // version is less than .30
 		
 	self::mla_update_option( self::MLA_VERSION_OPTION, MLA::CURRENT_MLA_VERSION );
+	}
+	
+	/**
+	 * Perform one-time actions on plugin activation
+	 *
+	 * Adds a view to the database to support sorting the listing on 'ALT Text'.
+	 *
+	 * @since 0.40
+	 *
+	 * @return	void
+	 */
+	public static function mla_activation_hook( ) {
+		global $wpdb, $table_prefix;
+		
+		$view_name = $table_prefix . MLA_OPTION_PREFIX . self::MLA_ALT_TEXT_VIEW_SUFFIX;
+		$table_name = $table_prefix . 'postmeta';
+		$result = $wpdb->query(
+			$wpdb->prepare(
+				"
+				CREATE OR REPLACE VIEW {$view_name} AS
+				SELECT post_id, meta_value
+				FROM {$table_name}
+				WHERE {$table_name}.meta_key = '_wp_attachment_image_alt'
+				"
+			)
+		);
+	}
+	
+	/**
+	 * Perform one-time actions on plugin deactivation
+	 *
+	 * Removes a view from the database that supports sorting the listing on 'ALT Text'.
+	 *
+	 * @since 0.40
+	 *
+	 * @return	void
+	 */
+	public static function mla_deactivation_hook( ) {
+		global $wpdb, $table_prefix;
+		
+		$view_name = $table_prefix . MLA_OPTION_PREFIX . self::MLA_ALT_TEXT_VIEW_SUFFIX;
+		$table_name = $table_prefix . 'postmeta';
+		$result = $wpdb->query(
+			$wpdb->prepare(
+				"
+				CREATE OR REPLACE VIEW {$view_name} AS
+				SELECT post_id, meta_value
+				FROM {$table_name}
+				WHERE {$table_name}.meta_key = '_wp_attachment_image_alt'
+				"
+			)
+		);
+
+		$result = $wpdb->query(
+			$wpdb->prepare(
+				"
+				DROP VIEW {self::$mla_alt_text_view}
+				"
+			)
+		);
 	}
 	
 	/**
@@ -300,6 +387,7 @@ class MLASettings {
 			'mla_admin_action' => MLA::MLA_ADMIN_SINGLE_EDIT_UPDATE,
 			'page' => self::MLA_SETTINGS_SLUG,
 			'_wpnonce' => wp_nonce_field( MLA::MLA_ADMIN_NONCE, '_wpnonce', true, false ),
+			'_wp_http_referer' => wp_referer_field( false ),
 			'phpDocs_url' => MLA_PLUGIN_URL . 'phpDocs/index.html'
 		);
 		
@@ -307,8 +395,10 @@ class MLASettings {
 		 * Check for submit buttons to change or reset settings.
 		 */
 		if ( !empty( $_REQUEST['mla-options-save'] ) ) {
+			check_admin_referer( MLA::MLA_ADMIN_NONCE, '_wpnonce' );
 			$page_content = self::_save_settings( $page_template_array );
 		} elseif ( !empty( $_REQUEST['mla-options-reset'] ) ) {
+			check_admin_referer( MLA::MLA_ADMIN_NONCE, '_wpnonce' );
 			$page_content = self::_reset_settings( $page_template_array );
 		} else {
 			$page_content = array(
@@ -586,7 +676,6 @@ class MLASettings {
 						$message = '';
 						break;
 					case 'radio':
-						error_log('self::mla_update_option ' . var_export($_REQUEST[ MLA_OPTION_PREFIX . $key ], true), 0 );
 						self::mla_update_option( $key, $_REQUEST[ MLA_OPTION_PREFIX . $key ] );
 						break;
 					case 'select':
@@ -643,7 +732,7 @@ class MLASettings {
 		}
 		
 		$page_content = array(
-			'message' => "<br>Settings saved.\r\n",
+			'message' => "Settings saved.\r\n",
 			'body' => '' 
 		);
 		

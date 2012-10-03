@@ -7,6 +7,19 @@
  */
 
 /*
+ * MLA List Table, single edit and settings page message DIV
+ */
+div.mla_messages {
+	background:#FFFFE0;
+	border:1px solid #CCC;
+	padding:0 10px;
+	margin-top:5px;
+	border-radius:5px;
+	-moz-border-radius:5px;
+	-webkit-border-radius:5px;
+}
+
+/*
  * MLA List Table ID_parent column
  */
 td.column-ID_parent, th.column-ID_parent {
@@ -65,30 +78,41 @@ textarea[readonly] {
 /*
  * MLA Inline editing - adapted from load-styles.php
  */
-#wpbody-content .quick-edit-row-attachment .inline-edit-col-left {
+.mla_bulk_taxonomy_options {
+	margin-bottom: 10px
+}
+
+#wpbody-content .quick-edit-row-attachment .inline-edit-col-left,
+#wpbody-content .bulk-edit-row-attachment .inline-edit-col-left {
 	width: 40%
 }
 
-#wpbody-content .quick-edit-row-attachment .inline-edit-col-center {
+#wpbody-content .quick-edit-row-attachment .inline-edit-col-center,
+#wpbody-content .bulk-edit-row-attachment .inline-edit-col-center {
 	width: 20%
 }
 
-#wpbody-content .quick-edit-row-attachment .inline-edit-col-right {
+#wpbody-content .quick-edit-row-attachment .inline-edit-col-right,
+#wpbody-content .bulk-edit-row-attachment .inline-edit-col-right {
 	width: 39%
 }
 
-.inline-edit-row fieldset.inline-edit-col-left label span.title{
+.quick-edit-row-attachment fieldset.inline-edit-col-left label span.title,
+.bulk-edit-row-attachment fieldset.inline-edit-col-right label span.title {
 	width: 6em
 }
 
-.inline-edit-row fieldset.inline-edit-col-left label span.input-text-wrap{
+.quick-edit-row-attachment fieldset.inline-edit-col-left label span.input-text-wrap,
+.bulk-edit-row-attachment fieldset.inline-edit-col-right label span.input-text-wrap {
 	margin-left: 6em
 }
 
-.inline-edit-row fieldset.inline-edit-col-left label.inline-edit-post-parent span.input-text-wrap{
+.quick-edit-row-attachment fieldset.inline-edit-col-left label.inline-edit-post-parent span.input-text-wrap,
+.bulk-edit-row-attachment fieldset.inline-edit-col-right label.inline-edit-post-parent span.input-text-wrap {
 	width: 5em
 }
 
-.inline-edit-row fieldset.inline-edit-col-right label span.title{
+.quick-edit-row-attachment fieldset.inline-edit-col-right label span.title,
+.bulk-edit-row-attachment fieldset.inline-edit-col-right label.inline-edit-tags span.title {
 	width: 99%
 }

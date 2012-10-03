@@ -17,12 +17,18 @@
 <!-- template="tag_block" -->
             <label class="inline-edit-tags">
               <span class="title">[+tax_html+]</span>
-              <textarea cols="22" rows="1" name="tax_input[[+tax_attr+]]" class="tax_input_[+tax_attr+]"></textarea>
+              <textarea cols="22" rows="1" name="tax_input[[+tax_attr+]]" class="tax_input_[+tax_attr+] mla_tags"></textarea>
             </label>
 
+<!-- template="taxonomy_options" -->
+			<div class="mla_bulk_taxonomy_options">
+            <input type="radio" name="tax_action[[+tax_attr+]]" id="tax_add_[+tax_attr+]" checked="checked" value="add" /> Add&nbsp;
+            <input type="radio" name="tax_action[[+tax_attr+]]" id="tax_remove_[+tax_attr+]" value="remove" /> Remove&nbsp;
+            <input type="radio" name="tax_action[[+tax_attr+]]" id="tax_reset_[+tax_attr+]" value="replace" /> Replace&nbsp;
+            </div>
 <!-- template="page" -->
 <form method="get" action="">
-  <table style="display: none">
+  <table width="99%" style="display: none">
     <tbody id="inlineedit">
       <tr id="inline-edit" class="inline-edit-row inline-edit-row-attachment inline-edit-attachment quick-edit-row quick-edit-row-attachment inline-edit-attachment" style="display: none">
         <td colspan="[+colspan+]" class="colspanchange">
@@ -42,9 +48,10 @@
                 <input type="text" name="post_parent" value="" />
                 </span> </label>
 [+authors+]
+            </div>
           </fieldset>
-[+middle_column+]
-[+right_column+]
+[+quick_middle_column+]
+[+quick_right_column+]
           <p class="submit inline-edit-save">
 		  	<a accesskey="c" href="#inline-edit" title="Cancel" class="button-secondary cancel alignleft">Cancel</a>
 		  	<a accesskey="s" href="#inline-edit" title="Update" class="button-primary save alignright">Update</a>
@@ -52,6 +59,35 @@
             <input type="hidden" name="screen" value="media_page_mla-menu" />
 			<br class="clear" />
             <span class="error" style="display:none"></span>
+          </p>
+        </td>
+      </tr>
+      <tr id="bulk-edit" class="inline-edit-row inline-edit-row-post inline-edit-attachment bulk-edit-row bulk-edit-row-attachment bulk-edit-attachment" style="display: none">
+        <td colspan="[+colspan+]" class="colspanchange">
+          <fieldset class="inline-edit-col-left">
+            <div class="inline-edit-col">
+              <h4>Bulk Edit</h4>
+              <div id="bulk-title-div">
+                <div id="bulk-titles"></div>
+              </div>
+            </div>
+          </fieldset>
+[+bulk_middle_column+]
+[+bulk_right_column+]
+          <fieldset class="inline-edit-col-right">
+            <div class="inline-edit-col">
+              <label class="inline-edit-post-parent"> <span class="title">Parent ID</span> <span class="input-text-wrap">
+                <input type="text" name="post_parent" value="" />
+                </span> </label>
+[+authors+]
+            </div>
+          </fieldset>
+          <p class="submit inline-edit-save">
+		  	<a accesskey="c" href="#inline-edit" title="Cancel" class="button-secondary cancel alignleft">Cancel</a>
+            <input accesskey="s" type="submit" name="bulk_edit" id="bulk_edit" class="button-primary alignright" value="Update"  />
+            <input type="hidden" name="page" value="mla-menu" />
+            <input type="hidden" name="screen" value="media_page_mla-menu" />
+            <span class="error" style="display:none"></span> <br class="clear" />
           </p>
         </td>
       </tr>

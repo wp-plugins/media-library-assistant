@@ -39,16 +39,28 @@ class MLAShortcodes {
 		'organize_by'=>'title',
 		), $atts)); */
 		
-		$attachments = $wpdb->get_results( "
-		SELECT ID, post_title, post_name, post_parent
-		FROM $wpdb->posts
-		WHERE post_type = 'attachment' 
-		" );
+		/*
+		 * Process the where-used settings option
+		 */
+		if ('checked' == MLASettings::mla_get_option( 'exclude_revisions' ) )
+			$exclude_revisions = "(post_type <> 'revision') AND ";
+		else
+			$exclude_revisions = '';
+				
+		$attachments = $wpdb->get_results(
+			$wpdb->prepare(
+				"
+				SELECT ID, post_title, post_name, post_parent
+				FROM {$wpdb->posts}
+				WHERE {$exclude_revisions}post_type = 'attachment' 
+				"
+			)
+		);
 		
 		foreach ( $attachments as $attachment ) {
 			$references = MLAData::mla_fetch_attachment_references( $attachment->ID, $attachment->post_parent );
 			
-			echo '&nbsp;<br><h3>' . $attachment->ID . ', ' . $attachment->post_title . ', Parent: ' . $attachment->post_parent . '<br>' . $attachment->post_name . '<br>' . $references['base_file'] . "</h3>\r\n";
+			echo '&nbsp;<br><h3>' . $attachment->ID . ', ' . esc_attr( $attachment->post_title ) . ', Parent: ' . $attachment->post_parent . '<br>' . esc_attr( $attachment->post_name ) . '<br>' . esc_html( $references['base_file'] ) . "</h3>\r\n";
 			
 			/*
 			 * Look for the "Featured Image(s)"
@@ -65,7 +77,7 @@ class MLAShortcodes {
 						$found_parent = true;
 					}
 					
-					echo $feature_id . ' (' . $feature->post_type . '), ' . $feature->post_title . "<br>\r\n";
+					echo $feature_id . ' (' . $feature->post_type . '), ' . esc_attr( $feature->post_title ) . "<br>\r\n";
 				}
 			}
 			
@@ -85,7 +97,7 @@ class MLAShortcodes {
 							$found_parent = true;
 						}
 						
-						echo $insert->ID . ' (' . $insert->post_type . '), ' . $insert->post_title . "<br>\r\n";
+						echo $insert->ID . ' (' . $insert->post_type . '), ' . esc_attr( $insert->post_title ) . "<br>\r\n";
 					} // foreach $insert
 				} // foreach $file
 			}

@@ -72,6 +72,7 @@
 <li class="method private "><a href="#_display_single_item" title="_display_single_item :: Display a single item sub page; prepare the form to
 change the meta data for a single attachment."><span class="description">Display a single item sub page; prepare the form to
 change the meta data for a single attachment.</span><pre>_display_single_item()</pre></a></li>
+<li class="method private "><a href="#_remove_tags" title="_remove_tags :: Remove tags from a term ids list"><span class="description">Remove tags from a term ids list</span><pre>_remove_tags()</pre></a></li>
 <li class="method private "><a href="#_restore_single_item" title="_restore_single_item :: Restore a single item from the Trash"><span class="description">Restore a single item from the Trash</span><pre>_restore_single_item()</pre></a></li>
 <li class="method private "><a href="#_trash_single_item" title="_trash_single_item :: Move a single item to Trash"><span class="description">Move a single item to Trash</span><pre>_trash_single_item()</pre></a></li>
 <li class="method private "><a href="#_update_single_item" title="_update_single_item :: Update a single item; change the meta data
@@ -414,6 +415,32 @@ change the meta data for a single attachment.</h2>
 <code>array</code>message and/or HTML content</div>
 </div></div>
 </div>
+<a name="_remove_tags" id="_remove_tags"></a><div class="element clickable method private _remove_tags" data-toggle="collapse" data-target="._remove_tags .collapse">
+<h2>Remove tags from a term ids list</h2>
+<pre>_remove_tags(array $terms_before, array $tags, object $taxonomy_obj) : array</pre>
+<div class="labels"></div>
+<div class="row collapse"><div class="detail-description">
+<p class="long_description"></p>
+<table class="table table-bordered"><tr>
+<th>since</th>
+<td>0.40</td>
+</tr></table>
+<h3>Parameters</h3>
+<div class="subelement argument">
+<h4>$terms_before</h4>
+<code>array</code><p>The term ids currently assigned</p></div>
+<div class="subelement argument">
+<h4>$tags</h4>
+<code>array</code><p>| string The term ids (array) or names (string) to remove</p>
+</div>
+<div class="subelement argument">
+<h4>$taxonomy_obj</h4>
+<code>object</code><p>The taxonomy object</p></div>
+<h3>Returns</h3>
+<div class="subelement response">
+<code>array</code>Term ids of the surviving tags</div>
+</div></div>
+</div>
 <a name="_restore_single_item" id="_restore_single_item"></a><div class="element clickable method private _restore_single_item" data-toggle="collapse" data-target="._restore_single_item .collapse">
 <h2>Restore a single item from the Trash</h2>
 <pre>_restore_single_item(array $post_id) : array</pre>
@@ -455,7 +482,7 @@ change the meta data for a single attachment.</h2>
 <a name="_update_single_item" id="_update_single_item"></a><div class="element clickable method private _update_single_item" data-toggle="collapse" data-target="._update_single_item .collapse">
 <h2>Update a single item; change the meta data
 for a single attachment.</h2>
-<pre>_update_single_item(int $post_id, array $new_data, array $tax_input) : array</pre>
+<pre>_update_single_item(int $post_id, array $new_data, array $tax_input, array $tax_actions) : array</pre>
 <div class="labels"></div>
 <div class="row collapse"><div class="detail-description">
 <p class="long_description"></p>
@@ -473,7 +500,11 @@ for a single attachment.</h2>
 </div>
 <div class="subelement argument">
 <h4>$tax_input</h4>
-<code>array</code><p>Attachment Category and Tag values</p></div>
+<code>array</code><p>Taxonomy term values</p></div>
+<div class="subelement argument">
+<h4>$tax_actions</h4>
+<code>array</code><p>Taxonomy actions (add, remove, replace)</p>
+</div>
 <h3>Returns</h3>
 <div class="subelement response">
 <code>array</code>success/failure message and NULL content</div>
@@ -694,7 +725,7 @@ for a single attachment.</h2>
 <div class="row"><footer class="span12">
             Template is built using <a href="http://twitter.github.com/bootstrap/">Twitter Bootstrap 2</a> and icons provided by <a href="http://glyphicons.com/">Glyphicons</a>.<br>
             Documentation is powered by <a href="http://www.phpdoc.org/">phpDocumentor 2.0.0a8</a> and<br>
-            generated on 2012-09-19T20:36:48-07:00.<br></footer></div>
+            generated on 2012-10-02T19:39:45-07:00.<br></footer></div>
 </div>
 </body>
 </html>

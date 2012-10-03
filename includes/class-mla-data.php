@@ -158,30 +158,7 @@ class MLAData {
 	 * @return	array	attachment objects (posts) including parent data, meta data and references
 	 */
 	public static function mla_query_list_table_items( $request, $offset, $count ) {
-		$request = self::_prepare_list_table_query( $request );
-		
-		/*
-		 * We have to handle custom field/post_meta values here
-		 * because they need a JOIN clause supplied by WP_Query
-		 */
-		switch ( self::$query_parameters['orderby'] ) {
-			case '_wp_attachment_image_alt':
-				$request['meta_key'] = '_wp_attachment_image_alt';
-				$request['orderby'] = 'meta_value';
-				$request['order'] = self::$query_parameters['order'];
-				break;
-			case '_wp_attached_file':
-				$request['meta_key'] = '_wp_attached_file';
-				$request['orderby'] = 'meta_value';
-				$request['order'] = self::$query_parameters['order'];
-				break;
-		} // $orderby
-
-		if ( ( (int) $count ) > 0 ) {
-			$request['offset'] = $offset;
-			$request['posts_per_page'] = $count;
-		}
-		
+		$request = self::_prepare_list_table_query( $request, $offset, $count );
 		$results = self::_execute_list_table_query( $request );
 		$attachments = $results->posts;
 		
@@ -233,27 +210,116 @@ class MLAData {
 	 * @since 0.1
 	 *
 	 * @param	array	query parameters from web page, usually found in $_REQUEST
+	 * @param	int		number of rows to skip over to reach desired page
+	 * @param	int		number of rows on each page (0 = all rows)
 	 *
 	 * @return	array	revised arguments suitable for WP_Query
 	 */
-	private static function _prepare_list_table_query( $request ) {
-//		error_log('_prepare_list_table_query $request = ' . var_export($request, true), 0);
+	private static function _prepare_list_table_query( $raw_request, $offset = 0, $count = 0 ) {
+		/*
+		 * Go through the $raw_request, take only the arguments that are used in the query and
+		 * sanitize or validate them.
+		 */
+		if ( ! is_array( $raw_request ) ) {
+			error_log( 'ERROR: _prepare_list_table_query $raw_request = ' . var_export( $raw_request, true ), 0 );
+			return null;
+		}
+		
+		$clean_request = array (
+			'm' => 0,
+			'orderby' => MLASettings::mla_get_option( 'default_orderby' ),
+			'order' => MLASettings::mla_get_option( 'default_order' ),
+			'post_type' => 'attachment',
+			'post_status' => 'inherit'
+		);
+		
+		foreach ( $raw_request as $key => $value ) {
+			switch ( $key ) {
+				case 'mla-tax':
+				case 'mla-term':
+					$clean_request[ $key ] = sanitize_key( $value );
+					break;
+				case 'orderby':
+					$sortable_columns = MLA_List_Table::mla_get_sortable_columns( );
+					foreach ($sortable_columns as $sort_key => $sort_value ) {
+						if ( $value == $sort_value[0] ) {
+							$clean_request[ $key ] = $value;
+							break;
+						}
+					} // foreach
+					break;
+				case 'post_mime_type':
+					if ( array_key_exists( $value, MLA_List_Table::mla_get_attachment_mime_types( ) ) )
+						$clean_request[ $key ] = $value;
+					break;
+				/*
+				 * ['m'] - filter by year and month of post, e.g., 201204
+				 */
+				case 'm':
+					$clean_request[ $key ] = absint( $value );
+					break;
+				/*
+				 * ['mla_filter_term'] - filter by category or tag ID; -1 allowed
+				 */
+				case 'mla_filter_term':
+					$clean_request[ $key ] = intval( $value );
+					break;
+				case 'order':
+					switch ( $value = strtoupper ($value ) ) {
+						case 'ASC':
+						case 'DESC':
+							$clean_request[ $key ] = $value;
+							break;
+						default:
+							$clean_request[ $key ] = 'ASC';
+					}
+					break;
+				case 'detached':
+					if ( '1' == $value )
+						$clean_request['detached'] = '1';
+					break;
+				case 'status':
+					if ( 'trash' == $value )
+						$clean_request['post_status'] = 'trash';
+					break;
+				default:
+					// ignore anything else in $_REQUEST
+			} // switch $key
+		} // foreach $raw_request
 		
 		self::$query_parameters = array( );
-		self::$query_parameters['detached'] = isset( $_REQUEST['detached'] );
-		self::$query_parameters['orderby'] = ( !empty( $request['orderby'] ) ) ? $request['orderby'] : MLASettings::mla_get_option( 'default_orderby' ); //If no sort, default from settings option
-		self::$query_parameters['order'] = ( !empty( $request['order'] ) ) ? strtoupper( $request['order'] ) : MLASettings::mla_get_option( 'default_order' ); //If no order, default from settings option
+		self::$query_parameters['detached'] = isset( $clean_request['detached'] );
+		self::$query_parameters['orderby'] = $clean_request['orderby'];
+		self::$query_parameters['order'] = $clean_request['order'];
+
+		/*
+		 * We have to handle custom field/post_meta values here
+		 * because they need a JOIN clause supplied by WP_Query
+		 */
+		switch ( self::$query_parameters['orderby'] ) {
+			/*
+			 * '_wp_attachment_image_alt' is special; we'll handle it in the JOIN and ORDERBY filters
+			 */
+			case '_wp_attachment_image_alt':
+				if ( isset($clean_request['orderby']) )
+					unset($clean_request['orderby']);
+				if ( isset($clean_request['order']) )
+					unset($clean_request['order']);
+				break;
+			case '_wp_attached_file':
+				$clean_request['meta_key'] = '_wp_attached_file';
+				$clean_request['orderby'] = 'meta_value';
+				$clean_request['order'] = self::$query_parameters['order'];
+				break;
+		} // $orderby
 
 		/*
 		 * Ignore incoming paged value; use offset and count instead
 		 */
-		if (isset($request['paged']))
-			unset($request['paged']);
-			
-		/*
-		 * ['m'] - filter by year and month of post, e.g., 201204
-		 */
-		$request['m'] = isset( $request['m'] ) ? (int) $request['m'] : 0;
+		if ( ( (int) $count ) > 0 ) {
+			$clean_request['offset'] = $offset;
+			$clean_request['posts_per_page'] = $count;
+		}
 		
 		/*
 		 * ['mla_filter_term'] - filter by taxonomy
@@ -261,52 +327,54 @@ class MLAData {
 		 * cat = '0' is "All Categories", i.e., no filtering
 		 * cat = '-1' is "No Categories"
 		 */
-		if ( isset( $request['mla_filter_term'] ) && ( $request['mla_filter_term'] != '0' ) ) {
-			$tax_filter =  MLASettings::mla_taxonomy_support('', 'filter');
-			if ( $request['mla_filter_term'] == '-1' ) {
-				$term_list = get_terms( $tax_filter, array(
-					'fields' => 'ids',
-					'hide_empty' => true 
-				) );
-				$request['tax_query'] = array(
-					array(
-						'taxonomy' => $tax_filter,
-						'field' => 'id',
-						'terms' => $term_list,
-						'operator' => 'NOT IN' 
-					) 
-				);
-			} else {
-				$request['tax_query'] = array(
-					array(
-						'taxonomy' => $tax_filter,
-						'field' => 'id',
-						'terms' => array(
-							(int) $request['mla_filter_term'] 
+		if ( isset( $clean_request['mla_filter_term'] ) ) {
+			if ( $clean_request['mla_filter_term'] != '0' ) {
+				$tax_filter =  MLASettings::mla_taxonomy_support('', 'filter');
+				if ( $clean_request['mla_filter_term'] == '-1' ) {
+					$term_list = get_terms( $tax_filter, array(
+						'fields' => 'ids',
+						'hide_empty' => true 
+					) );
+					$clean_request['tax_query'] = array(
+						array(
+							'taxonomy' => $tax_filter,
+							'field' => 'id',
+							'terms' => $term_list,
+							'operator' => 'NOT IN' 
 						) 
-					) 
-				);
-			}
-		}
+					);
+				}  // mla_filter_term == -1
+				else {
+					$clean_request['tax_query'] = array(
+						array(
+							'taxonomy' => $tax_filter,
+							'field' => 'id',
+							'terms' => array(
+								(int) $clean_request['mla_filter_term'] 
+							) 
+						) 
+					);
+				} // mla_filter_term != -1
+			} // mla_filter_term != 0
+			
+			unset( $clean_request['mla_filter_term'] );
+		} // isset mla_filter_term
 		
-		if ( isset( $request['mla-tax'] ) ) {
-			$request['tax_query'] = array(
+		if ( isset( $clean_request['mla-tax'] ) ) {
+			$clean_request['tax_query'] = array(
 				array(
-					'taxonomy' => $request['mla-tax'],
+					'taxonomy' => $clean_request['mla-tax'],
 					'field' => 'slug',
-					'terms' => $request['mla-term'],
+					'terms' => $clean_request['mla-term'],
 					'include_children' => false 
 				) 
 			);
-		}
+			
+			unset( $clean_request['mla-tax'] );
+			unset( $clean_request['mla-term'] );
+		} // isset mla_tax
 		
-		$request['post_type'] = 'attachment';
-		$states = 'inherit';
-		if ( current_user_can( 'read_private_posts' ) )
-			$states .= ',private';
-		
-		$request['post_status'] = isset( $request['status'] ) && 'trash' == $request['status'] ? 'trash' : $states;
-		return $request;
+		return $clean_request;
 	}
 
 	/**
@@ -322,13 +390,13 @@ class MLAData {
 		add_filter( 'posts_join', 'MLAData::mla_query_posts_join_filter' );
 		add_filter( 'posts_where', 'MLAData::mla_query_posts_where_filter' );
 		add_filter( 'posts_orderby', 'MLAData::mla_query_posts_orderby_filter' );
+
 		$results = new WP_Query( $request );
+
 		remove_filter( 'posts_orderby', 'MLAData::mla_query_posts_orderby_filter' );
 		remove_filter( 'posts_where', 'MLAData::mla_query_posts_where_filter' );
 		remove_filter( 'posts_join', 'MLAData::mla_query_posts_join_filter' );
 
-//		error_log( '_execute_list_table_query SQL ' . var_export( $results->request, true ), 0 );
-//		error_log( '_execute_list_table_query results ' . var_export( $results, true ), 0 );
 		return $results;
 	}
 	
@@ -345,9 +413,16 @@ class MLAData {
 	 */
 	public static function mla_query_posts_join_filter( $join_clause ) {
 		global $table_prefix;
-//		error_log( 'mla_query_posts_join_filter original ' . var_export( $join_clause, true ), 0 );
-		
-//		return ' LEFT JOIN mladev_postmeta ON (mladev_posts.ID = mladev_postmeta.post_id)';
+		/*
+		 * '_wp_attachment_image_alt' is special; we have to use an SQL VIEW to
+		 * build an intermediate table and modify the JOIN to include posts with
+		 * no value for this meta data field.
+		 */
+		if ( '_wp_attachment_image_alt' == self::$query_parameters['orderby'] ) {
+			$view_name = MLASettings::$mla_alt_text_view;
+			$join_clause .= " LEFT JOIN {$view_name} ON ({$table_prefix}posts.ID = {$view_name}.post_id)";
+		}
+
 		return $join_clause;
 	}
 
@@ -365,12 +440,10 @@ class MLAData {
 	 */
 	public static function mla_query_posts_where_filter( $where_clause ) {
 		global $table_prefix;
-//		error_log( 'mla_query_posts_where_filter original ' . var_export( $where_clause, true ), 0 );
 
 		if ( self::$query_parameters['detached'] )
 			$where_clause .= " AND {$table_prefix}posts.post_parent < 1";
 			
-//		error_log( 'mla_query_posts_where_filter UPDATED ' . var_export( $where_clause, true ), 0 );
 		return $where_clause;
 	}
 
@@ -388,7 +461,6 @@ class MLAData {
 	 */
 	public static function mla_query_posts_orderby_filter( $orderby_clause ) {
 		global $table_prefix;
-//		error_log( 'mla_query_posts_orderby_filter original ' . var_export( $orderby_clause, true ), 0 );
 
 		if ( isset( self::$query_parameters['orderby'] ) ) {
 			switch ( self::$query_parameters['orderby'] ) {
@@ -400,9 +472,19 @@ class MLAData {
 				case 'title_name':
 					$orderby = "{$table_prefix}posts.post_title";
 					break;
+				/*
+				 * The _wp_attached_file meta data value is present for all attachments, and the
+				 * sorting on the meta data value is handled by WP_Query
+				 */
 				case '_wp_attached_file':
-				case '_wp_attachment_image_alt':
 					$orderby = '';
+					break;
+				/*
+				 * The _wp_attachment_image_alt value is only present for images, so we have to
+				 * use the view we prepared to get attachments with no meta data value
+				 */
+				case '_wp_attachment_image_alt':
+					$orderby = MLASettings::$mla_alt_text_view . '.meta_value';
 					break;
 				default:
 					$orderby = "{$table_prefix}posts." . self::$query_parameters['orderby'];
@@ -412,7 +494,6 @@ class MLAData {
 				$orderby_clause = $orderby . ' ' . self::$query_parameters['order'];
 		} // isset
 
-//		error_log( 'mla_query_posts_orderby_filter UPDATED ' . var_export( $orderby_clause, true ), 0 );
 		return $orderby_clause;
 	}
 	
@@ -428,7 +509,7 @@ class MLAData {
 	 * @return	NULL|array NULL on failure else associative array
 	 */
 	function mla_get_attachment_by_id( $post_id ) {
-		global $wpdb, $post;
+		global $post;
 		
 		$item = get_post( $post_id );
 		if ( empty( $item ) ) {
@@ -441,7 +522,6 @@ class MLAData {
 			return NULL;
 		}
 		
-//		error_log('mla_get_attachment_by_id item ' . var_export($item, true), 0);
 		$post_data = (array) $item;
 		$post = $item;
 		setup_postdata( $item );
@@ -461,7 +541,6 @@ class MLAData {
 		 */
 		$post_data['mla_references'] = self::mla_fetch_attachment_references( $post_id, $post_data['post_parent'] );
 		
-//		error_log('post data ' . var_export($post_data, true), 0);
 		return $post_data;
 	}
 	
@@ -537,31 +616,48 @@ class MLAData {
 		}
 		
 		/*
+		 * Process the where-used settings option
+		 */
+		if ('checked' == MLASettings::mla_get_option( 'exclude_revisions' ) )
+			$exclude_revisions = "(post_type <> 'revision') AND ";
+		else
+			$exclude_revisions = '';
+				
+		/*
 		 * Look for the "Featured Image(s)"
 		 */
-		$features = $wpdb->get_results( "
-		SELECT post_id
-		FROM $wpdb->postmeta
-		WHERE meta_key = '_thumbnail_id' 
-		AND meta_value = $ID
-		" );
+		$features = $wpdb->get_results( 
+			$wpdb->prepare(
+				"
+				SELECT post_id
+				FROM {$wpdb->postmeta}
+				WHERE meta_key = '_thumbnail_id' AND meta_value = {$ID}
+				"
+			)
+		);
 		
 		if ( !empty( $features ) ) {
-			$references['found_reference'] = true;
-			
 			foreach ( $features as $feature ) {
-				$feature_results = $wpdb->get_results( "
-					SELECT post_type, post_title
-					FROM $wpdb->posts
-					WHERE ID = $feature->post_id 
-					" );
-				$references['features'][ $feature->post_id ] = $feature_results[0];
+				$feature_results = $wpdb->get_results(
+					$wpdb->prepare(
+						"
+						SELECT post_type, post_title
+						FROM {$wpdb->posts}
+						WHERE {$exclude_revisions}(ID = {$feature->post_id})
+						"
+					)
+				);
+					
+				if ( !empty( $feature_results ) ) {
+					$references['found_reference'] = true;
+					$references['features'][ $feature->post_id ] = $feature_results[0];
 				
-				if ( $feature->post_id == $parent ) {
-					$references['found_parent'] = true;
-					$references['parent_type'] = $feature_results[0]->post_type;
-					$references['parent_title'] = $feature_results[0]->post_title;
-				}
+					if ( $feature->post_id == $parent ) {
+						$references['found_parent'] = true;
+						$references['parent_type'] = $feature_results[0]->post_type;
+						$references['parent_title'] = $feature_results[0]->post_title;
+					}
+				} // !empty
 			} // foreach $feature
 		}
 		
@@ -569,18 +665,23 @@ class MLAData {
 		 * Look for item(s) inserted in post_content
 		 */
 		foreach ( $references['files'] as $file => $file_data ) {
-			$inserts = $wpdb->get_results( "
-			SELECT ID, post_type, post_title 
-			FROM $wpdb->posts
-			WHERE (
-				CONVERT(`post_content` USING utf8 )
-				LIKE '%$file%'
-			)
-			" );
+			$like = like_escape( $file );
+			$inserts = $wpdb->get_results(
+				$wpdb->prepare(
+					"
+					SELECT ID, post_type, post_title 
+					FROM {$wpdb->posts}
+					WHERE {$exclude_revisions}(
+						CONVERT(`post_content` USING utf8 )
+						LIKE %s)
+					", "%{$like}%"
+				)
+			);
 			
 			if ( !empty( $inserts ) ) {
 				$references['found_reference'] = true;
 				$references['inserts'][ $file ] = $inserts;
+				
 				foreach ( $inserts as $insert ) {
 					if ( $insert->ID == $parent ) {
 						$references['found_parent'] = true;
@@ -588,7 +689,7 @@ class MLAData {
 						$references['parent_title'] = $insert->post_title;
 					}
 				} // foreach $insert
-			}
+			} // !empty
 		} // foreach $file
 		
 		return $references;

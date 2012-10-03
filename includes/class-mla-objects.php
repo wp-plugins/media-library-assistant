@@ -137,9 +137,7 @@ class MLAObjects {
 	 */
 	public static function mla_taxonomy_column_filter( $place_holder, $column_name, $term_id ) {
 		$screen = get_current_screen();
-//		error_log('mla_taxonomy_column_filter $screen = ' . var_export($screen, true), 0);
 		$tax_object = get_taxonomy( $screen->taxonomy );
-//		error_log('mla_taxonomy_column_filter $tax_object = ' . var_export($tax_object, true), 0);
 		
 		$term = get_term( $term_id, $tax_object->name );
 		

@@ -54,7 +54,7 @@
             <div style="font-size:8pt;padding-bottom:10px;">&nbsp;&nbsp;[+help+]</div>
         </td></tr>
 <!-- template="messages" -->
-<div style="background:#ECECEC;border:1px solid #CCC;padding:0 10px;margin-top:5px;border-radius:5px;-moz-border-radius:5px;-webkit-border-radius:5px;">
+<div class="mla_messages">
 <p>
 [+messages+]
 </p></div>
@@ -77,7 +77,7 @@
 			Support
 			</th>
 		    <th scope="col" style="text-align:center">
-			Quick Edit
+			Inline Edit
 			</th>
 		    <th scope="col" style="text-align:center">
 			List Filter
@@ -122,6 +122,8 @@
         <input name="mla-options-save" type="submit" class="button-primary" value="Save Changes" />
         <input name="mla-options-reset" type="submit" class="button-primary" value="Delete all options and restore default settings"  style="float:right;"/>
     </p>
+[+_wpnonce+]
+[+_wp_http_referer+]
 </form>
 <h3>Plugin Documentation</h3>
 <p>
