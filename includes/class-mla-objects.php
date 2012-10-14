@@ -96,7 +96,9 @@ class MLAObjects {
 			add_filter( "manage_edit-{$tax_name}_columns", 'MLAObjects::mla_taxonomy_get_columns_filter', 10, 1 ); // $columns
 			add_filter( "manage_{$tax_name}_custom_column", 'MLAObjects::mla_taxonomy_column_filter', 10, 3 ); // $place_holder, $column_name, $tag->term_id
 		}
-	}
+	} // foreach
+	
+	// add_post_type_support( 'attachment', 'custom-fields' );  WP 3.5 experiment - MOVE THIS!
 	} // _build_taxonomies
 	
 	/**

@@ -8,12 +8,13 @@ Stable tag: 0.41
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
-Provides several enhancements to the WordPress Media Library,
-such as full taxonomy support, bulk & quick edit actions and where-used reporting.
+Provides enhancements to the Media Library; powerful[mla_gallery], full taxonomy support, bulk & quick edit actions and where-used reporting.
 
 == Description ==
 
 The Media Library Assistant provides several enhancements for managing the Media Library, including:
+
+* The **[mla_gallery] shortcode**, used in a post, page or custom post type to add a gallery of images and/or other Media Library items (such as PDF documents). [MLA Gallery](http://wordpress.org/extend/plugins/media-library-assistant/other_notes/ "Complete Documentation") is a superset of the [gallery] shortcode in the WordPress core; it is compatible with [gallery] and provides many enhancements. These include: 1) full support for WordPress categories, tags and custom taxonomies, 2) support for all post_mime_type values, not just images 3) media Library items need not be "attached" to the post.
 
 * An inline "Bulk Edit" area; update author or parent, add, remove or replace taxonomy terms for several attachments at once.
 * An inline "Quick Edit" action for many common fields.
@@ -25,9 +26,9 @@ The Media Library Assistant provides several enhancements for managing the Media
 * Provides additional view filters for mime types and taxonomies
 * Provides many more listing columns (more than 15) to choose from
 
-The Assistant is designed to work like the standard Media Library pages, so the learning curve is short and gentle. Contextual help is provided on every new screen to highlight new features.
+The Assistant is designed to work like the standard Media Library pages, so the learning curve is short and gentle. Contextual help is provided on every new screen to highlight new features. The [Other Notes section](http://wordpress.org/extend/plugins/media-library-assistant/other_notes/ "Click here, then scroll down for Help Summary") contains a summary of the help text following the [mla_gallery] documentation.
 
-This plugin was inspired by my work on the WordPress web site for our nonprofit, Fair Trade Judaica. If you find the Media Library Assistant plugin useful and would like to support a great cause, consider a <strong>tax-deductible</strong> donation to our work. Thank you!
+This plugin was inspired by my work on the WordPress web site for our nonprofit, Fair Trade Judaica. If you find the Media Library Assistant plugin useful and would like to support a great cause, consider a [<strong>tax-deductible</strong> donation](http://fairtradejudaica.org/make-a-difference/donate/ "Support Our Work") to our work. Thank you!
 
 == Installation ==
 
@@ -37,8 +38,21 @@ This plugin was inspired by my work on the WordPress web site for our nonprofit,
 1. Visit the "Assistant" submenu in the Media admin section
 1. Click the Screen Options link to customize the display
 1. Use the enhanced Edit page to assign categories and tags
+1. Use the [mla_gallery] shortcode to add galleries of images, documents and more to your posts and pages
 
 == Frequently Asked Questions ==
+
+= How can I use Categories, Tags and custom taxonomies to select images for display in my posts and pages? =
+
+The powerful [mla_gallery] shortcode supports almost all of the query flexibility provided by the WP_Query class. You can find [complete documentation](http://wordpress.org/extend/plugins/media-library-assistant/other_notes/ "Complete Documentation") in the Other Notes section.
+
+= Can I use [mla_gallery] for attachments other than images? =
+
+Yes! The [mla_gallery] shortcode supports all MIME types. You can build a gallery of your PDF documents, plain text files and other attachments. You can mix images and other MIME types in the same gallery, too; check out [the documentation](http://wordpress.org/extend/plugins/media-library-assistant/other_notes/ "Complete Documentation").
+
+= Can I attach an image to more than one post or page? =
+
+No; that's a structural limitation of the WordPress database. However, you can use Categories, Tags and custom taxonomies to organize your images and associate them with posts and pages in any way you like. The [mla_gallery] shortcode makes it easy.
 
 = Can the Assistant use the standard WordPress post Categories and Tags? =
 
@@ -83,8 +97,13 @@ All of the MLA source code has been annotated with "DocBlocks", a special type o
 
 == Changelog ==
 
+= 0.50 =
+* New: [mla_gallery] shortcode, a superset of the [gallery] shortcode that provides many enhancements. These include taxonomy support and all post_mime_type values (not just images). Media Library items need not be "attached" to the post.
+* New: [mla_gallery] shortcode documentation added to Settings page
+* New: Donate button and link added to Settings page
+
 = 0.41 =
-* Fix: SQL View now created for automatic plugin upgrades
+* Fix: SQL View (supporting ALT Text sorting) now created for automatic plugin upgrades
 
 = 0.40 =
 * New: Bulk Edit area; update author or parent, add, remove or replace taxonomy terms for several attachments at once
@@ -127,6 +146,9 @@ All of the MLA source code has been annotated with "DocBlocks", a special type o
 
 == Upgrade Notice ==
 
+= 0.50 =
+Upgrade for the new [mla_gallery] shortcode, a superset of the [gallery] shortcode that provides many enhancements. These include taxonomy support and all post_mime_type values (not just images).
+
 = 0.41 =
 Upgrade for the new Bulk Edit area; add, remove or replace taxonomy terms for several attachments at once. Sort your media listing on ALT Text, exclude revisions from where-used reporting.
 
@@ -144,6 +166,99 @@ You should upgrade to this version if you are getting "404 Not Found" errors whe
 
 = 0.1 =
 Initial release.
+
+==MLA Gallery Shortcode==
+
+The [mla_gallery] shortcode is used in a post, page or custom post type to add a gallery of images and/or other Media Library items (such as PDF documents). MLA Gallery is a superset of the [gallery] shortcode in the WordPress core; it is compatible with [gallery] and provides many enhancements. These include:
+
+* Full support for WordPress categories, tags and custom taxonomies. You can select items with any of the taxonomy parameters documented in the WP_Query class.
+* Support for all post_mime_type values, not just images.
+* Media Library items need not be "attached" to the post. You can build a gallery with any combination of items in the Library using taxonomy terms, custom fields and more.
+
+All of the options/parameters documented for the [gallery] shortcode are supported by the [mla_gallery] shortcode; you can find them in the WordPress Codex. Most of the parameters documented for the WP_Query class are also supported; see the WordPress Codex. Because the [mla_gallery] shortcode is designed to work with Media Library items, there are some parameter differences and extensions; these are documented below.
+
+<h4>Include, Exclude</h4>
+
+You can use "post_parent=all" to include or exclude attachments regardless of which post or page they are attached to. You can use "post_mime_type=all" to include or exclude attachments of all MIME types, not just images.
+
+<h4>Size</h4>
+
+The Size parameter specifies the image size to use for the thumbnail display. Valid values include "thumbnail", "medium", "large", "full" and any other additional image size that was registered with add_image_size(). The default value is "thumbnail". You can use "none" to suppress thumbnail display and substitute the item title string for the image.
+
+The [mla_gallery] shortcode supports an additional Size value, "icon", which shows a 60x60 pixel thumbnail for image items and an appropriate icon for non-image items such as PDF or text files.
+
+<h4>Order, Orderby</h4>
+
+To order the gallery randomly, use "orderby=rand". To suppress gallery ordering you can use "orderby=none" or "order=rand".
+
+The Orderby parameter specifies which database field is used to sort the gallery. You can order the gallery by any of the values documented for the WP_Query class reference in the Codex; you are NOT restricted to the values documented for the [gallery] shortcode.
+
+<h4>Post ID, Post Parent</h4>
+
+The "id" parameter lets you specify a post ID for your query. If the "id" parameter is not specified, the [mla_gallery] behavior differs from the [gallery] behavior. If your query uses taxonomy or custom field parameters, "author", "author_name" or "s" (search term), then the query will NOT be restricted to items attached to the current post. This lets you build a gallery with any combination of Media Library items that match the parameters.
+
+You can use the "post_parent" to override the default behavior. If you set "post_parent" to a specific post ID, only the items attached to that post are displayed. If you set "post_parent" to "current", only the items attached to the current post are displayed. If you set "post_parent" to "all", the query will not have a post ID or post_parent parameter.
+
+For example, `[mla_gallery tag="artisan"]` will display all images having the specified tag value, regardless of which post (if any) they are attached to. If you use `[mla_gallery tag="artisan" post_parent="current"]` it will display images having the specified tag value only if they are attached to the current post.
+
+<h4>Author, Author Name</h4>
+
+You can query by author's id or the "user_nicename" value (not the "display_name" value). Multiple author ID values are allowed, but only one author name value can be entered.
+
+<h4>Category Parameters</h4>
+
+Remember to use "post_parent=current" if you want to restrict your query to items attached to the current post.
+
+<h4>Tag Parameters</h4>
+
+Remember to use "post_parent=current" if you want to restrict your query to items attached to the current post.
+
+Note that the "tag_id" parameter requires exactly one tag ID; multiple IDs are not allowed. You can use the "tag__in" parameter to query for multiple values.
+
+<h4>Taxonomy Parameters</h4>
+
+The [mla_gallery] shortcode supports the simple "{tax} (string)" values (deprecated as of WordPress version 3.1) as well as the more powerful "tax_query" value. 
+
+For simple queries, enter the taxonomy name and the term(s) that must be matched, e.g.:
+
+* `[mla_gallery attachment_category='separate-category,another-category']`
+
+Note that you must use the name/slug strings for taxonomy and terms, not the "title" strings.
+
+More complex queries can be specified by using "tax_query", e.g.:
+
+* `[mla_gallery tax_query="array(array('taxonomy' => 'attachment_tag','field' => 'slug','terms' => 'artisan'))"]`
+* `[mla_gallery tax_query="array(array('taxonomy' => 'attachment_category','field' => 'id','terms' => array(11, 12)))" post_parent=current post_mime_type='']`
+
+The first example is equivalent to the simple query "attachment_tag=artisan". The second example matches items of all MIME types, attached to the current post, having an attachment_category ID of 11 or 12.
+
+When embedding the shortcode in the body of a post, be very careful when coding the tax_query; it must be a valid PHP array specification. In particular, code the query on one line; splitting it across lines can insert HTML &#8249;br&#8250; tags and corrupt your query. 
+
+Remember to use "post_parent=current" if you want to restrict your query to items attached to the current post.
+
+<h4>Post Type, Post Status and Post MIME Type</h4>
+
+For compatibility with the WordPress [gallery] shortcode, these parameters default to "post_type=attachment", "post_status=inherit" and "post_mime_type=image". You can override the defaults to, for example, display items in the trash ("post_status=trash") or PDF documents ("post_mime_type=application/pdf") or all MIME types ("post_mime_type=all"). I'm not sure why you'd want to override "post_type", but you are welcome to experiment and let me know what you find.
+
+<h4>Pagination Parameters</h4>
+
+The [mla_gallery] shortcode supplies "nopaging=true" as a default parameter. If you are working with a template that supports pagination you can replace this with specific values for "posts_per_page", "posts_per_archive_page", "paged" and/or "offset" . You can also pass "paged=current" to suppress the "nopaging" default; "current" will be replaced by the appropriate value (get_query_var('paged')).
+
+<h4>Time Parameters</h4>
+
+Support for time parameters is not included in the current version. I may add it later - let me know if you need it.
+
+<h4>Custom Field Parameters</h4>
+
+The [mla_gallery] shortcode supports the simple custom field parameters as well as the more powerful "meta_query" parameters made available as of WordPress 3.1.
+
+When embedding the shortcode in the body of a post, be very careful when coding the meta_query; it must be a valid PHP array specification. In particular, code the query on one line; splitting it across lines can insert HTML <br> tags and corrupt your query.
+
+Remember to use "post_parent=current" if you want to restrict your query to items attached to the current post.
+
+<h4>Search Keywords</h4>
+
+The search parameter ("s=keyword") will perform a keyword search. A cursory inspection of the code in /wp-includes/query.php reveals that the search includes the "post_title" and "post_content" (Description) fields but not the "post_excerpt" (Caption) field. An SQL "LIKE" clause is composed and added to the search criteria. I haven't done much testing of this parameter.
 
 == Help Summary ==
 <p><strong><em>Assistant Submenu - Attachment List Table</em></strong></p>
@@ -211,7 +326,8 @@ Initial release.
 </ul>
 <p><strong>Attachments Column</strong></p>
 <p>The &#8220;Attachments&#8221; colunm at the right of the table gives you the number of attachments associated with each tag. You can click on the number to get a list of all the attachments with that tag. The heading on the list page(s) will display the tag value you&#8217;ve selected.</p>
-== Other Notes ==
+
+== Acknowledgements ==
 
 I have used and learned much from the following books (among many):
 

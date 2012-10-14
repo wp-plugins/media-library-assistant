@@ -3,7 +3,7 @@
 <p>All the files you&#8217;ve uploaded are listed in the Media Library Assistant table, ordered by the Title field. You can change the sort order by clicking on one of the blue column names. You can change the default sort order on the Settings screen.</p>
 <p>You can use the Screen Options tab to customize the display of this screen. You can choose any combination of the sixteen (16) columns available for display. You can also choose how many items appear on each page of the display.</p>
 <p>You can narrow the list by file type/status using the text link filters at the top of the screen. You also can refine the list by month using the dropdown menu above the media table.</p>
-<p>If you have selected &#8220;Attachment Categories&#8221; support, you can filter the list by selecting &#8220;All Categories&#8221;, &#8220;No Categories&#8221; or a specific category from the drop down list. If you select a category that has child categories beneath it, attachments in any of the child categories will also appear in the filtered list.</p>
+<p>If you have selected taxonomy support, e.g., &#8220;Att. Categories&#8221;, you can filter the list by selecting &#8220;All Categories&#8221;, &#8220;No Categories&#8221; or a specific category from the drop down list. If you select a category that has child categories beneath it, attachments in any of the child categories will also appear in the filtered list. You can select the taxonomy you want to filter by on the Settings page.</p>
 <p><strong>NOTE:</strong> Month and category filters are &#8220;sticky&#8221;, i.e., they will persist as you resort the display or change the file type/status view.</p>
 <!-- template="mla-featured-inserted" -->
 <!-- title="Featured/Inserted" order="2" -->

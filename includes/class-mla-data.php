@@ -34,22 +34,42 @@ class MLAData {
 	 *
 	 * @since 0.1
 	 *
-	 * @param	string 	Complete path and name of the template file
+	 * @param	string 	Complete path and name of the template file, option name or the raw template
+	 * @param	string 	Type of template source; 'file', 'option', 'string'
 	 *
 	 * @return	string|array|false|NULL
 	 *  		string for files that do not contain template divider comments,
 	 * 			array for files containing template divider comments,
-	 *			false if file does not exist,
+	 *			false if file or option does not exist,
 	 *			NULL if file could not be loaded.
 	 */
-	public static function mla_load_template( $filepath ) {
-		if ( !file_exists( $filepath ) )
-			return false;
-		
-		$template = file_get_contents( $filepath, true );
-		if ( $template == false ) {
-			error_log( 'ERROR: mla_load_template file not found ' . var_export( $filepath, true ), 0 );
-			return NULL;
+	public static function mla_load_template( $source, $type = 'file' ) {
+		switch ( $type ) {
+			case 'file':
+				if ( !file_exists( $source ) )
+					return false;
+				
+				$template = file_get_contents( $source, true );
+				if ( $template == false ) {
+					error_log( 'ERROR: mla_load_template file not found ' . var_export( $source, true ), 0 );
+					return NULL;
+				}
+				break;
+			case 'option':
+				$template =  MLASettings::mla_get_option( $source );
+				if ( $template == false ) {
+					return false;
+				}
+				break;
+			case 'string':
+				$template = $source;
+				if ( empty( $template ) ) {
+					return false;
+				}
+				break;
+			default:
+				error_log( 'ERROR: mla_load_template bad source type ' . var_export( $type, true ), 0 );
+				return NULL;
 		}
 		
 		$match_count = preg_match_all( '#\<!-- template=".+" --\>#', $template, $matches, PREG_OFFSET_CAPTURE );

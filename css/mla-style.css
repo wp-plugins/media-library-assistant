@@ -116,3 +116,12 @@ textarea[readonly] {
 .bulk-edit-row-attachment fieldset.inline-edit-col-right label.inline-edit-tags span.title {
 	width: 99%
 }
+
+/*
+ * MLA Settings page
+ */
+ 
+ul.mla_settings { 
+	list-style-type: disc;
+	list-style-position: inside
+}

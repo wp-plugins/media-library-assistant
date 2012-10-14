@@ -178,7 +178,7 @@ the posts and postmeta tables, and all references to the attachment.</p></p>
 </div>
 <a name="mla_load_template" id="mla_load_template"></a><div class="element clickable method public mla_load_template" data-toggle="collapse" data-target=".mla_load_template .collapse">
 <h2>Load an HTML template from a file</h2>
-<pre>mla_load_template(string $filepath) : string | array | false | NULL</pre>
+<pre>mla_load_template(string $source, string $type) : string | array | false | NULL</pre>
 <div class="labels"></div>
 <div class="row collapse"><div class="detail-description">
 <p class="long_description"><p>Loads a template to a string or a multi-part template to an array.
@@ -190,11 +190,15 @@ where "key" becomes the key part of the array.</p></p>
 </tr></table>
 <h3>Parameters</h3>
 <div class="subelement argument">
-<h4>$filepath</h4>
-<code>string</code><p>Complete path and name of the template file</p></div>
+<h4>$source</h4>
+<code>string</code><p>Complete path and name of the template file, option name or the raw template</p></div>
+<div class="subelement argument">
+<h4>$type</h4>
+<code>string</code><p>Type of template source; 'file', 'option', 'string'</p>
+</div>
 <h3>Returns</h3>
 <div class="subelement response">
-<code>string</code><code>array</code><code>false</code><code>NULL</code>string for files that do not contain template divider comments, array for files containing template divider comments, false if file does not exist, NULL if file could not be loaded.</div>
+<code>string</code><code>array</code><code>false</code><code>NULL</code>string for files that do not contain template divider comments, array for files containing template divider comments, false if file or option does not exist, NULL if file could not be loaded.</div>
 </div></div>
 </div>
 <a name="mla_parse_template" id="mla_parse_template"></a><div class="element clickable method public mla_parse_template" data-toggle="collapse" data-target=".mla_parse_template .collapse">
@@ -419,7 +423,7 @@ any further logic required to translate those values is contained in the filters
 <div class="row"><footer class="span12">
             Template is built using <a href="http://twitter.github.com/bootstrap/">Twitter Bootstrap 2</a> and icons provided by <a href="http://glyphicons.com/">Glyphicons</a>.<br>
             Documentation is powered by <a href="http://www.phpdoc.org/">phpDocumentor 2.0.0a8</a> and<br>
-            generated on 2012-10-02T19:39:45-07:00.<br></footer></div>
+            generated on 2012-10-13T19:50:41-07:00.<br></footer></div>
 </div>
 </body>
 </html>

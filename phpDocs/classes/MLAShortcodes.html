@@ -54,6 +54,9 @@
 <i class="icon-custom icon-method"></i> Methods</li>
 <li class="method public "><a href="#initialize" title="initialize :: Initialization function, similar to __construct()"><span class="description">Initialization function, similar to __construct()</span><pre>initialize()</pre></a></li>
 <li class="method public "><a href="#mla_attachment_list_shortcode" title="mla_attachment_list_shortcode :: WordPress Shortcode; renders a complete list of all attachments and references to them"><span class="description">WordPress Shortcode; renders a complete list of all attachments and references to them</span><pre>mla_attachment_list_shortcode()</pre></a></li>
+<li class="method public "><a href="#mla_gallery_shortcode" title="mla_gallery_shortcode :: The MLA Gallery shortcode."><span class="description">The MLA Gallery shortcode.</span><pre>mla_gallery_shortcode()</pre></a></li>
+<li class="nav-header private">» Private</li>
+<li class="method private "><a href="#_get_attachments" title="_get_attachments :: Replaces /wp-includes/post.php function get_posts()"><span class="description">Replaces /wp-includes/post.php function get_posts()</span><pre>_get_attachments()</pre></a></li>
 </ul>
 </div>
 <div class="span8">
@@ -106,6 +109,46 @@
 </tr></table>
 </div></div>
 </div>
+<a name="mla_gallery_shortcode" id="mla_gallery_shortcode"></a><div class="element clickable method public mla_gallery_shortcode" data-toggle="collapse" data-target=".mla_gallery_shortcode .collapse">
+<h2>The MLA Gallery shortcode.</h2>
+<pre>mla_gallery_shortcode(array $attr) : string</pre>
+<div class="labels"></div>
+<div class="row collapse"><div class="detail-description">
+<p class="long_description"><p>This is a superset of the WordPress Gallery shortcode for displaying images on a post,
+page or custom post type. It is adapted from /wp-includes/media.php gallery_shortcode.
+Enhancements include many additional selection parameters and full taxonomy support.</p></p>
+<table class="table table-bordered"><tr>
+<th>since</th>
+<td>.50</td>
+</tr></table>
+<h3>Parameters</h3>
+<div class="subelement argument">
+<h4>$attr</h4>
+<code>array</code><p>Attributes of the shortcode.</p></div>
+<h3>Returns</h3>
+<div class="subelement response">
+<code>string</code>HTML content to display gallery.</div>
+</div></div>
+</div>
+<a name="_get_attachments" id="_get_attachments"></a><div class="element clickable method private _get_attachments" data-toggle="collapse" data-target="._get_attachments .collapse">
+<h2>Replaces /wp-includes/post.php function get_posts()</h2>
+<pre>_get_attachments(array $args) : array</pre>
+<div class="labels"></div>
+<div class="row collapse"><div class="detail-description">
+<p class="long_description"></p>
+<table class="table table-bordered"><tr>
+<th>since</th>
+<td>.50</td>
+</tr></table>
+<h3>Parameters</h3>
+<div class="subelement argument">
+<h4>$args</h4>
+<code>array</code><p>Attributes of the shortcode</p></div>
+<h3>Returns</h3>
+<div class="subelement response">
+<code>array</code>List of attachments returned from WP_Query</div>
+</div></div>
+</div>
 </div>
 </div>
 </div>
@@ -113,7 +156,7 @@
 <div class="row"><footer class="span12">
             Template is built using <a href="http://twitter.github.com/bootstrap/">Twitter Bootstrap 2</a> and icons provided by <a href="http://glyphicons.com/">Glyphicons</a>.<br>
             Documentation is powered by <a href="http://www.phpdoc.org/">phpDocumentor 2.0.0a8</a> and<br>
-            generated on 2012-10-02T19:39:45-07:00.<br></footer></div>
+            generated on 2012-10-13T19:50:41-07:00.<br></footer></div>
 </div>
 </body>
 </html>

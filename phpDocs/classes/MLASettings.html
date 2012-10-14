@@ -67,6 +67,7 @@ settings are being updated or reset."><span class="description">Determine MLA su
 settings are being updated or reset.</span><pre>mla_taxonomy_support()</pre></a></li>
 <li class="method public "><a href="#mla_update_option" title="mla_update_option :: Add or update the stored value of a defined MLA option"><span class="description">Add or update the stored value of a defined MLA option</span><pre>mla_update_option()</pre></a></li>
 <li class="nav-header private">» Private</li>
+<li class="method private "><a href="#_create_alt_text_view" title="_create_alt_text_view :: Add a view to the database to support sorting the listing on 'ALT Text'"><span class="description">Add a view to the database to support sorting the listing on 'ALT Text'</span><pre>_create_alt_text_view()</pre></a></li>
 <li class="method private "><a href="#_reset_settings" title="_reset_settings :: Delete saved settings, restoring default values"><span class="description">Delete saved settings, restoring default values</span><pre>_reset_settings()</pre></a></li>
 <li class="method private "><a href="#_save_settings" title="_save_settings :: Save settings to the options table"><span class="description">Save settings to the options table</span><pre>_save_settings()</pre></a></li>
 <li class="method private "><a href="#_taxonomy_handler" title="_taxonomy_handler :: Render and manage other taxonomy support options, e.g., Categories and Post Tags"><span class="description">Render and manage other taxonomy support options, e.g., Categories and Post Tags</span><pre>_taxonomy_handler()</pre></a></li>
@@ -278,6 +279,19 @@ settings are being updated or reset.</h2>
 <code>boolean</code>True if the value was changed or false if the update failed</div>
 </div></div>
 </div>
+<a name="_create_alt_text_view" id="_create_alt_text_view"></a><div class="element clickable method private _create_alt_text_view" data-toggle="collapse" data-target="._create_alt_text_view .collapse">
+<h2>Add a view to the database to support sorting the listing on 'ALT Text'</h2>
+<pre>_create_alt_text_view() : void</pre>
+<div class="labels"></div>
+<div class="row collapse"><div class="detail-description">
+<p class="long_description"><p>This function is called on each plugin invocation because the plugin upgrade process
+does not call the activation hook.</p></p>
+<table class="table table-bordered"><tr>
+<th>since</th>
+<td>0.50</td>
+</tr></table>
+</div></div>
+</div>
 <a name="_reset_settings" id="_reset_settings"></a><div class="element clickable method private _reset_settings" data-toggle="collapse" data-target="._reset_settings .collapse">
 <h2>Delete saved settings, restoring default values</h2>
 <pre>_reset_settings(array $template_array) : array</pre>
@@ -428,7 +442,7 @@ reset => reset function for 'custom' options; returns nothing. Usage:
 <div class="row"><footer class="span12">
             Template is built using <a href="http://twitter.github.com/bootstrap/">Twitter Bootstrap 2</a> and icons provided by <a href="http://glyphicons.com/">Glyphicons</a>.<br>
             Documentation is powered by <a href="http://www.phpdoc.org/">phpDocumentor 2.0.0a8</a> and<br>
-            generated on 2012-10-02T19:39:45-07:00.<br></footer></div>
+            generated on 2012-10-13T19:50:41-07:00.<br></footer></div>
 </div>
 </body>
 </html>

@@ -174,6 +174,7 @@ class MLASettings {
 		self::$mla_alt_text_view = $table_prefix . MLA_OPTION_PREFIX . self::MLA_ALT_TEXT_VIEW_SUFFIX;
 		add_action( 'admin_menu', 'MLASettings::mla_admin_menu_action' );
 		self::_version_upgrade();
+		self::_create_alt_text_view();
 	}
 	
 	/**
@@ -213,19 +214,19 @@ class MLASettings {
 		} // version is less than .30
 		
 		self::mla_update_option( self::MLA_VERSION_OPTION, MLA::CURRENT_MLA_VERSION );
-		self::mla_activation_hook();
 	}
 	
 	/**
-	 * Perform one-time actions on plugin activation
+	 * Add a view to the database to support sorting the listing on 'ALT Text'
 	 *
-	 * Adds a view to the database to support sorting the listing on 'ALT Text'.
+	 * This function is called on each plugin invocation because the plugin upgrade process
+	 * does not call the activation hook.
 	 *
-	 * @since 0.40
+	 * @since 0.50
 	 *
 	 * @return	void
 	 */
-	public static function mla_activation_hook( ) {
+	private static function _create_alt_text_view( ) {
 		global $wpdb, $table_prefix;
 		
 		$view_name = $table_prefix . MLA_OPTION_PREFIX . self::MLA_ALT_TEXT_VIEW_SUFFIX;
@@ -250,6 +251,19 @@ class MLASettings {
 				)
 			);
 		}
+	}
+	
+	/**
+	 * Perform one-time actions on plugin activation
+	 *
+	 * Adds a view to the database to support sorting the listing on 'ALT Text'.
+	 *
+	 * @since 0.40
+	 *
+	 * @return	void
+	 */
+	public static function mla_activation_hook( ) {
+		self::_create_alt_text_view();
 	}
 	
 	/**
@@ -435,7 +449,8 @@ class MLASettings {
 		 */
 		$shortcodes = array( 
 			// array("name" => "shortcode", "description" => "This shortcode...")
-			array( 'name' => 'mla_attachment_list', 'description' => 'renders a complete list of all attachments and references to them.' )
+			array( 'name' => 'mla_attachment_list', 'description' => 'renders a complete list of all attachments and references to them.' ),
+			array( 'name' => 'mla_gallery', 'description' => 'enhanced version of the WordPress [gallery] shortcode. For complete documentation <a href="#mla_gallery">click here</a>.' )
 		);
 		
 		$shortcode_list = '';
