@@ -4,7 +4,7 @@ Donate link: http://fairtradejudaica.org/make-a-difference/donate/
 Tags: attachments, documents, gallery, image, images, media, library, media library, media-tags, media tags, tags, media categories, categories
 Requires at least: 3.3
 Tested up to: 3.4.2
-Stable tag: 0.50
+Stable tag: 0.60
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -16,6 +16,7 @@ The Media Library Assistant provides several enhancements for managing the Media
 
 * The **[mla_gallery] shortcode**, used in a post, page or custom post type to add a gallery of images and/or other Media Library items (such as PDF documents). [MLA Gallery](http://wordpress.org/extend/plugins/media-library-assistant/other_notes/ "Complete Documentation") is a superset of the [gallery] shortcode in the WordPress core; it is compatible with [gallery] and provides many enhancements. These include: 1) full support for WordPress categories, tags and custom taxonomies, 2) support for all post_mime_type values, not just images 3) media Library items need not be "attached" to the post.
 
+* **Enhanced Search Media box**. Search can be extended to the name/slug, ALT text and caption fields. The connector between search terms can be "and" or "or".
 * An inline "Bulk Edit" area; update author or parent, add, remove or replace taxonomy terms for several attachments at once.
 * An inline "Quick Edit" action for many common fields.
 * Complete support for ALL taxonomies, including the standard Categories and Tags, your custom taxonomies and the Assistant's pre-defined Att. Categories and Att. Tags. You can add taxonomy columns to the Assistant listing, filter on any taxonomy, assign terms and list the attachments for a term.
@@ -48,7 +49,7 @@ The powerful [mla_gallery] shortcode supports almost all of the query flexibilit
 
 = Can I use [mla_gallery] for attachments other than images? =
 
-Yes! The [mla_gallery] shortcode supports all MIME types. You can build a gallery of your PDF documents, plain text files and other attachments. You can mix images and other MIME types in the same gallery, too; check out [the documentation](http://wordpress.org/extend/plugins/media-library-assistant/other_notes/ "Complete Documentation").
+Yes! The [mla_gallery] shortcode supports all MIME types when you add the post_mime_type parameter to your query. You can build a gallery of your PDF documents, plain text files and other attachments. You can mix images and other MIME types in the same gallery, too; check out [the documentation](http://wordpress.org/extend/plugins/media-library-assistant/other_notes/ "Complete Documentation").
 
 = Can I attach an image to more than one post or page? =
 
@@ -96,6 +97,16 @@ All of the MLA source code has been annotated with "DocBlocks", a special type o
 5. The Media Library Assistant submenu showing the Bulk Edit area with taxonomy Add, Remove and Replace options; also shows the tags suggestion popup.
 
 == Changelog ==
+
+= 0.60 =
+* New: Enhanced Search Media box. Search can be extended to the name/slug, ALT text and caption fields. The connector between search terms can be "and" or "or".
+* New: The ID/Parent and Parent ID columns now contain a link to a parent-specific search of the Media Library.
+* New: Menu Order added as sortable column, to Edit Single Item and to Quick Edit area.
+* New: The Author column now contains a link to an author-specific search of the Media Library.
+* New: The Attached to column now contains a link to the Edit Post/Page screen for the parent.
+* New: For WordPress version 3.5, the WordPress standard Edit Media screen replaces the MLA Edit Single Item screen.
+* Fix: HTML markup is no longer escaped in [mla_gallery] captions; caption processing now matches the WordPress [gallery] shortcode.
+* Fix: For WordPress version 3.5, duplicate "edit taxonomy" submenu entries will not appear.
 
 = 0.50 =
 * New: [mla_gallery] shortcode, a superset of the [gallery] shortcode that provides many enhancements. These include taxonomy support and all post_mime_type values (not just images). Media Library items need not be "attached" to the post.
@@ -146,6 +157,9 @@ All of the MLA source code has been annotated with "DocBlocks", a special type o
 
 == Upgrade Notice ==
 
+= 0.60 =
+Get the enhanced Search Media box. Extend search to the name/slug, ALT text and caption fields. Connect search terms with "and" or "or". Five other enhancements and two fixes.
+
 = 0.50 =
 Upgrade for the new [mla_gallery] shortcode, a superset of the [gallery] shortcode that provides many enhancements. These include taxonomy support and all post_mime_type values (not just images).
 
@@ -166,6 +180,16 @@ You should upgrade to this version if you are getting "404 Not Found" errors whe
 
 = 0.1 =
 Initial release.
+
+
+== Acknowledgements ==
+
+I have used and learned much from the following books (among many):
+
+* Professional WordPress; Design and Development, by Hal Stern, David Damstra and Brad Williams (Apr 5, 2010) ISBN-13: 978-0470560549
+* Professional WordPress Plugin Development, by Brad Williams, Ozh Richard and Justin Tadlock (Mar 15, 2011) ISBN-13: 978-0470916223
+* WordPress 3 Plugin Development Essentials, by Brian Bondari and Everett Griffiths (Mar 24, 2011) ISBN-13: 978-1849513524
+* WordPress and Ajax, by Ronald Huereca (Jan 13, 2011) ISBN-13: 978-1451598650
 
 ==MLA Gallery Shortcode==
 
@@ -261,6 +285,7 @@ Remember to use "post_parent=current" if you want to restrict your query to item
 The search parameter ("s=keyword") will perform a keyword search. A cursory inspection of the code in /wp-includes/query.php reveals that the search includes the "post_title" and "post_content" (Description) fields but not the "post_excerpt" (Caption) field. An SQL "LIKE" clause is composed and added to the search criteria. I haven't done much testing of this parameter.
 
 == Help Summary ==
+
 <p><strong><em>Assistant Submenu - Attachment List Table</em></strong></p>
 <p><strong>Overview</strong></p>
 <p>All the files you&#8217;ve uploaded are listed in the Media Library Assistant table, ordered by the Title field. You can change the sort order by clicking on one of the blue column names. You can change the default sort order on the Settings screen.</p>
@@ -276,6 +301,9 @@ The search parameter ("s=keyword") will perform a keyword search. A cursory insp
 <p>The Media Library Assistant provides two pre-defined taxonomies, &#8220;Att. Categories&#8221; and &#8220;Att. Tags&#8221; which are enabled by default. You can add or remove support for any registered taxonomy on the Settings screen. The standard WordPress Categories and Tags as well as any custom taxonomies can be supported.</p>
 <p>When you add support for a taxonomy it is visible on the main screen. If you want to hide the column simply use the Screen Options to uncheck the Show on screen box.</p>
 <p>Supported taxonomies also appear as submenus below the Media menu at the left of the screen. You can edit the taxonomy terms by clicking these submenus. The taxonomy edit screens include an &#8220;Attachments&#8221; column which displays the number of attachment objects for each term. You can display a filtered list of the attachments by clicking on the number in this column.</p>
+<p><strong>Search Media</strong></p>
+<p>The &#8220;Search Media&#8221; box supports a keyword search of several attachment fields; enter words and/or phrases in the box, separated by spaces. Click the Search Media button for a case-insensitive "SQL LIKE" search. Each keyword in the search phrase is matched independently, so the order of search words does not have to match the order in the text. For example, searching on "friend" and "best" will match "Best Friend". If you put quotes around a search phrase then word order is required for a match (and spaces between words must match as well). You can also match on partial words, e.g., "rien" will match "friend".
+<p>Once you&#8217;ve entered the terms you want, use the options below the box to tailor your search. You can pick the connector used between search terms; "or" means any of the terms will match, "and" means all of the terms must match. Use the checkboxes to extend your search to more fields in the database.</p>
 <p><strong>Bulk Actions</strong></p>
 <p>The &#8220;Bulk Actions&#8221; dropdown list works with the check box column to let you make changes to many items at once. Click the check box in the column title row to select all items on the page, or click the check box in a row to select items individually.</p>
 <p>Once you&#8217;ve selected the items you want, pick an action from the dropdown list and click Apply to perform the action on the selected items. The available actions will vary depending on the file type/status view you have picked.</p>
@@ -326,12 +354,3 @@ The search parameter ("s=keyword") will perform a keyword search. A cursory insp
 </ul>
 <p><strong>Attachments Column</strong></p>
 <p>The &#8220;Attachments&#8221; colunm at the right of the table gives you the number of attachments associated with each tag. You can click on the number to get a list of all the attachments with that tag. The heading on the list page(s) will display the tag value you&#8217;ve selected.</p>
-
-== Acknowledgements ==
-
-I have used and learned much from the following books (among many):
-
-* Professional WordPress; Design and Development, by Hal Stern, David Damstra and Brad Williams (Apr 5, 2010) ISBN-13: 978-0470560549
-* Professional WordPress Plugin Development, by Brad Williams, Ozh Richard and Justin Tadlock (Mar 15, 2011) ISBN-13: 978-0470916223
-* WordPress 3 Plugin Development Essentials, by Brian Bondari and Everett Griffiths (Mar 24, 2011) ISBN-13: 978-1849513524
-* WordPress and Ajax, by Ronald Huereca (Jan 13, 2011) ISBN-13: 978-1451598650

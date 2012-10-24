@@ -38,7 +38,7 @@ class MLA {
 	 *
 	 * @var	string
 	 */
-	const CURRENT_MLA_VERSION = '0.50';
+	const CURRENT_MLA_VERSION = '0.60';
 
 	/**
 	 * Minimum version of PHP required for this plugin
@@ -178,6 +178,10 @@ class MLA {
 	/**
 	 * Initialization function, similar to __construct()
 	 *
+	 * This function contains add_action and add_filter calls
+	 * to set up the Ajax handlers, enqueue JavaScript and CSS files, and 
+	 * set up the Assistant submenu.
+	 *
 	 * @since 0.1
 	 *
 	 * @return	void
@@ -251,10 +255,12 @@ class MLA {
 	 * Add the submenu pages
 	 *
 	 * Add a submenu page in the "Media" section,
-	 * add submenu page(s) for attachment taxonomies,
-	 * add filter to clean up taxonomy submenu labels
-	 * add settings page in the "Settings" section,
+	 * add settings page in the "Settings" section.
 	 * add settings link in the Plugins section entry for MLA.
+	 *
+	 * For WordPress versions before 3.5, 
+	 * add submenu page(s) for attachment taxonomies,
+	 * add filter to clean up taxonomy submenu labels.
 	 *
 	 * @since 0.1
 	 *
@@ -269,19 +275,60 @@ class MLA {
 		$taxonomies = get_object_taxonomies( 'attachment', 'objects' );
 		if ( !empty( $taxonomies ) ) {
 			foreach ( $taxonomies as $tax_name => $tax_object ) {
-				$hook = add_submenu_page( 'upload.php', $tax_object->label, $tax_object->label, 'manage_categories', 'mla-edit-tax-' . $tax_name, 'MLA::mla_edit_tax_redirect' );
-				add_action( 'load-' . $hook, 'MLA::mla_edit_tax_redirect' );
+				/*
+				 * WordPress 3.5 adds native support for taxonomies
+				 */
+				if( ! MLATest::$wordpress_3point5_plus ) {
+					$hook = add_submenu_page( 'upload.php', $tax_object->label, $tax_object->label, 'manage_categories', 'mla-edit-tax-' . $tax_name, 'MLA::mla_edit_tax_redirect' );
+					add_action( 'load-' . $hook, 'MLA::mla_edit_tax_redirect' );
+				} // ! MLATest::$wordpress_3point5_plus
+				
 				/*
 				 * The page_hook we need for taxonomy edits is slightly different
 				 */
 				$hook = 'edit-' . $tax_name;
 				self::$page_hooks[ $hook ] = 't_' . $tax_name;
-			}
+			} // foreach $taxonomies
 			
 			add_action( 'load-edit-tags.php', 'MLA::mla_add_help_tab' );
 		}
 		
-		add_filter( 'parent_file', 'MLA::mla_modify_parent_menu', 10, 1 );
+		add_filter( 'parent_file', 'MLA::mla_parent_file_filter', 10, 1 );
+
+		/*
+		 * For WordPress 3.5 and later we are using the native Edit Media screen,
+		 * so we want to get control back when the edits are completed.
+		 */
+		if( MLATest::$wordpress_3point5_plus ) {
+			add_filter( 'load-upload.php', 'MLA::mla_load_upload_php_action' );
+			add_filter( 'load-post.php', 'MLA::mla_load_post_php_action' );
+		}
+	}
+	
+	/**
+	 * Intercept return from Edit Media screen
+	 *
+	 * @since 0.60
+	 *
+	 * @return	void
+	 */
+	public static function mla_load_upload_php_action( ) {
+//		error_log('mla_load_upload_php_action current_screen = ' . var_export( get_current_screen(), true), 0 ); /* DGL */
+//		error_log('mla_load_upload_php_action $_REQUEST = ' . var_export($_REQUEST, true ), 0 ); /* DGL */
+//		error_log('mla_load_upload_php_action wp_get_referer() = ' . var_export(wp_get_referer(), true ), 0 ); /* DGL */
+	}
+	
+	/**
+	 * Intercept call to Edit Media screen
+	 *
+	 * @since 0.60
+	 *
+	 * @return	void
+	 */
+	public static function mla_load_post_php_action( ) {
+//		error_log('mla_load_post_php_action current_screen = ' . var_export( get_current_screen(), true), 0 ); /* DGL */
+//		error_log('mla_load_post_php_action $_REQUEST = ' . var_export($_REQUEST, true ), 0 ); /* DGL */
+//		error_log('mla_load_post_php_action wp_get_referer() = ' . var_export(wp_get_referer(), true ), 0 ); /* DGL */
 	}
 	
 	/**
@@ -304,61 +351,6 @@ class MLA {
 	}
 	
 	/**
-	 * Only show screen options on the table-list screen
-	 *
-	 * @since 0.1
-	 *
-	 * @param	boolean	True to display "Screen Options", false to suppress them
-	 * @param	string	Name of the page being loaded
-	 *
-	 * @return	boolean	True to display "Screen Options", false to suppress them
-	 */
-	public static function mla_screen_options_show_screen_filter( $show_screen, $this_screen ) {
-		if ( isset( $_REQUEST['mla_admin_action'] ) && ( $_REQUEST['mla_admin_action'] == self::MLA_ADMIN_SINGLE_EDIT_DISPLAY ) )
-			return false;
-		else
-			return $show_screen;
-	}
-	
-	/**
-	 * Save the "Entries per page" option set by this user
-	 *
-	 * @since 0.1
-	 *
-	 * @param	boolean	Unknown - always false?
-	 * @param	string	Name of the option being changed
-	 * @param	string	New value of the option
-	 *
-	 * @return	string|void	New value if this is our option, otherwise nothing
-	 */
-	public static function mla_set_screen_option_filter( $status, $option, $value )
-	{
-		if ( 'mla_entries_per_page' == $option )
-			return $value;
-	}
-	
-	/**
-	 * Redirect to the Edit Tags/Categories page
-	 *
-	 * The custom taxonomy add/edit submenu entries go to "upload.php" by default.
-	 * This filter is the only way to redirect them to the correct WordPress page.
-	 *
-	 * @since 0.1
-	 *
-	 * @return	void
-	 */
-	public static function mla_edit_tax_redirect( )
-	{
-		$screen = get_current_screen();
-
-		if ( isset( $_REQUEST['page'] ) && ( substr( $_REQUEST['page'], 0, 13 ) == 'mla-edit-tax-' ) ) {
-			$taxonomy = substr( $_REQUEST['page'], 13 );
-			wp_redirect( admin_url( 'edit-tags.php?taxonomy=' . $taxonomy . '&post_type=attachment' ), 302 );
-			exit;
-		}
-	}
-	
-	/**
 	 * Add contextual help tabs to all the MLA pages
 	 *
 	 * @since 0.1
@@ -368,7 +360,7 @@ class MLA {
 	public static function mla_add_help_tab( )
 	{
 		$screen = get_current_screen();
-
+		
 		/*
 		 * Is this one of our pages?
 		 */
@@ -445,11 +437,76 @@ class MLA {
 	}
 	
 	/**
+	 * Only show screen options on the table-list screen
+	 *
+	 * @since 0.1
+	 *
+	 * @param	boolean	True to display "Screen Options", false to suppress them
+	 * @param	string	Name of the page being loaded
+	 *
+	 * @return	boolean	True to display "Screen Options", false to suppress them
+	 */
+	public static function mla_screen_options_show_screen_filter( $show_screen, $this_screen ) {
+		if ( isset( $_REQUEST['mla_admin_action'] ) && ( $_REQUEST['mla_admin_action'] == self::MLA_ADMIN_SINGLE_EDIT_DISPLAY ) )
+			return false;
+		else
+			return $show_screen;
+	}
+	
+	/**
+	 * Save the "Entries per page" option set by this user
+	 *
+	 * @since 0.1
+	 *
+	 * @param	boolean	Unknown - always false?
+	 * @param	string	Name of the option being changed
+	 * @param	string	New value of the option
+	 *
+	 * @return	string|void	New value if this is our option, otherwise nothing
+	 */
+	public static function mla_set_screen_option_filter( $status, $option, $value )
+	{
+		if ( 'mla_entries_per_page' == $option )
+			return $value;
+	}
+	
+	/**
+	 * Redirect to the Edit Tags/Categories page
+	 *
+	 * The custom taxonomy add/edit submenu entries go to "upload.php" by default.
+	 * This filter is the only way to redirect them to the correct WordPress page.
+	 * The filter is not required for WordPress 3.5 and later.
+	 *
+	 * @since 0.1
+	 *
+	 * @return	void
+	 */
+	public static function mla_edit_tax_redirect( )
+	{
+		/*
+		 * WordPress 3.5 adds native support for taxonomies
+		 */
+		if( MLATest::$wordpress_3point5_plus ) 
+			return;
+
+		$screen = get_current_screen();
+
+		if ( isset( $_REQUEST['page'] ) && ( substr( $_REQUEST['page'], 0, 13 ) == 'mla-edit-tax-' ) ) {
+			$taxonomy = substr( $_REQUEST['page'], 13 );
+			wp_redirect( admin_url( 'edit-tags.php?taxonomy=' . $taxonomy . '&post_type=attachment' ), 302 );
+			exit;
+		}
+	}
+	
+	/**
 	 * Cleanup menus for Edit Tags/Categories page
 	 *
-	 * The submenu entries for custom taxonomies under the "Media" menu are not set up
-	 * correctly by WordPress, so this function cleans them up, redirecting the request
-	 * to the right WordPress page for editing/adding taxonomy terms.
+	 * For WordPress before 3.5, the submenu entries for custom taxonomies
+	 * under the "Media" menu are not set up correctly by WordPress, so this
+	 * function cleans them up, redirecting the request to the right WordPress
+	 * page for editing/adding taxonomy terms.
+	 * For WordPress 3.5 and later, the function fixes the submenu bolding when
+	 * going to the Edit Media screen.
 	 *
 	 * @since 0.1
 	 *
@@ -457,9 +514,21 @@ class MLA {
 	 *
 	 * @return	string	The updated top-level menu page
 	 */
-	public static function mla_modify_parent_menu( $parent_file ) {
-		global $submenu;
+	public static function mla_parent_file_filter( $parent_file ) {
+		global $submenu_file, $submenu;
 		
+		/*
+		 * Make sure the "Assistant" submenu line is bolded when we go to the Edit Media page
+		 */
+		if ( isset( $_REQUEST['mla_source'] ) )
+			$submenu_file = 'mla-menu';
+			
+		/*
+		 * WordPress 3.5 adds native support for taxonomies
+		 */
+		if( MLATest::$wordpress_3point5_plus ) 
+			return $parent_file;
+
 		if ( isset( $_REQUEST['taxonomy'] ) ) {
 			$taxonomies = get_object_taxonomies( 'attachment', 'objects' );
 			
@@ -626,6 +695,8 @@ class MLA {
 			
 			if ( !empty( $_REQUEST['heading_suffix'] ) ) {
 				echo ' - ' . $_REQUEST['heading_suffix'] . "</h2>\r\n";
+			} elseif ( !empty( $_REQUEST['s'] ) && !empty( $_REQUEST['mla-search-fields'] ) ) {
+				echo ' - search results for "' . stripslashes( trim( $_REQUEST['s'] ) ) . "\"</h2>\r\n";
 			} else
 				echo "</h2>\r\n";
 			
@@ -644,7 +715,58 @@ class MLA {
 			
 			//	 Forms are NOT created automatically, so you need to wrap the table in one to use features like bulk actions
 			echo '<form id="mla-filter" action="' . admin_url( 'upload.php' ) . "\" method=\"get\">\r\n";
-			
+			/*
+			 * Compose the Search Media box
+			 */
+			if ( !empty( $_REQUEST['s'] ) && !empty( $_REQUEST['mla-search-fields'] ) ) {
+				$search_value = esc_attr( stripslashes( trim( $_REQUEST['s'] ) ) );
+				$search_fields = $_REQUEST['mla-search-fields'];
+				$search_connector = $_REQUEST['mla-search-connector'];
+			} else {
+				$search_value = '';
+				$search_fields = array ( 'title', 'content' );
+				$search_connector = 'AND';
+			}
+				
+			echo '<p class="search-box">' . "\r\n";
+			echo '<label class="screen-reader-text" for="media-search-input">Search Media:</label>' . "\r\n";
+			echo '<input type="text" size="45"  id="media-search-input" name="s" value="' . $search_value . '" />' . "\r\n";
+			echo '<input type="submit" name="mla-search-submit" id="search-submit" class="button" value="Search Media"  /><br>' . "\r\n";
+			if ( 'OR' == $search_connector ) {
+				echo '<input type="radio" name="mla-search-connector" value="AND" />&nbsp;and&nbsp;' . "\r\n";
+				echo '<input type="radio" name="mla-search-connector" checked="checked" value="OR" />&nbsp;or&nbsp;' . "\r\n";
+			} else {
+				echo '<input type="radio" name="mla-search-connector" checked="checked" value="AND" />&nbsp;and&nbsp;' . "\r\n";
+				echo '<input type="radio" name="mla-search-connector" value="OR" />&nbsp;or&nbsp;' . "\r\n";
+			}
+
+			if ( in_array( 'title', $search_fields ) )
+				echo '<input type="checkbox" name="mla-search-fields[]" id="search-title" checked="checked" value="title" />&nbsp;title&nbsp;' . "\r\n";
+			else
+				echo '<input type="checkbox" name="mla-search-fields[]" id="search-title" value="title" />&nbsp;title&nbsp;' . "\r\n";
+				
+			if ( in_array( 'name', $search_fields ) )
+				echo '<input type="checkbox" name="mla-search-fields[]" id="search-name" checked="checked" value="name" />&nbsp;name&nbsp;' . "\r\n";
+			else
+				echo '<input type="checkbox" name="mla-search-fields[]" id="search-name" value="name" />&nbsp;name&nbsp;' . "\r\n";
+
+			if ( in_array( 'alt-text', $search_fields ) )
+				echo '<input type="checkbox" name="mla-search-fields[]" id="search-alt-text" checked="checked" value="alt-text" />&nbsp;ALT text&nbsp;' . "\r\n";
+			else
+				echo '<input type="checkbox" name="mla-search-fields[]" id="search-alt-text" value="alt-text" />&nbsp;ALT text&nbsp;' . "\r\n";
+
+			if ( in_array( 'excerpt', $search_fields ) )
+				echo '<input type="checkbox" name="mla-search-fields[]" id="search-excerpt" checked="checked" value="excerpt" />&nbsp;caption&nbsp;' . "\r\n";
+			else
+				echo '<input type="checkbox" name="mla-search-fields[]" id="search-excerpt" value="excerpt" />&nbsp;caption&nbsp;' . "\r\n";
+
+			if ( in_array( 'content', $search_fields ) )
+				echo '<input type="checkbox" name="mla-search-fields[]" id="search-content" checked="checked" value="content" />&nbsp;description&nbsp;' . "\r\n";
+			else
+				echo '<input type="checkbox" name="mla-search-fields[]" id="search-content" value="content" />&nbsp;description&nbsp;' . "\r\n";
+
+			echo '</p>' . "\r\n";
+
 			/*
 			 * We also need to ensure that the form posts back to our current page and remember all the view arguments
 			 */
@@ -1142,6 +1264,7 @@ class MLA {
 			'post_date' => $post_data['post_date'],
 			'post_modified' => $post_data['post_modified'],
 			'post_parent' => $post_data['post_parent'],
+			'menu_order' => $post_data['menu_order'],
 			'attachment_icon' => wp_get_attachment_image( $post_id, array( 160, 120 ), true ),
 			'file_name' => esc_html( $post_data['mla_references']['file'] ),
 			'width' => $width,
@@ -1274,6 +1397,15 @@ class MLA {
 					$value = absint( $value );
 					
 					$message .= sprintf( 'Changing Parent from "%1$s" to "%2$s"<br>', $post_data[ $key ], $value );
+					$updates[ $key ] = $value;
+					break;
+				case 'menu_order':
+					if ( $value == $post_data[ $key ] )
+						break;
+						
+					$value = absint( $value );
+					
+					$message .= sprintf( 'Changing Menu Order from "%1$s" to "%2$s"<br>', $post_data[ $key ], $value );
 					$updates[ $key ] = $value;
 					break;
 				case 'post_author':

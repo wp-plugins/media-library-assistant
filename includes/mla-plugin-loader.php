@@ -16,6 +16,13 @@ if (!defined('MLA_OPTION_PREFIX'))
 	define('MLA_OPTION_PREFIX', 'mla_');
 
 /*
+ * Basic library of run-time tests.
+ */
+require_once( MLA_PLUGIN_PATH . 'tests/class-mla-tests.php' );
+
+add_action( 'init', 'MLATest::initialize' );
+
+/*
  * Template file and database access functions.
  */
 require_once( MLA_PLUGIN_PATH . 'includes/class-mla-data.php' );
@@ -35,11 +42,6 @@ add_action('init', 'MLAObjects::initialize');
 require_once( MLA_PLUGIN_PATH . 'includes/class-mla-shortcodes.php');
 
 add_action('init', 'MLAShortcodes::initialize');
-
-/*
- * Basic library of run-time tests.
- */
-require_once( MLA_PLUGIN_PATH . 'tests/class-mla-tests.php' );
 
 /*
  * Plugin settings and management page

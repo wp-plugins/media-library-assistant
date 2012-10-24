@@ -60,7 +60,9 @@
 <li class="method public "><a href="#mla_admin_menu_action" title="mla_admin_menu_action :: Add the submenu pages"><span class="description">Add the submenu pages</span><pre>mla_admin_menu_action()</pre></a></li>
 <li class="method public "><a href="#mla_edit_tax_redirect" title="mla_edit_tax_redirect :: Redirect to the Edit Tags/Categories page"><span class="description">Redirect to the Edit Tags/Categories page</span><pre>mla_edit_tax_redirect()</pre></a></li>
 <li class="method public "><a href="#mla_inline_edit_action" title="mla_inline_edit_action :: Ajax handler for inline editing (quick and bulk edit)"><span class="description">Ajax handler for inline editing (quick and bulk edit)</span><pre>mla_inline_edit_action()</pre></a></li>
-<li class="method public "><a href="#mla_modify_parent_menu" title="mla_modify_parent_menu :: Cleanup menus for Edit Tags/Categories page"><span class="description">Cleanup menus for Edit Tags/Categories page</span><pre>mla_modify_parent_menu()</pre></a></li>
+<li class="method public "><a href="#mla_load_post_php_action" title="mla_load_post_php_action :: Intercept call to Edit Media screen"><span class="description">Intercept call to Edit Media screen</span><pre>mla_load_post_php_action()</pre></a></li>
+<li class="method public "><a href="#mla_load_upload_php_action" title="mla_load_upload_php_action :: Intercept return from Edit Media screen"><span class="description">Intercept return from Edit Media screen</span><pre>mla_load_upload_php_action()</pre></a></li>
+<li class="method public "><a href="#mla_parent_file_filter" title="mla_parent_file_filter :: Cleanup menus for Edit Tags/Categories page"><span class="description">Cleanup menus for Edit Tags/Categories page</span><pre>mla_parent_file_filter()</pre></a></li>
 <li class="method public "><a href="#mla_render_admin_page" title='mla_render_admin_page :: Render the "Assistant" subpage in the Media section, using the list_table package'><span class="description">Render the "Assistant" subpage in the Media section, using the list_table package</span><pre>mla_render_admin_page()</pre></a></li>
 <li class="method public "><a href="#mla_screen_options_show_screen_filter" title="mla_screen_options_show_screen_filter :: Only show screen options on the table-list screen"><span class="description">Only show screen options on the table-list screen</span><pre>mla_screen_options_show_screen_filter()</pre></a></li>
 <li class="method public "><a href="#mla_set_screen_option_filter" title='mla_set_screen_option_filter :: Save the "Entries per page" option set by this user'><span class="description">Save the "Entries per page" option set by this user</span><pre>mla_set_screen_option_filter()</pre></a></li>
@@ -134,7 +136,9 @@ of images and files held in the WordPress Media Library.</p>
 <pre>initialize() : void</pre>
 <div class="labels"></div>
 <div class="row collapse"><div class="detail-description">
-<p class="long_description"></p>
+<p class="long_description"><p>This function contains add_action and add_filter calls
+to set up the Ajax handlers, enqueue JavaScript and CSS files, and
+set up the Assistant submenu.</p></p>
 <table class="table table-bordered"><tr>
 <th>since</th>
 <td>0.1</td>
@@ -199,10 +203,12 @@ of images and files held in the WordPress Media Library.</p>
 <div class="labels"></div>
 <div class="row collapse"><div class="detail-description">
 <p class="long_description"><p>Add a submenu page in the "Media" section,
+add settings page in the "Settings" section.
+add settings link in the Plugins section entry for MLA.</p>
+
+<p>For WordPress versions before 3.5,
 add submenu page(s) for attachment taxonomies,
-add filter to clean up taxonomy submenu labels
-add settings page in the "Settings" section,
-add settings link in the Plugins section entry for MLA.</p></p>
+add filter to clean up taxonomy submenu labels.</p></p>
 <table class="table table-bordered"><tr>
 <th>since</th>
 <td>0.1</td>
@@ -215,7 +221,8 @@ add settings link in the Plugins section entry for MLA.</p></p>
 <div class="labels"></div>
 <div class="row collapse"><div class="detail-description">
 <p class="long_description"><p>The custom taxonomy add/edit submenu entries go to "upload.php" by default.
-This filter is the only way to redirect them to the correct WordPress page.</p></p>
+This filter is the only way to redirect them to the correct WordPress page.
+The filter is not required for WordPress 3.5 and later.</p></p>
 <table class="table table-bordered"><tr>
 <th>since</th>
 <td>0.1</td>
@@ -234,14 +241,41 @@ This filter is the only way to redirect them to the correct WordPress page.</p><
 </tr></table>
 </div></div>
 </div>
-<a name="mla_modify_parent_menu" id="mla_modify_parent_menu"></a><div class="element clickable method public mla_modify_parent_menu" data-toggle="collapse" data-target=".mla_modify_parent_menu .collapse">
-<h2>Cleanup menus for Edit Tags/Categories page</h2>
-<pre>mla_modify_parent_menu(array $parent_file) : string</pre>
+<a name="mla_load_post_php_action" id="mla_load_post_php_action"></a><div class="element clickable method public mla_load_post_php_action" data-toggle="collapse" data-target=".mla_load_post_php_action .collapse">
+<h2>Intercept call to Edit Media screen</h2>
+<pre>mla_load_post_php_action() : void</pre>
 <div class="labels"></div>
 <div class="row collapse"><div class="detail-description">
-<p class="long_description"><p>The submenu entries for custom taxonomies under the "Media" menu are not set up
-correctly by WordPress, so this function cleans them up, redirecting the request
-to the right WordPress page for editing/adding taxonomy terms.</p></p>
+<p class="long_description"></p>
+<table class="table table-bordered"><tr>
+<th>since</th>
+<td>0.60</td>
+</tr></table>
+</div></div>
+</div>
+<a name="mla_load_upload_php_action" id="mla_load_upload_php_action"></a><div class="element clickable method public mla_load_upload_php_action" data-toggle="collapse" data-target=".mla_load_upload_php_action .collapse">
+<h2>Intercept return from Edit Media screen</h2>
+<pre>mla_load_upload_php_action() : void</pre>
+<div class="labels"></div>
+<div class="row collapse"><div class="detail-description">
+<p class="long_description"></p>
+<table class="table table-bordered"><tr>
+<th>since</th>
+<td>0.60</td>
+</tr></table>
+</div></div>
+</div>
+<a name="mla_parent_file_filter" id="mla_parent_file_filter"></a><div class="element clickable method public mla_parent_file_filter" data-toggle="collapse" data-target=".mla_parent_file_filter .collapse">
+<h2>Cleanup menus for Edit Tags/Categories page</h2>
+<pre>mla_parent_file_filter(array $parent_file) : string</pre>
+<div class="labels"></div>
+<div class="row collapse"><div class="detail-description">
+<p class="long_description"><p>For WordPress before 3.5, the submenu entries for custom taxonomies
+under the "Media" menu are not set up correctly by WordPress, so this
+function cleans them up, redirecting the request to the right WordPress
+page for editing/adding taxonomy terms.
+For WordPress 3.5 and later, the function fixes the submenu bolding when
+going to the Edit Media screen.</p></p>
 <table class="table table-bordered"><tr>
 <th>since</th>
 <td>0.1</td>
@@ -725,7 +759,7 @@ for a single attachment.</h2>
 <div class="row"><footer class="span12">
             Template is built using <a href="http://twitter.github.com/bootstrap/">Twitter Bootstrap 2</a> and icons provided by <a href="http://glyphicons.com/">Glyphicons</a>.<br>
             Documentation is powered by <a href="http://www.phpdoc.org/">phpDocumentor 2.0.0a8</a> and<br>
-            generated on 2012-10-13T19:50:41-07:00.<br></footer></div>
+            generated on 2012-10-24T10:33:50-07:00.<br></footer></div>
 </div>
 </body>
 </html>

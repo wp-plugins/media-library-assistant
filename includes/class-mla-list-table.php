@@ -77,6 +77,7 @@ class MLA_List_Table extends WP_List_Table {
 		'post_title'  => 'Title',
 		'post_name'  => 'Name',
 		'parent'  => 'Parent ID',
+		'menu_order' => 'Menu Order',
 		'featured'   => 'Featured in',
 		'inserted' => 'Inserted in',
 		'alt_text' => 'ALT Text',
@@ -112,17 +113,18 @@ class MLA_List_Table extends WP_List_Table {
 		0 => 'post_title',
 		1 => 'post_name',
 		2 => 'parent',
+		3 => 'menu_order',
 		// 'featured',
 		// 'inserted,
-		3 => 'alt_text',
-		4 => 'caption',
-		5 => 'description',
-		6 => 'post_mime_type',
-		7 => 'base_file',
-		8 => 'date',
-		9 => 'modified',
-		10 => 'author',
-		11 => 'attached_to',
+		4 => 'alt_text',
+		5 => 'caption',
+		6 => 'description',
+		7 => 'post_mime_type',
+		8 => 'base_file',
+		9 => 'date',
+		10 => 'modified',
+		11 => 'author',
+		12 => 'attached_to',
 		// taxonomy columns added by mla_admin_init_action
 	);
 	
@@ -147,6 +149,7 @@ class MLA_List_Table extends WP_List_Table {
 		'post_title' => array('post_title',false),
 		'post_name' => array('post_name',false),
 		'parent' => array('post_parent',false),
+		'menu_order' => array('menu_order',false),
 		// 'featured'   => array('featured',false),
 		// 'inserted' => array('inserted',false),
 		'alt_text' => array('_wp_attachment_image_alt',false),
@@ -504,7 +507,15 @@ class MLA_List_Table extends WP_List_Table {
 				if ( $this->is_trash )
 					$actions['restore'] = '<a class="submitdelete" href="' . add_query_arg( $view_args, wp_nonce_url( '?mla_admin_action=' . MLA::MLA_ADMIN_SINGLE_RESTORE, MLA::MLA_ADMIN_NONCE ) ) . '" title="Restore this item from the Trash">Restore</a>';
 				else {
-					$actions['edit'] = '<a href="' . add_query_arg( $view_args, wp_nonce_url( '?mla_admin_action=' . MLA::MLA_ADMIN_SINGLE_EDIT_DISPLAY, MLA::MLA_ADMIN_NONCE ) ) . '" title="Edit this item">Edit</a>';
+					/*
+					 * Use the WordPress Edit Media screen for 3.5 and later
+					 */
+					if( MLATest::$wordpress_3point5_plus ) {
+						$actions['edit'] = '<a href="' . admin_url( 'post.php' ) . '?post=' . $item->ID . '&action=edit&mla_source=edit" title="Edit this item">Edit</a>';
+					}
+					else {
+						$actions['edit'] = '<a href="' . add_query_arg( $view_args, wp_nonce_url( '?mla_admin_action=' . MLA::MLA_ADMIN_SINGLE_EDIT_DISPLAY, MLA::MLA_ADMIN_NONCE ) ) . '" title="Edit this item">Edit</a>';
+					}
 					$actions['inline hide-if-no-js'] = '<a class="editinline" href="#" title="Edit this item inline">Quick Edit</a>';
 				}
 			} // edit_post
@@ -548,6 +559,7 @@ class MLA_List_Table extends WP_List_Table {
 		}
 		
 		$inline_data .= '	<div class="post_parent">' . $item->post_parent . "</div>\r\n";
+		$inline_data .= '	<div class="menu_order">' . $item->menu_order . "</div>\r\n";
 		$inline_data .= '	<div class="post_author">' . $item->post_author . "</div>\r\n";
 		
 		$taxonomies = get_object_taxonomies( 'attachment', 'objects' );
@@ -576,11 +588,19 @@ class MLA_List_Table extends WP_List_Table {
 	 */
 	function column_ID_parent( $item ) {
 		$row_actions = self::_build_rollover_actions( $item, 'ID_parent' );
-		
+		if ( $item->post_parent )
+			$parent = sprintf( '<a href="%1$s">(parent:%2$s)</a>', esc_url( add_query_arg( array(
+					 'page' => 'mla-menu',
+					'post_parent' => $item->post_parent,
+					'heading_suffix' => urlencode( 'Parent: ' . $item->parent_title ) 
+				), 'upload.php' ) ), (string) $item->post_parent );
+		else
+			$parent = 'parent:0';
+
 		if ( !empty( $row_actions ) ) {
-			return sprintf( '%1$s<br><span style="color:silver">(parent:%2$s)</span><br>%3$s%4$s', /*%1$s*/ $item->ID, /*%2$s*/ $item->post_parent, /*%3$s*/ $this->row_actions( $row_actions ), /*%4$s*/ $this->_build_inline_data( $item ) );
+			return sprintf( '%1$s<br><span style="color:silver">%2$s</span><br>%3$s%4$s', /*%1$s*/ $item->ID, /*%2$s*/ $parent, /*%3$s*/ $this->row_actions( $row_actions ), /*%4$s*/ $this->_build_inline_data( $item ) );
 		} else {
-			return sprintf( '%1$s<br><span style="color:silver">(parent:%2$s)</span>', /*%1$s*/ $item->ID, /*%2$s*/ $item->post_parent );
+			return sprintf( '%1$s<br><span style="color:silver">%2$s</span>', /*%1$s*/ $item->ID, /*%2$s*/ $parent );
 		}
 	}
 	
@@ -660,7 +680,27 @@ class MLA_List_Table extends WP_List_Table {
 	 * @return	string	HTML markup to be placed inside the column
 	 */
 	function column_parent( $item ) {
-		return (string) $item->post_parent;
+		if ( $item->post_parent ){
+			return sprintf( '<a href="%s">%s</a>', esc_url( add_query_arg( array(
+				 'page' => 'mla-menu',
+				'post_parent' => $item->post_parent,
+				'heading_suffix' => urlencode( 'Parent: ' . $item->parent_title ) 
+			), 'upload.php' ) ), (string) $item->post_parent );
+		}
+		else
+			return (string) $item->post_parent;
+	}
+	
+	/**
+	 * Supply the content for a custom column
+	 *
+	 * @since 0.60
+	 * 
+	 * @param	array	A singular attachment (post) object
+	 * @return	string	HTML markup to be placed inside the column
+	 */
+	function column_menu_order( $item ) {
+		return (string) $item->menu_order;
 	}
 	
 	/**
@@ -846,7 +886,11 @@ class MLA_List_Table extends WP_List_Table {
 		$user = get_user_by( 'id', $item->post_author );
 		
 		if ( isset( $user->data->display_name ) )
-			return $user->data->display_name;
+			return sprintf( '<a href="%s">%s</a>', esc_url( add_query_arg( array(
+				 'page' => 'mla-menu',
+				'author' => $item->post_author,
+				'heading_suffix' => urlencode( $user->data->display_name ) 
+			), 'upload.php' ) ), esc_html( $user->data->display_name ) );
 		else
 			return 'unknown';
 	}
@@ -866,7 +910,11 @@ class MLA_List_Table extends WP_List_Table {
 			$parent_date = '';
 		
 		if ( isset( $item->parent_title ) )
-			$parent_title = esc_attr( $item->parent_title );
+//			$parent_title = esc_attr( $item->parent_title );
+			$parent_title = sprintf( '<a href="%s">%s</a>', esc_url( add_query_arg( array(
+				'post' => $item->post_parent,
+				'action' => 'edit'
+			), 'post.php' ) ), esc_attr( $item->parent_title ) );
 		else
 			$parent_title = '(Unattached)';
 		

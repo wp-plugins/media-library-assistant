@@ -917,7 +917,7 @@ class MLASettings {
 				self::mla_delete_option( $key );
 				return "<br>Reset custom {$key}\r\n";
 			default:
-				error_log( 'ERROR: _save_settings unknown type(2): ' . var_export( $value, true ), 0 );
+				error_log( 'ERROR: _save_settings unknown type(3): ' . var_export( $value, true ), 0 );
 				return '';
 		}
 	} // _taxonomy_handler

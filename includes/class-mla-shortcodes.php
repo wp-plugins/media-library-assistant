@@ -123,6 +123,15 @@ class MLAShortcodes {
 	}
 	
 	/**
+	 * Accumulates debug messages
+	 *
+	 * @since 0.60
+	 *
+	 * @var	string
+	 */
+	private static $mla_debug_messages = '';
+	
+	/**
 	 * The MLA Gallery shortcode.
 	 *
 	 * This is a superset of the WordPress Gallery shortcode for displaying images on a post,
@@ -195,7 +204,9 @@ class MLAShortcodes {
 			'meta_compare' => '',
 			'meta_query' => '',
 			// Search
-			's' => ''
+			's' => '',
+			// Debug
+			'mla_debug' => false
 		);
 		
 		/*
@@ -242,12 +253,13 @@ class MLAShortcodes {
 		
 		// We're trusting author input, but let's at least make sure it looks like a valid orderby statement
 		if ( isset( $arguments['orderby'] ) ) {
-			$attr['orderby'] = sanitize_sql_orderby( $arguments['orderby'] );
+			$arguments['orderby'] = sanitize_sql_orderby( $arguments['orderby'] );
 			if ( ! $arguments['orderby'] )
 				unset( $arguments['orderby'] );
 		}
 	
 		$use_children = empty( $query_arguments );
+		$mla_debug = false;
 		foreach ($arguments as $key => $value ) {
 			/*
 			 * There are several "fallthru" cases in this switch statement that decide 
@@ -389,6 +401,11 @@ class MLAShortcodes {
 				}
 				unset( $arguments[ $key ] );
 				break;
+			case 'mla_debug': // boolean
+				if ( ! empty( $value ) && ( 'true' == strtolower( $value ) ) )
+					$mla_debug = true;
+				unset( $arguments[ $key ] );
+				break;
 			default:
 				// ignore anything else
 			} // switch $key
@@ -420,9 +437,17 @@ class MLAShortcodes {
 		if ( isset( $query_arguments['post_mime_type'] ) && ('all' == strtolower( $query_arguments['post_mime_type'] ) ) )
 			unset ($query_arguments['post_mime_type'] );
 
-		$attachments = self::_get_attachments( $query_arguments );
-		if ( empty($attachments) )
-			return '';
+		$attachments = self::_get_attachments( $query_arguments, $mla_debug );
+		if ( empty($attachments) ) {
+			if ( $mla_debug ) {
+				$output = '<p><strong>mla_debug</strong> empty gallery, query = ' . var_export( $query_arguments, true ) . '</p>';
+				$output .= self::$mla_debug_messages;
+				self::$mla_debug_messages = '';
+				return $output;
+			}
+			else
+				return '';
+		}
 	
 		if ( is_feed() ) {
 			$output = "\n";
@@ -474,6 +499,12 @@ class MLAShortcodes {
 		$gallery_div = "<div id='$selector' class='gallery galleryid-{$id} gallery-columns-{$columns} gallery-size-{$size_class}'>";
 		$output = apply_filters( 'gallery_style', $gallery_style . "\n\t\t" . $gallery_div );
 	
+		if ( $mla_debug ) {
+			$output .= '<p><strong>mla_debug</strong> query = ' . var_export( $query_arguments, true ) . '</p>';
+			$output .= self::$mla_debug_messages;
+			self::$mla_debug_messages = '';
+		}
+
 		$i = 0;
 		foreach ( $attachments as $id => $attachment ) {
 			$link = isset($arguments['link']) && 'file' == $arguments['link'] ? wp_get_attachment_link($attachment->ID, $size, false, $show_icon) : wp_get_attachment_link($attachment->ID, $size, true, $show_icon);
@@ -483,11 +514,10 @@ class MLAShortcodes {
 				<{$icontag} class='gallery-icon'>
 					$link
 				</{$icontag}>";
-				$post_excerpt = esc_attr( trim( $attachment->post_excerpt ) );
-			if ( $captiontag && ! empty( $post_excerpt ) ) {
+			if ( $captiontag && trim( $attachment->post_excerpt ) ) {
 				$output .= "
 					<{$captiontag} class='wp-caption-text gallery-caption'>
-					" . wptexturize($post_excerpt) . "
+					" . wptexturize( $attachment->post_excerpt ) . "
 					</{$captiontag}>";
 			}
 			$output .= "</{$itemtag}>";
@@ -508,10 +538,11 @@ class MLAShortcodes {
 	 * @since .50
 	 *
 	 * @param array Attributes of the shortcode
+	 * @param boolean True to add debug information to self::$mla_debug_messages
 	 *
 	 * @return array List of attachments returned from WP_Query
 	 */
-	private static function _get_attachments( $args ) {
+	private static function _get_attachments( $args , $mla_debug = false ) {
 		if ( ! empty($args['include']) ) {
 			$incposts = wp_parse_id_list( $args['include'] );
 			$args['posts_per_page'] = count($incposts);  // only the number of posts included
@@ -523,7 +554,14 @@ class MLAShortcodes {
 		$args['no_found_rows'] = true;
 	
 		$get_posts = new WP_Query;
-		return $get_posts->query($args);
+		$attachments = $get_posts->query($args);
+		
+		if ( $mla_debug ) {
+			self::$mla_debug_messages .= '<p><strong>mla_debug</strong> request = ' . var_export( $get_posts->request, true ) . '</p>';
+			self::$mla_debug_messages .= '<p><strong>mla_debug</strong> query_vars = ' . var_export( $get_posts->query_vars, true ) . '</p>';
+		}
+		
+		return $attachments;
 	
 	}
 } // Class MLAShortcodes

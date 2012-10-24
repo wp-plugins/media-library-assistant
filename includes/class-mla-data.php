@@ -250,11 +250,19 @@ class MLAData {
 			'orderby' => MLASettings::mla_get_option( 'default_orderby' ),
 			'order' => MLASettings::mla_get_option( 'default_order' ),
 			'post_type' => 'attachment',
-			'post_status' => 'inherit'
+			'post_status' => 'inherit',
+			'mla-search-connector' => 'AND',
+			'mla-search-fields' => array ( )
 		);
 		
 		foreach ( $raw_request as $key => $value ) {
 			switch ( $key ) {
+				/*
+				 * 'sentence' and 'exact' modify the keyword search ('s')
+				 * Their value is not important, only their presence.
+				 */
+				case 'sentence':
+				case 'exact':
 				case 'mla-tax':
 				case 'mla-term':
 					$clean_request[ $key ] = sanitize_key( $value );
@@ -275,6 +283,8 @@ class MLAData {
 				/*
 				 * ['m'] - filter by year and month of post, e.g., 201204
 				 */
+				case 'post_parent':
+				case 'author':
 				case 'm':
 					$clean_request[ $key ] = absint( $value );
 					break;
@@ -302,15 +312,49 @@ class MLAData {
 					if ( 'trash' == $value )
 						$clean_request['post_status'] = 'trash';
 					break;
+				/*
+				 * ['s'] - Search Media by one or more keywords
+				 * ['mla-search-connector'], ['mla-search-fields'] - Search Media options
+				 */
+				case 's':
+					$clean_request[ $key ] = stripslashes( trim( $value ) );
+					break;
+				case 'mla-search-connector':
+				case 'mla-search-fields':
+					$clean_request[ $key ] = $value;
+					break;
 				default:
 					// ignore anything else in $_REQUEST
 			} // switch $key
 		} // foreach $raw_request
 		
+		/*
+		 * Pass query parameters to the filters for _execute_list_table_query
+		 */
 		self::$query_parameters = array( );
 		self::$query_parameters['detached'] = isset( $clean_request['detached'] );
 		self::$query_parameters['orderby'] = $clean_request['orderby'];
 		self::$query_parameters['order'] = $clean_request['order'];
+		
+		/*
+		 * We will handle keyword search in the mla_query_posts_search_filter.
+		 * There must be at least one search field to do a search.
+		 */
+		if ( isset( $clean_request['s'] ) ) {
+			if ( ! empty( $clean_request['mla-search-fields'] ) ) {
+				self::$query_parameters['s'] = $clean_request['s'];
+				self::$query_parameters['mla-search-connector'] = $clean_request['mla-search-connector'];
+				self::$query_parameters['mla-search-fields'] = $clean_request['mla-search-fields'];
+				self::$query_parameters['sentence'] = isset( $clean_request['sentence'] );
+				self::$query_parameters['exact'] = isset( $clean_request['exact'] );
+			} // !empty
+			
+			unset( $clean_request['s'] );
+			unset( $clean_request['mla-search-connector'] );
+			unset( $clean_request['mla-search-fields'] );
+			unset( $clean_request['sentence'] );
+			unset( $clean_request['exact'] );
+		}
 
 		/*
 		 * We have to handle custom field/post_meta values here
@@ -407,6 +451,7 @@ class MLAData {
 	 * @return	object	WP_Query object with query results
 	 */
 	private static function _execute_list_table_query( $request ) {
+		add_filter( 'posts_search', 'MLAData::mla_query_posts_search_filter', 10, 2 ); // $search, &$this
 		add_filter( 'posts_join', 'MLAData::mla_query_posts_join_filter' );
 		add_filter( 'posts_where', 'MLAData::mla_query_posts_where_filter' );
 		add_filter( 'posts_orderby', 'MLAData::mla_query_posts_orderby_filter' );
@@ -416,10 +461,85 @@ class MLAData {
 		remove_filter( 'posts_orderby', 'MLAData::mla_query_posts_orderby_filter' );
 		remove_filter( 'posts_where', 'MLAData::mla_query_posts_where_filter' );
 		remove_filter( 'posts_join', 'MLAData::mla_query_posts_join_filter' );
+		remove_filter( 'posts_search', 'MLAData::mla_query_posts_search_filter' );
 
 		return $results;
 	}
 	
+	/**
+	 * Adds a keyword search to the WHERE clause, if required
+	 * 
+	 * Defined as public because it's a filter.
+	 *
+	 * @since 0.60
+	 *
+	 * @param	string	query clause before modification
+	 * @param	object	WP_Query object
+	 *
+	 * @return	string	query clause after keyword search addition
+	 */
+	public static function mla_query_posts_search_filter( $search_string, &$query_object ) {
+		global $table_prefix, $wpdb;
+
+		/*
+		 * Process the keyword search argument, if present.
+		 */
+		$search_clause = '';
+		if ( isset( self::$query_parameters['s'] ) ) {
+			if (  self::$query_parameters['sentence'] ) {
+				$search_terms = array( self::$query_parameters['s'] );
+			} else {
+				preg_match_all('/".*?("|$)|((?<=[\r\n\t ",+])|^)[^\r\n\t ",+]+/', self::$query_parameters['s'], $matches);
+				$search_terms = array_map('_search_terms_tidy', $matches[0]);
+			}
+			
+			$fields = self::$query_parameters['mla-search-fields'];
+			$percent = self::$query_parameters['exact'] ? '' : '%';
+			$connector = '';
+			foreach( $search_terms as $term ) {
+				$term = esc_sql( like_escape( $term ) );
+				$inner_connector = '';
+				$search_clause .= "{$connector}(";
+				
+				if ( in_array( 'content', $fields ) ) {
+					$search_clause .= "{$inner_connector}({$wpdb->posts}.post_content LIKE '{$percent}{$term}{$percent}')";
+					$inner_connector = ' OR ';
+				}
+				
+				if ( in_array( 'title', $fields ) ) {
+					$search_clause .= "{$inner_connector}({$wpdb->posts}.post_title LIKE '{$percent}{$term}{$percent}')";
+					$inner_connector = ' OR ';
+				}
+				
+				if ( in_array( 'excerpt', $fields ) ) {
+					$search_clause .= "{$inner_connector}({$wpdb->posts}.post_excerpt LIKE '{$percent}{$term}{$percent}')";
+					$inner_connector = ' OR ';
+				}
+				
+				if ( in_array( 'alt-text', $fields ) ) {
+					$view_name = MLASettings::$mla_alt_text_view;
+					$search_clause .= "{$inner_connector}({$view_name}.meta_value LIKE '{$percent}{$term}{$percent}')";
+					$inner_connector = ' OR ';
+				}
+				
+				if ( in_array( 'name', $fields ) ) {
+					$search_clause .= "{$inner_connector}({$wpdb->posts}.post_name LIKE '{$percent}{$term}{$percent}')";
+				}
+				
+				$search_clause .= ")";
+				$connector = ' ' . self::$query_parameters['mla-search-connector'] . ' ';
+			} // foreach
+
+			if ( !empty($search_clause) ) {
+				$search_clause = " AND ({$search_clause}) ";
+				if ( !is_user_logged_in() )
+					$search_clause .= " AND ($wpdb->posts.post_password = '') ";
+			}
+		} // isset 's'
+		
+		return $search_clause;
+	}
+
 	/**
 	 * Adds a JOIN clause, if required
 	 * 
@@ -438,7 +558,9 @@ class MLAData {
 		 * build an intermediate table and modify the JOIN to include posts with
 		 * no value for this meta data field.
 		 */
-		if ( '_wp_attachment_image_alt' == self::$query_parameters['orderby'] ) {
+		if ( '_wp_attachment_image_alt' == self::$query_parameters['orderby'] 
+			|| isset( self::$query_parameters['s'] )
+		) {
 			$view_name = MLASettings::$mla_alt_text_view;
 			$join_clause .= " LEFT JOIN {$view_name} ON ({$table_prefix}posts.ID = {$view_name}.post_id)";
 		}

@@ -60,6 +60,10 @@
 			<th valign='top' scope='row' class='label'><label for='attachments[[+ID+]][parent_info]'><span class='alignleft'>Parent Info</span><br class='clear' /></label></th>
 			<td class='field'><table><tr><td style="width: 50px; vertical-align:top" ><input type='text' class='text' name='attachments[[+ID+]][post_parent]' value='[+post_parent+]' /></td><td><input type='text' class='text' readonly='readonly' name='attachments[[+ID+]][parent_info]' value='[+parent_info+]' /></td></tr><tr><td colspan="2"><p class='help'>ID, type and title of parent, if any.</p></td></tr></table></td>
 		</tr>
+		<tr class='menu_order'>
+			<th valign='top' scope='row' class='label'><label for='attachments[[+ID+]][menu_order]'><span class='alignleft'>Menu Order</span><br class='clear' /></label></th>
+			<td class='field'><table style="width: 50px; vertical-align:top"><tr><td><input type='text' class='text' id='attachments[[+ID+]][menu_order]' name='attachments[[+ID+]][menu_order]' value='[+menu_order+]'  /></td></tr></table></td>
+		</tr>
 [+authors+]
 		<tr class='image_url'>
 			<th valign='top' scope='row' class='label'><label for='attachments[[+ID+]][image_url]'><span class='alignleft'>File URL</span><br class='clear' /></label></th>

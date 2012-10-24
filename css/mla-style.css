@@ -112,6 +112,10 @@ textarea[readonly] {
 	width: 5em
 }
 
+.quick-edit-row-attachment fieldset.inline-edit-col-left label.inline-edit-menu-order span.input-text-wrap {
+	width: 5em
+}
+
 .quick-edit-row-attachment fieldset.inline-edit-col-right label span.title,
 .bulk-edit-row-attachment fieldset.inline-edit-col-right label.inline-edit-tags span.title {
 	width: 99%

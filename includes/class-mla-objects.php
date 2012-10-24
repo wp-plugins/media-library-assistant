@@ -22,6 +22,13 @@ class MLAObjects {
 	 */
 	public static function initialize() {
 		self::_build_taxonomies();
+	
+		/*
+		 * WordPress 3.5 uses the advanced-form-edit.php function for the Edit Media
+		 * page. This supports all the standard meta-boxes for post types.
+		 */
+		if ( MLATest::$wordpress_3point5_plus )
+			add_post_type_support( 'attachment', 'custom-fields' );
 	}
 
 	/**

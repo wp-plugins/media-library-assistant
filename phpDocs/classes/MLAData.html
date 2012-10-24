@@ -61,6 +61,7 @@
 <li class="method public "><a href="#mla_query_list_table_items" title="mla_query_list_table_items :: Retrieve attachment objects for list table display"><span class="description">Retrieve attachment objects for list table display</span><pre>mla_query_list_table_items()</pre></a></li>
 <li class="method public "><a href="#mla_query_posts_join_filter" title="mla_query_posts_join_filter :: Adds a JOIN clause, if required"><span class="description">Adds a JOIN clause, if required</span><pre>mla_query_posts_join_filter()</pre></a></li>
 <li class="method public "><a href="#mla_query_posts_orderby_filter" title="mla_query_posts_orderby_filter :: Adds a ORDERBY clause, if required"><span class="description">Adds a ORDERBY clause, if required</span><pre>mla_query_posts_orderby_filter()</pre></a></li>
+<li class="method public "><a href="#mla_query_posts_search_filter" title="mla_query_posts_search_filter :: Adds a keyword search to the WHERE clause, if required"><span class="description">Adds a keyword search to the WHERE clause, if required</span><pre>mla_query_posts_search_filter()</pre></a></li>
 <li class="method public "><a href="#mla_query_posts_where_filter" title="mla_query_posts_where_filter :: Adds a WHERE clause for detached items"><span class="description">Adds a WHERE clause for detached items</span><pre>mla_query_posts_where_filter()</pre></a></li>
 <li class="nav-header private">» Private</li>
 <li class="method private "><a href="#_execute_list_table_query" title="_execute_list_table_query :: Add filters, run query, remove filters"><span class="description">Add filters, run query, remove filters</span><pre>_execute_list_table_query()</pre></a></li>
@@ -291,6 +292,28 @@ Defined as public because it's a filter.</p></p>
 <code>string</code>updated query clause</div>
 </div></div>
 </div>
+<a name="mla_query_posts_search_filter" id="mla_query_posts_search_filter"></a><div class="element clickable method public mla_query_posts_search_filter" data-toggle="collapse" data-target=".mla_query_posts_search_filter .collapse">
+<h2>Adds a keyword search to the WHERE clause, if required</h2>
+<pre>mla_query_posts_search_filter(string $search_string, object $query_object) : string</pre>
+<div class="labels"></div>
+<div class="row collapse"><div class="detail-description">
+<p class="long_description"><p>Defined as public because it's a filter.</p></p>
+<table class="table table-bordered"><tr>
+<th>since</th>
+<td>0.60</td>
+</tr></table>
+<h3>Parameters</h3>
+<div class="subelement argument">
+<h4>$search_string</h4>
+<code>string</code><p>query clause before modification</p></div>
+<div class="subelement argument">
+<h4>$query_object</h4>
+<code>object</code><p>WP_Query object</p></div>
+<h3>Returns</h3>
+<div class="subelement response">
+<code>string</code>query clause after keyword search addition</div>
+</div></div>
+</div>
 <a name="mla_query_posts_where_filter" id="mla_query_posts_where_filter"></a><div class="element clickable method public mla_query_posts_where_filter" data-toggle="collapse" data-target=".mla_query_posts_where_filter .collapse">
 <h2>Adds a WHERE clause for detached items</h2>
 <pre>mla_query_posts_where_filter(string $where_clause) : string</pre>
@@ -423,7 +446,7 @@ any further logic required to translate those values is contained in the filters
 <div class="row"><footer class="span12">
             Template is built using <a href="http://twitter.github.com/bootstrap/">Twitter Bootstrap 2</a> and icons provided by <a href="http://glyphicons.com/">Glyphicons</a>.<br>
             Documentation is powered by <a href="http://www.phpdoc.org/">phpDocumentor 2.0.0a8</a> and<br>
-            generated on 2012-10-13T19:50:41-07:00.<br></footer></div>
+            generated on 2012-10-24T10:33:50-07:00.<br></footer></div>
 </div>
 </body>
 </html>

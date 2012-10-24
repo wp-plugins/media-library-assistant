@@ -47,6 +47,9 @@
               <label class="inline-edit-post-parent"> <span class="title">Parent ID</span> <span class="input-text-wrap">
                 <input type="text" name="post_parent" value="" />
                 </span> </label>
+              <label class="inline-edit-menu-order"> <span class="title">Menu Order</span> <span class="input-text-wrap">
+                <input type="text" name="menu_order" value="" />
+                </span> </label>
 [+authors+]
             </div>
           </fieldset>

@@ -15,6 +15,26 @@
  */
 class MLATest {
 	/**
+	 * True if WordPress version is 3.5 or newer
+	 *
+	 * @since 0.60
+	 *
+	 * @var	boolean
+	 */
+	public static $wordpress_3point5_plus = null;
+	
+	/**
+	 * Initialization function, similar to __construct()
+	 *
+	 * @since 0.60
+	 *
+	 * @return	void
+	 */
+	public static function initialize() {
+		MLATest::$wordpress_3point5_plus = version_compare( get_bloginfo( 'version' ), '3.5', '>=' );
+	}
+
+	/**
 	 * Test that your PHP version is at least that of the $min_php_version
 	 *
 	 * @since 0.1
