@@ -729,6 +729,8 @@ class MLAData {
 			'files' => array(),
 			'features' => array(),
 			'inserts' => array(),
+			'mla_galleries' => array(),
+			'galleries' => array(),
 			'file' => '',
 			'parent_type' => '',
 			'parent_title' => '' 

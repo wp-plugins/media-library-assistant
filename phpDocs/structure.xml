@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <project version="2.0.0a8" title="Media Library Assistant">
-  <file path="includes\class-mla-data.php" hash="c91e07d51dc84371df97307042a002d9" package="Media Library Assistant">
+  <file path="includes\class-mla-data.php" hash="3e6a9d2a19b4154e620579eb5476670c" package="Media Library Assistant">
     <docblock line="2">
       <description><![CDATA[Database and template file access for MLA needs]]></description>
       <long-description><![CDATA[]]></long-description>
@@ -32,10 +32,10 @@ any further logic required to translate those values is contained in the filters
           </tag>
         </docblock>
       </property>
-      <property final="false" static="true" visibility="private" line="900" namespace="global" package="Media Library Assistant">
+      <property final="false" static="true" visibility="private" line="902" namespace="global" package="Media Library Assistant">
         <name>$galleries</name>
         <default><![CDATA[null]]></default>
-        <docblock line="882">
+        <docblock line="884">
           <description><![CDATA[Objects containing [gallery] shortcodes]]></description>
           <long-description><![CDATA[<p>This array contains all of the objects containing one or more [gallery] shortcodes
 and array(s) of which attachments each [gallery] contains. The arrays are built once
@@ -47,22 +47,22 @@ Each inner array has these elements:
 ['parent_type'] 'post' or 'page' or the custom post_type of the gallery parent,
 ['query'] contains a string with the arguments of the [gallery],
 ['results'] contains an array of post_ids for the objects in the gallery.</p>]]></long-description>
-          <tag line="882" name="since" description="0.70"/>
-          <tag line="882" name="var" description="" type="array">
+          <tag line="884" name="since" description="0.70"/>
+          <tag line="884" name="var" description="" type="array">
             <type by_reference="false">array</type>
           </tag>
         </docblock>
       </property>
-      <property final="false" static="true" visibility="private" line="913" namespace="global" package="Media Library Assistant">
+      <property final="false" static="true" visibility="private" line="915" namespace="global" package="Media Library Assistant">
         <name>$mla_galleries</name>
         <default><![CDATA[null]]></default>
-        <docblock line="902">
+        <docblock line="904">
           <description><![CDATA[Objects containing [mla_gallery] shortcodes]]></description>
           <long-description><![CDATA[<p>This array contains all of the objects containing one or more [mla_gallery] shortcodes
 and array(s) of which attachments each [mla_gallery] contains. The arrays are built once
 each page load and cached for subsequent calls.</p>]]></long-description>
-          <tag line="902" name="since" description="0.70"/>
-          <tag line="902" name="var" description="" type="array">
+          <tag line="904" name="since" description="0.70"/>
+          <tag line="904" name="var" description="" type="array">
             <type by_reference="false">array</type>
           </tag>
         </docblock>
@@ -392,107 +392,107 @@ as a Featured Image or inserted in the post as an image or link.</p>]]></long-de
           <type/>
         </argument>
       </method>
-      <method final="false" abstract="false" static="true" visibility="private" namespace="global" line="926" package="Media Library Assistant">
+      <method final="false" abstract="false" static="true" visibility="private" namespace="global" line="928" package="Media Library Assistant">
         <name>_build_mla_galleries</name>
         <full_name>_build_mla_galleries</full_name>
-        <docblock line="915">
+        <docblock line="917">
           <description><![CDATA[Builds the $mla_galleries or $galleries array]]></description>
           <long-description><![CDATA[]]></long-description>
-          <tag line="915" name="since" description="0.70"/>
-          <tag line="915" name="param" description="by reference to the private static galleries array variable" type="array" variable="$galleries_array">
+          <tag line="917" name="since" description="0.70"/>
+          <tag line="917" name="param" description="by reference to the private static galleries array variable" type="array" variable="$galleries_array">
             <type by_reference="false">array</type>
           </tag>
-          <tag line="915" name="param" description="the shortcode to be searched for and processed" type="string" variable="$shortcode">
+          <tag line="917" name="param" description="the shortcode to be searched for and processed" type="string" variable="$shortcode">
             <type by_reference="false">string</type>
           </tag>
-          <tag line="915" name="param" description="true to exclude revisions from the search" type="boolean" variable="$exclude_revisions">
+          <tag line="917" name="param" description="true to exclude revisions from the search" type="boolean" variable="$exclude_revisions">
             <type by_reference="false">boolean</type>
           </tag>
-          <tag line="915" name="return" description="true if the galleries array is not empty" type="boolean">
+          <tag line="917" name="return" description="true if the galleries array is not empty" type="boolean">
             <type by_reference="false">boolean</type>
           </tag>
         </docblock>
-        <argument line="926">
+        <argument line="928">
           <name>$galleries_array</name>
           <default><![CDATA[]]></default>
           <type/>
         </argument>
-        <argument line="926">
+        <argument line="928">
           <name>$shortcode</name>
           <default><![CDATA[]]></default>
           <type/>
         </argument>
-        <argument line="926">
+        <argument line="928">
           <name>$exclude_revisions</name>
           <default><![CDATA[]]></default>
           <type/>
         </argument>
       </method>
-      <method final="false" abstract="false" static="true" visibility="private" namespace="global" line="1008" package="Media Library Assistant">
+      <method final="false" abstract="false" static="true" visibility="private" namespace="global" line="1010" package="Media Library Assistant">
         <name>_search_mla_galleries</name>
         <full_name>_search_mla_galleries</full_name>
-        <docblock line="997">
+        <docblock line="999">
           <description><![CDATA[Search the $mla_galleries or $galleries array]]></description>
           <long-description><![CDATA[]]></long-description>
-          <tag line="997" name="since" description="0.70"/>
-          <tag line="997" name="param" description="by reference to the private static galleries array variable" type="array" variable="$galleries_array">
+          <tag line="999" name="since" description="0.70"/>
+          <tag line="999" name="param" description="by reference to the private static galleries array variable" type="array" variable="$galleries_array">
             <type by_reference="false">array</type>
           </tag>
-          <tag line="997" name="param" description="the attachment ID to be searched for and processed" type="int" variable="$attachment_id">
+          <tag line="999" name="param" description="the attachment ID to be searched for and processed" type="int" variable="$attachment_id">
             <type by_reference="false">int</type>
           </tag>
-          <tag line="997" name="return" description="All posts/pages with one or more galleries that include the attachment. The array key is the parent_post ID; each entry contains post_title and post_type." type="array">
+          <tag line="999" name="return" description="All posts/pages with one or more galleries that include the attachment. The array key is the parent_post ID; each entry contains post_title and post_type." type="array">
             <type by_reference="false">array</type>
           </tag>
         </docblock>
-        <argument line="1008">
+        <argument line="1010">
           <name>$galleries_array</name>
           <default><![CDATA[]]></default>
           <type/>
         </argument>
-        <argument line="1008">
+        <argument line="1010">
           <name>$attachment_id</name>
           <default><![CDATA[]]></default>
           <type/>
         </argument>
       </method>
-      <method final="false" abstract="false" static="true" visibility="private" namespace="global" line="1030" package="Media Library Assistant">
+      <method final="false" abstract="false" static="true" visibility="private" namespace="global" line="1032" package="Media Library Assistant">
         <name>_fetch_attachment_parent_data</name>
         <full_name>_fetch_attachment_parent_data</full_name>
-        <docblock line="1021">
+        <docblock line="1023">
           <description><![CDATA[Returns information about an attachment's parent, if found]]></description>
           <long-description><![CDATA[]]></long-description>
-          <tag line="1021" name="since" description="0.1"/>
-          <tag line="1021" name="param" description="post ID of attachment's parent, if any" type="int" variable="$parent_id">
+          <tag line="1023" name="since" description="0.1"/>
+          <tag line="1023" name="param" description="post ID of attachment's parent, if any" type="int" variable="$parent_id">
             <type by_reference="false">int</type>
           </tag>
-          <tag line="1021" name="return" description="Parent information; post_date, post_title and post_type" type="array">
+          <tag line="1023" name="return" description="Parent information; post_date, post_title and post_type" type="array">
             <type by_reference="false">array</type>
           </tag>
         </docblock>
-        <argument line="1030">
+        <argument line="1032">
           <name>$parent_id</name>
           <default><![CDATA[]]></default>
           <type/>
         </argument>
       </method>
-      <method final="false" abstract="false" static="true" visibility="private" namespace="global" line="1058" package="Media Library Assistant">
+      <method final="false" abstract="false" static="true" visibility="private" namespace="global" line="1060" package="Media Library Assistant">
         <name>_fetch_attachment_metadata</name>
         <full_name>_fetch_attachment_metadata</full_name>
-        <docblock line="1045">
+        <docblock line="1047">
           <description><![CDATA[Fetch and filter meta data for an attachment]]></description>
           <long-description><![CDATA[<p>Returns a filtered array of a post's meta data. Internal values beginning with '<em>'
 are stripped out or converted to an 'mla</em>' equivalent. Array data is replaced with
 a string containing the first array element.</p>]]></long-description>
-          <tag line="1045" name="since" description="0.1"/>
-          <tag line="1045" name="param" description="post ID of attachment" type="int" variable="$post_id">
+          <tag line="1047" name="since" description="0.1"/>
+          <tag line="1047" name="param" description="post ID of attachment" type="int" variable="$post_id">
             <type by_reference="false">int</type>
           </tag>
-          <tag line="1045" name="return" description="Meta data variables" type="array">
+          <tag line="1047" name="return" description="Meta data variables" type="array">
             <type by_reference="false">array</type>
           </tag>
         </docblock>
-        <argument line="1058">
+        <argument line="1060">
           <name>$post_id</name>
           <default><![CDATA[]]></default>
           <type/>
@@ -1357,7 +1357,7 @@ $this->set_pagination_args().</p>]]></long-description>
       </method>
     </class>
   </file>
-  <file path="includes\class-mla-main.php" hash="3f19601b6a238243a76d72483a7ed887" package="Media Library Assistant">
+  <file path="includes\class-mla-main.php" hash="ffcfbcfec7553e6632a9b98e2589a676" package="Media Library Assistant">
     <docblock line="2">
       <description><![CDATA[Top-level functions for the Media Library Assistant]]></description>
       <long-description><![CDATA[]]></long-description>
@@ -1394,7 +1394,7 @@ of images and files held in the WordPress Media Library.]]></description>
       <constant namespace="global" line="41" package="Media Library Assistant">
         <name>CURRENT_MLA_VERSION</name>
         <full_name>CURRENT_MLA_VERSION</full_name>
-        <value><![CDATA['0.70']]></value>
+        <value><![CDATA['0.71']]></value>
         <docblock line="34">
           <description><![CDATA[Current version number]]></description>
           <long-description><![CDATA[]]></long-description>
@@ -2734,13 +2734,13 @@ This file is only loaded if the naming conflict tests in index.php are passed.</
       </docblock>
     </constant>
   </file>
-  <file path="index.php" hash="52bcec16591373d72aafb9cb58b0a081" package="Media Library Assistant">
+  <file path="index.php" hash="2dfe672594252372fc565786939779b5" package="Media Library Assistant">
     <docblock line="2">
       <description><![CDATA[Provides several enhancements to the handling of images and files held in the WordPress Media Library]]></description>
       <long-description><![CDATA[<p>This file contains several tests for name conflicts with other plugins. Only if the tests are passed
 will the rest of the plugin be loaded and run.</p>]]></long-description>
       <tag line="2" name="package" description="Media Library Assistant"/>
-      <tag line="2" name="version" description="0.70"/>
+      <tag line="2" name="version" description="0.71"/>
     </docblock>
     <include line="103" type="Require Once" package="Media Library Assistant">
       <name>includes/mla-plugin-loader.php</name>

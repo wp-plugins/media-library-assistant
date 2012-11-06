@@ -4,7 +4,7 @@ Donate link: http://fairtradejudaica.org/make-a-difference/donate/
 Tags: attachments, documents, gallery, image, images, media, library, media library, media-tags, media tags, tags, media categories, categories
 Requires at least: 3.3
 Tested up to: 3.4.2
-Stable tag: 0.60
+Stable tag: 0.71
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -103,6 +103,9 @@ All of the MLA source code has been annotated with "DocBlocks", a special type o
 
 == Changelog ==
 
+= 0.71 =
+* Fix: Removed (!) Warning displays for empty Gallery in and MLA Gallery in column entries.
+
 = 0.70 =
 * New: "Gallery in" and "MLA Gallery in" columns show where the item appears in [gallery] and [mla_gallery] shortcode output.
 * New: Post titles in the where-used columns contain a link to the Edit Post/Page screen.
@@ -168,6 +171,9 @@ All of the MLA source code has been annotated with "DocBlocks", a special type o
 * Initial release.
 
 == Upgrade Notice ==
+
+= 0.71 =
+Get the new "Gallery in" and "MLA Gallery in" where-used reporting to see where items are returned by the [gallery] and [mla_gallery] shortcodes. Two other enhancements and two fixes.
 
 = 0.70 =
 Get the new "Gallery in" and "MLA Gallery in" where-used reporting to see where items are returned by the [gallery] and [mla_gallery] shortcodes. Two other enhancements and two fixes.
