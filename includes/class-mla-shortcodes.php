@@ -132,6 +132,15 @@ class MLAShortcodes {
 	private static $mla_debug_messages = '';
 	
 	/**
+	 * Turn debug collection and display on or off
+	 *
+	 * @since 0.70
+	 *
+	 * @var	boolean
+	 */
+	private static $mla_debug = false;
+	
+	/**
 	 * The MLA Gallery shortcode.
 	 *
 	 * This is a superset of the WordPress Gallery shortcode for displaying images on a post,
@@ -150,16 +159,141 @@ class MLAShortcodes {
 		static $instance = 0;
 		$instance++;
 	
+		/*
+		 * These are the parameters for gallery display
+		 */
+		$default_arguments = array(
+			'size' => 'thumbnail',
+			'itemtag' => 'dl',
+			'icontag' => 'dt',
+			'captiontag' => 'dd',
+			'columns' => 3,
+			'link' => 'permalink', // or 'file'
+			// MLA-specific
+			'mla_debug' => false
+		);
+		
+		/*
+		 * Merge gallery arguments with defaults, pass the query arguments on to mla_get_shortcode_attachments.
+		 */
+		 
+		$arguments = shortcode_atts( $default_arguments, $attr );
+		
+		self::$mla_debug = !empty( $default_arguments['mla_debug'] ) && ( 'true' == strtolower( $default_arguments['mla_debug'] ) );
+
+		$attachments = self::mla_get_shortcode_attachments( $post->ID, $attr );
+		if ( empty($attachments) ) {
+			if ( self::$mla_debug ) {
+				$output = '<p><strong>mla_debug</strong> empty gallery, query = ' . var_export( $attr, true ) . '</p>';
+				$output .= self::$mla_debug_messages;
+				self::$mla_debug_messages = '';
+				return $output;
+			}
+			else {
+				return '';
+			}
+		} // empty $attachments
+	
+		$size = $arguments['size'];
+		if ( 'icon'	 == strtolower( $size) ) {
+			$size = array( 60, 60 );
+			$show_icon = true;
+		}
+		else
+			$show_icon = false;
+			
+		if ( is_feed() ) {
+			$output = "\n";
+			foreach ( $attachments as $att_id => $attachment )
+				$output .= wp_get_attachment_link($att_id, $size, true) . "\n";
+			return $output;
+		}
+	
+		$id = $post->ID;
+		$itemtag = tag_escape( $arguments['itemtag'] );
+		$icontag = tag_escape( $arguments['icontag'] );
+		$captiontag = tag_escape( $arguments['captiontag'] );
+		$columns = intval( $arguments['columns']);
+		$itemwidth = $columns > 0 ? floor(100/$columns) : 100;
+		$float = is_rtl() ? 'right' : 'left';
+
+		$selector = "gallery-{$instance}";
+	
+		$gallery_style = $gallery_div = '';
+		if ( apply_filters( 'use_default_gallery_style', true ) )
+			$gallery_style = "
+			<style type='text/css'>
+				#{$selector} {
+					margin: auto;
+				}
+				#{$selector} .gallery-item {
+					float: {$float};
+					margin-top: 10px;
+					text-align: center;
+					width: {$itemwidth}%;
+				}
+				#{$selector} img {
+					border: 2px solid #cfcfcf;
+				}
+				#{$selector} .gallery-caption {
+					margin-left: 0;
+				}
+			</style>
+			<!-- see gallery_shortcode() in wp-includes/media.php -->";
+		$size_class = sanitize_html_class( $size );
+		$gallery_div = "<div id='$selector' class='gallery galleryid-{$id} gallery-columns-{$columns} gallery-size-{$size_class}'>";
+		$output = apply_filters( 'gallery_style', $gallery_style . "\n\t\t" . $gallery_div );
+	
+		if ( self::$mla_debug ) {
+			$output .= self::$mla_debug_messages;
+			self::$mla_debug_messages = '';
+		}
+
+		$i = 0;
+		foreach ( $attachments as $id => $attachment ) {
+			$link = isset($arguments['link']) && 'file' == $arguments['link'] ? wp_get_attachment_link($attachment->ID, $size, false, $show_icon) : wp_get_attachment_link($attachment->ID, $size, true, $show_icon);
+	
+			$output .= "<{$itemtag} class='gallery-item'>";
+			$output .= "
+				<{$icontag} class='gallery-icon'>
+					$link
+				</{$icontag}>";
+			if ( $captiontag && trim( $attachment->post_excerpt ) ) {
+				$output .= "
+					<{$captiontag} class='wp-caption-text gallery-caption'>
+					" . wptexturize( $attachment->post_excerpt ) . "
+					</{$captiontag}>";
+			}
+			$output .= "</{$itemtag}>";
+			if ( $columns > 0 && ++$i % $columns == 0 )
+				$output .= '<br style="clear: both" />';
+		}
+	
+		$output .= "
+				<br style='clear: both;' />
+			</div>\n";
+	
+		return $output;
+	}
+	
+	/**
+	 * Parses shortcode parameters and returns the gallery objects
+	 *
+	 * @since .50
+	 *
+	 * @param int Post ID of the parent
+	 * @param array Attributes of the shortcode
+	 *
+	 * @return array List of attachments returned from WP_Query
+	 */
+	public static function mla_get_shortcode_attachments( $post_parent, $attr ) {
+		/*
+		 * These are the parameters for the query
+		 */
 		$default_arguments = array(
 			'order' => 'ASC', // or 'DESC' or 'RAND'
 			'orderby' => 'menu_order ID',
 			'id' => NULL,
-			'itemtag' => 'dl',
-			'icontag' => 'dt',
-			'captiontag' => 'dd',
-			'link' => 'permalink', // or 'file'
-			'columns' => 3,
-			'size' => 'thumbnail',
 			'ids' => array ( ),
 			'include' => array ( ),
 			'exclude' => array ( ),
@@ -204,16 +338,16 @@ class MLAShortcodes {
 			'meta_compare' => '',
 			'meta_query' => '',
 			// Search
-			's' => '',
-			// Debug
-			'mla_debug' => false
+			's' => ''
 		);
 		
 		/*
 		 * Merge input arguments with defaults, then extract the query arguments.
-		 * $query_arguments has been initialized in the taxonomy code above.
 		 */
 		 
+		if ( is_string( $attr ) )
+			$attr = shortcode_parse_atts( $attr );
+			
 		$arguments = shortcode_atts( $default_arguments, $attr );
 
 		if ( 'RAND' == $arguments['order'] )
@@ -258,8 +392,11 @@ class MLAShortcodes {
 				unset( $arguments['orderby'] );
 		}
 	
+		/*
+		 * $query_arguments has been initialized in the taxonomy code above.
+		 */
 		$use_children = empty( $query_arguments );
-		$mla_debug = false;
+		self::$mla_debug = false;
 		foreach ($arguments as $key => $value ) {
 			/*
 			 * There are several "fallthru" cases in this switch statement that decide 
@@ -269,7 +406,7 @@ class MLAShortcodes {
 			switch ( $key ) {
 			case 'post_parent':
 				if ( 'current' == strtolower( $value ) )
-					$value = $post->ID;
+					$value = $post_parent;
 				elseif ( 'all' == strtolower( $value ) ) {
 					$value = NULL;
 					$use_children = false;
@@ -403,7 +540,7 @@ class MLAShortcodes {
 				break;
 			case 'mla_debug': // boolean
 				if ( ! empty( $value ) && ( 'true' == strtolower( $value ) ) )
-					$mla_debug = true;
+					self::$mla_debug = true;
 				unset( $arguments[ $key ] );
 				break;
 			default:
@@ -416,7 +553,7 @@ class MLAShortcodes {
 		 */
 		if ( $use_children && empty( $query_arguments['post_parent'] ) ) {
 			if ( empty( $query_arguments['id'] ) )
-				$query_arguments['post_parent'] = $post->ID;
+				$query_arguments['post_parent'] = $post_parent;
 			else				
 				$query_arguments['post_parent'] = $query_arguments['id'];
 
@@ -425,144 +562,71 @@ class MLAShortcodes {
 
 		if ( isset( $query_arguments['posts_per_page'] ) || isset( $query_arguments['posts_per_archive_page'] ) ||
 			isset( $query_arguments['paged'] ) || isset( $query_arguments['offset'] ) ) {
-			unset ($query_arguments['nopaging'] );
+			unset ( $query_arguments['nopaging'] );
 		}
 
 		if ( isset( $query_arguments['orderby'] ) && ('rand' == $query_arguments['orderby'] ) )
-			unset ($query_arguments['order'] );
+			unset ( $query_arguments['order'] );
 
 		if ( isset( $query_arguments['order'] ) && ('rand' == $query_arguments['order'] ) )
-			unset ($query_arguments['orderby'] );
+			unset ( $query_arguments['orderby'] );
 
 		if ( isset( $query_arguments['post_mime_type'] ) && ('all' == strtolower( $query_arguments['post_mime_type'] ) ) )
-			unset ($query_arguments['post_mime_type'] );
+			unset ( $query_arguments['post_mime_type'] );
 
-		$attachments = self::_get_attachments( $query_arguments, $mla_debug );
-		if ( empty($attachments) ) {
-			if ( $mla_debug ) {
-				$output = '<p><strong>mla_debug</strong> empty gallery, query = ' . var_export( $query_arguments, true ) . '</p>';
-				$output .= self::$mla_debug_messages;
-				self::$mla_debug_messages = '';
-				return $output;
-			}
-			else
-				return '';
-		}
+		if ( ! empty($query_arguments['include']) ) {
+			$incposts = wp_parse_id_list( $query_arguments['include'] );
+			$query_arguments['posts_per_page'] = count($incposts);  // only the number of posts included
+			$query_arguments['post__in'] = $incposts;
+		} elseif ( ! empty($query_arguments['exclude']) )
+			$query_arguments['post__not_in'] = wp_parse_id_list( $query_arguments['exclude'] );
 	
-		if ( is_feed() ) {
-			$output = "\n";
-			foreach ( $attachments as $att_id => $attachment )
-				$output .= wp_get_attachment_link($att_id, $arguments['size'], true) . "\n";
-			return $output;
-		}
+		$query_arguments['ignore_sticky_posts'] = true;
+		$query_arguments['no_found_rows'] = true;
 	
-		$id = $post->ID;
-		$itemtag = tag_escape( $arguments['itemtag'] );
-		$icontag = tag_escape( $arguments['icontag'] );
-		$captiontag = tag_escape( $arguments['captiontag'] );
-		$columns = intval( $arguments['columns']);
-		$itemwidth = $columns > 0 ? floor(100/$columns) : 100;
-		$float = is_rtl() ? 'right' : 'left';
-
-		$size = $arguments['size'];
-		if ( 'icon'	 == strtolower( $size) ) {
-			$size = array( 60, 60 );
-			$show_icon = true;
-		}
-		else
-			$show_icon = false;
-			
-		$selector = "gallery-{$instance}";
-	
-		$gallery_style = $gallery_div = '';
-		if ( apply_filters( 'use_default_gallery_style', true ) )
-			$gallery_style = "
-			<style type='text/css'>
-				#{$selector} {
-					margin: auto;
-				}
-				#{$selector} .gallery-item {
-					float: {$float};
-					margin-top: 10px;
-					text-align: center;
-					width: {$itemwidth}%;
-				}
-				#{$selector} img {
-					border: 2px solid #cfcfcf;
-				}
-				#{$selector} .gallery-caption {
-					margin-left: 0;
-				}
-			</style>
-			<!-- see gallery_shortcode() in wp-includes/media.php -->";
-		$size_class = sanitize_html_class( $size );
-		$gallery_div = "<div id='$selector' class='gallery galleryid-{$id} gallery-columns-{$columns} gallery-size-{$size_class}'>";
-		$output = apply_filters( 'gallery_style', $gallery_style . "\n\t\t" . $gallery_div );
-	
-		if ( $mla_debug ) {
-			$output .= '<p><strong>mla_debug</strong> query = ' . var_export( $query_arguments, true ) . '</p>';
-			$output .= self::$mla_debug_messages;
-			self::$mla_debug_messages = '';
-		}
-
-		$i = 0;
-		foreach ( $attachments as $id => $attachment ) {
-			$link = isset($arguments['link']) && 'file' == $arguments['link'] ? wp_get_attachment_link($attachment->ID, $size, false, $show_icon) : wp_get_attachment_link($attachment->ID, $size, true, $show_icon);
-	
-			$output .= "<{$itemtag} class='gallery-item'>";
-			$output .= "
-				<{$icontag} class='gallery-icon'>
-					$link
-				</{$icontag}>";
-			if ( $captiontag && trim( $attachment->post_excerpt ) ) {
-				$output .= "
-					<{$captiontag} class='wp-caption-text gallery-caption'>
-					" . wptexturize( $attachment->post_excerpt ) . "
-					</{$captiontag}>";
-			}
-			$output .= "</{$itemtag}>";
-			if ( $columns > 0 && ++$i % $columns == 0 )
-				$output .= '<br style="clear: both" />';
-		}
-	
-		$output .= "
-				<br style='clear: both;' />
-			</div>\n";
-	
-		return $output;
-	}
-	
-	/**
-	 * Replaces /wp-includes/post.php function get_posts()
-	 *
-	 * @since .50
-	 *
-	 * @param array Attributes of the shortcode
-	 * @param boolean True to add debug information to self::$mla_debug_messages
-	 *
-	 * @return array List of attachments returned from WP_Query
-	 */
-	private static function _get_attachments( $args , $mla_debug = false ) {
-		if ( ! empty($args['include']) ) {
-			$incposts = wp_parse_id_list( $args['include'] );
-			$args['posts_per_page'] = count($incposts);  // only the number of posts included
-			$args['post__in'] = $incposts;
-		} elseif ( ! empty($args['exclude']) )
-			$args['post__not_in'] = wp_parse_id_list( $args['exclude'] );
-	
-		$args['ignore_sticky_posts'] = true;
-		$args['no_found_rows'] = true;
-	
+		add_filter( 'posts_where', 'MLAShortcodes::mla_shortcode_query_posts_where_filter' );
 		$get_posts = new WP_Query;
-		$attachments = $get_posts->query($args);
+		$attachments = $get_posts->query($query_arguments);
+		remove_filter( 'posts_where', 'MLAShortcodes::mla_shortcode_query_posts_where_filter' );
 		
-		if ( $mla_debug ) {
+		if ( self::$mla_debug ) {
+			self::$mla_debug_messages .= '<p><strong>mla_debug</strong> query = ' . var_export( $query_arguments, true ) . '</p>';
 			self::$mla_debug_messages .= '<p><strong>mla_debug</strong> request = ' . var_export( $get_posts->request, true ) . '</p>';
 			self::$mla_debug_messages .= '<p><strong>mla_debug</strong> query_vars = ' . var_export( $get_posts->query_vars, true ) . '</p>';
 		}
 		
 		return $attachments;
 	
+	}
+
+	/**
+	 * Filters the WHERE clause for shortcode queries
+	 * 
+	 * Captures debug information. Adds whitespace to the post_type = 'attachment'
+	 * phrase to circumvent subsequent Role Scoper modification of the clause.
+	 * Defined as public because it's a filter.
+	 *
+	 * @since 0.70
+	 *
+	 * @param	string	query clause before modification
+	 *
+	 * @return	string	query clause after modification
+	 */
+	public static function mla_shortcode_query_posts_where_filter( $where_clause ) {
+		global $table_prefix;
+
+		if ( self::$mla_debug ) {
+			self::$mla_debug_messages .= '<p><strong>mla_debug</strong> WHERE filter = ' . var_export( $where_clause, true ) . '</p>';
+		}
+		
+		if ( strpos( $where_clause, "post_type = 'attachment'" ) ) {
+			$where_clause = str_replace( "post_type = 'attachment'", "post_type  =  'attachment'", $where_clause );
+			
+			if ( self::$mla_debug ) 
+				self::$mla_debug_messages .= '<p><strong>mla_debug</strong> modified WHERE filter = ' . var_export( $where_clause, true ) . '</p>';
+		}
+
+		return $where_clause;
 	}
 } // Class MLAShortcodes
 ?>

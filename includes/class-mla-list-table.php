@@ -80,6 +80,8 @@ class MLA_List_Table extends WP_List_Table {
 		'menu_order' => 'Menu Order',
 		'featured'   => 'Featured in',
 		'inserted' => 'Inserted in',
+		'galleries' => 'Gallery in',
+		'mla_galleries' => 'MLA Gallery in',
 		'alt_text' => 'ALT Text',
 		'caption' => 'Caption',
 		'description' => 'Description',
@@ -110,21 +112,23 @@ class MLA_List_Table extends WP_List_Table {
 	private static $default_hidden_columns	= array(
 		// 'ID_parent',
 		// 'title_name',
-		0 => 'post_title',
-		1 => 'post_name',
-		2 => 'parent',
-		3 => 'menu_order',
+		'post_title',
+		'post_name',
+		'parent',
+		'menu_order',
 		// 'featured',
 		// 'inserted,
-		4 => 'alt_text',
-		5 => 'caption',
-		6 => 'description',
-		7 => 'post_mime_type',
-		8 => 'base_file',
-		9 => 'date',
-		10 => 'modified',
-		11 => 'author',
-		12 => 'attached_to',
+		'galleries',
+		'mla_galleries',
+		'alt_text',
+		'caption',
+		'description',
+		'post_mime_type',
+		'base_file',
+		'date',
+		'modified',
+		'author',
+		'attached_to',
 		// taxonomy columns added by mla_admin_init_action
 	);
 	
@@ -152,6 +156,8 @@ class MLA_List_Table extends WP_List_Table {
 		'menu_order' => array('menu_order',false),
 		// 'featured'   => array('featured',false),
 		// 'inserted' => array('inserted',false),
+		// 'galleries' => array('galleries',false),
+		// 'mla_galleries' => array('mla_galleries',false),
 		'alt_text' => array('_wp_attachment_image_alt',false),
 		'caption' => array('post_excerpt',false),
 		'description' => array('post_content',false),
@@ -344,14 +350,16 @@ class MLA_List_Table extends WP_List_Table {
 	 */
 	public static function mla_admin_init_action( )
 	{
-		$tax_options =  MLASettings::mla_get_option( 'taxonomy_support' );
-		
-		foreach ($tax_options['tax_support'] as $tax_name => $value ) {
-			$tax_object = get_taxonomy( $tax_name );
-			MLA_List_Table::$default_columns[ 't_' . $tax_name ] = $tax_object->labels->name;
-			MLA_List_Table::$default_hidden_columns [] = $tax_name;
-			// MLA_List_Table::$default_sortable_columns [] = none at this time
-		}
+		$taxonomies = get_taxonomies( array ( 'show_ui' => 'true' ), 'names' );
+
+		foreach ( $taxonomies as $tax_name ) {
+			if ( MLASettings::mla_taxonomy_support( $tax_name ) ) {
+				$tax_object = get_taxonomy( $tax_name );
+				MLA_List_Table::$default_columns[ 't_' . $tax_name ] = $tax_object->labels->name;
+				MLA_List_Table::$default_hidden_columns [] = $tax_name;
+				// MLA_List_Table::$default_sortable_columns [] = none at this time
+			} // supported taxonomy
+		} // foreach $tax_name
 	}
 	
 	/**
@@ -363,7 +371,7 @@ class MLA_List_Table extends WP_List_Table {
 	 * @return	void
 	 */
 	function __construct( ) {
-		$this->detached = isset( $_REQUEST['detached'] ); // || isset( $_REQUEST['find_detached'] );
+		$this->detached = isset( $_REQUEST['detached'] );
 		$this->is_trash = isset( $_REQUEST['status'] ) && $_REQUEST['status'] == 'trash';
 		
 		//Set parent defaults
@@ -588,12 +596,18 @@ class MLA_List_Table extends WP_List_Table {
 	 */
 	function column_ID_parent( $item ) {
 		$row_actions = self::_build_rollover_actions( $item, 'ID_parent' );
-		if ( $item->post_parent )
+		if ( $item->post_parent ) {
+			if ( isset( $item->parent_title ) )
+				$parent_title = $item->parent_title;
+			else
+				$parent_title = '(no title: bad ID)';
+
 			$parent = sprintf( '<a href="%1$s">(parent:%2$s)</a>', esc_url( add_query_arg( array(
 					 'page' => 'mla-menu',
 					'post_parent' => $item->post_parent,
-					'heading_suffix' => urlencode( 'Parent: ' . $item->parent_title ) 
+					'heading_suffix' => urlencode( 'Parent: ' .  $parent_title ) 
 				), 'upload.php' ) ), (string) $item->post_parent );
+		} // $item->post_parent
 		else
 			$parent = 'parent:0';
 
@@ -620,8 +634,12 @@ class MLA_List_Table extends WP_List_Table {
 		if ( $item->mla_references['is_unattached'] )
 			$errors .= '(UNATTACHED) ';
 		else {
-			if ( !$item->mla_references['found_parent'] )
-				$errors .= '(BAD PARENT) ';
+			if ( !$item->mla_references['found_parent'] ) {
+				if ( isset( $item->parent_title ) )
+					$errors .= '(BAD PARENT) ';
+				else
+					$errors .= '(INVALID PARENT) ';
+			}
 		}
 		
 		$row_actions = self::_build_rollover_actions( $item, 'title_name' );
@@ -681,10 +699,15 @@ class MLA_List_Table extends WP_List_Table {
 	 */
 	function column_parent( $item ) {
 		if ( $item->post_parent ){
+			if ( isset( $item->parent_title ) )
+				$parent_title = $item->parent_title;
+			else
+				$parent_title = '(no title: bad ID)';
+
 			return sprintf( '<a href="%s">%s</a>', esc_url( add_query_arg( array(
 				 'page' => 'mla-menu',
 				'post_parent' => $item->post_parent,
-				'heading_suffix' => urlencode( 'Parent: ' . $item->parent_title ) 
+				'heading_suffix' => urlencode( 'Parent: ' . $parent_title ) 
 			), 'upload.php' ) ), (string) $item->post_parent );
 		}
 		else
@@ -716,11 +739,16 @@ class MLA_List_Table extends WP_List_Table {
 		
 		foreach ( $item->mla_references['features'] as $feature_id => $feature ) {
 			if ( $feature_id == $item->post_parent )
-				$parent = 'PARENT ';
+				$parent = ',<br>PARENT';
 			else
 				$parent = '';
 			
-			$value .= sprintf( '%1$s (%2$s %3$s), %4$s', /*%1$s*/ $parent, /*%2$s*/ esc_attr( $feature->post_type ), /*%3$s*/ $feature_id, /*%4$s*/ esc_attr( $feature->post_title ) ) . "<br>\r\n";
+			$value .= sprintf( '(%1$s %2$s%3$s), <a href="%4$s">%5$s</a>',
+				/*%1$s*/ esc_attr( $feature->post_type ),
+				/*%2$s*/ $feature_id,
+				/*%3$s*/ $parent,
+				/*%4$s*/ esc_url( add_query_arg( array('post' => $feature_id, 'action' => 'edit'), 'post.php' ) ),
+				/*%5$s*/ esc_attr( $feature->post_title ) ) . "<br>\r\n";
 		} // foreach $feature
 		
 		return $value;
@@ -742,13 +770,74 @@ class MLA_List_Table extends WP_List_Table {
 			
 			foreach ( $inserts as $insert ) {
 				if ( $insert->ID == $item->post_parent )
-					$parent = '&nbsp;&nbsp;PARENT ';
+					$parent = ',<br>PARENT';
 				else
-					$parent = '&nbsp;&nbsp;';
+					$parent = '';
 				
-				$value .= sprintf( '%1$s (%2$s %3$s), %4$s', /*%1$s*/ $parent, /*%2$s*/ esc_attr( $insert->post_type ), /*%3$s*/ $insert->ID, /*%4$s*/ esc_attr( $insert->post_title ) ) . "<br>\r\n";
+			$value .= sprintf( '(%1$s %2$s%3$s), <a href="%4$s">%5$s</a>',
+				/*%1$s*/ esc_attr( $insert->post_type ),
+				/*%2$s*/ $insert->ID,
+				/*%3$s*/ $parent,
+				/*%4$s*/ esc_url( add_query_arg( array('post' => $insert->ID, 'action' => 'edit'), 'post.php' ) ),
+				/*%5$s*/ esc_attr( $insert->post_title ) ) . "<br>\r\n";
 			} // foreach $insert
 		} // foreach $file
+		
+		return $value;
+	}
+	
+	/**
+	 * Supply the content for a custom column
+	 *
+	 * @since 0.70
+	 * 
+	 * @param	array	A singular attachment (post) object
+	 * @return	string	HTML markup to be placed inside the column
+	 */
+	function column_galleries( $item ) {
+		$value = '';
+		
+		foreach ( $item->mla_references['galleries'] as $ID => $gallery ) {
+			if ( $ID == $item->post_parent )
+				$parent = ',<br>PARENT';
+			else
+				$parent = '';
+			
+			$value .= sprintf( '(%1$s %2$s%3$s), <a href="%4$s">%5$s</a>',
+				/*%1$s*/ esc_attr( $gallery['post_type'] ),
+				/*%2$s*/ $ID,
+				/*%3$s*/ $parent,
+				/*%4$s*/ esc_url( add_query_arg( array('post' => $ID, 'action' => 'edit'), 'post.php' ) ),
+				/*%5$s*/ esc_attr( $gallery['post_title'] ) ) . "<br>\r\n";
+		} // foreach $gallery
+		
+		return $value;
+	}
+	
+	/**
+	 * Supply the content for a custom column
+	 *
+	 * @since 0.70
+	 * 
+	 * @param	array	A singular attachment (post) object
+	 * @return	string	HTML markup to be placed inside the column
+	 */
+	function column_mla_galleries( $item ) {
+		$value = '';
+		
+		foreach ( $item->mla_references['mla_galleries'] as $ID => $gallery ) {
+			if ( $ID == $item->post_parent )
+				$parent = ',<br>PARENT ';
+			else
+				$parent = '';
+			
+			$value .= sprintf( '(%1$s %2$s%3$s), <a href="%4$s">%5$s</a>',
+				/*%1$s*/ esc_attr( $gallery['post_type'] ),
+				/*%2$s*/ $ID,
+				/*%3$s*/ $parent,
+				/*%4$s*/ esc_url( add_query_arg( array('post' => $ID, 'action' => 'edit'), 'post.php' ) ),
+				/*%5$s*/ esc_attr( $gallery['post_title'] ) ) . "<br>\r\n";
+		} // foreach $gallery
 		
 		return $value;
 	}
@@ -910,7 +999,6 @@ class MLA_List_Table extends WP_List_Table {
 			$parent_date = '';
 		
 		if ( isset( $item->parent_title ) )
-//			$parent_title = esc_attr( $item->parent_title );
 			$parent_title = sprintf( '<a href="%s">%s</a>', esc_url( add_query_arg( array(
 				'post' => $item->post_parent,
 				'action' => 'edit'
@@ -919,7 +1007,7 @@ class MLA_List_Table extends WP_List_Table {
 			$parent_title = '(Unattached)';
 		
 		if ( isset( $item->parent_type ) )
-			$parent_type = '(' . $item->parent_type . ')';
+			$parent_type = '(' . $item->parent_type . ' ' . (string) $item->post_parent . ')';
 		else
 			$parent_type = '';
 		

@@ -4,7 +4,7 @@ Donate link: http://fairtradejudaica.org/make-a-difference/donate/
 Tags: attachments, documents, gallery, image, images, media, library, media library, media-tags, media tags, tags, media categories, categories
 Requires at least: 3.3
 Tested up to: 3.4.2
-Stable tag: 0.60
+Stable tag: 0.70
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -17,15 +17,16 @@ The Media Library Assistant provides several enhancements for managing the Media
 * The **[mla_gallery] shortcode**, used in a post, page or custom post type to add a gallery of images and/or other Media Library items (such as PDF documents). [MLA Gallery](http://wordpress.org/extend/plugins/media-library-assistant/other_notes/ "Complete Documentation") is a superset of the [gallery] shortcode in the WordPress core; it is compatible with [gallery] and provides many enhancements. These include: 1) full support for WordPress categories, tags and custom taxonomies, 2) support for all post_mime_type values, not just images 3) media Library items need not be "attached" to the post.
 
 * **Enhanced Search Media box**. Search can be extended to the name/slug, ALT text and caption fields. The connector between search terms can be "and" or "or".
-* An inline "Bulk Edit" area; update author or parent, add, remove or replace taxonomy terms for several attachments at once.
-* An inline "Quick Edit" action for many common fields.
-* Complete support for ALL taxonomies, including the standard Categories and Tags, your custom taxonomies and the Assistant's pre-defined Att. Categories and Att. Tags. You can add taxonomy columns to the Assistant listing, filter on any taxonomy, assign terms and list the attachments for a term.
-* Shows which posts use a media item as the "featured image"
-* Shows which posts use a media item as an inserted image or link
+
+* **Where-used reporting** shows which posts use a media item as the "featured image", an inserted image or link, an entry in a [gallery] and/or an entry in an [mla_gallery].
+
+* **Complete support for ALL taxonomies**, including the standard Categories and Tags, your custom taxonomies and the Assistant's pre-defined Att. Categories and Att. Tags. You can add taxonomy columns to the Assistant listing, filter on any taxonomy, assign terms and list the attachments for a term.
+* An inline "Bulk Edit" area; update author or parent, add, remove or replace taxonomy terms for several attachments at once
+* An inline "Quick Edit" action for many common fields
 * Displays more attachment information such as parent information, file URL and image metadata
 * Allows you to edit the attachment author, the name/slug and to "unattach" items
 * Provides additional view filters for mime types and taxonomies
-* Provides many more listing columns (more than 15) to choose from
+* Provides many more listing columns (more than 20) to choose from
 
 The Assistant is designed to work like the standard Media Library pages, so the learning curve is short and gentle. Contextual help is provided on every new screen to highlight new features. The [Other Notes section](http://wordpress.org/extend/plugins/media-library-assistant/other_notes/ "Click here, then scroll down for Help Summary") contains a summary of the help text following the [mla_gallery] documentation.
 
@@ -38,7 +39,7 @@ This plugin was inspired by my work on the WordPress web site for our nonprofit,
 1. Visit the settings page to customize category and tag support
 1. Visit the "Assistant" submenu in the Media admin section
 1. Click the Screen Options link to customize the display
-1. Use the enhanced Edit page to assign categories and tags
+1. Use the enhanced Edit, Quick Edit and Bulk Edit pages to assign categories and tags
 1. Use the [mla_gallery] shortcode to add galleries of images, documents and more to your posts and pages
 
 == Frequently Asked Questions ==
@@ -80,6 +81,10 @@ For example, if you add Tags support to the Assistant and then assign tag values
 
 Hover over the item you want to modify and click the "Edit" action. On the Edit Single Item page, set the ID portion of the Parent Info field to zero (0), then click "Update" to record your changes. If you change your mind, click "Cancel" to return to the main page without recording any changes.
 
+= The Media Library Assistant table listing seems sluggish; is there anything I can do to make it faster? =
+
+Some of the MLA features such as where-used reporting and ALT Text sorting/searching require a lot of database procesing. If this is a serious issue for you, open a thread in the support forum and let me know. I could implement a Settings option to turn these features on and off.
+
 = Are other language versions available? =
 
 Not at this time; I don't have working knowledge of anything but English. If you'd like to volunteer to produce another version, I'll rework the code to internationalize it and work with you to localize it.
@@ -97,6 +102,13 @@ All of the MLA source code has been annotated with "DocBlocks", a special type o
 5. The Media Library Assistant submenu showing the Bulk Edit area with taxonomy Add, Remove and Replace options; also shows the tags suggestion popup.
 
 == Changelog ==
+
+= 0.70 =
+* New: "Gallery in" and "MLA Gallery in" columns show where the item appears in [gallery] and [mla_gallery] shortcode output.
+* New: Post titles in the where-used columns contain a link to the Edit Post/Page screen.
+* New: Title/Name column distinguishes between "BAD PARENT" (no where-used references to the item) and "INVALID PARENT" (does not exist).
+* Fix: [mla_gallery] queries are modified to avoid a conflict with the Role Scoper plugin.
+* Fix: Undefined taxonomies are now bypassed when defining table columns, avoiding (!) Notice displays after changing taxonomy support settings.
 
 = 0.60 =
 * New: Enhanced Search Media box. Search can be extended to the name/slug, ALT text and caption fields. The connector between search terms can be "and" or "or".
@@ -156,6 +168,9 @@ All of the MLA source code has been annotated with "DocBlocks", a special type o
 * Initial release.
 
 == Upgrade Notice ==
+
+= 0.70 =
+Get the new "Gallery in" and "MLA Gallery in" where-used reporting to see where items are returned by the [gallery] and [mla_gallery] shortcodes. Two other enhancements and two fixes.
 
 = 0.60 =
 Get the enhanced Search Media box. Extend search to the name/slug, ALT text and caption fields. Connect search terms with "and" or "or". Five other enhancements and two fixes.
@@ -295,14 +310,17 @@ The search parameter ("s=keyword") will perform a keyword search. A cursory insp
 <p><strong>NOTE:</strong> Month and category filters are &#8220;sticky&#8221;, i.e., they will persist as you resort the display or change the file type/status view.</p>
 <p><strong>Featured/Inserted</strong></p>
 <p>The &#8220;Featured in&#8221; and &#8220;Inserted in&#8221; columns are a powerful tool for managing your attachments. They show you where each attachment is used in a post or page as a &#8220;Featured Image&#8221; or as an embedded image or link.</p>
-<p>You can also use the information in the &#8220;Title/Name&#8221; column to identify &#8220;Orphan&#8221; items that are not used in any post or page and items with a &#8220;Bad Parent&#8221;, i.e., a parent that does not exist.</p>
+<p>You can also use the information in the &#8220;Title/Name&#8221; column to identify &#8220;Orphan&#8221; items that are not used in any post or page and items with a &#8220;Bad Parent&#8221; (a parent that does contain any reference to the item) or an &#8220;Invalid Parent&#8221; (a parent that does not exist).</p>
+<p><strong>Gallery/MLA Gallery</strong></p>
+<p>The &#8220;Gallery in&#8221; and &#8220;MLA Gallery in&#8221; columns are a powerful tool for managing your attachments. They show you where each attachment is returned by a <code>[gallery]</code> or <code>[mla_gallery]</code> shortcode in a post or page. These columns do <strong>not</strong> use the post_parent (attached to) status of the item; they actually execute each shortcode and tabulate the attachments they return.</p>
+<p>You can also use the information in the &#8220;Title/Name&#8221; column to identify &#8220;Orphan&#8221; items that are not used in any post or page and items with a &#8220;Bad Parent&#8221; (a parent that does contain any reference to the item) or an &#8220;Invalid Parent&#8221; (a parent that does not exist).</p>
 <p><strong>Taxonomy Support</strong></p>
 <p>The &#8220;taxonomy&#8221; columns help you to group attachments by subject and keyword values. The columns list any categories and tags associated with the item. You can click on one of the displayed values to get a list of all items associated with that value.</p>
 <p>The Media Library Assistant provides two pre-defined taxonomies, &#8220;Att. Categories&#8221; and &#8220;Att. Tags&#8221; which are enabled by default. You can add or remove support for any registered taxonomy on the Settings screen. The standard WordPress Categories and Tags as well as any custom taxonomies can be supported.</p>
 <p>When you add support for a taxonomy it is visible on the main screen. If you want to hide the column simply use the Screen Options to uncheck the Show on screen box.</p>
 <p>Supported taxonomies also appear as submenus below the Media menu at the left of the screen. You can edit the taxonomy terms by clicking these submenus. The taxonomy edit screens include an &#8220;Attachments&#8221; column which displays the number of attachment objects for each term. You can display a filtered list of the attachments by clicking on the number in this column.</p>
 <p><strong>Search Media</strong></p>
-<p>The &#8220;Search Media&#8221; box supports a keyword search of several attachment fields; enter words and/or phrases in the box, separated by spaces. Click the Search Media button for a case-insensitive "SQL LIKE" search. Each keyword in the search phrase is matched independently, so the order of search words does not have to match the order in the text. For example, searching on "friend" and "best" will match "Best Friend". If you put quotes around a search phrase then word order is required for a match (and spaces between words must match as well). You can also match on partial words, e.g., "rien" will match "friend".
+<p>The &#8220;Search Media&#8221; box supports a keyword search of several attachment fields; enter words and/or phrases in the box, separated by spaces. Click the Search Media button for a case-insensitive "SQL LIKE" search. Each keyword in the search phrase is matched independently, so the order of search words does not have to match the order in the text. For example, searching on "friend" and "best" will match "Best Friend". If you put quotes around a search phrase then word order is required for a match (and spaces between words must match as well). You can also match on partial words, e.g., "rien" will match "friend".</p>
 <p>Once you&#8217;ve entered the terms you want, use the options below the box to tailor your search. You can pick the connector used between search terms; "or" means any of the terms will match, "and" means all of the terms must match. Use the checkboxes to extend your search to more fields in the database.</p>
 <p><strong>Bulk Actions</strong></p>
 <p>The &#8220;Bulk Actions&#8221; dropdown list works with the check box column to let you make changes to many items at once. Click the check box in the column title row to select all items on the page, or click the check box in a row to select items individually.</p>

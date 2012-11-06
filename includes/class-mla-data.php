@@ -834,9 +834,190 @@ class MLAData {
 			} // !empty
 		} // foreach $file
 		
+		/*
+		 * Look for [mla_gallery] references
+		 */
+		if ( self::_build_mla_galleries( self::$mla_galleries, '[mla_gallery', $exclude_revisions ) ) {
+			$galleries = self::_search_mla_galleries( self::$mla_galleries, $ID );
+			if ( !empty( $galleries ) ) {
+				$references['found_reference'] = true;
+				$references['mla_galleries'] = $galleries;
+
+				foreach ( $galleries as $post_id => $gallery ) {
+					if ( $post_id == $parent ) {
+						$references['found_parent'] = true;
+						$references['parent_type'] = $gallery['post_type'];
+						$references['parent_title'] = $gallery['post_title'];
+					}
+				} // foreach $gallery
+			} // !empty
+			else
+				$references['mla_galleries'] = array( );
+		}
+		
+		/*
+		 * Look for [gallery] references
+		 */
+		if ( self::_build_mla_galleries( self::$galleries, '[gallery', $exclude_revisions ) ) {
+			$galleries = self::_search_mla_galleries( self::$galleries, $ID );
+			if ( !empty( $galleries ) ) {
+				$references['found_reference'] = true;
+				$references['galleries'] = $galleries;
+
+				foreach ( $galleries as $post_id => $gallery ) {
+					if ( $post_id == $parent ) {
+						$references['found_parent'] = true;
+						$references['parent_type'] = $gallery['post_type'];
+						$references['parent_title'] = $gallery['post_title'];
+					}
+				} // foreach $gallery
+			} // !empty
+			else
+				$references['galleries'] = array( );
+		}
+		
 		return $references;
 	}
 	
+	/**
+	 * Objects containing [gallery] shortcodes
+	 *
+	 * This array contains all of the objects containing one or more [gallery] shortcodes
+	 * and array(s) of which attachments each [gallery] contains. The arrays are built once
+	 * each page load and cached for subsequent calls.
+	 *
+	 * The outer array is keyed by post_id. It contains an array of [gallery] entries numbered from one (1).
+	 * Each inner array has these elements:
+	 * ['parent_title'] post_title of the gallery parent, 
+	 * ['parent_type'] 'post' or 'page' or the custom post_type of the gallery parent,
+	 * ['query'] contains a string with the arguments of the [gallery], 
+	 * ['results'] contains an array of post_ids for the objects in the gallery.
+	 *
+	 * @since 0.70
+	 *
+	 * @var	array
+	 */
+	private static $galleries = null;
+
+	/**
+	 * Objects containing [mla_gallery] shortcodes
+	 *
+	 * This array contains all of the objects containing one or more [mla_gallery] shortcodes
+	 * and array(s) of which attachments each [mla_gallery] contains. The arrays are built once
+	 * each page load and cached for subsequent calls.
+	 *
+	 * @since 0.70
+	 *
+	 * @var	array
+	 */
+	private static $mla_galleries = null;
+
+	/**
+	 * Builds the $mla_galleries or $galleries array
+	 *
+	 * @since 0.70
+	 *
+	 * @param	array by reference to the private static galleries array variable
+	 * @param	string the shortcode to be searched for and processed
+	 * @param	boolean true to exclude revisions from the search
+	 *
+	 * @return	boolean true if the galleries array is not empty
+	 */
+	private static function _build_mla_galleries( &$galleries_array, $shortcode, $exclude_revisions ) {
+		global $wpdb, $post;
+
+		if ( is_array( $galleries_array ) ) {
+			if ( ! empty( $galleries_array ) ) {
+				return true;
+			} else {
+				return false;
+			}
+		}
+
+		/*
+		 * $galleries_array is null, so build the array
+		 */
+		$galleries_array = array( );
+		
+		if ( $exclude_revisions )
+			$exclude_revisions = "(post_type <> 'revision') AND ";
+		else
+			$exclude_revisions = '';
+		
+		$like = like_escape( $shortcode );
+		$results = $wpdb->get_results(
+			$wpdb->prepare(
+				"
+				SELECT ID, post_type, post_title, post_content
+				FROM {$wpdb->posts}
+				WHERE {$exclude_revisions}(
+					CONVERT(`post_content` USING utf8 )
+					LIKE %s)
+				", "%{$like}%"
+			)
+		);
+
+		if ( empty( $results ) )
+			return false;
+			
+		foreach ( $results as $result ) {
+			$count = preg_match_all( "/\\{$shortcode}(.*)\\]/", $result->post_content, $matches, PREG_PATTERN_ORDER );
+			if ( $count ) {
+				$result_id = $result->ID;
+				$galleries_array[ $result_id ]['parent_title'] = $result->post_title;
+				$galleries_array[ $result_id ]['parent_type'] = $result->post_type;
+				$galleries_array[ $result_id ]['results'] = array( );
+				$galleries_array[ $result_id ]['galleries'] = array( );
+				$instance = 0;
+				
+				foreach ( $matches[1] as $index => $match ) {
+					/*
+					 * Filter out shortcodes that are not an exact match
+					 */
+					if ( empty( $match ) || ( ' ' == substr( $match, 0, 1 ) ) ) {
+						$instance++;
+						$galleries_array[ $result_id ]['galleries'][ $instance ]['query'] = trim( $matches[1][$index] );
+						$galleries_array[ $result_id ]['galleries'][ $instance ]['results'] = array( );
+						
+						$post = $result; // set global variable for mla_gallery_shortcode
+						$attachments = MLAShortcodes::mla_get_shortcode_attachments( $result_id, $galleries_array[ $result_id ]['galleries'][ $instance ]['query'] );
+						if ( ! empty( $attachments ) )
+							foreach ( $attachments as $attachment ) {
+								$galleries_array[ $result_id ]['results'][ $attachment->ID ] = $attachment->ID;
+								$galleries_array[ $result_id ]['galleries'][ $instance ]['results'][] = $attachment->ID;
+							}
+					} // exact match
+				} // foreach $match
+			} // if $count
+		} // foreach $result
+		
+	return true;
+	}
+	
+	/**
+	 * Search the $mla_galleries or $galleries array
+	 *
+	 * @since 0.70
+	 *
+	 * @param	array	by reference to the private static galleries array variable
+	 * @param	int		the attachment ID to be searched for and processed
+	 *
+	 * @return	array	All posts/pages with one or more galleries that include the attachment.
+	 * 					The array key is the parent_post ID; each entry contains post_title and post_type.
+	 */
+	private static function _search_mla_galleries( &$galleries_array, $attachment_id ) {
+		$gallery_refs = array( );
+		if ( ! empty( $galleries_array ) ) {
+			foreach ( $galleries_array as $parent_id => $gallery ) {
+				if ( in_array( $attachment_id, $gallery['results'] ) ) {
+					$gallery_refs[ $parent_id ] = array ( 'post_title' => $gallery['parent_title'], 'post_type' => $gallery['parent_type'] );
+				}
+			} // foreach gallery
+		} // !empty
+		
+		return $gallery_refs;
+	}
+		
 	/**
 	 * Returns information about an attachment's parent, if found
 	 *

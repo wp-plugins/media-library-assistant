@@ -64,13 +64,17 @@
 <li class="method public "><a href="#mla_query_posts_search_filter" title="mla_query_posts_search_filter :: Adds a keyword search to the WHERE clause, if required"><span class="description">Adds a keyword search to the WHERE clause, if required</span><pre>mla_query_posts_search_filter()</pre></a></li>
 <li class="method public "><a href="#mla_query_posts_where_filter" title="mla_query_posts_where_filter :: Adds a WHERE clause for detached items"><span class="description">Adds a WHERE clause for detached items</span><pre>mla_query_posts_where_filter()</pre></a></li>
 <li class="nav-header private">» Private</li>
+<li class="method private "><a href="#_build_mla_galleries" title="_build_mla_galleries :: Builds the $mla_galleries or $galleries array"><span class="description">Builds the $mla_galleries or $galleries array</span><pre>_build_mla_galleries()</pre></a></li>
 <li class="method private "><a href="#_execute_list_table_query" title="_execute_list_table_query :: Add filters, run query, remove filters"><span class="description">Add filters, run query, remove filters</span><pre>_execute_list_table_query()</pre></a></li>
 <li class="method private "><a href="#_fetch_attachment_metadata" title="_fetch_attachment_metadata :: Fetch and filter meta data for an attachment"><span class="description">Fetch and filter meta data for an attachment</span><pre>_fetch_attachment_metadata()</pre></a></li>
 <li class="method private "><a href="#_fetch_attachment_parent_data" title="_fetch_attachment_parent_data :: Returns information about an attachment's parent, if found"><span class="description">Returns information about an attachment's parent, if found</span><pre>_fetch_attachment_parent_data()</pre></a></li>
 <li class="method private "><a href="#_prepare_list_table_query" title="_prepare_list_table_query :: Sanitize and expand query arguments from request variables"><span class="description">Sanitize and expand query arguments from request variables</span><pre>_prepare_list_table_query()</pre></a></li>
+<li class="method private "><a href="#_search_mla_galleries" title="_search_mla_galleries :: Search the $mla_galleries or $galleries array"><span class="description">Search the $mla_galleries or $galleries array</span><pre>_search_mla_galleries()</pre></a></li>
 <li class="nav-header">
 <i class="icon-custom icon-property"></i> Properties</li>
 <li class="nav-header private">» Private</li>
+<li class="property private "><a href="#%24galleries" title="$galleries :: Objects containing [gallery] shortcodes"><span class="description">Objects containing [gallery] shortcodes</span><pre>$galleries</pre></a></li>
+<li class="property private "><a href="#%24mla_galleries" title="$mla_galleries :: Objects containing [mla_gallery] shortcodes"><span class="description">Objects containing [mla_gallery] shortcodes</span><pre>$mla_galleries</pre></a></li>
 <li class="property private "><a href="#%24query_parameters" title='$query_parameters :: WP_Query filter "parameters"'><span class="description">WP_Query filter "parameters"</span><pre>$query_parameters</pre></a></li>
 </ul>
 </div>
@@ -334,6 +338,31 @@ Defined as public because it's a filter.</p></p>
 <code>string</code>query clause after "detached" item modification</div>
 </div></div>
 </div>
+<a name="_build_mla_galleries" id="_build_mla_galleries"></a><div class="element clickable method private _build_mla_galleries" data-toggle="collapse" data-target="._build_mla_galleries .collapse">
+<h2>Builds the $mla_galleries or $galleries array</h2>
+<pre>_build_mla_galleries(array $galleries_array, string $shortcode, boolean $exclude_revisions) : boolean</pre>
+<div class="labels"></div>
+<div class="row collapse"><div class="detail-description">
+<p class="long_description"></p>
+<table class="table table-bordered"><tr>
+<th>since</th>
+<td>0.70</td>
+</tr></table>
+<h3>Parameters</h3>
+<div class="subelement argument">
+<h4>$galleries_array</h4>
+<code>array</code><p>by reference to the private static galleries array variable</p></div>
+<div class="subelement argument">
+<h4>$shortcode</h4>
+<code>string</code><p>the shortcode to be searched for and processed</p></div>
+<div class="subelement argument">
+<h4>$exclude_revisions</h4>
+<code>boolean</code><p>true to exclude revisions from the search</p></div>
+<h3>Returns</h3>
+<div class="subelement response">
+<code>boolean</code>true if the galleries array is not empty</div>
+</div></div>
+</div>
 <a name="_execute_list_table_query" id="_execute_list_table_query"></a><div class="element clickable method private _execute_list_table_query" data-toggle="collapse" data-target="._execute_list_table_query .collapse">
 <h2>Add filters, run query, remove filters</h2>
 <pre>_execute_list_table_query(array $request) : object</pre>
@@ -423,8 +452,65 @@ Modeled after wp_edit_attachments_query in wp-admin/post.php</p></p>
 <code>array</code>revised arguments suitable for WP_Query</div>
 </div></div>
 </div>
+<a name="_search_mla_galleries" id="_search_mla_galleries"></a><div class="element clickable method private _search_mla_galleries" data-toggle="collapse" data-target="._search_mla_galleries .collapse">
+<h2>Search the $mla_galleries or $galleries array</h2>
+<pre>_search_mla_galleries(array $galleries_array, int $attachment_id) : array</pre>
+<div class="labels"></div>
+<div class="row collapse"><div class="detail-description">
+<p class="long_description"></p>
+<table class="table table-bordered"><tr>
+<th>since</th>
+<td>0.70</td>
+</tr></table>
+<h3>Parameters</h3>
+<div class="subelement argument">
+<h4>$galleries_array</h4>
+<code>array</code><p>by reference to the private static galleries array variable</p></div>
+<div class="subelement argument">
+<h4>$attachment_id</h4>
+<code>int</code><p>the attachment ID to be searched for and processed</p></div>
+<h3>Returns</h3>
+<div class="subelement response">
+<code>array</code>All posts/pages with one or more galleries that include the attachment. The array key is the parent_post ID; each entry contains post_title and post_type.</div>
+</div></div>
+</div>
 <h3>
 <i class="icon-custom icon-property"></i> Properties</h3>
+<a name="%24galleries" id="$galleries"> </a><div class="element clickable property private $galleries" data-toggle="collapse" data-target=".$galleries .collapse">
+<h2>Objects containing [gallery] shortcodes</h2>
+<pre>$galleries : array</pre>
+<div class="labels"></div>
+<div class="row collapse"><div class="detail-description">
+<p class="long_description"><p>This array contains all of the objects containing one or more [gallery] shortcodes
+and array(s) of which attachments each [gallery] contains. The arrays are built once
+each page load and cached for subsequent calls.</p>
+
+<p>The outer array is keyed by post_id. It contains an array of [gallery] entries numbered from one (1).
+Each inner array has these elements:
+['parent_title'] post_title of the gallery parent,
+['parent_type'] 'post' or 'page' or the custom post_type of the gallery parent,
+['query'] contains a string with the arguments of the [gallery],
+['results'] contains an array of post_ids for the objects in the gallery.</p></p>
+<table class="table table-bordered"><tr>
+<th>since</th>
+<td>0.70</td>
+</tr></table>
+</div></div>
+</div>
+<a name="%24mla_galleries" id="$mla_galleries"> </a><div class="element clickable property private $mla_galleries" data-toggle="collapse" data-target=".$mla_galleries .collapse">
+<h2>Objects containing [mla_gallery] shortcodes</h2>
+<pre>$mla_galleries : array</pre>
+<div class="labels"></div>
+<div class="row collapse"><div class="detail-description">
+<p class="long_description"><p>This array contains all of the objects containing one or more [mla_gallery] shortcodes
+and array(s) of which attachments each [mla_gallery] contains. The arrays are built once
+each page load and cached for subsequent calls.</p></p>
+<table class="table table-bordered"><tr>
+<th>since</th>
+<td>0.70</td>
+</tr></table>
+</div></div>
+</div>
 <a name="%24query_parameters" id="$query_parameters"> </a><div class="element clickable property private $query_parameters" data-toggle="collapse" data-target=".$query_parameters .collapse">
 <h2>WP_Query filter "parameters"</h2>
 <pre>$query_parameters : array</pre>
@@ -446,7 +532,7 @@ any further logic required to translate those values is contained in the filters
 <div class="row"><footer class="span12">
             Template is built using <a href="http://twitter.github.com/bootstrap/">Twitter Bootstrap 2</a> and icons provided by <a href="http://glyphicons.com/">Glyphicons</a>.<br>
             Documentation is powered by <a href="http://www.phpdoc.org/">phpDocumentor 2.0.0a8</a> and<br>
-            generated on 2012-10-24T10:33:50-07:00.<br></footer></div>
+            generated on 2012-11-06T11:03:46-08:00.<br></footer></div>
 </div>
 </body>
 </html>

@@ -66,9 +66,11 @@ calls the parent constructor to set some default configs.</span><pre>__construct
 <li class="method public "><a href="#column_default" title="column_default :: Supply a column value if no column-specific function has been defined"><span class="description">Supply a column value if no column-specific function has been defined</span><pre>column_default()</pre></a></li>
 <li class="method public "><a href="#column_description" title="column_description :: Supply the content for a custom column"><span class="description">Supply the content for a custom column</span><pre>column_description()</pre></a></li>
 <li class="method public "><a href="#column_featured" title="column_featured :: Supply the content for a custom column"><span class="description">Supply the content for a custom column</span><pre>column_featured()</pre></a></li>
+<li class="method public "><a href="#column_galleries" title="column_galleries :: Supply the content for a custom column"><span class="description">Supply the content for a custom column</span><pre>column_galleries()</pre></a></li>
 <li class="method public "><a href="#column_icon" title="column_icon :: Supply the content for a custom column"><span class="description">Supply the content for a custom column</span><pre>column_icon()</pre></a></li>
 <li class="method public "><a href="#column_inserted" title="column_inserted :: Supply the content for a custom column"><span class="description">Supply the content for a custom column</span><pre>column_inserted()</pre></a></li>
 <li class="method public "><a href="#column_menu_order" title="column_menu_order :: Supply the content for a custom column"><span class="description">Supply the content for a custom column</span><pre>column_menu_order()</pre></a></li>
+<li class="method public "><a href="#column_mla_galleries" title="column_mla_galleries :: Supply the content for a custom column"><span class="description">Supply the content for a custom column</span><pre>column_mla_galleries()</pre></a></li>
 <li class="method public "><a href="#column_modified" title="column_modified :: Supply the content for a custom column"><span class="description">Supply the content for a custom column</span><pre>column_modified()</pre></a></li>
 <li class="method public "><a href="#column_parent" title="column_parent :: Supply the content for a custom column"><span class="description">Supply the content for a custom column</span><pre>column_parent()</pre></a></li>
 <li class="method public "><a href="#column_post_mime_type" title="column_post_mime_type :: Supply the content for a custom column"><span class="description">Supply the content for a custom column</span><pre>column_post_mime_type()</pre></a></li>
@@ -377,6 +379,26 @@ have a specific method, so this function returns a troubleshooting message.</p><
 <code>string</code>HTML markup to be placed inside the column</div>
 </div></div>
 </div>
+<a name="column_galleries" id="column_galleries"></a><div class="element clickable method public column_galleries" data-toggle="collapse" data-target=".column_galleries .collapse">
+<h2>Supply the content for a custom column</h2>
+<pre>column_galleries(array $item) : string</pre>
+<div class="labels"></div>
+<div class="row collapse"><div class="detail-description">
+<p class="long_description"></p>
+<table class="table table-bordered"><tr>
+<th>since</th>
+<td>0.70</td>
+</tr></table>
+<h3>Parameters</h3>
+<div class="subelement argument">
+<h4>$item</h4>
+<code>array</code><p>A singular attachment (post) object</p>
+</div>
+<h3>Returns</h3>
+<div class="subelement response">
+<code>string</code>HTML markup to be placed inside the column</div>
+</div></div>
+</div>
 <a name="column_icon" id="column_icon"></a><div class="element clickable method public column_icon" data-toggle="collapse" data-target=".column_icon .collapse">
 <h2>Supply the content for a custom column</h2>
 <pre>column_icon(array $item) : string</pre>
@@ -426,6 +448,26 @@ have a specific method, so this function returns a troubleshooting message.</p><
 <table class="table table-bordered"><tr>
 <th>since</th>
 <td>0.60</td>
+</tr></table>
+<h3>Parameters</h3>
+<div class="subelement argument">
+<h4>$item</h4>
+<code>array</code><p>A singular attachment (post) object</p>
+</div>
+<h3>Returns</h3>
+<div class="subelement response">
+<code>string</code>HTML markup to be placed inside the column</div>
+</div></div>
+</div>
+<a name="column_mla_galleries" id="column_mla_galleries"></a><div class="element clickable method public column_mla_galleries" data-toggle="collapse" data-target=".column_mla_galleries .collapse">
+<h2>Supply the content for a custom column</h2>
+<pre>column_mla_galleries(array $item) : string</pre>
+<div class="labels"></div>
+<div class="row collapse"><div class="detail-description">
+<p class="long_description"></p>
+<table class="table table-bordered"><tr>
+<th>since</th>
+<td>0.70</td>
 </tr></table>
 <h3>Parameters</h3>
 <div class="subelement argument">
@@ -944,7 +986,7 @@ sorted by that column. This is computed each time the table is displayed.</p></p
 <div class="row"><footer class="span12">
             Template is built using <a href="http://twitter.github.com/bootstrap/">Twitter Bootstrap 2</a> and icons provided by <a href="http://glyphicons.com/">Glyphicons</a>.<br>
             Documentation is powered by <a href="http://www.phpdoc.org/">phpDocumentor 2.0.0a8</a> and<br>
-            generated on 2012-10-24T10:33:50-07:00.<br></footer></div>
+            generated on 2012-11-06T11:03:46-08:00.<br></footer></div>
 </div>
 </body>
 </html>
