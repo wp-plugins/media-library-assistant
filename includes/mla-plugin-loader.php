@@ -44,6 +44,15 @@ require_once( MLA_PLUGIN_PATH . 'includes/class-mla-shortcodes.php');
 add_action('init', 'MLAShortcodes::initialize');
 
 /*
+ * WordPress 3.5 and later Edit Media screen additions, e.g., meta boxes
+ */
+if ( version_compare( get_bloginfo( 'version' ), '3.5', '>=' ) ) {
+	require_once( MLA_PLUGIN_PATH . 'includes/class-mla-edit-media.php');
+	
+	add_action('init', 'MLAEdit::initialize');
+}
+
+/*
  * Plugin settings and management page
  */
 require_once( MLA_PLUGIN_PATH . 'includes/class-mla-settings.php' );

@@ -122,7 +122,7 @@ inlineEditAttachment = {
 		if ( typeof(id) == 'object' )
 			id = t.getId(id);
 
-		fields = ['post_title', 'post_name', 'image_alt', 'post_parent', 'menu_order', 'post_author'];
+		fields = ['post_title', 'post_name', 'post_excerpt', 'image_alt', 'post_parent', 'menu_order', 'post_author'];
 
 		// add the new blank row
 		editRow = $('#inline-edit').clone(true);

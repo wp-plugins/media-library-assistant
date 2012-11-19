@@ -378,7 +378,8 @@ class MLA_List_Table extends WP_List_Table {
 		parent::__construct( array(
 			'singular' => 'attachment', //singular name of the listed records
 			'plural' => 'attachments', //plural name of the listed records
-			'ajax' => true //does this table support ajax?
+			'ajax' => true, //does this table support ajax?
+			'screen' => 'media_page_mla-menu'
 		) );
 		
 		$this->currently_hidden = self::get_hidden_columns();
@@ -558,6 +559,7 @@ class MLA_List_Table extends WP_List_Table {
 		$inline_data = "\r\n" . '<div class="hidden" id="inline_' . $item->ID . "\">\r\n";
 		$inline_data .= '	<div class="post_title">' . esc_attr( $item->post_title ) . "</div>\r\n";
 		$inline_data .= '	<div class="post_name">' . esc_attr( $item->post_name ) . "</div>\r\n";
+		$inline_data .= '	<div class="post_excerpt">' . esc_attr( $item->post_excerpt ) . "</div>\r\n";
 		
 		if ( !empty( $item->mla_wp_attachment_metadata ) ) {
 			if ( isset( $item->mla_wp_attachment_image_alt ) )
@@ -603,8 +605,8 @@ class MLA_List_Table extends WP_List_Table {
 				$parent_title = '(no title: bad ID)';
 
 			$parent = sprintf( '<a href="%1$s">(parent:%2$s)</a>', esc_url( add_query_arg( array(
-					 'page' => 'mla-menu',
-					'post_parent' => $item->post_parent,
+					'page' => 'mla-menu',
+					'parent' => $item->post_parent,
 					'heading_suffix' => urlencode( 'Parent: ' .  $parent_title ) 
 				), 'upload.php' ) ), (string) $item->post_parent );
 		} // $item->post_parent
@@ -705,8 +707,8 @@ class MLA_List_Table extends WP_List_Table {
 				$parent_title = '(no title: bad ID)';
 
 			return sprintf( '<a href="%s">%s</a>', esc_url( add_query_arg( array(
-				 'page' => 'mla-menu',
-				'post_parent' => $item->post_parent,
+				'page' => 'mla-menu',
+				'parent' => $item->post_parent,
 				'heading_suffix' => urlencode( 'Parent: ' . $parent_title ) 
 			), 'upload.php' ) ), (string) $item->post_parent );
 		}
@@ -978,7 +980,7 @@ class MLA_List_Table extends WP_List_Table {
 			return sprintf( '<a href="%s">%s</a>', esc_url( add_query_arg( array(
 				 'page' => 'mla-menu',
 				'author' => $item->post_author,
-				'heading_suffix' => urlencode( $user->data->display_name ) 
+				'heading_suffix' => urlencode( 'Author: ' . $user->data->display_name ) 
 			), 'upload.php' ) ), esc_html( $user->data->display_name ) );
 		else
 			return 'unknown';
@@ -1087,12 +1089,10 @@ class MLA_List_Table extends WP_List_Table {
 		$_num_posts = (array) wp_count_attachments();
 		$_total_posts = array_sum( $_num_posts ) - $_num_posts['trash'];
 		$total_orphans = $wpdb->get_var(
-			$wpdb->prepare(
 				"
 				SELECT COUNT( * ) FROM {$wpdb->posts}
 				WHERE post_type = 'attachment' AND post_status != 'trash' AND post_parent < 1
 				"
-			)
 		);
 		
 		$post_mime_types = self::mla_get_attachment_mime_types();

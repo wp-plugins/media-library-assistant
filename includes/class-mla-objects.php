@@ -22,13 +22,6 @@ class MLAObjects {
 	 */
 	public static function initialize() {
 		self::_build_taxonomies();
-	
-		/*
-		 * WordPress 3.5 uses the advanced-form-edit.php function for the Edit Media
-		 * page. This supports all the standard meta-boxes for post types.
-		 */
-		if ( MLATest::$wordpress_3point5_plus )
-			add_post_type_support( 'attachment', 'custom-fields' );
 	}
 
 	/**
@@ -96,16 +89,14 @@ class MLAObjects {
 			);
 		}
 	
-	$taxonomies = get_taxonomies( array ( 'show_ui' => 'true' ), 'names' );
-	foreach ( $taxonomies as $tax_name ) {
-		if ( MLASettings::mla_taxonomy_support( $tax_name ) ) {
-			register_taxonomy_for_object_type( $tax_name, 'attachment');
-			add_filter( "manage_edit-{$tax_name}_columns", 'MLAObjects::mla_taxonomy_get_columns_filter', 10, 1 ); // $columns
-			add_filter( "manage_{$tax_name}_custom_column", 'MLAObjects::mla_taxonomy_column_filter', 10, 3 ); // $place_holder, $column_name, $tag->term_id
-		}
-	} // foreach
-	
-	// add_post_type_support( 'attachment', 'custom-fields' );  WP 3.5 experiment - MOVE THIS!
+		$taxonomies = get_taxonomies( array ( 'show_ui' => 'true' ), 'names' );
+		foreach ( $taxonomies as $tax_name ) {
+			if ( MLASettings::mla_taxonomy_support( $tax_name ) ) {
+				register_taxonomy_for_object_type( $tax_name, 'attachment');
+				add_filter( "manage_edit-{$tax_name}_columns", 'MLAObjects::mla_taxonomy_get_columns_filter', 10, 1 ); // $columns
+				add_filter( "manage_{$tax_name}_custom_column", 'MLAObjects::mla_taxonomy_column_filter', 10, 3 ); // $place_holder, $column_name, $tag->term_id
+			}
+		} // foreach
 	} // _build_taxonomies
 	
 	/**

@@ -41,6 +41,9 @@
               <label> <span class="title">Name/Slug</span> <span class="input-text-wrap">
                 <input type="text" name="post_name" value="" />
                 </span> </label>
+              <label> <span class="title">Caption</span> <span class="input-text-wrap">
+                <input type="text" name="post_excerpt" value="" />
+                </span> </label>
               <label class="inline-edit-image-alt"> <span class="title">Alt Text</span> <span class="input-text-wrap">
                 <input type="text" name="image_alt" value="" />
                 </span> </label>
@@ -82,7 +85,7 @@
               <label class="inline-edit-post-parent"> <span class="title">Parent ID</span> <span class="input-text-wrap">
                 <input type="text" name="post_parent" value="" />
                 </span> </label>
-[+authors+]
+[+bulk_authors+]
             </div>
           </fieldset>
           <p class="submit inline-edit-save">

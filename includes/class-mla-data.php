@@ -35,7 +35,7 @@ class MLAData {
 	 * @since 0.1
 	 *
 	 * @param	string 	Complete path and name of the template file, option name or the raw template
-	 * @param	string 	Type of template source; 'file', 'option', 'string'
+	 * @param	string 	Optional type of template source; 'file' (default), 'option', 'string'
 	 *
 	 * @return	string|array|false|NULL
 	 *  		string for files that do not contain template divider comments,
@@ -186,7 +186,7 @@ class MLAData {
 			/*
 			 * Add parent data
 			 */
-			$parent_data = self::_fetch_attachment_parent_data( $attachment->post_parent );
+			$parent_data = self::mla_fetch_attachment_parent_data( $attachment->post_parent );
 			foreach ( $parent_data as $parent_key => $parent_value ) {
 				$attachments[ $index ]->$parent_key = $parent_value;
 			}
@@ -194,7 +194,7 @@ class MLAData {
 			/*
 			 * Add meta data
 			 */
-			$meta_data = self::_fetch_attachment_metadata( $attachment->ID );
+			$meta_data = self::mla_fetch_attachment_metadata( $attachment->ID );
 			foreach ( $meta_data as $meta_key => $meta_value ) {
 				$attachments[ $index ]->$meta_key = $meta_value;
 			}
@@ -230,8 +230,8 @@ class MLAData {
 	 * @since 0.1
 	 *
 	 * @param	array	query parameters from web page, usually found in $_REQUEST
-	 * @param	int		number of rows to skip over to reach desired page
-	 * @param	int		number of rows on each page (0 = all rows)
+	 * @param	int		Optional number of rows (default 0) to skip over to reach desired page
+	 * @param	int		Optional number of rows on each page (0 = all rows, default)
 	 *
 	 * @return	array	revised arguments suitable for WP_Query
 	 */
@@ -280,10 +280,12 @@ class MLAData {
 					if ( array_key_exists( $value, MLA_List_Table::mla_get_attachment_mime_types( ) ) )
 						$clean_request[ $key ] = $value;
 					break;
+				case 'parent':
+					$clean_request[ 'post_parent' ] = absint( $value );
+					break;
 				/*
 				 * ['m'] - filter by year and month of post, e.g., 201204
 				 */
-				case 'post_parent':
 				case 'author':
 				case 'm':
 					$clean_request[ $key ] = absint( $value );
@@ -388,16 +390,16 @@ class MLAData {
 		/*
 		 * ['mla_filter_term'] - filter by taxonomy
 		 *
-		 * cat = '0' is "All Categories", i.e., no filtering
-		 * cat = '-1' is "No Categories"
+		 * cat =  0 is "All Categories", i.e., no filtering
+		 * cat = -1 is "No Categories"
 		 */
 		if ( isset( $clean_request['mla_filter_term'] ) ) {
-			if ( $clean_request['mla_filter_term'] != '0' ) {
+			if ( $clean_request['mla_filter_term'] != 0 ) {
 				$tax_filter =  MLASettings::mla_taxonomy_support('', 'filter');
-				if ( $clean_request['mla_filter_term'] == '-1' ) {
+				if ( $clean_request['mla_filter_term'] == -1 ) {
 					$term_list = get_terms( $tax_filter, array(
 						'fields' => 'ids',
-						'hide_empty' => true 
+						'hide_empty' => false
 					) );
 					$clean_request['tax_query'] = array(
 						array(
@@ -671,12 +673,12 @@ class MLAData {
 		/*
 		 * Add parent data
 		 */
-		$post_data = array_merge( $post_data, self::_fetch_attachment_parent_data( $post_data['post_parent'] ) );
+		$post_data = array_merge( $post_data, self::mla_fetch_attachment_parent_data( $post_data['post_parent'] ) );
 		
 		/*
 		 * Add meta data
 		 */
-		$post_data = array_merge( $post_data, self::_fetch_attachment_metadata( $post_id ) );
+		$post_data = array_merge( $post_data, self::mla_fetch_attachment_metadata( $post_id ) );
 		
 		/*
 		 * Add references
@@ -739,16 +741,9 @@ class MLAData {
 		$attachment_metadata = get_post_meta( $ID, '_wp_attachment_metadata', true );
 		if ( empty( $attachment_metadata ) ) {
 			$references['base_file'] = get_post_meta( $ID, '_wp_attached_file', true );
-			$references['files'][ $references['base_file'] ] = $references['base_file'];
-			$last_slash = strrpos( $references['base_file'], '/' );
-			$references['path'] = substr( $references['base_file'], 0, $last_slash + 1 );
-			$references['file'] = substr( $references['base_file'], $last_slash + 1 );
-		} else {
+		} // empty( $attachment_metadata )
+		else {
 			$references['base_file'] = $attachment_metadata['file'];
-			$references['files'][ $references['base_file'] ] = $references['base_file'];
-			$last_slash = strrpos( $references['base_file'], '/' );
-			$references['path'] = substr( $references['base_file'], 0, $last_slash + 1 );
-			$references['file'] = substr( $references['base_file'], $last_slash + 1 );
 			$sizes = $attachment_metadata['sizes'];
 			if ( !empty( $sizes ) ) {
 				/* Using the name as the array key ensures each name is added only once */
@@ -757,8 +752,19 @@ class MLAData {
 				}
 				
 			}
-		}
+		} // ! empty( $attachment_metadata )
 		
+		$references['files'][ $references['base_file'] ] = $references['base_file'];
+		$last_slash = strrpos( $references['base_file'], '/' );
+		if ( false === $last_slash ) {
+			$references['path'] = '';
+			$references['file'] = $references['base_file'];
+		}
+		else {
+			$references['path'] = substr( $references['base_file'], 0, $last_slash + 1 );
+			$references['file'] = substr( $references['base_file'], $last_slash + 1 );
+		}
+
 		/*
 		 * Process the where-used settings option
 		 */
@@ -771,25 +777,21 @@ class MLAData {
 		 * Look for the "Featured Image(s)"
 		 */
 		$features = $wpdb->get_results( 
-			$wpdb->prepare(
 				"
 				SELECT post_id
 				FROM {$wpdb->postmeta}
 				WHERE meta_key = '_thumbnail_id' AND meta_value = {$ID}
 				"
-			)
 		);
 		
 		if ( !empty( $features ) ) {
 			foreach ( $features as $feature ) {
 				$feature_results = $wpdb->get_results(
-					$wpdb->prepare(
 						"
 						SELECT post_type, post_title
 						FROM {$wpdb->posts}
 						WHERE {$exclude_revisions}(ID = {$feature->post_id})
 						"
-					)
 				);
 					
 				if ( !empty( $feature_results ) ) {
@@ -1029,7 +1031,7 @@ class MLAData {
 	 *
 	 * @return	array	Parent information; post_date, post_title and post_type
 	 */
-	private static function _fetch_attachment_parent_data( $parent_id ) {
+	public static function mla_fetch_attachment_parent_data( $parent_id ) {
 		$parent_data = array();
 		if ( $parent_id ) {
 			$parent = get_post( $parent_id );
@@ -1057,7 +1059,7 @@ class MLAData {
 	 *
 	 * @return	array	Meta data variables
 	 */
-	private static function _fetch_attachment_metadata( $post_id ) {
+	public static function mla_fetch_attachment_metadata( $post_id ) {
 		$results = array();
 		$post_meta = get_metadata( 'post', $post_id );
 			
@@ -1093,6 +1095,244 @@ class MLAData {
 		/* is_array($post_meta) */
 		
 		return $results;
+	}
+	
+	/**
+	 * Update a single item; change the meta data 
+	 * for a single attachment.
+	 * 
+	 * @since 0.1
+	 * 
+	 * @param	int		The ID of the attachment to be updated
+	 * @param	array	Field name => value pairs
+	 * @param	array	Optional taxonomy term values, default null
+	 * @param	array	Optional taxonomy actions (add, remove, replace), default null
+	 *
+	 * @return	array	success/failure message and NULL content
+	 */
+	public static function mla_update_single_item( $post_id, $new_data, $tax_input = NULL, $tax_actions = NULL ) {
+		$post_data = MLAData::mla_get_attachment_by_id( $post_id );
+		
+		if ( !isset( $post_data ) )
+			return array(
+				'message' => 'ERROR: Could not retrieve Attachment.',
+				'body' => '' 
+			);
+		
+		$message = '';
+		$updates = array( 'ID' => $post_id );
+		$new_data = stripslashes_deep( $new_data );
+
+		foreach ( $new_data as $key => $value ) {
+			switch ( $key ) {
+				case 'post_title':
+					if ( $value == $post_data[ $key ] )
+						break;
+						
+					$message .= sprintf( 'Changing Title from "%1$s" to "%2$s"<br>', esc_attr( $post_data[ $key ] ), esc_attr( $value ) );
+					$updates[ $key ] = $value;
+					break;
+				case 'post_name':
+					if ( $value == $post_data[ $key ] )
+						break;
+					
+					$value = sanitize_title( $value );
+					
+					/*
+					 * Make sure new slug is unique
+					 */
+					$args = array(
+						'name' => $value,
+						'post_type' => 'attachment',
+						'post_status' => 'inherit',
+						'showposts' => 1 
+					);
+					$my_posts = get_posts( $args );
+					
+					if ( $my_posts ) {
+						$message .= sprintf( 'ERROR: Could not change Name/Slug "%1$s"; name already exists<br>', $value );
+					} else {
+						$message .= sprintf( 'Changing Name/Slug from "%1$s" to "%2$s"<br>', esc_attr( $post_data[ $key ] ), $value );
+						$updates[ $key ] = $value;
+					}
+					break;
+				case 'image_alt':
+					$key = 'mla_wp_attachment_image_alt';
+					if ( !isset( $post_data[ $key ] ) )
+						$post_data[ $key ] = '';
+					
+					if ( $value == $post_data[ $key ] )
+						break;
+					
+					if ( empty( $value ) ) {
+						if ( delete_post_meta( $post_id, '_wp_attachment_image_alt', $value ) )
+							$message .= sprintf( 'Deleting Alternate Text, was "%1$s"<br>', esc_attr( $post_data[ $key ] ) );
+						else
+							$message .= sprintf( 'ERROR: Could not delete Alternate Text, remains "%1$s"<br>', esc_attr( $post_data[ $key ] ) );
+					} else {
+						if ( update_post_meta( $post_id, '_wp_attachment_image_alt', $value ) )
+							$message .= sprintf( 'Changing Alternate Text from "%1$s" to "%2$s"<br>', esc_attr( $post_data[ $key ] ), esc_attr( $value ) );
+						else
+							$message .= sprintf( 'ERROR: Could not change Alternate Text from "%1$s" to "%2$s"<br>', esc_attr( $post_data[ $key ] ), esc_attr( $value ) );
+					}
+					break;
+				case 'post_excerpt':
+					if ( $value == $post_data[ $key ] )
+						break;
+						
+					$message .= sprintf( 'Changing Caption from "%1$s" to "%2$s"<br>', esc_attr( $post_data[ $key ] ), esc_attr( $value ) );
+					$updates[ $key ] = $value;
+					break;
+				case 'post_content':
+					if ( $value == $post_data[ $key ] )
+						break;
+						
+					$message .= sprintf( 'Changing Description from "%1$s" to "%2$s"<br>', esc_textarea( $post_data[ $key ] ), esc_textarea( $value ) );
+					$updates[ $key ] = $value;
+					break;
+				case 'post_parent':
+					if ( $value == $post_data[ $key ] )
+						break;
+						
+					$value = absint( $value );
+					
+					$message .= sprintf( 'Changing Parent from "%1$s" to "%2$s"<br>', $post_data[ $key ], $value );
+					$updates[ $key ] = $value;
+					break;
+				case 'menu_order':
+					if ( $value == $post_data[ $key ] )
+						break;
+						
+					$value = absint( $value );
+					
+					$message .= sprintf( 'Changing Menu Order from "%1$s" to "%2$s"<br>', $post_data[ $key ], $value );
+					$updates[ $key ] = $value;
+					break;
+				case 'post_author':
+					if ( $value == $post_data[ $key ] )
+						break;
+						
+					$value = absint( $value );
+					
+					$from_user = get_userdata( $post_data[ $key ] );
+					$to_user = get_userdata( $value );
+					$message .= sprintf( 'Changing Author from "%1$s" to "%2$s"<br>', $from_user->display_name, $to_user->display_name );
+					$updates[ $key ] = $value;
+					break;
+				default:
+					// Ignore anything else
+			} // switch $key
+		} // foreach $new_data
+		
+		if ( !empty( $tax_input ) ) {
+			foreach ( $tax_input as $taxonomy => $tags ) {
+				if ( !empty( $tax_actions ) ) 
+					$tax_action = $tax_actions[ $taxonomy ];
+				else
+					$tax_action = 'replace';
+					
+				$taxonomy_obj = get_taxonomy( $taxonomy );
+
+				if ( current_user_can( $taxonomy_obj->cap->assign_terms ) ) {
+					$terms_before = wp_get_post_terms( $post_id, $taxonomy, array(
+						'fields' => 'ids' // all' 
+					) );
+					if ( is_array( $tags ) ) // array = hierarchical, string = non-hierarchical.
+						$tags = array_filter( $tags );
+					
+					switch ( $tax_action ) {
+						case 'add':
+							$action_name = 'Adding';
+							$result = wp_set_post_terms( $post_id, $tags, $taxonomy, true );
+							break;
+						case 'remove':
+							$action_name = 'Removing';
+							$tags = self::_remove_tags( $terms_before, $tags, $taxonomy_obj );
+							$result = wp_set_post_terms( $post_id, $tags, $taxonomy );
+							break;
+						case 'replace':
+							$action_name = 'Replacing';
+							$result = wp_set_post_terms( $post_id, $tags, $taxonomy );
+							break;
+						default:
+							$action_name = 'Ignoring';
+							// ignore anything else
+					}
+					
+					$terms_after = wp_get_post_terms( $post_id, $taxonomy, array(
+						'fields' => 'ids' // all' 
+					) );
+					
+					if ( $terms_before != $terms_after )
+						$message .= sprintf( '%1$s "%2$s" terms<br>', $action_name, $taxonomy );
+				} // current_user_can
+				else {
+					$message .= sprintf( 'You cannot assign "%1$s" terms<br>', $action_name, $taxonomy );
+				}
+			} // foreach $tax_input
+		} // !empty $tax_input
+		
+		if ( empty( $message ) )
+			return array(
+				'message' => 'Item: ' . $post_id . ', no changes detected.',
+				'body' => '' 
+			);
+		else {
+			if ( wp_update_post( $updates ) )
+				return array(
+					'message' => 'Item: ' . $post_id . ' updated.<br>' . $message,
+					'body' => '' 
+				);
+			else
+				return array(
+					'message' => 'ERROR: Item ' . $post_id . ' update failed.',
+					'body' => '' 
+				);
+		}
+	}
+	
+	/**
+	 * Remove tags from a term ids list
+	 * 
+	 * @since 0.40
+	 * 
+	 * @param	array	The term ids currently assigned
+	 * @param	array | string	The term ids (array) or names (string) to remove
+	 * @param	object	The taxonomy object
+	 *
+	 * @return	array	Term ids of the surviving tags
+	 */
+	private static function _remove_tags( $terms_before, $tags, $taxonomy_obj ) {
+		if ( ! is_array( $tags ) ) {
+			/*
+			 * Convert names to term ids
+			 */
+			$comma = _x( ',', 'tag delimiter' );
+			if ( ',' !== $comma )
+				$tags = str_replace( $comma, ',', $tags );
+			$terms = explode( ',', trim( $tags, " \n\t\r\0\x0B," ) );
+
+			$tags = array ( );
+			foreach ( (array) $terms as $term) {
+				if ( !strlen(trim($term)) )
+					continue;
+
+				// Skip if a non-existent term name is passed.
+				if ( ! $term_info = term_exists($term, $taxonomy_obj->name ) )
+					continue;
+
+				if ( is_wp_error($term_info) )
+					continue;
+
+				$tags[] = $term_info['term_id'];
+			} // foreach term
+		} // not an array
+		
+		$tags = array_map( 'intval', $tags );
+		$tags = array_unique( $tags );
+		$terms_after = array_diff( array_map( 'intval', $terms_before ), $tags );
+
+		return $terms_after;
 	}
 } // class MLAData
 ?>

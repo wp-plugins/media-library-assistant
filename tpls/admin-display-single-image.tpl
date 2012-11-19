@@ -86,6 +86,14 @@
 			<th valign='top' scope='row' class='label'><label for='attachments[[+ID+]][inserts]'><span class='alignleft'>Inserted in</span><br class='clear' /></label></th>
 			<td class='field'><textarea id='attachments[[+ID+]][inserts]' rows='5' readonly="readonly" name='attachments[[+ID+]][inserts]' >[+inserts+]</textarea></td>
 		</tr>
+		<tr class='galleries'>
+			<th valign='top' scope='row' class='label'><label for='attachments[[+ID+]][galleries]'><span class='alignleft'>Gallery in</span><br class='clear' /></label></th>
+			<td class='field'><textarea id='attachments[[+ID+]][galleries]' rows='5' readonly="readonly" name='attachments[[+ID+]][galleries]' >[+galleries+]</textarea></td>
+		</tr>
+		<tr class='mla_galleries'>
+			<th valign='top' scope='row' class='label'><label for='attachments[[+ID+]][mla_galleries]'><span class='alignleft'>MLA Gallery in</span><br class='clear' /></label></th>
+			<td class='field'><textarea id='attachments[[+ID+]][mla_galleries]' rows='5' readonly="readonly" name='attachments[[+ID+]][mla_galleries]' >[+mla_galleries+]</textarea></td>
+		</tr>
 </tbody>
 </table> <!-- class="slidetoggle describe" -->
 </div> <!-- class="media-item" -->

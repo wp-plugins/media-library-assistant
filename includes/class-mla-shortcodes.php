@@ -49,13 +49,11 @@ class MLAShortcodes {
 			$exclude_revisions = '';
 				
 		$attachments = $wpdb->get_results(
-			$wpdb->prepare(
 				"
 				SELECT ID, post_title, post_name, post_parent
 				FROM {$wpdb->posts}
 				WHERE {$exclude_revisions}post_type = 'attachment' 
 				"
-			)
 		);
 		
 		foreach ( $attachments as $attachment ) {
@@ -111,8 +109,12 @@ class MLAShortcodes {
 			if ( $references['is_unattached'] )
 				$errors .= '(UNATTACHED) ';
 			else {
-				if ( !$references['found_parent'] )
-					$errors .= '(BAD PARENT) ';
+				if ( !$references['found_parent'] ) {
+					if ( isset( $references['parent_title'] ) )
+						$errors .= '(BAD PARENT) ';
+					else
+						$errors .= '(INVALID PARENT) ';
+				}
 			}
 			
 			if ( !empty( $errors ) )
@@ -156,20 +158,22 @@ class MLAShortcodes {
 	public static function mla_gallery_shortcode($attr) {
 		global $post;
 
-		static $instance = 0;
-		$instance++;
-	
 		/*
 		 * These are the parameters for gallery display
 		 */
 		$default_arguments = array(
-			'size' => 'thumbnail',
+			'size' => 'thumbnail', // or 'medium', 'large', 'full' or registered size
 			'itemtag' => 'dl',
 			'icontag' => 'dt',
 			'captiontag' => 'dd',
 			'columns' => 3,
-			'link' => 'permalink', // or 'file'
+			'link' => 'permalink', // or 'file' or a registered size
 			// MLA-specific
+			'mla_style' => 'default',
+			'mla_markup' => 'default',
+			'mla_link_text' => NULL,
+			'mla_rollover_text' => NULL,
+			'mla_caption' => NULL,
 			'mla_debug' => false
 		);
 		
@@ -178,8 +182,7 @@ class MLAShortcodes {
 		 */
 		 
 		$arguments = shortcode_atts( $default_arguments, $attr );
-		
-		self::$mla_debug = !empty( $default_arguments['mla_debug'] ) && ( 'true' == strtolower( $default_arguments['mla_debug'] ) );
+		self::$mla_debug = !empty( $arguments['mla_debug'] ) && ( 'true' == strtolower( $arguments['mla_debug'] ) );
 
 		$attachments = self::mla_get_shortcode_attachments( $post->ID, $attr );
 		if ( empty($attachments) ) {
@@ -194,7 +197,7 @@ class MLAShortcodes {
 			}
 		} // empty $attachments
 	
-		$size = $arguments['size'];
+		$size = $size_class = $arguments['size'];
 		if ( 'icon'	 == strtolower( $size) ) {
 			$size = array( 60, 60 );
 			$show_icon = true;
@@ -208,70 +211,305 @@ class MLAShortcodes {
 				$output .= wp_get_attachment_link($att_id, $size, true) . "\n";
 			return $output;
 		}
-	
-		$id = $post->ID;
-		$itemtag = tag_escape( $arguments['itemtag'] );
-		$icontag = tag_escape( $arguments['icontag'] );
-		$captiontag = tag_escape( $arguments['captiontag'] );
-		$columns = intval( $arguments['columns']);
-		$itemwidth = $columns > 0 ? floor(100/$columns) : 100;
-		$float = is_rtl() ? 'right' : 'left';
 
-		$selector = "gallery-{$instance}";
+		// $instance supports multiple galleries in one page/post	
+		static $instance = 0;
+		$instance++;
+		
+		$style_values = array(
+			'mla_style' => $arguments['mla_style'],
+			'instance' => $instance,
+			'id' => $post->ID,
+			'itemtag' => tag_escape( $arguments['itemtag'] ),
+			'icontag' => tag_escape( $arguments['icontag'] ),
+			'captiontag' => tag_escape( $arguments['captiontag'] ),
+			'columns' => intval( $arguments['columns']),
+			'itemwidth' => $arguments['columns'] > 0 ? floor(100/$arguments['columns']) : 100,
+			'float' => is_rtl() ? 'right' : 'left',
+			'selector' => "mla_gallery-{$instance}",
+			'size_class' => sanitize_html_class( $size_class )
+		);
 	
-		$gallery_style = $gallery_div = '';
-		if ( apply_filters( 'use_default_gallery_style', true ) )
-			$gallery_style = "
-			<style type='text/css'>
-				#{$selector} {
-					margin: auto;
-				}
-				#{$selector} .gallery-item {
-					float: {$float};
-					margin-top: 10px;
-					text-align: center;
-					width: {$itemwidth}%;
-				}
-				#{$selector} img {
-					border: 2px solid #cfcfcf;
-				}
-				#{$selector} .gallery-caption {
-					margin-left: 0;
-				}
-			</style>
-			<!-- see gallery_shortcode() in wp-includes/media.php -->";
-		$size_class = sanitize_html_class( $size );
-		$gallery_div = "<div id='$selector' class='gallery galleryid-{$id} gallery-columns-{$columns} gallery-size-{$size_class}'>";
-		$output = apply_filters( 'gallery_style', $gallery_style . "\n\t\t" . $gallery_div );
-	
+		$style_template = $gallery_style = '';
+		if ( apply_filters( 'use_mla_gallery_style', true ) ) {
+			$style_template = MLASettings::mla_fetch_gallery_template( $style_values['mla_style'], 'style' );
+			if ( empty( $style_template ) ) {
+				$style_values['mla_style'] = 'default';
+				$style_template = MLASettings::mla_fetch_gallery_template( 'default', 'style' );
+			}
+				
+			if ( ! empty ( $style_template ) ) {
+				$gallery_style = MLAData::mla_parse_template( $style_template, $style_values );
+			} // !empty template
+		} // use_mla_gallery_style
+		
+		$upload_dir = wp_upload_dir();
+		$markup_values = array(
+			'mla_markup' => $arguments['mla_markup'],
+			'instance' => $instance,
+			'id' => $post->ID,
+			'itemtag' => tag_escape( $arguments['itemtag'] ),
+			'icontag' => tag_escape( $arguments['icontag'] ),
+			'captiontag' => tag_escape( $arguments['captiontag'] ),
+			'columns' => intval( $arguments['columns']),
+			'itemwidth' => $arguments['columns'] > 0 ? floor(100/$arguments['columns']) : 100,
+			'float' => is_rtl() ? 'right' : 'left',
+			'selector' => "mla_gallery-{$instance}",
+			'size_class' => sanitize_html_class( $size_class ),
+			'base_url' => $upload_dir['baseurl'],
+			'base_dir' => $upload_dir['basedir']
+		);
+
+		$markup_template = MLASettings::mla_fetch_gallery_template( $markup_values['mla_markup'] . '-open', 'markup' );
+		if ( empty( $markup_template ) ) {
+			$markup_values['mla_markup'] = 'default';
+			$markup_template = MLASettings::mla_fetch_gallery_template( 'default-open', 'markup' );
+		}
+			
+		if ( ! empty( $markup_template ) ) {
+			$gallery_div = MLAData::mla_parse_template( $markup_template, $markup_values );
+
+			$row_open_template = MLASettings::mla_fetch_gallery_template( $markup_values['mla_markup'] . '-row-open', 'markup' );
+			if ( empty( $row_open_template ) )
+				$row_open_template = '';
+				
+			$item_template = MLASettings::mla_fetch_gallery_template( $markup_values['mla_markup'] . '-item', 'markup' );
+			if ( empty( $item_template ) )
+				$item_template = '';
+				
+			$row_close_template = MLASettings::mla_fetch_gallery_template( $markup_values['mla_markup'] . '-row-close', 'markup' );
+			if ( empty( $row_close_template ) )
+				$row_close_template = '';
+				
+			$close_template = MLASettings::mla_fetch_gallery_template( $markup_values['mla_markup'] . '-close', 'markup' );
+			if ( empty( $close_template ) )
+				$close_template = '';
+		}
+		
 		if ( self::$mla_debug ) {
-			$output .= self::$mla_debug_messages;
+			$output = self::$mla_debug_messages;
 			self::$mla_debug_messages = '';
 		}
+		else
+			$output = '';
 
+		$output .= apply_filters( 'mla_gallery_style', $gallery_style .  $gallery_div, $style_values, $markup_values, $style_template, $markup_template );
+	
 		$i = 0;
 		foreach ( $attachments as $id => $attachment ) {
-			$link = isset($arguments['link']) && 'file' == $arguments['link'] ? wp_get_attachment_link($attachment->ID, $size, false, $show_icon) : wp_get_attachment_link($attachment->ID, $size, true, $show_icon);
-	
-			$output .= "<{$itemtag} class='gallery-item'>";
-			$output .= "
-				<{$icontag} class='gallery-icon'>
-					$link
-				</{$icontag}>";
-			if ( $captiontag && trim( $attachment->post_excerpt ) ) {
-				$output .= "
-					<{$captiontag} class='wp-caption-text gallery-caption'>
-					" . wptexturize( $attachment->post_excerpt ) . "
-					</{$captiontag}>";
+			/*
+			 * fill in item-specific elements
+			 */
+			$markup_values['index'] = (string) 1 + $i;
+
+			$markup_values['excerpt'] = wptexturize( $attachment->post_excerpt );
+			$markup_values['attachment_ID'] = $attachment->ID;
+			$markup_values['mime_type'] = $attachment->post_mime_type;
+			$markup_values['menu_order'] = $attachment->menu_order;
+			$markup_values['date'] = $attachment->post_date;
+			$markup_values['modified'] = $attachment->post_modified;
+			$markup_values['parent'] = $attachment->post_parent;
+			$markup_values['parent_title'] = '(unattached)';
+			$markup_values['parent_type'] = '';
+			$markup_values['parent_date'] = '';
+			$markup_values['title'] = wptexturize( $attachment->post_title );
+			$markup_values['slug'] = wptexturize( $attachment->post_name );
+			$markup_values['width'] = '';
+			$markup_values['height'] = '';
+			$markup_values['image_meta'] = '';
+			$markup_values['image_alt'] = '';
+			$markup_values['base_file'] = '';
+			$markup_values['path'] = '';
+			$markup_values['file'] = '';
+			$markup_values['description'] = wptexturize( $attachment->post_content );
+			$markup_values['file_url'] = wptexturize( $attachment->guid );
+			$markup_values['author_id'] = $attachment->post_author;
+		
+			$user = get_user_by( 'id', $attachment->post_author );
+			if ( isset( $user->data->display_name ) )
+				$markup_values['author'] = wptexturize( $user->data->display_name );
+			else
+				$markup_values['author'] = 'unknown';
+
+			$post_meta = MLAData::mla_fetch_attachment_metadata( $attachment->ID );
+			if ( !empty( $post_meta['mla_wp_attachment_metadata'] ) ) {
+				$base_file = $post_meta['mla_wp_attachment_metadata']['file'];
+				$sizes = $post_meta['mla_wp_attachment_metadata']['sizes'];
+				$markup_values['width'] = $post_meta['mla_wp_attachment_metadata']['width'];
+				$markup_values['height'] = $post_meta['mla_wp_attachment_metadata']['height'];
+				$markup_values['image_meta'] = wptexturize( var_export( $post_meta['mla_wp_attachment_metadata']['image_meta'], true ) );
 			}
-			$output .= "</{$itemtag}>";
-			if ( $columns > 0 && ++$i % $columns == 0 )
-				$output .= '<br style="clear: both" />';
+			else {
+				$base_file = $post_meta['mla_wp_attached_file'];
+				$sizes = array( );
+			}
+
+			if ( isset( $post_meta['mla_wp_attachment_image_alt'] ) )
+				$markup_values['image_alt'] = wptexturize( $post_meta['mla_wp_attachment_image_alt'] );
+
+			if ( ! empty( $base_file ) ) {
+				$last_slash = strrpos( $base_file, '/' );
+				if ( false === $last_slash ) {
+					$file_name = $base_file;
+					$markup_values['base_file'] = wptexturize( $base_file );
+					$markup_values['file'] = wptexturize( $base_file );
+				}
+				else {
+					$file_name = substr( $base_file, $last_slash + 1 );
+					$markup_values['base_file'] = wptexturize( $base_file );
+					$markup_values['path'] = wptexturize( substr( $base_file, 0, $last_slash + 1 ) );
+					$markup_values['file'] = wptexturize( $file_name );
+				}
+			}
+			else
+				$file_name = '';
+
+			$parent_info = MLAData::mla_fetch_attachment_parent_data( $attachment->post_parent );
+			if ( isset( $parent_info['parent_title'] ) )
+				$markup_values['parent_title'] = wptexturize( $parent_info['parent_title'] );
+				
+			if ( isset( $parent_info['parent_date'] ) )
+				$markup_values['parent_date'] = wptexturize( $parent_info['parent_date'] );
+				
+			if ( isset( $parent_info['parent_type'] ) )
+				$markup_values['parent_type'] = wptexturize( $parent_info['parent_type'] );
+				
+			unset(
+				$markup_values['caption'],
+				$markup_values['pagelink'],
+				$markup_values['filelink'],
+				$markup_values['link'],
+				$markup_values['pagelink_url'],
+				$markup_values['filelink_url'],
+				$markup_values['link_url'],
+				$markup_values['thumbnail_content'],
+				$markup_values['thumbnail_width'],
+				$markup_values['thumbnail_height'],
+				$markup_values['thumbnail_url']
+			);
+			
+			if ( $markup_values['captiontag'] ) {
+				if ( ! empty( $arguments['mla_caption'] ) ) {
+					$new_text = str_replace( '{+', '[+', str_replace( '+}', '+]', $arguments['mla_caption'] ) );
+					$markup_values['caption'] = wptexturize( MLAData::mla_parse_template( $new_text, $markup_values ) );
+				}
+				else
+					$markup_values['caption'] = wptexturize( $attachment->post_excerpt );
+			}
+			else
+				$markup_values['caption'] = '';
+			
+			if ( ! empty( $arguments['mla_link_text'] ) ) {
+				$link_text = str_replace( '{+', '[+', str_replace( '+}', '+]', $arguments['mla_link_text'] ) );
+				$link_text = MLAData::mla_parse_template( $link_text, $markup_values );
+			}
+			else
+				$link_text = false;
+
+			$markup_values['pagelink'] = wp_get_attachment_link($attachment->ID, $size, true, $show_icon, $link_text);
+			$markup_values['filelink'] = wp_get_attachment_link($attachment->ID, $size, false, $show_icon, $link_text);
+			
+			if ( ! empty( $arguments['mla_rollover_text'] ) ) {
+				$new_text = str_replace( '{+', '[+', str_replace( '+}', '+]', $arguments['mla_rollover_text'] ) );
+				$new_text = MLAData::mla_parse_template( $new_text, $markup_values );
+				
+				/*
+				 * Replace single- and double-quote delimited values
+				 */
+				$markup_values['pagelink'] = preg_replace('# title=\'([^\']*)\'#', " title='{$new_text}'", $markup_values['pagelink'] );
+				$markup_values['pagelink'] = preg_replace('# title=\"([^\"]*)\"#', " title=\"{$new_text}\"", $markup_values['pagelink'] );
+				$markup_values['filelink'] = preg_replace('# title=\'([^\']*)\'#', " title='{$new_text}'", $markup_values['filelink'] );
+				$markup_values['filelink'] = preg_replace('# title=\"([^\"]*)\"#', " title=\"{$new_text}\"", $markup_values['filelink'] );
+			}
+			
+			switch ( $arguments['link'] ) {
+				case 'permalink':
+					$markup_values['link'] = $markup_values['pagelink'];
+					break;
+				case 'file':
+				case 'full':
+					$markup_values['link'] = $markup_values['filelink'];
+					break;
+				default:
+					$markup_values['link'] = $markup_values['filelink'];
+
+					/*
+					 * Check for link to specific (registered) file size
+					 */
+					if ( array_key_exists( $arguments['link'], $sizes ) ) {
+						$target_file = $sizes[ $arguments['link'] ]['file'];
+						$markup_values['link'] = str_replace( $file_name, $target_file, $markup_values['filelink'] );
+					}
+			} // switch 'link'
+			
+			/*
+			 * Extract target and thumbnail fields
+			 */
+			$match_count = preg_match_all( '#href=\'([^\']+)\' title=\'([^\']*)\'#', $markup_values['pagelink'], $matches, PREG_OFFSET_CAPTURE );
+ 			if ( ! ( ( $match_count == false ) || ( $match_count == 0 ) ) ) {
+				$markup_values['pagelink_url'] = $matches[1][0][0];
+			}
+			else
+				$markup_values['pagelink_url'] = '';
+
+			$match_count = preg_match_all( '#href=\'([^\']+)\'#', $markup_values['filelink'], $matches, PREG_OFFSET_CAPTURE );
+			if ( ! ( ( $match_count == false ) || ( $match_count == 0 ) ) ) {
+				$markup_values['filelink_url'] = $matches[1][0][0];
+			}
+			else
+				$markup_values['filelink_url'] = '';
+
+			$match_count = preg_match_all( '#href=\'([^\']+)\'#', $markup_values['link'], $matches, PREG_OFFSET_CAPTURE );
+			if ( ! ( ( $match_count == false ) || ( $match_count == 0 ) ) ) {
+				$markup_values['link_url'] = $matches[1][0][0];
+			}
+			else
+				$markup_values['link_url'] = '';
+
+			$match_count = preg_match_all( '#\<a [^\>]+\>(.*)\</a\>#', $markup_values['link'], $matches, PREG_OFFSET_CAPTURE );
+			if ( ! ( ( $match_count == false ) || ( $match_count == 0 ) ) ) {
+				$markup_values['thumbnail_content'] = $matches[1][0][0];
+			}
+			else
+				$markup_values['thumbnail_content'] = '';
+
+			$match_count = preg_match_all( '#img width=\"([^\"]+)\" height=\"([^\"]+)\" src=\"([^\"]+)\"#', $markup_values['link'], $matches, PREG_OFFSET_CAPTURE );
+			if ( ! ( ( $match_count == false ) || ( $match_count == 0 ) ) ) {
+				$markup_values['thumbnail_width'] = $matches[1][0][0];
+				$markup_values['thumbnail_height'] = $matches[2][0][0];
+				$markup_values['thumbnail_url'] = $matches[3][0][0];
+			}
+			else {
+				$markup_values['thumbnail_width'] = '';
+				$markup_values['thumbnail_height'] = '';
+				$markup_values['thumbnail_url'] = '';
+			}
+
+			/*
+			 * Start of row markup
+			 */
+			if ( $markup_values['columns'] > 0 && $i % $markup_values['columns'] == 0 )
+				$output .= MLAData::mla_parse_template( $row_open_template, $markup_values );
+			
+			/*
+			 * item markup
+			 */
+			$output .= MLAData::mla_parse_template( $item_template, $markup_values );
+
+			/*
+			 * End of row markup
+			 */
+			if ( $markup_values['columns'] > 0 && ++$i % $markup_values['columns'] == 0 )
+				$output .= MLAData::mla_parse_template( $row_close_template, $markup_values );
 		}
 	
-		$output .= "
-				<br style='clear: both;' />
-			</div>\n";
+		/*
+		 * Close out partial row
+		 */
+		if ( ! ($markup_values['columns'] > 0 && $i % $markup_values['columns'] == 0 ) )
+			$output .= MLAData::mla_parse_template( $row_close_template, $markup_values );
+			
+		$output .= MLAData::mla_parse_template( $close_template, $markup_values );
 	
 		return $output;
 	}
@@ -396,7 +634,6 @@ class MLAShortcodes {
 		 * $query_arguments has been initialized in the taxonomy code above.
 		 */
 		$use_children = empty( $query_arguments );
-		self::$mla_debug = false;
 		foreach ($arguments as $key => $value ) {
 			/*
 			 * There are several "fallthru" cases in this switch statement that decide 
@@ -536,11 +773,6 @@ class MLAShortcodes {
 
 					$use_children = false;
 				}
-				unset( $arguments[ $key ] );
-				break;
-			case 'mla_debug': // boolean
-				if ( ! empty( $value ) && ( 'true' == strtolower( $value ) ) )
-					self::$mla_debug = true;
 				unset( $arguments[ $key ] );
 				break;
 			default:

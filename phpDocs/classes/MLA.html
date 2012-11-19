@@ -77,9 +77,6 @@ change the meta data for a single attachment.</span><pre>_display_single_item()<
 <li class="method private "><a href="#_remove_tags" title="_remove_tags :: Remove tags from a term ids list"><span class="description">Remove tags from a term ids list</span><pre>_remove_tags()</pre></a></li>
 <li class="method private "><a href="#_restore_single_item" title="_restore_single_item :: Restore a single item from the Trash"><span class="description">Restore a single item from the Trash</span><pre>_restore_single_item()</pre></a></li>
 <li class="method private "><a href="#_trash_single_item" title="_trash_single_item :: Move a single item to Trash"><span class="description">Move a single item to Trash</span><pre>_trash_single_item()</pre></a></li>
-<li class="method private "><a href="#_update_single_item" title="_update_single_item :: Update a single item; change the meta data
-for a single attachment."><span class="description">Update a single item; change the meta data
-for a single attachment.</span><pre>_update_single_item()</pre></a></li>
 <li class="nav-header">
 <i class="icon-custom icon-property"></i> Properties</li>
 <li class="nav-header private">» Private</li>
@@ -364,13 +361,15 @@ going to the Edit Media screen.</p></p>
 <h3>Parameters</h3>
 <div class="subelement argument">
 <h4>$author</h4>
-<code>integer</code><p>User ID of the current author</p></div>
+<code>integer</code><p>Optional User ID of the current author, default 0</p></div>
 <div class="subelement argument">
 <h4>$name</h4>
-<code>string</code><p>HTML name attribute</p></div>
+<code>string</code><p>Optional HTML name attribute, default 'post_author'</p>
+</div>
 <div class="subelement argument">
 <h4>$class</h4>
-<code>string</code><p>HTML class attribute</p></div>
+<code>string</code><p>Optional HTML class attribute, default 'authors'</p>
+</div>
 <h3>Returns</h3>
 <div class="subelement response">
 <code>string</code><code>false</code>HTML markup for the dropdown field or False</div>
@@ -508,37 +507,6 @@ change the meta data for a single attachment.</h2>
 <div class="subelement argument">
 <h4>$post_id</h4>
 <code>array</code><p>The form POST data</p></div>
-<h3>Returns</h3>
-<div class="subelement response">
-<code>array</code>success/failure message and NULL content</div>
-</div></div>
-</div>
-<a name="_update_single_item" id="_update_single_item"></a><div class="element clickable method private _update_single_item" data-toggle="collapse" data-target="._update_single_item .collapse">
-<h2>Update a single item; change the meta data
-for a single attachment.</h2>
-<pre>_update_single_item(int $post_id, array $new_data, array $tax_input, array $tax_actions) : array</pre>
-<div class="labels"></div>
-<div class="row collapse"><div class="detail-description">
-<p class="long_description"></p>
-<table class="table table-bordered"><tr>
-<th>since</th>
-<td>0.1</td>
-</tr></table>
-<h3>Parameters</h3>
-<div class="subelement argument">
-<h4>$post_id</h4>
-<code>int</code><p>The ID of the attachment to be updated</p></div>
-<div class="subelement argument">
-<h4>$new_data</h4>
-<code>array</code><p>Field name => value pairs</p>
-</div>
-<div class="subelement argument">
-<h4>$tax_input</h4>
-<code>array</code><p>Taxonomy term values</p></div>
-<div class="subelement argument">
-<h4>$tax_actions</h4>
-<code>array</code><p>Taxonomy actions (add, remove, replace)</p>
-</div>
 <h3>Returns</h3>
 <div class="subelement response">
 <code>array</code>success/failure message and NULL content</div>
@@ -759,7 +727,7 @@ for a single attachment.</h2>
 <div class="row"><footer class="span12">
             Template is built using <a href="http://twitter.github.com/bootstrap/">Twitter Bootstrap 2</a> and icons provided by <a href="http://glyphicons.com/">Glyphicons</a>.<br>
             Documentation is powered by <a href="http://www.phpdoc.org/">phpDocumentor 2.0.0a8</a> and<br>
-            generated on 2012-11-06T11:50:00-08:00.<br></footer></div>
+            generated on 2012-11-18T13:00:09-08:00.<br></footer></div>
 </div>
 </body>
 </html>

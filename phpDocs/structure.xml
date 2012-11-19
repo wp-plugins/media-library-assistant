@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <project version="2.0.0a8" title="Media Library Assistant">
-  <file path="includes\class-mla-data.php" hash="3e6a9d2a19b4154e620579eb5476670c" package="Media Library Assistant">
+  <file path="includes\class-mla-data.php" hash="3e2e35de11b00451187f449376db1faa" package="Media Library Assistant">
     <docblock line="2">
       <description><![CDATA[Database and template file access for MLA needs]]></description>
       <long-description><![CDATA[]]></long-description>
@@ -32,10 +32,10 @@ any further logic required to translate those values is contained in the filters
           </tag>
         </docblock>
       </property>
-      <property final="false" static="true" visibility="private" line="902" namespace="global" package="Media Library Assistant">
+      <property final="false" static="true" visibility="private" line="904" namespace="global" package="Media Library Assistant">
         <name>$galleries</name>
         <default><![CDATA[null]]></default>
-        <docblock line="884">
+        <docblock line="886">
           <description><![CDATA[Objects containing [gallery] shortcodes]]></description>
           <long-description><![CDATA[<p>This array contains all of the objects containing one or more [gallery] shortcodes
 and array(s) of which attachments each [gallery] contains. The arrays are built once
@@ -47,22 +47,22 @@ Each inner array has these elements:
 ['parent_type'] 'post' or 'page' or the custom post_type of the gallery parent,
 ['query'] contains a string with the arguments of the [gallery],
 ['results'] contains an array of post_ids for the objects in the gallery.</p>]]></long-description>
-          <tag line="884" name="since" description="0.70"/>
-          <tag line="884" name="var" description="" type="array">
+          <tag line="886" name="since" description="0.70"/>
+          <tag line="886" name="var" description="" type="array">
             <type by_reference="false">array</type>
           </tag>
         </docblock>
       </property>
-      <property final="false" static="true" visibility="private" line="915" namespace="global" package="Media Library Assistant">
+      <property final="false" static="true" visibility="private" line="917" namespace="global" package="Media Library Assistant">
         <name>$mla_galleries</name>
         <default><![CDATA[null]]></default>
-        <docblock line="904">
+        <docblock line="906">
           <description><![CDATA[Objects containing [mla_gallery] shortcodes]]></description>
           <long-description><![CDATA[<p>This array contains all of the objects containing one or more [mla_gallery] shortcodes
 and array(s) of which attachments each [mla_gallery] contains. The arrays are built once
 each page load and cached for subsequent calls.</p>]]></long-description>
-          <tag line="904" name="since" description="0.70"/>
-          <tag line="904" name="var" description="" type="array">
+          <tag line="906" name="since" description="0.70"/>
+          <tag line="906" name="var" description="" type="array">
             <type by_reference="false">array</type>
           </tag>
         </docblock>
@@ -88,7 +88,7 @@ where "key" becomes the key part of the array.</p>]]></long-description>
           <tag line="28" name="param" description="Complete path and name of the template file, option name or the raw template" type="string" variable="$source">
             <type by_reference="false">string</type>
           </tag>
-          <tag line="28" name="param" description="Type of template source; 'file', 'option', 'string'" type="string" variable="$type">
+          <tag line="28" name="param" description="Optional type of template source; 'file' (default), 'option', 'string'" type="string" variable="$type">
             <type by_reference="false">string</type>
           </tag>
           <tag line="28" name="return" description="string for files that do not contain template divider comments, array for files containing template divider comments, false if file or option does not exist, NULL if file could not be loaded." type="string|array|false|NULL">
@@ -205,10 +205,10 @@ Modeled after wp_edit_attachments_query in wp-admin/post.php</p>]]></long-descri
           <tag line="224" name="param" description="query parameters from web page, usually found in $_REQUEST" type="array" variable="$raw_request">
             <type by_reference="false">array</type>
           </tag>
-          <tag line="224" name="param" description="number of rows to skip over to reach desired page" type="int" variable="$offset">
+          <tag line="224" name="param" description="Optional number of rows (default 0) to skip over to reach desired page" type="int" variable="$offset">
             <type by_reference="false">int</type>
           </tag>
-          <tag line="224" name="param" description="number of rows on each page (0 = all rows)" type="int" variable="$count">
+          <tag line="224" name="param" description="Optional number of rows on each page (0 = all rows, default)" type="int" variable="$count">
             <type by_reference="false">int</type>
           </tag>
           <tag line="224" name="return" description="revised arguments suitable for WP_Query" type="array">
@@ -231,276 +231,565 @@ Modeled after wp_edit_attachments_query in wp-admin/post.php</p>]]></long-descri
           <type/>
         </argument>
       </method>
-      <method final="false" abstract="false" static="true" visibility="private" namespace="global" line="453" package="Media Library Assistant">
+      <method final="false" abstract="false" static="true" visibility="private" namespace="global" line="455" package="Media Library Assistant">
         <name>_execute_list_table_query</name>
         <full_name>_execute_list_table_query</full_name>
-        <docblock line="444">
+        <docblock line="446">
           <description><![CDATA[Add filters, run query, remove filters]]></description>
           <long-description><![CDATA[]]></long-description>
-          <tag line="444" name="since" description="0.30"/>
-          <tag line="444" name="param" description="query parameters from web page, usually found in $_REQUEST" type="array" variable="$request">
+          <tag line="446" name="since" description="0.30"/>
+          <tag line="446" name="param" description="query parameters from web page, usually found in $_REQUEST" type="array" variable="$request">
             <type by_reference="false">array</type>
           </tag>
-          <tag line="444" name="return" description="WP_Query object with query results" type="object">
+          <tag line="446" name="return" description="WP_Query object with query results" type="object">
             <type by_reference="false">object</type>
           </tag>
         </docblock>
-        <argument line="453">
+        <argument line="455">
           <name>$request</name>
           <default><![CDATA[]]></default>
           <type/>
         </argument>
       </method>
-      <method final="false" abstract="false" static="true" visibility="public" namespace="global" line="481" package="Media Library Assistant">
+      <method final="false" abstract="false" static="true" visibility="public" namespace="global" line="483" package="Media Library Assistant">
         <name>mla_query_posts_search_filter</name>
         <full_name>mla_query_posts_search_filter</full_name>
-        <docblock line="469">
+        <docblock line="471">
           <description><![CDATA[Adds a keyword search to the WHERE clause, if required]]></description>
           <long-description><![CDATA[<p>Defined as public because it's a filter.</p>]]></long-description>
-          <tag line="469" name="since" description="0.60"/>
-          <tag line="469" name="param" description="query clause before modification" type="string" variable="$search_string">
+          <tag line="471" name="since" description="0.60"/>
+          <tag line="471" name="param" description="query clause before modification" type="string" variable="$search_string">
             <type by_reference="false">string</type>
           </tag>
-          <tag line="469" name="param" description="WP_Query object" type="object" variable="$query_object">
+          <tag line="471" name="param" description="WP_Query object" type="object" variable="$query_object">
             <type by_reference="false">object</type>
           </tag>
-          <tag line="469" name="return" description="query clause after keyword search addition" type="string">
+          <tag line="471" name="return" description="query clause after keyword search addition" type="string">
             <type by_reference="false">string</type>
           </tag>
         </docblock>
-        <argument line="481">
+        <argument line="483">
           <name>$search_string</name>
           <default><![CDATA[]]></default>
           <type/>
         </argument>
-        <argument line="481">
+        <argument line="483">
           <name>$query_object</name>
           <default><![CDATA[]]></default>
           <type/>
         </argument>
       </method>
-      <method final="false" abstract="false" static="true" visibility="public" namespace="global" line="554" package="Media Library Assistant">
+      <method final="false" abstract="false" static="true" visibility="public" namespace="global" line="556" package="Media Library Assistant">
         <name>mla_query_posts_join_filter</name>
         <full_name>mla_query_posts_join_filter</full_name>
-        <docblock line="543">
+        <docblock line="545">
           <description><![CDATA[Adds a JOIN clause, if required]]></description>
           <long-description><![CDATA[<p>Defined as public because it's a filter.</p>]]></long-description>
-          <tag line="543" name="since" description="0.30"/>
-          <tag line="543" name="param" description="query clause before modification" type="string" variable="$join_clause">
+          <tag line="545" name="since" description="0.30"/>
+          <tag line="545" name="param" description="query clause before modification" type="string" variable="$join_clause">
             <type by_reference="false">string</type>
           </tag>
-          <tag line="543" name="return" description="query clause after &quot;detached&quot; item modification" type="string">
+          <tag line="545" name="return" description="query clause after &quot;detached&quot; item modification" type="string">
             <type by_reference="false">string</type>
           </tag>
         </docblock>
-        <argument line="554">
+        <argument line="556">
           <name>$join_clause</name>
           <default><![CDATA[]]></default>
           <type/>
         </argument>
       </method>
-      <method final="false" abstract="false" static="true" visibility="public" namespace="global" line="583" package="Media Library Assistant">
+      <method final="false" abstract="false" static="true" visibility="public" namespace="global" line="585" package="Media Library Assistant">
         <name>mla_query_posts_where_filter</name>
         <full_name>mla_query_posts_where_filter</full_name>
-        <docblock line="571">
+        <docblock line="573">
           <description><![CDATA[Adds a WHERE clause for detached items]]></description>
           <long-description><![CDATA[<p>Modeled after _edit_attachments_query_helper in wp-admin/post.php.
 Defined as public because it's a filter.</p>]]></long-description>
-          <tag line="571" name="since" description="0.1"/>
-          <tag line="571" name="param" description="query clause before modification" type="string" variable="$where_clause">
+          <tag line="573" name="since" description="0.1"/>
+          <tag line="573" name="param" description="query clause before modification" type="string" variable="$where_clause">
             <type by_reference="false">string</type>
           </tag>
-          <tag line="571" name="return" description="query clause after &quot;detached&quot; item modification" type="string">
+          <tag line="573" name="return" description="query clause after &quot;detached&quot; item modification" type="string">
             <type by_reference="false">string</type>
           </tag>
         </docblock>
-        <argument line="583">
+        <argument line="585">
           <name>$where_clause</name>
           <default><![CDATA[]]></default>
           <type/>
         </argument>
       </method>
-      <method final="false" abstract="false" static="true" visibility="public" namespace="global" line="604" package="Media Library Assistant">
+      <method final="false" abstract="false" static="true" visibility="public" namespace="global" line="606" package="Media Library Assistant">
         <name>mla_query_posts_orderby_filter</name>
         <full_name>mla_query_posts_orderby_filter</full_name>
-        <docblock line="592">
+        <docblock line="594">
           <description><![CDATA[Adds a ORDERBY clause, if required]]></description>
           <long-description><![CDATA[<p>Expands the range of sort options because the logic in WP_Query is limited.
 Defined as public because it's a filter.</p>]]></long-description>
-          <tag line="592" name="since" description="0.30"/>
-          <tag line="592" name="param" description="query clause before modification" type="string" variable="$orderby_clause">
+          <tag line="594" name="since" description="0.30"/>
+          <tag line="594" name="param" description="query clause before modification" type="string" variable="$orderby_clause">
             <type by_reference="false">string</type>
           </tag>
-          <tag line="592" name="return" description="updated query clause" type="string">
+          <tag line="594" name="return" description="updated query clause" type="string">
             <type by_reference="false">string</type>
           </tag>
         </docblock>
-        <argument line="604">
+        <argument line="606">
           <name>$orderby_clause</name>
           <default><![CDATA[]]></default>
           <type/>
         </argument>
       </method>
-      <method final="false" abstract="false" static="false" visibility="public" namespace="global" line="653" package="Media Library Assistant">
+      <method final="false" abstract="false" static="false" visibility="public" namespace="global" line="655" package="Media Library Assistant">
         <name>mla_get_attachment_by_id</name>
         <full_name>mla_get_attachment_by_id</full_name>
-        <docblock line="642">
+        <docblock line="644">
           <description><![CDATA[Retrieve an Attachment array given a $post_id]]></description>
           <long-description><![CDATA[<p>The (associative) array will contain every field that can be found in
 the posts and postmeta tables, and all references to the attachment.</p>]]></long-description>
-          <tag line="642" name="since" description="0.1"/>
-          <tag line="642" name="param" description="The ID of the attachment post" type="int" variable="$post_id">
+          <tag line="644" name="since" description="0.1"/>
+          <tag line="644" name="param" description="The ID of the attachment post" type="int" variable="$post_id">
             <type by_reference="false">int</type>
           </tag>
-          <tag line="642" name="return" description="NULL on failure else associative array" type="NULL|array">
+          <tag line="644" name="return" description="NULL on failure else associative array" type="NULL|array">
             <type by_reference="false">NULL</type>
             <type by_reference="false">array</type>
           </tag>
         </docblock>
-        <argument line="653">
+        <argument line="655">
           <name>$post_id</name>
           <default><![CDATA[]]></default>
           <type/>
         </argument>
       </method>
-      <method final="false" abstract="false" static="true" visibility="public" namespace="global" line="702" package="Media Library Assistant">
+      <method final="false" abstract="false" static="true" visibility="public" namespace="global" line="704" package="Media Library Assistant">
         <name>mla_fetch_attachment_references</name>
         <full_name>mla_fetch_attachment_references</full_name>
-        <docblock line="689">
+        <docblock line="691">
           <description><![CDATA[Find Featured Image and inserted image/link references to an attachment]]></description>
           <long-description><![CDATA[<p>Searches all post and page content to see if the attachment is used
 as a Featured Image or inserted in the post as an image or link.</p>]]></long-description>
-          <tag line="689" name="since" description="0.1"/>
-          <tag line="689" name="param" description="post ID of attachment" type="int" variable="$ID">
+          <tag line="691" name="since" description="0.1"/>
+          <tag line="691" name="param" description="post ID of attachment" type="int" variable="$ID">
             <type by_reference="false">int</type>
           </tag>
-          <tag line="689" name="param" description="post ID of attachment's parent, if any" type="int" variable="$parent">
+          <tag line="691" name="param" description="post ID of attachment's parent, if any" type="int" variable="$parent">
             <type by_reference="false">int</type>
           </tag>
-          <tag line="689" name="return" description="Reference information; see $references array comments" type="array">
+          <tag line="691" name="return" description="Reference information; see $references array comments" type="array">
             <type by_reference="false">array</type>
           </tag>
         </docblock>
-        <argument line="702">
+        <argument line="704">
           <name>$ID</name>
           <default><![CDATA[]]></default>
           <type/>
         </argument>
-        <argument line="702">
+        <argument line="704">
           <name>$parent</name>
           <default><![CDATA[]]></default>
           <type/>
         </argument>
       </method>
-      <method final="false" abstract="false" static="true" visibility="private" namespace="global" line="928" package="Media Library Assistant">
+      <method final="false" abstract="false" static="true" visibility="private" namespace="global" line="930" package="Media Library Assistant">
         <name>_build_mla_galleries</name>
         <full_name>_build_mla_galleries</full_name>
-        <docblock line="917">
+        <docblock line="919">
           <description><![CDATA[Builds the $mla_galleries or $galleries array]]></description>
           <long-description><![CDATA[]]></long-description>
-          <tag line="917" name="since" description="0.70"/>
-          <tag line="917" name="param" description="by reference to the private static galleries array variable" type="array" variable="$galleries_array">
+          <tag line="919" name="since" description="0.70"/>
+          <tag line="919" name="param" description="by reference to the private static galleries array variable" type="array" variable="$galleries_array">
             <type by_reference="false">array</type>
           </tag>
-          <tag line="917" name="param" description="the shortcode to be searched for and processed" type="string" variable="$shortcode">
+          <tag line="919" name="param" description="the shortcode to be searched for and processed" type="string" variable="$shortcode">
             <type by_reference="false">string</type>
           </tag>
-          <tag line="917" name="param" description="true to exclude revisions from the search" type="boolean" variable="$exclude_revisions">
+          <tag line="919" name="param" description="true to exclude revisions from the search" type="boolean" variable="$exclude_revisions">
             <type by_reference="false">boolean</type>
           </tag>
-          <tag line="917" name="return" description="true if the galleries array is not empty" type="boolean">
+          <tag line="919" name="return" description="true if the galleries array is not empty" type="boolean">
             <type by_reference="false">boolean</type>
           </tag>
         </docblock>
-        <argument line="928">
+        <argument line="930">
           <name>$galleries_array</name>
           <default><![CDATA[]]></default>
           <type/>
         </argument>
-        <argument line="928">
+        <argument line="930">
           <name>$shortcode</name>
           <default><![CDATA[]]></default>
           <type/>
         </argument>
-        <argument line="928">
+        <argument line="930">
           <name>$exclude_revisions</name>
           <default><![CDATA[]]></default>
           <type/>
         </argument>
       </method>
-      <method final="false" abstract="false" static="true" visibility="private" namespace="global" line="1010" package="Media Library Assistant">
+      <method final="false" abstract="false" static="true" visibility="private" namespace="global" line="1012" package="Media Library Assistant">
         <name>_search_mla_galleries</name>
         <full_name>_search_mla_galleries</full_name>
-        <docblock line="999">
+        <docblock line="1001">
           <description><![CDATA[Search the $mla_galleries or $galleries array]]></description>
           <long-description><![CDATA[]]></long-description>
-          <tag line="999" name="since" description="0.70"/>
-          <tag line="999" name="param" description="by reference to the private static galleries array variable" type="array" variable="$galleries_array">
+          <tag line="1001" name="since" description="0.70"/>
+          <tag line="1001" name="param" description="by reference to the private static galleries array variable" type="array" variable="$galleries_array">
             <type by_reference="false">array</type>
           </tag>
-          <tag line="999" name="param" description="the attachment ID to be searched for and processed" type="int" variable="$attachment_id">
+          <tag line="1001" name="param" description="the attachment ID to be searched for and processed" type="int" variable="$attachment_id">
             <type by_reference="false">int</type>
           </tag>
-          <tag line="999" name="return" description="All posts/pages with one or more galleries that include the attachment. The array key is the parent_post ID; each entry contains post_title and post_type." type="array">
+          <tag line="1001" name="return" description="All posts/pages with one or more galleries that include the attachment. The array key is the parent_post ID; each entry contains post_title and post_type." type="array">
             <type by_reference="false">array</type>
           </tag>
         </docblock>
-        <argument line="1010">
+        <argument line="1012">
           <name>$galleries_array</name>
           <default><![CDATA[]]></default>
           <type/>
         </argument>
-        <argument line="1010">
+        <argument line="1012">
           <name>$attachment_id</name>
           <default><![CDATA[]]></default>
           <type/>
         </argument>
       </method>
-      <method final="false" abstract="false" static="true" visibility="private" namespace="global" line="1032" package="Media Library Assistant">
-        <name>_fetch_attachment_parent_data</name>
-        <full_name>_fetch_attachment_parent_data</full_name>
-        <docblock line="1023">
+      <method final="false" abstract="false" static="true" visibility="public" namespace="global" line="1034" package="Media Library Assistant">
+        <name>mla_fetch_attachment_parent_data</name>
+        <full_name>mla_fetch_attachment_parent_data</full_name>
+        <docblock line="1025">
           <description><![CDATA[Returns information about an attachment's parent, if found]]></description>
           <long-description><![CDATA[]]></long-description>
-          <tag line="1023" name="since" description="0.1"/>
-          <tag line="1023" name="param" description="post ID of attachment's parent, if any" type="int" variable="$parent_id">
+          <tag line="1025" name="since" description="0.1"/>
+          <tag line="1025" name="param" description="post ID of attachment's parent, if any" type="int" variable="$parent_id">
             <type by_reference="false">int</type>
           </tag>
-          <tag line="1023" name="return" description="Parent information; post_date, post_title and post_type" type="array">
+          <tag line="1025" name="return" description="Parent information; post_date, post_title and post_type" type="array">
             <type by_reference="false">array</type>
           </tag>
         </docblock>
-        <argument line="1032">
+        <argument line="1034">
           <name>$parent_id</name>
           <default><![CDATA[]]></default>
           <type/>
         </argument>
       </method>
-      <method final="false" abstract="false" static="true" visibility="private" namespace="global" line="1060" package="Media Library Assistant">
-        <name>_fetch_attachment_metadata</name>
-        <full_name>_fetch_attachment_metadata</full_name>
-        <docblock line="1047">
+      <method final="false" abstract="false" static="true" visibility="public" namespace="global" line="1062" package="Media Library Assistant">
+        <name>mla_fetch_attachment_metadata</name>
+        <full_name>mla_fetch_attachment_metadata</full_name>
+        <docblock line="1049">
           <description><![CDATA[Fetch and filter meta data for an attachment]]></description>
           <long-description><![CDATA[<p>Returns a filtered array of a post's meta data. Internal values beginning with '<em>'
 are stripped out or converted to an 'mla</em>' equivalent. Array data is replaced with
 a string containing the first array element.</p>]]></long-description>
-          <tag line="1047" name="since" description="0.1"/>
-          <tag line="1047" name="param" description="post ID of attachment" type="int" variable="$post_id">
+          <tag line="1049" name="since" description="0.1"/>
+          <tag line="1049" name="param" description="post ID of attachment" type="int" variable="$post_id">
             <type by_reference="false">int</type>
           </tag>
-          <tag line="1047" name="return" description="Meta data variables" type="array">
+          <tag line="1049" name="return" description="Meta data variables" type="array">
             <type by_reference="false">array</type>
           </tag>
         </docblock>
-        <argument line="1060">
+        <argument line="1062">
           <name>$post_id</name>
+          <default><![CDATA[]]></default>
+          <type/>
+        </argument>
+      </method>
+      <method final="false" abstract="false" static="true" visibility="public" namespace="global" line="1113" package="Media Library Assistant">
+        <name>mla_update_single_item</name>
+        <full_name>mla_update_single_item</full_name>
+        <docblock line="1100">
+          <description><![CDATA[Update a single item; change the meta data
+for a single attachment.]]></description>
+          <long-description><![CDATA[]]></long-description>
+          <tag line="1100" name="since" description="0.1"/>
+          <tag line="1100" name="param" description="The ID of the attachment to be updated" type="int" variable="$post_id">
+            <type by_reference="false">int</type>
+          </tag>
+          <tag line="1100" name="param" description="Field name =&gt; value pairs" type="array" variable="$new_data">
+            <type by_reference="false">array</type>
+          </tag>
+          <tag line="1100" name="param" description="Optional taxonomy term values, default null" type="array" variable="$tax_input">
+            <type by_reference="false">array</type>
+          </tag>
+          <tag line="1100" name="param" description="Optional taxonomy actions (add, remove, replace), default null" type="array" variable="$tax_actions">
+            <type by_reference="false">array</type>
+          </tag>
+          <tag line="1100" name="return" description="success/failure message and NULL content" type="array">
+            <type by_reference="false">array</type>
+          </tag>
+        </docblock>
+        <argument line="1113">
+          <name>$post_id</name>
+          <default><![CDATA[]]></default>
+          <type/>
+        </argument>
+        <argument line="1113">
+          <name>$new_data</name>
+          <default><![CDATA[]]></default>
+          <type/>
+        </argument>
+        <argument line="1113">
+          <name>$tax_input</name>
+          <default><![CDATA[NULL]]></default>
+          <type/>
+        </argument>
+        <argument line="1113">
+          <name>$tax_actions</name>
+          <default><![CDATA[NULL]]></default>
+          <type/>
+        </argument>
+      </method>
+    </class>
+  </file>
+  <file path="includes\class-mla-edit-media.php" hash="b54afde032b42b5d2fbfdc62e3e592c1" package="Media Library Assistant">
+    <docblock line="2">
+      <description><![CDATA[Media Library Assistant Edit Media screen enhancements]]></description>
+      <long-description><![CDATA[]]></long-description>
+      <tag line="2" name="package" description="Media Library Assistant"/>
+      <tag line="2" name="since" description="0.80"/>
+    </docblock>
+    <class final="false" abstract="false" namespace="global" line="15" package="Media Library Assistant">
+      <extends/>
+      <name>MLAEdit</name>
+      <full_name>\MLAEdit</full_name>
+      <docblock line="9">
+        <description><![CDATA[Class MLA (Media Library Assistant) Edit contains meta boxes for the Edit Media (advanced-form-edit.php) screen]]></description>
+        <long-description><![CDATA[]]></long-description>
+        <tag line="9" name="package" description="Media Library Assistant"/>
+        <tag line="9" name="since" description="0.80"/>
+      </docblock>
+      <property final="false" static="true" visibility="private" line="96" namespace="global" package="Media Library Assistant">
+        <name>$mla_references</name>
+        <default><![CDATA[null]]></default>
+        <docblock line="86">
+          <description><![CDATA[Where-used values for the current item]]></description>
+          <long-description><![CDATA[<p>This array contains the Featured/Inserted/Gallery/MLA Gallery references for the item.
+The array is built once each page load and cached for subsequent calls.</p>]]></long-description>
+          <tag line="86" name="since" description="0.80"/>
+          <tag line="86" name="var" description="" type="array">
+            <type by_reference="false">array</type>
+          </tag>
+        </docblock>
+      </property>
+      <method final="false" abstract="false" static="true" visibility="public" namespace="global" line="23" package="Media Library Assistant">
+        <name>initialize</name>
+        <full_name>initialize</full_name>
+        <docblock line="16">
+          <description><![CDATA[Initialization function, similar to __construct()]]></description>
+          <long-description><![CDATA[]]></long-description>
+          <tag line="16" name="since" description="0.80"/>
+          <tag line="16" name="return" description="" type="void">
+            <type by_reference="false">void</type>
+          </tag>
+        </docblock>
+      </method>
+      <method final="false" abstract="false" static="true" visibility="public" namespace="global" line="48" package="Media Library Assistant">
+        <name>mla_last_modified_action</name>
+        <full_name>mla_last_modified_action</full_name>
+        <docblock line="40">
+          <description><![CDATA[Adds Last Modified date to the Submit box on the Edit Media screen.]]></description>
+          <long-description><![CDATA[<p>Declared public because it is an action.</p>]]></long-description>
+          <tag line="40" name="since" description="0.80"/>
+          <tag line="40" name="return" description="echoes the HTML markup for the label and value" type="void">
+            <type by_reference="false">void</type>
+          </tag>
+        </docblock>
+      </method>
+      <method final="false" abstract="false" static="true" visibility="public" namespace="global" line="70" package="Media Library Assistant">
+        <name>mla_add_meta_boxes_action</name>
+        <full_name>mla_add_meta_boxes_action</full_name>
+        <docblock line="59">
+          <description><![CDATA[Registers meta boxes for the Edit Media screen.]]></description>
+          <long-description><![CDATA[<p>Declared public because it is an action.</p>]]></long-description>
+          <tag line="59" name="since" description="0.80"/>
+          <tag line="59" name="param" description="type of the current post, e.g., 'attachment'" type="string" variable="$post_type">
+            <type by_reference="false">string</type>
+          </tag>
+          <tag line="59" name="param" description="current post" type="object" variable="$post">
+            <type by_reference="false">object</type>
+          </tag>
+          <tag line="59" name="return" description="" type="void">
+            <type by_reference="false">void</type>
+          </tag>
+        </docblock>
+        <argument line="70">
+          <name>$post_type</name>
+          <default><![CDATA[]]></default>
+          <type/>
+        </argument>
+        <argument line="70">
+          <name>$post</name>
+          <default><![CDATA[]]></default>
+          <type/>
+        </argument>
+      </method>
+      <method final="false" abstract="false" static="true" visibility="public" namespace="global" line="108" package="Media Library Assistant">
+        <name>mla_parent_info_handler</name>
+        <full_name>mla_parent_info_handler</full_name>
+        <docblock line="98">
+          <description><![CDATA[Renders the Parent Info meta box on the Edit Media page.]]></description>
+          <long-description><![CDATA[<p>Declared public because it is a callback function.</p>]]></long-description>
+          <tag line="98" name="since" description="0.80"/>
+          <tag line="98" name="param" description="current post" type="object" variable="$post">
+            <type by_reference="false">object</type>
+          </tag>
+          <tag line="98" name="return" description="echoes the HTML markup for the meta box content" type="void">
+            <type by_reference="false">void</type>
+          </tag>
+        </docblock>
+        <argument line="108">
+          <name>$post</name>
+          <default><![CDATA[]]></default>
+          <type/>
+        </argument>
+      </method>
+      <method final="false" abstract="false" static="true" visibility="public" namespace="global" line="147" package="Media Library Assistant">
+        <name>mla_menu_order_handler</name>
+        <full_name>mla_menu_order_handler</full_name>
+        <docblock line="137">
+          <description><![CDATA[Renders the Menu Order meta box on the Edit Media page.]]></description>
+          <long-description><![CDATA[<p>Declared public because it is a callback function.</p>]]></long-description>
+          <tag line="137" name="since" description="0.80"/>
+          <tag line="137" name="param" description="current post" type="object" variable="$post">
+            <type by_reference="false">object</type>
+          </tag>
+          <tag line="137" name="return" description="echoes the HTML markup for the meta box content" type="void">
+            <type by_reference="false">void</type>
+          </tag>
+        </docblock>
+        <argument line="147">
+          <name>$post</name>
+          <default><![CDATA[]]></default>
+          <type/>
+        </argument>
+      </method>
+      <method final="false" abstract="false" static="true" visibility="public" namespace="global" line="162" package="Media Library Assistant">
+        <name>mla_image_metadata_handler</name>
+        <full_name>mla_image_metadata_handler</full_name>
+        <docblock line="152">
+          <description><![CDATA[Renders the Image Metadata meta box on the Edit Media page.]]></description>
+          <long-description><![CDATA[<p>Declared public because it is a callback function.</p>]]></long-description>
+          <tag line="152" name="since" description="0.80"/>
+          <tag line="152" name="param" description="current post" type="object" variable="$post">
+            <type by_reference="false">object</type>
+          </tag>
+          <tag line="152" name="return" description="echoes the HTML markup for the meta box content" type="void">
+            <type by_reference="false">void</type>
+          </tag>
+        </docblock>
+        <argument line="162">
+          <name>$post</name>
+          <default><![CDATA[]]></default>
+          <type/>
+        </argument>
+      </method>
+      <method final="false" abstract="false" static="true" visibility="public" namespace="global" line="183" package="Media Library Assistant">
+        <name>mla_featured_in_handler</name>
+        <full_name>mla_featured_in_handler</full_name>
+        <docblock line="173">
+          <description><![CDATA[Renders the Featured in meta box on the Edit Media page.]]></description>
+          <long-description><![CDATA[<p>Declared public because it is a callback function.</p>]]></long-description>
+          <tag line="173" name="since" description="0.80"/>
+          <tag line="173" name="param" description="current post" type="object" variable="$post">
+            <type by_reference="false">object</type>
+          </tag>
+          <tag line="173" name="return" description="echoes the HTML markup for the meta box content" type="void">
+            <type by_reference="false">void</type>
+          </tag>
+        </docblock>
+        <argument line="183">
+          <name>$post</name>
+          <default><![CDATA[]]></default>
+          <type/>
+        </argument>
+      </method>
+      <method final="false" abstract="false" static="true" visibility="public" namespace="global" line="213" package="Media Library Assistant">
+        <name>mla_inserted_in_handler</name>
+        <full_name>mla_inserted_in_handler</full_name>
+        <docblock line="203">
+          <description><![CDATA[Renders the Inserted in meta box on the Edit Media page.]]></description>
+          <long-description><![CDATA[<p>Declared public because it is a callback function.</p>]]></long-description>
+          <tag line="203" name="since" description="0.80"/>
+          <tag line="203" name="param" description="current post" type="object" variable="$post">
+            <type by_reference="false">object</type>
+          </tag>
+          <tag line="203" name="return" description="echoes the HTML markup for the meta box content" type="void">
+            <type by_reference="false">void</type>
+          </tag>
+        </docblock>
+        <argument line="213">
+          <name>$post</name>
+          <default><![CDATA[]]></default>
+          <type/>
+        </argument>
+      </method>
+      <method final="false" abstract="false" static="true" visibility="public" namespace="global" line="247" package="Media Library Assistant">
+        <name>mla_gallery_in_handler</name>
+        <full_name>mla_gallery_in_handler</full_name>
+        <docblock line="237">
+          <description><![CDATA[Renders the Gallery in meta box on the Edit Media page.]]></description>
+          <long-description><![CDATA[<p>Declared public because it is a callback function.</p>]]></long-description>
+          <tag line="237" name="since" description="0.80"/>
+          <tag line="237" name="param" description="current post" type="object" variable="$post">
+            <type by_reference="false">object</type>
+          </tag>
+          <tag line="237" name="return" description="echoes the HTML markup for the meta box content" type="void">
+            <type by_reference="false">void</type>
+          </tag>
+        </docblock>
+        <argument line="247">
+          <name>$post</name>
+          <default><![CDATA[]]></default>
+          <type/>
+        </argument>
+      </method>
+      <method final="false" abstract="false" static="true" visibility="public" namespace="global" line="277" package="Media Library Assistant">
+        <name>mla_mla_gallery_in_handler</name>
+        <full_name>mla_mla_gallery_in_handler</full_name>
+        <docblock line="267">
+          <description><![CDATA[Renders the Gallery in meta box on the Edit Media page.]]></description>
+          <long-description><![CDATA[<p>Declared public because it is a callback function.</p>]]></long-description>
+          <tag line="267" name="since" description="0.80"/>
+          <tag line="267" name="param" description="current post" type="object" variable="$post">
+            <type by_reference="false">object</type>
+          </tag>
+          <tag line="267" name="return" description="echoes the HTML markup for the meta box content" type="void">
+            <type by_reference="false">void</type>
+          </tag>
+        </docblock>
+        <argument line="277">
+          <name>$post</name>
+          <default><![CDATA[]]></default>
+          <type/>
+        </argument>
+      </method>
+      <method final="false" abstract="false" static="true" visibility="public" namespace="global" line="307" package="Media Library Assistant">
+        <name>mla_edit_attachment_action</name>
+        <full_name>mla_edit_attachment_action</full_name>
+        <docblock line="297">
+          <description><![CDATA[Saves updates from the Edit Media screen.]]></description>
+          <long-description><![CDATA[<p>Declared public because it is an action.</p>]]></long-description>
+          <tag line="297" name="since" description="0.80"/>
+          <tag line="297" name="param" description="ID of the current post" type="integer" variable="$post_ID">
+            <type by_reference="false">integer</type>
+          </tag>
+          <tag line="297" name="return" description="" type="void">
+            <type by_reference="false">void</type>
+          </tag>
+        </docblock>
+        <argument line="307">
+          <name>$post_ID</name>
           <default><![CDATA[]]></default>
           <type/>
         </argument>
       </method>
     </class>
   </file>
-  <file path="includes\class-mla-list-table.php" hash="7076e77a8b63290ad9cf9bbd949cf7e4" package="Media Library Assistant">
+  <file path="includes\class-mla-list-table.php" hash="56c374cfa428af7c5e8cf054e9c4ed43" package="Media Library Assistant">
     <docblock line="2">
       <description><![CDATA[Media Library Assistant extended List Table class]]></description>
       <long-description><![CDATA[]]></long-description>
@@ -736,553 +1025,553 @@ calls the parent constructor to set some default configs.]]></description>
           </tag>
         </docblock>
       </method>
-      <method final="false" abstract="false" static="false" visibility="public" namespace="global" line="405" package="Media Library Assistant">
+      <method final="false" abstract="false" static="false" visibility="public" namespace="global" line="406" package="Media Library Assistant">
         <name>column_default</name>
         <full_name>column_default</full_name>
-        <docblock line="392">
+        <docblock line="393">
           <description><![CDATA[Supply a column value if no column-specific function has been defined]]></description>
           <long-description><![CDATA[<p>Called when the parent class can't find a method specifically built for a
 given column. The taxonomy columns are handled here. All other columns should
 have a specific method, so this function returns a troubleshooting message.</p>]]></long-description>
-          <tag line="392" name="since" description="0.1"/>
-          <tag line="392" name="param" description="A singular item (one full row's worth of data)" type="array" variable="$item">
+          <tag line="393" name="since" description="0.1"/>
+          <tag line="393" name="param" description="A singular item (one full row's worth of data)" type="array" variable="$item">
             <type by_reference="false">array</type>
           </tag>
-          <tag line="392" name="param" description="The name/slug of the column to be processed" type="array" variable="$column_name">
+          <tag line="393" name="param" description="The name/slug of the column to be processed" type="array" variable="$column_name">
             <type by_reference="false">array</type>
           </tag>
-          <tag line="392" name="return" description="Text or HTML to be placed inside the column" type="string">
+          <tag line="393" name="return" description="Text or HTML to be placed inside the column" type="string">
             <type by_reference="false">string</type>
           </tag>
         </docblock>
-        <argument line="405">
+        <argument line="406">
           <name>$item</name>
           <default><![CDATA[]]></default>
           <type/>
         </argument>
-        <argument line="405">
+        <argument line="406">
           <name>$column_name</name>
           <default><![CDATA[]]></default>
           <type/>
         </argument>
       </method>
-      <method final="false" abstract="false" static="false" visibility="public" namespace="global" line="447" package="Media Library Assistant">
+      <method final="false" abstract="false" static="false" visibility="public" namespace="global" line="448" package="Media Library Assistant">
         <name>column_cb</name>
         <full_name>column_cb</full_name>
-        <docblock line="438">
+        <docblock line="439">
           <description><![CDATA[Displays checkboxes for using bulk actions.]]></description>
           <long-description><![CDATA[<p>The 'cb' column
 is given special treatment when columns are processed.</p>]]></long-description>
-          <tag line="438" name="since" description="0.1"/>
-          <tag line="438" name="param" description="A singular attachment (post) object" type="array" variable="$item">
+          <tag line="439" name="since" description="0.1"/>
+          <tag line="439" name="param" description="A singular attachment (post) object" type="array" variable="$item">
             <type by_reference="false">array</type>
           </tag>
-          <tag line="438" name="return" description="HTML markup to be placed inside the column" type="string">
+          <tag line="439" name="return" description="HTML markup to be placed inside the column" type="string">
             <type by_reference="false">string</type>
           </tag>
         </docblock>
-        <argument line="447">
+        <argument line="448">
           <name>$item</name>
           <default><![CDATA[]]></default>
           <type/>
         </argument>
       </method>
-      <method final="false" abstract="false" static="false" visibility="public" namespace="global" line="463" package="Media Library Assistant">
+      <method final="false" abstract="false" static="false" visibility="public" namespace="global" line="464" package="Media Library Assistant">
         <name>column_icon</name>
         <full_name>column_icon</full_name>
-        <docblock line="455">
+        <docblock line="456">
           <description><![CDATA[Supply the content for a custom column]]></description>
           <long-description><![CDATA[]]></long-description>
-          <tag line="455" name="since" description="0.1"/>
-          <tag line="455" name="param" description="A singular attachment (post) object" type="array" variable="$item">
+          <tag line="456" name="since" description="0.1"/>
+          <tag line="456" name="param" description="A singular attachment (post) object" type="array" variable="$item">
             <type by_reference="false">array</type>
           </tag>
-          <tag line="455" name="return" description="HTML markup to be placed inside the column" type="string">
+          <tag line="456" name="return" description="HTML markup to be placed inside the column" type="string">
             <type by_reference="false">string</type>
           </tag>
         </docblock>
-        <argument line="463">
+        <argument line="464">
           <name>$item</name>
           <default><![CDATA[]]></default>
           <type/>
         </argument>
       </method>
-      <method final="false" abstract="false" static="false" visibility="private" namespace="global" line="479" package="Media Library Assistant">
+      <method final="false" abstract="false" static="false" visibility="private" namespace="global" line="480" package="Media Library Assistant">
         <name>_build_rollover_actions</name>
         <full_name>_build_rollover_actions</full_name>
-        <docblock line="468">
+        <docblock line="469">
           <description><![CDATA[Add rollover actions to exactly one of the following displayed columns:
 'ID_parent', 'title_name', 'post_title', 'post_name']]></description>
           <long-description><![CDATA[]]></long-description>
-          <tag line="468" name="since" description="0.1"/>
-          <tag line="468" name="param" description="A singular attachment (post) object" type="object" variable="$item">
+          <tag line="469" name="since" description="0.1"/>
+          <tag line="469" name="param" description="A singular attachment (post) object" type="object" variable="$item">
             <type by_reference="false">object</type>
           </tag>
-          <tag line="468" name="param" description="Current column name" type="string" variable="$column">
+          <tag line="469" name="param" description="Current column name" type="string" variable="$column">
             <type by_reference="false">string</type>
           </tag>
-          <tag line="468" name="return" description="Names and URLs of row-level actions" type="array">
+          <tag line="469" name="return" description="Names and URLs of row-level actions" type="array">
             <type by_reference="false">array</type>
           </tag>
         </docblock>
-        <argument line="479">
+        <argument line="480">
           <name>$item</name>
           <default><![CDATA[]]></default>
           <type/>
         </argument>
-        <argument line="479">
+        <argument line="480">
           <name>$column</name>
           <default><![CDATA[]]></default>
           <type/>
         </argument>
       </method>
-      <method final="false" abstract="false" static="false" visibility="private" namespace="global" line="557" package="Media Library Assistant">
+      <method final="false" abstract="false" static="false" visibility="private" namespace="global" line="558" package="Media Library Assistant">
         <name>_build_inline_data</name>
         <full_name>_build_inline_data</full_name>
-        <docblock line="548">
+        <docblock line="549">
           <description><![CDATA[Add hidden fields with the data for use in the inline editor]]></description>
           <long-description><![CDATA[]]></long-description>
-          <tag line="548" name="since" description="0.20"/>
-          <tag line="548" name="param" description="A singular attachment (post) object" type="object" variable="$item">
+          <tag line="549" name="since" description="0.20"/>
+          <tag line="549" name="param" description="A singular attachment (post) object" type="object" variable="$item">
             <type by_reference="false">object</type>
           </tag>
-          <tag line="548" name="return" description="HTML &lt;div&gt; with row data" type="string">
+          <tag line="549" name="return" description="HTML &lt;div&gt; with row data" type="string">
             <type by_reference="false">string</type>
           </tag>
         </docblock>
-        <argument line="557">
+        <argument line="558">
           <name>$item</name>
           <default><![CDATA[]]></default>
           <type/>
         </argument>
       </method>
-      <method final="false" abstract="false" static="false" visibility="public" namespace="global" line="597" package="Media Library Assistant">
+      <method final="false" abstract="false" static="false" visibility="public" namespace="global" line="599" package="Media Library Assistant">
         <name>column_ID_parent</name>
         <full_name>column_ID_parent</full_name>
-        <docblock line="589">
+        <docblock line="591">
           <description><![CDATA[Supply the content for a custom column]]></description>
           <long-description><![CDATA[]]></long-description>
-          <tag line="589" name="since" description="0.1"/>
-          <tag line="589" name="param" description="A singular attachment (post) object" type="array" variable="$item">
+          <tag line="591" name="since" description="0.1"/>
+          <tag line="591" name="param" description="A singular attachment (post) object" type="array" variable="$item">
             <type by_reference="false">array</type>
           </tag>
-          <tag line="589" name="return" description="HTML markup to be placed inside the column" type="string">
+          <tag line="591" name="return" description="HTML markup to be placed inside the column" type="string">
             <type by_reference="false">string</type>
           </tag>
         </docblock>
-        <argument line="597">
+        <argument line="599">
           <name>$item</name>
           <default><![CDATA[]]></default>
           <type/>
         </argument>
       </method>
-      <method final="false" abstract="false" static="false" visibility="public" namespace="global" line="629" package="Media Library Assistant">
+      <method final="false" abstract="false" static="false" visibility="public" namespace="global" line="631" package="Media Library Assistant">
         <name>column_title_name</name>
         <full_name>column_title_name</full_name>
-        <docblock line="621">
+        <docblock line="623">
           <description><![CDATA[Supply the content for a custom column]]></description>
           <long-description><![CDATA[]]></long-description>
-          <tag line="621" name="since" description="0.1"/>
-          <tag line="621" name="param" description="A singular attachment (post) object" type="array" variable="$item">
+          <tag line="623" name="since" description="0.1"/>
+          <tag line="623" name="param" description="A singular attachment (post) object" type="array" variable="$item">
             <type by_reference="false">array</type>
           </tag>
-          <tag line="621" name="return" description="HTML markup to be placed inside the column" type="string">
+          <tag line="623" name="return" description="HTML markup to be placed inside the column" type="string">
             <type by_reference="false">string</type>
           </tag>
         </docblock>
-        <argument line="629">
+        <argument line="631">
           <name>$item</name>
           <default><![CDATA[]]></default>
           <type/>
         </argument>
       </method>
-      <method final="false" abstract="false" static="false" visibility="public" namespace="global" line="664" package="Media Library Assistant">
+      <method final="false" abstract="false" static="false" visibility="public" namespace="global" line="666" package="Media Library Assistant">
         <name>column_post_title</name>
         <full_name>column_post_title</full_name>
-        <docblock line="656">
+        <docblock line="658">
           <description><![CDATA[Supply the content for a custom column]]></description>
           <long-description><![CDATA[]]></long-description>
-          <tag line="656" name="since" description="0.1"/>
-          <tag line="656" name="param" description="A singular attachment (post) object" type="array" variable="$item">
+          <tag line="658" name="since" description="0.1"/>
+          <tag line="658" name="param" description="A singular attachment (post) object" type="array" variable="$item">
             <type by_reference="false">array</type>
           </tag>
-          <tag line="656" name="return" description="HTML markup to be placed inside the column" type="string">
+          <tag line="658" name="return" description="HTML markup to be placed inside the column" type="string">
             <type by_reference="false">string</type>
           </tag>
         </docblock>
-        <argument line="664">
+        <argument line="666">
           <name>$item</name>
           <default><![CDATA[]]></default>
           <type/>
         </argument>
       </method>
-      <method final="false" abstract="false" static="false" visibility="public" namespace="global" line="682" package="Media Library Assistant">
+      <method final="false" abstract="false" static="false" visibility="public" namespace="global" line="684" package="Media Library Assistant">
         <name>column_post_name</name>
         <full_name>column_post_name</full_name>
-        <docblock line="674">
+        <docblock line="676">
           <description><![CDATA[Supply the content for a custom column]]></description>
           <long-description><![CDATA[]]></long-description>
-          <tag line="674" name="since" description="0.1"/>
-          <tag line="674" name="param" description="A singular attachment (post) object" type="array" variable="$item">
+          <tag line="676" name="since" description="0.1"/>
+          <tag line="676" name="param" description="A singular attachment (post) object" type="array" variable="$item">
             <type by_reference="false">array</type>
           </tag>
-          <tag line="674" name="return" description="HTML markup to be placed inside the column" type="string">
+          <tag line="676" name="return" description="HTML markup to be placed inside the column" type="string">
             <type by_reference="false">string</type>
           </tag>
         </docblock>
-        <argument line="682">
+        <argument line="684">
           <name>$item</name>
           <default><![CDATA[]]></default>
           <type/>
         </argument>
       </method>
-      <method final="false" abstract="false" static="false" visibility="public" namespace="global" line="700" package="Media Library Assistant">
+      <method final="false" abstract="false" static="false" visibility="public" namespace="global" line="702" package="Media Library Assistant">
         <name>column_parent</name>
         <full_name>column_parent</full_name>
-        <docblock line="692">
+        <docblock line="694">
           <description><![CDATA[Supply the content for a custom column]]></description>
           <long-description><![CDATA[]]></long-description>
-          <tag line="692" name="since" description="0.1"/>
-          <tag line="692" name="param" description="A singular attachment (post) object" type="array" variable="$item">
+          <tag line="694" name="since" description="0.1"/>
+          <tag line="694" name="param" description="A singular attachment (post) object" type="array" variable="$item">
             <type by_reference="false">array</type>
           </tag>
-          <tag line="692" name="return" description="HTML markup to be placed inside the column" type="string">
+          <tag line="694" name="return" description="HTML markup to be placed inside the column" type="string">
             <type by_reference="false">string</type>
           </tag>
         </docblock>
-        <argument line="700">
+        <argument line="702">
           <name>$item</name>
           <default><![CDATA[]]></default>
           <type/>
         </argument>
       </method>
-      <method final="false" abstract="false" static="false" visibility="public" namespace="global" line="725" package="Media Library Assistant">
+      <method final="false" abstract="false" static="false" visibility="public" namespace="global" line="727" package="Media Library Assistant">
         <name>column_menu_order</name>
         <full_name>column_menu_order</full_name>
-        <docblock line="717">
+        <docblock line="719">
           <description><![CDATA[Supply the content for a custom column]]></description>
           <long-description><![CDATA[]]></long-description>
-          <tag line="717" name="since" description="0.60"/>
-          <tag line="717" name="param" description="A singular attachment (post) object" type="array" variable="$item">
+          <tag line="719" name="since" description="0.60"/>
+          <tag line="719" name="param" description="A singular attachment (post) object" type="array" variable="$item">
             <type by_reference="false">array</type>
           </tag>
-          <tag line="717" name="return" description="HTML markup to be placed inside the column" type="string">
+          <tag line="719" name="return" description="HTML markup to be placed inside the column" type="string">
             <type by_reference="false">string</type>
           </tag>
         </docblock>
-        <argument line="725">
+        <argument line="727">
           <name>$item</name>
           <default><![CDATA[]]></default>
           <type/>
         </argument>
       </method>
-      <method final="false" abstract="false" static="false" visibility="public" namespace="global" line="737" package="Media Library Assistant">
+      <method final="false" abstract="false" static="false" visibility="public" namespace="global" line="739" package="Media Library Assistant">
         <name>column_featured</name>
         <full_name>column_featured</full_name>
-        <docblock line="729">
+        <docblock line="731">
           <description><![CDATA[Supply the content for a custom column]]></description>
           <long-description><![CDATA[]]></long-description>
-          <tag line="729" name="since" description="0.1"/>
-          <tag line="729" name="param" description="A singular attachment (post) object" type="array" variable="$item">
+          <tag line="731" name="since" description="0.1"/>
+          <tag line="731" name="param" description="A singular attachment (post) object" type="array" variable="$item">
             <type by_reference="false">array</type>
           </tag>
-          <tag line="729" name="return" description="HTML markup to be placed inside the column" type="string">
+          <tag line="731" name="return" description="HTML markup to be placed inside the column" type="string">
             <type by_reference="false">string</type>
           </tag>
         </docblock>
-        <argument line="737">
+        <argument line="739">
           <name>$item</name>
           <default><![CDATA[]]></default>
           <type/>
         </argument>
       </method>
-      <method final="false" abstract="false" static="false" visibility="public" namespace="global" line="765" package="Media Library Assistant">
+      <method final="false" abstract="false" static="false" visibility="public" namespace="global" line="767" package="Media Library Assistant">
         <name>column_inserted</name>
         <full_name>column_inserted</full_name>
-        <docblock line="757">
+        <docblock line="759">
           <description><![CDATA[Supply the content for a custom column]]></description>
           <long-description><![CDATA[]]></long-description>
-          <tag line="757" name="since" description="0.1"/>
-          <tag line="757" name="param" description="A singular attachment (post) object" type="array" variable="$item">
+          <tag line="759" name="since" description="0.1"/>
+          <tag line="759" name="param" description="A singular attachment (post) object" type="array" variable="$item">
             <type by_reference="false">array</type>
           </tag>
-          <tag line="757" name="return" description="HTML markup to be placed inside the column" type="string">
+          <tag line="759" name="return" description="HTML markup to be placed inside the column" type="string">
             <type by_reference="false">string</type>
           </tag>
         </docblock>
-        <argument line="765">
+        <argument line="767">
           <name>$item</name>
           <default><![CDATA[]]></default>
           <type/>
         </argument>
       </method>
-      <method final="false" abstract="false" static="false" visibility="public" namespace="global" line="797" package="Media Library Assistant">
+      <method final="false" abstract="false" static="false" visibility="public" namespace="global" line="799" package="Media Library Assistant">
         <name>column_galleries</name>
         <full_name>column_galleries</full_name>
-        <docblock line="789">
+        <docblock line="791">
           <description><![CDATA[Supply the content for a custom column]]></description>
           <long-description><![CDATA[]]></long-description>
-          <tag line="789" name="since" description="0.70"/>
-          <tag line="789" name="param" description="A singular attachment (post) object" type="array" variable="$item">
+          <tag line="791" name="since" description="0.70"/>
+          <tag line="791" name="param" description="A singular attachment (post) object" type="array" variable="$item">
             <type by_reference="false">array</type>
           </tag>
-          <tag line="789" name="return" description="HTML markup to be placed inside the column" type="string">
+          <tag line="791" name="return" description="HTML markup to be placed inside the column" type="string">
             <type by_reference="false">string</type>
           </tag>
         </docblock>
-        <argument line="797">
+        <argument line="799">
           <name>$item</name>
           <default><![CDATA[]]></default>
           <type/>
         </argument>
       </method>
-      <method final="false" abstract="false" static="false" visibility="public" namespace="global" line="825" package="Media Library Assistant">
+      <method final="false" abstract="false" static="false" visibility="public" namespace="global" line="827" package="Media Library Assistant">
         <name>column_mla_galleries</name>
         <full_name>column_mla_galleries</full_name>
-        <docblock line="817">
+        <docblock line="819">
           <description><![CDATA[Supply the content for a custom column]]></description>
           <long-description><![CDATA[]]></long-description>
-          <tag line="817" name="since" description="0.70"/>
-          <tag line="817" name="param" description="A singular attachment (post) object" type="array" variable="$item">
+          <tag line="819" name="since" description="0.70"/>
+          <tag line="819" name="param" description="A singular attachment (post) object" type="array" variable="$item">
             <type by_reference="false">array</type>
           </tag>
-          <tag line="817" name="return" description="HTML markup to be placed inside the column" type="string">
+          <tag line="819" name="return" description="HTML markup to be placed inside the column" type="string">
             <type by_reference="false">string</type>
           </tag>
         </docblock>
-        <argument line="825">
+        <argument line="827">
           <name>$item</name>
           <default><![CDATA[]]></default>
           <type/>
         </argument>
       </method>
-      <method final="false" abstract="false" static="false" visibility="public" namespace="global" line="853" package="Media Library Assistant">
+      <method final="false" abstract="false" static="false" visibility="public" namespace="global" line="855" package="Media Library Assistant">
         <name>column_alt_text</name>
         <full_name>column_alt_text</full_name>
-        <docblock line="845">
+        <docblock line="847">
           <description><![CDATA[Supply the content for a custom column]]></description>
           <long-description><![CDATA[]]></long-description>
-          <tag line="845" name="since" description="0.1"/>
-          <tag line="845" name="param" description="A singular attachment (post) object" type="array" variable="$item">
+          <tag line="847" name="since" description="0.1"/>
+          <tag line="847" name="param" description="A singular attachment (post) object" type="array" variable="$item">
             <type by_reference="false">array</type>
           </tag>
-          <tag line="845" name="return" description="HTML markup to be placed inside the column" type="string">
+          <tag line="847" name="return" description="HTML markup to be placed inside the column" type="string">
             <type by_reference="false">string</type>
           </tag>
         </docblock>
-        <argument line="853">
+        <argument line="855">
           <name>$item</name>
           <default><![CDATA[]]></default>
           <type/>
         </argument>
       </method>
-      <method final="false" abstract="false" static="false" visibility="public" namespace="global" line="868" package="Media Library Assistant">
+      <method final="false" abstract="false" static="false" visibility="public" namespace="global" line="870" package="Media Library Assistant">
         <name>column_caption</name>
         <full_name>column_caption</full_name>
-        <docblock line="860">
+        <docblock line="862">
           <description><![CDATA[Supply the content for a custom column]]></description>
           <long-description><![CDATA[]]></long-description>
-          <tag line="860" name="since" description="0.1"/>
-          <tag line="860" name="param" description="A singular attachment (post) object" type="array" variable="$item">
+          <tag line="862" name="since" description="0.1"/>
+          <tag line="862" name="param" description="A singular attachment (post) object" type="array" variable="$item">
             <type by_reference="false">array</type>
           </tag>
-          <tag line="860" name="return" description="HTML markup to be placed inside the column" type="string">
+          <tag line="862" name="return" description="HTML markup to be placed inside the column" type="string">
             <type by_reference="false">string</type>
           </tag>
         </docblock>
-        <argument line="868">
+        <argument line="870">
           <name>$item</name>
           <default><![CDATA[]]></default>
           <type/>
         </argument>
       </method>
-      <method final="false" abstract="false" static="false" visibility="public" namespace="global" line="880" package="Media Library Assistant">
+      <method final="false" abstract="false" static="false" visibility="public" namespace="global" line="882" package="Media Library Assistant">
         <name>column_description</name>
         <full_name>column_description</full_name>
-        <docblock line="872">
+        <docblock line="874">
           <description><![CDATA[Supply the content for a custom column]]></description>
           <long-description><![CDATA[]]></long-description>
-          <tag line="872" name="since" description="0.1"/>
-          <tag line="872" name="param" description="A singular attachment (post) object" type="array" variable="$item">
+          <tag line="874" name="since" description="0.1"/>
+          <tag line="874" name="param" description="A singular attachment (post) object" type="array" variable="$item">
             <type by_reference="false">array</type>
           </tag>
-          <tag line="872" name="return" description="HTML markup to be placed inside the column" type="string">
+          <tag line="874" name="return" description="HTML markup to be placed inside the column" type="string">
             <type by_reference="false">string</type>
           </tag>
         </docblock>
-        <argument line="880">
+        <argument line="882">
           <name>$item</name>
           <default><![CDATA[]]></default>
           <type/>
         </argument>
       </method>
-      <method final="false" abstract="false" static="false" visibility="public" namespace="global" line="892" package="Media Library Assistant">
+      <method final="false" abstract="false" static="false" visibility="public" namespace="global" line="894" package="Media Library Assistant">
         <name>column_post_mime_type</name>
         <full_name>column_post_mime_type</full_name>
-        <docblock line="884">
+        <docblock line="886">
           <description><![CDATA[Supply the content for a custom column]]></description>
           <long-description><![CDATA[]]></long-description>
-          <tag line="884" name="since" description="0.30"/>
-          <tag line="884" name="param" description="A singular attachment (post) object" type="array" variable="$item">
+          <tag line="886" name="since" description="0.30"/>
+          <tag line="886" name="param" description="A singular attachment (post) object" type="array" variable="$item">
             <type by_reference="false">array</type>
           </tag>
-          <tag line="884" name="return" description="HTML markup to be placed inside the column" type="string">
+          <tag line="886" name="return" description="HTML markup to be placed inside the column" type="string">
             <type by_reference="false">string</type>
           </tag>
         </docblock>
-        <argument line="892">
+        <argument line="894">
           <name>$item</name>
           <default><![CDATA[]]></default>
           <type/>
         </argument>
       </method>
-      <method final="false" abstract="false" static="false" visibility="public" namespace="global" line="904" package="Media Library Assistant">
+      <method final="false" abstract="false" static="false" visibility="public" namespace="global" line="906" package="Media Library Assistant">
         <name>column_base_file</name>
         <full_name>column_base_file</full_name>
-        <docblock line="896">
+        <docblock line="898">
           <description><![CDATA[Supply the content for a custom column]]></description>
           <long-description><![CDATA[]]></long-description>
-          <tag line="896" name="since" description="0.1"/>
-          <tag line="896" name="param" description="A singular attachment (post) object" type="array" variable="$item">
+          <tag line="898" name="since" description="0.1"/>
+          <tag line="898" name="param" description="A singular attachment (post) object" type="array" variable="$item">
             <type by_reference="false">array</type>
           </tag>
-          <tag line="896" name="return" description="HTML markup to be placed inside the column" type="string">
+          <tag line="898" name="return" description="HTML markup to be placed inside the column" type="string">
             <type by_reference="false">string</type>
           </tag>
         </docblock>
-        <argument line="904">
+        <argument line="906">
           <name>$item</name>
           <default><![CDATA[]]></default>
           <type/>
         </argument>
       </method>
-      <method final="false" abstract="false" static="false" visibility="public" namespace="global" line="916" package="Media Library Assistant">
+      <method final="false" abstract="false" static="false" visibility="public" namespace="global" line="918" package="Media Library Assistant">
         <name>column_date</name>
         <full_name>column_date</full_name>
-        <docblock line="908">
+        <docblock line="910">
           <description><![CDATA[Supply the content for a custom column]]></description>
           <long-description><![CDATA[]]></long-description>
-          <tag line="908" name="since" description="0.1"/>
-          <tag line="908" name="param" description="A singular attachment (post) object" type="array" variable="$item">
+          <tag line="910" name="since" description="0.1"/>
+          <tag line="910" name="param" description="A singular attachment (post) object" type="array" variable="$item">
             <type by_reference="false">array</type>
           </tag>
-          <tag line="908" name="return" description="HTML markup to be placed inside the column" type="string">
+          <tag line="910" name="return" description="HTML markup to be placed inside the column" type="string">
             <type by_reference="false">string</type>
           </tag>
         </docblock>
-        <argument line="916">
+        <argument line="918">
           <name>$item</name>
           <default><![CDATA[]]></default>
           <type/>
         </argument>
       </method>
-      <method final="false" abstract="false" static="false" visibility="public" namespace="global" line="945" package="Media Library Assistant">
+      <method final="false" abstract="false" static="false" visibility="public" namespace="global" line="947" package="Media Library Assistant">
         <name>column_modified</name>
         <full_name>column_modified</full_name>
-        <docblock line="937">
+        <docblock line="939">
           <description><![CDATA[Supply the content for a custom column]]></description>
           <long-description><![CDATA[]]></long-description>
-          <tag line="937" name="since" description="0.30"/>
-          <tag line="937" name="param" description="A singular attachment (post) object" type="array" variable="$item">
+          <tag line="939" name="since" description="0.30"/>
+          <tag line="939" name="param" description="A singular attachment (post) object" type="array" variable="$item">
             <type by_reference="false">array</type>
           </tag>
-          <tag line="937" name="return" description="HTML markup to be placed inside the column" type="string">
+          <tag line="939" name="return" description="HTML markup to be placed inside the column" type="string">
             <type by_reference="false">string</type>
           </tag>
         </docblock>
-        <argument line="945">
+        <argument line="947">
           <name>$item</name>
           <default><![CDATA[]]></default>
           <type/>
         </argument>
       </method>
-      <method final="false" abstract="false" static="false" visibility="public" namespace="global" line="974" package="Media Library Assistant">
+      <method final="false" abstract="false" static="false" visibility="public" namespace="global" line="976" package="Media Library Assistant">
         <name>column_author</name>
         <full_name>column_author</full_name>
-        <docblock line="966">
+        <docblock line="968">
           <description><![CDATA[Supply the content for a custom column]]></description>
           <long-description><![CDATA[]]></long-description>
-          <tag line="966" name="since" description="0.30"/>
-          <tag line="966" name="param" description="A singular attachment (post) object" type="array" variable="$item">
+          <tag line="968" name="since" description="0.30"/>
+          <tag line="968" name="param" description="A singular attachment (post) object" type="array" variable="$item">
             <type by_reference="false">array</type>
           </tag>
-          <tag line="966" name="return" description="HTML markup to be placed inside the column" type="string">
+          <tag line="968" name="return" description="HTML markup to be placed inside the column" type="string">
             <type by_reference="false">string</type>
           </tag>
         </docblock>
-        <argument line="974">
+        <argument line="976">
           <name>$item</name>
           <default><![CDATA[]]></default>
           <type/>
         </argument>
       </method>
-      <method final="false" abstract="false" static="false" visibility="public" namespace="global" line="995" package="Media Library Assistant">
+      <method final="false" abstract="false" static="false" visibility="public" namespace="global" line="997" package="Media Library Assistant">
         <name>column_attached_to</name>
         <full_name>column_attached_to</full_name>
-        <docblock line="987">
+        <docblock line="989">
           <description><![CDATA[Supply the content for a custom column]]></description>
           <long-description><![CDATA[]]></long-description>
-          <tag line="987" name="since" description="0.1"/>
-          <tag line="987" name="param" description="A singular attachment (post) object" type="array" variable="$item">
+          <tag line="989" name="since" description="0.1"/>
+          <tag line="989" name="param" description="A singular attachment (post) object" type="array" variable="$item">
             <type by_reference="false">array</type>
           </tag>
-          <tag line="987" name="return" description="HTML markup to be placed inside the column" type="string">
+          <tag line="989" name="return" description="HTML markup to be placed inside the column" type="string">
             <type by_reference="false">string</type>
           </tag>
         </docblock>
-        <argument line="995">
+        <argument line="997">
           <name>$item</name>
           <default><![CDATA[]]></default>
           <type/>
         </argument>
       </method>
-      <method final="false" abstract="false" static="false" visibility="public" namespace="global" line="1024" package="Media Library Assistant">
+      <method final="false" abstract="false" static="false" visibility="public" namespace="global" line="1026" package="Media Library Assistant">
         <name>get_columns</name>
         <full_name>get_columns</full_name>
-        <docblock line="1017">
+        <docblock line="1019">
           <description><![CDATA[This method dictates the table's columns and titles]]></description>
           <long-description><![CDATA[]]></long-description>
-          <tag line="1017" name="since" description="0.1"/>
-          <tag line="1017" name="return" description="Column information: 'slugs'=&gt;'Visible Titles'" type="array">
+          <tag line="1019" name="since" description="0.1"/>
+          <tag line="1019" name="return" description="Column information: 'slugs'=&gt;'Visible Titles'" type="array">
             <type by_reference="false">array</type>
           </tag>
         </docblock>
       </method>
-      <method final="false" abstract="false" static="false" visibility="public" namespace="global" line="1036" package="Media Library Assistant">
+      <method final="false" abstract="false" static="false" visibility="public" namespace="global" line="1038" package="Media Library Assistant">
         <name>get_hidden_columns</name>
         <full_name>get_hidden_columns</full_name>
-        <docblock line="1028">
+        <docblock line="1030">
           <description><![CDATA[Returns the list of currently hidden columns from a user option or
 from default values if the option is not set]]></description>
           <long-description><![CDATA[]]></long-description>
-          <tag line="1028" name="since" description="0.1"/>
-          <tag line="1028" name="return" description="Column information,e.g., array(0 =&gt; 'ID_parent, 1 =&gt; 'title_name')" type="array">
+          <tag line="1030" name="since" description="0.1"/>
+          <tag line="1030" name="return" description="Column information,e.g., array(0 =&gt; 'ID_parent, 1 =&gt; 'title_name')" type="array">
             <type by_reference="false">array</type>
           </tag>
         </docblock>
       </method>
-      <method final="false" abstract="false" static="false" visibility="public" namespace="global" line="1056" package="Media Library Assistant">
+      <method final="false" abstract="false" static="false" visibility="public" namespace="global" line="1058" package="Media Library Assistant">
         <name>get_sortable_columns</name>
         <full_name>get_sortable_columns</full_name>
-        <docblock line="1046">
+        <docblock line="1048">
           <description><![CDATA[Returns an array where the  key is the column that needs to be sortable
 and the value is db column to sort by.]]></description>
           <long-description><![CDATA[<p>Also notes the current sort column,
 if set.</p>]]></long-description>
-          <tag line="1046" name="since" description="0.1"/>
-          <tag line="1046" name="return" description="Sortable column information,e.g., 'slugs'=&gt;array('data_values',boolean)" type="array">
+          <tag line="1048" name="since" description="0.1"/>
+          <tag line="1048" name="return" description="Sortable column information,e.g., 'slugs'=&gt;array('data_values',boolean)" type="array">
             <type by_reference="false">array</type>
           </tag>
         </docblock>
       </method>
-      <method final="false" abstract="false" static="false" visibility="public" namespace="global" line="1083" package="Media Library Assistant">
+      <method final="false" abstract="false" static="false" visibility="public" namespace="global" line="1085" package="Media Library Assistant">
         <name>get_views</name>
         <full_name>get_views</full_name>
-        <docblock line="1075">
+        <docblock line="1077">
           <description><![CDATA[Returns an associative array listing all the views that can be used with this table.]]></description>
           <long-description><![CDATA[<p>These are listed across the top of the page and managed by WordPress.</p>]]></long-description>
-          <tag line="1075" name="since" description="0.1"/>
-          <tag line="1075" name="return" description="View information,e.g., array ( id =&gt; link )" type="array">
+          <tag line="1077" name="since" description="0.1"/>
+          <tag line="1077" name="return" description="View information,e.g., array ( id =&gt; link )" type="array">
             <type by_reference="false">array</type>
           </tag>
         </docblock>
@@ -1357,7 +1646,7 @@ $this->set_pagination_args().</p>]]></long-description>
       </method>
     </class>
   </file>
-  <file path="includes\class-mla-main.php" hash="ffcfbcfec7553e6632a9b98e2589a676" package="Media Library Assistant">
+  <file path="includes\class-mla-main.php" hash="67d1a10d670c324dff54fed0153155bb" package="Media Library Assistant">
     <docblock line="2">
       <description><![CDATA[Top-level functions for the Media Library Assistant]]></description>
       <long-description><![CDATA[]]></long-description>
@@ -1394,7 +1683,7 @@ of images and files held in the WordPress Media Library.]]></description>
       <constant namespace="global" line="41" package="Media Library Assistant">
         <name>CURRENT_MLA_VERSION</name>
         <full_name>CURRENT_MLA_VERSION</full_name>
-        <value><![CDATA['0.71']]></value>
+        <value><![CDATA['0.80']]></value>
         <docblock line="34">
           <description><![CDATA[Current version number]]></description>
           <long-description><![CDATA[]]></long-description>
@@ -1858,213 +2147,168 @@ going to the Edit Media screen.</p>]]></long-description>
           <type/>
         </argument>
       </method>
-      <method final="false" abstract="false" static="true" visibility="private" namespace="global" line="1007" package="Media Library Assistant">
+      <method final="false" abstract="false" static="true" visibility="private" namespace="global" line="1017" package="Media Library Assistant">
         <name>_authors_dropdown</name>
         <full_name>_authors_dropdown</full_name>
-        <docblock line="996">
+        <docblock line="1006">
           <description><![CDATA[Get the edit Authors dropdown box, if user has suitable permissions]]></description>
           <long-description><![CDATA[]]></long-description>
-          <tag line="996" name="since" description="0.20"/>
-          <tag line="996" name="param" description="User ID of the current author" type="integer" variable="$author">
+          <tag line="1006" name="since" description="0.20"/>
+          <tag line="1006" name="param" description="Optional User ID of the current author, default 0" type="integer" variable="$author">
             <type by_reference="false">integer</type>
           </tag>
-          <tag line="996" name="param" description="HTML name attribute" type="string" variable="$name">
+          <tag line="1006" name="param" description="Optional HTML name attribute, default 'post_author'" type="string" variable="$name">
             <type by_reference="false">string</type>
           </tag>
-          <tag line="996" name="param" description="HTML class attribute" type="string" variable="$class">
+          <tag line="1006" name="param" description="Optional HTML class attribute, default 'authors'" type="string" variable="$class">
             <type by_reference="false">string</type>
           </tag>
-          <tag line="996" name="return" description="HTML markup for the dropdown field or False" type="string|false">
+          <tag line="1006" name="return" description="HTML markup for the dropdown field or False" type="string|false">
             <type by_reference="false">string</type>
             <type by_reference="false">false</type>
           </tag>
         </docblock>
-        <argument line="1007">
+        <argument line="1017">
           <name>$author</name>
           <default><![CDATA[0]]></default>
           <type/>
         </argument>
-        <argument line="1007">
+        <argument line="1017">
           <name>$name</name>
           <default><![CDATA['post_author']]></default>
           <type/>
         </argument>
-        <argument line="1007">
+        <argument line="1017">
           <name>$class</name>
           <default><![CDATA['authors']]></default>
           <type/>
         </argument>
       </method>
-      <method final="false" abstract="false" static="true" visibility="private" namespace="global" line="1039" package="Media Library Assistant">
+      <method final="false" abstract="false" static="true" visibility="private" namespace="global" line="1051" package="Media Library Assistant">
         <name>_current_bulk_action</name>
         <full_name>_current_bulk_action</full_name>
-        <docblock line="1032">
+        <docblock line="1044">
           <description><![CDATA[Get the current action selected from the bulk actions dropdown]]></description>
           <long-description><![CDATA[]]></long-description>
-          <tag line="1032" name="since" description="0.1"/>
-          <tag line="1032" name="return" description="The action name or False if no action was selected" type="string|false">
+          <tag line="1044" name="since" description="0.1"/>
+          <tag line="1044" name="return" description="The action name or False if no action was selected" type="string|false">
             <type by_reference="false">string</type>
             <type by_reference="false">false</type>
           </tag>
         </docblock>
       </method>
-      <method final="false" abstract="false" static="true" visibility="private" namespace="global" line="1069" package="Media Library Assistant">
+      <method final="false" abstract="false" static="true" visibility="private" namespace="global" line="1081" package="Media Library Assistant">
         <name>_delete_single_item</name>
         <full_name>_delete_single_item</full_name>
-        <docblock line="1060">
+        <docblock line="1072">
           <description><![CDATA[Delete a single item permanently]]></description>
           <long-description><![CDATA[]]></long-description>
-          <tag line="1060" name="since" description="0.1"/>
-          <tag line="1060" name="param" description="The form POST data" type="array" variable="$post_id">
+          <tag line="1072" name="since" description="0.1"/>
+          <tag line="1072" name="param" description="The form POST data" type="array" variable="$post_id">
             <type by_reference="false">array</type>
           </tag>
-          <tag line="1060" name="return" description="success/failure message and NULL content" type="array">
+          <tag line="1072" name="return" description="success/failure message and NULL content" type="array">
             <type by_reference="false">array</type>
           </tag>
         </docblock>
-        <argument line="1069">
+        <argument line="1081">
           <name>$post_id</name>
           <default><![CDATA[]]></default>
           <type/>
         </argument>
       </method>
-      <method final="false" abstract="false" static="true" visibility="private" namespace="global" line="1098" package="Media Library Assistant">
+      <method final="false" abstract="false" static="true" visibility="private" namespace="global" line="1110" package="Media Library Assistant">
         <name>_display_single_item</name>
         <full_name>_display_single_item</full_name>
-        <docblock line="1088">
+        <docblock line="1100">
           <description><![CDATA[Display a single item sub page; prepare the form to
 change the meta data for a single attachment.]]></description>
           <long-description><![CDATA[]]></long-description>
-          <tag line="1088" name="since" description="0.1"/>
-          <tag line="1088" name="param" description="The WordPress Post ID of the attachment item" type="int" variable="$post_id">
+          <tag line="1100" name="since" description="0.1"/>
+          <tag line="1100" name="param" description="The WordPress Post ID of the attachment item" type="int" variable="$post_id">
             <type by_reference="false">int</type>
           </tag>
-          <tag line="1088" name="return" description="message and/or HTML content" type="array">
+          <tag line="1100" name="return" description="message and/or HTML content" type="array">
             <type by_reference="false">array</type>
           </tag>
         </docblock>
-        <argument line="1098">
+        <argument line="1110">
           <name>$post_id</name>
           <default><![CDATA[]]></default>
           <type/>
         </argument>
       </method>
-      <method final="false" abstract="false" static="true" visibility="private" namespace="global" line="1313" package="Media Library Assistant">
-        <name>_update_single_item</name>
-        <full_name>_update_single_item</full_name>
-        <docblock line="1300">
-          <description><![CDATA[Update a single item; change the meta data
-for a single attachment.]]></description>
-          <long-description><![CDATA[]]></long-description>
-          <tag line="1300" name="since" description="0.1"/>
-          <tag line="1300" name="param" description="The ID of the attachment to be updated" type="int" variable="$post_id">
-            <type by_reference="false">int</type>
-          </tag>
-          <tag line="1300" name="param" description="Field name =&gt; value pairs" type="array" variable="$new_data">
-            <type by_reference="false">array</type>
-          </tag>
-          <tag line="1300" name="param" description="Taxonomy term values" type="array" variable="$tax_input">
-            <type by_reference="false">array</type>
-          </tag>
-          <tag line="1300" name="param" description="Taxonomy actions (add, remove, replace)" type="array" variable="$tax_actions">
-            <type by_reference="false">array</type>
-          </tag>
-          <tag line="1300" name="return" description="success/failure message and NULL content" type="array">
-            <type by_reference="false">array</type>
-          </tag>
-        </docblock>
-        <argument line="1313">
-          <name>$post_id</name>
-          <default><![CDATA[]]></default>
-          <type/>
-        </argument>
-        <argument line="1313">
-          <name>$new_data</name>
-          <default><![CDATA[]]></default>
-          <type/>
-        </argument>
-        <argument line="1313">
-          <name>$tax_input</name>
-          <default><![CDATA[NULL]]></default>
-          <type/>
-        </argument>
-        <argument line="1313">
-          <name>$tax_actions</name>
-          <default><![CDATA[NULL]]></default>
-          <type/>
-        </argument>
-      </method>
-      <method final="false" abstract="false" static="true" visibility="private" namespace="global" line="1505" package="Media Library Assistant">
+      <method final="false" abstract="false" static="true" visibility="private" namespace="global" line="1351" package="Media Library Assistant">
         <name>_remove_tags</name>
         <full_name>_remove_tags</full_name>
-        <docblock line="1494">
+        <docblock line="1340">
           <description><![CDATA[Remove tags from a term ids list]]></description>
           <long-description><![CDATA[]]></long-description>
-          <tag line="1494" name="since" description="0.40"/>
-          <tag line="1494" name="param" description="The term ids currently assigned" type="array" variable="$terms_before">
+          <tag line="1340" name="since" description="0.40"/>
+          <tag line="1340" name="param" description="The term ids currently assigned" type="array" variable="$terms_before">
             <type by_reference="false">array</type>
           </tag>
-          <tag line="1494" name="param" description="| string The term ids (array) or names (string) to remove" type="array" variable="$tags">
+          <tag line="1340" name="param" description="| string The term ids (array) or names (string) to remove" type="array" variable="$tags">
             <type by_reference="false">array</type>
           </tag>
-          <tag line="1494" name="param" description="The taxonomy object" type="object" variable="$taxonomy_obj">
+          <tag line="1340" name="param" description="The taxonomy object" type="object" variable="$taxonomy_obj">
             <type by_reference="false">object</type>
           </tag>
-          <tag line="1494" name="return" description="Term ids of the surviving tags" type="array">
+          <tag line="1340" name="return" description="Term ids of the surviving tags" type="array">
             <type by_reference="false">array</type>
           </tag>
         </docblock>
-        <argument line="1505">
+        <argument line="1351">
           <name>$terms_before</name>
           <default><![CDATA[]]></default>
           <type/>
         </argument>
-        <argument line="1505">
+        <argument line="1351">
           <name>$tags</name>
           <default><![CDATA[]]></default>
           <type/>
         </argument>
-        <argument line="1505">
+        <argument line="1351">
           <name>$taxonomy_obj</name>
           <default><![CDATA[]]></default>
           <type/>
         </argument>
       </method>
-      <method final="false" abstract="false" static="true" visibility="private" namespace="global" line="1547" package="Media Library Assistant">
+      <method final="false" abstract="false" static="true" visibility="private" namespace="global" line="1393" package="Media Library Assistant">
         <name>_restore_single_item</name>
         <full_name>_restore_single_item</full_name>
-        <docblock line="1538">
+        <docblock line="1384">
           <description><![CDATA[Restore a single item from the Trash]]></description>
           <long-description><![CDATA[]]></long-description>
-          <tag line="1538" name="since" description="0.1"/>
-          <tag line="1538" name="param" description="The form POST data" type="array" variable="$post_id">
+          <tag line="1384" name="since" description="0.1"/>
+          <tag line="1384" name="param" description="The form POST data" type="array" variable="$post_id">
             <type by_reference="false">array</type>
           </tag>
-          <tag line="1538" name="return" description="success/failure message and NULL content" type="array">
+          <tag line="1384" name="return" description="success/failure message and NULL content" type="array">
             <type by_reference="false">array</type>
           </tag>
         </docblock>
-        <argument line="1547">
+        <argument line="1393">
           <name>$post_id</name>
           <default><![CDATA[]]></default>
           <type/>
         </argument>
       </method>
-      <method final="false" abstract="false" static="true" visibility="private" namespace="global" line="1583" package="Media Library Assistant">
+      <method final="false" abstract="false" static="true" visibility="private" namespace="global" line="1429" package="Media Library Assistant">
         <name>_trash_single_item</name>
         <full_name>_trash_single_item</full_name>
-        <docblock line="1574">
+        <docblock line="1420">
           <description><![CDATA[Move a single item to Trash]]></description>
           <long-description><![CDATA[]]></long-description>
-          <tag line="1574" name="since" description="0.1"/>
-          <tag line="1574" name="param" description="The form POST data" type="array" variable="$post_id">
+          <tag line="1420" name="since" description="0.1"/>
+          <tag line="1420" name="param" description="The form POST data" type="array" variable="$post_id">
             <type by_reference="false">array</type>
           </tag>
-          <tag line="1574" name="return" description="success/failure message and NULL content" type="array">
+          <tag line="1420" name="return" description="success/failure message and NULL content" type="array">
             <type by_reference="false">array</type>
           </tag>
         </docblock>
-        <argument line="1583">
+        <argument line="1429">
           <name>$post_id</name>
           <default><![CDATA[]]></default>
           <type/>
@@ -2072,7 +2316,7 @@ for a single attachment.]]></description>
       </method>
     </class>
   </file>
-  <file path="includes\class-mla-objects.php" hash="e829b63334fcd4617993caf68d75e16a" package="Media Library Assistant">
+  <file path="includes\class-mla-objects.php" hash="c571d4b2d34bcbb60ee67b25ab36534d" package="Media Library Assistant">
     <docblock line="2">
       <description><![CDATA[Media Library Assistant Custom Taxonomy and Post Type objects]]></description>
       <long-description><![CDATA[]]></long-description>
@@ -2101,71 +2345,71 @@ for a single attachment.]]></description>
           </tag>
         </docblock>
       </method>
-      <method final="false" abstract="false" static="true" visibility="private" namespace="global" line="41" package="Media Library Assistant">
+      <method final="false" abstract="false" static="true" visibility="private" namespace="global" line="34" package="Media Library Assistant">
         <name>_build_taxonomies</name>
         <full_name>_build_taxonomies</full_name>
-        <docblock line="34">
+        <docblock line="27">
           <description><![CDATA[Registers Attachment Categories and Attachment Tags custom taxonomies, adds taxonomy-related filters]]></description>
           <long-description><![CDATA[]]></long-description>
-          <tag line="34" name="since" description="0.1"/>
-          <tag line="34" name="return" description="" type="void">
+          <tag line="27" name="since" description="0.1"/>
+          <tag line="27" name="return" description="" type="void">
             <type by_reference="false">void</type>
           </tag>
         </docblock>
       </method>
-      <method final="false" abstract="false" static="true" visibility="public" namespace="global" line="121" package="Media Library Assistant">
+      <method final="false" abstract="false" static="true" visibility="public" namespace="global" line="112" package="Media Library Assistant">
         <name>mla_taxonomy_get_columns_filter</name>
         <full_name>mla_taxonomy_get_columns_filter</full_name>
-        <docblock line="111">
+        <docblock line="102">
           <description><![CDATA[WordPress Filter for edit taxonomy "Attachments" column,
 which replaces the "Posts" column with an equivalent "Attachments" column.]]></description>
           <long-description><![CDATA[]]></long-description>
-          <tag line="111" name="since" description="0.30"/>
-          <tag line="111" name="param" description="column definitions for the edit taxonomy list table" type="array" variable="$columns">
+          <tag line="102" name="since" description="0.30"/>
+          <tag line="102" name="param" description="column definitions for the edit taxonomy list table" type="array" variable="$columns">
             <type by_reference="false">array</type>
           </tag>
-          <tag line="111" name="return" description="updated column definitions for the edit taxonomy list table" type="array">
+          <tag line="102" name="return" description="updated column definitions for the edit taxonomy list table" type="array">
             <type by_reference="false">array</type>
           </tag>
         </docblock>
-        <argument line="121">
+        <argument line="112">
           <name>$columns</name>
           <default><![CDATA[]]></default>
           <type/>
         </argument>
       </method>
-      <method final="false" abstract="false" static="true" visibility="public" namespace="global" line="147" package="Media Library Assistant">
+      <method final="false" abstract="false" static="true" visibility="public" namespace="global" line="138" package="Media Library Assistant">
         <name>mla_taxonomy_column_filter</name>
         <full_name>mla_taxonomy_column_filter</full_name>
-        <docblock line="134">
+        <docblock line="125">
           <description><![CDATA[WordPress Filter for edit taxonomy "Attachments" column,
 which returns a count of the attachments assigned a given term]]></description>
           <long-description><![CDATA[]]></long-description>
-          <tag line="134" name="since" description="0.30"/>
-          <tag line="134" name="param" description="current column value; always ''" type="string" variable="$place_holder">
+          <tag line="125" name="since" description="0.30"/>
+          <tag line="125" name="param" description="current column value; always ''" type="string" variable="$place_holder">
             <type by_reference="false">string</type>
           </tag>
-          <tag line="134" name="param" description="name of the column" type="array" variable="$column_name">
+          <tag line="125" name="param" description="name of the column" type="array" variable="$column_name">
             <type by_reference="false">array</type>
           </tag>
-          <tag line="134" name="param" description="ID of the term for which the count is desired" type="array" variable="$term_id">
+          <tag line="125" name="param" description="ID of the term for which the count is desired" type="array" variable="$term_id">
             <type by_reference="false">array</type>
           </tag>
-          <tag line="134" name="return" description="HTML markup for the column content; number of attachments in the category and alink to retrieve a list of them" type="array">
+          <tag line="125" name="return" description="HTML markup for the column content; number of attachments in the category and alink to retrieve a list of them" type="array">
             <type by_reference="false">array</type>
           </tag>
         </docblock>
-        <argument line="147">
+        <argument line="138">
           <name>$place_holder</name>
           <default><![CDATA[]]></default>
           <type/>
         </argument>
-        <argument line="147">
+        <argument line="138">
           <name>$column_name</name>
           <default><![CDATA[]]></default>
           <type/>
         </argument>
-        <argument line="147">
+        <argument line="138">
           <name>$term_id</name>
           <default><![CDATA[]]></default>
           <type/>
@@ -2173,7 +2417,7 @@ which returns a count of the attachments assigned a given term]]></description>
       </method>
     </class>
   </file>
-  <file path="includes\class-mla-settings.php" hash="1680e112c3fa28e997da057f3a7d3951" package="Media Library Assistant">
+  <file path="includes\class-mla-settings.php" hash="8a10e64bb55bb4db8049d532fe9b8d39" package="Media Library Assistant">
     <docblock line="2">
       <description><![CDATA[Manages the plugin option settings and provides the settings page to edit them]]></description>
       <long-description><![CDATA[]]></long-description>
@@ -2230,16 +2474,17 @@ and provides the settings page to edit them.]]></description>
           </tag>
         </docblock>
       </property>
-      <property final="false" static="true" visibility="private" line="65" namespace="global" package="Media Library Assistant">
+      <property final="false" static="true" visibility="private" line="66" namespace="global" package="Media Library Assistant">
         <name>$mla_options</name>
-        <default><![CDATA[array(self::MLA_VERSION_OPTION => array('type' => 'hidden', 'std' => '0'), 'attachment_category' => array('name' => 'Attachment Categories', 'type' => 'hidden', 'std' => 'checked', 'help' => 'Check this option to add support for Attachment Categories.'), 'attachment_tag' => array('name' => 'Attachment Tags', 'type' => 'hidden', 'std' => 'checked', 'help' => 'Check this option to add support for Attachment Tags.'), 'where_used_heading' => array('name' => 'Where-used Reporting', 'type' => 'header'), 'exclude_revisions' => array('name' => 'Exclude Revisions', 'type' => 'checkbox', 'std' => 'checked', 'help' => 'Check this option to exclude revisions from where-used reporting.'), 'taxonomy_heading' => array('name' => 'Taxonomy Support', 'type' => 'header'), 'taxonomy_support' => array('help' => 'Check the "Support" box to add the taxonomy to the Assistant.<br>Check the "Inline Edit" box to display the taxonomy in the Quick Edit and Bulk Edit areas.<br>Use the "List Filter" option to select the taxonomy on which to filter the Assistant table listing.', 'std' => array('tax_support' => array('attachment_category' => 'checked', 'attachment_tag' => 'checked'), 'tax_quick_edit' => array('attachment_category' => 'checked', 'attachment_tag' => 'checked'), 'tax_filter' => 'attachment_category'), 'type' => 'custom', 'render' => '_taxonomy_handler', 'update' => '_taxonomy_handler', 'delete' => '_taxonomy_handler', 'reset' => '_taxonomy_handler'), 'orderby_heading' => array('name' => 'Default Table Listing Sort Order', 'type' => 'header'), 'default_orderby' => array('name' => 'Order By', 'type' => 'select', 'std' => 'title_name', 'options' => array('title_name'), 'texts' => array('Title/Name'), 'help' => 'Select the column for the sort order of the Assistant table listing.'), 'default_order' => array('name' => 'Order', 'type' => 'radio', 'std' => 'ASC', 'options' => array('ASC', 'DESC'), 'texts' => array('Ascending', 'Descending'), 'help' => 'Choose the sort order.'))]]></default>
+        <default><![CDATA[array(self::MLA_VERSION_OPTION => array('tab' => '', 'type' => 'hidden', 'std' => '0'), 'attachment_category' => array('tab' => '', 'name' => 'Attachment Categories', 'type' => 'hidden', 'std' => 'checked', 'help' => 'Check this option to add support for Attachment Categories.'), 'attachment_tag' => array('tab' => '', 'name' => 'Attachment Tags', 'type' => 'hidden', 'std' => 'checked', 'help' => 'Check this option to add support for Attachment Tags.'), 'where_used_heading' => array('tab' => 'general', 'name' => 'Where-used Reporting', 'type' => 'header'), 'exclude_revisions' => array('tab' => 'general', 'name' => 'Exclude Revisions', 'type' => 'checkbox', 'std' => 'checked', 'help' => 'Check this option to exclude revisions from where-used reporting.'), 'taxonomy_heading' => array('tab' => 'general', 'name' => 'Taxonomy Support', 'type' => 'header'), 'taxonomy_support' => array('tab' => 'general', 'help' => 'Check the "Support" box to add the taxonomy to the Assistant.<br>Check the "Inline Edit" box to display the taxonomy in the Quick Edit and Bulk Edit areas.<br>Use the "List Filter" option to select the taxonomy on which to filter the Assistant table listing.', 'std' => array('tax_support' => array('attachment_category' => 'checked', 'attachment_tag' => 'checked'), 'tax_quick_edit' => array('attachment_category' => 'checked', 'attachment_tag' => 'checked'), 'tax_filter' => 'attachment_category'), 'type' => 'custom', 'render' => '_taxonomy_handler', 'update' => '_taxonomy_handler', 'delete' => '_taxonomy_handler', 'reset' => '_taxonomy_handler'), 'orderby_heading' => array('tab' => 'general', 'name' => 'Default Table Listing Sort Order', 'type' => 'header'), 'default_orderby' => array('tab' => 'general', 'name' => 'Order By', 'type' => 'select', 'std' => 'title_name', 'options' => array('title_name'), 'texts' => array('Title/Name'), 'help' => 'Select the column for the sort order of the Assistant table listing.'), 'default_order' => array('tab' => 'general', 'name' => 'Order', 'type' => 'radio', 'std' => 'ASC', 'options' => array('ASC', 'DESC'), 'texts' => array('Ascending', 'Descending'), 'help' => 'Choose the sort order.'), 'style_templates' => array('tab' => '', 'type' => 'hidden', 'std' => array()), 'markup_templates' => array('tab' => '', 'type' => 'hidden', 'std' => array()))]]></default>
         <docblock line="41">
           <description><![CDATA[$mla_options defines the database options and admin page areas for setting/updating them.]]></description>
           <long-description><![CDATA[<p>Each option is defined by an array with the following elements:</p>
 
 <p>array key => HTML id/name attribute and option database key (OMIT MLA_OPTION_PREFIX)</p>
 
-<p>name => admin page label or heading text
+<p>tab => Settings page tab id for the option
+name => admin page label or heading text
 type => 'checkbox', 'header', 'radio', 'select', 'text', 'textarea', 'custom', 'hidden'
 std => default value
 help => help text
@@ -2249,7 +2494,7 @@ rows => textbox rows, default 5
 options => array of radio or select option values
 texts => array of radio or select option display texts
 render => rendering function for 'custom' options. Usage:
-    $options_list .= ['render']( 'render', $key, $value, $page_template_array );
+    $options_list .= ['render']( 'render', $key, $value );
 update => update function for 'custom' options; returns nothing. Usage:
     $message = ['update']( 'update', $key, $value, $_REQUEST );
 delete => delete function for 'custom' options; returns nothing. Usage:
@@ -2258,305 +2503,572 @@ reset => reset function for 'custom' options; returns nothing. Usage:
     $message = ['reset']( 'reset', $key, $value, $_REQUEST );</p>]]></long-description>
         </docblock>
       </property>
-      <method final="false" abstract="false" static="true" visibility="public" namespace="global" line="171" package="Media Library Assistant">
+      <property final="false" static="true" visibility="private" line="363" namespace="global" package="Media Library Assistant">
+        <name>$mla_template_array</name>
+        <default><![CDATA[null]]></default>
+        <docblock line="356">
+          <description><![CDATA[Style and Markup templates]]></description>
+          <long-description><![CDATA[]]></long-description>
+          <tag line="356" name="since" description="0.80"/>
+          <tag line="356" name="var" description="" type="array">
+            <type by_reference="false">array</type>
+          </tag>
+        </docblock>
+      </property>
+      <property final="false" static="true" visibility="private" line="815" namespace="global" package="Media Library Assistant">
+        <name>$page_template_array</name>
+        <default><![CDATA[null]]></default>
+        <docblock line="805">
+          <description><![CDATA[Template file for the Settings page(s) and parts]]></description>
+          <long-description><![CDATA[<p>This array contains all of the template parts for the Settings page(s). The array is built once
+each page load and cached for subsequent use.</p>]]></long-description>
+          <tag line="805" name="since" description="0.80"/>
+          <tag line="805" name="var" description="" type="array">
+            <type by_reference="false">array</type>
+          </tag>
+        </docblock>
+      </property>
+      <property final="false" static="true" visibility="private" line="831" namespace="global" package="Media Library Assistant">
+        <name>$mla_tablist</name>
+        <default><![CDATA[array('general' => array('title' => 'General', 'render' => '_compose_general_tab'), 'mla-gallery' => array('title' => 'MLA Gallery', 'render' => '_compose_mla_gallery_tab'), 'documentation' => array('title' => 'Documentation', 'render' => '_compose_documentation_tab'))]]></default>
+        <docblock line="817">
+          <description><![CDATA[Definitions for Settings page tab ids, titles and handlers
+Each tab is defined by an array with the following elements:]]></description>
+          <long-description><![CDATA[<p>array key => HTML id/name attribute and option database key (OMIT MLA_OPTION_PREFIX)</p>
+
+<p>title => tab label / heading text
+render => rendering function for tab messages and content. Usage:
+    $tab_content = <a href="">'render'</a>;</p>]]></long-description>
+          <tag line="817" name="since" description="0.80"/>
+          <tag line="817" name="var" description="" type="array">
+            <type by_reference="false">array</type>
+          </tag>
+        </docblock>
+      </property>
+      <method final="false" abstract="false" static="true" visibility="public" namespace="global" line="198" package="Media Library Assistant">
         <name>initialize</name>
         <full_name>initialize</full_name>
-        <docblock line="164">
+        <docblock line="191">
           <description><![CDATA[Initialization function, similar to __construct()]]></description>
           <long-description><![CDATA[]]></long-description>
-          <tag line="164" name="since" description="0.1"/>
-          <tag line="164" name="return" description="" type="void">
+          <tag line="191" name="since" description="0.1"/>
+          <tag line="191" name="return" description="" type="void">
             <type by_reference="false">void</type>
           </tag>
         </docblock>
       </method>
-      <method final="false" abstract="false" static="true" visibility="private" namespace="global" line="187" package="Media Library Assistant">
+      <method final="false" abstract="false" static="true" visibility="private" namespace="global" line="215" package="Media Library Assistant">
         <name>_version_upgrade</name>
         <full_name>_version_upgrade</full_name>
-        <docblock line="180">
+        <docblock line="208">
           <description><![CDATA[Database and option update check, for installing new versions]]></description>
           <long-description><![CDATA[]]></long-description>
-          <tag line="180" name="since" description="0.30"/>
-          <tag line="180" name="return" description="" type="void">
+          <tag line="208" name="since" description="0.30"/>
+          <tag line="208" name="return" description="" type="void">
             <type by_reference="false">void</type>
           </tag>
         </docblock>
       </method>
-      <method final="false" abstract="false" static="true" visibility="private" namespace="global" line="229" package="Media Library Assistant">
+      <method final="false" abstract="false" static="true" visibility="private" namespace="global" line="257" package="Media Library Assistant">
         <name>_create_alt_text_view</name>
         <full_name>_create_alt_text_view</full_name>
-        <docblock line="219">
+        <docblock line="247">
           <description><![CDATA[Add a view to the database to support sorting the listing on 'ALT Text']]></description>
           <long-description><![CDATA[<p>This function is called on each plugin invocation because the plugin upgrade process
 does not call the activation hook.</p>]]></long-description>
-          <tag line="219" name="since" description="0.50"/>
-          <tag line="219" name="return" description="" type="void">
+          <tag line="247" name="since" description="0.50"/>
+          <tag line="247" name="return" description="" type="void">
             <type by_reference="false">void</type>
           </tag>
         </docblock>
       </method>
-      <method final="false" abstract="false" static="true" visibility="public" namespace="global" line="265" package="Media Library Assistant">
+      <method final="false" abstract="false" static="true" visibility="public" namespace="global" line="289" package="Media Library Assistant">
         <name>mla_activation_hook</name>
         <full_name>mla_activation_hook</full_name>
-        <docblock line="256">
+        <docblock line="280">
           <description><![CDATA[Perform one-time actions on plugin activation]]></description>
           <long-description><![CDATA[<p>Adds a view to the database to support sorting the listing on 'ALT Text'.</p>]]></long-description>
-          <tag line="256" name="since" description="0.40"/>
-          <tag line="256" name="return" description="" type="void">
+          <tag line="280" name="since" description="0.40"/>
+          <tag line="280" name="return" description="" type="void">
             <type by_reference="false">void</type>
           </tag>
         </docblock>
       </method>
-      <method final="false" abstract="false" static="true" visibility="public" namespace="global" line="278" package="Media Library Assistant">
+      <method final="false" abstract="false" static="true" visibility="public" namespace="global" line="302" package="Media Library Assistant">
         <name>mla_deactivation_hook</name>
         <full_name>mla_deactivation_hook</full_name>
-        <docblock line="269">
+        <docblock line="293">
           <description><![CDATA[Perform one-time actions on plugin deactivation]]></description>
           <long-description><![CDATA[<p>Removes a view from the database that supports sorting the listing on 'ALT Text'.</p>]]></long-description>
-          <tag line="269" name="since" description="0.40"/>
-          <tag line="269" name="return" description="" type="void">
+          <tag line="293" name="since" description="0.40"/>
+          <tag line="293" name="return" description="" type="void">
             <type by_reference="false">void</type>
           </tag>
         </docblock>
       </method>
-      <method final="false" abstract="false" static="true" visibility="public" namespace="global" line="309" package="Media Library Assistant">
+      <method final="false" abstract="false" static="true" visibility="public" namespace="global" line="329" package="Media Library Assistant">
         <name>mla_admin_menu_action</name>
         <full_name>mla_admin_menu_action</full_name>
-        <docblock line="301">
+        <docblock line="321">
           <description><![CDATA[Add settings page in the "Settings" section,
 add settings link in the Plugins section entry for MLA.]]></description>
           <long-description><![CDATA[]]></long-description>
-          <tag line="301" name="since" description="0.1"/>
-          <tag line="301" name="return" description="" type="void">
+          <tag line="321" name="since" description="0.1"/>
+          <tag line="321" name="return" description="" type="void">
             <type by_reference="false">void</type>
           </tag>
         </docblock>
       </method>
-      <method final="false" abstract="false" static="true" visibility="public" namespace="global" line="327" package="Media Library Assistant">
+      <method final="false" abstract="false" static="true" visibility="public" namespace="global" line="347" package="Media Library Assistant">
         <name>mla_add_plugin_settings_link</name>
         <full_name>mla_add_plugin_settings_link</full_name>
-        <docblock line="317">
+        <docblock line="337">
           <description><![CDATA[Add the "Settings" link to the MLA entry in the Plugins section]]></description>
           <long-description><![CDATA[]]></long-description>
-          <tag line="317" name="since" description="0.1"/>
-          <tag line="317" name="param" description="array of links for the Plugin, e.g., &quot;Activate&quot;" type="array" variable="$links">
+          <tag line="337" name="since" description="0.1"/>
+          <tag line="337" name="param" description="array of links for the Plugin, e.g., &quot;Activate&quot;" type="array" variable="$links">
             <type by_reference="false">array</type>
           </tag>
-          <tag line="317" name="param" description="Directory and name of the plugin Index file" type="string" variable="$file">
+          <tag line="337" name="param" description="Directory and name of the plugin Index file" type="string" variable="$file">
             <type by_reference="false">string</type>
           </tag>
-          <tag line="317" name="return" description="Updated array of links for the Plugin" type="array">
+          <tag line="337" name="return" description="Updated array of links for the Plugin" type="array">
             <type by_reference="false">array</type>
           </tag>
         </docblock>
-        <argument line="327">
+        <argument line="347">
           <name>$links</name>
           <default><![CDATA[]]></default>
           <type/>
         </argument>
-        <argument line="327">
+        <argument line="347">
           <name>$file</name>
           <default><![CDATA[]]></default>
           <type/>
         </argument>
       </method>
-      <method final="false" abstract="false" static="true" visibility="public" namespace="global" line="345" package="Media Library Assistant">
-        <name>mla_get_option</name>
-        <full_name>mla_get_option</full_name>
-        <docblock line="336">
-          <description><![CDATA[Return the stored value or default value of a defined MLA option]]></description>
+      <method final="false" abstract="false" static="true" visibility="private" namespace="global" line="372" package="Media Library Assistant">
+        <name>_load_templates</name>
+        <full_name>_load_templates</full_name>
+        <docblock line="365">
+          <description><![CDATA[Load style and markup templates to $mla_templates]]></description>
           <long-description><![CDATA[]]></long-description>
-          <tag line="336" name="since" description="0.1"/>
-          <tag line="336" name="param" description="Name of the desired option" type="string" variable="$option">
+          <tag line="365" name="since" description="0.80"/>
+          <tag line="365" name="return" description="" type="void">
+            <type by_reference="false">void</type>
+          </tag>
+        </docblock>
+      </method>
+      <method final="false" abstract="false" static="true" visibility="public" namespace="global" line="420" package="Media Library Assistant">
+        <name>mla_fetch_gallery_template</name>
+        <full_name>mla_fetch_gallery_template</full_name>
+        <docblock line="410">
+          <description><![CDATA[Fetch style or markup template from $mla_templates]]></description>
+          <long-description><![CDATA[]]></long-description>
+          <tag line="410" name="since" description="0.80"/>
+          <tag line="410" name="param" description="Template name" type="string" variable="$key">
             <type by_reference="false">string</type>
           </tag>
-          <tag line="336" name="return" description="Value(s) for the option or false if the option is not a defined MLA option" type="mixed">
+          <tag line="410" name="param" description="Template type; 'style' (default) or 'markup'" type="string" variable="$type">
+            <type by_reference="false">string</type>
+          </tag>
+          <tag line="410" name="return" description="requested template, false if not found or null if no templates" type="string|boolean|null">
+            <type by_reference="false">string</type>
+            <type by_reference="false">boolean</type>
+            <type by_reference="false">null</type>
+          </tag>
+        </docblock>
+        <argument line="420">
+          <name>$key</name>
+          <default><![CDATA[]]></default>
+          <type/>
+        </argument>
+        <argument line="420">
+          <name>$type</name>
+          <default><![CDATA['style']]></default>
+          <type/>
+        </argument>
+      </method>
+      <method final="false" abstract="false" static="true" visibility="public" namespace="global" line="442" package="Media Library Assistant">
+        <name>_get_style_templates</name>
+        <full_name>_get_style_templates</full_name>
+        <docblock line="435">
+          <description><![CDATA[Get ALL style templates from $mla_templates, including 'default']]></description>
+          <long-description><![CDATA[]]></long-description>
+          <tag line="435" name="since" description="0.80"/>
+          <tag line="435" name="return" description="name =&gt; value for all style templates or null if no templates" type="array|null">
+            <type by_reference="false">array</type>
+            <type by_reference="false">null</type>
+          </tag>
+        </docblock>
+      </method>
+      <method final="false" abstract="false" static="true" visibility="public" namespace="global" line="468" package="Media Library Assistant">
+        <name>_put_style_templates</name>
+        <full_name>_put_style_templates</full_name>
+        <docblock line="460">
+          <description><![CDATA[Put user-defined style templates to $mla_templates and database]]></description>
+          <long-description><![CDATA[]]></long-description>
+          <tag line="460" name="since" description="0.80"/>
+          <tag line="460" name="param" description="name =&gt; value for all user-defined style templates" type="array" variable="$templates">
+            <type by_reference="false">array</type>
+          </tag>
+          <tag line="460" name="return" description="true if success, false if failure" type="boolean">
+            <type by_reference="false">boolean</type>
+          </tag>
+        </docblock>
+        <argument line="468">
+          <name>$templates</name>
+          <default><![CDATA[]]></default>
+          <type/>
+        </argument>
+      </method>
+      <method final="false" abstract="false" static="true" visibility="public" namespace="global" line="484" package="Media Library Assistant">
+        <name>_get_markup_templates</name>
+        <full_name>_get_markup_templates</full_name>
+        <docblock line="477">
+          <description><![CDATA[Get ALL markup templates from $mla_templates, including 'default']]></description>
+          <long-description><![CDATA[]]></long-description>
+          <tag line="477" name="since" description="0.80"/>
+          <tag line="477" name="return" description="name =&gt; value for all markup templates or null if no templates" type="array|null">
+            <type by_reference="false">array</type>
+            <type by_reference="false">null</type>
+          </tag>
+        </docblock>
+      </method>
+      <method final="false" abstract="false" static="true" visibility="public" namespace="global" line="538" package="Media Library Assistant">
+        <name>_put_markup_templates</name>
+        <full_name>_put_markup_templates</full_name>
+        <docblock line="530">
+          <description><![CDATA[Put user-defined markup templates to $mla_templates and database]]></description>
+          <long-description><![CDATA[]]></long-description>
+          <tag line="530" name="since" description="0.80"/>
+          <tag line="530" name="param" description="name =&gt; value for all user-defined markup templates" type="array" variable="$templates">
+            <type by_reference="false">array</type>
+          </tag>
+          <tag line="530" name="return" description="true if success, false if failure" type="boolean">
+            <type by_reference="false">boolean</type>
+          </tag>
+        </docblock>
+        <argument line="538">
+          <name>$templates</name>
+          <default><![CDATA[]]></default>
+          <type/>
+        </argument>
+      </method>
+      <method final="false" abstract="false" static="true" visibility="public" namespace="global" line="556" package="Media Library Assistant">
+        <name>mla_get_option</name>
+        <full_name>mla_get_option</full_name>
+        <docblock line="547">
+          <description><![CDATA[Return the stored value or default value of a defined MLA option]]></description>
+          <long-description><![CDATA[]]></long-description>
+          <tag line="547" name="since" description="0.1"/>
+          <tag line="547" name="param" description="Name of the desired option" type="string" variable="$option">
+            <type by_reference="false">string</type>
+          </tag>
+          <tag line="547" name="return" description="Value(s) for the option or false if the option is not a defined MLA option" type="mixed">
             <type by_reference="false">mixed</type>
           </tag>
         </docblock>
-        <argument line="345">
+        <argument line="556">
           <name>$option</name>
           <default><![CDATA[]]></default>
           <type/>
         </argument>
       </method>
-      <method final="false" abstract="false" static="true" visibility="public" namespace="global" line="366" package="Media Library Assistant">
+      <method final="false" abstract="false" static="true" visibility="public" namespace="global" line="577" package="Media Library Assistant">
         <name>mla_update_option</name>
         <full_name>mla_update_option</full_name>
-        <docblock line="356">
+        <docblock line="567">
           <description><![CDATA[Add or update the stored value of a defined MLA option]]></description>
           <long-description><![CDATA[]]></long-description>
-          <tag line="356" name="since" description="0.1"/>
-          <tag line="356" name="param" description="Name of the desired option" type="string" variable="$option">
+          <tag line="567" name="since" description="0.1"/>
+          <tag line="567" name="param" description="Name of the desired option" type="string" variable="$option">
             <type by_reference="false">string</type>
           </tag>
-          <tag line="356" name="param" description="New value for the desired option" type="mixed" variable="$newvalue">
+          <tag line="567" name="param" description="New value for the desired option" type="mixed" variable="$newvalue">
             <type by_reference="false">mixed</type>
           </tag>
-          <tag line="356" name="return" description="True if the value was changed or false if the update failed" type="boolean">
+          <tag line="567" name="return" description="True if the value was changed or false if the update failed" type="boolean">
             <type by_reference="false">boolean</type>
           </tag>
         </docblock>
-        <argument line="366">
+        <argument line="577">
           <name>$option</name>
           <default><![CDATA[]]></default>
           <type/>
         </argument>
-        <argument line="366">
+        <argument line="577">
           <name>$newvalue</name>
           <default><![CDATA[]]></default>
           <type/>
         </argument>
       </method>
-      <method final="false" abstract="false" static="true" visibility="public" namespace="global" line="382" package="Media Library Assistant">
+      <method final="false" abstract="false" static="true" visibility="public" namespace="global" line="593" package="Media Library Assistant">
         <name>mla_delete_option</name>
         <full_name>mla_delete_option</full_name>
-        <docblock line="373">
+        <docblock line="584">
           <description><![CDATA[Delete the stored value of a defined MLA option]]></description>
           <long-description><![CDATA[]]></long-description>
-          <tag line="373" name="since" description="0.1"/>
-          <tag line="373" name="param" description="Name of the desired option" type="string" variable="$option">
+          <tag line="584" name="since" description="0.1"/>
+          <tag line="584" name="param" description="Name of the desired option" type="string" variable="$option">
             <type by_reference="false">string</type>
           </tag>
-          <tag line="373" name="return" description="True if the option was deleted, otherwise false" type="boolean">
+          <tag line="584" name="return" description="True if the option was deleted, otherwise false" type="boolean">
             <type by_reference="false">boolean</type>
           </tag>
         </docblock>
-        <argument line="382">
+        <argument line="593">
           <name>$option</name>
           <default><![CDATA[]]></default>
           <type/>
         </argument>
       </method>
-      <method final="false" abstract="false" static="true" visibility="public" namespace="global" line="397" package="Media Library Assistant">
+      <method final="false" abstract="false" static="true" visibility="private" namespace="global" line="612" package="Media Library Assistant">
+        <name>_update_option_row</name>
+        <full_name>_update_option_row</full_name>
+        <docblock line="601">
+          <description><![CDATA[Update or delete a single MLA option value]]></description>
+          <long-description><![CDATA[]]></long-description>
+          <tag line="601" name="since" description="0.80"/>
+          <tag line="601" name="uses" description="\global\$_REQUEST" refers="\global\$_REQUEST"/>
+          <tag line="601" name="param" description="HTML id/name attribute and option database key (OMIT MLA_OPTION_PREFIX)" type="string" variable="$key">
+            <type by_reference="false">string</type>
+          </tag>
+          <tag line="601" name="param" description="Option parameters, e.g., 'type', 'std'" type="array" variable="$value">
+            <type by_reference="false">array</type>
+          </tag>
+          <tag line="601" name="return" description="HTML markup for the option's table row" type="string">
+            <type by_reference="false">string</type>
+          </tag>
+        </docblock>
+        <argument line="612">
+          <name>$key</name>
+          <default><![CDATA[]]></default>
+          <type/>
+        </argument>
+        <argument line="612">
+          <name>$value</name>
+          <default><![CDATA[]]></default>
+          <type/>
+        </argument>
+      </method>
+      <method final="false" abstract="false" static="true" visibility="private" namespace="global" line="688" package="Media Library Assistant">
+        <name>_compose_option_row</name>
+        <full_name>_compose_option_row</full_name>
+        <docblock line="677">
+          <description><![CDATA[Compose the table row for a single MLA option]]></description>
+          <long-description><![CDATA[]]></long-description>
+          <tag line="677" name="since" description="0.80"/>
+          <tag line="677" name="uses" description="\global\$page_template_array" refers="\global\$page_template_array"/>
+          <tag line="677" name="param" description="HTML id/name attribute and option database key (OMIT MLA_OPTION_PREFIX)" type="string" variable="$key">
+            <type by_reference="false">string</type>
+          </tag>
+          <tag line="677" name="param" description="Option parameters, e.g., 'type', 'std'" type="array" variable="$value">
+            <type by_reference="false">array</type>
+          </tag>
+          <tag line="677" name="return" description="HTML markup for the option's table row" type="string">
+            <type by_reference="false">string</type>
+          </tag>
+        </docblock>
+        <argument line="688">
+          <name>$key</name>
+          <default><![CDATA[]]></default>
+          <type/>
+        </argument>
+        <argument line="688">
+          <name>$value</name>
+          <default><![CDATA[]]></default>
+          <type/>
+        </argument>
+      </method>
+      <method final="false" abstract="false" static="true" visibility="private" namespace="global" line="847" package="Media Library Assistant">
+        <name>_compose_settings_tabs</name>
+        <full_name>_compose_settings_tabs</full_name>
+        <docblock line="837">
+          <description><![CDATA[Compose the navigation tabs for the Settings subpage]]></description>
+          <long-description><![CDATA[]]></long-description>
+          <tag line="837" name="since" description="0.80"/>
+          <tag line="837" name="uses" description="\global\$page_template_array" refers="\global\$page_template_array"/>
+          <tag line="837" name="param" description="Optional data-tab-id value for the active tab, default 'general'" type="string" variable="$active_tab">
+            <type by_reference="false">string</type>
+          </tag>
+          <tag line="837" name="return" description="HTML markup for the Settings subpage navigation tabs" type="string">
+            <type by_reference="false">string</type>
+          </tag>
+        </docblock>
+        <argument line="847">
+          <name>$active_tab</name>
+          <default><![CDATA['general']]></default>
+          <type/>
+        </argument>
+      </method>
+      <method final="false" abstract="false" static="true" visibility="private" namespace="global" line="873" package="Media Library Assistant">
+        <name>_compose_general_tab</name>
+        <full_name>_compose_general_tab</full_name>
+        <docblock line="865">
+          <description><![CDATA[Compose the General tab content for the Settings subpage]]></description>
+          <long-description><![CDATA[]]></long-description>
+          <tag line="865" name="since" description="0.80"/>
+          <tag line="865" name="uses" description="\global\$page_template_array" refers="\global\$page_template_array"/>
+          <tag line="865" name="return" description="'message' =&gt; status/error messages, 'body' =&gt; tab content" type="array">
+            <type by_reference="false">array</type>
+          </tag>
+        </docblock>
+      </method>
+      <method final="false" abstract="false" static="true" visibility="private" namespace="global" line="957" package="Media Library Assistant">
+        <name>_compose_mla_gallery_tab</name>
+        <full_name>_compose_mla_gallery_tab</full_name>
+        <docblock line="949">
+          <description><![CDATA[Compose the MLA Gallery tab content for the Settings subpage]]></description>
+          <long-description><![CDATA[]]></long-description>
+          <tag line="949" name="since" description="0.80"/>
+          <tag line="949" name="uses" description="\global\$page_template_array" refers="\global\$page_template_array"/>
+          <tag line="949" name="return" description="'message' =&gt; status/error messages, 'body' =&gt; tab content" type="array">
+            <type by_reference="false">array</type>
+          </tag>
+        </docblock>
+      </method>
+      <method final="false" abstract="false" static="true" visibility="private" namespace="global" line="1239" package="Media Library Assistant">
+        <name>_compose_documentation_tab</name>
+        <full_name>_compose_documentation_tab</full_name>
+        <docblock line="1231">
+          <description><![CDATA[Compose the Documentation tab content for the Settings subpage]]></description>
+          <long-description><![CDATA[]]></long-description>
+          <tag line="1231" name="since" description="0.80"/>
+          <tag line="1231" name="uses" description="\global\$page_template_array" refers="\global\$page_template_array"/>
+          <tag line="1231" name="return" description="'message' =&gt; status/error messages, 'body' =&gt; tab content" type="array">
+            <type by_reference="false">array</type>
+          </tag>
+        </docblock>
+      </method>
+      <method final="false" abstract="false" static="true" visibility="public" namespace="global" line="1257" package="Media Library Assistant">
         <name>mla_render_settings_page</name>
         <full_name>mla_render_settings_page</full_name>
-        <docblock line="390">
+        <docblock line="1250">
           <description><![CDATA[Render (echo) the "Media Library Assistant" subpage in the Settings section]]></description>
           <long-description><![CDATA[]]></long-description>
-          <tag line="390" name="since" description="0.1"/>
-          <tag line="390" name="return" description="Echoes HTML markup for the settings subpage" type="void">
+          <tag line="1250" name="since" description="0.1"/>
+          <tag line="1250" name="return" description="Echoes HTML markup for the Settings subpage" type="void">
             <type by_reference="false">void</type>
           </tag>
         </docblock>
       </method>
-      <method final="false" abstract="false" static="true" visibility="public" namespace="global" line="619" package="Media Library Assistant">
+      <method final="false" abstract="false" static="true" visibility="public" namespace="global" line="1311" package="Media Library Assistant">
         <name>mla_taxonomy_support</name>
         <full_name>mla_taxonomy_support</full_name>
-        <docblock line="606">
+        <docblock line="1298">
           <description><![CDATA[Determine MLA support for a taxonomy, handling the special case where the
 settings are being updated or reset.]]></description>
           <long-description><![CDATA[]]></long-description>
-          <tag line="606" name="since" description="0.30"/>
-          <tag line="606" name="param" description="Taxonomy name, e.g., attachment_category" type="string" variable="$tax_name">
+          <tag line="1298" name="since" description="0.30"/>
+          <tag line="1298" name="param" description="Taxonomy name, e.g., attachment_category" type="string" variable="$tax_name">
             <type by_reference="false">string</type>
           </tag>
-          <tag line="606" name="param" description="'support' (the default), 'quick-edit' or 'filter'" type="string" variable="$support_type">
+          <tag line="1298" name="param" description="Optional. 'support' (default), 'quick-edit' or 'filter'" type="string" variable="$support_type">
             <type by_reference="false">string</type>
           </tag>
-          <tag line="606" name="return" description="true if the taxonomy is supported in this way else false string if $tax_name is '' and $support_type is 'filter', returns the taxonomy to filter by" type="boolean|string">
+          <tag line="1298" name="return" description="true if the taxonomy is supported in this way else false string if $tax_name is '' and $support_type is 'filter', returns the taxonomy to filter by" type="boolean|string">
             <type by_reference="false">boolean</type>
             <type by_reference="false">string</type>
           </tag>
         </docblock>
-        <argument line="619">
+        <argument line="1311">
           <name>$tax_name</name>
           <default><![CDATA[]]></default>
           <type/>
         </argument>
-        <argument line="619">
+        <argument line="1311">
           <name>$support_type</name>
           <default><![CDATA['support']]></default>
           <type/>
         </argument>
       </method>
-      <method final="false" abstract="false" static="true" visibility="private" namespace="global" line="691" package="Media Library Assistant">
-        <name>_save_settings</name>
-        <full_name>_save_settings</full_name>
-        <docblock line="682">
-          <description><![CDATA[Save settings to the options table]]></description>
+      <method final="false" abstract="false" static="true" visibility="private" namespace="global" line="1383" package="Media Library Assistant">
+        <name>_save_gallery_settings</name>
+        <full_name>_save_gallery_settings</full_name>
+        <docblock line="1374">
+          <description><![CDATA[Save MLA Gallery settings to the options table]]></description>
           <long-description><![CDATA[]]></long-description>
-          <tag line="682" name="since" description="0.1"/>
-          <tag line="682" name="param" description="HTML template(s) for the settings page" type="array" variable="$template_array">
-            <type by_reference="false">array</type>
-          </tag>
-          <tag line="682" name="return" description="Message(s) reflecting the results of the operation" type="array">
+          <tag line="1374" name="since" description="0.80"/>
+          <tag line="1374" name="uses" description="\global\$_REQUEST" refers="\global\$_REQUEST"/>
+          <tag line="1374" name="return" description="Message(s) reflecting the results of the operation" type="array">
             <type by_reference="false">array</type>
           </tag>
         </docblock>
-        <argument line="691">
-          <name>$template_array</name>
-          <default><![CDATA[]]></default>
-          <type/>
-        </argument>
       </method>
-      <method final="false" abstract="false" static="true" visibility="private" namespace="global" line="782" package="Media Library Assistant">
-        <name>_reset_settings</name>
-        <full_name>_reset_settings</full_name>
-        <docblock line="773">
+      <method final="false" abstract="false" static="true" visibility="private" namespace="global" line="1609" package="Media Library Assistant">
+        <name>_save_general_settings</name>
+        <full_name>_save_general_settings</full_name>
+        <docblock line="1600">
+          <description><![CDATA[Save General settings to the options table]]></description>
+          <long-description><![CDATA[]]></long-description>
+          <tag line="1600" name="since" description="0.1"/>
+          <tag line="1600" name="uses" description="\global\$_REQUEST" refers="\global\$_REQUEST"/>
+          <tag line="1600" name="return" description="Message(s) reflecting the results of the operation" type="array">
+            <type by_reference="false">array</type>
+          </tag>
+        </docblock>
+      </method>
+      <method final="false" abstract="false" static="true" visibility="private" namespace="global" line="1637" package="Media Library Assistant">
+        <name>_reset_general_settings</name>
+        <full_name>_reset_general_settings</full_name>
+        <docblock line="1630">
           <description><![CDATA[Delete saved settings, restoring default values]]></description>
           <long-description><![CDATA[]]></long-description>
-          <tag line="773" name="since" description="0.1"/>
-          <tag line="773" name="param" description="HTML template(s) for the settings page" type="array" variable="$template_array">
-            <type by_reference="false">array</type>
-          </tag>
-          <tag line="773" name="return" description="Message(s) reflecting the results of the operation" type="array">
+          <tag line="1630" name="since" description="0.1"/>
+          <tag line="1630" name="return" description="Message(s) reflecting the results of the operation" type="array">
             <type by_reference="false">array</type>
           </tag>
         </docblock>
-        <argument line="782">
-          <name>$template_array</name>
-          <default><![CDATA[]]></default>
-          <type/>
-        </argument>
       </method>
-      <method final="false" abstract="false" static="true" visibility="private" namespace="global" line="825" package="Media Library Assistant">
+      <method final="false" abstract="false" static="true" visibility="private" namespace="global" line="1681" package="Media Library Assistant">
         <name>_taxonomy_handler</name>
         <full_name>_taxonomy_handler</full_name>
-        <docblock line="813">
+        <docblock line="1668">
           <description><![CDATA[Render and manage other taxonomy support options, e.g., Categories and Post Tags]]></description>
           <long-description><![CDATA[]]></long-description>
-          <tag line="813" name="since" description="0.30"/>
-          <tag line="813" name="param" description="'render', 'update', 'delete', or 'reset'" type="string" variable="$action">
+          <tag line="1668" name="since" description="0.30"/>
+          <tag line="1668" name="uses" description="\global\$page_template_array" refers="\global\$page_template_array"/>
+          <tag line="1668" name="param" description="'render', 'update', 'delete', or 'reset'" type="string" variable="$action">
             <type by_reference="false">string</type>
           </tag>
-          <tag line="813" name="param" description="option name, e.g., 'taxonomy_support'" type="string" variable="$key">
+          <tag line="1668" name="param" description="option name, e.g., 'taxonomy_support'" type="string" variable="$key">
             <type by_reference="false">string</type>
           </tag>
-          <tag line="813" name="param" description="option parameters" type="array" variable="$value">
+          <tag line="1668" name="param" description="option parameters" type="array" variable="$value">
             <type by_reference="false">array</type>
           </tag>
-          <tag line="813" name="param" description="The $page_template_array for 'render' else $_REQUEST" type="array" variable="$args">
+          <tag line="1668" name="param" description="Optional. null (default) for 'render' else $_REQUEST" type="array" variable="$args">
             <type by_reference="false">array</type>
           </tag>
-          <tag line="813" name="return" description="HTML table row markup for 'render' else message(s) reflecting the results of the operation." type="string">
+          <tag line="1668" name="return" description="HTML table row markup for 'render' else message(s) reflecting the results of the operation." type="string">
             <type by_reference="false">string</type>
           </tag>
         </docblock>
-        <argument line="825">
+        <argument line="1681">
           <name>$action</name>
           <default><![CDATA[]]></default>
           <type/>
         </argument>
-        <argument line="825">
+        <argument line="1681">
           <name>$key</name>
           <default><![CDATA[]]></default>
           <type/>
         </argument>
-        <argument line="825">
+        <argument line="1681">
           <name>$value</name>
           <default><![CDATA[]]></default>
           <type/>
         </argument>
-        <argument line="825">
+        <argument line="1681">
           <name>$args</name>
-          <default><![CDATA[]]></default>
+          <default><![CDATA[null]]></default>
           <type/>
         </argument>
       </method>
     </class>
   </file>
-  <file path="includes\class-mla-shortcodes.php" hash="d77b8e63a9ec2dc65324584b34313d52" package="Media Library Assistant">
+  <file path="includes\class-mla-shortcodes.php" hash="7bb613203da59ba600ff1cd17f74ecb5" package="Media Library Assistant">
     <docblock line="2">
       <description><![CDATA[Media Library Assistant Shortcode handler(s)]]></description>
       <long-description><![CDATA[]]></long-description>
@@ -2573,26 +3085,26 @@ settings are being updated or reset.]]></description>
         <tag line="9" name="package" description="Media Library Assistant"/>
         <tag line="9" name="since" description="0.20"/>
       </docblock>
-      <property final="false" static="true" visibility="private" line="132" namespace="global" package="Media Library Assistant">
+      <property final="false" static="true" visibility="private" line="134" namespace="global" package="Media Library Assistant">
         <name>$mla_debug_messages</name>
         <default><![CDATA['']]></default>
-        <docblock line="125">
+        <docblock line="127">
           <description><![CDATA[Accumulates debug messages]]></description>
           <long-description><![CDATA[]]></long-description>
-          <tag line="125" name="since" description="0.60"/>
-          <tag line="125" name="var" description="" type="string">
+          <tag line="127" name="since" description="0.60"/>
+          <tag line="127" name="var" description="" type="string">
             <type by_reference="false">string</type>
           </tag>
         </docblock>
       </property>
-      <property final="false" static="true" visibility="private" line="141" namespace="global" package="Media Library Assistant">
+      <property final="false" static="true" visibility="private" line="143" namespace="global" package="Media Library Assistant">
         <name>$mla_debug</name>
         <default><![CDATA[false]]></default>
-        <docblock line="134">
+        <docblock line="136">
           <description><![CDATA[Turn debug collection and display on or off]]></description>
           <long-description><![CDATA[]]></long-description>
-          <tag line="134" name="since" description="0.70"/>
-          <tag line="134" name="var" description="" type="boolean">
+          <tag line="136" name="since" description="0.70"/>
+          <tag line="136" name="var" description="" type="boolean">
             <type by_reference="false">boolean</type>
           </tag>
         </docblock>
@@ -2621,73 +3133,73 @@ settings are being updated or reset.]]></description>
           </tag>
         </docblock>
       </method>
-      <method final="false" abstract="false" static="true" visibility="public" namespace="global" line="156" package="Media Library Assistant">
+      <method final="false" abstract="false" static="true" visibility="public" namespace="global" line="158" package="Media Library Assistant">
         <name>mla_gallery_shortcode</name>
         <full_name>mla_gallery_shortcode</full_name>
-        <docblock line="143">
+        <docblock line="145">
           <description><![CDATA[The MLA Gallery shortcode.]]></description>
           <long-description><![CDATA[<p>This is a superset of the WordPress Gallery shortcode for displaying images on a post,
 page or custom post type. It is adapted from /wp-includes/media.php gallery_shortcode.
 Enhancements include many additional selection parameters and full taxonomy support.</p>]]></long-description>
-          <tag line="143" name="since" description=".50"/>
-          <tag line="143" name="param" description="Attributes of the shortcode." type="array" variable="$attr">
+          <tag line="145" name="since" description=".50"/>
+          <tag line="145" name="param" description="Attributes of the shortcode." type="array" variable="$attr">
             <type by_reference="false">array</type>
           </tag>
-          <tag line="143" name="return" description="HTML content to display gallery." type="string">
+          <tag line="145" name="return" description="HTML content to display gallery." type="string">
             <type by_reference="false">string</type>
           </tag>
         </docblock>
-        <argument line="156">
+        <argument line="158">
           <name>$attr</name>
           <default><![CDATA[]]></default>
           <type/>
         </argument>
       </method>
-      <method final="false" abstract="false" static="true" visibility="public" namespace="global" line="289" package="Media Library Assistant">
+      <method final="false" abstract="false" static="true" visibility="public" namespace="global" line="527" package="Media Library Assistant">
         <name>mla_get_shortcode_attachments</name>
         <full_name>mla_get_shortcode_attachments</full_name>
-        <docblock line="279">
+        <docblock line="517">
           <description><![CDATA[Parses shortcode parameters and returns the gallery objects]]></description>
           <long-description><![CDATA[]]></long-description>
-          <tag line="279" name="since" description=".50"/>
-          <tag line="279" name="param" description="Post ID of the parent" type="int" variable="$post_parent">
+          <tag line="517" name="since" description=".50"/>
+          <tag line="517" name="param" description="Post ID of the parent" type="int" variable="$post_parent">
             <type by_reference="false">int</type>
           </tag>
-          <tag line="279" name="param" description="Attributes of the shortcode" type="array" variable="$attr">
+          <tag line="517" name="param" description="Attributes of the shortcode" type="array" variable="$attr">
             <type by_reference="false">array</type>
           </tag>
-          <tag line="279" name="return" description="List of attachments returned from WP_Query" type="array">
+          <tag line="517" name="return" description="List of attachments returned from WP_Query" type="array">
             <type by_reference="false">array</type>
           </tag>
         </docblock>
-        <argument line="289">
+        <argument line="527">
           <name>$post_parent</name>
           <default><![CDATA[]]></default>
           <type/>
         </argument>
-        <argument line="289">
+        <argument line="527">
           <name>$attr</name>
           <default><![CDATA[]]></default>
           <type/>
         </argument>
       </method>
-      <method final="false" abstract="false" static="true" visibility="public" namespace="global" line="615" package="Media Library Assistant">
+      <method final="false" abstract="false" static="true" visibility="public" namespace="global" line="847" package="Media Library Assistant">
         <name>mla_shortcode_query_posts_where_filter</name>
         <full_name>mla_shortcode_query_posts_where_filter</full_name>
-        <docblock line="602">
+        <docblock line="834">
           <description><![CDATA[Filters the WHERE clause for shortcode queries]]></description>
           <long-description><![CDATA[<p>Captures debug information. Adds whitespace to the post_type = 'attachment'
 phrase to circumvent subsequent Role Scoper modification of the clause.
 Defined as public because it's a filter.</p>]]></long-description>
-          <tag line="602" name="since" description="0.70"/>
-          <tag line="602" name="param" description="query clause before modification" type="string" variable="$where_clause">
+          <tag line="834" name="since" description="0.70"/>
+          <tag line="834" name="param" description="query clause before modification" type="string" variable="$where_clause">
             <type by_reference="false">string</type>
           </tag>
-          <tag line="602" name="return" description="query clause after modification" type="string">
+          <tag line="834" name="return" description="query clause after modification" type="string">
             <type by_reference="false">string</type>
           </tag>
         </docblock>
-        <argument line="615">
+        <argument line="847">
           <name>$where_clause</name>
           <default><![CDATA[]]></default>
           <type/>
@@ -2695,7 +3207,7 @@ Defined as public because it's a filter.</p>]]></long-description>
       </method>
     </class>
   </file>
-  <file path="includes\mla-plugin-loader.php" hash="a9524964c779b4fd40d40dad431cf4d1" package="Media Library Assistant">
+  <file path="includes\mla-plugin-loader.php" hash="f4bad52265d28d345e66c72c1aecce07" package="Media Library Assistant">
     <docblock line="2">
       <description><![CDATA[Media Library Assistant Plugin Loader]]></description>
       <long-description><![CDATA[<p>Defines constants and loads all of the classes and functions required to run the plugin.
@@ -2715,13 +3227,16 @@ This file is only loaded if the naming conflict tests in index.php are passed.</
     <include line="42" type="Require Once" package="Media Library Assistant">
       <name/>
     </include>
-    <include line="49" type="Require Once" package="Media Library Assistant">
+    <include line="50" type="Require Once" package="Media Library Assistant">
       <name/>
     </include>
-    <include line="56" type="Require Once" package="Media Library Assistant">
+    <include line="58" type="Require Once" package="Media Library Assistant">
       <name/>
     </include>
-    <include line="61" type="Require Once" package="Media Library Assistant">
+    <include line="65" type="Require Once" package="Media Library Assistant">
+      <name/>
+    </include>
+    <include line="70" type="Require Once" package="Media Library Assistant">
       <name/>
     </include>
     <constant namespace="global" line="16" package="Media Library Assistant">
@@ -2734,13 +3249,13 @@ This file is only loaded if the naming conflict tests in index.php are passed.</
       </docblock>
     </constant>
   </file>
-  <file path="index.php" hash="2dfe672594252372fc565786939779b5" package="Media Library Assistant">
+  <file path="index.php" hash="60d52453e39e48b06b84813ec8f2b13a" package="Media Library Assistant">
     <docblock line="2">
       <description><![CDATA[Provides several enhancements to the handling of images and files held in the WordPress Media Library]]></description>
       <long-description><![CDATA[<p>This file contains several tests for name conflicts with other plugins. Only if the tests are passed
 will the rest of the plugin be loaded and run.</p>]]></long-description>
       <tag line="2" name="package" description="Media Library Assistant"/>
-      <tag line="2" name="version" description="0.71"/>
+      <tag line="2" name="version" description="0.80"/>
     </docblock>
     <include line="103" type="Require Once" package="Media Library Assistant">
       <name>includes/mla-plugin-loader.php</name>

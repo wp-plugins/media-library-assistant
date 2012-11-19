@@ -4,7 +4,7 @@ Donate link: http://fairtradejudaica.org/make-a-difference/donate/
 Tags: attachments, documents, gallery, image, images, media, library, media library, media-tags, media tags, tags, media categories, categories
 Requires at least: 3.3
 Tested up to: 3.4.2
-Stable tag: 0.71
+Stable tag: 0.80
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -14,7 +14,7 @@ Provides enhancements to the Media Library; powerful[mla_gallery], full taxonomy
 
 The Media Library Assistant provides several enhancements for managing the Media Library, including:
 
-* The **[mla_gallery] shortcode**, used in a post, page or custom post type to add a gallery of images and/or other Media Library items (such as PDF documents). [MLA Gallery](http://wordpress.org/extend/plugins/media-library-assistant/other_notes/ "Complete Documentation") is a superset of the [gallery] shortcode in the WordPress core; it is compatible with [gallery] and provides many enhancements. These include: 1) full support for WordPress categories, tags and custom taxonomies, 2) support for all post_mime_type values, not just images 3) media Library items need not be "attached" to the post.
+* The **[mla_gallery] shortcode**, used in a post, page or custom post type to add a gallery of images and/or other Media Library items (such as PDF documents). [MLA Gallery](http://wordpress.org/extend/plugins/media-library-assistant/other_notes/ "Complete Documentation") is a superset of the [gallery] shortcode in the WordPress core; it is compatible with [gallery] and provides many enhancements. These include: 1) full support for WordPress categories, tags and custom taxonomies, 2) support for all post_mime_type values, not just images 3) media Library items need not be "attached" to the post, and 4) control over the styles, markup and content of each gallery using Style and Markup Templates.
 
 * **Enhanced Search Media box**. Search can be extended to the name/slug, ALT text and caption fields. The connector between search terms can be "and" or "or".
 
@@ -24,7 +24,7 @@ The Media Library Assistant provides several enhancements for managing the Media
 * An inline "Bulk Edit" area; update author or parent, add, remove or replace taxonomy terms for several attachments at once
 * An inline "Quick Edit" action for many common fields
 * Displays more attachment information such as parent information, file URL and image metadata
-* Allows you to edit the attachment author, the name/slug and to "unattach" items
+* Allows you to edit the post_parent, the menu_order and to "unattach" items
 * Provides additional view filters for mime types and taxonomies
 * Provides many more listing columns (more than 20) to choose from
 
@@ -96,12 +96,28 @@ All of the MLA source code has been annotated with "DocBlocks", a special type o
 == Screenshots ==
 
 1. The Media Library Assistant submenu showing the available columns, including "Featured in", "Inserted in", "Att. Categories" and "Att. Tags"; also shows the Quick Edit area.
-2. The enhanced Edit page showing additional fields, categories and tags
-3. A typical edit taxonomy page, showing the "Attachments" column
-4. The Settings page, to customize support of Att. Categories, Att. Tags and other taxonomies and the default sort order
-5. The Media Library Assistant submenu showing the Bulk Edit area with taxonomy Add, Remove and Replace options; also shows the tags suggestion popup.
+2. The Media Library Assistant submenu showing the Bulk Edit area with taxonomy Add, Remove and Replace options; also shows the tags suggestion popup.
+3. A typical edit taxonomy page, showing the "Attachments" column.
+4. The enhanced Edit page showing additional fields, categories and tags.
+5. The Settings page General tab, where you can customize support of Att. Categories, Att. Tags and other taxonomies, where-used reporting and the default sort order.
+6. The Settings page MLA Gallery tab, where you can add custom style and markup templates for `[mla_gallery]` shortcode output.
 
 == Changelog ==
+
+= 0.80 =
+* New: MLA Gllery Style and Markup Templates, for control over CSS styles, HTML markup and data content of `[mla_gallery]` shortcode output.
+* New: The `[mla_gallery]` "mla_link_text", "mla_rollover_text" and "mla_caption", parameters allow easy customization of gallery display.
+* New: The `[mla_gallery]` "link" parameter now accepts size values, e.g., "medium", to generate a link to image sizes other than "full".
+* New: The `[mla_gallery]` "mla_debug" parameter provides debugging information for query parameters.
+* New: Quick Edit area now includes caption field.
+* New: Settings page now divided into three tabbed subpages for easier access to settings and documentation.
+* New: For WordPress 3.5, Custom Field support added to attachments and to the WordPress standard Edit Media Screen.
+* New: For WordPress version 3.5, the WordPress standard Edit Media screen now includes Last Modified date, Parent Info, Menu Order, Image Metadata and all "where-used" information.
+* New: For WordPress versions before 3.5, the MLA Edit single item screen now includes "Gallery in" and "MLA Gallery in"  information.
+* Fix: Bulk edit now supports "No Change" option for Author.
+* Fix: Bulk edit now supports changing Parent ID to "0" (unattached).
+* Fix: Where-used reporting corrected for sites without month- and year-based folders.
+* Fix: "No Categories" filtering fixed; used to return items with categories in some cases.
 
 = 0.71 =
 * Fix: Removed (!) Warning displays for empty Gallery in and MLA Gallery in column entries.
@@ -137,7 +153,7 @@ All of the MLA source code has been annotated with "DocBlocks", a special type o
 * New: Activate and deactivate hooks added to create and drop an SQL View supporting ALT Text sorting
 * New: Revisions are excluded from the where-used columns; a settings option lets you include them if you wish
 * Fix: Better validation/sanitization of data fields on input and display
-* Fix: Database query validation/sanitization with wpdb_prepare()
+* Fix: Database query validation/sanitization with wpdb->prepare()
 * Fix: check_admin_referer added to settings page
 * Fix: Inline CSS styles for message DIV moved to style sheet
 
@@ -172,6 +188,9 @@ All of the MLA source code has been annotated with "DocBlocks", a special type o
 
 == Upgrade Notice ==
 
+= 0.80 =
+Get the MLA Gallery Style and Markup Templates for control over CSS styles, HTML markup and data content of `[mla_gallery]` shortcode output. Eight other enhancements and four fixes.
+
 = 0.71 =
 Get the new "Gallery in" and "MLA Gallery in" where-used reporting to see where items are returned by the [gallery] and [mla_gallery] shortcodes. Two other enhancements and two fixes.
 
@@ -202,6 +221,14 @@ You should upgrade to this version if you are getting "404 Not Found" errors whe
 = 0.1 =
 Initial release.
 
+== Other Notes ==
+
+In this section:
+
+* Acknowledgements
+* MLA Gallery Shortcode Documentation
+* MLA Gallery Style and Markup Template Documentation
+* Online Help Summary (Assistant Submenu - Attachment List Table)
 
 == Acknowledgements ==
 
@@ -212,25 +239,28 @@ I have used and learned much from the following books (among many):
 * WordPress 3 Plugin Development Essentials, by Brian Bondari and Everett Griffiths (Mar 24, 2011) ISBN-13: 978-1849513524
 * WordPress and Ajax, by Ronald Huereca (Jan 13, 2011) ISBN-13: 978-1451598650
 
-==MLA Gallery Shortcode==
+== MLA Gallery Shortcode ==
 
-The [mla_gallery] shortcode is used in a post, page or custom post type to add a gallery of images and/or other Media Library items (such as PDF documents). MLA Gallery is a superset of the [gallery] shortcode in the WordPress core; it is compatible with [gallery] and provides many enhancements. These include:
+The `[mla_gallery]` shortcode is used in a post, page or custom post type to add a gallery of images and/or other Media Library items (such as PDF documents). MLA Gallery is a superset of the `[gallery]` shortcode in the WordPress core; it is compatible with `[gallery]` and provides many enhancements. These include:
 
 * Full support for WordPress categories, tags and custom taxonomies. You can select items with any of the taxonomy parameters documented in the WP_Query class.
 * Support for all post_mime_type values, not just images.
 * Media Library items need not be "attached" to the post. You can build a gallery with any combination of items in the Library using taxonomy terms, custom fields and more.
+* Control over the styles, markup and content of each gallery using the Style and Markup Templates documented below.
 
-All of the options/parameters documented for the [gallery] shortcode are supported by the [mla_gallery] shortcode; you can find them in the WordPress Codex. Most of the parameters documented for the WP_Query class are also supported; see the WordPress Codex. Because the [mla_gallery] shortcode is designed to work with Media Library items, there are some parameter differences and extensions; these are documented below.
+All of the options/parameters documented for the `[gallery]` shortcode are supported by the `[mla_gallery]` shortcode; you can find them in the WordPress Codex. Most of the parameters documented for the WP_Query class are also supported; see the WordPress Codex. Because the `[mla_gallery]` shortcode is designed to work with Media Library items, there are some parameter differences and extensions; these are documented below.
 
-<h4>Include, Exclude</h4>
+<h4>Gallery Display Content</h4>
 
-You can use "post_parent=all" to include or exclude attachments regardless of which post or page they are attached to. You can use "post_mime_type=all" to include or exclude attachments of all MIME types, not just images.
+Three `[mla_gallery]` parameters provide an easy way to control the contents of gallery items without requiring the use of custom Markup templates.  
 
-<h4>Size</h4>
+* `mla_link_text`: replaces the thumbnail image or attachment title text displayed for each gallery item.
 
-The Size parameter specifies the image size to use for the thumbnail display. Valid values include "thumbnail", "medium", "large", "full" and any other additional image size that was registered with add_image_size(). The default value is "thumbnail". You can use "none" to suppress thumbnail display and substitute the item title string for the image.
+* `mla_rollover_text`: replaces the attachment title text displayed when the mouse rolls or hovers over the gallery thumbnail.
 
-The [mla_gallery] shortcode supports an additional Size value, "icon", which shows a 60x60 pixel thumbnail for image items and an appropriate icon for non-image items such as PDF or text files.
+* `mla_caption`: replaces the attachment caption text displayed beneath the thumbnail of each gallery item.
+
+All three of these parameters support the Markup and Attachment-specific substitution arguments defined for Markup Templates. For example, if you code `mla_rollover_text="{+date+} : {+description+}"`, the rollover text will contain the upload date, a colon, and the full description of each gallery item. Simply add "{+" before the substitution parameter name and add "+}" after the name. Note that the enclosing delimiters are different than those used in the templates, since the shortcode parser reserves square brackets ("[" and "]") for its own use.
 
 <h4>Order, Orderby</h4>
 
@@ -238,9 +268,27 @@ To order the gallery randomly, use "orderby=rand". To suppress gallery ordering 
 
 The Orderby parameter specifies which database field is used to sort the gallery. You can order the gallery by any of the values documented for the WP_Query class reference in the Codex; you are NOT restricted to the values documented for the [gallery] shortcode.
 
-<h4>Post ID, Post Parent</h4>
+<h4>Size</h4>
+
+The Size parameter specifies the image size to use for the thumbnail display. Valid values include "thumbnail", "medium", "large", "full" and any additional image size that was registered with add_image_size(). The default value is "thumbnail". You can use "none" or "" to suppress thumbnail display and substitute the item title string for the image/icon.
+
+The [mla_gallery] shortcode supports an additional Size value, "icon", which shows a 60x60 pixel thumbnail for image items and an appropriate icon for non-image items such as PDF or text files.
+
+<h4>Link</h4>
+
+The Link parameter specifies the target for the link from the gallery to the attachment. The default value, "permalink", links to the attachment's media page. The "file" and "full" values link directly to the attachment file.
+
+For image attachments you can also specify the size of the image file you want to link to. Valid values include "thumbnail", "medium", "large" and any additional image size that was registered with add_image_size(). If the specified size is not available or if the attachment is not an image, the link will go directly to the attachment file.
+
+<h4>Include, Exclude</h4>
+
+You can use "post_parent=all" to include or exclude attachments regardless of which post or page they are attached to. You can use "post_mime_type=all" to include or exclude attachments of all MIME types, not just images.
+
+<h4>Post ID, "ids", Post Parent</h4>
 
 The "id" parameter lets you specify a post ID for your query. If the "id" parameter is not specified, the [mla_gallery] behavior differs from the [gallery] behavior. If your query uses taxonomy or custom field parameters, "author", "author_name" or "s" (search term), then the query will NOT be restricted to items attached to the current post. This lets you build a gallery with any combination of Media Library items that match the parameters.
+
+For WordPress 3.5 and later, the "ids" parameter lets you specify a list of Post IDs. The attachment(s) matching the "ids" values will be displayed in the order specified by the list.
 
 You can use the "post_parent" to override the default behavior. If you set "post_parent" to a specific post ID, only the items attached to that post are displayed. If you set "post_parent" to "current", only the items attached to the current post are displayed. If you set "post_parent" to "all", the query will not have a post ID or post_parent parameter.
 
@@ -305,56 +353,194 @@ Remember to use "post_parent=current" if you want to restrict your query to item
 
 The search parameter ("s=keyword") will perform a keyword search. A cursory inspection of the code in /wp-includes/query.php reveals that the search includes the "post_title" and "post_content" (Description) fields but not the "post_excerpt" (Caption) field. An SQL "LIKE" clause is composed and added to the search criteria. I haven't done much testing of this parameter.
 
-== Help Summary ==
+<h4>Debugging Output</h4>
+
+The "mla_debug" parameter controls the display of information about the query parameters and SQL statements used to retrieve gallery items. If you code `mla_debug=true` you will see a lot of information added to the post or page containing the gallery. Of course, this parameter should <strong>only</strong> be used in a development/debugging environment; it's quite ugly.
+
+== MLA Gallery Style and Markup Templates ==
+
+<p>
+The Style and Markup templates give you great flexibility for the content and format of each <code>[mla_gallery]</code>. You can define as many templates as you need.
+</p>
+Style templates provide gallery-specific CSS inline styles. Markup templates provide the HTML markup for 1) the beginning of the gallery, 2) the beginning of each row, 3) each gallery item, 4) the end of each row and 5) the end of the gallery. The attachment-specific markup parameters let you choose among most of the attachment fields, not just the caption.
+<p>
+The MLA Gallery tab on the Settings page lets you add, change and delete custom templates. The default tempates are also displayed on this tab for easy reference.
+</p>
+<p>
+In a template, substitution parameters are surrounded by opening ('[+') and closing ('+]') tags to separate them from the template text; see the default templates for many examples.
+</p>
+<h4>Substitution parameters for style templates</h4>
+* `mla_style`: shortcode parameter, default = 'default'
+* `instance`: starts at '1', incremented for each additional shortcode in the post/page
+* `id`: post_ID of the post/page in which the gallery appears
+* `itemtag`: shortcode parameter, default = 'dl'
+* `icontag`: shortcode parameter, default = 'dt'
+* `captiontag`: shortcode parameter, default = 'dd'
+* `columns`: shortcode parameter, default = '3'
+* `itemwidth`: '100' if 'columns' is zero, or 100/columns, e.g., '33' if columns is '3'
+* `float`: 'right' if current locale is RTL, 'left' if not
+* `selector`: "mla_gallery-{$instance}", e.g., mla_gallery-1
+* `size_class`: shortcode 'size' parameter, default = 'thumbnail'</td>
+<h4>Substitution parameters for markup templates</h4>
+* `mla_markup`: shortcode parameter, default = 'default'
+* `instance`: starts at '1', incremented for each additional shortcode in the post/page
+* `id`: post_ID of the post/page in which the gallery appears
+* `itemtag`: shortcode parameter, default = 'dl'
+* `icontag`: shortcode parameter, default = 'dt'
+* `captiontag`: shortcode parameter, default = 'dd'
+* `columns`: shortcode parameter, default = '3'
+* `itemwidth`: '100' if 'columns' is zero, or 100/columns, e.g., '33' if columns is '3'
+* `float`: 'right' if current locale is RTL, 'left' if not
+* `selector`: "mla_gallery-{$instance}", e.g., mla_gallery-1
+* `size_class`: shortcode 'size' parameter, default = 'thumbnail'. If this parameter contains "none" or an empty string (size="") the attachment title will be displayed instead of the image/icon.
+* `base_url`: absolute URL to the upload directory, without trailing slash
+* `base_dir`: full path to the upload directory, without trailing slash
+
+<h4>Attachment-specific substitution parameters for markup templates</h4>
+* `index`: starts at '1', incremented for each attachment in the gallery
+* `caption`: if captiontag is not empty, contains caption/post_excerpt
+* `excerpt`: always contains post_excerpt
+* `attachment_ID`: attachment post_ID
+* `mime_type`: attachment post_mime_type
+* `menu_order`: attachment menu_order
+* `date`: attachment post_date
+* `modified`: attachment post_modified
+* `parent`: attachment post_parent (ID)
+* `parent_title`: post_title of the parent, or '(unattached)'
+* `parent_type`: 'post', 'page' or custom post type of the parent
+* `parent_date`: upload date of the parent
+* `title`: attachment post_title
+* `slug`: attachment post_name
+* `width`: width in pixels, for image types
+* `height`: height in pixels, for image types
+* `image_meta`: image metadata, for image types
+* `image_alt`: ALT text, for image types
+* `base_file`: path and file name relative to uploads directory
+* `path`: path portion of base_file
+* `file`: file name portion of base_file
+* `description`: attachment post_content
+* `file_url`: attachment guid
+* `author_id`: attachment post_author
+* `author`: author display_name, or 'unknown'
+* `link`: hyperlink to the attachment page (default) or file (shortcode 'link' parameter = "file")
+* `pagelink`: always contains a hyperlink to the attachment page
+* `filelink`: always contains a hyperlink to the attachment file
+* `link_url`: the URL portion of `link`
+* `pagelink_url`: the URL portion of `pagelink`
+* `filelink_url`: the URL portion of `filelink`
+* `thumbnail_content`: complete content of the gallery item link. This will either be an image (img) tag or a text string for non-image items.
+* `thumbnail_width`: for image/icon items, width of the gallery image/icon
+* `thumbnail_height`: for image/icon items, height of the gallery image/icon
+* `thumbnail_url`: for image/icon items, URL of the gallery image/icon
+<h3>A Table-based Template Example</h3>
+<p>
+Here's a small example that shows a gallery using table markup.
+</p>
+<h4>Style Template</h4>
+
+	<style type='text/css'>
+		#[+selector+] {
+			margin: auto;
+		}
+		#[+selector+] .gallery-row {
+			float: [+float+];
+			margin-top: 10px;
+			border-top: 1px solid #ddd;
+			text-align: center;
+			width: [+itemwidth+]%;
+		}
+		#[+selector+] .gallery-row td.gallery-icon {
+			width: 60;
+			height: 60;
+			vertical-align: top;
+		}
+		#[+selector+] .gallery-row .gallery-icon img {
+			border: 2px solid #cfcfcf;
+		}
+		#[+selector+] .gallery-caption {
+			margin-left: 0;
+			vertical-align: top;
+		}
+	</style>
+
+<h4>Markup Template</h4>
+<h5>Open</h5>
+
+	<table id='[+selector+]' class='gallery galleryid-[+id+]<br />gallery-columns-[+columns+] gallery-size-[+size_class+]'>
+
+<h5>Row Open</h5>
+
+	<tr class='gallery-row'>
+
+<h5>Item</h5>
+
+	<td class='gallery-icon'>
+		[+link+]
+	</td>
+	<td class='wp-caption-text gallery-caption'>
+		<strong>[+title+]</strong><br />
+		[+description+]<br />
+		[+date+]
+	</td>
+
+<h5>Row Close</h5>
+
+	</tr>
+	
+<h5>Close</h5>
+
+	</table>
+
+== Online Help Summary ==
 
 <p><strong><em>Assistant Submenu - Attachment List Table</em></strong></p>
-<p><strong>Overview</strong></p>
+<h4>Overview</h4>
 <p>All the files you&#8217;ve uploaded are listed in the Media Library Assistant table, ordered by the Title field. You can change the sort order by clicking on one of the blue column names. You can change the default sort order on the Settings screen.</p>
 <p>You can use the Screen Options tab to customize the display of this screen. You can choose any combination of the sixteen (16) columns available for display. You can also choose how many items appear on each page of the display.</p>
 <p>You can narrow the list by file type/status using the text link filters at the top of the screen. You also can refine the list by month using the dropdown menu above the media table.</p>
 <p>If you have selected &#8220;Attachment Categories&#8221; support, you can filter the list by selecting &#8220;All Categories&#8221;, &#8220;No Categories&#8221; or a specific category from the drop down list. If you select a category that has child categories beneath it, attachments in any of the child categories will also appear in the filtered list.</p>
 <p><strong>NOTE:</strong> Month and category filters are &#8220;sticky&#8221;, i.e., they will persist as you resort the display or change the file type/status view.</p>
-<p><strong>Featured/Inserted</strong></p>
+<h4>Featured/Inserted</h4>
 <p>The &#8220;Featured in&#8221; and &#8220;Inserted in&#8221; columns are a powerful tool for managing your attachments. They show you where each attachment is used in a post or page as a &#8220;Featured Image&#8221; or as an embedded image or link.</p>
 <p>You can also use the information in the &#8220;Title/Name&#8221; column to identify &#8220;Orphan&#8221; items that are not used in any post or page and items with a &#8220;Bad Parent&#8221; (a parent that does contain any reference to the item) or an &#8220;Invalid Parent&#8221; (a parent that does not exist).</p>
-<p><strong>Gallery/MLA Gallery</strong></p>
+<h4>Gallery/MLA Gallery</h4>
 <p>The &#8220;Gallery in&#8221; and &#8220;MLA Gallery in&#8221; columns are a powerful tool for managing your attachments. They show you where each attachment is returned by a <code>[gallery]</code> or <code>[mla_gallery]</code> shortcode in a post or page. These columns do <strong>not</strong> use the post_parent (attached to) status of the item; they actually execute each shortcode and tabulate the attachments they return.</p>
 <p>You can also use the information in the &#8220;Title/Name&#8221; column to identify &#8220;Orphan&#8221; items that are not used in any post or page and items with a &#8220;Bad Parent&#8221; (a parent that does contain any reference to the item) or an &#8220;Invalid Parent&#8221; (a parent that does not exist).</p>
-<p><strong>Taxonomy Support</strong></p>
+<h4>Taxonomy Support</h4>
 <p>The &#8220;taxonomy&#8221; columns help you to group attachments by subject and keyword values. The columns list any categories and tags associated with the item. You can click on one of the displayed values to get a list of all items associated with that value.</p>
 <p>The Media Library Assistant provides two pre-defined taxonomies, &#8220;Att. Categories&#8221; and &#8220;Att. Tags&#8221; which are enabled by default. You can add or remove support for any registered taxonomy on the Settings screen. The standard WordPress Categories and Tags as well as any custom taxonomies can be supported.</p>
 <p>When you add support for a taxonomy it is visible on the main screen. If you want to hide the column simply use the Screen Options to uncheck the Show on screen box.</p>
 <p>Supported taxonomies also appear as submenus below the Media menu at the left of the screen. You can edit the taxonomy terms by clicking these submenus. The taxonomy edit screens include an &#8220;Attachments&#8221; column which displays the number of attachment objects for each term. You can display a filtered list of the attachments by clicking on the number in this column.</p>
-<p><strong>Search Media</strong></p>
+<h4>Search Media</h4>
 <p>The &#8220;Search Media&#8221; box supports a keyword search of several attachment fields; enter words and/or phrases in the box, separated by spaces. Click the Search Media button for a case-insensitive "SQL LIKE" search. Each keyword in the search phrase is matched independently, so the order of search words does not have to match the order in the text. For example, searching on "friend" and "best" will match "Best Friend". If you put quotes around a search phrase then word order is required for a match (and spaces between words must match as well). You can also match on partial words, e.g., "rien" will match "friend".</p>
 <p>Once you&#8217;ve entered the terms you want, use the options below the box to tailor your search. You can pick the connector used between search terms; "or" means any of the terms will match, "and" means all of the terms must match. Use the checkboxes to extend your search to more fields in the database.</p>
-<p><strong>Bulk Actions</strong></p>
+<h4>Bulk Actions</h4>
 <p>The &#8220;Bulk Actions&#8221; dropdown list works with the check box column to let you make changes to many items at once. Click the check box in the column title row to select all items on the page, or click the check box in a row to select items individually.</p>
 <p>Once you&#8217;ve selected the items you want, pick an action from the dropdown list and click Apply to perform the action on the selected items. The available actions will vary depending on the file type/status view you have picked.</p>
 <p>If you have enabled Trash support (define MEDIA_TRASH in wp-config.php) you can use bulk actions to move items to and from the Trash or delete them permamently.</p>
 <p>When using Bulk Edit, you can change the metadata (author, parent, taxonomy terms) for all selected attachments at once. To remove an attachment from the grouping, just click the x next to its name in the left column of the Bulk Edit area.</p>
 <p>Bulk Edit support for taxonomy terms allows you to <strong>add, remove or completely replace</strong> terms for the selected attachments. Below each taxonomy edit box are three radio buttons that let you select the action you&#8217;d like to perform.</p>
 <p>The taxonomies that appear in the Bulk Edit area can be a subset of the taxonomies supported on the single item edit screen. You can select which taxonomies appear by entering your choice(s) on the Media Libray Assistant Settings screen.</p>
-<p><strong>Available Actions</strong></p>
+<h4>Available Actions</h4>
 <p>Hovering over a row reveals action links such as Edit, Quick Edit, Move to Trash and Delete Permanently. Clicking Edit displays a simple screen to edit that individual file&#8217;s metadata. Clicking Move to Trash will assign the file to the Trash pile but will not affect pages or posts to which it is attached. Clicking Delete Permanently will delete the file from the media library (as well as from any posts to which it is currently attached). Clicking Quick Edit displays an inline form to edit the file's metadata without leaving the menu screen.</p>
 <p>The taxonomies that appear in the Quick Edit area can be a subset of the taxonomies supported on the single item edit screen. You can select which taxonomies appear by entering your choice(s) on the Media Libray Assistant Settings screen.</p>
-<p><strong>Attaching Files</strong></p>
+<h4>Attaching Files</h4>
 <p>If a media file has not been attached to any post, you will see (unattached) in the Attached To column. You can click on the Edit or Quick Edit action to attach the file by assigning a value to the Parent ID field.</p>
 <p><strong><em>Single Item Edit Screen</em></strong></p>
-<p><strong>Overview</strong></p>
+<h4>Overview</h4>
 <p>This screen allows you to view many of the fields associated with an attachment and to edit several of them. Fields that are read-only have a light gray background; fields that may be changes have a white background. Hints and helpful information appear below some fields.</p>
 <p>Remember to click the &#8220;Update&#8221; button to save your work. You may instead click the &#8220;Cancel&#8221; button to discard any changes.</p>
-<p><strong>Taxonomies</strong></p>
+<h4>Taxonomies</h4>
 <p>If there are custom taxonomies, such as &#8220;Attachment Categories&#8221; or &#8220;Attachment Tags&#8221;, registered for attachments they will apppear in the right-hand column on this screen. You can add or remove terms from any of the taxonomies displayed. Changes will not be saved until you click the &#8220;Update&#8221; button for the attachment.</p>
-<p><strong>Parent Info</strong></p>
+<h4>Parent Info</h4>
 <p>The &#8220;Parent Info&#8221; field displays the Post ID, type and title of the post or page to which the item is attached. It will display &#8220;0 (unattached)&#8221; if there is no parent post or page.</p>
 <p>You can change the post or page to which the item is attached by changing the Post ID value and clicking the &#8220;Update&#8221; button. Changing the Post ID value to zero (0) will &#8220;unattach&#8221; the item.</p>
 <p><strong><em>Edit Hierarchical Taxonomies (Categories)</em></strong></p>
-<p><strong>Overview</strong></p>
+<h4>Overview</h4>
 <p>You can use <strong>categories</strong> to define sections of your site and group related attachments. The default is &#8220;none&#8221;, i.e., the attachment is not associated with any category.</p>
 <p>What&#8217;s the difference between categories and tags? Normally, tags are ad-hoc keywords that identify important information about your attachment (names, subjects, etc) that may or may not apply to other attachments, while categories are pre-determined sections. If you think of your site like a book, the categories are like the Table of Contents and the tags are like the terms in the index.</p>
 <p>You can change the display of this screen using the Screen Options tab to set how many items are displayed per screen and to display/hide columns in the table.</p>
-<p><strong>Adding Categories</strong></p>
+<h4>Adding Categories</h4>
 <p>When adding a new category on this screen, you&#8217;ll fill in the following fields:</p>
 <ul>
 <li><strong>Name</strong> - The name is how it appears on your site.</li>
@@ -362,19 +548,19 @@ The search parameter ("s=keyword") will perform a keyword search. A cursory insp
 <li><strong>Parent</strong> - Categories, unlike tags, can have a hierarchy. You might have a Landscape category, and under that have children categories for Mountains and Seashore. Totally optional. To create a subcategory, just choose another category from the Parent dropdown.</li>
 <li><strong>Description</strong> - The description is not prominent by default; however, some themes may display it.</li>
 </ul>
-<p><strong>Attachments Column</strong></p>
+<h4>Attachments Column</h4>
 <p>The &#8220;Attachments&#8221; colunm at the right of the table gives you the number of attachments associated with each category. You can click on the number to get a list of all the attachments with that category. The heading on the list page(s) will display the category value you&#8217;ve selected.</p>
 <p><strong><em>Edit Flat Taxonomies (Tags)</em></strong></p>
-<p><strong>Overview</strong></p>
+<h4>Overview</h4>
 <p>You can assign keywords to your attachments using <strong>tags</strong>. Unlike categories, tags have no hierarchy, meaning there&#8217;s no relationship from one tag to another.</p>
 <p>What&#8217;s the difference between categories and tags? Normally, tags are ad-hoc keywords that identify important information about your attachment (names, subjects, etc.) that may or may not apply to other attachments, while categories are pre-determined sections. If you think of your site like a book, the categories are like the Table of Contents and the tags are like the terms in the index.</p>
 <p>You can change the display of this screen using the Screen Options tab to set how many items are displayed per screen and to display/hide columns in the table.</p>
-<p><strong>Adding Tags</strong></p>
+<h4>Adding Tags</h4>
 <p>When adding a new tag on this screen, you&#8217;ll fill in the following fields:</p>
 <ul>
 <li><strong>Name</strong> - The name is how it appears on your site.</li>
 <li><strong>Slug</strong> - The &#8220;slug&#8221; is the URL-friendly version of the name. It is usually all lowercase and contains only letters, numbers, and hyphens.</li>
 <li><strong>Description</strong> - The description is not prominent by default; however, some themes may display it.</li>
 </ul>
-<p><strong>Attachments Column</strong></p>
+<h4>Attachments Column</h4>
 <p>The &#8220;Attachments&#8221; colunm at the right of the table gives you the number of attachments associated with each tag. You can click on the number to get a list of all the attachments with that tag. The heading on the list page(s) will display the tag value you&#8217;ve selected.</p>

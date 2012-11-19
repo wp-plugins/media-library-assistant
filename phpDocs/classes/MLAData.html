@@ -54,6 +54,8 @@
 <i class="icon-custom icon-method"></i> Methods</li>
 <li class="method public "><a href="#initialize" title="initialize :: Initialization function, similar to __construct()"><span class="description">Initialization function, similar to __construct()</span><pre>initialize()</pre></a></li>
 <li class="method public "><a href="#mla_count_list_table_items" title="mla_count_list_table_items :: Get the total number of attachment posts"><span class="description">Get the total number of attachment posts</span><pre>mla_count_list_table_items()</pre></a></li>
+<li class="method public "><a href="#mla_fetch_attachment_metadata" title="mla_fetch_attachment_metadata :: Fetch and filter meta data for an attachment"><span class="description">Fetch and filter meta data for an attachment</span><pre>mla_fetch_attachment_metadata()</pre></a></li>
+<li class="method public "><a href="#mla_fetch_attachment_parent_data" title="mla_fetch_attachment_parent_data :: Returns information about an attachment's parent, if found"><span class="description">Returns information about an attachment's parent, if found</span><pre>mla_fetch_attachment_parent_data()</pre></a></li>
 <li class="method public "><a href="#mla_fetch_attachment_references" title="mla_fetch_attachment_references :: Find Featured Image and inserted image/link references to an attachment"><span class="description">Find Featured Image and inserted image/link references to an attachment</span><pre>mla_fetch_attachment_references()</pre></a></li>
 <li class="method public "><a href="#mla_get_attachment_by_id" title="mla_get_attachment_by_id :: Retrieve an Attachment array given a $post_id"><span class="description">Retrieve an Attachment array given a $post_id</span><pre>mla_get_attachment_by_id()</pre></a></li>
 <li class="method public "><a href="#mla_load_template" title="mla_load_template :: Load an HTML template from a file"><span class="description">Load an HTML template from a file</span><pre>mla_load_template()</pre></a></li>
@@ -63,11 +65,12 @@
 <li class="method public "><a href="#mla_query_posts_orderby_filter" title="mla_query_posts_orderby_filter :: Adds a ORDERBY clause, if required"><span class="description">Adds a ORDERBY clause, if required</span><pre>mla_query_posts_orderby_filter()</pre></a></li>
 <li class="method public "><a href="#mla_query_posts_search_filter" title="mla_query_posts_search_filter :: Adds a keyword search to the WHERE clause, if required"><span class="description">Adds a keyword search to the WHERE clause, if required</span><pre>mla_query_posts_search_filter()</pre></a></li>
 <li class="method public "><a href="#mla_query_posts_where_filter" title="mla_query_posts_where_filter :: Adds a WHERE clause for detached items"><span class="description">Adds a WHERE clause for detached items</span><pre>mla_query_posts_where_filter()</pre></a></li>
+<li class="method public "><a href="#mla_update_single_item" title="mla_update_single_item :: Update a single item; change the meta data
+for a single attachment."><span class="description">Update a single item; change the meta data
+for a single attachment.</span><pre>mla_update_single_item()</pre></a></li>
 <li class="nav-header private">» Private</li>
 <li class="method private "><a href="#_build_mla_galleries" title="_build_mla_galleries :: Builds the $mla_galleries or $galleries array"><span class="description">Builds the $mla_galleries or $galleries array</span><pre>_build_mla_galleries()</pre></a></li>
 <li class="method private "><a href="#_execute_list_table_query" title="_execute_list_table_query :: Add filters, run query, remove filters"><span class="description">Add filters, run query, remove filters</span><pre>_execute_list_table_query()</pre></a></li>
-<li class="method private "><a href="#_fetch_attachment_metadata" title="_fetch_attachment_metadata :: Fetch and filter meta data for an attachment"><span class="description">Fetch and filter meta data for an attachment</span><pre>_fetch_attachment_metadata()</pre></a></li>
-<li class="method private "><a href="#_fetch_attachment_parent_data" title="_fetch_attachment_parent_data :: Returns information about an attachment's parent, if found"><span class="description">Returns information about an attachment's parent, if found</span><pre>_fetch_attachment_parent_data()</pre></a></li>
 <li class="method private "><a href="#_prepare_list_table_query" title="_prepare_list_table_query :: Sanitize and expand query arguments from request variables"><span class="description">Sanitize and expand query arguments from request variables</span><pre>_prepare_list_table_query()</pre></a></li>
 <li class="method private "><a href="#_search_mla_galleries" title="_search_mla_galleries :: Search the $mla_galleries or $galleries array"><span class="description">Search the $mla_galleries or $galleries array</span><pre>_search_mla_galleries()</pre></a></li>
 <li class="nav-header">
@@ -137,6 +140,47 @@ Templates separate HTML markup from PHP code for easier maintenance and localiza
 <code>integer</code>Number of attachment posts</div>
 </div></div>
 </div>
+<a name="mla_fetch_attachment_metadata" id="mla_fetch_attachment_metadata"></a><div class="element clickable method public mla_fetch_attachment_metadata" data-toggle="collapse" data-target=".mla_fetch_attachment_metadata .collapse">
+<h2>Fetch and filter meta data for an attachment</h2>
+<pre>mla_fetch_attachment_metadata(int $post_id) : array</pre>
+<div class="labels"></div>
+<div class="row collapse"><div class="detail-description">
+<p class="long_description"><p>Returns a filtered array of a post's meta data. Internal values beginning with '<em>'
+are stripped out or converted to an 'mla</em>' equivalent. Array data is replaced with
+a string containing the first array element.</p></p>
+<table class="table table-bordered"><tr>
+<th>since</th>
+<td>0.1</td>
+</tr></table>
+<h3>Parameters</h3>
+<div class="subelement argument">
+<h4>$post_id</h4>
+<code>int</code><p>post ID of attachment</p></div>
+<h3>Returns</h3>
+<div class="subelement response">
+<code>array</code>Meta data variables</div>
+</div></div>
+</div>
+<a name="mla_fetch_attachment_parent_data" id="mla_fetch_attachment_parent_data"></a><div class="element clickable method public mla_fetch_attachment_parent_data" data-toggle="collapse" data-target=".mla_fetch_attachment_parent_data .collapse">
+<h2>Returns information about an attachment's parent, if found</h2>
+<pre>mla_fetch_attachment_parent_data(int $parent_id) : array</pre>
+<div class="labels"></div>
+<div class="row collapse"><div class="detail-description">
+<p class="long_description"></p>
+<table class="table table-bordered"><tr>
+<th>since</th>
+<td>0.1</td>
+</tr></table>
+<h3>Parameters</h3>
+<div class="subelement argument">
+<h4>$parent_id</h4>
+<code>int</code><p>post ID of attachment's parent, if any</p>
+</div>
+<h3>Returns</h3>
+<div class="subelement response">
+<code>array</code>Parent information; post_date, post_title and post_type</div>
+</div></div>
+</div>
 <a name="mla_fetch_attachment_references" id="mla_fetch_attachment_references"></a><div class="element clickable method public mla_fetch_attachment_references" data-toggle="collapse" data-target=".mla_fetch_attachment_references .collapse">
 <h2>Find Featured Image and inserted image/link references to an attachment</h2>
 <pre>mla_fetch_attachment_references(int $ID, int $parent) : array</pre>
@@ -199,7 +243,7 @@ where "key" becomes the key part of the array.</p></p>
 <code>string</code><p>Complete path and name of the template file, option name or the raw template</p></div>
 <div class="subelement argument">
 <h4>$type</h4>
-<code>string</code><p>Type of template source; 'file', 'option', 'string'</p>
+<code>string</code><p>Optional type of template source; 'file' (default), 'option', 'string'</p>
 </div>
 <h3>Returns</h3>
 <div class="subelement response">
@@ -338,6 +382,37 @@ Defined as public because it's a filter.</p></p>
 <code>string</code>query clause after "detached" item modification</div>
 </div></div>
 </div>
+<a name="mla_update_single_item" id="mla_update_single_item"></a><div class="element clickable method public mla_update_single_item" data-toggle="collapse" data-target=".mla_update_single_item .collapse">
+<h2>Update a single item; change the meta data
+for a single attachment.</h2>
+<pre>mla_update_single_item(int $post_id, array $new_data, array $tax_input, array $tax_actions) : array</pre>
+<div class="labels"></div>
+<div class="row collapse"><div class="detail-description">
+<p class="long_description"></p>
+<table class="table table-bordered"><tr>
+<th>since</th>
+<td>0.1</td>
+</tr></table>
+<h3>Parameters</h3>
+<div class="subelement argument">
+<h4>$post_id</h4>
+<code>int</code><p>The ID of the attachment to be updated</p></div>
+<div class="subelement argument">
+<h4>$new_data</h4>
+<code>array</code><p>Field name => value pairs</p>
+</div>
+<div class="subelement argument">
+<h4>$tax_input</h4>
+<code>array</code><p>Optional taxonomy term values, default null</p></div>
+<div class="subelement argument">
+<h4>$tax_actions</h4>
+<code>array</code><p>Optional taxonomy actions (add, remove, replace), default null</p>
+</div>
+<h3>Returns</h3>
+<div class="subelement response">
+<code>array</code>success/failure message and NULL content</div>
+</div></div>
+</div>
 <a name="_build_mla_galleries" id="_build_mla_galleries"></a><div class="element clickable method private _build_mla_galleries" data-toggle="collapse" data-target="._build_mla_galleries .collapse">
 <h2>Builds the $mla_galleries or $galleries array</h2>
 <pre>_build_mla_galleries(array $galleries_array, string $shortcode, boolean $exclude_revisions) : boolean</pre>
@@ -383,47 +458,6 @@ Defined as public because it's a filter.</p></p>
 <code>object</code>WP_Query object with query results</div>
 </div></div>
 </div>
-<a name="_fetch_attachment_metadata" id="_fetch_attachment_metadata"></a><div class="element clickable method private _fetch_attachment_metadata" data-toggle="collapse" data-target="._fetch_attachment_metadata .collapse">
-<h2>Fetch and filter meta data for an attachment</h2>
-<pre>_fetch_attachment_metadata(int $post_id) : array</pre>
-<div class="labels"></div>
-<div class="row collapse"><div class="detail-description">
-<p class="long_description"><p>Returns a filtered array of a post's meta data. Internal values beginning with '<em>'
-are stripped out or converted to an 'mla</em>' equivalent. Array data is replaced with
-a string containing the first array element.</p></p>
-<table class="table table-bordered"><tr>
-<th>since</th>
-<td>0.1</td>
-</tr></table>
-<h3>Parameters</h3>
-<div class="subelement argument">
-<h4>$post_id</h4>
-<code>int</code><p>post ID of attachment</p></div>
-<h3>Returns</h3>
-<div class="subelement response">
-<code>array</code>Meta data variables</div>
-</div></div>
-</div>
-<a name="_fetch_attachment_parent_data" id="_fetch_attachment_parent_data"></a><div class="element clickable method private _fetch_attachment_parent_data" data-toggle="collapse" data-target="._fetch_attachment_parent_data .collapse">
-<h2>Returns information about an attachment's parent, if found</h2>
-<pre>_fetch_attachment_parent_data(int $parent_id) : array</pre>
-<div class="labels"></div>
-<div class="row collapse"><div class="detail-description">
-<p class="long_description"></p>
-<table class="table table-bordered"><tr>
-<th>since</th>
-<td>0.1</td>
-</tr></table>
-<h3>Parameters</h3>
-<div class="subelement argument">
-<h4>$parent_id</h4>
-<code>int</code><p>post ID of attachment's parent, if any</p>
-</div>
-<h3>Returns</h3>
-<div class="subelement response">
-<code>array</code>Parent information; post_date, post_title and post_type</div>
-</div></div>
-</div>
 <a name="_prepare_list_table_query" id="_prepare_list_table_query"></a><div class="element clickable method private _prepare_list_table_query" data-toggle="collapse" data-target="._prepare_list_table_query .collapse">
 <h2>Sanitize and expand query arguments from request variables</h2>
 <pre>_prepare_list_table_query(array $raw_request, int $offset, int $count) : array</pre>
@@ -442,10 +476,11 @@ Modeled after wp_edit_attachments_query in wp-admin/post.php</p></p>
 </div>
 <div class="subelement argument">
 <h4>$offset</h4>
-<code>int</code><p>number of rows to skip over to reach desired page</p></div>
+<code>int</code><p>Optional number of rows (default 0) to skip over to reach desired page</p>
+</div>
 <div class="subelement argument">
 <h4>$count</h4>
-<code>int</code><p>number of rows on each page (0 = all rows)</p>
+<code>int</code><p>Optional number of rows on each page (0 = all rows, default)</p>
 </div>
 <h3>Returns</h3>
 <div class="subelement response">
@@ -532,7 +567,7 @@ any further logic required to translate those values is contained in the filters
 <div class="row"><footer class="span12">
             Template is built using <a href="http://twitter.github.com/bootstrap/">Twitter Bootstrap 2</a> and icons provided by <a href="http://glyphicons.com/">Glyphicons</a>.<br>
             Documentation is powered by <a href="http://www.phpdoc.org/">phpDocumentor 2.0.0a8</a> and<br>
-            generated on 2012-11-06T11:50:00-08:00.<br></footer></div>
+            generated on 2012-11-18T13:00:09-08:00.<br></footer></div>
 </div>
 </body>
 </html>
