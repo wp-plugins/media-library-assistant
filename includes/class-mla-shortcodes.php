@@ -171,6 +171,8 @@ class MLAShortcodes {
 			// MLA-specific
 			'mla_style' => 'default',
 			'mla_markup' => 'default',
+			'mla_itemwidth' => NULL,
+			'mla_margin' => '1.5',
 			'mla_link_text' => NULL,
 			'mla_rollover_text' => NULL,
 			'mla_caption' => NULL,
@@ -215,16 +217,33 @@ class MLAShortcodes {
 		// $instance supports multiple galleries in one page/post	
 		static $instance = 0;
 		$instance++;
+
+		/*
+		 * The default style template includes "margin: 1.5%" to put a bit of
+		 * minimum space between the columns. "mla_margin" can be used to increase
+		 * this. "mla_itemwidth" can be used with "columns=0" to achieve a "responsive"
+		 * layout.
+		 */
+		 
+		$margin = absint( 2 * (float) $arguments['mla_margin'] );
+		if ( isset ( $arguments['mla_itemwidth'] ) ) {
+			$itemwidth = absint( $arguments['mla_itemwidth'] );
+		}
+		else {
+			$itemwidth = $arguments['columns'] > 0 ? (floor(100/$arguments['columns']) - $margin) : 100 - $margin;
+		}
 		
 		$style_values = array(
 			'mla_style' => $arguments['mla_style'],
+			'mla_markup' => $arguments['mla_markup'],
 			'instance' => $instance,
 			'id' => $post->ID,
 			'itemtag' => tag_escape( $arguments['itemtag'] ),
 			'icontag' => tag_escape( $arguments['icontag'] ),
 			'captiontag' => tag_escape( $arguments['captiontag'] ),
 			'columns' => intval( $arguments['columns']),
-			'itemwidth' => $arguments['columns'] > 0 ? floor(100/$arguments['columns']) : 100,
+			'itemwidth' => intval( $itemwidth ),
+			'margin' => $arguments['mla_margin'],
 			'float' => is_rtl() ? 'right' : 'left',
 			'selector' => "mla_gallery-{$instance}",
 			'size_class' => sanitize_html_class( $size_class )
@@ -244,21 +263,9 @@ class MLAShortcodes {
 		} // use_mla_gallery_style
 		
 		$upload_dir = wp_upload_dir();
-		$markup_values = array(
-			'mla_markup' => $arguments['mla_markup'],
-			'instance' => $instance,
-			'id' => $post->ID,
-			'itemtag' => tag_escape( $arguments['itemtag'] ),
-			'icontag' => tag_escape( $arguments['icontag'] ),
-			'captiontag' => tag_escape( $arguments['captiontag'] ),
-			'columns' => intval( $arguments['columns']),
-			'itemwidth' => $arguments['columns'] > 0 ? floor(100/$arguments['columns']) : 100,
-			'float' => is_rtl() ? 'right' : 'left',
-			'selector' => "mla_gallery-{$instance}",
-			'size_class' => sanitize_html_class( $size_class ),
-			'base_url' => $upload_dir['baseurl'],
-			'base_dir' => $upload_dir['basedir']
-		);
+		$markup_values = $style_values;
+		$markup_values['base_url'] = $upload_dir['baseurl'];
+		$markup_values['base_dir'] = $upload_dir['basedir'];
 
 		$markup_template = MLASettings::mla_fetch_gallery_template( $markup_values['mla_markup'] . '-open', 'markup' );
 		if ( empty( $markup_template ) ) {

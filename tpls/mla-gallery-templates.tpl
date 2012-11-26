@@ -2,10 +2,11 @@
 <style type='text/css'>
 	#[+selector+] {
 		margin: auto;
+		width: 100%;
 	}
 	#[+selector+] .gallery-item {
 		float: [+float+];
-		margin-top: 10px;
+		margin: [+margin+]%;
 		text-align: center;
 		width: [+itemwidth+]%;
 	}

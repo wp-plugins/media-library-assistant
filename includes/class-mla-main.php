@@ -38,7 +38,7 @@ class MLA {
 	 *
 	 * @var	string
 	 */
-	const CURRENT_MLA_VERSION = '0.80';
+	const CURRENT_MLA_VERSION = '0.81';
 
 	/**
 	 * Minimum version of PHP required for this plugin
@@ -823,6 +823,17 @@ class MLA {
 		if ( ! current_user_can( 'edit_post', $post_id ) )
 			wp_die( __( 'You are not allowed to edit this Attachment.' ) );
 
+		/*
+		 * The category taxonomy is a special case because post_categories_meta_box() changes the input name
+		 */
+		if ( !isset( $_REQUEST['tax_input'] ) )
+			$_REQUEST['tax_input'] = array ();
+				
+		if ( isset( $_REQUEST['post_category'] ) ) {
+			$_REQUEST['tax_input']['category'] = $_REQUEST['post_category'];
+			unset ( $_REQUEST['post_category'] );
+		}
+			
 		if ( ! empty( $_REQUEST['tax_input'] ) ) {
 			/*
 			 * Flat taxonomy strings must be cleaned up and duplicates removed

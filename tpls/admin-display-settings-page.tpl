@@ -263,7 +263,7 @@ All of the options/parameters documented for the [gallery] shortcode are support
 </p>
 <h4>Gallery Display Content</h4>
 <p>
-Three `[mla_gallery]` parameters provide an easy way to control the contents of gallery items without requiring the use of custom Markup templates.  
+Three [mla_gallery] parameters provide an easy way to control the contents of gallery items without requiring the use of custom Markup templates.  
 </p>
 <table>
 <tr>
@@ -272,7 +272,7 @@ Three `[mla_gallery]` parameters provide an easy way to control the contents of 
 </tr>
 <tr>
 <td style="padding-right: 10px; vertical-align: top; font-weight:bold">mla_rollover_text</td>
-<td>replaces the attachment title text displayed when the mouse rolls or hovers over the gallery thumbnai</td>
+<td>replaces the attachment title text displayed when the mouse rolls or hovers over the gallery thumbnail</td>
 </tr>
 <tr>
 <td style="padding-right: 10px; vertical-align: top; font-weight:bold">mla_caption</td>
@@ -281,6 +281,23 @@ Three `[mla_gallery]` parameters provide an easy way to control the contents of 
 </table>
 <p>
 All three of these parameters support the Markup and Attachment-specific substitution arguments defined for Markup Templates. For example, if you code `mla_rollover_text="{+date+} : {+description+}"`, the rollover text will contain the upload date, a colon, and the full description of each gallery item. Simply add "{+" before the substitution parameter name and add "+}" after the name. Note that the enclosing delimiters are different than those used in the templates, since the shortcode parser reserves square brackets ("[" and "]") for its own use.
+</p>
+<h4>Gallery Display Style</h4>
+<p>
+Two [mla_gallery] parameters provide control over the size and spacing of gallery items without requiring the use of custom Style templates.
+</p>
+<table>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">mla_margin</td>
+<td>specifies the margin attribute (in percent) of the ".gallery-item" style. The default value is "1.5" percent.</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">mla_itemwidth</td>
+<td>specifies the width attribute (in percent) of the ".gallery-item" style. The default value is calculated by subtracting twice the margin from 100%, then dividing by the number of gallery columns. For example, the default value is "32", or (100 - (2 * 1.5)) / 3.</td>
+</tr>
+</table>
+<p>
+These parameters are only important if the gallery thumbnails are too large to fit within the width of the page on which they appear. For example, if you code [mla_gallery size=full], the browser will automatically scale down large images to fit within the width attribute (in percent) of the ".gallery-item" style. The default 1.5% margin will ensure that the images do not overlap; you can increase it to add more space between the gallery items. You can also reduce the itemwidth parameter to increase the left and right space between the items.
 </p>
 <h4>Order, Orderby</h4>
 <p>
@@ -417,6 +434,10 @@ In a template, substitution parameters are surrounded by opening ('[+') and clos
 <td>shortcode parameter, default = 'default'</td>
 </tr>
 <tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">mla_markup</td>
+<td>shortcode parameter, default = 'default'</td>
+</tr>
+<tr>
 <td style="padding-right: 10px; vertical-align: top; font-weight:bold">instance</td>
 <td>starts at '1', incremented for each additional shortcode in the post/page</td>
 </tr>
@@ -442,7 +463,11 @@ In a template, substitution parameters are surrounded by opening ('[+') and clos
 </tr>
 <tr>
 <td style="padding-right: 10px; vertical-align: top; font-weight:bold">itemwidth</td>
-<td>'100' if 'columns' is zero, or 100/columns, e.g., '33' if columns is '3'</td>
+<td>shortcode parameter, default = '97' if 'columns' is zero, or 97/columns, e.g., '32' if columns is '3'</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">margin</td>
+<td>shortcode parameter, default = '1.5' (percent)</td>
 </tr>
 <tr>
 <td style="padding-right: 10px; vertical-align: top; font-weight:bold">float</td>
@@ -459,6 +484,10 @@ In a template, substitution parameters are surrounded by opening ('[+') and clos
 </table>
 <h4>Substitution parameters for markup templates</h4>
 <table>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">mla_style</td>
+<td>shortcode parameter, default = 'default'</td>
+</tr>
 <tr>
 <td style="padding-right: 10px; vertical-align: top; font-weight:bold">mla_markup</td>
 <td>shortcode parameter, default = 'default'</td>
@@ -489,7 +518,11 @@ In a template, substitution parameters are surrounded by opening ('[+') and clos
 </tr>
 <tr>
 <td style="padding-right: 10px; vertical-align: top; font-weight:bold">itemwidth</td>
-<td>'100' if 'columns' is zero, or 100/columns, e.g., '33' if columns is '3'</td>
+<td>shortcode parameter, default = '97' if 'columns' is zero, or 97/columns, e.g., '32' if columns is '3'</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">margin</td>
+<td>shortcode parameter, default = '1.5' (percent)</td>
 </tr>
 <tr>
 <td style="padding-right: 10px; vertical-align: top; font-weight:bold">float</td>

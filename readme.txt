@@ -4,7 +4,7 @@ Donate link: http://fairtradejudaica.org/make-a-difference/donate/
 Tags: attachments, documents, gallery, image, images, media, library, media library, media-tags, media tags, tags, media categories, categories
 Requires at least: 3.3
 Tested up to: 3.4.2
-Stable tag: 0.80
+Stable tag: 0.81
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -104,6 +104,10 @@ All of the MLA source code has been annotated with "DocBlocks", a special type o
 
 == Changelog ==
 
+= 0.81 =
+* New: Improved default Style template, `[mla_gallery]` parameters "mla_itemwidth" and "mla_margin" added to allow control of gallery item spacing.
+* Fix: Quick edit support of WordPress standard Categories taxonomy fixed.
+
 = 0.80 =
 * New: MLA Gllery Style and Markup Templates, for control over CSS styles, HTML markup and data content of `[mla_gallery]` shortcode output.
 * New: The `[mla_gallery]` "mla_link_text", "mla_rollover_text" and "mla_caption", parameters allow easy customization of gallery display.
@@ -188,6 +192,9 @@ All of the MLA source code has been annotated with "DocBlocks", a special type o
 
 == Upgrade Notice ==
 
+= 0.81 =
+* Get improved default Style template, `[mla_gallery]` parameters "mla_itemwidth" and "mla_margin" for control of gallery item spacing. Quick edit support of WordPress standard Categories taxonomy has been fixed.
+
 = 0.80 =
 Get the MLA Gallery Style and Markup Templates for control over CSS styles, HTML markup and data content of `[mla_gallery]` shortcode output. Eight other enhancements and four fixes.
 
@@ -261,6 +268,16 @@ Three `[mla_gallery]` parameters provide an easy way to control the contents of 
 * `mla_caption`: replaces the attachment caption text displayed beneath the thumbnail of each gallery item.
 
 All three of these parameters support the Markup and Attachment-specific substitution arguments defined for Markup Templates. For example, if you code `mla_rollover_text="{+date+} : {+description+}"`, the rollover text will contain the upload date, a colon, and the full description of each gallery item. Simply add "{+" before the substitution parameter name and add "+}" after the name. Note that the enclosing delimiters are different than those used in the templates, since the shortcode parser reserves square brackets ("[" and "]") for its own use.
+
+<h4>Gallery Display Style</h4>
+
+Two `[mla_gallery]` parameters provide control over the size and spacing of gallery items without requiring the use of custom Style templates.
+
+* `mla_margin`: specifies the margin attribute (in percent) of the ".gallery-item" style. The default value is "1.5" percent.
+
+* `mla_itemwidth`: specifies the width attribute (in percent) of the ".gallery-item" style. The default value is calculated by subtracting twice the margin from 100%, then dividing by the number of gallery columns. For example, the default value is "32", or (100 - (2 * 1.5)) / 3.
+
+These parameters are only important if the gallery thumbnails are too large to fit within the width of the page on which they appear. For example, if you code `[mla_gallery size=full]`, the browser will automatically scale down large images to fit within the width attribute (in percent) of the ".gallery-item" style. The default 1.5% margin will ensure that the images do not overlap; you can increase it to add more space between the gallery items. You can also reduce the itemwidth parameter to increase the left and right space between the items.
 
 <h4>Order, Orderby</h4>
 
@@ -371,17 +388,6 @@ In a template, substitution parameters are surrounded by opening ('[+') and clos
 </p>
 <h4>Substitution parameters for style templates</h4>
 * `mla_style`: shortcode parameter, default = 'default'
-* `instance`: starts at '1', incremented for each additional shortcode in the post/page
-* `id`: post_ID of the post/page in which the gallery appears
-* `itemtag`: shortcode parameter, default = 'dl'
-* `icontag`: shortcode parameter, default = 'dt'
-* `captiontag`: shortcode parameter, default = 'dd'
-* `columns`: shortcode parameter, default = '3'
-* `itemwidth`: '100' if 'columns' is zero, or 100/columns, e.g., '33' if columns is '3'
-* `float`: 'right' if current locale is RTL, 'left' if not
-* `selector`: "mla_gallery-{$instance}", e.g., mla_gallery-1
-* `size_class`: shortcode 'size' parameter, default = 'thumbnail'</td>
-<h4>Substitution parameters for markup templates</h4>
 * `mla_markup`: shortcode parameter, default = 'default'
 * `instance`: starts at '1', incremented for each additional shortcode in the post/page
 * `id`: post_ID of the post/page in which the gallery appears
@@ -389,7 +395,22 @@ In a template, substitution parameters are surrounded by opening ('[+') and clos
 * `icontag`: shortcode parameter, default = 'dt'
 * `captiontag`: shortcode parameter, default = 'dd'
 * `columns`: shortcode parameter, default = '3'
-* `itemwidth`: '100' if 'columns' is zero, or 100/columns, e.g., '33' if columns is '3'
+* `itemwidth`: shortcode parameter, default = '97' if 'columns' is zero, or 97/columns, e.g., '32' if columns is '3'
+* `margin`: shortcode parameter, default = '1.5' (percent)
+* `float`: 'right' if current locale is RTL, 'left' if not
+* `selector`: "mla_gallery-{$instance}", e.g., mla_gallery-1
+* `size_class`: shortcode 'size' parameter, default = 'thumbnail'</td>
+<h4>Substitution parameters for markup templates</h4>
+* `mla_style`: shortcode parameter, default = 'default'
+* `mla_markup`: shortcode parameter, default = 'default'
+* `instance`: starts at '1', incremented for each additional shortcode in the post/page
+* `id`: post_ID of the post/page in which the gallery appears
+* `itemtag`: shortcode parameter, default = 'dl'
+* `icontag`: shortcode parameter, default = 'dt'
+* `captiontag`: shortcode parameter, default = 'dd'
+* `columns`: shortcode parameter, default = '3'
+* `itemwidth`: shortcode parameter, default = '97' if 'columns' is zero, or 97/columns, e.g., '32' if columns is '3'
+* `margin`: shortcode parameter, default = '1.5' (percent)
 * `float`: 'right' if current locale is RTL, 'left' if not
 * `selector`: "mla_gallery-{$instance}", e.g., mla_gallery-1
 * `size_class`: shortcode 'size' parameter, default = 'thumbnail'. If this parameter contains "none" or an empty string (size="") the attachment title will be displayed instead of the image/icon.
