@@ -54,10 +54,12 @@
 <i class="icon-custom icon-method"></i> Methods</li>
 <li class="method public "><a href="#initialize" title="initialize :: Initialization function, similar to __construct()"><span class="description">Initialization function, similar to __construct()</span><pre>initialize()</pre></a></li>
 <li class="method public "><a href="#mla_count_list_table_items" title="mla_count_list_table_items :: Get the total number of attachment posts"><span class="description">Get the total number of attachment posts</span><pre>mla_count_list_table_items()</pre></a></li>
+<li class="method public "><a href="#mla_fetch_attachment_image_metadata" title="mla_fetch_attachment_image_metadata :: Fetch and filter IPTC and EXIF meta data for an image attachment"><span class="description">Fetch and filter IPTC and EXIF meta data for an image attachment</span><pre>mla_fetch_attachment_image_metadata()</pre></a></li>
 <li class="method public "><a href="#mla_fetch_attachment_metadata" title="mla_fetch_attachment_metadata :: Fetch and filter meta data for an attachment"><span class="description">Fetch and filter meta data for an attachment</span><pre>mla_fetch_attachment_metadata()</pre></a></li>
 <li class="method public "><a href="#mla_fetch_attachment_parent_data" title="mla_fetch_attachment_parent_data :: Returns information about an attachment's parent, if found"><span class="description">Returns information about an attachment's parent, if found</span><pre>mla_fetch_attachment_parent_data()</pre></a></li>
 <li class="method public "><a href="#mla_fetch_attachment_references" title="mla_fetch_attachment_references :: Find Featured Image and inserted image/link references to an attachment"><span class="description">Find Featured Image and inserted image/link references to an attachment</span><pre>mla_fetch_attachment_references()</pre></a></li>
 <li class="method public "><a href="#mla_get_attachment_by_id" title="mla_get_attachment_by_id :: Retrieve an Attachment array given a $post_id"><span class="description">Retrieve an Attachment array given a $post_id</span><pre>mla_get_attachment_by_id()</pre></a></li>
+<li class="method public "><a href="#mla_get_template_placeholders" title="mla_get_template_placeholders :: Analyze a template, returning an array of the place holders it contains"><span class="description">Analyze a template, returning an array of the place holders it contains</span><pre>mla_get_template_placeholders()</pre></a></li>
 <li class="method public "><a href="#mla_load_template" title="mla_load_template :: Load an HTML template from a file"><span class="description">Load an HTML template from a file</span><pre>mla_load_template()</pre></a></li>
 <li class="method public "><a href="#mla_parse_template" title="mla_parse_template :: Expand a template, replacing place holders with their values"><span class="description">Expand a template, replacing place holders with their values</span><pre>mla_parse_template()</pre></a></li>
 <li class="method public "><a href="#mla_query_list_table_items" title="mla_query_list_table_items :: Retrieve attachment objects for list table display"><span class="description">Retrieve attachment objects for list table display</span><pre>mla_query_list_table_items()</pre></a></li>
@@ -71,6 +73,7 @@ for a single attachment.</span><pre>mla_update_single_item()</pre></a></li>
 <li class="nav-header private">» Private</li>
 <li class="method private "><a href="#_build_mla_galleries" title="_build_mla_galleries :: Builds the $mla_galleries or $galleries array"><span class="description">Builds the $mla_galleries or $galleries array</span><pre>_build_mla_galleries()</pre></a></li>
 <li class="method private "><a href="#_execute_list_table_query" title="_execute_list_table_query :: Add filters, run query, remove filters"><span class="description">Add filters, run query, remove filters</span><pre>_execute_list_table_query()</pre></a></li>
+<li class="method private "><a href="#_hex_dump" title="_hex_dump :: Format printable version of binary data"><span class="description">Format printable version of binary data</span><pre>_hex_dump()</pre></a></li>
 <li class="method private "><a href="#_prepare_list_table_query" title="_prepare_list_table_query :: Sanitize and expand query arguments from request variables"><span class="description">Sanitize and expand query arguments from request variables</span><pre>_prepare_list_table_query()</pre></a></li>
 <li class="method private "><a href="#_remove_tags" title="_remove_tags :: Remove tags from a term ids list"><span class="description">Remove tags from a term ids list</span><pre>_remove_tags()</pre></a></li>
 <li class="method private "><a href="#_search_mla_galleries" title="_search_mla_galleries :: Search the $mla_galleries or $galleries array"><span class="description">Search the $mla_galleries or $galleries array</span><pre>_search_mla_galleries()</pre></a></li>
@@ -139,6 +142,25 @@ Templates separate HTML markup from PHP code for easier maintenance and localiza
 <h3>Returns</h3>
 <div class="subelement response">
 <code>integer</code>Number of attachment posts</div>
+</div></div>
+</div>
+<a name="mla_fetch_attachment_image_metadata" id="mla_fetch_attachment_image_metadata"></a><div class="element clickable method public mla_fetch_attachment_image_metadata" data-toggle="collapse" data-target=".mla_fetch_attachment_image_metadata .collapse">
+<h2>Fetch and filter IPTC and EXIF meta data for an image attachment</h2>
+<pre>mla_fetch_attachment_image_metadata(int $post_id) : array</pre>
+<div class="labels"></div>
+<div class="row collapse"><div class="detail-description">
+<p class="long_description"><p>Returns</p></p>
+<table class="table table-bordered"><tr>
+<th>since</th>
+<td>0.90</td>
+</tr></table>
+<h3>Parameters</h3>
+<div class="subelement argument">
+<h4>$post_id</h4>
+<code>int</code><p>post ID of attachment</p></div>
+<h3>Returns</h3>
+<div class="subelement response">
+<code>array</code>Meta data variables</div>
 </div></div>
 </div>
 <a name="mla_fetch_attachment_metadata" id="mla_fetch_attachment_metadata"></a><div class="element clickable method public mla_fetch_attachment_metadata" data-toggle="collapse" data-target=".mla_fetch_attachment_metadata .collapse">
@@ -224,6 +246,26 @@ the posts and postmeta tables, and all references to the attachment.</p></p>
 <h3>Returns</h3>
 <div class="subelement response">
 <code>NULL</code><code>array</code>NULL on failure else associative array</div>
+</div></div>
+</div>
+<a name="mla_get_template_placeholders" id="mla_get_template_placeholders"></a><div class="element clickable method public mla_get_template_placeholders" data-toggle="collapse" data-target=".mla_get_template_placeholders .collapse">
+<h2>Analyze a template, returning an array of the place holders it contains</h2>
+<pre>mla_get_template_placeholders(string $tpl) : array</pre>
+<div class="labels"></div>
+<div class="row collapse"><div class="detail-description">
+<p class="long_description"></p>
+<table class="table table-bordered"><tr>
+<th>since</th>
+<td>0.90</td>
+</tr></table>
+<h3>Parameters</h3>
+<div class="subelement argument">
+<h4>$tpl</h4>
+<code>string</code><p>A formatting string containing [+placeholders+]</p>
+</div>
+<h3>Returns</h3>
+<div class="subelement response">
+<code>array</code>Placeholder information: each entry is an array with ['prefix'] => string, ['value'] => string, ['single'] => boolean</div>
 </div></div>
 </div>
 <a name="mla_load_template" id="mla_load_template"></a><div class="element clickable method public mla_load_template" data-toggle="collapse" data-target=".mla_load_template .collapse">
@@ -459,6 +501,32 @@ for a single attachment.</h2>
 <code>object</code>WP_Query object with query results</div>
 </div></div>
 </div>
+<a name="_hex_dump" id="_hex_dump"></a><div class="element clickable method private _hex_dump" data-toggle="collapse" data-target="._hex_dump .collapse">
+<h2>Format printable version of binary data</h2>
+<pre>_hex_dump(string $data, integer $limit, \intger $bytes_per_row) : string</pre>
+<div class="labels"></div>
+<div class="row collapse"><div class="detail-description">
+<p class="long_description"></p>
+<table class="table table-bordered"><tr>
+<th>since</th>
+<td>0.90</td>
+</tr></table>
+<h3>Parameters</h3>
+<div class="subelement argument">
+<h4>$data</h4>
+<code>string</code><p>Binary data</p></div>
+<div class="subelement argument">
+<h4>$limit</h4>
+<code>integer</code><p>Bytes to format, default = 0 (all bytes)</p>
+</div>
+<div class="subelement argument">
+<h4>$bytes_per_row</h4>
+<code>\intger</code><p>Bytes to format on each line</p></div>
+<h3>Returns</h3>
+<div class="subelement response">
+<code>string</code>Printable representation of $data</div>
+</div></div>
+</div>
 <a name="_prepare_list_table_query" id="_prepare_list_table_query"></a><div class="element clickable method private _prepare_list_table_query" data-toggle="collapse" data-target="._prepare_list_table_query .collapse">
 <h2>Sanitize and expand query arguments from request variables</h2>
 <pre>_prepare_list_table_query(array $raw_request, int $offset, int $count) : array</pre>
@@ -594,7 +662,7 @@ any further logic required to translate those values is contained in the filters
 <div class="row"><footer class="span12">
             Template is built using <a href="http://twitter.github.com/bootstrap/">Twitter Bootstrap 2</a> and icons provided by <a href="http://glyphicons.com/">Glyphicons</a>.<br>
             Documentation is powered by <a href="http://www.phpdoc.org/">phpDocumentor 2.0.0a8</a> and<br>
-            generated on 2012-11-25T17:41:22-08:00.<br></footer></div>
+            generated on 2012-12-07T13:43:49-08:00.<br></footer></div>
 </div>
 </body>
 </html>

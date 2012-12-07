@@ -446,7 +446,7 @@ class MLASettings {
 		}
 		
 		$templates = array( );
-		foreach( self::$mla_template_array as $key => $value ) {
+		foreach ( self::$mla_template_array as $key => $value ) {
 				$tail = strrpos( $key, '-style' );
 				if ( ! ( false === $tail ) ) {
 					$name = substr( $key, 0, $tail );
@@ -488,7 +488,7 @@ class MLASettings {
 		}
 		
 		$templates = array( );
-		foreach( self::$mla_template_array as $key => $value ) {
+		foreach ( self::$mla_template_array as $key => $value ) {
 				$tail = strrpos( $key, '-row-open-markup' );
 				if ( ! ( false === $tail ) ) {
 					$name = substr( $key, 0, $tail );

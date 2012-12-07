@@ -5,7 +5,7 @@
  * @package Media Library Assistant
  * @since 0.1
  */
-
+ 
 /**
  * Class MLA (Media Library Assistant) Data provides database and template file access for MLA needs
  *
@@ -145,6 +145,49 @@ class MLAData {
 		}
 		
 		return $tpl;
+	}
+	
+	/**
+	 * Analyze a template, returning an array of the place holders it contains
+	 *
+	 * @since 0.90
+	 *
+	 * @param	string	A formatting string containing [+placeholders+]
+	 *
+	 * @return	array	Placeholder information: each entry is an array with
+	 * 					['prefix'] => string, ['value'] => string, ['single'] => boolean
+	 */
+	public static function mla_get_template_placeholders( $tpl ) {
+		$results = array();
+		$match_count = preg_match_all( '/\[\+[^+]+\+\]/', $tpl, $matches );
+		if ( ( $match_count == false ) || ( $match_count == 0 ) )
+			return $results;
+			
+		foreach ( $matches[0] as $match ) {
+			$key = substr( $match, 2, (strlen( $match ) - 4 ) );
+			$result = array( 'prefix' => '', 'value' => '', 'single' => false);
+			$match_count = preg_match( '/\[\+(.+):(.+)/', $match, $matches );
+			if ( 1 == $match_count ) {
+				$result['prefix'] = $matches[1];
+				$tail = $matches[2];
+			}
+			else {
+				$tail = substr( $match, 2);
+			}
+			
+			$match_count = preg_match( '/([^,]+)(,single)\+\]/', $tail, $matches );
+			if ( 1 == $match_count ) {
+				$result['single'] = true;
+				$result['value'] = $matches[1];
+			}
+			else {
+				$result['value'] = substr( $tail, 0, (strlen( $tail ) - 2 ) );
+			}
+			
+		$results[ $key ] = $result;
+		} // foreach
+		
+		return $results;
 	}
 	
 	/**
@@ -498,7 +541,7 @@ class MLAData {
 			$fields = self::$query_parameters['mla-search-fields'];
 			$percent = self::$query_parameters['exact'] ? '' : '%';
 			$connector = '';
-			foreach( $search_terms as $term ) {
+			foreach ( $search_terms as $term ) {
 				$term = esc_sql( like_escape( $term ) );
 				$inner_connector = '';
 				$search_clause .= "{$connector}(";
@@ -1047,6 +1090,58 @@ class MLAData {
 	}
 	
 	/**
+	 * Fetch and filter IPTC and EXIF meta data for an image attachment
+	 * 
+	 * Returns 
+	 *
+	 * @since 0.90
+	 *
+	 * @param	int		post ID of attachment
+	 *
+	 * @return	array	Meta data variables
+	 */
+	public static function mla_fetch_attachment_image_metadata( $post_id ) {
+		$results = array(
+			'mla_iptc_metadata' => array (),
+			'mla_exif_metadata' => array ()
+			);
+
+		$post_meta = get_metadata( 'post', $post_id, '_wp_attachment_metadata' );
+		if ( is_array( $post_meta ) && isset( $post_meta[0]['file'] ) ) {
+			$path = get_attached_file($post_id);
+			$size = getimagesize( $path, $info );
+			foreach ( $info as $key => $value ) {
+			}
+			
+			if ( is_callable( 'iptcparse' ) ) {
+				if ( !empty( $info['APP13'] ) ) {
+					$iptc_values = iptcparse( $info['APP13'] );
+					if ( ! is_array( $iptc_values ) )
+						$iptc_values = array();
+						
+					foreach ( $iptc_values as $key => $value ) {
+						if ( in_array( $key, array( '1#000', '1#020', '1#022', '1#120', '1#122', '2#000',  '2#200', '2#201' ) ) ) {
+							$value = unpack( 'nbinary', $value[0] );
+							$results['mla_iptc_metadata'][ $key ] = (string) $value['binary'];
+						}
+						elseif ( 1 == count( $value ) )
+							$results['mla_iptc_metadata'][ $key ] = $value[0];
+						else
+							$results['mla_iptc_metadata'][ $key ] = $value;
+							
+					} // foreach $value
+				} // !empty
+			}
+				
+			if ( is_callable( 'exif_read_data' ) && in_array( $size[2], array( IMAGETYPE_JPEG, IMAGETYPE_TIFF_II, IMAGETYPE_TIFF_MM ) ) ) {
+				$results['mla_exif_metadata'] = exif_read_data( $path );
+			}
+		}
+		
+		return $results;
+	}
+	
+	/**
 	 * Fetch and filter meta data for an attachment
 	 * 
 	 * Returns a filtered array of a post's meta data. Internal values beginning with '_'
@@ -1333,6 +1428,54 @@ class MLAData {
 		$terms_after = array_diff( array_map( 'intval', $terms_before ), $tags );
 
 		return $terms_after;
+	}
+	
+	/**
+	 * Format printable version of binary data
+	 * 
+	 * @since 0.90
+	 * 
+	 * @param	string	Binary data
+	 * @param	integer	Bytes to format, default = 0 (all bytes)
+	 * @param	intger	Bytes to format on each line
+	 *
+	 * @return	string	Printable representation of $data
+	 */
+	private static function _hex_dump( $data, $limit = 0, $bytes_per_row = 16 ) {
+		if ( 0 == $limit )
+			$limit = strlen( $data );
+			
+		$position = 0;
+		$output = "\r\n";
+		
+		while ( $position < $limit ) {
+			$row_length = strlen( substr( $data, $position ) );
+			
+			if ( $row_length > ( $limit - $position ) )
+				$row_length = $limit - $position;
+
+			if ( $row_length > $bytes_per_row )
+				$row_length = $bytes_per_row;
+			
+			$row_data = substr( $data, $position, $row_length );
+			
+			$print_string = '';
+			$hex_string = '';
+			for ( $index = 0; $index < $row_length; $index++ ) {
+				$char = ord( substr( $row_data, $index, 1 ) );
+				if ( ( 31 < $char ) && ( 127 > $char ) )
+					$print_string .= chr($char);
+				else
+					$print_string .= '.';
+					
+				$hex_string .= ' ' . bin2hex( chr($char) );
+			} // for
+			
+			$output .= str_pad( $print_string, $bytes_per_row, ' ', STR_PAD_RIGHT ) . $hex_string . "\r\n";
+			$position += $row_length;
+		} // while
+		
+		return $output;
 	}
 } // class MLAData
 ?>

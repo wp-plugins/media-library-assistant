@@ -1,5 +1,7 @@
 <!-- template="page" -->
-<a name="backtotop"></a><div class="wrap">
+<a name="backtotop"></a>
+&nbsp;
+<div class="wrap">
 <div id="icon-options-general" class="icon32"><br/></div>
 <h2>Media Library Assistant [+version+] Settings</h2>
 [+messages+]
@@ -235,9 +237,30 @@
 </form>
 <!-- template="documentation-tab" -->
 <div class="mla-display-settings-page" id="mla-display-settings-documentation-tab">
-<p>
-<a href="#mla_gallery_templates">Go to <strong>Style and Markup Templates</strong></a>
-</p>
+<h3>In this section, jump to:</h3>
+<ul style="list-style-position:inside; list-style:disc; line-height: 18px">
+<li>
+<a href="#mla_gallery_templates"><strong>Style and Markup Templates</strong></a>
+</li>
+<li>
+<a href="#mla_style_parameters"><strong>Substitution parameters for style templates</strong></a>
+</li>
+<li>
+<a href="#mla_markup_parameters"><strong>Substitution parameters for markup templates</strong></a>
+</li>
+<li>
+<a href="#mla_attachment_parameters"><strong>Attachment-specific substitution parameters for markup templates</strong></a>
+</li>
+<li>
+<a href="#mla_variable_parameters"><strong>Field-level markup substitution parameters</strong></a>
+</li>
+<li>
+<a href="#mla_table_example"><strong>A table-based template example</strong></a>
+</li>
+<li>
+<a href="#mla_iptc_identifiers"><strong>IPTC identifiers and friendly names</strong></a>
+</li>
+</ul>
 <h3>Plugin Code Documentation</h3>
 <p>
 If you are a developer interested in how this plugin is put together, you should
@@ -420,12 +443,19 @@ The "mla_debug" parameter controls the display of information about the query pa
 <p>
 The Style and Markup templates give you great flexibility for the content and format of each <code>[mla_gallery]</code>. You can define as many templates as you need.
 </p>
+<p>
 Style templates provide gallery-specific CSS inline styles. Markup templates provide the HTML markup for 1) the beginning of the gallery, 2) the beginning of each row, 3) each gallery item, 4) the end of each row and 5) the end of the gallery. The attachment-specific markup parameters let you choose among most of the attachment fields, not just the caption.
+</p>
 <p>
 The MLA Gallery tab on the Settings page lets you add, change and delete custom templates. The default tempates are also displayed on this tab for easy reference.
 </p>
 <p>
-In a template, substitution parameters are surrounded by opening ('[+') and closing ('+]') tags to separate them from the template text; see the default templates for many examples.
+In a template, substitution parameters are surrounded by opening ('[+') and closing ('+]') delimiters to separate them from the template text; see the default templates for many examples.
+</p>
+<a name="mla_style_parameters"></a>
+&nbsp;
+<p>
+<a href="#backtotop">Go to Top</a>
 </p>
 <h4>Substitution parameters for style templates</h4>
 <table>
@@ -482,6 +512,11 @@ In a template, substitution parameters are surrounded by opening ('[+') and clos
 <td>shortcode 'size' parameter, default = 'thumbnail'</td>
 </tr>
 </table>
+<a name="mla_markup_parameters"></a>
+&nbsp;
+<p>
+<a href="#backtotop">Go to Top</a>
+</p>
 <h4>Substitution parameters for markup templates</h4>
 <table>
 <tr>
@@ -545,6 +580,11 @@ In a template, substitution parameters are surrounded by opening ('[+') and clos
 <td>full path to the upload directory, without trailing slash</td>
 </tr>
 </table>
+<a name="mla_attachment_parameters"></a>
+&nbsp;
+<p>
+<a href="#backtotop">Go to Top</a>
+</p>
 <h4>Attachment-specific substitution parameters for markup templates</h4>
 <table>
 <tr>
@@ -688,9 +728,63 @@ In a template, substitution parameters are surrounded by opening ('[+') and clos
 <td>for image/icon items, URL of the gallery image/icon</td>
 </tr>
 </table>
+<a name="mla_variable_parameters"></a>
+&nbsp;
+<p>
+<a href="#backtotop">Go to Top</a>
+</p>
+<h3>Field-level Markup Substitution Parameters</h3>
+<p>
+Field-level substitution parameters let you access custom fields, taxonomy terms, IPTC metadata and EXIF metadata for display in an MLA gallery. For these parameters, the value you code within the surrounding the ('[+') and ('+]') delimiters has three parts; the prefix, the field name and the optional ",single" indicator.
+</p>
+<p>
+The <strong>prefix</strong> defines which type of field-level data you are accessing. It must immediately follow the opening ('[+') delimiter and end with a colon (':'). There can be no spaces in this part of the parameter.
+</p>
+<p>
+The <strong>field name</strong> defines which field-level data element you are accessing. It must immediately follow the colon (':'). There can be no spaces between the colon and the field name. Spaces are allowed within the field name to accomodate custom field names that contain them. 
+</p>
+<p>
+The optional <strong>",single" indicator</strong> defines how to handle fields with multiple values. It must immediately follow the field name and end with the closing delimiter ('+]'). There can be no spaces in this part of the parameter. If this part of the parameter is present, only the first value of the field will be returned. Use this indicator to limit the data returned for a custom field, taxonomy or metadata field that can have many values.
+</p>
+<p>
+There are four prefix values for field-level data. Prefix values must be coded as shown; all lowercase letters.
+</p>
+<table>
+	<tr>
+		<td style="padding-right: 10px; vertical-align: top; font-weight:bold">custom</td>
+		<td>WordPress Custom Fields, which you can define and populate on the Edit Media screen. The field name, or key, can contain spaces and some punctuation characters. You <strong>cannot use the plus sign ('+')</strong> in a field name you want to use with <code>[mla_gallery]</code>. Custom field names are case-sensitive; "client" and "Client" are not the same.</td>
+	</tr>
+	<tr>
+		<td style="padding-right: 10px; vertical-align: top; font-weight:bold">terms</td>
+		<td>WordPress Category, tag or custom taxonomy terms. For this category, you code the name of the taxonomy as the field name. The term(s) associated with the attachment will be displayed in the <code>[mla_gallery]</code>. Note that you must use the name/slug string for taxonomy, not the "title" string. For example, use "attachment-category" or "attachment-tag", not "Att. Category" or "Attachment Category".</td>
+	</tr>
+	<tr>
+		<td style="padding-right: 10px; vertical-align: top; font-weight:bold">iptc</td>
+		<td>
+		The IPTC (International Press Telecommunications Council) metadata, if any, embedded in the image file. For this category, you can code any of the IPTC DataSet tag and field identifiers, e.g., "2#025" for the Keywords field. You can also use the "friendly name" MLA defines for most of the IPTC fields; see the <a href="#mla_iptc_identifiers">table of identifiers and friendly names</a> below. <br />
+		&nbsp;<br />
+		You can find more information in the <a href="http://www.iptc.org/std/IIM/4.1/specification/IIMV4.1.pdf" title="IPTC-NAA Information Interchange Model Version No. 4.1 specification" target="_blank">IPTC-NAA Information Interchange Model Version No. 4.1 specification</a>.</td>
+	</tr>
+	<tr>
+		<td style="padding-right: 10px; vertical-align: top; font-weight:bold">exif</td>
+		<td>
+		The EXIF (EXchangeable Image File) metadata, if any, embedded in a JPEG DCT or TIFF Rev 6.0 image file. 
+		Though the specification is not currently maintained by any industry or standards organization, almost all camera manufacturers use it. It is also supported by many image editing programs such as Adobe PhotoShop.
+		For this category, you can code any of the field names embedded in the image by the camera or editing software. The is no official list of standard field names, so you just have to know the names your camera and software use; field names are case-sensitive.
+		<br />&nbsp;<br />
+		You can find more information in the <a href="http://en.wikipedia.org/wiki/Exchangeable_image_file_format" title="IPTC-NAA Information Interchange Model Version No. 4.1 specification" target="_blank">Exchangeable image file format</a> article on Wikipedia.</td>
+	</tr>
+</table>
+
+<a name="mla_table_example"></a>
+&nbsp;
+<p>
+<a href="#backtotop">Go to Top</a>
+</p>
 <h3>A Table-based Template Example</h3>
 <p>
 Here's a small example that shows a gallery using <code>&lt;table&gt;</code> markup.
+The Item markup section shows how to use the "terms", "custom", "iptc" and "exif" substitution parameters.
 </p>
 <h4>Style Template</h4>
 <code>
@@ -738,6 +832,11 @@ Here's a small example that shows a gallery using <code>&lt;table&gt;</code> mar
 		&nbsp;&nbsp;&nbsp;&nbsp;&lt;strong&gt;[+title+]&lt;/strong&gt;&lt;br /&gt;<br />
 		&nbsp;&nbsp;&nbsp;&nbsp;[+description+]&lt;br /&gt;<br />
 		&nbsp;&nbsp;&nbsp;&nbsp;[+date+]<br />
+		&nbsp;&nbsp;&nbsp;&nbsp;[+custom:client,single+]<br />
+		&nbsp;&nbsp;&nbsp;&nbsp;[+terms:category+]<br />
+		&nbsp;&nbsp;&nbsp;&nbsp;[+iptc:caption-or-abstract+]<br />
+		&nbsp;&nbsp;&nbsp;&nbsp;[+iptc:2#025,single+]<br />
+		&nbsp;&nbsp;&nbsp;&nbsp;[+exif:Artist+]
 	&lt;/td&gt;</code>
 </td>
 	</tr>
@@ -750,5 +849,97 @@ Here's a small example that shows a gallery using <code>&lt;table&gt;</code> mar
 		<td><code>&lt;/table&gt;</code></td>
 	</tr>
 </table>
-
+<a name="mla_iptc_identifiers"></a>
+&nbsp;
+<p>
+<a href="#backtotop">Go to Top</a>
+</p>
+<h3>IPTC Identifiers and Friendly Names</h3>
+<table>
+<tr><td colspan="3" style="font-weight:bold">Envelope Record</td></tr>
+<tr><td style="padding-right: 10px; vertical-align: top; font-weight:bold">model-version</td><td style="padding-right: 10px; vertical-align: top">1#000</td><td style="padding-right: 10px; vertical-align: top">2 octet binary IIM version number</td></tr>
+<tr><td style="padding-right: 10px; vertical-align: top; font-weight:bold">destination</td><td style="padding-right: 10px; vertical-align: top">1#005</td><td style="padding-right: 10px; vertical-align: top">Max 1024 characters of Destination (ISO routing information); repeatable</td></tr>
+<tr><td style="padding-right: 10px; vertical-align: top; font-weight:bold">file-format</td><td style="padding-right: 10px; vertical-align: top">1#020</td><td style="padding-right: 10px; vertical-align: top">2 octet binary file format number, see IPTC-NAA V4 Appendix A</td></tr>
+<tr><td style="padding-right: 10px; vertical-align: top; font-weight:bold">file-format-version</td><td style="padding-right: 10px; vertical-align: top">1#022</td><td style="padding-right: 10px; vertical-align: top">2 octet binary file format version number</td></tr>
+<tr><td style="padding-right: 10px; vertical-align: top; font-weight:bold">service-identifier</td><td style="padding-right: 10px; vertical-align: top">1#030</td><td style="padding-right: 10px; vertical-align: top">Max 10 characters of Service Identifier and product</td></tr>
+<tr><td style="padding-right: 10px; vertical-align: top; font-weight:bold">envelope-number</td><td style="padding-right: 10px; vertical-align: top">1#040</td><td style="padding-right: 10px; vertical-align: top">8 Character Envelope Number</td></tr>
+<tr><td style="padding-right: 10px; vertical-align: top; font-weight:bold">product-id</td><td style="padding-right: 10px; vertical-align: top">1#050</td><td style="padding-right: 10px; vertical-align: top">Max 32 characters subset of provider's overall service; repeatable</td></tr>
+<tr><td style="padding-right: 10px; vertical-align: top; font-weight:bold">envelope-priority</td><td style="padding-right: 10px; vertical-align: top">1#060</td><td style="padding-right: 10px; vertical-align: top">1 numeric character of envelope handling priority (not urgency)</td></tr>
+<tr><td style="padding-right: 10px; vertical-align: top; font-weight:bold">date-sent</td><td style="padding-right: 10px; vertical-align: top">1#070</td><td style="padding-right: 10px; vertical-align: top">8 numeric characters of Date Sent by service - CCYYMMDD</td></tr>
+<tr><td style="padding-right: 10px; vertical-align: top; font-weight:bold">time-sent</td><td style="padding-right: 10px; vertical-align: top">1#080</td><td style="padding-right: 10px; vertical-align: top">11 characters of Time Sent by service - HHMMSS±HHMM</td></tr>
+<tr><td style="padding-right: 10px; vertical-align: top; font-weight:bold">coded-character-set</td><td style="padding-right: 10px; vertical-align: top">1#090</td><td style="padding-right: 10px; vertical-align: top">Max 32 characters of control functions, etc.</td></tr>
+<tr><td style="padding-right: 10px; vertical-align: top; font-weight:bold">uno</td><td style="padding-right: 10px; vertical-align: top">1#100</td><td style="padding-right: 10px; vertical-align: top">14 to 80 characters of eternal, globally unique identification for objects</td></tr>
+<tr><td style="padding-right: 10px; vertical-align: top; font-weight:bold">arm-identifier</td><td style="padding-right: 10px; vertical-align: top">1#120</td><td style="padding-right: 10px; vertical-align: top">2 octet binary Abstract Relationship Model Identifier</td></tr>
+<tr><td style="padding-right: 10px; vertical-align: top; font-weight:bold">arm-version</td><td style="padding-right: 10px; vertical-align: top">1#122</td><td style="padding-right: 10px; vertical-align: top">2 octet binary Abstract Relationship Model Version</td></tr>
+<tr><td colspan="3" style="font-weight:bold">&nbsp;<br />Application Record</td></tr>
+<tr><td style="padding-right: 10px; vertical-align: top; font-weight:bold">record-version</td><td style="padding-right: 10px; vertical-align: top">2#000</td><td style="padding-right: 10px; vertical-align: top">2 octet binary Information Interchange Model, Part II version number</td></tr>
+<tr><td style="padding-right: 10px; vertical-align: top; font-weight:bold">object-type-reference</td><td style="padding-right: 10px; vertical-align: top">2#003</td><td style="padding-right: 10px; vertical-align: top">3 to 67 Characters of Object Type Reference number and optional text</td></tr>
+<tr><td style="padding-right: 10px; vertical-align: top; font-weight:bold">object-attribute-reference</td><td style="padding-right: 10px; vertical-align: top">2#004</td><td style="padding-right: 10px; vertical-align: top">3 to 67 Characters of Object Attribute Reference number and optional text; repeatable</td></tr>
+<tr><td style="padding-right: 10px; vertical-align: top; font-weight:bold">object-name</td><td style="padding-right: 10px; vertical-align: top">2#005</td><td style="padding-right: 10px; vertical-align: top">Max 64 characters of the object name or shorthand reference</td></tr>
+<tr><td style="padding-right: 10px; vertical-align: top; font-weight:bold">edit-status</td><td style="padding-right: 10px; vertical-align: top">2#007</td><td style="padding-right: 10px; vertical-align: top">Max 64 characters of the status of the objectdata</td></tr>
+<tr><td style="padding-right: 10px; vertical-align: top; font-weight:bold">editorial-update</td><td style="padding-right: 10px; vertical-align: top">2#008</td><td style="padding-right: 10px; vertical-align: top">2 numeric characters of the type of update this object provides</td></tr>
+<tr><td style="padding-right: 10px; vertical-align: top; font-weight:bold">urgency</td><td style="padding-right: 10px; vertical-align: top">2#010</td><td style="padding-right: 10px; vertical-align: top">1 numeric character of the editorial urgency of content</td></tr>
+<tr><td style="padding-right: 10px; vertical-align: top; font-weight:bold">subject-reference</td><td style="padding-right: 10px; vertical-align: top">2#012</td><td style="padding-right: 10px; vertical-align: top">13 to 236 characters of a structured definition of the subject matter; repeatable</td></tr>
+<tr><td style="padding-right: 10px; vertical-align: top; font-weight:bold">category</td><td style="padding-right: 10px; vertical-align: top">2#015</td><td style="padding-right: 10px; vertical-align: top">Max 3 characters of the subject of the objectdata, DEPRECATED</td></tr>
+<tr><td style="padding-right: 10px; vertical-align: top; font-weight:bold">supplemental-category</td><td style="padding-right: 10px; vertical-align: top">2#020</td><td style="padding-right: 10px; vertical-align: top">Max 32 characters (each) of further refinement of subject, DEPRECATED; repeatable</td></tr>
+<tr><td style="padding-right: 10px; vertical-align: top; font-weight:bold">fixture-identifier</td><td style="padding-right: 10px; vertical-align: top">2#022</td><td style="padding-right: 10px; vertical-align: top">Max 32 characters identifying recurring, predictable content</td></tr>
+<tr><td style="padding-right: 10px; vertical-align: top; font-weight:bold">keywords</td><td style="padding-right: 10px; vertical-align: top">2#025</td><td style="padding-right: 10px; vertical-align: top">Max 64 characters (each) of tags; repeatable</td></tr>
+<tr><td style="padding-right: 10px; vertical-align: top; font-weight:bold">content-location-code</td><td style="padding-right: 10px; vertical-align: top">2#026</td><td style="padding-right: 10px; vertical-align: top">3 characters of ISO3166 country code or IPTC-assigned code; repeatable</td></tr>
+<tr><td style="padding-right: 10px; vertical-align: top; font-weight:bold">content-location-name</td><td style="padding-right: 10px; vertical-align: top">2#027</td><td style="padding-right: 10px; vertical-align: top">Max 64 characters of publishable country/geographical location name; repeatable</td></tr>
+<tr><td style="padding-right: 10px; vertical-align: top; font-weight:bold">release-date</td><td style="padding-right: 10px; vertical-align: top">2#030</td><td style="padding-right: 10px; vertical-align: top">8 numeric characters of Release Date (earliest use) - CCYYMMDD</td></tr>
+<tr><td style="padding-right: 10px; vertical-align: top; font-weight:bold">release-time</td><td style="padding-right: 10px; vertical-align: top">2#035</td><td style="padding-right: 10px; vertical-align: top">11 characters of Release Time (earliest use) - HHMMSS±HHMM</td></tr>
+<tr><td style="padding-right: 10px; vertical-align: top; font-weight:bold">expiration-date</td><td style="padding-right: 10px; vertical-align: top">2#037</td><td style="padding-right: 10px; vertical-align: top">8 numeric characters of Expiration Date (latest use) -  CCYYMDD</td></tr>
+<tr><td style="padding-right: 10px; vertical-align: top; font-weight:bold">expiration-time</td><td style="padding-right: 10px; vertical-align: top">2#038</td><td style="padding-right: 10px; vertical-align: top">11 characters of Expiration Time (latest use) - HHMMSS±HHMM</td></tr>
+<tr><td style="padding-right: 10px; vertical-align: top; font-weight:bold">special-instructions</td><td style="padding-right: 10px; vertical-align: top">2#040</td><td style="padding-right: 10px; vertical-align: top">Max 256 Characters of editorial instructions, e.g., embargoes and warnings</td></tr>
+<tr><td style="padding-right: 10px; vertical-align: top; font-weight:bold">action-advised</td><td style="padding-right: 10px; vertical-align: top">2#042</td><td style="padding-right: 10px; vertical-align: top">2 numeric characters of type of action this object provides to a previous object</td></tr>
+<tr><td style="padding-right: 10px; vertical-align: top; font-weight:bold">reference-service</td><td style="padding-right: 10px; vertical-align: top">2#045</td><td style="padding-right: 10px; vertical-align: top">Max 10 characters of the Service ID (1#030) of a prior envelope; repeatable</td></tr>
+<tr><td style="padding-right: 10px; vertical-align: top; font-weight:bold">reference-date</td><td style="padding-right: 10px; vertical-align: top">2#047</td><td style="padding-right: 10px; vertical-align: top">8 numeric characters of prior envelope Reference Date (1#070) - CCYYMMDD; repeatable</td></tr>
+<tr><td style="padding-right: 10px; vertical-align: top; font-weight:bold">reference-number</td><td style="padding-right: 10px; vertical-align: top">2#050</td><td style="padding-right: 10px; vertical-align: top">8 characters of prior envelope Reference Number (1#040); repeatable</td></tr>
+<tr><td style="padding-right: 10px; vertical-align: top; font-weight:bold">date-created</td><td style="padding-right: 10px; vertical-align: top">2#055</td><td style="padding-right: 10px; vertical-align: top">8 numeric characters of intellectual content Date Created - CCYYMMDD</td></tr>
+<tr><td style="padding-right: 10px; vertical-align: top; font-weight:bold">time-created</td><td style="padding-right: 10px; vertical-align: top">2#060</td><td style="padding-right: 10px; vertical-align: top">11 characters of intellectual content Time Created - HHMMSS±HHMM</td></tr>
+<tr><td style="padding-right: 10px; vertical-align: top; font-weight:bold">digital-creation-date</td><td style="padding-right: 10px; vertical-align: top">2#062</td><td style="padding-right: 10px; vertical-align: top">8 numeric characters of digital representation creation date - CCYYMMDD</td></tr>
+<tr><td style="padding-right: 10px; vertical-align: top; font-weight:bold">digital-creation-time</td><td style="padding-right: 10px; vertical-align: top">2#063</td><td style="padding-right: 10px; vertical-align: top">11 characters of digital representation creation time - HHMMSS±HHMM</td></tr>
+<tr><td style="padding-right: 10px; vertical-align: top; font-weight:bold">originating-program</td><td style="padding-right: 10px; vertical-align: top">2#065</td><td style="padding-right: 10px; vertical-align: top">Max 32 characters of the program used to create the objectdata</td></tr>
+<tr><td style="padding-right: 10px; vertical-align: top; font-weight:bold">program-version</td><td style="padding-right: 10px; vertical-align: top">2#070</td><td style="padding-right: 10px; vertical-align: top">Program Version - Max 10 characters of the version of the program used to create the objectdata</td></tr>
+<tr><td style="padding-right: 10px; vertical-align: top; font-weight:bold">object-cycle</td><td style="padding-right: 10px; vertical-align: top">2#075</td><td style="padding-right: 10px; vertical-align: top">1 character where a=morning, p=evening, b=both</td></tr>
+<tr><td style="padding-right: 10px; vertical-align: top; font-weight:bold">by-line</td><td style="padding-right: 10px; vertical-align: top">2#080</td><td style="padding-right: 10px; vertical-align: top">Max 32 Characters of the name of the objectdata creator, e.g., the writer, photographer; repeatable</td></tr>
+<tr><td style="padding-right: 10px; vertical-align: top; font-weight:bold">by-line-title</td><td style="padding-right: 10px; vertical-align: top">2#085</td><td style="padding-right: 10px; vertical-align: top">Max 32 characters of the title of the objectdata creator; repeatable</td></tr>
+<tr><td style="padding-right: 10px; vertical-align: top; font-weight:bold">city</td><td style="padding-right: 10px; vertical-align: top">2#090</td><td style="padding-right: 10px; vertical-align: top">Max 32 Characters of the city of objectdata origin</td></tr>
+<tr><td style="padding-right: 10px; vertical-align: top; font-weight:bold">sub-location</td><td style="padding-right: 10px; vertical-align: top">2#092</td><td style="padding-right: 10px; vertical-align: top">Max 32 Characters of the location within the city of objectdata origin</td></tr>
+<tr><td style="padding-right: 10px; vertical-align: top; font-weight:bold">province-or-state</td><td style="padding-right: 10px; vertical-align: top">2#095</td><td style="padding-right: 10px; vertical-align: top">Max 32 Characters of the objectdata origin Province or State</td></tr>
+<tr><td style="padding-right: 10px; vertical-align: top; font-weight:bold">country-or-primary-location-code</td><td style="padding-right: 10px; vertical-align: top">2#100</td><td style="padding-right: 10px; vertical-align: top">3 characters of ISO3166 or IPTC-assigned code for Country of objectdata origin</td></tr>
+<tr><td style="padding-right: 10px; vertical-align: top; font-weight:bold">country-or-primary-location-name</td><td style="padding-right: 10px; vertical-align: top">2#101</td><td style="padding-right: 10px; vertical-align: top">Max 64 characters of publishable country/geographical location name; repeatable</td></tr>
+<tr><td style="padding-right: 10px; vertical-align: top; font-weight:bold">original-transmission-reference</td><td style="padding-right: 10px; vertical-align: top">2#103</td><td style="padding-right: 10px; vertical-align: top">Max 32 characters of a code representing the location of original transmission</td></tr>
+<tr><td style="padding-right: 10px; vertical-align: top; font-weight:bold">headline</td><td style="padding-right: 10px; vertical-align: top">2#105</td><td style="padding-right: 10px; vertical-align: top">Max 256 Characters of a publishable entry providing a synopsis of the contents of the objectdata</td></tr>
+<tr><td style="padding-right: 10px; vertical-align: top; font-weight:bold">credit</td><td style="padding-right: 10px; vertical-align: top">2#110</td><td style="padding-right: 10px; vertical-align: top">Max 32 Characters that identifies the provider of the objectdata (Vs the owner/creator)</td></tr>
+<tr><td style="padding-right: 10px; vertical-align: top; font-weight:bold">source</td><td style="padding-right: 10px; vertical-align: top">2#115</td><td style="padding-right: 10px; vertical-align: top">Max 32 Characters that identifies the original owner of the intellectual content</td></tr>
+<tr><td style="padding-right: 10px; vertical-align: top; font-weight:bold">copyright-notice</td><td style="padding-right: 10px; vertical-align: top">2#116</td><td style="padding-right: 10px; vertical-align: top">Max 128 Characters that contains any necessary copyright notice</td></tr>
+<tr><td style="padding-right: 10px; vertical-align: top; font-weight:bold">contact</td><td style="padding-right: 10px; vertical-align: top">2#118</td><td style="padding-right: 10px; vertical-align: top">Max 128 characters that identifies the person or organisation which can provide further background information; repeatable</td></tr>
+<tr><td style="padding-right: 10px; vertical-align: top; font-weight:bold">caption-or-abstract</td><td style="padding-right: 10px; vertical-align: top">2#120</td><td style="padding-right: 10px; vertical-align: top">Max 2000 Characters of a textual description of the objectdata</td></tr>
+<tr><td style="padding-right: 10px; vertical-align: top; font-weight:bold">caption-writer-or-editor</td><td style="padding-right: 10px; vertical-align: top">2#122</td><td style="padding-right: 10px; vertical-align: top">Max 32 Characters that the identifies the person involved in the writing, editing or correcting the objectdata or caption/abstract; repeatable</td></tr>
+<tr><td style="padding-right: 10px; vertical-align: top; font-weight:bold">rasterized-caption</td><td style="padding-right: 10px; vertical-align: top">2#125</td><td style="padding-right: 10px; vertical-align: top">7360 binary octets of the rasterized caption - 1 bit per pixel, 460x128-pixel image</td></tr>
+<tr><td style="padding-right: 10px; vertical-align: top; font-weight:bold">image-type</td><td style="padding-right: 10px; vertical-align: top">2#130</td><td style="padding-right: 10px; vertical-align: top">2 characters of color composition type and information</td></tr>
+<tr><td style="padding-right: 10px; vertical-align: top; font-weight:bold">image-orientation</td><td style="padding-right: 10px; vertical-align: top">2#131</td><td style="padding-right: 10px; vertical-align: top">1 alphabetic character indicating the image area layout - P=portrait, L=landscape, S=square</td></tr>
+<tr><td style="padding-right: 10px; vertical-align: top; font-weight:bold">language-identifier</td><td style="padding-right: 10px; vertical-align: top">2#135</td><td style="padding-right: 10px; vertical-align: top">2 or 3 aphabetic characters containing the major national language of the object, according to the ISO 639:1988 codes</td></tr>
+<tr><td style="padding-right: 10px; vertical-align: top; font-weight:bold">audio-type</td><td style="padding-right: 10px; vertical-align: top">2#150</td><td style="padding-right: 10px; vertical-align: top">2 characters identifying monaural/stereo and exact type of audio content</td></tr>
+<tr><td style="padding-right: 10px; vertical-align: top; font-weight:bold">audio-sampling-rate</td><td style="padding-right: 10px; vertical-align: top">2#151</td><td style="padding-right: 10px; vertical-align: top">6 numeric characters representing the audio sampling rate in hertz (Hz)</td></tr>
+<tr><td style="padding-right: 10px; vertical-align: top; font-weight:bold">audio-sampling-resolution</td><td style="padding-right: 10px; vertical-align: top">2#152</td><td style="padding-right: 10px; vertical-align: top">2 numeric characters representing the number of bits in each audio sample</td></tr>
+<tr><td style="padding-right: 10px; vertical-align: top; font-weight:bold">audio-duration</td><td style="padding-right: 10px; vertical-align: top">2#153</td><td style="padding-right: 10px; vertical-align: top">6 numeric characters of the Audio Duration - HHMMSS</td></tr>
+<tr><td style="padding-right: 10px; vertical-align: top; font-weight:bold">audio-outcue</td><td style="padding-right: 10px; vertical-align: top">2#154</td><td style="padding-right: 10px; vertical-align: top">Max 64 characters of the content of the end of an audio objectdata</td></tr>
+<tr><td style="padding-right: 10px; vertical-align: top; font-weight:bold">objectdata-preview-file-format</td><td style="padding-right: 10px; vertical-align: top">2#200</td><td style="padding-right: 10px; vertical-align: top">2 octet binary file format of the ObjectData Preview</td></tr>
+<tr><td style="padding-right: 10px; vertical-align: top; font-weight:bold">objectdata-preview-file-format-version</td><td style="padding-right: 10px; vertical-align: top">2#201</td><td style="padding-right: 10px; vertical-align: top">2 octet binary particular version of the ObjectData Preview File Format</td></tr>
+<tr><td style="padding-right: 10px; vertical-align: top; font-weight:bold">objectdata-preview-data</td><td style="padding-right: 10px; vertical-align: top">2#202</td><td style="padding-right: 10px; vertical-align: top">Max 256000 binary octets containing the ObjectData Preview data</td></tr>
+<tr><td colspan="3" style="font-weight:bold">&nbsp;<br />Pre ObjectData Descriptor Record</td></tr>
+<tr><td style="padding-right: 10px; vertical-align: top; font-weight:bold">size-mode</td><td style="padding-right: 10px; vertical-align: top">7#010</td><td style="padding-right: 10px; vertical-align: top">1 numeric character - 0=objectdata size not known, 1=objectdata size known at beginning of transfer</td></tr>
+<tr><td style="padding-right: 10px; vertical-align: top; font-weight:bold">max-subfile-size</td><td style="padding-right: 10px; vertical-align: top">7#020</td><td style="padding-right: 10px; vertical-align: top">4 octet binary maximum subfile dataset(s) size</td></tr>
+<tr><td style="padding-right: 10px; vertical-align: top; font-weight:bold">objectdata-size-announced</td><td style="padding-right: 10px; vertical-align: top">7#090</td><td style="padding-right: 10px; vertical-align: top">4 octet binary objectdata size if known at beginning of transfer</td></tr>
+<tr><td style="padding-right: 10px; vertical-align: top; font-weight:bold">maximum-objectdata-size</td><td style="padding-right: 10px; vertical-align: top">7#095</td><td style="padding-right: 10px; vertical-align: top">4 octet binary largest possible objectdata size</td></tr>
+<tr><td colspan="3" style="font-weight:bold">&nbsp;<br />ObjectData</td></tr>
+<tr><td style="padding-right: 10px; vertical-align: top; font-weight:bold">subfile</td><td style="padding-right: 10px; vertical-align: top">8#010</td><td style="padding-right: 10px; vertical-align: top">Subfile DataSet containing the objectdata itself; repeatable</td></tr>
+<tr><td colspan="3" style="font-weight:bold">&nbsp;<br />Post ObjectData Descriptor Record</td></tr>
+<tr><td style="padding-right: 10px; vertical-align: top; font-weight:bold">confirmed-objectdata-size</td><td style="padding-right: 10px; vertical-align: top">9#010</td><td style="padding-right: 10px; vertical-align: top">4 octet binary total objectdata size</td></tr>
+</table>
+<p>
+<a href="#backtotop">Go to Top</a>
+</p>
 </div>

@@ -3,8 +3,8 @@ Contributors: dglingren
 Donate link: http://fairtradejudaica.org/make-a-difference/donate/
 Tags: attachments, documents, gallery, image, images, media, library, media library, media-tags, media tags, tags, media categories, categories
 Requires at least: 3.3
-Tested up to: 3.4.2
-Stable tag: 0.81
+Tested up to: 3.5
+Stable tag: 0.90
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -14,21 +14,23 @@ Provides enhancements to the Media Library; powerful[mla_gallery], full taxonomy
 
 The Media Library Assistant provides several enhancements for managing the Media Library, including:
 
-* The **[mla_gallery] shortcode**, used in a post, page or custom post type to add a gallery of images and/or other Media Library items (such as PDF documents). [MLA Gallery](http://wordpress.org/extend/plugins/media-library-assistant/other_notes/ "Complete Documentation") is a superset of the [gallery] shortcode in the WordPress core; it is compatible with [gallery] and provides many enhancements. These include: 1) full support for WordPress categories, tags and custom taxonomies, 2) support for all post_mime_type values, not just images 3) media Library items need not be "attached" to the post, and 4) control over the styles, markup and content of each gallery using Style and Markup Templates.
+* The **`[mla_gallery]` shortcode**, used in a post, page or custom post type to add a gallery of images and/or other Media Library items (such as PDF documents). [MLA Gallery](http://wordpress.org/extend/plugins/media-library-assistant/other_notes/ "Complete Documentation") is a superset of the `[gallery]` shortcode in the WordPress core; it is compatible with `[gallery]` and provides many enhancements. These include: 1) full query and display support for WordPress categories, tags, custom taxonomies and custom fields, 2) support for all post_mime_type values, not just images 3) media Library items need not be "attached" to the post, and 4) control over the styles, markup and content of each gallery using Style and Markup Templates.
+
+* Display **IPTC** and **EXIF** metadata with `[mla_gallery]` custom templates.
 
 * **Enhanced Search Media box**. Search can be extended to the name/slug, ALT text and caption fields. The connector between search terms can be "and" or "or".
 
-* **Where-used reporting** shows which posts use a media item as the "featured image", an inserted image or link, an entry in a [gallery] and/or an entry in an [mla_gallery].
+* **Where-used reporting** shows which posts use a media item as the "featured image", an inserted image or link, an entry in a `[gallery]` and/or an entry in an `[mla_gallery]`.
 
 * **Complete support for ALL taxonomies**, including the standard Categories and Tags, your custom taxonomies and the Assistant's pre-defined Att. Categories and Att. Tags. You can add taxonomy columns to the Assistant listing, filter on any taxonomy, assign terms and list the attachments for a term.
 * An inline "Bulk Edit" area; update author or parent, add, remove or replace taxonomy terms for several attachments at once
 * An inline "Quick Edit" action for many common fields
-* Displays more attachment information such as parent information, file URL and image metadata
+* Displays more attachment information such as parent information, file URL and image metadata. Uses and enhances the new Edit Media screen for WordPress 3.5 and above.
 * Allows you to edit the post_parent, the menu_order and to "unattach" items
 * Provides additional view filters for mime types and taxonomies
 * Provides many more listing columns (more than 20) to choose from
 
-The Assistant is designed to work like the standard Media Library pages, so the learning curve is short and gentle. Contextual help is provided on every new screen to highlight new features. The [Other Notes section](http://wordpress.org/extend/plugins/media-library-assistant/other_notes/ "Click here, then scroll down for Help Summary") contains a summary of the help text following the [mla_gallery] documentation.
+The Assistant is designed to work like the standard Media Library pages, so the learning curve is short and gentle. Contextual help is provided on every new screen to highlight new features. The [Other Notes section](http://wordpress.org/extend/plugins/media-library-assistant/other_notes/ "Click here, then scroll down for Help Summary") contains a summary of the help text following the `[mla_gallery]` documentation.
 
 This plugin was inspired by my work on the WordPress web site for our nonprofit, Fair Trade Judaica. If you find the Media Library Assistant plugin useful and would like to support a great cause, consider a [<strong>tax-deductible</strong> donation](http://fairtradejudaica.org/make-a-difference/donate/ "Support Our Work") to our work. Thank you!
 
@@ -40,21 +42,21 @@ This plugin was inspired by my work on the WordPress web site for our nonprofit,
 1. Visit the "Assistant" submenu in the Media admin section
 1. Click the Screen Options link to customize the display
 1. Use the enhanced Edit, Quick Edit and Bulk Edit pages to assign categories and tags
-1. Use the [mla_gallery] shortcode to add galleries of images, documents and more to your posts and pages
+1. Use the `[mla_gallery]` shortcode to add galleries of images, documents and more to your posts and pages
 
 == Frequently Asked Questions ==
 
 = How can I use Categories, Tags and custom taxonomies to select images for display in my posts and pages? =
 
-The powerful [mla_gallery] shortcode supports almost all of the query flexibility provided by the WP_Query class. You can find [complete documentation](http://wordpress.org/extend/plugins/media-library-assistant/other_notes/ "Complete Documentation") in the Other Notes section.
+The powerful `[mla_gallery]` shortcode supports almost all of the query flexibility provided by the WP_Query class. You can find [complete documentation](http://wordpress.org/extend/plugins/media-library-assistant/other_notes/ "Complete Documentation") in the Other Notes section.
 
-= Can I use [mla_gallery] for attachments other than images? =
+= Can I use `[mla_gallery]` for attachments other than images? =
 
-Yes! The [mla_gallery] shortcode supports all MIME types when you add the post_mime_type parameter to your query. You can build a gallery of your PDF documents, plain text files and other attachments. You can mix images and other MIME types in the same gallery, too; check out [the documentation](http://wordpress.org/extend/plugins/media-library-assistant/other_notes/ "Complete Documentation").
+Yes! The `[mla_gallery]` shortcode supports all MIME types when you add the post_mime_type parameter to your query. You can build a gallery of your PDF documents, plain text files and other attachments. You can mix images and other MIME types in the same gallery, too; check out [the documentation](http://wordpress.org/extend/plugins/media-library-assistant/other_notes/ "Complete Documentation").
 
 = Can I attach an image to more than one post or page? =
 
-No; that's a structural limitation of the WordPress database. However, you can use Categories, Tags and custom taxonomies to organize your images and associate them with posts and pages in any way you like. The [mla_gallery] shortcode makes it easy.
+No; that's a structural limitation of the WordPress database. However, you can use Categories, Tags and custom taxonomies to organize your images and associate them with posts and pages in any way you like. The `[mla_gallery]` shortcode makes it easy.
 
 = Can the Assistant use the standard WordPress post Categories and Tags? =
 
@@ -104,6 +106,12 @@ All of the MLA source code has been annotated with "DocBlocks", a special type o
 
 == Changelog ==
 
+= 0.90 =
+* New: Field-level IPTC and EXIF metadata support for `[mla_gallery]` display using custom markup templates.
+* New: Field-level Custom field and taxonomy term support for `[mla_gallery]` display using custom markup templates.
+* New: Contextual help tabs added to WordPress 3.5+ Edit Media Screen, explaining MLA enhancements.
+* Updated for WordPress version 3.5!
+
 = 0.81 =
 * New: Improved default Style template, `[mla_gallery]` parameters "mla_itemwidth" and "mla_margin" added to allow control of gallery item spacing.
 * Fix: Quick edit support of WordPress standard Categories taxonomy fixed.
@@ -127,10 +135,10 @@ All of the MLA source code has been annotated with "DocBlocks", a special type o
 * Fix: Removed (!) Warning displays for empty Gallery in and MLA Gallery in column entries.
 
 = 0.70 =
-* New: "Gallery in" and "MLA Gallery in" columns show where the item appears in [gallery] and [mla_gallery] shortcode output.
+* New: "Gallery in" and "MLA Gallery in" columns show where the item appears in `[gallery]` and `[mla_gallery]` shortcode output.
 * New: Post titles in the where-used columns contain a link to the Edit Post/Page screen.
 * New: Title/Name column distinguishes between "BAD PARENT" (no where-used references to the item) and "INVALID PARENT" (does not exist).
-* Fix: [mla_gallery] queries are modified to avoid a conflict with the Role Scoper plugin.
+* Fix: `[mla_gallery]` queries are modified to avoid a conflict with the Role Scoper plugin.
 * Fix: Undefined taxonomies are now bypassed when defining table columns, avoiding (!) Notice displays after changing taxonomy support settings.
 
 = 0.60 =
@@ -140,12 +148,12 @@ All of the MLA source code has been annotated with "DocBlocks", a special type o
 * New: The Author column now contains a link to an author-specific search of the Media Library.
 * New: The Attached to column now contains a link to the Edit Post/Page screen for the parent.
 * New: For WordPress version 3.5, the WordPress standard Edit Media screen replaces the MLA Edit Single Item screen.
-* Fix: HTML markup is no longer escaped in [mla_gallery] captions; caption processing now matches the WordPress [gallery] shortcode.
+* Fix: HTML markup is no longer escaped in `[mla_gallery]` captions; caption processing now matches the WordPress `[gallery]` shortcode.
 * Fix: For WordPress version 3.5, duplicate "edit taxonomy" submenu entries will not appear.
 
 = 0.50 =
-* New: [mla_gallery] shortcode, a superset of the [gallery] shortcode that provides many enhancements. These include taxonomy support and all post_mime_type values (not just images). Media Library items need not be "attached" to the post.
-* New: [mla_gallery] shortcode documentation added to Settings page
+* New: `[mla_gallery]` shortcode, a superset of the `[gallery]` shortcode that provides many enhancements. These include taxonomy support and all post_mime_type values (not just images). Media Library items need not be "attached" to the post.
+* New: `[mla_gallery]` shortcode documentation added to Settings page
 * New: Donate button and link added to Settings page
 
 = 0.41 =
@@ -192,23 +200,26 @@ All of the MLA source code has been annotated with "DocBlocks", a special type o
 
 == Upgrade Notice ==
 
+= 0.90 =
+Get `[mla_gallery]` support for custom fields, taxonomy terms and IPTC/EXIF metadata. Updated for WordPress 3.5!
+
 = 0.81 =
-* Get improved default Style template, `[mla_gallery]` parameters "mla_itemwidth" and "mla_margin" for control of gallery item spacing. Quick edit support of WordPress standard Categories taxonomy has been fixed.
+Get improved default Style template, `[mla_gallery]` parameters "mla_itemwidth" and "mla_margin" for control of gallery item spacing. Quick edit support of WordPress standard Categories taxonomy has been fixed.
 
 = 0.80 =
 Get the MLA Gallery Style and Markup Templates for control over CSS styles, HTML markup and data content of `[mla_gallery]` shortcode output. Eight other enhancements and four fixes.
 
 = 0.71 =
-Get the new "Gallery in" and "MLA Gallery in" where-used reporting to see where items are returned by the [gallery] and [mla_gallery] shortcodes. Two other enhancements and two fixes.
+Get the new "Gallery in" and "MLA Gallery in" where-used reporting to see where items are returned by the `[gallery]` and `[mla_gallery]` shortcodes. Two other enhancements and two fixes.
 
 = 0.70 =
-Get the new "Gallery in" and "MLA Gallery in" where-used reporting to see where items are returned by the [gallery] and [mla_gallery] shortcodes. Two other enhancements and two fixes.
+Get the new "Gallery in" and "MLA Gallery in" where-used reporting to see where items are returned by the `[gallery]` and `[mla_gallery]` shortcodes. Two other enhancements and two fixes.
 
 = 0.60 =
 Get the enhanced Search Media box. Extend search to the name/slug, ALT text and caption fields. Connect search terms with "and" or "or". Five other enhancements and two fixes.
 
 = 0.50 =
-Upgrade for the new [mla_gallery] shortcode, a superset of the [gallery] shortcode that provides many enhancements. These include taxonomy support and all post_mime_type values (not just images).
+Upgrade for the new `[mla_gallery]` shortcode, a superset of the `[gallery]` shortcode that provides many enhancements. These include taxonomy support and all post_mime_type values (not just images).
 
 = 0.41 =
 Upgrade for the new Bulk Edit area; add, remove or replace taxonomy terms for several attachments at once. Sort your media listing on ALT Text, exclude revisions from where-used reporting.
@@ -283,13 +294,13 @@ These parameters are only important if the gallery thumbnails are too large to f
 
 To order the gallery randomly, use "orderby=rand". To suppress gallery ordering you can use "orderby=none" or "order=rand".
 
-The Orderby parameter specifies which database field is used to sort the gallery. You can order the gallery by any of the values documented for the WP_Query class reference in the Codex; you are NOT restricted to the values documented for the [gallery] shortcode.
+The Orderby parameter specifies which database field is used to sort the gallery. You can order the gallery by any of the values documented for the WP_Query class reference in the Codex; you are NOT restricted to the values documented for the `[gallery]` shortcode.
 
 <h4>Size</h4>
 
 The Size parameter specifies the image size to use for the thumbnail display. Valid values include "thumbnail", "medium", "large", "full" and any additional image size that was registered with add_image_size(). The default value is "thumbnail". You can use "none" or "" to suppress thumbnail display and substitute the item title string for the image/icon.
 
-The [mla_gallery] shortcode supports an additional Size value, "icon", which shows a 60x60 pixel thumbnail for image items and an appropriate icon for non-image items such as PDF or text files.
+The `[mla_gallery]` shortcode supports an additional Size value, "icon", which shows a 60x60 pixel thumbnail for image items and an appropriate icon for non-image items such as PDF or text files.
 
 <h4>Link</h4>
 
@@ -303,7 +314,7 @@ You can use "post_parent=all" to include or exclude attachments regardless of wh
 
 <h4>Post ID, "ids", Post Parent</h4>
 
-The "id" parameter lets you specify a post ID for your query. If the "id" parameter is not specified, the [mla_gallery] behavior differs from the [gallery] behavior. If your query uses taxonomy or custom field parameters, "author", "author_name" or "s" (search term), then the query will NOT be restricted to items attached to the current post. This lets you build a gallery with any combination of Media Library items that match the parameters.
+The "id" parameter lets you specify a post ID for your query. If the "id" parameter is not specified, the `[mla_gallery]` behavior differs from the `[gallery]` behavior. If your query uses taxonomy or custom field parameters, "author", "author_name" or "s" (search term), then the query will NOT be restricted to items attached to the current post. This lets you build a gallery with any combination of Media Library items that match the parameters.
 
 For WordPress 3.5 and later, the "ids" parameter lets you specify a list of Post IDs. The attachment(s) matching the "ids" values will be displayed in the order specified by the list.
 
@@ -327,7 +338,7 @@ Note that the "tag_id" parameter requires exactly one tag ID; multiple IDs are n
 
 <h4>Taxonomy Parameters</h4>
 
-The [mla_gallery] shortcode supports the simple "{tax} (string)" values (deprecated as of WordPress version 3.1) as well as the more powerful "tax_query" value. 
+The `[mla_gallery]` shortcode supports the simple "{tax} (string)" values (deprecated as of WordPress version 3.1) as well as the more powerful "tax_query" value. 
 
 For simple queries, enter the taxonomy name and the term(s) that must be matched, e.g.:
 
@@ -348,11 +359,11 @@ Remember to use "post_parent=current" if you want to restrict your query to item
 
 <h4>Post Type, Post Status and Post MIME Type</h4>
 
-For compatibility with the WordPress [gallery] shortcode, these parameters default to "post_type=attachment", "post_status=inherit" and "post_mime_type=image". You can override the defaults to, for example, display items in the trash ("post_status=trash") or PDF documents ("post_mime_type=application/pdf") or all MIME types ("post_mime_type=all"). I'm not sure why you'd want to override "post_type", but you are welcome to experiment and let me know what you find.
+For compatibility with the WordPress `[gallery]` shortcode, these parameters default to "post_type=attachment", "post_status=inherit" and "post_mime_type=image". You can override the defaults to, for example, display items in the trash ("post_status=trash") or PDF documents ("post_mime_type=application/pdf") or all MIME types ("post_mime_type=all"). I'm not sure why you'd want to override "post_type", but you are welcome to experiment and let me know what you find.
 
 <h4>Pagination Parameters</h4>
 
-The [mla_gallery] shortcode supplies "nopaging=true" as a default parameter. If you are working with a template that supports pagination you can replace this with specific values for "posts_per_page", "posts_per_archive_page", "paged" and/or "offset" . You can also pass "paged=current" to suppress the "nopaging" default; "current" will be replaced by the appropriate value (get_query_var('paged')).
+The `[mla_gallery]` shortcode supplies "nopaging=true" as a default parameter. If you are working with a template that supports pagination you can replace this with specific values for "posts_per_page", "posts_per_archive_page", "paged" and/or "offset" . You can also pass "paged=current" to suppress the "nopaging" default; "current" will be replaced by the appropriate value (get_query_var('paged')).
 
 <h4>Time Parameters</h4>
 
@@ -360,7 +371,7 @@ Support for time parameters is not included in the current version. I may add it
 
 <h4>Custom Field Parameters</h4>
 
-The [mla_gallery] shortcode supports the simple custom field parameters as well as the more powerful "meta_query" parameters made available as of WordPress 3.1.
+The `[mla_gallery]` shortcode supports the simple custom field parameters as well as the more powerful "meta_query" parameters made available as of WordPress 3.1.
 
 When embedding the shortcode in the body of a post, be very careful when coding the meta_query; it must be a valid PHP array specification. In particular, code the query on one line; splitting it across lines can insert HTML <br> tags and corrupt your query.
 
@@ -376,16 +387,14 @@ The "mla_debug" parameter controls the display of information about the query pa
 
 == MLA Gallery Style and Markup Templates ==
 
-<p>
 The Style and Markup templates give you great flexibility for the content and format of each <code>[mla_gallery]</code>. You can define as many templates as you need.
-</p>
+
 Style templates provide gallery-specific CSS inline styles. Markup templates provide the HTML markup for 1) the beginning of the gallery, 2) the beginning of each row, 3) each gallery item, 4) the end of each row and 5) the end of the gallery. The attachment-specific markup parameters let you choose among most of the attachment fields, not just the caption.
-<p>
+
 The MLA Gallery tab on the Settings page lets you add, change and delete custom templates. The default tempates are also displayed on this tab for easy reference.
-</p>
-<p>
+
 In a template, substitution parameters are surrounded by opening ('[+') and closing ('+]') tags to separate them from the template text; see the default templates for many examples.
-</p>
+
 <h4>Substitution parameters for style templates</h4>
 * `mla_style`: shortcode parameter, default = 'default'
 * `mla_markup`: shortcode parameter, default = 'default'
@@ -453,9 +462,31 @@ In a template, substitution parameters are surrounded by opening ('[+') and clos
 * `thumbnail_width`: for image/icon items, width of the gallery image/icon
 * `thumbnail_height`: for image/icon items, height of the gallery image/icon
 * `thumbnail_url`: for image/icon items, URL of the gallery image/icon
+<h3>Field-level Markup Substitution Parameters</h3>
+
+Field-level substitution parameters let you access custom fields, taxonomy terms, IPTC metadata and EXIF metadata for display in an MLA gallery. For these parameters, the value you code within the surrounding the ('[+') and ('+]') delimiters has three parts; the prefix, the field name and the optional ",single" indicator.
+
+The <strong>prefix</strong> defines which type of field-level data you are accessing. It must immediately follow the opening ('[+') delimiter and end with a colon (':'). There can be no spaces in this part of the parameter.
+
+The <strong>field name</strong> defines which field-level data element you are accessing. It must immediately follow the colon (':'). There can be no spaces between the colon and the field name. Spaces are allowed within the field name to accomodate custom field names that contain them. 
+
+The optional <strong>",single" indicator</strong> defines how to handle fields with multiple values. It must immediately follow the field name and end with the closing delimiter ('+]'). There can be no spaces in this part of the parameter. If this part of the parameter is present, only the first value of the field will be returned. Use this indicator to limit the data returned for a custom field, taxonomy or metadata field that can have many values.
+
+There are four prefix values for field-level data. Prefix values must be coded as shown; all lowercase letters.
+
+* `custom`: WordPress Custom Fields, which you can define and populate on the Edit Media screen. The field name, or key, can contain spaces and some punctuation characters. You <strong>cannot use the plus sign ('+')</strong> in a field name you want to use with `[mla_gallery]`. Custom field names are case-sensitive; "client" and "Client" are not the same.
+* `terms`: WordPress Category, tag or custom taxonomy terms. For this category, you code the name of the taxonomy as the field name. The term(s) associated with the attachment will be displayed in the `[mla_gallery]`. Note that you must use the name/slug string for taxonomy, not the "title" string. For example, use "attachment-category" or "attachment-tag", not "Att. Category" or "Attachment Category".
+
+* `iptc`: The IPTC (International Press Telecommunications Council) metadata, if any, embedded in the image file. For this category, you can code any of the IPTC DataSet tag and field identifiers, e.g., "2#025" for the Keywords field. You can also use the "friendly name" MLA defines for most of the IPTC fields; see the table of identifiers and friendly names in the MLA documentation. You can find more information in the <a href="http://www.iptc.org/std/IIM/4.1/specification/IIMV4.1.pdf" title="IPTC-NAA Information Interchange Model Version No. 4.1 specification" target="_blank">IPTC-NAA Information Interchange Model Version No. 4.1 specification</a>.
+
+* `exif`: The EXIF (EXchangeable Image File) metadata, if any, embedded in a JPEG DCT or TIFF Rev 6.0 image file. 
+ Though the specification is not currently maintained by any industry or standards organization, almost all camera manufacturers use it. It is also supported by many image editing programs such as Adobe PhotoShop.
+ For this category, you can code any of the field names embedded in the image by the camera or editing software. The is no official list of standard field names, so you just have to know the names your camera and software use; field names are case-sensitive. You can find more information in the <a href="http://en.wikipedia.org/wiki/Exchangeable_image_file_format" title="IPTC-NAA Information Interchange Model Version No. 4.1 specification" target="_blank">Exchangeable image file format</a> article on Wikipedia.
+ 
 <h3>A Table-based Template Example</h3>
 <p>
-Here's a small example that shows a gallery using table markup.
+Here's a small example that shows a gallery using table markup. The Item markup section shows how to use the "terms", "custom", "iptc" and "exif" substitution parameters.
+
 </p>
 <h4>Style Template</h4>
 
@@ -501,7 +532,12 @@ Here's a small example that shows a gallery using table markup.
 	<td class='wp-caption-text gallery-caption'>
 		<strong>[+title+]</strong><br />
 		[+description+]<br />
-		[+date+]
+		[+date+]<br />
+		[+custom:client,single+]<br />
+		[+terms:category+]<br />
+		[+iptc:caption-or-abstract+]<br />
+		[+iptc:2#025,single+]<br />
+		[+exif:Artist+]
 	</td>
 
 <h5>Row Close</h5>
@@ -547,8 +583,18 @@ Here's a small example that shows a gallery using table markup.
 <p>The taxonomies that appear in the Quick Edit area can be a subset of the taxonomies supported on the single item edit screen. You can select which taxonomies appear by entering your choice(s) on the Media Libray Assistant Settings screen.</p>
 <h4>Attaching Files</h4>
 <p>If a media file has not been attached to any post, you will see (unattached) in the Attached To column. You can click on the Edit or Quick Edit action to attach the file by assigning a value to the Parent ID field.</p>
-<p><strong><em>Single Item Edit Screen</em></strong></p>
-<h4>Overview</h4>
+<p><strong><em>Single Item Edit Screen (3.4.x) / Edit Media Screen (3.5+)</em></strong></p>
+<h4>MLA Enhancements, 3.5+</h4>
+WordPress 3.5 introduced a much-improved Edit Media screen. Media Library Assistant incorporates and adds several enhancements to the new screen:
+
+* Displays Last Modified date and time
+* Supports Custom fields, which `[mla_gallery]` can use for query and display
+* Supports Parent Info and Menu Order
+* Displays Image Metadata
+* Displays where-used information; Featured in, Inserted in, Gallery in and MLA Gallery in
+
+<p>Remember to click the &#8220;Update&#8221; button to save your work.</p>
+<h4>Overview, 3.4.x</h4>
 <p>This screen allows you to view many of the fields associated with an attachment and to edit several of them. Fields that are read-only have a light gray background; fields that may be changes have a white background. Hints and helpful information appear below some fields.</p>
 <p>Remember to click the &#8220;Update&#8221; button to save your work. You may instead click the &#8220;Cancel&#8221; button to discard any changes.</p>
 <h4>Taxonomies</h4>

@@ -38,7 +38,7 @@ class MLA {
 	 *
 	 * @var	string
 	 */
-	const CURRENT_MLA_VERSION = '0.81';
+	const CURRENT_MLA_VERSION = '0.90';
 
 	/**
 	 * Minimum version of PHP required for this plugin

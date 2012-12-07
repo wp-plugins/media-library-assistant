@@ -34,6 +34,9 @@ class MLAEdit {
 			
 			// do_action in wp-includes/post.php function wp_insert_post
 			add_action( 'edit_attachment', 'MLAEdit::mla_edit_attachment_action', 10, 1 );
+			
+//			add_action( 'load-edit_attachment.php', 'MLAEdit::mla_edit_add_help_tab' );
+			add_filter( 'admin_title', 'MLAEdit::mla_edit_add_help_tab', 10, 2 );
 		} // $wordpress_3point5_plus
 	}
 
@@ -82,6 +85,54 @@ class MLAEdit {
 			add_meta_box( 'mla-mla-gallery-in', 'MLA Gallery in', 'MLAEdit::mla_mla_gallery_in_handler', 'attachment', 'normal', 'core' );
 		} // 'attachment'
 	} // mla_add_meta_boxes_action
+	
+	/**
+	 * Add contextual help tabs to the WordPress Edit Media page
+	 *
+	 * @since 0.90
+	 *
+	 * @param	string	title as shown on the screen
+	 * @param	string	title as shown in the HTML header
+	 *
+	 * @return	void
+	 */
+	public static function mla_edit_add_help_tab( $admin_title, $title ) {
+		$screen = get_current_screen();
+
+		if ( ( 'attachment' != $screen->id ) || ( 'attachment' != $screen->post_type ) || ( 'post' != $screen->base ) )
+			return $admin_title;
+			
+		$template_array = MLAData::mla_load_template( MLA_PLUGIN_PATH . 'tpls/help-for-edit_attachment.tpl' );
+		if ( empty( $template_array ) ) {
+			return $admin_title;
+		}
+		
+		/*
+		 * Provide explicit control over tab order
+		 */
+		$tab_array = array( );
+		
+		foreach ( $template_array as $id => $content ) {
+			$match_count = preg_match( '#\<!-- title="(.+)" order="(.+)" --\>#', $content, $matches, PREG_OFFSET_CAPTURE );
+			
+			if ( $match_count > 0 ) {
+				$tab_array[ $matches[ 2 ][ 0 ] ] = array(
+					 'id' => $id,
+					'title' => $matches[ 1 ][ 0 ],
+					'content' => $content 
+				);
+			} else {
+				error_log( 'ERROR: mla_edit_add_help_tab discarding '.var_export( $id, true ), 0 );
+			}
+		}
+		
+		ksort( $tab_array, SORT_NUMERIC );
+		foreach ( $tab_array as $indx => $value ) {
+			$screen->add_help_tab( $value );
+		}
+
+	return $admin_title;
+	}
 	
 	/**
 	 * Where-used values for the current item
