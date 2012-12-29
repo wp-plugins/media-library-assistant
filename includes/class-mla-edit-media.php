@@ -26,7 +26,8 @@ class MLAEdit {
 		 * page. This supports all the standard meta-boxes for post types.
 		 */
 		if ( MLATest::$wordpress_3point5_plus ) {
-			add_post_type_support( 'attachment', 'custom-fields' );
+			add_action( 'admin_init', 'MLAEdit::mla_custom_field_support_action' );
+			
 			add_action( 'add_meta_boxes', 'MLAEdit::mla_add_meta_boxes_action', 10, 2 );
 
 			// do_action in wp-admin/includes/meta-boxes.php function attachment_submit_meta_box
@@ -38,6 +39,18 @@ class MLAEdit {
 //			add_action( 'load-edit_attachment.php', 'MLAEdit::mla_edit_add_help_tab' );
 			add_filter( 'admin_title', 'MLAEdit::mla_edit_add_help_tab', 10, 2 );
 		} // $wordpress_3point5_plus
+	}
+
+	/**
+	 * Adds Custom Field support to the Edit Media screen.
+	 * Declared public because it is an action.
+	 *
+	 * @since 0.80
+	 *
+	 * @return	void	echoes the HTML markup for the label and value
+	 */
+	public static function mla_custom_field_support_action( ) {
+			add_post_type_support( 'attachment', 'custom-fields' );
 	}
 
 	/**
@@ -79,10 +92,14 @@ class MLAEdit {
 			if ( !empty( $image_metadata ) )
 				add_meta_box( 'mla-image-metadata', 'Image Metadata', 'MLAEdit::mla_image_metadata_handler', 'attachment', 'normal', 'core' );
 
-			add_meta_box( 'mla-featured-in', 'Featured in', 'MLAEdit::mla_featured_in_handler', 'attachment', 'normal', 'core' );
-			add_meta_box( 'mla-inserted-in', 'Inserted in', 'MLAEdit::mla_inserted_in_handler', 'attachment', 'normal', 'core' );
-			add_meta_box( 'mla-gallery-in', 'Gallery in', 'MLAEdit::mla_gallery_in_handler', 'attachment', 'normal', 'core' );
-			add_meta_box( 'mla-mla-gallery-in', 'MLA Gallery in', 'MLAEdit::mla_mla_gallery_in_handler', 'attachment', 'normal', 'core' );
+			if ( MLAOptions::$process_featured_in )
+				add_meta_box( 'mla-featured-in', 'Featured in', 'MLAEdit::mla_featured_in_handler', 'attachment', 'normal', 'core' );
+			if ( MLAOptions::$process_inserted_in )
+				add_meta_box( 'mla-inserted-in', 'Inserted in', 'MLAEdit::mla_inserted_in_handler', 'attachment', 'normal', 'core' );
+			if ( MLAOptions::$process_gallery_in )
+				add_meta_box( 'mla-gallery-in', 'Gallery in', 'MLAEdit::mla_gallery_in_handler', 'attachment', 'normal', 'core' );
+			if ( MLAOptions::$process_mla_gallery_in )
+				add_meta_box( 'mla-mla-gallery-in', 'MLA Gallery in', 'MLAEdit::mla_mla_gallery_in_handler', 'attachment', 'normal', 'core' );
 		} // 'attachment'
 	} // mla_add_meta_boxes_action
 	
@@ -161,28 +178,14 @@ class MLAEdit {
 			self::$mla_references = MLAData::mla_fetch_attachment_references( $post->ID, $post->post_parent );
 			
 		if ( is_array( self::$mla_references ) ) {
-			if ( self::$mla_references['found_parent'] ) {
-				$parent_info = sprintf( '(%1$s) %2$s', self::$mla_references['parent_type'], self::$mla_references['parent_title'] );
-			} else {
-				$parent_info = '';
-				if ( !self::$mla_references['found_reference'] )
-					$parent_info .= '(ORPHAN) ';
-				
-				if ( self::$mla_references['is_unattached'] )
-					$parent_info .= '(UNATTACHED) ';
-				else {
-					if ( !self::$mla_references['found_parent'] ) {
-						if ( isset( self::$mla_references['parent_title'] ) )
-							$parent_info .= '(BAD PARENT) ';
-						else
-							$parent_info .= '(INVALID PARENT) ';
-					}
-				}
-			} // no parent
+			if ( empty(self::$mla_references['parent_title'] ) )
+				$parent_info = self::$mla_references['parent_errors'];
+			else
+				$parent_info = sprintf( '(%1$s) %2$s %3$s', self::$mla_references['parent_type'], self::$mla_references['parent_title'], self::$mla_references['parent_errors'] );
 		} // is_array
 
 		echo '<label class="screen-reader-text" for="mla_post_parent">Post Parent</label><input name="mla_post_parent" type="text" size="4" id="mla_post_parent" value="' . $post->post_parent . "\" />\r\n";
-		echo '<label class="screen-reader-text" for="mla_parent_info">Parent Info</label><input name="mla_parent_info" type="text" readonly="readonly" size="60" id="mla_parent_info" value="' . esc_attr( $parent_info ) . "\" />\r\n";
+		echo '<label class="screen-reader-text" for="mla_parent_info">Parent Info</label><input class="readonly" name="mla_parent_info" type="text" readonly="readonly" size="60" id="mla_parent_info" value="' . esc_attr( $parent_info ) . "\" />\r\n";
 	}
 	
 	/**
@@ -218,7 +221,13 @@ class MLAEdit {
 		else
 			$value = '';
 
-		echo '<label class="screen-reader-text" for="mla_image_metadata">Image Metadata</label><textarea id="mla_image_metadata" rows="5" cols="80" readonly="readonly" name="mla_image_metadata" >' . esc_textarea( $value ) . "</textarea>\r\n";
+		echo '<label class="screen-reader-text" for="mla_image_metadata">Image Metadata</label><textarea class="readonly" id="mla_image_metadata" rows="5" cols="80" readonly="readonly" name="mla_image_metadata" >' . esc_textarea( $value ) . "</textarea>\r\n";
+		
+		$view_args = array(
+			'page' => 'mla-menu',
+			'mla_item_ID' => $post->ID 
+		);
+		echo '<a style="float: right; " href="' . add_query_arg( $view_args, wp_nonce_url( 'upload.php?mla_admin_action=' . MLA::MLA_ADMIN_SINGLE_MAP, MLA::MLA_ADMIN_NONCE ) ) . '" title="Map IPTC/EXIF metadata for this item">Map IPTC/EXIF Metadata</a>' . "\r\n";
 	}
 	
 	/**
@@ -248,7 +257,7 @@ class MLAEdit {
 			} // foreach $feature
 		}
 
-		echo '<label class="screen-reader-text" for="mla_featured_in">Featured in</label><textarea id="mla_featured_in" rows="5" cols="80" readonly="readonly" name="mla_featured_in" >' . esc_textarea( $features ) . "</textarea>\r\n";
+		echo '<label class="screen-reader-text" for="mla_featured_in">Featured in</label><textarea class="readonly" id="mla_featured_in" rows="5" cols="80" readonly="readonly" name="mla_featured_in" >' . esc_textarea( $features ) . "</textarea>\r\n";
 	}
 	
 	/**
@@ -282,7 +291,7 @@ class MLAEdit {
 			} // foreach $file
 		} // is_array
 
-		echo '<label class="screen-reader-text" for="mla_inserted_in">Inserted in</label><textarea id="mla_inserted_in" rows="5" cols="80" readonly="readonly" name="mla_inserted_in" >' . esc_textarea( $inserts ) . "</textarea>\r\n";
+		echo '<label class="screen-reader-text" for="mla_inserted_in">Inserted in</label><textarea class="readonly" id="mla_inserted_in" rows="5" cols="80" readonly="readonly" name="mla_inserted_in" >' . esc_textarea( $inserts ) . "</textarea>\r\n";
 	}
 	
 	/**
@@ -312,7 +321,7 @@ class MLAEdit {
 			} // foreach $feature
 		}
 
-		echo '<label class="screen-reader-text" for="mla_gallery_in">Gallery in</label><textarea id="mla_gallery_in" rows="5" cols="80" readonly="readonly" name="mla_gallery_in" >' . esc_textarea( $galleries ) . "</textarea>\r\n";
+		echo '<label class="screen-reader-text" for="mla_gallery_in">Gallery in</label><textarea class="readonly" id="mla_gallery_in" rows="5" cols="80" readonly="readonly" name="mla_gallery_in" >' . esc_textarea( $galleries ) . "</textarea>\r\n";
 	}
 	
 	/**
@@ -342,7 +351,7 @@ class MLAEdit {
 			} // foreach $feature
 		}
 
-		echo '<label class="screen-reader-text" for="mla_mla_gallery_in">MLA Gallery in</label><textarea id="mla_mla_gallery_in" rows="5" cols="80" readonly="readonly" name="mla_mla_gallery_in" >' . esc_textarea( $galleries ) . "</textarea>\r\n";
+		echo '<label class="screen-reader-text" for="mla_mla_gallery_in">MLA Gallery in</label><textarea class="readonly" id="mla_mla_gallery_in" rows="5" cols="80" readonly="readonly" name="mla_mla_gallery_in" >' . esc_textarea( $galleries ) . "</textarea>\r\n";
 	}
 	
 	/**

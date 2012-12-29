@@ -58,6 +58,7 @@
 <li class="method public "><a href="#mla_fetch_attachment_metadata" title="mla_fetch_attachment_metadata :: Fetch and filter meta data for an attachment"><span class="description">Fetch and filter meta data for an attachment</span><pre>mla_fetch_attachment_metadata()</pre></a></li>
 <li class="method public "><a href="#mla_fetch_attachment_parent_data" title="mla_fetch_attachment_parent_data :: Returns information about an attachment's parent, if found"><span class="description">Returns information about an attachment's parent, if found</span><pre>mla_fetch_attachment_parent_data()</pre></a></li>
 <li class="method public "><a href="#mla_fetch_attachment_references" title="mla_fetch_attachment_references :: Find Featured Image and inserted image/link references to an attachment"><span class="description">Find Featured Image and inserted image/link references to an attachment</span><pre>mla_fetch_attachment_references()</pre></a></li>
+<li class="method public "><a href="#mla_flush_mla_galleries" title="mla_flush_mla_galleries :: Invalidates the $mla_galleries or $galleries array and cached values"><span class="description">Invalidates the $mla_galleries or $galleries array and cached values</span><pre>mla_flush_mla_galleries()</pre></a></li>
 <li class="method public "><a href="#mla_get_attachment_by_id" title="mla_get_attachment_by_id :: Retrieve an Attachment array given a $post_id"><span class="description">Retrieve an Attachment array given a $post_id</span><pre>mla_get_attachment_by_id()</pre></a></li>
 <li class="method public "><a href="#mla_get_template_placeholders" title="mla_get_template_placeholders :: Analyze a template, returning an array of the place holders it contains"><span class="description">Analyze a template, returning an array of the place holders it contains</span><pre>mla_get_template_placeholders()</pre></a></li>
 <li class="method public "><a href="#mla_load_template" title="mla_load_template :: Load an HTML template from a file"><span class="description">Load an HTML template from a file</span><pre>mla_load_template()</pre></a></li>
@@ -67,6 +68,7 @@
 <li class="method public "><a href="#mla_query_posts_orderby_filter" title="mla_query_posts_orderby_filter :: Adds a ORDERBY clause, if required"><span class="description">Adds a ORDERBY clause, if required</span><pre>mla_query_posts_orderby_filter()</pre></a></li>
 <li class="method public "><a href="#mla_query_posts_search_filter" title="mla_query_posts_search_filter :: Adds a keyword search to the WHERE clause, if required"><span class="description">Adds a keyword search to the WHERE clause, if required</span><pre>mla_query_posts_search_filter()</pre></a></li>
 <li class="method public "><a href="#mla_query_posts_where_filter" title="mla_query_posts_where_filter :: Adds a WHERE clause for detached items"><span class="description">Adds a WHERE clause for detached items</span><pre>mla_query_posts_where_filter()</pre></a></li>
+<li class="method public "><a href="#mla_save_post_action" title="mla_save_post_action :: Invalidates $mla_galleries and $galleries arrays and cached values after post, page or attachment updates"><span class="description">Invalidates $mla_galleries and $galleries arrays and cached values after post, page or attachment updates</span><pre>mla_save_post_action()</pre></a></li>
 <li class="method public "><a href="#mla_update_single_item" title="mla_update_single_item :: Update a single item; change the meta data
 for a single attachment."><span class="description">Update a single item; change the meta data
 for a single attachment.</span><pre>mla_update_single_item()</pre></a></li>
@@ -146,7 +148,7 @@ Templates separate HTML markup from PHP code for easier maintenance and localiza
 </div>
 <a name="mla_fetch_attachment_image_metadata" id="mla_fetch_attachment_image_metadata"></a><div class="element clickable method public mla_fetch_attachment_image_metadata" data-toggle="collapse" data-target=".mla_fetch_attachment_image_metadata .collapse">
 <h2>Fetch and filter IPTC and EXIF meta data for an image attachment</h2>
-<pre>mla_fetch_attachment_image_metadata(int $post_id) : array</pre>
+<pre>mla_fetch_attachment_image_metadata(int $post_id, string $path) : array</pre>
 <div class="labels"></div>
 <div class="row collapse"><div class="detail-description">
 <p class="long_description"><p>Returns</p></p>
@@ -158,6 +160,10 @@ Templates separate HTML markup from PHP code for easier maintenance and localiza
 <div class="subelement argument">
 <h4>$post_id</h4>
 <code>int</code><p>post ID of attachment</p></div>
+<div class="subelement argument">
+<h4>$path</h4>
+<code>string</code><p>optional; if $post_id is zero, path to the image file.</p>
+</div>
 <h3>Returns</h3>
 <div class="subelement response">
 <code>array</code>Meta data variables</div>
@@ -226,6 +232,23 @@ as a Featured Image or inserted in the post as an image or link.</p></p>
 <h3>Returns</h3>
 <div class="subelement response">
 <code>array</code>Reference information; see $references array comments</div>
+</div></div>
+</div>
+<a name="mla_flush_mla_galleries" id="mla_flush_mla_galleries"></a><div class="element clickable method public mla_flush_mla_galleries" data-toggle="collapse" data-target=".mla_flush_mla_galleries .collapse">
+<h2>Invalidates the $mla_galleries or $galleries array and cached values</h2>
+<pre>mla_flush_mla_galleries(string $option_name) : void</pre>
+<div class="labels"></div>
+<div class="row collapse"><div class="detail-description">
+<p class="long_description"></p>
+<table class="table table-bordered"><tr>
+<th>since</th>
+<td>1.00</td>
+</tr></table>
+<h3>Parameters</h3>
+<div class="subelement argument">
+<h4>$option_name</h4>
+<code>string</code><p>name of the gallery's cache/option variable</p>
+</div>
 </div></div>
 </div>
 <a name="mla_get_attachment_by_id" id="mla_get_attachment_by_id"></a><div class="element clickable method public mla_get_attachment_by_id" data-toggle="collapse" data-target=".mla_get_attachment_by_id .collapse">
@@ -425,6 +448,23 @@ Defined as public because it's a filter.</p></p>
 <code>string</code>query clause after "detached" item modification</div>
 </div></div>
 </div>
+<a name="mla_save_post_action" id="mla_save_post_action"></a><div class="element clickable method public mla_save_post_action" data-toggle="collapse" data-target=".mla_save_post_action .collapse">
+<h2>Invalidates $mla_galleries and $galleries arrays and cached values after post, page or attachment updates</h2>
+<pre>mla_save_post_action(integer $post_id) : void</pre>
+<div class="labels"></div>
+<div class="row collapse"><div class="detail-description">
+<p class="long_description"></p>
+<table class="table table-bordered"><tr>
+<th>since</th>
+<td>1.00</td>
+</tr></table>
+<h3>Parameters</h3>
+<div class="subelement argument">
+<h4>$post_id</h4>
+<code>integer</code><p>ID of post/page/attachment; not used at this time</p>
+</div>
+</div></div>
+</div>
 <a name="mla_update_single_item" id="mla_update_single_item"></a><div class="element clickable method public mla_update_single_item" data-toggle="collapse" data-target=".mla_update_single_item .collapse">
 <h2>Update a single item; change the meta data
 for a single attachment.</h2>
@@ -458,7 +498,7 @@ for a single attachment.</h2>
 </div>
 <a name="_build_mla_galleries" id="_build_mla_galleries"></a><div class="element clickable method private _build_mla_galleries" data-toggle="collapse" data-target="._build_mla_galleries .collapse">
 <h2>Builds the $mla_galleries or $galleries array</h2>
-<pre>_build_mla_galleries(array $galleries_array, string $shortcode, boolean $exclude_revisions) : boolean</pre>
+<pre>_build_mla_galleries(string $option_name, array $galleries_array, string $shortcode, boolean $exclude_revisions) : boolean</pre>
 <div class="labels"></div>
 <div class="row collapse"><div class="detail-description">
 <p class="long_description"></p>
@@ -467,6 +507,10 @@ for a single attachment.</h2>
 <td>0.70</td>
 </tr></table>
 <h3>Parameters</h3>
+<div class="subelement argument">
+<h4>$option_name</h4>
+<code>string</code><p>name of the gallery's cache/option variable</p>
+</div>
 <div class="subelement argument">
 <h4>$galleries_array</h4>
 <code>array</code><p>by reference to the private static galleries array variable</p></div>
@@ -662,7 +706,7 @@ any further logic required to translate those values is contained in the filters
 <div class="row"><footer class="span12">
             Template is built using <a href="http://twitter.github.com/bootstrap/">Twitter Bootstrap 2</a> and icons provided by <a href="http://glyphicons.com/">Glyphicons</a>.<br>
             Documentation is powered by <a href="http://www.phpdoc.org/">phpDocumentor 2.0.0a8</a> and<br>
-            generated on 2012-12-07T13:43:49-08:00.<br></footer></div>
+            generated on 2012-12-29T12:42:47-08:00.<br></footer></div>
 </div>
 </body>
 </html>

@@ -353,7 +353,7 @@ class MLA_List_Table extends WP_List_Table {
 		$taxonomies = get_taxonomies( array ( 'show_ui' => 'true' ), 'names' );
 
 		foreach ( $taxonomies as $tax_name ) {
-			if ( MLASettings::mla_taxonomy_support( $tax_name ) ) {
+			if ( MLAOptions::mla_taxonomy_support( $tax_name ) ) {
 				$tax_object = get_taxonomy( $tax_name );
 				MLA_List_Table::$default_columns[ 't_' . $tax_name ] = $tax_object->labels->name;
 				MLA_List_Table::$default_hidden_columns [] = $tax_name;
@@ -575,10 +575,10 @@ class MLA_List_Table extends WP_List_Table {
 		$taxonomies = get_object_taxonomies( 'attachment', 'objects' );
 		
 		foreach ( $taxonomies as $tax_name => $tax_object ) {
-			if ( $tax_object->hierarchical && $tax_object->show_ui && MLASettings::mla_taxonomy_support($tax_name, 'quick-edit') ) {
+			if ( $tax_object->hierarchical && $tax_object->show_ui && MLAOptions::mla_taxonomy_support($tax_name, 'quick-edit') ) {
 				$inline_data .= '	<div class="mla_category" id="' . $tax_name . '_' . $item->ID . '">'
 					. implode( ',', wp_get_object_terms( $item->ID, $tax_name, array( 'fields' => 'ids' ) ) ) . "</div>\r\n";
-			} elseif ( $tax_object->show_ui && MLASettings::mla_taxonomy_support($tax_name, 'quick-edit') ) {
+			} elseif ( $tax_object->show_ui && MLAOptions::mla_taxonomy_support($tax_name, 'quick-edit') ) {
 				$inline_data .= '	<div class="mla_tags" id="'.$tax_name.'_'.$item->ID. '">'
 					. esc_html( str_replace( ',', ', ', get_terms_to_edit( $item->ID, $tax_name ) ) ) . "</div>\r\n";
 			}
@@ -629,24 +629,12 @@ class MLA_List_Table extends WP_List_Table {
 	 * @return	string	HTML markup to be placed inside the column
 	 */
 	function column_title_name( $item ) {
-		$errors = '';
-		if ( !$item->mla_references['found_reference'] )
-			$errors .= '(ORPHAN) ';
-		
-		if ( $item->mla_references['is_unattached'] )
-			$errors .= '(UNATTACHED) ';
-		else {
-			if ( !$item->mla_references['found_parent'] ) {
-				if ( isset( $item->parent_title ) )
-					$errors .= '(BAD PARENT) ';
-				else
-					$errors .= '(INVALID PARENT) ';
-			}
-		}
-		
 		$row_actions = self::_build_rollover_actions( $item, 'title_name' );
 		$post_title = esc_attr( $item->post_title );
 		$post_name = esc_attr( $item->post_name );
+		$errors = $item->mla_references['parent_errors'];
+		if ( '(NO REFERENCE TESTS)' == $errors )
+			$errors = '';
 		
 		if ( !empty( $row_actions ) ) {
 			return sprintf( '%1$s<br>%2$s<br>%3$s%4$s', /*%1$s*/ $post_title, /*%2$s*/ $post_name, /*%3$s*/ $errors, /*%4$s*/ $this->row_actions( $row_actions ) );
@@ -737,6 +725,9 @@ class MLA_List_Table extends WP_List_Table {
 	 * @return	string	HTML markup to be placed inside the column
 	 */
 	function column_featured( $item ) {
+		if ( !MLAOptions::$process_featured_in )
+			return 'disabled';
+			
 		$value = '';
 		
 		foreach ( $item->mla_references['features'] as $feature_id => $feature ) {
@@ -765,6 +756,9 @@ class MLA_List_Table extends WP_List_Table {
 	 * @return	string	HTML markup to be placed inside the column
 	 */
 	function column_inserted( $item ) {
+		if ( !MLAOptions::$process_inserted_in )
+			return 'disabled';
+			
 		$value = '';
 		
 		foreach ( $item->mla_references['inserts'] as $file => $inserts ) {
@@ -797,6 +791,9 @@ class MLA_List_Table extends WP_List_Table {
 	 * @return	string	HTML markup to be placed inside the column
 	 */
 	function column_galleries( $item ) {
+		if ( !MLAOptions::$process_gallery_in )
+			return 'disabled';
+			
 		$value = '';
 		
 		foreach ( $item->mla_references['galleries'] as $ID => $gallery ) {
@@ -825,6 +822,9 @@ class MLA_List_Table extends WP_List_Table {
 	 * @return	string	HTML markup to be placed inside the column
 	 */
 	function column_mla_galleries( $item ) {
+		if ( !MLAOptions::$process_mla_gallery_in )
+			return 'disabled';
+			
 		$value = '';
 		
 		foreach ( $item->mla_references['mla_galleries'] as $ID => $gallery ) {
@@ -1195,7 +1195,7 @@ class MLA_List_Table extends WP_List_Table {
 		if ( 'top' == $which ) {
 			$this->months_dropdown( 'attachment' );
 			
-			$tax_filter =  MLASettings::mla_taxonomy_support('', 'filter');
+			$tax_filter =  MLAOptions::mla_taxonomy_support('', 'filter');
 			if ( ( '' != $tax_filter ) && ( is_object_in_taxonomy( 'attachment', $tax_filter ) ) ) {
 				$tax_object = get_taxonomy( $tax_filter );
 				$dropdown_options = array(

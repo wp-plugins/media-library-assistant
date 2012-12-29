@@ -38,7 +38,7 @@ class MLA {
 	 *
 	 * @var	string
 	 */
-	const CURRENT_MLA_VERSION = '0.90';
+	const CURRENT_MLA_VERSION = '1.00';
 
 	/**
 	 * Minimum version of PHP required for this plugin
@@ -165,6 +165,15 @@ class MLA {
 	 * @var	string
 	 */
 	const MLA_ADMIN_SINGLE_TRASH = 'single_item_trash';
+	
+	/**
+	 * mla_admin_action value for mapping IPTC/EXIF metadata
+	 *
+	 * @since 1.00
+	 *
+	 * @var	string
+	 */
+	const MLA_ADMIN_SINGLE_MAP = 'single_item_map';
 	
 	/**
 	 * Holds screen ids to match help text to corresponding screen
@@ -600,6 +609,13 @@ class MLA {
 							$item_content = self::_delete_single_item( $post_id );
 							break;
 						case 'edit':
+							if ( !empty( $_REQUEST['bulk_map'] ) ) {
+								$item = get_post( $post_id );
+								$updates = MLAOptions::mla_evaluate_iptc_exif_mapping( $item, 'iptc_exif_mapping' );
+								$item_content = MLAData::mla_update_single_item( $post_id, $updates );
+								break;
+							}
+							
 							$new_data = array ( ) ;
 							if ( isset( $_REQUEST['post_parent'] ) && is_numeric( $_REQUEST['post_parent'] ) )
 								$new_data['post_parent'] = $_REQUEST['post_parent'];
@@ -648,9 +664,13 @@ class MLA {
 				case self::MLA_ADMIN_SINGLE_EDIT_UPDATE:
 					if ( !empty( $_REQUEST['update'] ) ) {
 						$page_content = MLAData::mla_update_single_item( $_REQUEST['mla_item_ID'], $_REQUEST['attachments'][ $_REQUEST['mla_item_ID'] ], $_REQUEST['tax_input'] );
+					} elseif ( !empty( $_REQUEST['map-iptc-exif'] ) ) {
+						$item = get_post( $_REQUEST['mla_item_ID'] );
+						$updates = MLAOptions::mla_evaluate_iptc_exif_mapping( $item, 'iptc_exif_mapping' );
+						$page_content = MLAData::mla_update_single_item( $_REQUEST['mla_item_ID'], $updates );
 					} else {
 						$page_content = array(
-							 'message' => 'Item: ' . $_REQUEST['mla_item_ID'] . ' cancelled.',
+							'message' => 'Item: ' . $_REQUEST['mla_item_ID'] . ' cancelled.',
 							'body' => '' 
 						);
 					}
@@ -660,6 +680,11 @@ class MLA {
 					break;
 				case self::MLA_ADMIN_SINGLE_TRASH:
 					$page_content = self::_trash_single_item( $_REQUEST['mla_item_ID'] );
+					break;
+				case self::MLA_ADMIN_SINGLE_MAP:
+					$item = get_post( $_REQUEST['mla_item_ID'] );
+					$updates = MLAOptions::mla_evaluate_iptc_exif_mapping( $item, 'iptc_exif_mapping' );
+					$page_content = MLAData::mla_update_single_item( $_REQUEST['mla_item_ID'], $updates );
 					break;
 				default:
 					$page_content = array(
@@ -894,9 +919,9 @@ class MLA {
 		$hierarchical_taxonomies = array();
 		$flat_taxonomies = array();
 		foreach ( $taxonomies as $tax_name => $tax_object ) {
-			if ( $tax_object->hierarchical && $tax_object->show_ui && MLASettings::mla_taxonomy_support($tax_name, 'quick-edit') ) {
+			if ( $tax_object->hierarchical && $tax_object->show_ui && MLAOptions::mla_taxonomy_support($tax_name, 'quick-edit') ) {
 				$hierarchical_taxonomies[$tax_name] = $tax_object;
-			} elseif ( $tax_object->show_ui && MLASettings::mla_taxonomy_support($tax_name, 'quick-edit') ) {
+			} elseif ( $tax_object->show_ui && MLAOptions::mla_taxonomy_support($tax_name, 'quick-edit') ) {
 				$flat_taxonomies[$tax_name] = $tax_object;
 			}
 		}
@@ -1059,8 +1084,7 @@ class MLA {
 	 *
 	 * @return string|false The action name or False if no action was selected
 	 */
-	private static function _current_bulk_action( )
-	{
+	private static function _current_bulk_action( )	{
 		$action = false;
 		
 		if ( isset( $_REQUEST['action'] ) ) {
@@ -1125,7 +1149,6 @@ class MLA {
 		 * This function sets the global $post
 		 */
 		$post_data = MLAData::mla_get_attachment_by_id( $post_id );
-		
 		if ( !isset( $post_data ) )
 			return array(
 				 'message' => 'ERROR: Could not retrieve Attachment.',
@@ -1164,25 +1187,11 @@ class MLA {
 			$postbox_template = '';
 		}
 		
-		if ( $post_data['mla_references']['found_parent'] ) {
-			$parent_info = sprintf( '(%1$s) %2$s', $post_data['mla_references']['parent_type'], $post_data['mla_references']['parent_title'] );
-		} else {
-			$parent_info = '';
-			if ( !$post_data['mla_references']['found_reference'] )
-				$parent_info .= '(ORPHAN) ';
-			
-			if ( $post_data['mla_references']['is_unattached'] )
-				$parent_info .= '(UNATTACHED) ';
-			else {
-				if ( !$post_data['mla_references']['found_parent'] ) {
-					if ( isset( $post_data['mla_references']['parent_title'] ) )
-						$parent_info .= '(BAD PARENT) ';
-					else
-						$parent_info .= '(INVALID PARENT) ';
-				}
-			}
-		}
-		
+		if ( empty($post_data['mla_references']['parent_title'] ) )
+			$parent_info = $post_data['mla_references']['parent_errors'];
+		else
+			$parent_info = sprintf( '(%1$s) %2$s %3$s', $post_data['mla_references']['parent_type'], $post_data['mla_references']['parent_title'], $post_data['mla_references']['parent_errors'] );
+
 		if ( $authors = self::_authors_dropdown( $post_data['post_author'], 'attachments[' . $post_data['ID'] . '][post_author]' ) ) {
 			$args = array (
 				'ID' => $post_data['ID'],
@@ -1193,54 +1202,70 @@ class MLA {
 		else
 			$authors = '';
 
-		$features = '';
-		
-		foreach ( $post_data['mla_references']['features'] as $feature_id => $feature ) {
-			if ( $feature_id == $post_data['post_parent'] )
-				$parent = 'PARENT ';
-			else
-				$parent = '';
+		if ( MLAOptions::$process_featured_in ) {
+			$features = '';
 			
-			$features .= sprintf( '%1$s (%2$s %3$s), %4$s', /*$1%s*/ $parent, /*$2%s*/ $feature->post_type, /*$3%s*/ $feature_id, /*$4%s*/ $feature->post_title ) . "\r\n";
-		} // foreach $feature
-		
-		$inserts = '';
-		
-		foreach ( $post_data['mla_references']['inserts'] as $file => $insert_array ) {
-			$inserts .= $file . "\r\n";
-			
-			foreach ( $insert_array as $insert ) {
-				if ( $insert->ID == $post_data['post_parent'] )
-					$parent = '  PARENT ';
+			foreach ( $post_data['mla_references']['features'] as $feature_id => $feature ) {
+				if ( $feature_id == $post_data['post_parent'] )
+					$parent = 'PARENT ';
 				else
-					$parent = '  ';
+					$parent = '';
 				
-				$inserts .= sprintf( '%1$s (%2$s %3$s), %4$s', /*$1%s*/ $parent, /*$2%s*/ $insert->post_type, /*$3%s*/ $insert->ID, /*$4%s*/ $insert->post_title ) . "\r\n";
-			} // foreach $insert
-		} // foreach $file
+				$features .= sprintf( '%1$s (%2$s %3$s), %4$s', /*$1%s*/ $parent, /*$2%s*/ $feature->post_type, /*$3%s*/ $feature_id, /*$4%s*/ $feature->post_title ) . "\r\n";
+			} // foreach $feature
+		}
+		else
+			$features = 'disabled';
+			
+		if ( MLAOptions::$process_inserted_in ) {
+			$inserts = '';
+			
+			foreach ( $post_data['mla_references']['inserts'] as $file => $insert_array ) {
+				$inserts .= $file . "\r\n";
+				
+				foreach ( $insert_array as $insert ) {
+					if ( $insert->ID == $post_data['post_parent'] )
+						$parent = '  PARENT ';
+					else
+						$parent = '  ';
+					
+					$inserts .= sprintf( '%1$s (%2$s %3$s), %4$s', /*$1%s*/ $parent, /*$2%s*/ $insert->post_type, /*$3%s*/ $insert->ID, /*$4%s*/ $insert->post_title ) . "\r\n";
+				} // foreach $insert
+			} // foreach $file
+		}
+		else
+			$inserts = 'disabled';
 		
-		$galleries = '';
-			
-		foreach ( $post_data['mla_references']['galleries'] as $gallery_id => $gallery ) {
-			if ( $gallery_id == $post_data['post_parent'] )
-				$parent = 'PARENT ';
-			else
-				$parent = '';
-			
-			$galleries .= sprintf( '%1$s (%2$s %3$s), %4$s', /*$1%s*/ $parent, /*$2%s*/ $gallery['post_type'], /*$3%s*/ $gallery_id, /*$4%s*/ $gallery['post_title'] ) . "\r\n";
-		} // foreach $gallery
+		if ( MLAOptions::$process_gallery_in ) {
+			$galleries = '';
+				
+			foreach ( $post_data['mla_references']['galleries'] as $gallery_id => $gallery ) {
+				if ( $gallery_id == $post_data['post_parent'] )
+					$parent = 'PARENT ';
+				else
+					$parent = '';
+				
+				$galleries .= sprintf( '%1$s (%2$s %3$s), %4$s', /*$1%s*/ $parent, /*$2%s*/ $gallery['post_type'], /*$3%s*/ $gallery_id, /*$4%s*/ $gallery['post_title'] ) . "\r\n";
+			} // foreach $gallery
+		}
+		else
+			$galleries = 'disabled';
 
-		$mla_galleries = '';
-			
-		foreach ( $post_data['mla_references']['mla_galleries'] as $gallery_id => $gallery ) {
-			if ( $gallery_id == $post_data['post_parent'] )
-				$parent = 'PARENT ';
-			else
-				$parent = '';
-			
-			$mla_galleries .= sprintf( '%1$s (%2$s %3$s), %4$s', /*$1%s*/ $parent, /*$2%s*/ $gallery['post_type'], /*$3%s*/ $gallery_id, /*$4%s*/ $gallery['post_title'] ) . "\r\n";
-		} // foreach $feature
-
+		if ( MLAOptions::$process_mla_gallery_in ) {
+			$mla_galleries = '';
+				
+			foreach ( $post_data['mla_references']['mla_galleries'] as $gallery_id => $gallery ) {
+				if ( $gallery_id == $post_data['post_parent'] )
+					$parent = 'PARENT ';
+				else
+					$parent = '';
+				
+				$mla_galleries .= sprintf( '%1$s (%2$s %3$s), %4$s', /*$1%s*/ $parent, /*$2%s*/ $gallery['post_type'], /*$3%s*/ $gallery_id, /*$4%s*/ $gallery['post_title'] ) . "\r\n";
+			} // foreach $gallery
+		}
+		else
+			$mla_galleries = 'disabled';
+		
 		/*
 		 * WordPress doesn't look in hidden fields to set the month filter dropdown or pagination filter
 		 */

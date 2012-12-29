@@ -43,7 +43,7 @@ class MLAShortcodes {
 		/*
 		 * Process the where-used settings option
 		 */
-		if ('checked' == MLASettings::mla_get_option( 'exclude_revisions' ) )
+		if ('checked' == MLAOptions::mla_get_option( 'exclude_revisions' ) )
 			$exclude_revisions = "(post_type <> 'revision') AND ";
 		else
 			$exclude_revisions = '';
@@ -131,7 +131,7 @@ class MLAShortcodes {
 	 *
 	 * @var	string
 	 */
-	private static $mla_debug_messages = '';
+	public static $mla_debug_messages = '';
 	
 	/**
 	 * Turn debug collection and display on or off
@@ -169,13 +169,14 @@ class MLAShortcodes {
 			'columns' => 3,
 			'link' => 'permalink', // or 'file' or a registered size
 			// MLA-specific
-			'mla_style' => 'default',
-			'mla_markup' => 'default',
+			'mla_style' => MLAOptions::mla_get_option('default_style'),
+			'mla_markup' => MLAOptions::mla_get_option('default_markup'),
+			'mla_float' => is_rtl() ? 'right' : 'left',
 			'mla_itemwidth' => NULL,
 			'mla_margin' => '1.5',
-			'mla_link_text' => NULL,
-			'mla_rollover_text' => NULL,
-			'mla_caption' => NULL,
+			'mla_link_text' => '',
+			'mla_rollover_text' => '',
+			'mla_caption' => '',
 			'mla_debug' => false
 		);
 		
@@ -233,6 +234,10 @@ class MLAShortcodes {
 			$itemwidth = $arguments['columns'] > 0 ? (floor(100/$arguments['columns']) - $margin) : 100 - $margin;
 		}
 		
+		$float = strtolower( $arguments['mla_float'] );
+		if ( ! in_array( $float, array( 'left', 'none', 'right' ) ) )
+			$float = is_rtl() ? 'right' : 'left';
+		
 		$style_values = array(
 			'mla_style' => $arguments['mla_style'],
 			'mla_markup' => $arguments['mla_markup'],
@@ -244,17 +249,17 @@ class MLAShortcodes {
 			'columns' => intval( $arguments['columns']),
 			'itemwidth' => intval( $itemwidth ),
 			'margin' => $arguments['mla_margin'],
-			'float' => is_rtl() ? 'right' : 'left',
+			'float' => $float,
 			'selector' => "mla_gallery-{$instance}",
 			'size_class' => sanitize_html_class( $size_class )
 		);
 	
 		$style_template = $gallery_style = '';
 		if ( apply_filters( 'use_mla_gallery_style', true ) ) {
-			$style_template = MLASettings::mla_fetch_gallery_template( $style_values['mla_style'], 'style' );
+			$style_template = MLAOptions::mla_fetch_gallery_template( $style_values['mla_style'], 'style' );
 			if ( empty( $style_template ) ) {
 				$style_values['mla_style'] = 'default';
-				$style_template = MLASettings::mla_fetch_gallery_template( 'default', 'style' );
+				$style_template = MLAOptions::mla_fetch_gallery_template( 'default', 'style' );
 			}
 				
 			if ( ! empty ( $style_template ) ) {
@@ -275,28 +280,29 @@ class MLAShortcodes {
 		$iptc_placeholders = array();
 		$exif_placeholders = array();
 
-		$markup_template = MLASettings::mla_fetch_gallery_template( $markup_values['mla_markup'] . '-open', 'markup' );
+		$markup_template = MLAOptions::mla_fetch_gallery_template( $markup_values['mla_markup'] . '-open', 'markup' );
 		if ( empty( $markup_template ) ) {
 			$markup_values['mla_markup'] = 'default';
-			$markup_template = MLASettings::mla_fetch_gallery_template( 'default-open', 'markup' );
+			$markup_template = MLAOptions::mla_fetch_gallery_template( 'default-open', 'markup' );
 		}
 			
 		if ( ! empty( $markup_template ) ) {
 			$gallery_div = MLAData::mla_parse_template( $markup_template, $markup_values );
 
-			$row_open_template = MLASettings::mla_fetch_gallery_template( $markup_values['mla_markup'] . '-row-open', 'markup' );
+			$row_open_template = MLAOptions::mla_fetch_gallery_template( $markup_values['mla_markup'] . '-row-open', 'markup' );
 			if ( empty( $row_open_template ) )
 				$row_open_template = '';
 				
-			$item_template = MLASettings::mla_fetch_gallery_template( $markup_values['mla_markup'] . '-item', 'markup' );
+			$item_template = MLAOptions::mla_fetch_gallery_template( $markup_values['mla_markup'] . '-item', 'markup' );
 			if ( empty( $item_template ) )
 				$item_template = '';
 			else {
 				/*
 				 * Look for variable item-level placeholders
 				 */
-				$placeholders = MLAData::mla_get_template_placeholders( $item_template );
-				
+				$new_text = str_replace( '{+', '[+', str_replace( '+}', '+]', $arguments['mla_link_text'] . $arguments['mla_rollover_text'] . $arguments['mla_caption'] ) );
+				$placeholders = MLAData::mla_get_template_placeholders( $item_template . $new_text );
+// error_log( '$placeholders = ' . var_export( $placeholders, true ), 0);				
 				foreach ($placeholders as $key => $value ) {
 					switch ( $value['prefix'] ) {
 						case 'terms':
@@ -317,11 +323,11 @@ class MLAShortcodes {
 				} // $placeholders
 			} // $item_template
 				
-			$row_close_template = MLASettings::mla_fetch_gallery_template( $markup_values['mla_markup'] . '-row-close', 'markup' );
+			$row_close_template = MLAOptions::mla_fetch_gallery_template( $markup_values['mla_markup'] . '-row-close', 'markup' );
 			if ( empty( $row_close_template ) )
 				$row_close_template = '';
 				
-			$close_template = MLASettings::mla_fetch_gallery_template( $markup_values['mla_markup'] . '-close', 'markup' );
+			$close_template = MLAOptions::mla_fetch_gallery_template( $markup_values['mla_markup'] . '-close', 'markup' );
 			if ( empty( $close_template ) )
 				$close_template = '';
 		}
@@ -414,6 +420,91 @@ class MLAShortcodes {
 			if ( isset( $parent_info['parent_type'] ) )
 				$markup_values['parent_type'] = wptexturize( $parent_info['parent_type'] );
 				
+			/*
+			 * Add variable placeholders
+			 */
+			foreach ( $terms_placeholders as $key => $value ) {
+				$text = '';
+				$terms = wp_get_object_terms( $attachment->ID, $value['value'] );
+			
+				if ( is_wp_error( $terms ) || empty( $terms ) )
+					$text = '';
+				else {
+					if ( $value['single'] )
+						$text = sanitize_term_field( 'name', $terms[0]->name, $terms[0]->term_id, $value, 'display' );
+					else
+						foreach ( $terms as $term ) {
+							$term_name = sanitize_term_field( 'name', $term->name, $term->term_id, $value, 'display' );
+							$text .= strlen( $text ) ? ', ' . $term_name : $term_name;
+						}
+				}
+				
+				$markup_values[ $key ] = $text;
+			} // $terms_placeholders
+			
+			foreach ( $custom_placeholders as $key => $value ) {
+				$record = get_metadata( 'post', $attachment->ID, $value['value'], $value['single'] );
+
+				if ( is_wp_error( $record ) || empty( $record ) )
+					$text = '';
+				elseif ( is_scalar( $record ) )
+					$text = (string) $record;
+				elseif ( is_array( $record ) ) {
+					$text = '';
+					foreach ( $record as $term ) {
+						$term_name = sanitize_text_field( $term );
+						$text .= strlen( $text ) ? ', ' . $term_name : $term_name;
+					}
+				} // is_array
+				else
+					$text = '';
+				
+				$markup_values[ $key ] = $text;
+			} // $custom_placeholders
+			
+			if ( !empty( $iptc_placeholders ) || !empty( $iptc_placeholders ) ) {
+				$image_metadata = MLAData::mla_fetch_attachment_image_metadata( $attachment->ID );
+			}
+			
+			foreach ( $iptc_placeholders as $key => $value ) {
+				// convert friendly name/slug to identifier
+				if ( array_key_exists( $value['value'], self::$mla_iptc_keys ) ) {
+					$value['value'] = self::$mla_iptc_keys[ $value['value'] ];
+				}
+				
+				$text = '';
+				if ( array_key_exists( $value['value'], $image_metadata['mla_iptc_metadata'] ) ) {
+					$record = $image_metadata['mla_iptc_metadata'][ $value['value'] ];
+					if ( is_array( $record ) ) {
+						if ( $value['single'] )
+							$text = $record[0];
+						else
+							foreach ( $record as $term ) {
+								$term_name = sanitize_text_field( $term );
+								$text .= strlen( $text ) ? ', ' . $term_name : $term_name;
+							}
+					} // is_array
+					else
+						$text = $record;
+				}
+					
+				$markup_values[ $key ] = $text;
+			} // $iptc_placeholders
+			
+			foreach ( $exif_placeholders as $key => $value ) {
+				$text = '';
+				if ( array_key_exists( $value['value'], $image_metadata['mla_exif_metadata'] ) ) {
+					$record = $image_metadata['mla_exif_metadata'][ $value['value'] ];
+					if ( is_array( $record ) ) {
+						$text = var_export( $record, true);
+					} // is_array
+					else
+						$text = $record;
+				}
+					
+				$markup_values[ $key ] = $text;
+			} // $exif_placeholders
+			
 			unset(
 				$markup_values['caption'],
 				$markup_values['pagelink'],
@@ -525,91 +616,6 @@ class MLAShortcodes {
 				$markup_values['thumbnail_url'] = '';
 			}
 
-			/*
-			 * Add variable placeholders
-			 */
-			foreach ( $terms_placeholders as $key => $value ) {
-				$text = '';
-				$terms = wp_get_object_terms( $attachment->ID, $value['value'] );
-			
-				if ( is_wp_error( $terms ) || empty( $terms ) )
-					$text = '';
-				else {
-					if ( $value['single'] )
-						$text = sanitize_term_field( 'name', $terms[0]->name, $terms[0]->term_id, $value, 'display' );
-					else
-						foreach ( $terms as $term ) {
-							$term_name = sanitize_term_field( 'name', $term->name, $term->term_id, $value, 'display' );
-							$text .= strlen( $text ) ? ', ' . $term_name : $term_name;
-						}
-				}
-				
-				$markup_values[ $key ] = $text;
-			} // $terms_placeholders
-			
-			foreach ( $custom_placeholders as $key => $value ) {
-				$record = get_metadata( 'post', $attachment->ID, $value['value'], $value['single'] );
-
-				if ( is_wp_error( $record ) || empty( $record ) )
-					$text = '';
-				elseif ( is_scalar( $record ) )
-					$text = (string) $record;
-				elseif ( is_array( $record ) ) {
-					$text = '';
-					foreach ( $record as $term ) {
-						$term_name = sanitize_text_field( $term );
-						$text .= strlen( $text ) ? ', ' . $term_name : $term_name;
-					}
-				} // is_array
-				else
-					$text = '';
-				
-				$markup_values[ $key ] = $text;
-			} // $custom_placeholders
-			
-			if ( !empty( $iptc_placeholders ) || !empty( $iptc_placeholders ) ) {
-				$image_metadata = MLAData::mla_fetch_attachment_image_metadata( $attachment->ID );
-			}
-			
-			foreach ( $iptc_placeholders as $key => $value ) {
-				// convert friendly name/slug to identifier
-				if ( array_key_exists( $value['value'], self::$mla_iptc_keys ) ) {
-					$value['value'] = self::$mla_iptc_keys[ $value['value'] ];
-				}
-				
-				$text = '';
-				if ( array_key_exists( $value['value'], $image_metadata['mla_iptc_metadata'] ) ) {
-					$record = $image_metadata['mla_iptc_metadata'][ $value['value'] ];
-					if ( is_array( $record ) ) {
-						if ( $value['single'] )
-							$text = $record[0];
-						else
-							foreach ( $record as $term ) {
-								$term_name = sanitize_text_field( $term );
-								$text .= strlen( $text ) ? ', ' . $term_name : $term_name;
-							}
-					} // is_array
-					else
-						$text = $record;
-				}
-					
-				$markup_values[ $key ] = $text;
-			} // $iptc_placeholders
-			
-			foreach ( $exif_placeholders as $key => $value ) {
-				$text = '';
-				if ( array_key_exists( $value['value'], $image_metadata['mla_exif_metadata'] ) ) {
-					$record = $image_metadata['mla_exif_metadata'][ $value['value'] ];
-					if ( is_array( $record ) ) {
-						$text = var_export( $record, true);
-					} // is_array
-					else
-						$text = $record;
-				}
-					
-				$markup_values[ $key ] = $text;
-			} // $exif_placeholders
-			
 			/*
 			 * Start of row markup
 			 */
@@ -1096,7 +1102,7 @@ class MLAShortcodes {
 	 *
 	 * @var	array
 	 */
-	private static $mla_iptc_keys = array(
+	public static $mla_iptc_keys = array(
 		// Envelope Record
 		'model-version' => '1#000',
 		'destination' => '1#005',

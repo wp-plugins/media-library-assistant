@@ -32,7 +32,7 @@ class MLAObjects {
 	 * @return	void
 	 */
 	private static function _build_taxonomies( ) {
-		if ( MLASettings::mla_taxonomy_support('attachment_category') ) {
+		if ( MLAOptions::mla_taxonomy_support('attachment_category') ) {
 			$labels = array(
 				'name' => _x( 'Att. Categories', 'taxonomy general name' ),
 				'singular_name' => _x( 'Att. Category', 'taxonomy singular name' ),
@@ -60,7 +60,7 @@ class MLAObjects {
 			);
 		}
 		
-		if ( MLASettings::mla_taxonomy_support('attachment_tag') ) {
+		if ( MLAOptions::mla_taxonomy_support('attachment_tag') ) {
 			$labels = array(
 				'name' => _x( 'Att. Tags', 'taxonomy general name' ),
 				'singular_name' => _x( 'Att. Tag', 'taxonomy singular name' ),
@@ -91,7 +91,7 @@ class MLAObjects {
 	
 		$taxonomies = get_taxonomies( array ( 'show_ui' => 'true' ), 'names' );
 		foreach ( $taxonomies as $tax_name ) {
-			if ( MLASettings::mla_taxonomy_support( $tax_name ) ) {
+			if ( MLAOptions::mla_taxonomy_support( $tax_name ) ) {
 				register_taxonomy_for_object_type( $tax_name, 'attachment');
 				add_filter( "manage_edit-{$tax_name}_columns", 'MLAObjects::mla_taxonomy_get_columns_filter', 10, 1 ); // $columns
 				add_filter( "manage_{$tax_name}_custom_column", 'MLAObjects::mla_taxonomy_column_filter', 10, 3 ); // $place_holder, $column_name, $tag->term_id

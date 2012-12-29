@@ -53,7 +53,14 @@ if ( version_compare( get_bloginfo( 'version' ), '3.5', '>=' ) ) {
 }
 
 /*
- * Plugin settings and management page
+ * Plugin settings management
+ */
+require_once( MLA_PLUGIN_PATH . 'includes/class-mla-options.php' );
+
+add_action( 'init', 'MLAOptions::initialize' );
+ 
+/*
+ * Plugin settings management page
  */
 require_once( MLA_PLUGIN_PATH . 'includes/class-mla-settings.php' );
 

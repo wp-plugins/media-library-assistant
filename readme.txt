@@ -4,7 +4,7 @@ Donate link: http://fairtradejudaica.org/make-a-difference/donate/
 Tags: attachments, documents, gallery, image, images, media, library, media library, media-tags, media tags, tags, media categories, categories
 Requires at least: 3.3
 Tested up to: 3.5
-Stable tag: 0.90
+Stable tag: 1.00
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -85,7 +85,7 @@ Hover over the item you want to modify and click the "Edit" action. On the Edit 
 
 = The Media Library Assistant table listing seems sluggish; is there anything I can do to make it faster? =
 
-Some of the MLA features such as where-used reporting and ALT Text sorting/searching require a lot of database procesing. If this is a serious issue for you, open a thread in the support forum and let me know. I could implement a Settings option to turn these features on and off.
+Some of the MLA features such as where-used reporting and ALT Text sorting/searching require a lot of database procesing. If this is an issue for you, go to the Settings page and adjust the "Where-used database access tuning" settings. For any where-used category you can enable or disable processing. For the "Gallery in" and "MLA Gallery in" you can also choose to update the results on every page load or to cache the results for fifteen minutes between updates. The cache is also flushed automatically when posts, pages or attachments are inserted or updated.
 
 = Are other language versions available? =
 
@@ -103,9 +103,22 @@ All of the MLA source code has been annotated with "DocBlocks", a special type o
 4. The enhanced Edit page showing additional fields, categories and tags.
 5. The Settings page General tab, where you can customize support of Att. Categories, Att. Tags and other taxonomies, where-used reporting and the default sort order.
 6. The Settings page MLA Gallery tab, where you can add custom style and markup templates for `[mla_gallery]` shortcode output.
+7. The Settings page IPTC &amp; EXIF Processing Options screen, where you can map image metadata to standard fields (e.g. caption), taxonomy terms and custom fields.
 
 == Changelog ==
 
+= 1.00 =
+* New: IPTC and EXIF metadata can be assigned to standard WordPress fields, taxonomy terms and Custom fields. You can update all existing attachments from the Settings page IPTC/EXIF tab, groups of existing attachments with a Bulk Action or one existing attachment from the Edit Media/Edit Single Item screen.
+* New: Where-used processing can be tuned or disabled on the Settings page, General tab.
+* New: "Gallery in" and "MLA Gallery in" results are cached for fifteen minutes, avoiding repetitive database access. The cache is automatically flushed when pages, posts or attachments are inserted or updates, and can be manually flushed or disabled on the Settings page, General tab.
+* New: Default `[mla_gallery]` style and markup templates can be specified on the Settings page.
+* New: `[mla_gallery]` parameter "mla_float" allows control of gallery item "float" attribute.
+* Fix: Field-level substitution parameters (custom fields, taxonomy terms, IPTC metadata and EXIF metadata) are now available for mla_link_text, mla_rollover_text and mla_caption parameters.
+* Fix: Attachment/Parent relationships are reported consistently on the edit pages and the Assistant table listing.
+* Fix: Defect in generating mla_debug messages has been corrected.
+* Fix: Default "Order by" option now includes "None".
+* Fix: For WordPress 3.5, Custom Field support for attachments enabled in admin_init action.
+ 
 = 0.90 =
 * New: Field-level IPTC and EXIF metadata support for `[mla_gallery]` display using custom markup templates.
 * New: Field-level Custom field and taxonomy term support for `[mla_gallery]` display using custom markup templates.
@@ -125,7 +138,7 @@ All of the MLA source code has been annotated with "DocBlocks", a special type o
 * New: Settings page now divided into three tabbed subpages for easier access to settings and documentation.
 * New: For WordPress 3.5, Custom Field support added to attachments and to the WordPress standard Edit Media Screen.
 * New: For WordPress version 3.5, the WordPress standard Edit Media screen now includes Last Modified date, Parent Info, Menu Order, Image Metadata and all "where-used" information.
-* New: For WordPress versions before 3.5, the MLA Edit single item screen now includes "Gallery in" and "MLA Gallery in"  information.
+* New: For WordPress versions before 3.5, the MLA Edit Single Item screen now includes "Gallery in" and "MLA Gallery in"  information.
 * Fix: Bulk edit now supports "No Change" option for Author.
 * Fix: Bulk edit now supports changing Parent ID to "0" (unattached).
 * Fix: Where-used reporting corrected for sites without month- and year-based folders.
@@ -200,6 +213,9 @@ All of the MLA source code has been annotated with "DocBlocks", a special type o
 
 == Upgrade Notice ==
 
+= 1.00 =
+Map IPTC and EXIF metadata to standard fields, taxonomy terms and custom fields. Get improved performance for where-used reporting. Specify default `[mla_gallery]` style and markup templates. Five other fixes.
+
 = 0.90 =
 Get `[mla_gallery]` support for custom fields, taxonomy terms and IPTC/EXIF metadata. Updated for WordPress 3.5!
 
@@ -246,6 +262,7 @@ In this section:
 * Acknowledgements
 * MLA Gallery Shortcode Documentation
 * MLA Gallery Style and Markup Template Documentation
+* IPTC &amp; EXIF Processing Options
 * Online Help Summary (Assistant Submenu - Attachment List Table)
 
 == Acknowledgements ==
@@ -268,6 +285,24 @@ The `[mla_gallery]` shortcode is used in a post, page or custom post type to add
 
 All of the options/parameters documented for the `[gallery]` shortcode are supported by the `[mla_gallery]` shortcode; you can find them in the WordPress Codex. Most of the parameters documented for the WP_Query class are also supported; see the WordPress Codex. Because the `[mla_gallery]` shortcode is designed to work with Media Library items, there are some parameter differences and extensions; these are documented below.
 
+<h4>Gallery Display Style</h4>
+
+Two `[mla_gallery]` parameters provide a way to apply custom style and markup templates to your `[mla_gallery]` display. These parameters replace the default style and/or markup templates with templates you define on the "MLA Gallery" tab of the Settings page. On the "MLA Gallery" tab you can also select one of your custom templates to replace the built-in default template for all `[mla_gallery`] shortcodes the do not contain one of these parameters.
+
+* `mla_style`: replaces the default style template for an `[mla_gallery]` shortcode
+
+* `mla_markup`: replaces the default markup template for an `[mla_gallery]` shortcode
+
+Three `[mla_gallery]` parameters provide control over the placement, size and spacing of gallery items without requiring the use of custom Style templates.
+
+* `mla_float`: specifies the float attribute of the ".gallery-item" style. Acceptable values are "left", "none", "right"; the default value is "right" if current locale is RTL, "left" on LTR (left-to-right inline flow, e.g., English).
+
+* `mla_margin`: specifies the margin attribute (in percent) of the ".gallery-item" style. The default value is "1.5" percent.
+
+* `mla_itemwidth`: specifies the width attribute (in percent) of the ".gallery-item" style. The default value is calculated by subtracting twice the margin from 100%, then dividing by the number of gallery columns. For example, the default value is "32", or (100 - (2 * 1.5)) / 3.
+
+These parameters are only important if the gallery thumbnails are too large to fit within the width of the page on which they appear. For example, if you code `[mla_gallery size=full]`, the browser will automatically scale down large images to fit within the width attribute (in percent) of the ".gallery-item" style. The default 1.5% margin will ensure that the images do not overlap; you can increase it to add more space between the gallery items. You can also reduce the itemwidth parameter to increase the left and right space between the items.
+
 <h4>Gallery Display Content</h4>
 
 Three `[mla_gallery]` parameters provide an easy way to control the contents of gallery items without requiring the use of custom Markup templates.  
@@ -279,16 +314,6 @@ Three `[mla_gallery]` parameters provide an easy way to control the contents of 
 * `mla_caption`: replaces the attachment caption text displayed beneath the thumbnail of each gallery item.
 
 All three of these parameters support the Markup and Attachment-specific substitution arguments defined for Markup Templates. For example, if you code `mla_rollover_text="{+date+} : {+description+}"`, the rollover text will contain the upload date, a colon, and the full description of each gallery item. Simply add "{+" before the substitution parameter name and add "+}" after the name. Note that the enclosing delimiters are different than those used in the templates, since the shortcode parser reserves square brackets ("[" and "]") for its own use.
-
-<h4>Gallery Display Style</h4>
-
-Two `[mla_gallery]` parameters provide control over the size and spacing of gallery items without requiring the use of custom Style templates.
-
-* `mla_margin`: specifies the margin attribute (in percent) of the ".gallery-item" style. The default value is "1.5" percent.
-
-* `mla_itemwidth`: specifies the width attribute (in percent) of the ".gallery-item" style. The default value is calculated by subtracting twice the margin from 100%, then dividing by the number of gallery columns. For example, the default value is "32", or (100 - (2 * 1.5)) / 3.
-
-These parameters are only important if the gallery thumbnails are too large to fit within the width of the page on which they appear. For example, if you code `[mla_gallery size=full]`, the browser will automatically scale down large images to fit within the width attribute (in percent) of the ".gallery-item" style. The default 1.5% margin will ensure that the images do not overlap; you can increase it to add more space between the gallery items. You can also reduce the itemwidth parameter to increase the left and right space between the items.
 
 <h4>Order, Orderby</h4>
 
@@ -548,6 +573,66 @@ Here's a small example that shows a gallery using table markup. The Item markup 
 
 	</table>
 
+==IPTC &amp; EXIF Processing Options</h==
+
+Some image file formats such as JPEG DCT or TIFF Rev 6.0 support the addition of data about the image, or <em>metadata</em>, in the image file. Many popular image processing programs such as Adobe PhotoShop allow you to populate metadata fields with information such as a copyright notice, caption, the image author and keywords that categorize the image in a larger collection. WordPress uses some of this information to populate the Title, Slug and Description fields when you add an image to the Media Library.
+
+The Media Library Assistant has powerful tools for copying image metadata to:
+
+* the WordPress standard fields, e.g., the Caption
+* taxonomy terms, e.g., in categories, tags or custom taxonomies
+* WordPress Custom Fields
+
+You can define the rules for mapping metadata on the "IPTC/EXIF" tab of the Settings page. You can choose to automatically apply the rules when new media are added to the Library (or not). You can click the "Map IPTC/EXIF metadata" button on the Edit Media/Edit Single Item screen or in the bulk edit area to selectivelly apply the rules to one or more images. You can click the "Map All Attachments Now" to apply the rules to <strong>all of the images in your library</strong> at one time.
+
+<h4>Mapping tables</h4>
+
+The three mapping tables on the IPTC/EXIF tab have the following columns:
+
+* `Field Title`: The standard field title, taxonomy name or Custom Field name. In the Custom Field table you can define a new field by entering its name in the blank box at the bottom of the list; the value will be saved when you click "Save Changes" at the bottom of the screen.
+
+* `IPTC Value`: The IPTC (International Press Telecommunications Council) metadata, if any, embedded in the image file. For this category, you can select any of the IPTC DataSet tag and field identifiers, e.g., "2#025" for the Keywords field. The dropdown list has the identifier and the "friendly name" MLA defines for most of the IPTC fields; see the table of identifiers and friendly names in the table below. You can find more information in the <a href="http://www.iptc.org/std/IIM/4.1/specification/IIMV4.1.pdf" title="IPTC-NAA Information Interchange Model Version No. 4.1 specification" target="_blank">IPTC-NAA Information Interchange Model Version No. 4.1 specification</a>.
+
+* `EXIF Value`: The EXIF (EXchangeable Image File) metadata, if any, embedded in a JPEG DCT or TIFF Rev 6.0 image file. Though the specification is not currently maintained by any industry or standards organization, almost all camera manufacturers use it. For this category, you can code any of the field names embedded in the image by the camera or editing software. The is no official list of standard field names, so you just have to know the names your camera and software use; field names are case-sensitive. You can find more information in the <a href="http://en.wikipedia.org/wiki/Exchangeable_image_file_format" title="IPTC-NAA Information Interchange Model Version No. 4.1 specification" target="_blank">Exchangeable image file format</a> article on Wikipedia.<a name="mla_iptc_identifiers"></a>
+
+* `Priority`:  If both the IPTC Value and the EXIF Value are non-blank for a particular image, you can select which of the values will be used for the mapping.
+
+* `Existing Text`: Images already in the Media Library will have non-blank values in many fields and may have existing terms in a taxonomy. You can select "Keep" to retain these values or "Replace" to always map a metadata value into the field. For a taxonomy, "Keep" will retain any terms already assigned to the item and "Replace" will delete any existing terms before assigning metadata values as terms.
+
+* `Parent`: For hierarchical taxonomies such as Categories you can select one of the existing terms in the taxonomy as the parent term for any terms you are mapping from metadata values. For example, you could define "IPTC Keywords" as a parent and then assign all of the 2#025 values under that parent term.
+
+<h4>Map All Attachments Now</h4>
+
+To the right of each table heading is a "Map All Attachments Now" button. When you click one of these buttons, the mapping rules in that table are applied to <strong>all of the images in the Media Library.</strong> This is a great way to bring your media items up to date, but it is <strong>not reversible</strong>, so think carefully before you click!
+Each button applies the rules in just one category, so you can update taxonomy terms without disturbing standard or custom field values.
+
+These buttons <strong>do not</strong> save any rules changes you've made, so you can make a temporary rule change and process your attachments without disturbing the standing rules.
+
+<h4>Other mapping techniques</h4>
+
+There are two other ways you can perform metadata mapping to one or more existing Media Library images:
+
+* `Single Item Edit/Edit Media screen`: For WordPress 3.5 and later, you can click the "Map IPTC/EXIF metadata" link in the "Image Metadata" postbox to apply the standing mapping rules to a single attachment.  For WordPress 3.4.x and earlier, you can click the "Map IPTC/EXIF metadata" button on the Single Item Edit screen to apply the standing mapping rules.
+
+* `Bulk Action edit area`: To perform mapping for a group of attachments you can use the Bulk Action facility on the main Assistant screen. Check the attachments you want to map, select "edit" from the Bulk Actions dropdown list and click "Apply". The bulk edit area will open with a list of the checked attachments in the left-hand column. You can click the "Map IPTC/EXIF metadata" button in the lower left corner of the area to apply the standing mapping rules to the attachments in the list.
+
+<h4>WordPress default title, slug and description mapping</h4>
+
+When WordPress uploads a new image file that contains IPTC and EXIF metadata it automatically maps metadata values to the title (post_title), name/slug (post_name) and description (post_content) fields. This happens before the MLA mapping rules are applied, so if you want to override the default mapping you must select "Replace" in the "Existing Text" column.
+
+The WordPress rules are somewhat complex; consult the source code if you need exact details. Roughly speaking, the priority order for mapping the post_title and post_name values from non-blank IPTC/EXIF metadata is:
+
+1. EXIF "Title"
+1. EXIF "ImageDescription" (if less than 80 characters)
+1. IPTC 2#105 "headline"
+1. IPTC 2#005 "object-name"
+1. IPTC 2#120 "caption-or-abstract" (if less than 80 characters)
+
+The priority order for mapping the post_content value from non-blank IPTC/EXIF metadata is:
+
+1. EXIF "ImageDescription" (if different from post_title)
+1. IPTC 2#120 "caption-or-abstract" (if different from post_title)
+
 == Online Help Summary ==
 
 <p><strong><em>Assistant Submenu - Attachment List Table</em></strong></p>
@@ -560,9 +645,11 @@ Here's a small example that shows a gallery using table markup. The Item markup 
 <h4>Featured/Inserted</h4>
 <p>The &#8220;Featured in&#8221; and &#8220;Inserted in&#8221; columns are a powerful tool for managing your attachments. They show you where each attachment is used in a post or page as a &#8220;Featured Image&#8221; or as an embedded image or link.</p>
 <p>You can also use the information in the &#8220;Title/Name&#8221; column to identify &#8220;Orphan&#8221; items that are not used in any post or page and items with a &#8220;Bad Parent&#8221; (a parent that does contain any reference to the item) or an &#8220;Invalid Parent&#8221; (a parent that does not exist).</p>
+<p>If performance is a concern, you can go to the Settings page and disable either or both of these columns.</p>
 <h4>Gallery/MLA Gallery</h4>
 <p>The &#8220;Gallery in&#8221; and &#8220;MLA Gallery in&#8221; columns are a powerful tool for managing your attachments. They show you where each attachment is returned by a <code>[gallery]</code> or <code>[mla_gallery]</code> shortcode in a post or page. These columns do <strong>not</strong> use the post_parent (attached to) status of the item; they actually execute each shortcode and tabulate the attachments they return.</p>
 <p>You can also use the information in the &#8220;Title/Name&#8221; column to identify &#8220;Orphan&#8221; items that are not used in any post or page and items with a &#8220;Bad Parent&#8221; (a parent that does contain any reference to the item) or an &#8220;Invalid Parent&#8221; (a parent that does not exist).</p>
+<p>If performance is a concern, you can go to the Settings page and disable either or both of these columns. You can also adjust the settings to cache the results for fifteen minutes between updates. Results are automatically updated after a post, page or attachment is added or updated.</p>
 <h4>Taxonomy Support</h4>
 <p>The &#8220;taxonomy&#8221; columns help you to group attachments by subject and keyword values. The columns list any categories and tags associated with the item. You can click on one of the displayed values to get a list of all items associated with that value.</p>
 <p>The Media Library Assistant provides two pre-defined taxonomies, &#8220;Att. Categories&#8221; and &#8220;Att. Tags&#8221; which are enabled by default. You can add or remove support for any registered taxonomy on the Settings screen. The standard WordPress Categories and Tags as well as any custom taxonomies can be supported.</p>

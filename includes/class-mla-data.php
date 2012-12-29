@@ -22,7 +22,9 @@ class MLAData {
 	 * @since 0.1
 	 */
 	public static function initialize() {
-		/* Nothing to do at this point. */
+		add_action( 'save_post', 'MLAData::mla_save_post_action', 10, 1);
+		add_action( 'edit_attachment', 'MLAData::mla_save_post_action', 10, 1);
+		add_action( 'add_attachment', 'MLAData::mla_save_post_action', 10, 1);
 	}
 	
 	/**
@@ -56,7 +58,7 @@ class MLAData {
 				}
 				break;
 			case 'option':
-				$template =  MLASettings::mla_get_option( $source );
+				$template =  MLAOptions::mla_get_option( $source );
 				if ( $template == false ) {
 					return false;
 				}
@@ -290,8 +292,8 @@ class MLAData {
 		
 		$clean_request = array (
 			'm' => 0,
-			'orderby' => MLASettings::mla_get_option( 'default_orderby' ),
-			'order' => MLASettings::mla_get_option( 'default_order' ),
+			'orderby' => MLAOptions::mla_get_option( 'default_orderby' ),
+			'order' => MLAOptions::mla_get_option( 'default_order' ),
 			'post_type' => 'attachment',
 			'post_status' => 'inherit',
 			'mla-search-connector' => 'AND',
@@ -311,13 +313,17 @@ class MLAData {
 					$clean_request[ $key ] = sanitize_key( $value );
 					break;
 				case 'orderby':
-					$sortable_columns = MLA_List_Table::mla_get_sortable_columns( );
-					foreach ($sortable_columns as $sort_key => $sort_value ) {
-						if ( $value == $sort_value[0] ) {
-							$clean_request[ $key ] = $value;
-							break;
-						}
-					} // foreach
+					if ( 'none' == $value )
+						$clean_request[ $key ] = $value;
+					else {
+						$sortable_columns = MLA_List_Table::mla_get_sortable_columns( );
+						foreach ($sortable_columns as $sort_key => $sort_value ) {
+							if ( $value == $sort_value[0] ) {
+								$clean_request[ $key ] = $value;
+								break;
+							}
+						} // foreach
+					}
 					break;
 				case 'post_mime_type':
 					if ( array_key_exists( $value, MLA_List_Table::mla_get_attachment_mime_types( ) ) )
@@ -438,7 +444,7 @@ class MLAData {
 		 */
 		if ( isset( $clean_request['mla_filter_term'] ) ) {
 			if ( $clean_request['mla_filter_term'] != 0 ) {
-				$tax_filter =  MLASettings::mla_taxonomy_support('', 'filter');
+				$tax_filter =  MLAOptions::mla_taxonomy_support('', 'filter');
 				if ( $clean_request['mla_filter_term'] == -1 ) {
 					$term_list = get_terms( $tax_filter, array(
 						'fields' => 'ids',
@@ -651,6 +657,9 @@ class MLAData {
 
 		if ( isset( self::$query_parameters['orderby'] ) ) {
 			switch ( self::$query_parameters['orderby'] ) {
+				case 'none':
+					$orderby = '';
+					break;
 				/*
 				 * There are two columns defined that end up sorting on post_title,
 				 * so we can't use the database column to identify the column but
@@ -748,8 +757,9 @@ class MLAData {
 		global $wpdb;
 		
 		/*
-		 * found_reference	true if either features or inserts is not empty()
-		 * found_parent		true if $parent matches a features or inserts post ID
+		 * tested_reference	true if any of the four where-used types was processed
+		 * found_reference	true if any where-used array is not empty()
+		 * found_parent		true if $parent matches a where-used post ID
 		 * is_unattached	true if $parent is zero (0)
 		 * base_file		relative path and name of the uploaded file, e.g., 2012/04/image.jpg
 		 * path				path to the file, relative to the "uploads/" directory
@@ -761,11 +771,16 @@ class MLAData {
 		 * inserts			Array of specific files (i.e., sizes) found in one or more posts/pages
 		 *					as an image (<img>) or link (<a href>). The array key is the path and file name.
 		 *					The array value is an array with the ID, post_type and post_title of each reference
+		 * mla_galleries	Array of objects with the post_type and post_title of each post
+		 *					that was returned by an [mla_gallery] shortcode
+		 * galleries		Array of objects with the post_type and post_title of each post
+		 *					that was returned by a [gallery] shortcode
 		 * file				The name portion of the base file, e.g., image.jpg
 		 * parent_type		'post' or 'page' or the custom post type of the attachment's parent
 		 * parent_title		post_title of the attachment's parent
 		 */
 		$references = array(
+			'tested_reference' => false,
 			'found_reference' => false,
 			'found_parent' => false,
 			'is_unattached' => ( ( (int) $parent ) === 0 ),
@@ -778,9 +793,19 @@ class MLAData {
 			'galleries' => array(),
 			'file' => '',
 			'parent_type' => '',
-			'parent_title' => '' 
+			'parent_title' => '',
+			'parent_errors' => ''
 		);
 		
+		/*
+		 * Fill in Parent data
+		 */
+		$parent_data = self::mla_fetch_attachment_parent_data( $parent );
+		if ( isset( $parent_data['parent_type'] ) ) 
+			$references['parent_type'] =  $parent_data['parent_type'];
+		if ( isset( $parent_data['parent_title'] ) ) 
+			$references['parent_title'] =  $parent_data['parent_title'];
+
 		$attachment_metadata = get_post_meta( $ID, '_wp_attachment_metadata', true );
 		if ( empty( $attachment_metadata ) ) {
 			$references['base_file'] = get_post_meta( $ID, '_wp_attached_file', true );
@@ -811,118 +836,153 @@ class MLAData {
 		/*
 		 * Process the where-used settings option
 		 */
-		if ('checked' == MLASettings::mla_get_option( 'exclude_revisions' ) )
+		if ('checked' == MLAOptions::mla_get_option( 'exclude_revisions' ) )
 			$exclude_revisions = "(post_type <> 'revision') AND ";
 		else
 			$exclude_revisions = '';
-				
+
 		/*
-		 * Look for the "Featured Image(s)"
+		 * Accumulate reference test types, e.g.,  0 = no tests, 4 = all tests
 		 */
-		$features = $wpdb->get_results( 
-				"
-				SELECT post_id
-				FROM {$wpdb->postmeta}
-				WHERE meta_key = '_thumbnail_id' AND meta_value = {$ID}
-				"
-		);
-		
-		if ( !empty( $features ) ) {
-			foreach ( $features as $feature ) {
-				$feature_results = $wpdb->get_results(
-						"
-						SELECT post_type, post_title
-						FROM {$wpdb->posts}
-						WHERE {$exclude_revisions}(ID = {$feature->post_id})
-						"
-				);
+		$reference_tests = 0;
+
+		/*
+		 * Look for the "Featured Image(s)", if enabled
+		 */
+		if ( MLAOptions::$process_featured_in ) {
+			$reference_tests++;
+			$features = $wpdb->get_results( 
+					"
+					SELECT post_id
+					FROM {$wpdb->postmeta}
+					WHERE meta_key = '_thumbnail_id' AND meta_value = {$ID}
+					"
+			);
+			
+			if ( !empty( $features ) ) {
+				foreach ( $features as $feature ) {
+					$feature_results = $wpdb->get_results(
+							"
+							SELECT post_type, post_title
+							FROM {$wpdb->posts}
+							WHERE {$exclude_revisions}(ID = {$feature->post_id})
+							"
+					);
+						
+					if ( !empty( $feature_results ) ) {
+						$references['found_reference'] = true;
+						$references['features'][ $feature->post_id ] = $feature_results[0];
 					
-				if ( !empty( $feature_results ) ) {
-					$references['found_reference'] = true;
-					$references['features'][ $feature->post_id ] = $feature_results[0];
-				
-					if ( $feature->post_id == $parent ) {
-						$references['found_parent'] = true;
-						$references['parent_type'] = $feature_results[0]->post_type;
-						$references['parent_title'] = $feature_results[0]->post_title;
-					}
-				} // !empty
-			} // foreach $feature
-		}
+						if ( $feature->post_id == $parent ) {
+							$references['found_parent'] = true;
+						}
+					} // !empty
+				} // foreach $feature
+			}
+		} // $process_featured_in
 		
 		/*
 		 * Look for item(s) inserted in post_content
 		 */
-		foreach ( $references['files'] as $file => $file_data ) {
-			$like = like_escape( $file );
-			$inserts = $wpdb->get_results(
-				$wpdb->prepare(
-					"
-					SELECT ID, post_type, post_title 
-					FROM {$wpdb->posts}
-					WHERE {$exclude_revisions}(
-						CONVERT(`post_content` USING utf8 )
-						LIKE %s)
-					", "%{$like}%"
-				)
-			);
-			
-			if ( !empty( $inserts ) ) {
-				$references['found_reference'] = true;
-				$references['inserts'][ $file ] = $inserts;
+		if ( MLAOptions::$process_inserted_in ) {
+			$reference_tests++;
+			foreach ( $references['files'] as $file => $file_data ) {
+				$like = like_escape( $file );
+				$inserts = $wpdb->get_results(
+					$wpdb->prepare(
+						"
+						SELECT ID, post_type, post_title 
+						FROM {$wpdb->posts}
+						WHERE {$exclude_revisions}(
+							CONVERT(`post_content` USING utf8 )
+							LIKE %s)
+						", "%{$like}%"
+					)
+				);
 				
-				foreach ( $inserts as $insert ) {
-					if ( $insert->ID == $parent ) {
-						$references['found_parent'] = true;
-						$references['parent_type'] = $insert->post_type;
-						$references['parent_title'] = $insert->post_title;
-					}
-				} // foreach $insert
-			} // !empty
-		} // foreach $file
+				if ( !empty( $inserts ) ) {
+					$references['found_reference'] = true;
+					$references['inserts'][ $file ] = $inserts;
+					
+					foreach ( $inserts as $insert ) {
+						if ( $insert->ID == $parent ) {
+							$references['found_parent'] = true;
+						}
+					} // foreach $insert
+				} // !empty
+			} // foreach $file
+		} // $process_inserted_in
 		
 		/*
 		 * Look for [mla_gallery] references
 		 */
-		if ( self::_build_mla_galleries( self::$mla_galleries, '[mla_gallery', $exclude_revisions ) ) {
-			$galleries = self::_search_mla_galleries( self::$mla_galleries, $ID );
-			if ( !empty( $galleries ) ) {
-				$references['found_reference'] = true;
-				$references['mla_galleries'] = $galleries;
-
-				foreach ( $galleries as $post_id => $gallery ) {
-					if ( $post_id == $parent ) {
-						$references['found_parent'] = true;
-						$references['parent_type'] = $gallery['post_type'];
-						$references['parent_title'] = $gallery['post_title'];
-					}
-				} // foreach $gallery
-			} // !empty
-			else
-				$references['mla_galleries'] = array( );
-		}
+		if ( MLAOptions::$process_mla_gallery_in ) {
+			$reference_tests++;
+			if ( self::_build_mla_galleries( MLAOptions::MLA_MLA_GALLERY_IN_TUNING, self::$mla_galleries, '[mla_gallery', $exclude_revisions ) ) {
+				$galleries = self::_search_mla_galleries( self::$mla_galleries, $ID );
+				if ( !empty( $galleries ) ) {
+					$references['found_reference'] = true;
+					$references['mla_galleries'] = $galleries;
+	
+					foreach ( $galleries as $post_id => $gallery ) {
+						if ( $post_id == $parent ) {
+							$references['found_parent'] = true;
+						}
+					} // foreach $gallery
+				} // !empty
+				else
+					$references['mla_galleries'] = array( );
+			}
+		} // $process_mla_gallery_in
 		
 		/*
 		 * Look for [gallery] references
 		 */
-		if ( self::_build_mla_galleries( self::$galleries, '[gallery', $exclude_revisions ) ) {
-			$galleries = self::_search_mla_galleries( self::$galleries, $ID );
-			if ( !empty( $galleries ) ) {
-				$references['found_reference'] = true;
-				$references['galleries'] = $galleries;
+		if ( MLAOptions::$process_gallery_in ) {
+			$reference_tests++;
+			if ( self::_build_mla_galleries( MLAOptions::MLA_GALLERY_IN_TUNING, self::$galleries, '[gallery', $exclude_revisions ) ) {
+				$galleries = self::_search_mla_galleries( self::$galleries, $ID );
+				if ( !empty( $galleries ) ) {
+					$references['found_reference'] = true;
+					$references['galleries'] = $galleries;
+	
+					foreach ( $galleries as $post_id => $gallery ) {
+						if ( $post_id == $parent ) {
+							$references['found_parent'] = true;
+						}
+					} // foreach $gallery
+				} // !empty
+				else
+					$references['galleries'] = array( );
+			}
+		} // $process_gallery_in
+		
+		/*
+		 * Evaluate and summarize reference tests
+		 */
+		if ( !empty( $references['parent_title'] ) )
+			$errors = '';
+		elseif ( $references['is_unattached'] )
+			$errors = '(UNATTACHED) ';
+		else 
+			$errors = '(INVALID PARENT) ';
 
-				foreach ( $galleries as $post_id => $gallery ) {
-					if ( $post_id == $parent ) {
-						$references['found_parent'] = true;
-						$references['parent_type'] = $gallery['post_type'];
-						$references['parent_title'] = $gallery['post_title'];
-					}
-				} // foreach $gallery
-			} // !empty
-			else
-				$references['galleries'] = array( );
+		if ( 0 == $reference_tests ) {
+			$references['tested_reference'] = false;
+			$errors .= '(NO REFERENCE TESTS)';
+		}
+		else {
+			$references['tested_reference'] = true;
+			$suffix = ( 4 == $reference_tests ) ? '' : '?';
+
+			if ( !$references['found_reference'] )
+				$errors .= "(ORPHAN{$suffix}) ";
+			
+			if ( !$references['found_parent'] && !empty( $references['parent_title'] ) )
+				$errors .= "(BAD PARENT{$suffix})";
 		}
 		
+		$references['parent_errors'] = trim( $errors );
 		return $references;
 	}
 	
@@ -960,17 +1020,56 @@ class MLAData {
 	private static $mla_galleries = null;
 
 	/**
+	 * Invalidates the $mla_galleries or $galleries array and cached values
+	 *
+	 * @since 1.00
+	 *
+	 * @param	string name of the gallery's cache/option variable
+	 *
+	 * @return	void
+	 */
+	public static function mla_flush_mla_galleries( $option_name ) {
+		delete_transient( MLA_OPTION_PREFIX . 't_' . $option_name );
+
+		switch ( $option_name ) {
+			case MLAOptions::MLA_GALLERY_IN_TUNING:
+				self::$galleries = null;
+				break;
+			case MLAOptions::MLA_MLA_GALLERY_IN_TUNING:
+				self::$mla_galleries = null;
+				break;
+			default:
+				//	ignore everything else
+		} // switch
+	}
+	
+	/**
+	 * Invalidates $mla_galleries and $galleries arrays and cached values after post, page or attachment updates
+	 *
+	 * @since 1.00
+	 *
+	 * @param	integer ID of post/page/attachment; not used at this time
+	 *
+	 * @return	void
+	 */
+	public static function mla_save_post_action( $post_id ) {
+		self::mla_flush_mla_galleries( MLAOptions::MLA_GALLERY_IN_TUNING );
+		self::mla_flush_mla_galleries( MLAOptions::MLA_MLA_GALLERY_IN_TUNING );
+	}
+	
+	/**
 	 * Builds the $mla_galleries or $galleries array
 	 *
 	 * @since 0.70
 	 *
+	 * @param	string name of the gallery's cache/option variable
 	 * @param	array by reference to the private static galleries array variable
 	 * @param	string the shortcode to be searched for and processed
 	 * @param	boolean true to exclude revisions from the search
 	 *
 	 * @return	boolean true if the galleries array is not empty
 	 */
-	private static function _build_mla_galleries( &$galleries_array, $shortcode, $exclude_revisions ) {
+	private static function _build_mla_galleries( $option_name, &$galleries_array, $shortcode, $exclude_revisions ) {
 		global $wpdb, $post;
 
 		if ( is_array( $galleries_array ) ) {
@@ -981,6 +1080,22 @@ class MLAData {
 			}
 		}
 
+		$option_value = MLAOptions::mla_get_option( $option_name );
+		if ( 'disabled' == $option_value )
+			return false;
+		elseif ( 'cached' == $option_value ) {
+			$galleries_array = get_transient( MLA_OPTION_PREFIX . 't_' . $option_name );
+			if ( is_array( $galleries_array ) ) {
+				if ( ! empty( $galleries_array ) ) {
+					return true;
+				} else {
+					return false;
+				}
+			}
+			else
+				$galleries_array = NULL;
+		} // cached
+		
 		/*
 		 * $galleries_array is null, so build the array
 		 */
@@ -1037,7 +1152,14 @@ class MLAData {
 				} // foreach $match
 			} // if $count
 		} // foreach $result
-		
+	
+	/*
+	 * Maybe cache the results
+	 */	
+	if ( 'cached' == $option_value ) {
+		set_transient( MLA_OPTION_PREFIX . 't_' . $option_name, $galleries_array, 900 ); // fifteen minutes
+	}
+
 	return true;
 	}
 	
@@ -1097,18 +1219,22 @@ class MLAData {
 	 * @since 0.90
 	 *
 	 * @param	int		post ID of attachment
+	 * @param	string	optional; if $post_id is zero, path to the image file.
 	 *
 	 * @return	array	Meta data variables
 	 */
-	public static function mla_fetch_attachment_image_metadata( $post_id ) {
+	public static function mla_fetch_attachment_image_metadata( $post_id, $path = '' ) {
 		$results = array(
 			'mla_iptc_metadata' => array (),
 			'mla_exif_metadata' => array ()
 			);
 
-		$post_meta = get_metadata( 'post', $post_id, '_wp_attachment_metadata' );
-		if ( is_array( $post_meta ) && isset( $post_meta[0]['file'] ) ) {
+//		$post_meta = get_metadata( 'post', $post_id, '_wp_attachment_metadata' );
+//		if ( is_array( $post_meta ) && isset( $post_meta[0]['file'] ) ) {
+		if ( 0 != $post_id )
 			$path = get_attached_file($post_id);
+			
+		if ( ! empty( $path ) ) {
 			$size = getimagesize( $path, $info );
 			foreach ( $info as $key => $value ) {
 			}
@@ -1217,6 +1343,7 @@ class MLAData {
 		$message = '';
 		$updates = array( 'ID' => $post_id );
 		$new_data = stripslashes_deep( $new_data );
+		$new_meta = NULL;
 
 		foreach ( $new_data as $key => $value ) {
 			switch ( $key ) {
@@ -1314,6 +1441,13 @@ class MLAData {
 					$message .= sprintf( 'Changing Author from "%1$s" to "%2$s"<br>', $from_user->display_name, $to_user->display_name );
 					$updates[ $key ] = $value;
 					break;
+				case 'taxonomy_updates':
+					$tax_input = $value['inputs'];
+					$tax_actions = $value['actions'];
+					break;
+				case 'custom_updates':
+					$new_meta = $value;
+					break;
 				default:
 					// Ignore anything else
 			} // switch $key
@@ -1351,6 +1485,7 @@ class MLAData {
 							break;
 						default:
 							$action_name = 'Ignoring';
+							$result = NULL;
 							// ignore anything else
 					}
 					
@@ -1366,6 +1501,20 @@ class MLAData {
 				}
 			} // foreach $tax_input
 		} // !empty $tax_input
+		
+		if ( is_array( $new_meta ) ) {
+			foreach ( $new_meta as $meta_key => $meta_value ) {
+				if ( isset( $post_data[ 'mla_item_' . $meta_key ] ) )
+					$old_meta_value = $post_data[ 'mla_item_' . $meta_key ];
+				else
+					$old_meta_value = '';
+
+				if ( $old_meta_value != $meta_value ) {
+					$message .= sprintf( 'Changing %1$s from "%2$s" to "%3$s"<br>', $meta_key, $old_meta_value, $meta_value );
+					$results = update_post_meta( $post_id, $meta_key, $meta_value );
+				}
+			} // foreach $new_meta
+		}
 		
 		if ( empty( $message ) )
 			return array(

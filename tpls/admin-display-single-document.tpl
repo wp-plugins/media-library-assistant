@@ -19,7 +19,8 @@
 [+view_args+][+wpnonce+]
 <p class="submit" style="padding-bottom: 0;">
 <input name="update" type="submit" class="button-primary" value="Update" />&nbsp;
-<input name="cancel" type="submit" class="button-primary" value="Cancel" />
+<input name="cancel" type="submit" class="button-primary" value="Cancel" />&nbsp;
+<input name="map-iptc-exif" type="submit" class="button-secondary" value="Map IPTC/EXIF metadata" />
 </p>
 <div id="poststuff" class="metabox-holder has-right-sidebar">
 <div class="mla-media-single">

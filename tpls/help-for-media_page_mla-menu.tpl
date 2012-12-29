@@ -9,10 +9,12 @@
 <!-- title="Featured/Inserted" order="2" -->
 <p>The &#8220;Featured in&#8221; and &#8220;Inserted in&#8221; columns are a powerful tool for managing your attachments. They show you where each attachment is used in a post or page as a &#8220;Featured Image&#8221; or as an embedded image or link.</p>
 <p>You can also use the information in the &#8220;Title/Name&#8221; column to identify &#8220;Orphan&#8221; items that are not used in any post or page and items with a &#8220;Bad Parent&#8221; (a parent that does contain any reference to the item) or an &#8220;Invalid Parent&#8221; (a parent that does not exist).</p>
+<p>If performance is a concern, you can go to the Settings page and disable either or both of these columns.</p>
 <!-- template="mla-gallery-in" -->
 <!-- title="Gallery/MLA Gallery" order="3" -->
 <p>The &#8220;Gallery in&#8221; and &#8220;MLA Gallery in&#8221; columns are a powerful tool for managing your attachments. They show you where each attachment is returned by a <code>[gallery]</code> or <code>[mla_gallery]</code> shortcode in a post or page. These columns do <strong>not</strong> use the post_parent (attached to) status of the item; they actually execute each shortcode and tabulate the attachments they return.</p>
 <p>You can also use the information in the &#8220;Title/Name&#8221; column to identify &#8220;Orphan&#8221; items that are not used in any post or page and items with a &#8220;Bad Parent&#8221; (a parent that does contain any reference to the item) or an &#8220;Invalid Parent&#8221; (a parent that does not exist).</p>
+<p>If performance is a concern, you can go to the Settings page and disable either or both of these columns. You can also adjust the settings to cache the results for fifteen minutes between updates. Results are automatically updated after a post, page or attachment is added or updated.</p>
 <!-- template="mla-categories-tags" -->
 <!-- title="Taxonomy Support" order="4" -->
 <p>The &#8220;taxonomy&#8221; columns help you to group attachments by subject and keyword values. The columns list any categories and tags associated with the item. You can click on one of the displayed values to get a list of all items associated with that value.</p>

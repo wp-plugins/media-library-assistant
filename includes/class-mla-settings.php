@@ -1,14 +1,13 @@
 <?php
 /**
- * Manages the plugin option settings and provides the settings page to edit them
+ * Manages the settings page to edit the plugin option settings
  *
  * @package Media Library Assistant
  * @since 0.1
  */
 
 /**
- * Class MLA (Media Library Assistant) Settings manages the plugin option settings
- * and provides the settings page to edit them.
+ * Class MLA (Media Library Assistant) Settings provides the settings page to edit the plugin option settings
  *
  * @package Media Library Assistant
  * @since 0.1
@@ -34,161 +33,6 @@ class MLASettings {
 	const MLA_SETTINGS_SLUG = 'mla-settings-menu';
 	
 	/**
-	 * Provides a unique name for the current version option
-	 */
-	const MLA_VERSION_OPTION = 'current_version';
-	
-	/**
-	 * $mla_options defines the database options and admin page areas for setting/updating them.
-	 * Each option is defined by an array with the following elements:
-	 *
-	 * array key => HTML id/name attribute and option database key (OMIT MLA_OPTION_PREFIX)
-	 *
-	 * tab => Settings page tab id for the option
-	 * name => admin page label or heading text
-	 * type => 'checkbox', 'header', 'radio', 'select', 'text', 'textarea', 'custom', 'hidden'
-	 * std => default value
-	 * help => help text
-	 * size => text size, default 40
-	 * cols => textbox columns, default 90
-	 * rows => textbox rows, default 5
-	 * options => array of radio or select option values
-	 * texts => array of radio or select option display texts
-	 * render => rendering function for 'custom' options. Usage:
-	 *     $options_list .= ['render']( 'render', $key, $value );
-	 * update => update function for 'custom' options; returns nothing. Usage:
-	 *     $message = ['update']( 'update', $key, $value, $_REQUEST );
-	 * delete => delete function for 'custom' options; returns nothing. Usage:
-	 *     $message = ['delete']( 'delete', $key, $value, $_REQUEST );
-	 * reset => reset function for 'custom' options; returns nothing. Usage:
-	 *     $message = ['reset']( 'reset', $key, $value, $_REQUEST );
-	 */
-	private static $mla_options = array (
-		/*
-		 * This option records the highest MLA version so-far installed
-		 */
-		self::MLA_VERSION_OPTION =>
-			array('tab' => '',
-				'type' => 'hidden', 
-				'std' => '0'),
-		
-		/* 
-		 * These checkboxes are no longer used;
-		 * they are retained for the database version/update check
-		 */
-		'attachment_category' =>
-			array('tab' => '',
-				'name' => 'Attachment Categories',
-				'type' => 'hidden', // checkbox',
-				'std' => 'checked',
-				'help' => 'Check this option to add support for Attachment Categories.'),
-		
-		'attachment_tag' =>
-			array('tab' => '',
-				'name' => 'Attachment Tags',
-				'type' => 'hidden', // checkbox',
-				'std' => 'checked',
-				'help' => 'Check this option to add support for Attachment Tags.'),
-	
-		'where_used_heading' =>
-			array('tab' => 'general',
-				'name' => 'Where-used Reporting',
-				'type' => 'header'),
-		
-		'exclude_revisions' =>
-			array('tab' => 'general',
-				'name' => 'Exclude Revisions',
-				'type' => 'checkbox',
-				'std' => 'checked',
-				'help' => 'Check this option to exclude revisions from where-used reporting.'),
-	
-		'taxonomy_heading' =>
-			array('tab' => 'general',
-				'name' => 'Taxonomy Support',
-				'type' => 'header'),
-		
-		'taxonomy_support' =>
-			array('tab' => 'general',
-				'help' => 'Check the "Support" box to add the taxonomy to the Assistant.<br>Check the "Inline Edit" box to display the taxonomy in the Quick Edit and Bulk Edit areas.<br>Use the "List Filter" option to select the taxonomy on which to filter the Assistant table listing.',
-				'std' =>  array (
-					'tax_support' => array (
-				    	'attachment_category' => 'checked',
-					    'attachment_tag' => 'checked',
-					  ),
-					'tax_quick_edit' => array (
-						'attachment_category' => 'checked',
-						'attachment_tag' => 'checked',
-					),
-					'tax_filter' => 'attachment_category'
-					), 
-				'type' => 'custom',
-				'render' => '_taxonomy_handler',
-				'update' => '_taxonomy_handler',
-				'delete' => '_taxonomy_handler',
-				'reset' => '_taxonomy_handler'),
-	
-		'orderby_heading' =>
-			array('tab' => 'general',
-				'name' => 'Default Table Listing Sort Order',
-				'type' => 'header'),
-		
-		'default_orderby' =>
-			array('tab' => 'general',
-				'name' => 'Order By',
-				'type' => 'select',
-				'std' => 'title_name',
-				'options' => array('title_name'),
-				'texts' => array('Title/Name'),
-				'help' => 'Select the column for the sort order of the Assistant table listing.'),
-	
-		'default_order' =>
-			array('tab' => 'general',
-				'name' => 'Order',
-				'type' => 'radio',
-				'std' => 'ASC',
-				'options' => array('ASC', 'DESC'),
-				'texts' => array('Ascending', 'Descending'),
-				'help' => 'Choose the sort order.'),
-
-		/*
-		 * Managed by _get_style_templates and _put_style_templates
-		 */
-		'style_templates' =>
-			array('tab' => '',
-				'type' => 'hidden',
-				'std' => array( )),
-	
-		/*
-		 * Managed by _get_markup_templates and _put_markup_templates
-		 */
-		'markup_templates' =>
-			array('tab' => '',
-				'type' => 'hidden',
-				'std' => array( )),
-	
-		/* Here are examples of the other option types
-		'testvalues' =>
-			array('name' => 'Test Values',
-				'type' => 'header'),
-	
-		'text' =>
-			array('name' => 'Text Field',
-				'type' => 'text',
-				'std' => 'default text',
-				'size' => 20,
-				'help' => 'Enter the text...'),
-
-		'textarea' =>
-			array('name' => 'Text Area',
-				'type' => 'textarea',
-				'std' => 'default text area',
-				'cols' => 60,
-				'rows' => 4,
-				'help' => 'Enter the text area...'),
-		*/
-	);
-	
-	/**
 	 * Initialization function, similar to __construct()
 	 *
 	 * @since 0.1
@@ -202,7 +46,6 @@ class MLASettings {
 		add_action( 'admin_menu', 'MLASettings::mla_admin_menu_action' );
 		self::_version_upgrade();
 		self::_create_alt_text_view();
-		self::_load_templates();
 	}
 	
 	/**
@@ -213,17 +56,17 @@ class MLASettings {
 	 * @return	void
 	 */
 	private static function _version_upgrade( ) {
-		$current_version = self::mla_get_option( self::MLA_VERSION_OPTION );
+		$current_version = MLAOptions::mla_get_option( MLAOptions::MLA_VERSION_OPTION );
 		
 		if ( ((float)'.30') > ((float)$current_version) ) {
 			/*
 			 * Convert attachment_category and _tag to taxonomy_support;
 			 * change the default if either option is unchecked
 			 */
-			$category_option = self::mla_get_option( 'attachment_category' );
-			$tag_option = self::mla_get_option( 'attachment_tag' );
+			$category_option = MLAOptions::mla_get_option( 'attachment_category' );
+			$tag_option = MLAOptions::mla_get_option( 'attachment_tag' );
 			if ( ! ( ( 'checked' == $category_option ) && ( 'checked' == $tag_option ) ) ) {
-				$tax_option = self::mla_get_option( 'taxonomy_support' );
+				$tax_option = MLAOptions::mla_get_option( 'taxonomy_support' );
 				if ( 'checked' != $category_option ) {
 					if ( isset( $tax_option['tax_support']['attachment_category'] ) )
 						unset( $tax_option['tax_support']['attachment_category'] );
@@ -234,14 +77,14 @@ class MLASettings {
 						unset( $tax_option['tax_support']['attachment_tag'] );
 				}
 
-				self::_taxonomy_handler( 'update', 'taxonomy_support', self::$mla_options['taxonomy_support'], $tax_option );
+				MLAOptions::mla_taxonomy_option_handler( 'update', 'taxonomy_support', MLAOptions::$mla_option_definitions['taxonomy_support'], $tax_option );
 			} // one or both options unchecked
 
-		self::mla_delete_option( 'attachment_category' );
-		self::mla_delete_option( 'attachment_tag' );
+		MLAOptions::mla_delete_option( 'attachment_category' );
+		MLAOptions::mla_delete_option( 'attachment_tag' );
 		} // version is less than .30
 		
-		self::mla_update_option( self::MLA_VERSION_OPTION, MLA::CURRENT_MLA_VERSION );
+		MLAOptions::mla_update_option( MLAOptions::MLA_VERSION_OPTION, MLA::CURRENT_MLA_VERSION );
 	}
 	
 	/**
@@ -354,251 +197,6 @@ class MLASettings {
 	}
 	
 	/**
-	 * Style and Markup templates
-	 *
-	 * @since 0.80
-	 *
-	 * @var	array
-	 */
-	private static $mla_template_array = null;
-	
-	/**
-	 * Load style and markup templates to $mla_templates
-	 *
-	 * @since 0.80
-	 *
-	 * @return	void
-	 */
-	private static function _load_templates() {
-		self::$mla_template_array = MLAData::mla_load_template( MLA_PLUGIN_PATH . 'tpls/mla-gallery-templates.tpl' );
-
-		/* 	
-		 * Load the default templates
-		 */
-		if( is_null( self::$mla_template_array ) ) {
-			self::$mla_debug_messages .= '<p><strong>_load_templates()</strong> error loading tpls/mla-gallery-templates.tpl';
-			return;
-		}
-		elseif( !self::$mla_template_array ) {
-			self::$mla_debug_messages .= '<p><strong>_load_templates()</strong>tpls/mla-gallery-templates.tpl not found';
-			$mla_template_array = null;
-			return;
-		}
-
-		/*
-		 * Add user-defined Style and Markup templates
-		 */
-		$templates = self::mla_get_option( 'style_templates' );
-		if ( is_array(	$templates ) ) {
-			foreach ( $templates as $name => $value ) {
-				self::$mla_template_array[ $name . '-style' ] = $value;
-			} // foreach $templates
-		} // is_array
-
-		$templates = self::mla_get_option( 'markup_templates' );
-		if ( is_array(	$templates ) ) {
-			foreach ( $templates as $name => $value ) {
-				self::$mla_template_array[ $name . '-open-markup' ] = $value['open'];
-				self::$mla_template_array[ $name . '-row-open-markup' ] = $value['row-open'];
-				self::$mla_template_array[ $name . '-item-markup' ] = $value['item'];
-				self::$mla_template_array[ $name . '-row-close-markup' ] = $value['row-close'];
-				self::$mla_template_array[ $name . '-close-markup' ] = $value['close'];
-			} // foreach $templates
-		} // is_array
-	}
-
-	/**
-	 * Fetch style or markup template from $mla_templates
-	 *
-	 * @since 0.80
-	 *
-	 * @param	string	Template name
-	 * @param	string	Template type; 'style' (default) or 'markup'
-	 *
-	 * @return	string|boolean|null	requested template, false if not found or null if no templates
-	 */
-	public static function mla_fetch_gallery_template( $key, $type = 'style' ) {
-		if ( ! is_array( self::$mla_template_array ) ) {
-			self::$mla_debug_messages .= '<p><strong>_fetch_template()</strong> no templates exist';
-			return null;
-		}
-		
-		$array_key = $key . '-' . $type;
-		if ( array_key_exists( $array_key, self::$mla_template_array ) )
-			return self::$mla_template_array[ $array_key ];
-		else {
-			self::$mla_debug_messages .= "<p><strong>_fetch_template( {$key}, {$type} )</strong> not found";
-			return false;
-		}
-	}
-
-	/**
-	 * Get ALL style templates from $mla_templates, including 'default'
-	 *
-	 * @since 0.80
-	 *
-	 * @return	array|null	name => value for all style templates or null if no templates
-	 */
-	public static function _get_style_templates() {
-		if ( ! is_array( self::$mla_template_array ) ) {
-			self::$mla_debug_messages .= '<p><strong>_fetch_template()</strong> no templates exist';
-			return null;
-		}
-		
-		$templates = array( );
-		foreach ( self::$mla_template_array as $key => $value ) {
-				$tail = strrpos( $key, '-style' );
-				if ( ! ( false === $tail ) ) {
-					$name = substr( $key, 0, $tail );
-					$templates[ $name ] = $value;
-				}
-		} // foreach
-		
-		return $templates;
-	}
-
-	/**
-	 * Put user-defined style templates to $mla_templates and database
-	 *
-	 * @since 0.80
-	 *
-	 * @param	array	name => value for all user-defined style templates
-	 * @return	boolean	true if success, false if failure
-	 */
-	public static function _put_style_templates( $templates ) {
-		if ( self::mla_update_option( 'style_templates', $templates ) ) {
-			self::_load_templates();
-			return true;
-		}
-		
-		return false;
-	}
-
-	/**
-	 * Get ALL markup templates from $mla_templates, including 'default'
-	 *
-	 * @since 0.80
-	 *
-	 * @return	array|null	name => value for all markup templates or null if no templates
-	 */
-	public static function _get_markup_templates() {
-		if ( ! is_array( self::$mla_template_array ) ) {
-			self::$mla_debug_messages .= '<p><strong>_fetch_template()</strong> no templates exist';
-			return null;
-		}
-		
-		$templates = array( );
-		foreach ( self::$mla_template_array as $key => $value ) {
-				$tail = strrpos( $key, '-row-open-markup' );
-				if ( ! ( false === $tail ) ) {
-					$name = substr( $key, 0, $tail );
-					$templates[ $name ]['row-open'] = $value;
-					continue;
-				}
-					
-				$tail = strrpos( $key, '-open-markup' );
-				if ( ! ( false === $tail ) ) {
-					$name = substr( $key, 0, $tail );
-					$templates[ $name ]['open'] = $value;
-					continue;
-				}
-					
-				$tail = strrpos( $key, '-item-markup' );
-				if ( ! ( false === $tail ) ) {
-					$name = substr( $key, 0, $tail );
-					$templates[ $name ]['item'] = $value;
-					continue;
-				}
-					
-				$tail = strrpos( $key, '-row-close-markup' );
-				if ( ! ( false === $tail ) ) {
-					$name = substr( $key, 0, $tail );
-					$templates[ $name ]['row-close'] = $value;
-					continue;
-				}
-					
-				$tail = strrpos( $key, '-close-markup' );
-				if ( ! ( false === $tail ) ) {
-					$name = substr( $key, 0, $tail );
-					$templates[ $name ]['close'] = $value;
-				}
-		} // foreach
-		
-		return $templates;
-	}
-
-	/**
-	 * Put user-defined markup templates to $mla_templates and database
-	 *
-	 * @since 0.80
-	 *
-	 * @param	array	name => value for all user-defined markup templates
-	 * @return	boolean	true if success, false if failure
-	 */
-	public static function _put_markup_templates( $templates ) {
-		if ( self::mla_update_option( 'markup_templates', $templates ) ) {
-			self::_load_templates();
-			return true;
-		}
-		
-		return false;
-	}
-
-	/**
-	 * Return the stored value or default value of a defined MLA option
-	 *
-	 * @since 0.1
-	 *
-	 * @param	string 	Name of the desired option
-	 *
-	 * @return	mixed	Value(s) for the option or false if the option is not a defined MLA option
-	 */
-	public static function mla_get_option( $option ) {
-		if ( array_key_exists( $option, self::$mla_options ) ) {
-			if ( array_key_exists( 'std', self::$mla_options[ $option ] ) )
-				return get_option( MLA_OPTION_PREFIX . $option, self::$mla_options[ $option ]['std'] );
-			else
-				return get_option( MLA_OPTION_PREFIX . $option, false );
-		}
-		
-		return false;
-	}
-	
-	/**
-	 * Add or update the stored value of a defined MLA option
-	 *
-	 * @since 0.1
-	 *
-	 * @param	string 	Name of the desired option
-	 * @param	mixed 	New value for the desired option
-	 *
-	 * @return	boolean	True if the value was changed or false if the update failed
-	 */
-	public static function mla_update_option( $option, $newvalue ) {
-		if ( array_key_exists( $option, self::$mla_options ) )
-			return update_option( MLA_OPTION_PREFIX . $option, $newvalue );
-		
-		return false;
-	}
-	
-	/**
-	 * Delete the stored value of a defined MLA option
-	 *
-	 * @since 0.1
-	 *
-	 * @param	string 	Name of the desired option
-	 *
-	 * @return	boolean	True if the option was deleted, otherwise false
-	 */
-	public static function mla_delete_option( $option ) {
-		if ( array_key_exists( $option, self::$mla_options ) ) {
-			return delete_option( MLA_OPTION_PREFIX . $option );
-		}
-		
-		return false;
-	}
-	
-	/**
 	 * Update or delete a single MLA option value
 	 *
 	 * @since 0.80
@@ -614,25 +212,26 @@ class MLASettings {
 			$message = '<br>update_option(' . $key . ")\r\n";
 			switch ( $value['type'] ) {
 				case 'checkbox':
-					self::mla_update_option( $key, 'checked' );
+					MLAOptions::mla_update_option( $key, 'checked' );
 					break;
 				case 'header':
+				case 'subheader':
 					$message = '';
 					break;
 				case 'radio':
-					self::mla_update_option( $key, $_REQUEST[ MLA_OPTION_PREFIX . $key ] );
+					MLAOptions::mla_update_option( $key, $_REQUEST[ MLA_OPTION_PREFIX . $key ] );
 					break;
 				case 'select':
-					self::mla_update_option( $key, $_REQUEST[ MLA_OPTION_PREFIX . $key ] );
+					MLAOptions::mla_update_option( $key, $_REQUEST[ MLA_OPTION_PREFIX . $key ] );
 					break;
 				case 'text':
-					self::mla_update_option( $key, trim( $_REQUEST[ MLA_OPTION_PREFIX . $key ] ) );
+					MLAOptions::mla_update_option( $key, trim( $_REQUEST[ MLA_OPTION_PREFIX . $key ] ) );
 					break;
 				case 'textarea':
-					self::mla_update_option( $key, trim( $_REQUEST[ MLA_OPTION_PREFIX . $key ] ) );
+					MLAOptions::mla_update_option( $key, trim( $_REQUEST[ MLA_OPTION_PREFIX . $key ] ) );
 					break;
 				case 'custom':
-					$message = self::$value['update']( 'update', $key, $value, $_REQUEST );
+					$message = MLAOptions::$value['update']( 'update', $key, $value, $_REQUEST );
 					break;
 				case 'hidden':
 					break;
@@ -644,25 +243,26 @@ class MLASettings {
 			$message = '<br>delete_option(' . $key . ')';
 			switch ( $value['type'] ) {
 				case 'checkbox':
-					self::mla_update_option( $key, 'unchecked' );
+					MLAOptions::mla_update_option( $key, 'unchecked' );
 					break;
 				case 'header':
+				case 'subheader':
 					$message = '';
 					break;
 				case 'radio':
-					self::mla_delete_option( $key );
+					MLAOptions::mla_delete_option( $key );
 					break;
 				case 'select':
-					self::mla_delete_option( $key );
+					MLAOptions::mla_delete_option( $key );
 					break;
 				case 'text':
-					self::mla_delete_option( $key );
+					MLAOptions::mla_delete_option( $key );
 					break;
 				case 'textarea':
-					self::mla_delete_option( $key );
+					MLAOptions::mla_delete_option( $key );
 					break;
 				case 'custom':
-					$message = self::$value['delete']( 'delete', $key, $value, $_REQUEST );
+					$message = MLAOptions::$value['delete']( 'delete', $key, $value, $_REQUEST );
 					break;
 				case 'hidden':
 					break;
@@ -695,17 +295,18 @@ class MLASettings {
 					'help' => $value['help'] 
 				);
 				
-				if ( 'checked' == self::mla_get_option( $key ) )
+				if ( 'checked' == MLAOptions::mla_get_option( $key ) )
 					$option_values['checked'] = 'checked="checked"';
 				
 				return MLAData::mla_parse_template( self::$page_template_array['checkbox'], $option_values );
 			case 'header':
+			case 'subheader':
 				$option_values = array(
 					'key' => MLA_OPTION_PREFIX . $key,
 					'value' => $value['name'] 
 				);
 				
-				return MLAData::mla_parse_template( self::$page_template_array['header'], $option_values );
+				return MLAData::mla_parse_template( self::$page_template_array[ $value['type'] ], $option_values );
 			case 'radio':
 				$radio_options = '';
 				foreach ( $value['options'] as $optid => $option ) {
@@ -716,7 +317,7 @@ class MLASettings {
 						'value' => $value['texts'][$optid] 
 					);
 					
-					if ( $option == self::mla_get_option( $key ) )
+					if ( $option == MLAOptions::mla_get_option( $key ) )
 						$option_values['checked'] = 'checked="checked"';
 					
 					$radio_options .= MLAData::mla_parse_template( self::$page_template_array['radio-option'], $option_values );
@@ -738,7 +339,7 @@ class MLASettings {
 						'text' => $value['texts'][$optid]
 					);
 					
-					if ( $option == self::mla_get_option( $key ) )
+					if ( $option == MLAOptions::mla_get_option( $key ) )
 						$option_values['selected'] = 'selected="selected"';
 					
 					$select_options .= MLAData::mla_parse_template( self::$page_template_array['select-option'], $option_values );
@@ -765,7 +366,7 @@ class MLASettings {
 				if ( !empty( $value['size'] ) )
 					$option_values['size'] = $value['size'];
 				
-				$option_values['text'] = self::mla_get_option( $key );
+				$option_values['text'] = MLAOptions::mla_get_option( $key );
 				
 				return MLAData::mla_parse_template( self::$page_template_array['text'], $option_values );
 			case 'textarea':
@@ -785,12 +386,12 @@ class MLASettings {
 				if ( !empty( $value['rows'] ) )
 					$option_values['rows'] = $value['rows'];
 				
-				$option_values['text'] = stripslashes( self::mla_get_option( $key ) );
+				$option_values['text'] = stripslashes( MLAOptions::mla_get_option( $key ) );
 				
 				return MLAData::mla_parse_template( self::$page_template_array['textarea'], $option_values );
 			case 'custom':
 				if ( isset( $value['render'] ) )
-					return self::$value['render']( 'render', $key, $value );
+					return MLAOptions::$value['render']( 'render', $key, $value );
 
 				break;
 			case 'hidden':
@@ -831,6 +432,7 @@ class MLASettings {
 	private static $mla_tablist = array(
 		'general' => array( 'title' => 'General', 'render' => '_compose_general_tab' ),
 		'mla-gallery' => array( 'title' => 'MLA Gallery', 'render' => '_compose_mla_gallery_tab' ),
+		'iptc-exif' => array( 'title' => 'IPTC/EXIF', 'render' => '_compose_iptc_exif_tab' ),
 		'documentation' => array( 'title' => 'Documentation', 'render' => '_compose_documentation_tab' )
 	);
 
@@ -931,12 +533,12 @@ class MLASettings {
 		 */
 		$default_orderby = MLA_List_Table::mla_get_sortable_columns( );
 		foreach ($default_orderby as $key => $value ) {
-			self::$mla_options['default_orderby']['options'][] = $value[0];
-			self::$mla_options['default_orderby']['texts'][] = $value[1];
+			MLAOptions::$mla_option_definitions['default_orderby']['options'][] = $value[0];
+			MLAOptions::$mla_option_definitions['default_orderby']['texts'][] = $value[1];
 		}
 		
 		$options_list = '';
-		foreach ( self::$mla_options as $key => $value ) {
+		foreach ( MLAOptions::$mla_option_definitions as $key => $value ) {
 			if ( 'general' == $value['tab'] )
 				$options_list .= self::_compose_option_row( $key, $value );
 		}
@@ -982,10 +584,27 @@ class MLASettings {
 		);
 		
 		/*
+		 * Build default template selection lists
+		 */
+		$templates = MLAOptions::mla_get_style_templates();
+		ksort($templates);
+		foreach ($templates as $key => $value ) {
+			MLAOptions::$mla_option_definitions['default_style']['options'][] = $key;
+			MLAOptions::$mla_option_definitions['default_style']['texts'][] = $key;
+		}
+
+		$templates = MLAOptions::mla_get_markup_templates();
+		ksort($templates);
+		foreach ($templates as $key => $value ) {
+			MLAOptions::$mla_option_definitions['default_markup']['options'][] = $key;
+			MLAOptions::$mla_option_definitions['default_markup']['texts'][] = $key;
+		}
+		
+		/*
 		 * Start with any page-level options
 		 */
 		$options_list = '';
-		foreach ( self::$mla_options as $key => $value ) {
+		foreach ( MLAOptions::$mla_option_definitions as $key => $value ) {
 			if ( 'mla-gallery' == $value['tab'] )
 				$options_list .= self::_compose_option_row( $key, $value );
 		}
@@ -996,7 +615,7 @@ class MLASettings {
 		 * Add style templates; default goes first
 		 */
 		$style_options_list = '';
-		$templates = self::_get_style_templates();
+		$templates = MLAOptions::mla_get_style_templates();
 		
 		$name = 'default';
 		$value =$templates['default'];
@@ -1080,7 +699,7 @@ class MLASettings {
 		 * Add markup templates; default goes first
 		 */
 		$markup_options_list = '';
-		$templates = self::_get_markup_templates();
+		$templates = MLAOptions::mla_get_markup_templates();
 		
 		$name = 'default';
 		$value =$templates['default'];
@@ -1229,6 +848,79 @@ class MLASettings {
 	}
 	
 	/**
+	 * Compose the IPTC/EXIF tab content for the Settings subpage
+	 *
+	 * @since 1.00
+	 * @uses $page_template_array contains tab content template(s)
+ 	 *
+	 * @return	array	'message' => status/error messages, 'body' => tab content
+	 */
+	private static function _compose_iptc_exif_tab( ) {
+// error_log( '_compose_iptc_exif_tab $_REQUEST = ' . var_export( $_REQUEST, true ), 0 );
+		/*
+		 * Check for submit buttons to change or reset settings.
+		 * Initialize page messages and content.
+		 */
+		if ( !empty( $_REQUEST['iptc-exif-options-save'] ) ) {
+			check_admin_referer( MLA::MLA_ADMIN_NONCE, '_wpnonce' );
+			$page_content = self::_save_iptc_exif_settings( );
+		}
+		elseif ( !empty( $_REQUEST['iptc-exif-options-process-standard'] ) ) {
+			check_admin_referer( MLA::MLA_ADMIN_NONCE, '_wpnonce' );
+			$page_content = self::_process_iptc_exif_standard( );
+		}
+		elseif ( !empty( $_REQUEST['iptc-exif-options-process-taxonomy'] ) ) {
+			check_admin_referer( MLA::MLA_ADMIN_NONCE, '_wpnonce' );
+			$page_content = self::_process_iptc_exif_taxonomy( );
+		}
+		elseif ( !empty( $_REQUEST['iptc-exif-options-process-custom'] ) ) {
+			check_admin_referer( MLA::MLA_ADMIN_NONCE, '_wpnonce' );
+			$page_content = self::_process_iptc_exif_custom( );
+		} else {
+			$page_content = array(
+				 'message' => '',
+				'body' => '' 
+			);
+		}
+		
+		if ( !empty( $page_content['body'] ) ) {
+			return $page_content;
+		}
+		
+		$page_values = array(
+			'options_list' => '',
+			'standard_options_list' => '',
+			'taxonomy_options_list' => '',
+			'custom_options_list' => '',
+			'_wpnonce' => wp_nonce_field( MLA::MLA_ADMIN_NONCE, '_wpnonce', true, false ),
+			'_wp_http_referer' => wp_referer_field( false )
+		);
+		
+		/*
+		 * Start with any page-level options
+		 */
+		$options_list = '';
+		foreach ( MLAOptions::$mla_option_definitions as $key => $value ) {
+			if ( 'iptc-exif' == $value['tab'] )
+				$options_list .= self::_compose_option_row( $key, $value );
+		}
+		
+		$page_values['options_list'] = $options_list;
+		
+		/*
+		 * Add mapping options
+		 */
+		$page_values['standard_options_list'] = MLAOptions::mla_iptc_exif_option_handler( 'render', 'iptc_exif_standard_mapping', MLAOptions::$mla_option_definitions['iptc_exif_standard_mapping'] );
+		
+		$page_values['taxonomy_options_list'] = MLAOptions::mla_iptc_exif_option_handler( 'render', 'iptc_exif_taxonomy_mapping', MLAOptions::$mla_option_definitions['iptc_exif_taxonomy_mapping'] );
+		
+		$page_values['custom_options_list'] = MLAOptions::mla_iptc_exif_option_handler( 'render', 'iptc_exif_custom_mapping', MLAOptions::$mla_option_definitions['iptc_exif_custom_mapping'] );
+		
+		$page_content['body'] = MLAData::mla_parse_template( self::$page_template_array['iptc-exif-tab'], $page_values );
+		return $page_content;
+	}
+	
+	/**
 	 * Compose the Documentation tab content for the Settings subpage
 	 *
 	 * @since 0.80
@@ -1237,13 +929,14 @@ class MLASettings {
 	 * @return	array	'message' => status/error messages, 'body' => tab content
 	 */
 	private static function _compose_documentation_tab( ) {
+		$page_template = MLAData::mla_load_template( MLA_PLUGIN_PATH . 'tpls/documentation-settings-tab.tpl' );
 		$page_values = array(
 			'phpDocs_url' => MLA_PLUGIN_URL . 'phpDocs/index.html'
 		);
 		
 		return array(
 			'message' => '',
-			'body' => MLAData::mla_parse_template( self::$page_template_array['documentation-tab'], $page_values ) 
+			'body' => MLAData::mla_parse_template( $page_template['documentation-tab'], $page_values ) 
 		);
 	}
 	
@@ -1296,82 +989,6 @@ class MLASettings {
 	} // mla_render_settings_page
 	
 	/**
-	 * Determine MLA support for a taxonomy, handling the special case where the
-	 * settings are being updated or reset.
- 	 *
-	 * @since 0.30
-	 *
-	 * @param	string	Taxonomy name, e.g., attachment_category
-	 * @param	string	Optional. 'support' (default), 'quick-edit' or 'filter'
-	 *
-	 * @return	boolean|string
-	 *			true if the taxonomy is supported in this way else false
-	 *			string if $tax_name is '' and $support_type is 'filter', returns the taxonomy to filter by
-	 */
-	public static function mla_taxonomy_support($tax_name, $support_type = 'support') {
-		$tax_options =  MLASettings::mla_get_option( 'taxonomy_support' );
-		
-		switch ( $support_type ) {
-			case 'support': 
-				$tax_support = isset( $tax_options['tax_support'] ) ? $tax_options['tax_support'] : array ();
-				$is_supported = array_key_exists( $tax_name, $tax_support );
-				
-				if ( !empty( $_REQUEST['mla-general-options-save'] ) ) {
-					$is_supported = isset( $_REQUEST['tax_support'][ $tax_name ] );
-				} elseif ( !empty( $_REQUEST['mla-general-options-reset'] ) ) {
-					switch ( $tax_name ) {
-						case 'attachment_category':
-						case 'attachment_tag':
-							$is_supported = true;
-							break;
-						default:
-							$is_supported = false;
-					}
-				}
-		
-				return $is_supported;
-			case 'quick-edit':
-				$tax_quick_edit = isset( $tax_options['tax_quick_edit'] ) ? $tax_options['tax_quick_edit'] : array ();
-				$is_supported = array_key_exists( $tax_name, $tax_quick_edit );
-				
-				if ( !empty( $_REQUEST['mla-general-options-save'] ) ) {
-					$is_supported = isset( $_REQUEST['tax_quick_edit'][ $tax_name ] );
-				} elseif ( !empty( $_REQUEST['mla-general-options-reset'] ) ) {
-					switch ( $tax_name ) {
-						case 'attachment_category':
-						case 'attachment_tag':
-							$is_supported = true;
-							break;
-						default:
-							$is_supported = false;
-					}
-				}
-		
-				return $is_supported;
-			case 'filter':
-				$tax_filter = isset( $tax_options['tax_filter'] ) ? $tax_options['tax_filter'] : '';
-				if ( '' == $tax_name )
-					return $tax_filter;
-				else
-					$is_supported = ( $tax_name == $tax_filter );
-				
-				if ( !empty( $_REQUEST['mla-general-options-save'] ) ) {
-					$tax_filter = isset( $_REQUEST['tax_filter'] ) ? $_REQUEST['tax_filter'] : '';
-					$is_supported = ( $tax_name == $tax_filter );
-				} elseif ( !empty( $_REQUEST['mla-general-options-reset'] ) ) {
-					if ( 'attachment_category' == $tax_name )
-						$is_supported = true;
-					else
-						$is_supported = false;
-				}
-		
-				return $is_supported;
-			default:
-				return false;
-		} // $support_type
-	} // mla_taxonomy_support
-	
-	/**
 	 * Save MLA Gallery settings to the options table
  	 *
 	 * @since 0.80
@@ -1388,15 +1005,20 @@ class MLASettings {
 		/*
 		 * Start with any page-level options
 		 */
-		foreach ( self::$mla_options as $key => $value ) {
-			if ( 'mla-gallery' == $value['tab'] )
-				$message_list .= self::_update_option_row( $key, $value );
+		foreach ( MLAOptions::$mla_option_definitions as $key => $value ) {
+			if ( 'mla-gallery' == $value['tab'] && ( 'select' == $value['type'] ) ) {
+				$old_value = MLAOptions::mla_get_option( $key );
+				if ( $old_value != $_REQUEST[ MLA_OPTION_PREFIX . $key ] ) {
+					$settings_changed = true;
+					$message_list .= self::_update_option_row( $key, $value );
+				}
+			}
 		} // foreach mla_options
 		
 		/*
 		 * Get the current style contents for comparison
 		 */
-		$old_templates = self::_get_style_templates();
+		$old_templates = MLAOptions::mla_get_style_templates();
 		$new_templates = array( );
 		$new_names = $_REQUEST['mla_style_templates_name'];
 		$new_values = stripslashes_deep( $_REQUEST['mla_style_templates_value'] );
@@ -1464,14 +1086,14 @@ class MLASettings {
 		
 		if ( $templates_changed ) {
 			$settings_changed = true;
-			if ( false == self::_put_style_templates( $new_templates ) )
+			if ( false == MLAOptions::mla_put_style_templates( $new_templates ) )
 				$error_list .= "<br>Error: update of style templates failed.";
 		}
 		
 		/*
 		 * Get the current markup contents for comparison
 		 */
-		$old_templates = self::_get_markup_templates();
+		$old_templates = MLAOptions::mla_get_markup_templates();
 		$new_templates = array( );
 		$new_names = $_REQUEST['mla_markup_templates_name'];
 		$new_values['open'] = stripslashes_deep( $_REQUEST['mla_markup_templates_open'] );
@@ -1575,7 +1197,7 @@ class MLASettings {
 		
 		if ( $templates_changed ) {
 			$settings_changed = true;
-			if ( false == self::_put_markup_templates( $new_templates ) )
+			if ( false == MLAOptions::mla_put_markup_templates( $new_templates ) )
 				$error_list .= "<br>Error: update of markup templates failed.";
 		}
 		
@@ -1598,6 +1220,177 @@ class MLASettings {
 	} // _save_gallery_settings
 	
 	/**
+	 * Process IPTC/EXIF standard field settings against all image attachments
+	 * without saving the settings to the mla_option
+ 	 *
+	 * @since 1.00
+	 *
+	 * @uses $_REQUEST
+	 *
+	 * @return	array	Message(s) reflecting the results of the operation
+	 */
+	private static function _process_iptc_exif_standard( ) {
+		if ( ! isset( $_REQUEST['iptc_exif_mapping']['standard'] ) )
+			return array(
+				'message' => 'ERROR: No standard field settings to process.',
+				'body' => '' 
+			);
+
+		$examine_count = 0;
+		$update_count = 0;
+		
+		$query = array( 'orderby' => 'none', 'post_parent' => 'all' );
+		$posts = MLAShortcodes::mla_get_shortcode_attachments( 0, $query );
+		
+		foreach( $posts as $key => $post ) {
+			$updates = MLAOptions::mla_evaluate_iptc_exif_mapping( $post, 'iptc_exif_standard_mapping', $_REQUEST['iptc_exif_mapping'] );
+
+			$examine_count += 1;
+			if ( ! empty( $updates ) ) {
+				MLAData::mla_update_single_item( $post->ID, $updates );
+				$update_count += 1;
+			}
+		} // foreach post
+		
+		if ( $update_count )
+			$message = "IPTC/EXIF Standard field mapping completed; {$examine_count} attachment(s) examined, {$update_count} updated.\r\n";
+		else
+			$message = "IPTC/EXIF Standard field mapping completed; {$examine_count} attachment(s) examined, no changes detected.\r\n";
+		
+		return array(
+			'message' => $message,
+			'body' => '' 
+		);
+	} // _process_iptc_exif_standard
+	
+	/**
+	 * Process IPTC/EXIF taxonomy term settings against all image attachments
+	 * without saving the settings to the mla_option
+ 	 *
+	 * @since 1.00
+	 *
+	 * @uses $_REQUEST
+	 *
+	 * @return	array	Message(s) reflecting the results of the operation
+	 */
+	private static function _process_iptc_exif_taxonomy( ) {
+		if ( ! isset( $_REQUEST['iptc_exif_mapping']['taxonomy'] ) )
+			return array(
+				'message' => 'ERROR: No taxonomy term settings to process.',
+				'body' => '' 
+			);
+
+		$examine_count = 0;
+		$update_count = 0;
+		
+		$query = array( 'orderby' => 'none', 'post_parent' => 'all' );
+		$posts = MLAShortcodes::mla_get_shortcode_attachments( 0, $query );
+		
+		foreach( $posts as $key => $post ) {
+			$updates = MLAOptions::mla_evaluate_iptc_exif_mapping( $post, 'iptc_exif_taxonomy_mapping', $_REQUEST['iptc_exif_mapping'] );
+
+			$examine_count += 1;
+			if ( ! empty( $updates ) ) {
+				$results = MLAData::mla_update_single_item( $post->ID, array( ), $updates['taxonomy_updates']['inputs'], $updates['taxonomy_updates']['actions'] );
+				if ( stripos( $results['message'], 'updated.' ) )
+					$update_count += 1;
+			}
+		} // foreach post
+		
+		if ( $update_count )
+			$message = "IPTC/EXIF Taxonomy term mapping completed; {$examine_count} attachment(s) examined, {$update_count} updated.\r\n";
+		else
+			$message = "IPTC/EXIF Taxonomy term mapping completed; {$examine_count} attachment(s) examined, no changes detected.\r\n";
+		
+		return array(
+			'message' => $message,
+			'body' => '' 
+		);
+	} // _process_iptc_exif_taxonomy
+	
+	/**
+	 * Process IPTC/EXIF custom field settings against all image attachments
+	 * without saving the settings to the mla_option
+ 	 *
+	 * @since 1.00
+	 *
+	 * @uses $_REQUEST
+	 *
+	 * @return	array	Message(s) reflecting the results of the operation
+	 */
+	private static function _process_iptc_exif_custom( ) {
+		if ( ! isset( $_REQUEST['iptc_exif_mapping']['custom'] ) )
+			return array(
+				'message' => 'ERROR: No custom field settings to process.',
+				'body' => '' 
+			);
+
+		$examine_count = 0;
+		$update_count = 0;
+		
+		$query = array( 'orderby' => 'none', 'post_parent' => 'all' );
+		$posts = MLAShortcodes::mla_get_shortcode_attachments( 0, $query );
+		
+		foreach( $posts as $key => $post ) {
+			$updates = MLAOptions::mla_evaluate_iptc_exif_mapping( $post, 'iptc_exif_custom_mapping', $_REQUEST['iptc_exif_mapping'] );
+
+			$examine_count += 1;
+			if ( ! empty( $updates ) ) {
+				$results = MLAData::mla_update_single_item( $post->ID, $updates );
+				if ( stripos( $results['message'], 'updated.' ) )
+					$update_count += 1;
+			}
+		} // foreach post
+		
+		if ( $update_count )
+			$message = "IPTC/EXIF custom field mapping completed; {$examine_count} attachment(s) examined, {$update_count} updated.\r\n";
+		else
+			$message = "IPTC/EXIF custom field mapping completed; {$examine_count} attachment(s) examined, no changes detected.\r\n";
+		
+		return array(
+			'message' => $message,
+			'body' => '' 
+		);
+	} // _process_iptc_exif_custom
+	
+	/**
+	 * Save IPTC/EXIF settings to the options table
+ 	 *
+	 * @since 1.00
+	 *
+	 * @uses $_REQUEST
+	 *
+	 * @return	array	Message(s) reflecting the results of the operation
+	 */
+	private static function _save_iptc_exif_settings( ) {
+		$message_list = '';
+		$option_messages = '';
+
+		/*
+		 * Start with any page-level options
+		 */
+		foreach ( MLAOptions::$mla_option_definitions as $key => $value ) {
+			if ( 'iptc-exif' == $value['tab'] )
+				$option_messages .= self::_update_option_row( $key, $value );
+		}
+
+		/*
+		 * Uncomment this for debugging.
+		 */
+		// $message_list = $option_messages . '<br>';
+		
+		/*
+		 * Add mapping options
+		 */
+		$new_values = ( isset( $_REQUEST['iptc_exif_mapping'] ) ) ? $_REQUEST['iptc_exif_mapping'] : array( 'standard' => array(), 'taxonomy' => array(), 'custom' => array() );
+
+		return array(
+			'message' => $message_list . MLAOptions::mla_iptc_exif_option_handler( 'update', 'iptc_exif_mapping', MLAOptions::$mla_option_definitions['iptc_exif_mapping'], $new_values ),
+			'body' => '' 
+		);
+	} // _save_iptc_exif_settings
+	
+	/**
 	 * Save General settings to the options table
  	 *
 	 * @since 0.1
@@ -1609,9 +1402,39 @@ class MLASettings {
 	private static function _save_general_settings( ) {
 		$message_list = '';
 		
-		foreach ( self::$mla_options as $key => $value ) {
-			if ( 'general' == $value['tab'] )
+		foreach ( MLAOptions::$mla_option_definitions as $key => $value ) {
+			if ( 'general' == $value['tab'] ) {
+				switch ( $key ) {
+					case MLAOptions::MLA_FEATURED_IN_TUNING:
+						MLAOptions::$process_featured_in = ( 'disabled' != $_REQUEST[ MLA_OPTION_PREFIX . $key ] );
+						break;
+					case MLAOptions::MLA_INSERTED_IN_TUNING:
+						MLAOptions::$process_inserted_in = ( 'disabled' != $_REQUEST[ MLA_OPTION_PREFIX . $key ] );
+						break;
+					case MLAOptions::MLA_GALLERY_IN_TUNING:
+						MLAOptions::$process_gallery_in = ( 'disabled' != $_REQUEST[ MLA_OPTION_PREFIX . $key ] );
+						
+						if ( 'refresh' == $_REQUEST[ MLA_OPTION_PREFIX . $key ] ) {
+							MLAData::mla_flush_mla_galleries( MLAOptions::MLA_GALLERY_IN_TUNING );
+							$message_list .= "<br>Gallery in - references updated.\r\n";
+							$_REQUEST[ MLA_OPTION_PREFIX . $key ] = 'cached';
+						}
+						break;
+					case MLAOptions::MLA_MLA_GALLERY_IN_TUNING:
+						MLAOptions::$process_mla_gallery_in = ( 'disabled' != $_REQUEST[ MLA_OPTION_PREFIX . $key ] );
+						
+						if ( 'refresh' == $_REQUEST[ MLA_OPTION_PREFIX . $key ] ) {
+							MLAData::mla_flush_mla_galleries( MLAOptions::MLA_MLA_GALLERY_IN_TUNING );
+							$message_list .= "<br>MLA Gallery in - references updated.\r\n";
+							$_REQUEST[ MLA_OPTION_PREFIX . $key ] = 'cached';
+						}
+						break;
+					default:
+						//	ignore everything else
+				} // switch
+
 				$message_list .= self::_update_option_row( $key, $value );
+			} // general option
 		} // foreach mla_options
 		
 		$page_content = array(
@@ -1637,15 +1460,15 @@ class MLASettings {
 	private static function _reset_general_settings( ) {
 		$message_list = '';
 		
-		foreach ( self::$mla_options as $key => $value ) {
+		foreach ( MLAOptions::$mla_option_definitions as $key => $value ) {
 			if ( 'custom' == $value['type'] ) {
-				$message = self::$value['reset']( 'reset', $key, $value, $_REQUEST );
+				$message = MLAOptions::$value['reset']( 'reset', $key, $value, $_REQUEST );
 			}
 			elseif ( ('header' == $value['type']) || ('hidden' == $value['type']) ) {
 				$message = '';
 			}
 			else {
-				self::mla_delete_option( $key );
+				MLAOptions::mla_delete_option( $key );
 				$message = '<br>delete_option(' . $key . ')';
 			}
 			
@@ -1664,118 +1487,5 @@ class MLASettings {
 		
 		return $page_content;
 	} // _reset_general_settings
-	
-	/**
-	 * Render and manage other taxonomy support options, e.g., Categories and Post Tags
- 	 *
-	 * @since 0.30
-	 * @uses $page_template_array contains taxonomy-row and taxonomy-table templates
-	 *
-	 * @param	string 	'render', 'update', 'delete', or 'reset'
-	 * @param	string 	option name, e.g., 'taxonomy_support'
-	 * @param	array 	option parameters
-	 * @param	array 	Optional. null (default) for 'render' else $_REQUEST
-	 *
-	 * @return	string	HTML table row markup for 'render' else message(s) reflecting the results of the operation.
-	 */
-	private static function _taxonomy_handler( $action, $key, $value, $args = null ) {
-		switch ( $action ) {
-			case 'render':
-				$taxonomies = get_taxonomies( array ( 'show_ui' => 'true' ), 'objects' );
-				$current_values = self::mla_get_option( $key );
-				$tax_support = isset( $current_values['tax_support'] ) ? $current_values['tax_support'] : array ();
-				$tax_quick_edit = isset( $current_values['tax_quick_edit'] ) ? $current_values['tax_quick_edit'] : array ();
-				$tax_filter = isset( $current_values['tax_filter'] ) ? $current_values['tax_filter'] : '';
-				
-				/*
-				 * Always display our own taxonomies, even if not registered.
-				 * Otherwise there's no way to turn them back on.
-				 */
-				if ( ! array_key_exists( 'attachment_category', $taxonomies ) ) {
-					$taxonomies['attachment_category'] = (object) array( 'labels' => (object) array( 'name' => 'Attachment Categories' ) );
-					if ( isset( $tax_support['attachment_category'] ) )
-						unset( $tax_support['attachment_category'] );
-						
-					if ( isset( $tax_quick_edit['attachment_category'] ) )
-						unset( $tax_quick_edit['attachment_category'] );
-						
-					if ( $tax_filter == 'attachment_category' )
-						$tax_filter = '';
-				}
-
-				if ( ! array_key_exists( 'attachment_tag', $taxonomies ) ) {
-					$taxonomies['attachment_tag'] = (object) array( 'labels' => (object) array( 'name' => 'Attachment Tags' ) );
-
-					if ( isset( $tax_support['attachment_tag'] ) )
-						unset( $tax_support['attachment_tag'] );
-						
-					if ( isset( $tax_quick_edit['attachment_tag'] ) )
-						unset( $tax_quick_edit['attachment_tag'] );
-						
-					if ( $tax_filter == 'attachment_tag' )
-						$tax_filter = '';
-				}
-
-				$taxonomy_row = self::$page_template_array['taxonomy-row'];
-				$row = '';
-				
-				foreach ($taxonomies as $tax_name => $tax_object) {
-					$option_values = array (
-						'key' => $tax_name,
-						'name' => $tax_object->labels->name,
-						'support_checked' => array_key_exists( $tax_name, $tax_support ) ? 'checked=checked' : '',
-						'quick_edit_checked' => array_key_exists( $tax_name, $tax_quick_edit ) ? 'checked=checked' : '',
-						'filter_checked' => ( $tax_name == $tax_filter ) ? 'checked=checked' : ''
-					);
-					
-					$row .= MLAData::mla_parse_template( $taxonomy_row, $option_values );
-				}
-
-				$option_values = array (
-					'taxonomy_rows' => $row,
-					'help' => $value['help']
-				);
-				
-				return MLAData::mla_parse_template( self::$page_template_array['taxonomy-table'], $option_values );
-			case 'update':
-			case 'delete':
-				$tax_support = isset( $args['tax_support'] ) ? $args['tax_support'] : array ();
-				$tax_quick_edit = isset( $args['tax_quick_edit'] ) ? $args['tax_quick_edit'] : array ();
-				$tax_filter = isset( $args['tax_filter'] ) ? $args['tax_filter'] : '';
-
-				$msg = '';
-				
-				if ( !empty($tax_filter) && !array_key_exists( $tax_filter, $tax_support ) ) {
-					$msg .= "<br>List Filter ignored; {$tax_filter} not supported.\r\n";
-					$tax_filter = '';
-				}
-
-				foreach ($tax_quick_edit as $tax_name => $tax_value) {				
-					if ( !array_key_exists( $tax_name, $tax_support ) ) {
-						$msg .= "<br>Quick Edit ignored; {$tax_name} not supported.\r\n";
-						unset( $tax_quick_edit[ $tax_name ] );
-					}
-				}
-				
-				$value = array (
-					'tax_support' => $tax_support,
-					'tax_quick_edit' => $tax_quick_edit,
-					'tax_filter' => $tax_filter
-					);
-				
-				self::mla_update_option( $key, $value );
-				
-				if ( empty( $msg ) )
-					$msg = "<br>Update custom {$key}\r\n";
-
-				return $msg;
-			case 'reset':
-				self::mla_delete_option( $key );
-				return "<br>Reset custom {$key}\r\n";
-			default:
-				error_log( 'ERROR: _save_settings unknown type(3): ' . var_export( $value, true ), 0 );
-				return '';
-		}
-	} // _taxonomy_handler
 } // class MLASettings
 ?>
