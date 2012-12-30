@@ -1,14 +1,14 @@
 === Plugin Name ===
 Contributors: dglingren
 Donate link: http://fairtradejudaica.org/make-a-difference/donate/
-Tags: attachments, documents, gallery, image, images, media, library, media library, media-tags, media tags, tags, media categories, categories
+Tags: attachment, attachments, documents, gallery, image, images, media, library, media library, media-tags, media tags, tags, media categories, categories, IPTC, exif, meta, metadata, photo, photos, photograph, photographs, photoblog, photo albums
 Requires at least: 3.3
 Tested up to: 3.5
 Stable tag: 1.00
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
-Provides enhancements to the Media Library; powerful[mla_gallery], full taxonomy support, bulk & quick edit actions and where-used reporting.
+Enhances the Media Library; powerful[mla_gallery], taxonomy support, IPTC/EXIF processing, bulk & quick edit actions and where-used reporting.
 
 == Description ==
 
@@ -16,7 +16,7 @@ The Media Library Assistant provides several enhancements for managing the Media
 
 * The **`[mla_gallery]` shortcode**, used in a post, page or custom post type to add a gallery of images and/or other Media Library items (such as PDF documents). [MLA Gallery](http://wordpress.org/extend/plugins/media-library-assistant/other_notes/ "Complete Documentation") is a superset of the `[gallery]` shortcode in the WordPress core; it is compatible with `[gallery]` and provides many enhancements. These include: 1) full query and display support for WordPress categories, tags, custom taxonomies and custom fields, 2) support for all post_mime_type values, not just images 3) media Library items need not be "attached" to the post, and 4) control over the styles, markup and content of each gallery using Style and Markup Templates.
 
-* Display **IPTC** and **EXIF** metadata with `[mla_gallery]` custom templates.
+* **IPTC** and **EXIF** metadata can be assigned to standard WordPress fields, taxonomy terms and Custom fields. You can update all existing attachments from the Settings page IPTC/EXIF tab, groups of existing attachments with a Bulk Action or one existing attachment from the Edit Media/Edit Single Item screen. Display **IPTC** and **EXIF** metadata with `[mla_gallery]` custom templates.
 
 * **Enhanced Search Media box**. Search can be extended to the name/slug, ALT text and caption fields. The connector between search terms can be "and" or "or".
 
