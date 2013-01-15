@@ -30,13 +30,16 @@ class MLAEdit {
 			
 			add_action( 'add_meta_boxes', 'MLAEdit::mla_add_meta_boxes_action', 10, 2 );
 
+			// apply_filters( 'post_updated_messages', $messages ) in wp-admin/edit-form-advanced.php
+			add_filter( 'post_updated_messages', 'MLAEdit::mla_post_updated_messages_filter', 10, 1 );
+
 			// do_action in wp-admin/includes/meta-boxes.php function attachment_submit_meta_box
-			add_action( 'attachment_submitbox_misc_actions', 'MLAEdit::mla_last_modified_action' );
+			add_action( 'attachment_submitbox_misc_actions', 'MLAEdit::mla_attachment_submitbox_action' );
 			
 			// do_action in wp-includes/post.php function wp_insert_post
 			add_action( 'edit_attachment', 'MLAEdit::mla_edit_attachment_action', 10, 1 );
 			
-//			add_action( 'load-edit_attachment.php', 'MLAEdit::mla_edit_add_help_tab' );
+			// apply_filters( 'admin_title', $admin_title, $title ) in /wp-admin/admin-header.php
 			add_filter( 'admin_title', 'MLAEdit::mla_edit_add_help_tab', 10, 2 );
 		} // $wordpress_3point5_plus
 	}
@@ -54,6 +57,25 @@ class MLAEdit {
 	}
 
 	/**
+	 * Adds mapping update messages for display at the top of the Edit Media screen.
+	 * Declared public because it is a filter.
+	 *
+	 * @since 1.10
+	 *
+	 * @param	array	messages for the Edit screen
+	 *
+	 * @return	array	updated messages
+	 */
+	public static function mla_post_updated_messages_filter( $messages ) {
+	if ( isset( $messages['attachment'] ) ) {
+		$messages['attachment'][101] = 'Custom Field mapping updated.';
+		$messages['attachment'][102] = 'IPTC/EXIF mapping updated.';
+	}
+	
+	return $messages;
+	} // mla_post_updated_messages_filter
+
+	/**
 	 * Adds Last Modified date to the Submit box on the Edit Media screen.
 	 * Declared public because it is an action.
 	 *
@@ -61,7 +83,7 @@ class MLAEdit {
 	 *
 	 * @return	void	echoes the HTML markup for the label and value
 	 */
-	public static function mla_last_modified_action( ) {
+	public static function mla_attachment_submitbox_action( ) {
 		global $post;
 
 		$datef = __( 'M j, Y @ G:i' );
@@ -70,7 +92,18 @@ class MLAEdit {
 		echo '<div class="misc-pub-section curtime">' . "\r\n";
 		echo '<span id="timestamp">' . sprintf($stamp, $date) . "</span>\r\n";
 		echo "</div><!-- .misc-pub-section -->\r\n";
-	} // mla_last_modified_action
+		echo '<div class="misc-pub-section mla-links">' . "\r\n";
+		
+		$view_args = array( 'page' => 'mla-menu', 'mla_item_ID' => $post->ID );
+		if ( isset( $_REQUEST['mla_source'] ) )
+			$view_args['mla_source'] = $_REQUEST['mla_source'];
+			
+		echo '<span id="mla_metadata_links" style="font-weight: bold; line-height: 2em">';
+		echo '<a href="' . add_query_arg( $view_args, wp_nonce_url( 'upload.php?mla_admin_action=' . MLA::MLA_ADMIN_SINGLE_CUSTOM_FIELD_MAP, MLA::MLA_ADMIN_NONCE ) ) . '" title="Map Custom Field metadata for this item">Map Custom Field Metadata</a><br>';
+		echo '<a href="' . add_query_arg( $view_args, wp_nonce_url( 'upload.php?mla_admin_action=' . MLA::MLA_ADMIN_SINGLE_MAP, MLA::MLA_ADMIN_NONCE ) ) . '" title="Map IPTC/EXIF metadata for this item">Map IPTC/EXIF Metadata</a>';
+		echo "</span>\r\n";
+		echo "</div><!-- .misc-pub-section -->\r\n";
+	} // mla_attachment_submitbox_action
 	
 	/**
 	 * Registers meta boxes for the Edit Media screen.
@@ -127,7 +160,7 @@ class MLAEdit {
 		/*
 		 * Provide explicit control over tab order
 		 */
-		$tab_array = array( );
+		$tab_array = array();
 		
 		foreach ( $template_array as $id => $content ) {
 			$match_count = preg_match( '#\<!-- title="(.+)" order="(.+)" --\>#', $content, $matches, PREG_OFFSET_CAPTURE );
@@ -222,12 +255,6 @@ class MLAEdit {
 			$value = '';
 
 		echo '<label class="screen-reader-text" for="mla_image_metadata">Image Metadata</label><textarea class="readonly" id="mla_image_metadata" rows="5" cols="80" readonly="readonly" name="mla_image_metadata" >' . esc_textarea( $value ) . "</textarea>\r\n";
-		
-		$view_args = array(
-			'page' => 'mla-menu',
-			'mla_item_ID' => $post->ID 
-		);
-		echo '<a style="float: right; " href="' . add_query_arg( $view_args, wp_nonce_url( 'upload.php?mla_admin_action=' . MLA::MLA_ADMIN_SINGLE_MAP, MLA::MLA_ADMIN_NONCE ) ) . '" title="Map IPTC/EXIF metadata for this item">Map IPTC/EXIF Metadata</a>' . "\r\n";
 	}
 	
 	/**

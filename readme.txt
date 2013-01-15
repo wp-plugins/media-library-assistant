@@ -1,22 +1,26 @@
 === Plugin Name ===
 Contributors: dglingren
 Donate link: http://fairtradejudaica.org/make-a-difference/donate/
-Tags: attachment, attachments, documents, gallery, image, images, media, library, media library, media-tags, media tags, tags, media categories, categories, IPTC, exif, meta, metadata, photo, photos, photograph, photographs, photoblog, photo albums
+Tags: attachment, attachments, documents, gallery, image, images, media, library, media library, media-tags, media tags, tags, media categories, categories, IPTC, EXIF, meta, metadata, photo, photos, photograph, photographs, photoblog, photo albums
 Requires at least: 3.3
 Tested up to: 3.5
-Stable tag: 1.00
+Stable tag: 1.10
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
-Enhances the Media Library; powerful[mla_gallery], taxonomy support, IPTC/EXIF processing, bulk & quick edit actions and where-used reporting.
+Enhances the Media Library; powerful [mla_gallery], taxonomy support, IPTC/EXIF processing, bulk & quick edit actions and where-used reporting.
 
 == Description ==
 
 The Media Library Assistant provides several enhancements for managing the Media Library, including:
 
-* The **`[mla_gallery]` shortcode**, used in a post, page or custom post type to add a gallery of images and/or other Media Library items (such as PDF documents). [MLA Gallery](http://wordpress.org/extend/plugins/media-library-assistant/other_notes/ "Complete Documentation") is a superset of the `[gallery]` shortcode in the WordPress core; it is compatible with `[gallery]` and provides many enhancements. These include: 1) full query and display support for WordPress categories, tags, custom taxonomies and custom fields, 2) support for all post_mime_type values, not just images 3) media Library items need not be "attached" to the post, and 4) control over the styles, markup and content of each gallery using Style and Markup Templates.
+* The **`[mla_gallery]` shortcode**, used in a post, page or custom post type to add a gallery of images and/or other Media Library items (such as PDF documents). [MLA Gallery](http://wordpress.org/extend/plugins/media-library-assistant/other_notes/ "Complete Documentation") is a superset of the WordPress `[gallery]` shortcode; it is compatible with `[gallery]` and provides many enhancements. These include: 1) full query and display support for WordPress categories, tags, custom taxonomies and custom fields, 2) support for all post_mime_type values, not just images 3) media Library items need not be "attached" to the post, and 4) control over the styles, markup and content of each gallery using Style and Markup Templates.
 
-* **IPTC** and **EXIF** metadata can be assigned to standard WordPress fields, taxonomy terms and Custom fields. You can update all existing attachments from the Settings page IPTC/EXIF tab, groups of existing attachments with a Bulk Action or one existing attachment from the Edit Media/Edit Single Item screen. Display **IPTC** and **EXIF** metadata with `[mla_gallery]` custom templates.
+* **Integrates with Photonic Gallery** (plugin), so you can add slideshows, thumbnail strips and special effects to your `[mla_gallery]` galleries.
+
+* **Attachment metadata** such as file size, image dimensions and where-used issues can be assigned to WordPress custom fields. You can then use the custom fields in your `[mla_gallery]` display and you can add custom fields as sortable columns in the Media/Assistant submenu table.
+
+* **IPTC** and **EXIF** metadata can be assigned to standard WordPress fields, taxonomy terms and custom fields. You can update all existing attachments from the Settings page IPTC/EXIF tab, groups of existing attachments with a Bulk Action or one existing attachment from the Edit Media/Edit Single Item screen. Display **IPTC** and **EXIF** metadata with `[mla_gallery]` custom templates.
 
 * **Enhanced Search Media box**. Search can be extended to the name/slug, ALT text and caption fields. The connector between search terms can be "and" or "or".
 
@@ -38,13 +42,18 @@ This plugin was inspired by my work on the WordPress web site for our nonprofit,
 
 1. Upload `media-library-assistant` and its subfolders to your `/wp-content/plugins/` directory
 1. Activate the plugin through the "Plugins" menu in WordPress
-1. Visit the settings page to customize category and tag support
+1. Visit the Settings page to customize category and tag support
+1. Visit the Settings page Custom Fields and IPTC/EXIF tabs to map metadata to attachment fields
 1. Visit the "Assistant" submenu in the Media admin section
 1. Click the Screen Options link to customize the display
 1. Use the enhanced Edit, Quick Edit and Bulk Edit pages to assign categories and tags
 1. Use the `[mla_gallery]` shortcode to add galleries of images, documents and more to your posts and pages
 
 == Frequently Asked Questions ==
+
+= How can I sort the Media/Assistant submenu table on values such as File Size? =
+
+You can add support for many attachment metadata values such as file size by visiting the Custom Fields tab on the Settings page. There you can define a rule that maps the data to a WordPress custom field and check the "MLA Column" box to make that field a sortable column in the Media/Assistant submenu table. You can also use the field in your `[mla_gallery]` shortcodes.
 
 = How can I use Categories, Tags and custom taxonomies to select images for display in my posts and pages? =
 
@@ -83,7 +92,7 @@ For example, if you add Tags support to the Assistant and then assign tag values
 
 Hover over the item you want to modify and click the "Edit" action. On the Edit Single Item page, set the ID portion of the Parent Info field to zero (0), then click "Update" to record your changes. If you change your mind, click "Cancel" to return to the main page without recording any changes.
 
-= The Media Library Assistant table listing seems sluggish; is there anything I can do to make it faster? =
+= The Media/Assistant submenu seems sluggish; is there anything I can do to make it faster? =
 
 Some of the MLA features such as where-used reporting and ALT Text sorting/searching require a lot of database procesing. If this is an issue for you, go to the Settings page and adjust the "Where-used database access tuning" settings. For any where-used category you can enable or disable processing. For the "Gallery in" and "MLA Gallery in" you can also choose to update the results on every page load or to cache the results for fifteen minutes between updates. The cache is also flushed automatically when posts, pages or attachments are inserted or updated.
 
@@ -97,31 +106,42 @@ All of the MLA source code has been annotated with "DocBlocks", a special type o
 
 == Screenshots ==
 
-1. The Media Library Assistant submenu showing the available columns, including "Featured in", "Inserted in", "Att. Categories" and "Att. Tags"; also shows the Quick Edit area.
-2. The Media Library Assistant submenu showing the Bulk Edit area with taxonomy Add, Remove and Replace options; also shows the tags suggestion popup.
+1. The Media/Assistant submenu table showing the available columns, including "Featured in", "Inserted in", "Att. Categories" and "Att. Tags"; also shows the Quick Edit area.
+2. The Media/Assistant submenu table showing the Bulk Edit area with taxonomy Add, Remove and Replace options; also shows the tags suggestion popup.
 3. A typical edit taxonomy page, showing the "Attachments" column.
 4. The enhanced Edit page showing additional fields, categories and tags.
 5. The Settings page General tab, where you can customize support of Att. Categories, Att. Tags and other taxonomies, where-used reporting and the default sort order.
 6. The Settings page MLA Gallery tab, where you can add custom style and markup templates for `[mla_gallery]` shortcode output.
 7. The Settings page IPTC &amp; EXIF Processing Options screen, where you can map image metadata to standard fields (e.g. caption), taxonomy terms and custom fields.
+8. The Settings page Custom Field Processing Options screen, where you can map attachment metadata to custom fields for display in [mla_gallery] shortcodes and as sortable columns in the Media/Assistant submenu.
 
 == Changelog ==
 
+= 1.10 =
+* New: Attachment metadata such as file size, dimensions and where-used status can be assigned to WordPress custom fields. These custom fields can be added to the Media/Assistant submenu table as sortable columns and displayed in `[mla_gallery]` shortcode output.
+* New: Integrates with Photonic Gallery (plugin), so you can add slideshows, thumbnail strips and special effects to your `[mla_gallery]` galleries.
+* Fix: Edit Media screen with appropriate message displayed after "Map ... Metadata" actions.
+* Fix: SQL View (supporting ALT Text sorting/searching) now created only when required and dropped immediately after use. Avoids conflicts with database backup/restore utilities.
+* Fix: "Map IPTC/EXIF Metadata" link moved from Image Metadata box to Save Metadata box.
+* Fix: Field-level debug information removed from bulk edit messages.
+* Fix: PHP Notice for NULL post metadata keys resolved.
+* Fix: PHP Notice for images without "sizes" metadata array resolved.
+
 = 1.00 =
-* New: IPTC and EXIF metadata can be assigned to standard WordPress fields, taxonomy terms and Custom fields. You can update all existing attachments from the Settings page IPTC/EXIF tab, groups of existing attachments with a Bulk Action or one existing attachment from the Edit Media/Edit Single Item screen.
+* New: IPTC and EXIF metadata can be assigned to standard WordPress fields, taxonomy terms and custom fields. You can update all existing attachments from the Settings page IPTC/EXIF tab, groups of existing attachments with a Bulk Action or one existing attachment from the Edit Media/Edit Single Item screen.
 * New: Where-used processing can be tuned or disabled on the Settings page, General tab.
 * New: "Gallery in" and "MLA Gallery in" results are cached for fifteen minutes, avoiding repetitive database access. The cache is automatically flushed when pages, posts or attachments are inserted or updates, and can be manually flushed or disabled on the Settings page, General tab.
 * New: Default `[mla_gallery]` style and markup templates can be specified on the Settings page.
 * New: `[mla_gallery]` parameter "mla_float" allows control of gallery item "float" attribute.
 * Fix: Field-level substitution parameters (custom fields, taxonomy terms, IPTC metadata and EXIF metadata) are now available for mla_link_text, mla_rollover_text and mla_caption parameters.
-* Fix: Attachment/Parent relationships are reported consistently on the edit pages and the Assistant table listing.
+* Fix: Attachment/Parent relationships are reported consistently on the edit pages and the Media/Assistant submenu table.
 * Fix: Defect in generating mla_debug messages has been corrected.
 * Fix: Default "Order by" option now includes "None".
 * Fix: For WordPress 3.5, Custom Field support for attachments enabled in admin_init action.
  
 = 0.90 =
 * New: Field-level IPTC and EXIF metadata support for `[mla_gallery]` display using custom markup templates.
-* New: Field-level Custom field and taxonomy term support for `[mla_gallery]` display using custom markup templates.
+* New: Field-level custom field and taxonomy term support for `[mla_gallery]` display using custom markup templates.
 * New: Contextual help tabs added to WordPress 3.5+ Edit Media Screen, explaining MLA enhancements.
 * Updated for WordPress version 3.5!
 
@@ -136,7 +156,7 @@ All of the MLA source code has been annotated with "DocBlocks", a special type o
 * New: The `[mla_gallery]` "mla_debug" parameter provides debugging information for query parameters.
 * New: Quick Edit area now includes caption field.
 * New: Settings page now divided into three tabbed subpages for easier access to settings and documentation.
-* New: For WordPress 3.5, Custom Field support added to attachments and to the WordPress standard Edit Media Screen.
+* New: For WordPress 3.5, custom field support added to attachments and to the WordPress standard Edit Media Screen.
 * New: For WordPress version 3.5, the WordPress standard Edit Media screen now includes Last Modified date, Parent Info, Menu Order, Image Metadata and all "where-used" information.
 * New: For WordPress versions before 3.5, the MLA Edit Single Item screen now includes "Gallery in" and "MLA Gallery in"  information.
 * Fix: Bulk edit now supports "No Change" option for Author.
@@ -213,6 +233,9 @@ All of the MLA source code has been annotated with "DocBlocks", a special type o
 
 == Upgrade Notice ==
 
+= 1.10 =
+Map attachment metadata to custom fields; add them to [mla_gallery] display and as sortable columns on the Media/Assistant submenu table. Get Photonic Gallery (plugin) integration and six other fixes.
+
 = 1.00 =
 Map IPTC and EXIF metadata to standard fields, taxonomy terms and custom fields. Get improved performance for where-used reporting. Specify default `[mla_gallery]` style and markup templates. Five other fixes.
 
@@ -247,7 +270,7 @@ Upgrade for the new Bulk Edit area; add, remove or replace taxonomy terms for se
 Upgrade to support ALL taxonomies, including the standard Categories and Tags, your custom taxonomies and the Assistant's pre-defined Att. Categories and Att. Tags. Add taxonomy columns to the Assistant admin screen, filter on any taxonomy, assign terms and list the attachments for a term. 
 
 = 0.20 =
-You should upgrade to this version if you need "Quick Edit" functionality.
+Upgrade to this version to get "Quick Edit" functionality.
 
 = 0.11 =
 You should upgrade to this version if you are getting "404 Not Found" errors when updating single items.
@@ -257,13 +280,15 @@ Initial release.
 
 == Other Notes ==
 
-In this section:
+In this section, scroll down to see:
 
 * Acknowledgements
 * MLA Gallery Shortcode Documentation
+* Support for &ldquo;Photonic Gallery for Flickr, Picasa, SmugMug, 500px and Instagram&rdquo;
 * MLA Gallery Style and Markup Template Documentation
+* Custom Field Processing Options
 * IPTC &amp; EXIF Processing Options
-* Online Help Summary (Assistant Submenu - Attachment List Table)
+* Online Help Summary (Media/Assistant submenu, Edit Media screen, Taxonomy edit screens)
 
 == Acknowledgements ==
 
@@ -410,9 +435,15 @@ The search parameter ("s=keyword") will perform a keyword search. A cursory insp
 
 The "mla_debug" parameter controls the display of information about the query parameters and SQL statements used to retrieve gallery items. If you code `mla_debug=true` you will see a lot of information added to the post or page containing the gallery. Of course, this parameter should <strong>only</strong> be used in a development/debugging environment; it's quite ugly.
 
+== Support for &ldquo;Photonic Gallery for Flickr, Picasa, SmugMug, 500px and Instagram&rdquo; ==
+
+The <a href="http://wordpress.org/extend/plugins/photonic/" title="Photonic Gallery plugin directory page" target="_blank">Photonic Gallery for Flickr, Picasa, SmugMug, 500px and Instagram</a> plugin adds several new parameters to the `[mla_gallery]` shortcode to enhance your galleries. All you have to do is install the plugin, then add a "style=" parameter to your `[mla_gallery]` shortcode to use the Photonic styling and markup in place of the native `[mla_gallery]` style and markup templates. 
+
+You can use the "Photonic" screen of the Insert Media dialog to build the display portion of your shortcode parameters. After you click "Insert into post", change the shortcode name from "gallery" to "mla_gallery" and add the query parameters you need to select the attachments for the gallery. The `[mla_gallery]` code will compile the list of attachments for your gallery, then hand control over to Photonic to format the results. 
+
 == MLA Gallery Style and Markup Templates ==
 
-The Style and Markup templates give you great flexibility for the content and format of each <code>[mla_gallery]</code>. You can define as many templates as you need.
+The Style and Markup templates give you great flexibility for the content and format of each `[mla_gallery]`. You can define as many templates as you need.
 
 Style templates provide gallery-specific CSS inline styles. Markup templates provide the HTML markup for 1) the beginning of the gallery, 2) the beginning of each row, 3) each gallery item, 4) the end of each row and 5) the end of the gallery. The attachment-specific markup parameters let you choose among most of the attachment fields, not just the caption.
 
@@ -499,7 +530,7 @@ The optional <strong>",single" indicator</strong> defines how to handle fields w
 
 There are four prefix values for field-level data. Prefix values must be coded as shown; all lowercase letters.
 
-* `custom`: WordPress Custom Fields, which you can define and populate on the Edit Media screen. The field name, or key, can contain spaces and some punctuation characters. You <strong>cannot use the plus sign ('+')</strong> in a field name you want to use with `[mla_gallery]`. Custom field names are case-sensitive; "client" and "Client" are not the same.
+* `custom`: WordPress custom fields, which you can define and populate on the Edit Media screen. The field name, or key, can contain spaces and some punctuation characters. You <strong>cannot use the plus sign ('+')</strong> in a field name you want to use with `[mla_gallery]`. Custom field names are case-sensitive; "client" and "Client" are not the same.
 * `terms`: WordPress Category, tag or custom taxonomy terms. For this category, you code the name of the taxonomy as the field name. The term(s) associated with the attachment will be displayed in the `[mla_gallery]`. Note that you must use the name/slug string for taxonomy, not the "title" string. For example, use "attachment-category" or "attachment-tag", not "Att. Category" or "Attachment Category".
 
 * `iptc`: The IPTC (International Press Telecommunications Council) metadata, if any, embedded in the image file. For this category, you can code any of the IPTC DataSet tag and field identifiers, e.g., "2#025" for the Keywords field. You can also use the "friendly name" MLA defines for most of the IPTC fields; see the table of identifiers and friendly names in the MLA documentation. You can find more information in the <a href="http://www.iptc.org/std/IIM/4.1/specification/IIMV4.1.pdf" title="IPTC-NAA Information Interchange Model Version No. 4.1 specification" target="_blank">IPTC-NAA Information Interchange Model Version No. 4.1 specification</a>.
@@ -573,7 +604,62 @@ Here's a small example that shows a gallery using table markup. The Item markup 
 
 	</table>
 
-==IPTC &amp; EXIF Processing Options</h==
+==Custom Field Processing Options==
+
+On the Custom Fields tab of the Settings screen you can define the rules for mapping several types of file and image metadata to WordPress custom fields. Custom field mapping can be applied automatically when an attachment is added to the Media Library. You can refresh the mapping for <strong><em>ALL</em></strong> attachments using the command buttons on the screen. You can selectively apply the mapping in the bulk edit area of the Media/Assistant submenu table and/or on the Edit Media screen for a single attachment.
+
+This is a powerful tool, but it comes at the price of additional database storage space processing time to maintain and retrieve the data. <strong><em>Think carefully about your needs before you use this tool.</em></strong> You can disable or delete any rules you create, so you might want to set up some rules for a special project or analysis of your library and then discard them when you're done. That said, the advantages of mapping metadata to custom fields are:
+
+* You can add the data to an [mla_gallery] with a field-level markup substitution parameter. For example, add the image dimensions or a list of all the intermediate sizes available for the image.
+
+* You can add the data as a sortable column to the Media/Assistant submenu table. For example, you can find all the "orphans" in your library by adding "reference_issues" and then sorting by that column.
+
+Most of the data elements are static, i.e., they do not change after the attachment is added to the Media Library. The parent/reference information (parent_type, parent_name, parent_issues, reference_issues) is dynamic; it will change as you define galleries, insert images in posts, define featured images, etc. Because of the database processing required to update this information, <strong><em>parent and reference data are NOT automatically refreshed</em></strong>. If you use these elements, you must manually refresh them with the "map data" buttons on the Settings screen, the bulk edit area or the Edit Media screen.
+
+Several of the data elements are sourced from the WordPress "image_meta" array. The credit, caption, copyright and title elements are taken from the IPTC/EXIF metadata (if any), but they go through a number of filtering rules that are not easy to replicate with the MLA IPTC/EXIF processing rules. You may find these "image_meta" elements more useful than the raw IPTC/EXIF metadata.
+
+<h4>Data sources for custom field mapping</h4>
+
+<strong>NOTE:</strong> Sorting by custom fields in the Media/Assistant submenu is by string values. For numeric data this can cause odd-looking results, e.g., dimensions of "1200x768" will sort before "640x480". The "file_size", "pixels", "width" and "height" data sources are converted to srtings and padded on the left with spaces if you use the "commas" format. This padding makes them sort more sensibly.
+
+* `path`: path portion of the base_file value, e.g., 2012/11/
+* `file_name`: file name portion of the base_file value, e.g., image.jpg
+* `extension`: extension portion of the base_file value, e.g., jpg
+* `file_size`: file size in bytes
+* `dimensions`: for image types, width x height, e.g., 1024x768
+* `pixels`: for image types, size in pixels, e.g., 307200 for a 640x480 image
+* `width`: for image types, width in pixels
+* `height`: for image types, height in pixels
+* `hwstring_small`: HTML dimensions of a "small" image, i.e., 128 or less width, 96 or less height. Not computed for images uploaded in WordPress 3.5 and later.
+* `size_keys`: image size names for thumbnail versions of the image, e.g., "thumbnail, medium, large"
+* `size_names`: image file names for thumbnail versions of the image, e.g., "image-150x150.jpg, image-300x225.jpg, image-600x288.jpg"
+* `size_bytes`: file size in bytes for thumbnail versions of the image, e.g., "5127, 11829, 33968"
+* `size_pixels`: image size in pixels for thumbnail versions of the image, e.g., "22500, 67500, 172800"
+* `size_dimensions`: image dimensions for thumbnail versions of the image, e.g., "150x150, 300x225, 600x288"
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">size_name[size]`: image file name for a specific thumbnail version, e.g., size_name[medium] = image-300x225.jpg; set to empty string if the specified size does not exist. There will be a [size] choice for every thumbnail version registered with WordPress for the site.
+* `size_bytes[size]`: file size in bytes for a specific thumbnail version, e.g., size_bytes[medium] = "11829"
+* `size_pixels[size]`: image size in pixels for a specific thumbnail version, e.g., size_pixels[medium] = "67500"
+<tr>
+<tr>
+<td style="width: 12em; padding-right: 10px; vertical-align: top; font-weight:bold">size_dimensions[size]`: image dimensions for a specific thumbnail version, e.g., size_dimensions[medium] = 300x225; set to empty string if the specified size does not exist. There will be a [size] choice for every thumbnail version registered with WordPress for the site.
+* `parent_type`: for "attached" (post_parent not zero) objects, post type of the parent object
+<tr>
+* `parent_name`: for "attached" (post_parent not zero) objects, post title of the parent object
+<tr>
+* `parent_issues`: summary of parent status (only) "issues", e.g., bad parent, invalid parent, unattached
+* `reference_issues`: summary of all reference and parent status "issues", e.g., orphan, bad parent, invalid parent, unattached
+* `aperture`: for image types, the value stored in WordPress "image_meta" array
+* `credit`: for image types, the value stored in WordPress "image_meta" array
+* `camera`: for image types, the value stored in WordPress "image_meta" array
+* `caption`: for image types, the value stored in WordPress "image_meta" array
+* `created_timestamp`: for image types, the value stored in WordPress "image_meta" array
+* `copyright`: for image types, the value stored in WordPress "image_meta" array
+* `focal_length`: for image types, the value stored in WordPress "image_meta" array
+* `iso`: for image types, the value stored in WordPress "image_meta" array
+* `shutter_speed`: for image types, the value stored in WordPress "image_meta" array
+* `title`: for image types, the value stored in WordPress "image_meta" array
+
+==IPTC &amp; EXIF Processing Options==
 
 Some image file formats such as JPEG DCT or TIFF Rev 6.0 support the addition of data about the image, or <em>metadata</em>, in the image file. Many popular image processing programs such as Adobe PhotoShop allow you to populate metadata fields with information such as a copyright notice, caption, the image author and keywords that categorize the image in a larger collection. WordPress uses some of this information to populate the Title, Slug and Description fields when you add an image to the Media Library.
 
@@ -581,7 +667,7 @@ The Media Library Assistant has powerful tools for copying image metadata to:
 
 * the WordPress standard fields, e.g., the Caption
 * taxonomy terms, e.g., in categories, tags or custom taxonomies
-* WordPress Custom Fields
+* WordPress custom fields
 
 You can define the rules for mapping metadata on the "IPTC/EXIF" tab of the Settings page. You can choose to automatically apply the rules when new media are added to the Library (or not). You can click the "Map IPTC/EXIF metadata" button on the Edit Media/Edit Single Item screen or in the bulk edit area to selectivelly apply the rules to one or more images. You can click the "Map All Attachments Now" to apply the rules to <strong>all of the images in your library</strong> at one time.
 
@@ -589,7 +675,7 @@ You can define the rules for mapping metadata on the "IPTC/EXIF" tab of the Sett
 
 The three mapping tables on the IPTC/EXIF tab have the following columns:
 
-* `Field Title`: The standard field title, taxonomy name or Custom Field name. In the Custom Field table you can define a new field by entering its name in the blank box at the bottom of the list; the value will be saved when you click "Save Changes" at the bottom of the screen.
+* `Field Title`: The standard field title, taxonomy name or custom field name. In the Custom Field table you can define a new field by entering its name in the blank box at the bottom of the list; the value will be saved when you click "Save Changes" at the bottom of the screen.
 
 * `IPTC Value`: The IPTC (International Press Telecommunications Council) metadata, if any, embedded in the image file. For this category, you can select any of the IPTC DataSet tag and field identifiers, e.g., "2#025" for the Keywords field. The dropdown list has the identifier and the "friendly name" MLA defines for most of the IPTC fields; see the table of identifiers and friendly names in the table below. You can find more information in the <a href="http://www.iptc.org/std/IIM/4.1/specification/IIMV4.1.pdf" title="IPTC-NAA Information Interchange Model Version No. 4.1 specification" target="_blank">IPTC-NAA Information Interchange Model Version No. 4.1 specification</a>.
 
@@ -635,9 +721,9 @@ The priority order for mapping the post_content value from non-blank IPTC/EXIF m
 
 == Online Help Summary ==
 
-<p><strong><em>Assistant Submenu - Attachment List Table</em></strong></p>
+<p><strong><em>Media/Assistant Submenu Table</em></strong></p>
 <h4>Overview</h4>
-<p>All the files you&#8217;ve uploaded are listed in the Media Library Assistant table, ordered by the Title field. You can change the sort order by clicking on one of the blue column names. You can change the default sort order on the Settings screen.</p>
+<p>All the files you&#8217;ve uploaded are listed in the Media/Assistant submenu table, ordered by the Title field. You can change the sort order by clicking on one of the blue column names. You can change the default sort order on the Settings screen.</p>
 <p>You can use the Screen Options tab to customize the display of this screen. You can choose any combination of the sixteen (16) columns available for display. You can also choose how many items appear on each page of the display.</p>
 <p>You can narrow the list by file type/status using the text link filters at the top of the screen. You also can refine the list by month using the dropdown menu above the media table.</p>
 <p>If you have selected &#8220;Attachment Categories&#8221; support, you can filter the list by selecting &#8220;All Categories&#8221;, &#8220;No Categories&#8221; or a specific category from the drop down list. If you select a category that has child categories beneath it, attachments in any of the child categories will also appear in the filtered list.</p>
@@ -647,7 +733,7 @@ The priority order for mapping the post_content value from non-blank IPTC/EXIF m
 <p>You can also use the information in the &#8220;Title/Name&#8221; column to identify &#8220;Orphan&#8221; items that are not used in any post or page and items with a &#8220;Bad Parent&#8221; (a parent that does contain any reference to the item) or an &#8220;Invalid Parent&#8221; (a parent that does not exist).</p>
 <p>If performance is a concern, you can go to the Settings page and disable either or both of these columns.</p>
 <h4>Gallery/MLA Gallery</h4>
-<p>The &#8220;Gallery in&#8221; and &#8220;MLA Gallery in&#8221; columns are a powerful tool for managing your attachments. They show you where each attachment is returned by a <code>[gallery]</code> or <code>[mla_gallery]</code> shortcode in a post or page. These columns do <strong>not</strong> use the post_parent (attached to) status of the item; they actually execute each shortcode and tabulate the attachments they return.</p>
+<p>The &#8220;Gallery in&#8221; and &#8220;MLA Gallery in&#8221; columns are a powerful tool for managing your attachments. They show you where each attachment is returned by a `[gallery]` or `[mla_gallery]` shortcode in a post or page. These columns do <strong>not</strong> use the post_parent (attached to) status of the item; they actually execute each shortcode and tabulate the attachments they return.</p>
 <p>You can also use the information in the &#8220;Title/Name&#8221; column to identify &#8220;Orphan&#8221; items that are not used in any post or page and items with a &#8220;Bad Parent&#8221; (a parent that does contain any reference to the item) or an &#8220;Invalid Parent&#8221; (a parent that does not exist).</p>
 <p>If performance is a concern, you can go to the Settings page and disable either or both of these columns. You can also adjust the settings to cache the results for fifteen minutes between updates. Results are automatically updated after a post, page or attachment is added or updated.</p>
 <h4>Taxonomy Support</h4>
@@ -655,6 +741,8 @@ The priority order for mapping the post_content value from non-blank IPTC/EXIF m
 <p>The Media Library Assistant provides two pre-defined taxonomies, &#8220;Att. Categories&#8221; and &#8220;Att. Tags&#8221; which are enabled by default. You can add or remove support for any registered taxonomy on the Settings screen. The standard WordPress Categories and Tags as well as any custom taxonomies can be supported.</p>
 <p>When you add support for a taxonomy it is visible on the main screen. If you want to hide the column simply use the Screen Options to uncheck the Show on screen box.</p>
 <p>Supported taxonomies also appear as submenus below the Media menu at the left of the screen. You can edit the taxonomy terms by clicking these submenus. The taxonomy edit screens include an &#8220;Attachments&#8221; column which displays the number of attachment objects for each term. You can display a filtered list of the attachments by clicking on the number in this column.</p>
+<h4>Custom Fields</h4>
+<p>You can add sortable columns to the Media/Assistant submenu table by visiting the Custom Fields tab on the Settings page. There you define rules that map attachment metadata such as file size to WordPress custom fields. The &#8220;MLA Column&#8221; checkbox for each rule lets you select which rules will appear on this screen.</p>
 <h4>Search Media</h4>
 <p>The &#8220;Search Media&#8221; box supports a keyword search of several attachment fields; enter words and/or phrases in the box, separated by spaces. Click the Search Media button for a case-insensitive "SQL LIKE" search. Each keyword in the search phrase is matched independently, so the order of search words does not have to match the order in the text. For example, searching on "friend" and "best" will match "Best Friend". If you put quotes around a search phrase then word order is required for a match (and spaces between words must match as well). You can also match on partial words, e.g., "rien" will match "friend".</p>
 <p>Once you&#8217;ve entered the terms you want, use the options below the box to tailor your search. You can pick the connector used between search terms; "or" means any of the terms will match, "and" means all of the terms must match. Use the checkboxes to extend your search to more fields in the database.</p>
@@ -675,7 +763,8 @@ The priority order for mapping the post_content value from non-blank IPTC/EXIF m
 WordPress 3.5 introduced a much-improved Edit Media screen. Media Library Assistant incorporates and adds several enhancements to the new screen:
 
 * Displays Last Modified date and time
-* Supports Custom fields, which `[mla_gallery]` can use for query and display
+* Supports mapping of Custom Field and ITPC/EXIF metadata for this attachment
+* Supports custom fields, which `[mla_gallery]` can use for query and display
 * Supports Parent Info and Menu Order
 * Displays Image Metadata
 * Displays where-used information; Featured in, Inserted in, Gallery in and MLA Gallery in
@@ -689,6 +778,9 @@ WordPress 3.5 introduced a much-improved Edit Media screen. Media Library Assist
 <h4>Parent Info</h4>
 <p>The &#8220;Parent Info&#8221; field displays the Post ID, type and title of the post or page to which the item is attached. It will display &#8220;0 (unattached)&#8221; if there is no parent post or page.</p>
 <p>You can change the post or page to which the item is attached by changing the Post ID value and clicking the &#8220;Update&#8221; button. Changing the Post ID value to zero (0) will &#8220;unattach&#8221; the item.</p>
+<h4>Metadata Mapping</h4>
+<p>The &#8220;Map Custom Field Metadata&#8221; and &#8220;Map IPTC/EXIF Metadata&#8221; links let you create or update attachment values by applying the rules you define on the Media Library Assistant Settings page. The links are located in the &#8220;Save&#8221; metabox in the upper-right part of the screen, just below the Last Modified date and time.</p>
+<p>When you click on one of the two links, all of the mapping rules for that type of metadata will be applied to the attachment you are editing. The updates are immediate; you do not need to click the &#8220;Update&#8221; button to make them permanent.</p>
 <p><strong><em>Edit Hierarchical Taxonomies (Categories)</em></strong></p>
 <h4>Overview</h4>
 <p>You can use <strong>categories</strong> to define sections of your site and group related attachments. The default is &#8220;none&#8221;, i.e., the attachment is not associated with any category.</p>

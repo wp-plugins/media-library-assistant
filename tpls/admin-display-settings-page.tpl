@@ -201,6 +201,41 @@
 [+_wp_http_referer+]
 </form>
 
+<!-- template="custom-field-tab" -->
+<h3>Custom Field Processing Options</h3>
+<p>
+In this tab you can define the rules for mapping several types of image metadata to WordPress custom fields. <strong>NOTE:</strong> changes to a single rule will be made permanent if you click the "Update Rule" button for that rule. The rule will be applied to existing attachments if you click the "Map All Attachments" button for that rule.
+</p>
+<p>
+Custom field mapping can be applied automatically when an attachment is added to the Media Library. You can refresh the mapping for <strong><em>ALL</em></strong> attachments using the command buttons on this screen. You can selectively apply the mapping in the bulk edit area of the Media/Assistant screen and/or on the Media/Edit Media screen for a single attachment.
+</p>
+<p>
+If you click any of the "Map All Attachments" buttons, the rule currently displayed for that field will be immediately applied to <strong><em>ALL</em></strong> of the attachments in your site. Rule changes are <strong><em>NOT</em></strong> saved when you click any of these buttons, and <strong><em>THERE IS NO UNDO FOR THESE ACTIONS!</em></strong>
+</p>
+<p>
+You can find more information about all of these topics on the <a href="http:/wp-admin/options-general.php?page=mla-settings-menu&amp;mla_tab=documentation#mla_custom_field_mapping" title="Custom Field Processing Options documentation">Documentation tab</a>.
+</p>
+<p>
+<strong>NOTE:</strong> Check the box in the "MLA Column" column to make the field a sortable column in the Media/Assistant submenu table. The "file_size", "pixels", "width" and "height" data sources will sort more sensibly if you use the "Commas" format.
+</p>
+<form method="post" class="mla-display-settings-page" id="mla-display-settings-custom-field-tab">
+&nbsp;<br />
+[+options_list+]
+<h4>Custom field mapping</h4>
+    <table class="optiontable">
+[+custom_options_list+]
+	</table>
+    <p class="submit" style="padding-bottom: 0;">
+        <input name="custom-field-options-save" type="submit" class="button-primary" value="Save Changes" />
+        <input name="custom-field-options-map" type="submit" class="button-secondary" style="margin-left: 20px" value="Map All Rules, All Attachments Now" />
+    </p>
+	<p>
+	Click Save Changes to update the "Enable custom field mapping..." checkbox and/or all rule changes and additions at once.<br />
+	Click Map All Rules, All Attachments Now to apply all the rules at once (rule changes will be applied but not saved).
+[+_wpnonce+]
+[+_wp_http_referer+]
+</form>
+
 <!-- template="iptc-exif-tab" -->
 <h3>IPTC &amp; EXIF Processing Options</h3>
 <p>In this tab you can define the rules for mapping IPTC (International Press Telecommunications Council) and EXIF (EXchangeable Image File) metadata to WordPress standard attachment fields, taxonomy terms and custom fields. <strong>NOTE:</strong> settings changes will not be made permanent until you click "Save Changes" at the bottom of this page.</p>

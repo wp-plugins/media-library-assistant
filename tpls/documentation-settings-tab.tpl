@@ -1,9 +1,12 @@
 <!-- template="documentation-tab" -->
-<div class="mla-display-settings-page" id="mla-display-settings-documentation-tab">
+<div class="mla-display-settings-page" id="mla-display-settings-documentation-tab" style="width:700px">
 <h3>In this tab, jump to:</h3>
 <ul style="list-style-position:inside; list-style:disc; line-height: 18px">
 <li>
 <a href="#mla_gallery"><strong>MLA Gallery Shortcode</strong></a>
+</li>
+<li>
+<a href="#photonic_gallery"><strong>Support for &#8220;Photonic Gallery&#8221;</strong></a>
 </li>
 <li>
 <a href="#mla_gallery_templates"><strong>Style and Markup Templates</strong></a>
@@ -24,6 +27,12 @@
 <a href="#mla_table_example"><strong>A table-based template example</strong></a>
 </li>
 <li>
+<a href="#mla_custom_field_mapping"><strong>Custom Field Processing Options</strong></a>
+</li>
+<li>
+<a href="#mla_custom_field_parameters"><strong>Data sources for custom field mapping</strong></a>
+</li>
+<li>
 <a href="#mla_iptc_exif_mapping"><strong>IPTC &amp; EXIF Processing Options</strong></a>
 </li>
 <li>
@@ -40,7 +49,6 @@ have a look at the <a title="Consult the phpDocs documentation" href="[+phpDocs_
 <p>
 <a href="#backtotop">Go to Top</a>
 </p>
-<div class="mla_gallery_help" style="width:700px">
 <h3>MLA Gallery Shortcode</h3>
 <p>
 The [mla_gallery] shortcode is used in a post, page or custom post type to add a gallery of images and/or other Media Library items (such as PDF documents). MLA Gallery is a superset of the [gallery] shortcode in the WordPress core; it is compatible with [gallery] and provides many enhancements. These include:
@@ -76,7 +84,6 @@ Three [mla_gallery] parameters provide control over the placement, size and spac
 <td style="padding-right: 10px; vertical-align: top; font-weight:bold">mla_float</td>
 <td>specifies the float attribute of the ".gallery-item" style. Acceptable values are "left", "none", "right"; the default value is "right" if current locale is RTL, "left" on LTR (left-to-right inline flow, e.g., English).</td>
 </tr>
-<tr>
 <tr>
 <td style="padding-right: 10px; vertical-align: top; font-weight:bold">mla_margin</td>
 <td>specifies the margin attribute (in percent) of the ".gallery-item" style. The default value is "1.5" percent.</td>
@@ -219,17 +226,28 @@ The search parameter ("s=keyword") will perform a keyword search. A cursory insp
 </p>
 <h4>Debugging Output</h4>
 <p>
-The "mla_debug" parameter controls the display of information about the query parameters and SQL statements used to retrieve gallery items. If you code `mla_debug=true` you will see a lot of information added to the post or page containing the gallery. Of course, this parameter should <strong>only</strong> be used in a development/debugging environment; it's quite ugly.
+The "mla_debug" parameter controls the display of information about the query parameters and SQL statements used to retrieve gallery items. If you code `mla_debug=true` you will see a lot of information added to the post or page containing the gallery. Of course, this parameter should <strong><em>ONLY</em></strong> be used in a development/debugging environment; it's quite ugly.
+</p>
+<a name="photonic_gallery"></a>
+&nbsp;
+<p>
+<a href="#backtotop">Go to Top</a>
+</p>
+<h3>Support for &#8220;Photonic Gallery for Flickr, Picasa, SmugMug, 500px and Instagram&#8221;</h3>
+<p>
+The <a href="http://wordpress.org/extend/plugins/photonic/" title="Photonic Gallery plugin directory page" target="_blank">Photonic Gallery for Flickr, Picasa, SmugMug, 500px and Instagram</a> plugin adds several new parameters to the [mla_gallery] shortcode to enhance your galleries. All you have to do is install the plugin, then add a "style=" parameter to your [mla_gallery] shortcode to use the Photonic styling and markup in place of the native [mla_gallery] style and markup templates.
+</p>
+<p>
+You can use the "Photonic" screen of the Insert Media dialog to build the display portion of your shortcode parameters. After you click "Insert into post", change the shortcode name from "gallery" to "mla_gallery" and add the query parameters you need to select the attachments for the gallery. The [mla_gallery] code will compile the list of attachments for your gallery, then hand control over to Photonic to format the results.
 </p>
 <a name="mla_gallery_templates"></a>
 &nbsp;
 <p>
 <a href="#backtotop">Go to Top</a>
 </p>
-<div class="mla_gallery_help" style="width:700px">
 <h3>MLA Gallery Style and Markup Templates</h3>
 <p>
-The Style and Markup templates give you great flexibility for the content and format of each <code>[mla_gallery]</code>. You can define as many templates as you need.
+The Style and Markup templates give you great flexibility for the content and format of each [mla_gallery]. You can define as many templates as you need.
 </p>
 <p>
 Style templates provide gallery-specific CSS inline styles. Markup templates provide the HTML markup for 1) the beginning of the gallery, 2) the beginning of each row, 3) each gallery item, 4) the end of each row and 5) the end of the gallery. The attachment-specific markup parameters let you choose among most of the attachment fields, not just the caption.
@@ -540,11 +558,11 @@ There are four prefix values for field-level data. Prefix values must be coded a
 <table>
 	<tr>
 		<td style="padding-right: 10px; vertical-align: top; font-weight:bold">custom</td>
-		<td>WordPress Custom Fields, which you can define and populate on the Edit Media screen. The field name, or key, can contain spaces and some punctuation characters. You <strong>cannot use the plus sign ('+')</strong> in a field name you want to use with <code>[mla_gallery]</code>. Custom field names are case-sensitive; "client" and "Client" are not the same.</td>
+		<td>WordPress Custom Fields, which you can define and populate on the Edit Media screen. The field name, or key, can contain spaces and some punctuation characters. You <strong><em>cannot use the plus sign ('+')</em></strong> in a field name you want to use with [mla_gallery]. Custom field names are case-sensitive; "client" and "Client" are not the same.</td>
 	</tr>
 	<tr>
 		<td style="padding-right: 10px; vertical-align: top; font-weight:bold">terms</td>
-		<td>WordPress Category, tag or custom taxonomy terms. For this category, you code the name of the taxonomy as the field name. The term(s) associated with the attachment will be displayed in the <code>[mla_gallery]</code>. Note that you must use the name/slug string for taxonomy, not the "title" string. For example, use "attachment-category" or "attachment-tag", not "Att. Category" or "Attachment Category".</td>
+		<td>WordPress Category, tag or custom taxonomy terms. For this category, you code the name of the taxonomy as the field name. The term(s) associated with the attachment will be displayed in the [mla_gallery]. Note that you must use the name/slug string for taxonomy, not the "title" string. For example, use "attachment-category" or "attachment-tag", not "Att. Category" or "Attachment Category".</td>
 	</tr>
 	<tr>
 		<td style="padding-right: 10px; vertical-align: top; font-weight:bold">iptc</td>
@@ -637,6 +655,170 @@ The Item markup section shows how to use the "terms", "custom", "iptc" and "exif
 		<td><code>&lt;/table&gt;</code></td>
 	</tr>
 </table>
+<a name="mla_custom_field_mapping"></a>
+&nbsp;
+<p>
+<a href="#backtotop">Go to Top</a>
+</p>
+<h3>Custom Field Processing Options</h3>
+<p>
+On the Custom Fields tab of the Settings screen you can define the rules for mapping several types of file and image metadata to WordPress custom fields. Custom field mapping can be applied automatically when an attachment is added to the Media Library. You can refresh the mapping for <strong><em>ALL</em></strong> attachments using the command buttons on the screen. You can selectively apply the mapping in the bulk edit area of the Media/Assistant submenu table and/or on the Edit Media screen for a single attachment.
+</p>
+<p>
+This is a powerful tool, but it comes at the price of additional database storage space processing time to maintain and retrieve the data. <strong><em>Think carefully about your needs before you use this tool.</em></strong> You can disable or delete any rules you create, so you might want to set up some rules for a special project or analysis of your library and then discard them when you're done. That said, the advantages of mapping metadata to custom fields are:
+</p>
+<ul class="mla_settings">
+<li>You can add the data to an [mla_gallery] with a field-level markup substitution parameter. For example, add the image dimensions or a list of all the intermediate sizes available for the image.</li>
+<li>You can add the data as a sortable column to the Media/Assistant submenu table. For example, you can find all the "orphans" in your library by adding "reference_issues" and then sorting by that column.</li>
+</ul>
+<p>
+Most of the data elements are static, i.e., they do not change after the attachment is added to the Media Library.
+The parent/reference information (parent_type, parent_name, parent_issues, reference_issues) is dynamic; it will change as you define galleries, insert images in posts, define featured images, etc. Because of the database processing required to update this information, <strong><em>parent and reference data are NOT automatically refreshed</em></strong>. If you use these elements, you must manually refresh them with the "map data" buttons on the Settings screen, the bulk edit area or the Edit Media screen.
+</p>
+<p>
+Several of the data elements are sourced from the WordPress "image_meta" array. The credit, caption, copyright and title elements are taken from the IPTC/EXIF metadata (if any), but they go through a number of filtering rules that are not easy to replicate with the MLA IPTC/EXIF processing rules. You may find these "image_meta" elements more useful than the raw IPTC/EXIF metadata.
+</p>
+<a name="mla_custom_field_parameters"></a>
+&nbsp;
+<p>
+<a href="#backtotop">Go to Top</a>
+</p>
+<h4>Data sources for custom field mapping</h4>
+<p>
+<strong>NOTE:</strong> Sorting by custom fields in the Media/Assistant submenu is by string values. For numeric data this can cause odd-looking results, e.g., dimensions of "1200x768" will sort before "640x480". The "file_size", "pixels", "width" and "height" data sources are converted to srtings and padded on the left with spaces if you use the "commas" format. This padding makes them sort more sensibly.
+</p>
+<table>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">path</td>
+<td>path portion of the base_file value, e.g., 2012/11/</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">file_name</td>
+<td>file name portion of the base_file value, e.g., image.jpg</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">extension</td>
+<td>extension portion of the base_file value, e.g., jpg</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">file_size</td>
+<td>file size in bytes</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">dimensions</td>
+<td>for image types, width x height, e.g., 1024x768</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">pixels</td>
+<td>for image types, size in pixels, e.g., 307200 for a 640x480 image</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">width</td>
+<td>for image types, width in pixels</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">height</td>
+<td>for image types, height in pixels</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">hwstring_small</td>
+<td>HTML dimensions of a "small" image, i.e., 128 or less width, 96 or less height. Not computed for images uploaded in WordPress 3.5 and later.</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">size_keys</td>
+<td>image size names for thumbnail versions of the image, e.g., "thumbnail, medium, large"</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">size_names</td>
+<td>image file names for thumbnail versions of the image, e.g., "image-150x150.jpg, image-300x225.jpg, image-600x288.jpg"</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">size_bytes</td>
+<td>file size in bytes for thumbnail versions of the image, e.g., "5127, 11829, 33968"</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">size_pixels</td>
+<td>image size in pixels for thumbnail versions of the image, e.g., "22500, 67500, 172800"</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">size_dimensions</td>
+<td>image dimensions for thumbnail versions of the image, e.g., "150x150, 300x225, 600x288"</td>
+</tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">size_name[size]</td>
+<td>image file name for a specific thumbnail version, e.g., size_name[medium] = image-300x225.jpg; set to empty string if the specified size does not exist. There will be a [size] choice for every thumbnail version registered with WordPress for the site.</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">size_bytes[size]</td>
+<td>file size in bytes for a specific thumbnail version, e.g., size_bytes[medium] = "11829"</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">size_pixels[size]</td>
+<td>image size in pixels for a specific thumbnail version, e.g., size_pixels[medium] = "67500"</td>
+</tr>
+<tr>
+<tr>
+<td style="width: 12em; padding-right: 10px; vertical-align: top; font-weight:bold">size_dimensions[size]</td>
+<td>image dimensions for a specific thumbnail version, e.g., size_dimensions[medium] = 300x225; set to empty string if the specified size does not exist. There will be a [size] choice for every thumbnail version registered with WordPress for the site.</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">parent_type</td>
+<td>for "attached" (post_parent not zero) objects, post type of the parent object</td>
+</tr>
+<tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">parent_name</td>
+<td>for "attached" (post_parent not zero) objects, post title of the parent object</td>
+</tr>
+<tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">parent_issues</td>
+<td>summary of parent status (only) "issues", e.g., bad parent, invalid parent, unattached</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">reference_issues</td>
+<td>summary of all reference and parent status "issues", e.g., orphan, bad parent, invalid parent, unattached</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">aperture</td>
+<td>for image types, the value stored in WordPress "image_meta" array</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">credit</td>
+<td>for image types, the value stored in WordPress "image_meta" array</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">camera</td>
+<td>for image types, the value stored in WordPress "image_meta" array</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">caption</td>
+<td>for image types, the value stored in WordPress "image_meta" array</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">created_timestamp</td>
+<td>for image types, the value stored in WordPress "image_meta" array</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">copyright</td>
+<td>for image types, the value stored in WordPress "image_meta" array</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">focal_length</td>
+<td>for image types, the value stored in WordPress "image_meta" array</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">iso</td>
+<td>for image types, the value stored in WordPress "image_meta" array</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">shutter_speed</td>
+<td>for image types, the value stored in WordPress "image_meta" array</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">title</td>
+<td>for image types, the value stored in WordPress "image_meta" array</td>
+</tr>
+</table>
 <a name="mla_iptc_exif_mapping"></a>
 &nbsp;
 <p>
@@ -653,7 +835,7 @@ The Media Library Assistant has powerful tools for copying image metadata to:
 <li>taxonomy terms, e.g., in categories, tags or custom taxonomies</li>
 <li>WordPress Custom Fields</li>
 </ul>
-You can define the rules for mapping metadata on the "IPTC/EXIF" tab of the Settings page. You can choose to automatically apply the rules when new media are added to the Library (or not). You can click the "Map IPTC/EXIF metadata" button on the Edit Media/Edit Single Item screen or in the bulk edit area to selectivelly apply the rules to one or more images. You can click the "Map All Attachments Now" to apply the rules to <strong>all of the images in your library</strong> at one time.
+You can define the rules for mapping metadata on the "IPTC/EXIF" tab of the Settings page. You can choose to automatically apply the rules when new media are added to the Library (or not). You can click the "Map IPTC/EXIF metadata" button on the Edit Media/Edit Single Item screen or in the bulk edit area to selectivelly apply the rules to one or more images. You can click the "Map All Attachments Now" to apply the rules to <strong><em>ALL of the images in your library</em></strong> at one time.
 </p>
 <h4>Mapping tables</h4>
 <p>
@@ -681,11 +863,11 @@ The three mapping tables on the IPTC/EXIF tab have the following columns:
 </dl>
 <h4>Map All Attachments Now</h4>
 <p>
-To the right of each table heading is a "Map All Attachments Now" button. When you click one of these buttons, the mapping rules in that table are applied to <strong>all of the images in the Media Library.</strong> This is a great way to bring your media items up to date, but it is <strong>not reversible</strong>, so think carefully before you click!
+To the right of each table heading is a "Map All Attachments Now" button. When you click one of these buttons, the mapping rules in that table are applied to <strong><em>ALL of the images in the Media Library</em></strong>. This is a great way to bring your media items up to date, but it is <strong><em>NOT REVERSIBLE</em></strong>, so think carefully before you click!
 Each button applies the rules in just one category, so you can update taxonomy terms without disturbing standard or custom field values.
 </p>
 <p>
-These buttons <strong>do not</strong> save any rules changes you've made, so you can make a temporary rule change and process your attachments without disturbing the standing rules.
+These buttons <strong><em>DO NOT</em></strong> save any rules changes you've made, so you can make a temporary rule change and process your attachments without disturbing the standing rules.
 </p>
 <h4>Other mapping techniques</h4>
 <p>
@@ -697,6 +879,7 @@ There are two other ways you can perform metadata mapping to one or more existin
 <dt>Bulk Action edit area</dt>
 <dd>To perform mapping for a group of attachments you can use the Bulk Action facility on the main Assistant screen. Check the attachments you want to map, select "edit" from the Bulk Actions dropdown list and click "Apply". The bulk edit area will open with a list of the checked attachments in the left-hand column. You can click the "Map IPTC/EXIF metadata" button in the lower left corner of the area to apply the standing mapping rules to the attachments in the list.
 </dd>
+</dl>
 </p>
 <h4>WordPress default title, slug and description mapping</h4>
 <p>

@@ -17,11 +17,30 @@
  */
 class MLAData {
 	/**
+	 * Provides a unique suffix for the ALT Text SQL VIEW
+	 *
+	 * @since 0.40
+	 */
+	const MLA_ALT_TEXT_VIEW_SUFFIX = 'alt_text_view';
+	
+	/**
+	 * Provides a unique name for the ALT Text SQL VIEW
+	 *
+	 * @since 0.40
+	 *
+	 * @var	array
+	 */
+	private static $mla_alt_text_view = NULL;
+	
+	/**
 	 * Initialization function, similar to __construct()
 	 *
 	 * @since 0.1
 	 */
 	public static function initialize() {
+		global $table_prefix;
+		self::$mla_alt_text_view = $table_prefix . MLA_OPTION_PREFIX . self::MLA_ALT_TEXT_VIEW_SUFFIX;
+
 		add_action( 'save_post', 'MLAData::mla_save_post_action', 10, 1);
 		add_action( 'edit_attachment', 'MLAData::mla_save_post_action', 10, 1);
 		add_action( 'add_attachment', 'MLAData::mla_save_post_action', 10, 1);
@@ -264,7 +283,7 @@ class MLAData {
 	 *
 	 * @var	array
 	 */
-	private static $query_parameters = array( );
+	private static $query_parameters = array();
 
 	/**
 	 * Sanitize and expand query arguments from request variables
@@ -297,7 +316,7 @@ class MLAData {
 			'post_type' => 'attachment',
 			'post_status' => 'inherit',
 			'mla-search-connector' => 'AND',
-			'mla-search-fields' => array ( )
+			'mla-search-fields' => array()
 		);
 		
 		foreach ( $raw_request as $key => $value ) {
@@ -382,7 +401,7 @@ class MLAData {
 		/*
 		 * Pass query parameters to the filters for _execute_list_table_query
 		 */
-		self::$query_parameters = array( );
+		self::$query_parameters = array( 'use_alt_text_view' => false );
 		self::$query_parameters['detached'] = isset( $clean_request['detached'] );
 		self::$query_parameters['orderby'] = $clean_request['orderby'];
 		self::$query_parameters['order'] = $clean_request['order'];
@@ -398,6 +417,9 @@ class MLAData {
 				self::$query_parameters['mla-search-fields'] = $clean_request['mla-search-fields'];
 				self::$query_parameters['sentence'] = isset( $clean_request['sentence'] );
 				self::$query_parameters['exact'] = isset( $clean_request['exact'] );
+				
+			 	if ( in_array( 'alt-text', self::$query_parameters['mla-search-fields'] ) )
+					self::$query_parameters['use_alt_text_view'] = true;
 			} // !empty
 			
 			unset( $clean_request['s'] );
@@ -411,22 +433,33 @@ class MLAData {
 		 * We have to handle custom field/post_meta values here
 		 * because they need a JOIN clause supplied by WP_Query
 		 */
-		switch ( self::$query_parameters['orderby'] ) {
-			/*
-			 * '_wp_attachment_image_alt' is special; we'll handle it in the JOIN and ORDERBY filters
-			 */
-			case '_wp_attachment_image_alt':
-				if ( isset($clean_request['orderby']) )
-					unset($clean_request['orderby']);
-				if ( isset($clean_request['order']) )
-					unset($clean_request['order']);
-				break;
-			case '_wp_attached_file':
-				$clean_request['meta_key'] = '_wp_attached_file';
+		if ( 'c_' == substr( self::$query_parameters['orderby'], 0, 2 ) ) {
+			$option_value = MLAOptions::mla_custom_field_option_value( self::$query_parameters['orderby'] );
+			if ( isset( $option_value['name'] ) ) {
+				$clean_request['meta_key'] = $option_value['name'];
 				$clean_request['orderby'] = 'meta_value';
 				$clean_request['order'] = self::$query_parameters['order'];
-				break;
-		} // $orderby
+			}
+		} // custom field
+		else {
+			switch ( self::$query_parameters['orderby'] ) {
+				/*
+				 * '_wp_attachment_image_alt' is special; we'll handle it in the JOIN and ORDERBY filters
+				 */
+				case '_wp_attachment_image_alt':
+					self::$query_parameters['use_alt_text_view'] = true;
+					if ( isset($clean_request['orderby']) )
+						unset($clean_request['orderby']);
+					if ( isset($clean_request['order']) )
+						unset($clean_request['order']);
+					break;
+				case '_wp_attached_file':
+					$clean_request['meta_key'] = '_wp_attached_file';
+					$clean_request['orderby'] = 'meta_value';
+					$clean_request['order'] = self::$query_parameters['order'];
+					break;
+			} // switch $orderby
+		}
 
 		/*
 		 * Ignore incoming paged value; use offset and count instead
@@ -502,6 +535,27 @@ class MLAData {
 	 * @return	object	WP_Query object with query results
 	 */
 	private static function _execute_list_table_query( $request ) {
+		global $wpdb, $table_prefix;
+		
+		/*
+		 * ALT Text is special; we have to use an SQL VIEW to build 
+		 * an intermediate table and modify the JOIN to include posts
+		 * with no value for this metadata field.
+		 */
+		if ( self::$query_parameters['use_alt_text_view'] ) {
+			$view_name = self::$mla_alt_text_view;
+			$table_name = $table_prefix . 'postmeta';
+
+			$result = $wpdb->query(
+					"
+					CREATE OR REPLACE VIEW {$view_name} AS
+					SELECT post_id, meta_value
+					FROM {$table_name}
+					WHERE {$table_name}.meta_key = '_wp_attachment_image_alt'
+					"
+			);
+		}
+
 		add_filter( 'posts_search', 'MLAData::mla_query_posts_search_filter', 10, 2 ); // $search, &$this
 		add_filter( 'posts_join', 'MLAData::mla_query_posts_join_filter' );
 		add_filter( 'posts_where', 'MLAData::mla_query_posts_where_filter' );
@@ -513,6 +567,10 @@ class MLAData {
 		remove_filter( 'posts_where', 'MLAData::mla_query_posts_where_filter' );
 		remove_filter( 'posts_join', 'MLAData::mla_query_posts_join_filter' );
 		remove_filter( 'posts_search', 'MLAData::mla_query_posts_search_filter' );
+
+		if ( self::$query_parameters['use_alt_text_view'] ) {
+			$result = $wpdb->query( "DROP VIEW {$view_name}" );
+		}
 
 		return $results;
 	}
@@ -568,7 +626,7 @@ class MLAData {
 				}
 				
 				if ( in_array( 'alt-text', $fields ) ) {
-					$view_name = MLASettings::$mla_alt_text_view;
+					$view_name = self::$mla_alt_text_view;
 					$search_clause .= "{$inner_connector}({$view_name}.meta_value LIKE '{$percent}{$term}{$percent}')";
 					$inner_connector = ' OR ';
 				}
@@ -592,7 +650,7 @@ class MLAData {
 	}
 
 	/**
-	 * Adds a JOIN clause, if required
+	 * Adds a JOIN clause, if required, to handle sorting/searching on ALT Text
 	 * 
 	 * Defined as public because it's a filter.
 	 *
@@ -600,19 +658,17 @@ class MLAData {
 	 *
 	 * @param	string	query clause before modification
 	 *
-	 * @return	string	query clause after "detached" item modification
+	 * @return	string	query clause after "LEFT JOIN view ON post_id" item modification
 	 */
 	public static function mla_query_posts_join_filter( $join_clause ) {
 		global $table_prefix;
 		/*
 		 * '_wp_attachment_image_alt' is special; we have to use an SQL VIEW to
 		 * build an intermediate table and modify the JOIN to include posts with
-		 * no value for this meta data field.
+		 * no value for this metadata field.
 		 */
-		if ( '_wp_attachment_image_alt' == self::$query_parameters['orderby'] 
-			|| isset( self::$query_parameters['s'] )
-		) {
-			$view_name = MLASettings::$mla_alt_text_view;
+		if ( self::$query_parameters['use_alt_text_view'] ) {
+			$view_name = self::$mla_alt_text_view;
 			$join_clause .= " LEFT JOIN {$view_name} ON ({$table_prefix}posts.ID = {$view_name}.post_id)";
 		}
 
@@ -656,35 +712,40 @@ class MLAData {
 		global $table_prefix;
 
 		if ( isset( self::$query_parameters['orderby'] ) ) {
-			switch ( self::$query_parameters['orderby'] ) {
-				case 'none':
-					$orderby = '';
-					break;
-				/*
-				 * There are two columns defined that end up sorting on post_title,
-				 * so we can't use the database column to identify the column but
-				 * we actually sort on the database column.
-				 */
-				case 'title_name':
-					$orderby = "{$table_prefix}posts.post_title";
-					break;
-				/*
-				 * The _wp_attached_file meta data value is present for all attachments, and the
-				 * sorting on the meta data value is handled by WP_Query
-				 */
-				case '_wp_attached_file':
-					$orderby = '';
-					break;
-				/*
-				 * The _wp_attachment_image_alt value is only present for images, so we have to
-				 * use the view we prepared to get attachments with no meta data value
-				 */
-				case '_wp_attachment_image_alt':
-					$orderby = MLASettings::$mla_alt_text_view . '.meta_value';
-					break;
-				default:
-					$orderby = "{$table_prefix}posts." . self::$query_parameters['orderby'];
-			} // $query_parameters['orderby']
+			if ( 'c_' == substr( self::$query_parameters['orderby'], 0, 2 ) ) {
+				$orderby = $table_prefix . 'postmeta.meta_value';
+			} // custom field sort
+			else {
+				switch ( self::$query_parameters['orderby'] ) {
+					case 'none':
+						$orderby = '';
+						break;
+					/*
+					 * There are two columns defined that end up sorting on post_title,
+					 * so we can't use the database column to identify the column but
+					 * we actually sort on the database column.
+					 */
+					case 'title_name':
+						$orderby = "{$table_prefix}posts.post_title";
+						break;
+					/*
+					 * The _wp_attached_file meta data value is present for all attachments, and the
+					 * sorting on the meta data value is handled by WP_Query
+					 */
+					case '_wp_attached_file':
+						$orderby = '';
+						break;
+					/*
+					 * The _wp_attachment_image_alt value is only present for images, so we have to
+					 * use the view we prepared to get attachments with no meta data value
+					 */
+					case '_wp_attachment_image_alt':
+						$orderby = self::$mla_alt_text_view . '.meta_value';
+						break;
+					default:
+						$orderby = "{$table_prefix}posts." . self::$query_parameters['orderby'];
+				} // $query_parameters['orderby']
+			}
 			
 			if ( ! empty( $orderby ) )
 				$orderby_clause = $orderby . ' ' . self::$query_parameters['order'];
@@ -700,6 +761,7 @@ class MLAData {
 	 * the posts and postmeta tables, and all references to the attachment.
 	 * 
 	 * @since 0.1
+	 * @uses $post WordPress global variable
 	 * 
 	 * @param	int		The ID of the attachment post
 	 * @return	NULL|array NULL on failure else associative array
@@ -741,6 +803,96 @@ class MLAData {
 	}
 	
 	/**
+	 * Returns information about an attachment's parent, if found
+	 *
+	 * @since 0.1
+	 *
+	 * @param	int		post ID of attachment's parent, if any
+	 *
+	 * @return	array	Parent information; post_date, post_title and post_type
+	 */
+	public static function mla_fetch_attachment_parent_data( $parent_id ) {
+		$parent_data = array();
+		if ( $parent_id ) {
+			$parent = get_post( $parent_id );
+			if ( isset( $parent->post_date ) )
+				$parent_data['parent_date'] = $parent->post_date;
+			if ( isset( $parent->post_title ) )
+				$parent_data['parent_title'] = $parent->post_title;
+			if ( isset( $parent->post_type ) )
+				$parent_data['parent_type'] = $parent->post_type;
+		}
+		
+		return $parent_data;
+	}
+	
+	/**
+	 * Fetch and filter meta data for an attachment
+	 * 
+	 * Returns a filtered array of a post's meta data. Internal values beginning with '_'
+	 * are stripped out or converted to an 'mla_' equivalent. Array data is replaced with
+	 * a string containing the first array element.
+	 *
+	 * @since 0.1
+	 *
+	 * @param	int		post ID of attachment
+	 *
+	 * @return	array	Meta data variables
+	 */
+	public static function mla_fetch_attachment_metadata( $post_id ) {
+		$attached_file = NULL;
+		$results = array();
+		$post_meta = get_metadata( 'post', $post_id );
+
+		if ( is_array( $post_meta ) ) {
+			foreach ( $post_meta as $post_meta_key => $post_meta_value ) {
+				if ( empty( $post_meta_key ) )
+					continue;
+					
+				if ( '_' == $post_meta_key{0} ) {
+					if ( stripos( $post_meta_key, '_wp_attached_file' ) === 0 ) {
+						$key = 'mla_wp_attached_file';
+						$attached_file = $post_meta_value[0];
+					} elseif ( stripos( $post_meta_key, '_wp_attachment_metadata' ) === 0 ) {
+						$key = 'mla_wp_attachment_metadata';
+						$post_meta_value = unserialize( $post_meta_value[0] );
+					} elseif ( stripos( $post_meta_key, '_wp_attachment_image_alt' ) === 0 ) {
+						$key = 'mla_wp_attachment_image_alt';
+					} else {
+						continue;
+					}
+				} else {
+					if ( stripos( $post_meta_key, 'mla_' ) === 0 )
+						$key = $post_meta_key;
+					else
+						$key = 'mla_item_' . $post_meta_key;
+				}
+				
+				if ( is_array( $post_meta_value ) && count( $post_meta_value ) == 1 )
+					$value = $post_meta_value[0];
+				else
+					$value = $post_meta_value;
+				
+				$results[ $key ] = $value;
+			} // foreach $post_meta
+
+			if ( !empty( $attached_file ) ) {
+				$last_slash = strrpos( $attached_file, '/' );
+				if ( false === $last_slash ) {
+					$results['mla_wp_attached_path'] = '';
+					$results['mla_wp_attached_filename'] = $attached_file;
+				}
+				else {
+					$results['mla_wp_attached_path'] = substr( $attached_file, 0, $last_slash + 1 );
+					$results['mla_wp_attached_filename'] = substr( $attached_file, $last_slash + 1 );
+				}
+			} // $attached_file
+		} // is_array($post_meta)
+		
+		return $results;
+	}
+	
+	/**
 	 * Find Featured Image and inserted image/link references to an attachment
 	 * 
 	 * Searches all post and page content to see if the attachment is used 
@@ -762,7 +914,8 @@ class MLAData {
 		 * found_parent		true if $parent matches a where-used post ID
 		 * is_unattached	true if $parent is zero (0)
 		 * base_file		relative path and name of the uploaded file, e.g., 2012/04/image.jpg
-		 * path				path to the file, relative to the "uploads/" directory
+		 * path				path to the file, relative to the "uploads/" directory, e.g., 2012/04/
+		 * file				The name portion of the base file, e.g., image.jpg
 		 * files			base file and any other image size files. Array key is path and file name.
 		 *					Non-image file value is a string containing file name without path
 		 *					Image file value is an array with file name, width and height
@@ -775,9 +928,9 @@ class MLAData {
 		 *					that was returned by an [mla_gallery] shortcode
 		 * galleries		Array of objects with the post_type and post_title of each post
 		 *					that was returned by a [gallery] shortcode
-		 * file				The name portion of the base file, e.g., image.jpg
 		 * parent_type		'post' or 'page' or the custom post type of the attachment's parent
 		 * parent_title		post_title of the attachment's parent
+		 * parent_errors	UNATTACHED, ORPHAN, BAD/INVALID PARENT
 		 */
 		$references = array(
 			'tested_reference' => false,
@@ -786,12 +939,12 @@ class MLAData {
 			'is_unattached' => ( ( (int) $parent ) === 0 ),
 			'base_file' => '',
 			'path' => '',
+			'file' => '',
 			'files' => array(),
 			'features' => array(),
 			'inserts' => array(),
 			'mla_galleries' => array(),
 			'galleries' => array(),
-			'file' => '',
 			'parent_type' => '',
 			'parent_title' => '',
 			'parent_errors' => ''
@@ -812,7 +965,7 @@ class MLAData {
 		} // empty( $attachment_metadata )
 		else {
 			$references['base_file'] = $attachment_metadata['file'];
-			$sizes = $attachment_metadata['sizes'];
+			$sizes = isset( $attachment_metadata['sizes'] ) ? $attachment_metadata['sizes'] : NULL;
 			if ( !empty( $sizes ) ) {
 				/* Using the name as the array key ensures each name is added only once */
 				foreach ( $sizes as $size ) {
@@ -931,7 +1084,7 @@ class MLAData {
 					} // foreach $gallery
 				} // !empty
 				else
-					$references['mla_galleries'] = array( );
+					$references['mla_galleries'] = array();
 			}
 		} // $process_mla_gallery_in
 		
@@ -953,20 +1106,14 @@ class MLAData {
 					} // foreach $gallery
 				} // !empty
 				else
-					$references['galleries'] = array( );
+					$references['galleries'] = array();
 			}
 		} // $process_gallery_in
 		
 		/*
 		 * Evaluate and summarize reference tests
 		 */
-		if ( !empty( $references['parent_title'] ) )
-			$errors = '';
-		elseif ( $references['is_unattached'] )
-			$errors = '(UNATTACHED) ';
-		else 
-			$errors = '(INVALID PARENT) ';
-
+		$errors = '';
 		if ( 0 == $reference_tests ) {
 			$references['tested_reference'] = false;
 			$errors .= '(NO REFERENCE TESTS)';
@@ -982,6 +1129,11 @@ class MLAData {
 				$errors .= "(BAD PARENT{$suffix})";
 		}
 		
+		if ( $references['is_unattached'] )
+			$errors .= '(UNATTACHED) ';
+		elseif ( empty( $references['parent_title'] ) ) 
+			$errors .= '(INVALID PARENT) ';
+
 		$references['parent_errors'] = trim( $errors );
 		return $references;
 	}
@@ -1099,7 +1251,7 @@ class MLAData {
 		/*
 		 * $galleries_array is null, so build the array
 		 */
-		$galleries_array = array( );
+		$galleries_array = array();
 		
 		if ( $exclude_revisions )
 			$exclude_revisions = "(post_type <> 'revision') AND ";
@@ -1128,8 +1280,8 @@ class MLAData {
 				$result_id = $result->ID;
 				$galleries_array[ $result_id ]['parent_title'] = $result->post_title;
 				$galleries_array[ $result_id ]['parent_type'] = $result->post_type;
-				$galleries_array[ $result_id ]['results'] = array( );
-				$galleries_array[ $result_id ]['galleries'] = array( );
+				$galleries_array[ $result_id ]['results'] = array();
+				$galleries_array[ $result_id ]['galleries'] = array();
 				$instance = 0;
 				
 				foreach ( $matches[1] as $index => $match ) {
@@ -1139,7 +1291,7 @@ class MLAData {
 					if ( empty( $match ) || ( ' ' == substr( $match, 0, 1 ) ) ) {
 						$instance++;
 						$galleries_array[ $result_id ]['galleries'][ $instance ]['query'] = trim( $matches[1][$index] );
-						$galleries_array[ $result_id ]['galleries'][ $instance ]['results'] = array( );
+						$galleries_array[ $result_id ]['galleries'][ $instance ]['results'] = array();
 						
 						$post = $result; // set global variable for mla_gallery_shortcode
 						$attachments = MLAShortcodes::mla_get_shortcode_attachments( $result_id, $galleries_array[ $result_id ]['galleries'][ $instance ]['query'] );
@@ -1175,7 +1327,7 @@ class MLAData {
 	 * 					The array key is the parent_post ID; each entry contains post_title and post_type.
 	 */
 	private static function _search_mla_galleries( &$galleries_array, $attachment_id ) {
-		$gallery_refs = array( );
+		$gallery_refs = array();
 		if ( ! empty( $galleries_array ) ) {
 			foreach ( $galleries_array as $parent_id => $gallery ) {
 				if ( in_array( $attachment_id, $gallery['results'] ) ) {
@@ -1187,30 +1339,6 @@ class MLAData {
 		return $gallery_refs;
 	}
 		
-	/**
-	 * Returns information about an attachment's parent, if found
-	 *
-	 * @since 0.1
-	 *
-	 * @param	int		post ID of attachment's parent, if any
-	 *
-	 * @return	array	Parent information; post_date, post_title and post_type
-	 */
-	public static function mla_fetch_attachment_parent_data( $parent_id ) {
-		$parent_data = array();
-		if ( $parent_id ) {
-			$parent = get_post( $parent_id );
-			if ( isset( $parent->post_date ) )
-				$parent_data['parent_date'] = $parent->post_date;
-			if ( isset( $parent->post_title ) )
-				$parent_data['parent_title'] = $parent->post_title;
-			if ( isset( $parent->post_type ) )
-				$parent_data['parent_type'] = $parent->post_type;
-		}
-		
-		return $parent_data;
-	}
-	
 	/**
 	 * Fetch and filter IPTC and EXIF meta data for an image attachment
 	 * 
@@ -1225,8 +1353,8 @@ class MLAData {
 	 */
 	public static function mla_fetch_attachment_image_metadata( $post_id, $path = '' ) {
 		$results = array(
-			'mla_iptc_metadata' => array (),
-			'mla_exif_metadata' => array ()
+			'mla_iptc_metadata' => array(),
+			'mla_exif_metadata' => array()
 			);
 
 //		$post_meta = get_metadata( 'post', $post_id, '_wp_attachment_metadata' );
@@ -1263,57 +1391,6 @@ class MLAData {
 				$results['mla_exif_metadata'] = exif_read_data( $path );
 			}
 		}
-		
-		return $results;
-	}
-	
-	/**
-	 * Fetch and filter meta data for an attachment
-	 * 
-	 * Returns a filtered array of a post's meta data. Internal values beginning with '_'
-	 * are stripped out or converted to an 'mla_' equivalent. Array data is replaced with
-	 * a string containing the first array element.
-	 *
-	 * @since 0.1
-	 *
-	 * @param	int		post ID of attachment
-	 *
-	 * @return	array	Meta data variables
-	 */
-	public static function mla_fetch_attachment_metadata( $post_id ) {
-		$results = array();
-		$post_meta = get_metadata( 'post', $post_id );
-			
-		if ( is_array( $post_meta ) ) {
-			foreach ( $post_meta as $post_meta_key => $post_meta_value ) {
-				if ( '_' == $post_meta_key{0} ) {
-					if ( stripos( $post_meta_key, '_wp_attached_file' ) === 0 ) {
-						$key = 'mla_wp_attached_file';
-					} elseif ( stripos( $post_meta_key, '_wp_attachment_metadata' ) === 0 ) {
-						$key = 'mla_wp_attachment_metadata';
-						$post_meta_value = unserialize( $post_meta_value[0] );
-					} elseif ( stripos( $post_meta_key, '_wp_attachment_image_alt' ) === 0 ) {
-						$key = 'mla_wp_attachment_image_alt';
-					} else {
-						continue;
-					}
-				} else {
-					if ( stripos( $post_meta_key, 'mla_' ) === 0 )
-						$key = $post_meta_key;
-					else
-						$key = 'mla_item_' . $post_meta_key;
-				}
-				
-				if ( is_array( $post_meta_value ) && count( $post_meta_value ) == 1 )
-					$value = $post_meta_value[0];
-				else
-					$value = $post_meta_value;
-				
-				$results[ $key ] = $value;
-			}
-			/* foreach $post_meta */
-		}
-		/* is_array($post_meta) */
 		
 		return $results;
 	}
@@ -1522,11 +1599,18 @@ class MLAData {
 				'body' => '' 
 			);
 		else {
-			if ( wp_update_post( $updates ) )
+			if ( wp_update_post( $updates ) ) {
+				$final_message = 'Item: ' . $post_id . ' updated.';
+				/*
+				 * Uncomment this for debugging.
+				 */
+				// $final_message .= '<br>' . $message;
+				
 				return array(
-					'message' => 'Item: ' . $post_id . ' updated.<br>' . $message,
+					'message' => $final_message,
 					'body' => '' 
 				);
+			}
 			else
 				return array(
 					'message' => 'ERROR: Item ' . $post_id . ' update failed.',
@@ -1556,7 +1640,7 @@ class MLAData {
 				$tags = str_replace( $comma, ',', $tags );
 			$terms = explode( ',', trim( $tags, " \n\t\r\0\x0B," ) );
 
-			$tags = array ( );
+			$tags = array();
 			foreach ( (array) $terms as $term) {
 				if ( !strlen(trim($term)) )
 					continue;

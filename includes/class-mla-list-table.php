@@ -46,7 +46,7 @@ class MLA_List_Table extends WP_List_Table {
 	 *
 	 * @var	array
 	 */
-	private $currently_hidden = array( );
+	private $currently_hidden = array();
 	
 	/*
 	 * These arrays define the table columns.
@@ -64,6 +64,7 @@ class MLA_List_Table extends WP_List_Table {
 	 * bulk actions or checkboxes, simply leave the 'cb' entry out of your array.
 	 *
 	 * Taxonomy columns are added to this array by mla_admin_init_action.
+	 * Custom field columns are added to this array by mla_admin_init_action.
 	 * 
 	 * @since 0.1
 	 *
@@ -92,6 +93,7 @@ class MLA_List_Table extends WP_List_Table {
 		'author' => 'Author',
 		'attached_to' => 'Attached to'
 		// taxonomy columns added by mla_admin_init_action
+		// custom field columns added by mla_admin_init_action
 	);
 	
 	/**
@@ -104,6 +106,7 @@ class MLA_List_Table extends WP_List_Table {
 	 * array(0 => 'ID_parent, 1 => 'title_name').
 	 *
 	 * Taxonomy columns are added to this array by mla_admin_init_action.
+	 * Custom field columns are added to this array by mla_admin_init_action.
 	 * 
 	 * @since 0.1
 	 *
@@ -143,6 +146,9 @@ class MLA_List_Table extends WP_List_Table {
 	 * The array value also contains a boolean which is 'true' if the data is currently
 	 * sorted by that column. This is computed each time the table is displayed.
 	 *
+	 * Taxonomy columns, if any, are added to this array by mla_admin_init_action.
+	 * Custom field columns are added to this array by mla_admin_init_action.
+	 *
 	 * @since 0.1
 	 *
 	 * @var	array
@@ -168,6 +174,7 @@ class MLA_List_Table extends WP_List_Table {
 		'author' => array('post_author',false),
 		'attached_to' => array('post_parent',false),
 		// sortable taxonomy columns, if any, added by mla_admin_init_action
+		// sortable custom field columns, if any, added by mla_admin_init_action
         );
 
 	/**
@@ -195,7 +202,7 @@ class MLA_List_Table extends WP_List_Table {
 	 * @return	array	Mime type names
 	 */
 	private function _avail_mime_types( $num_posts ) {
-		$available = array( );
+		$available = array();
 		
 		foreach ( $num_posts as $mime_type => $number ) {
 			if ( ( $number > 0 ) && ( $mime_type <> 'trash' ) )
@@ -208,7 +215,7 @@ class MLA_List_Table extends WP_List_Table {
 	/**
 	 * Get possible mime types for view preparation
 	 *
-	 * Modeled after get_post_mime_types in wp-admin/includes/post.php,
+	 * Modeled after get_post_mime_types in wp-includes/post.php,
 	 * with additional entries.
 	 *
 	 * @since 0.1
@@ -290,7 +297,7 @@ class MLA_List_Table extends WP_List_Table {
 	 */
 	public static function mla_get_sortable_columns( )
 	{
-		$results = array ( ) ;
+		$results = array() ;
 			
 		foreach ( MLA_List_Table::$default_sortable_columns as $key => $value ) {
 			$value[1] = MLA_List_Table::$default_columns[ $key ];
@@ -356,10 +363,14 @@ class MLA_List_Table extends WP_List_Table {
 			if ( MLAOptions::mla_taxonomy_support( $tax_name ) ) {
 				$tax_object = get_taxonomy( $tax_name );
 				MLA_List_Table::$default_columns[ 't_' . $tax_name ] = $tax_object->labels->name;
-				MLA_List_Table::$default_hidden_columns [] = $tax_name;
+				MLA_List_Table::$default_hidden_columns [] = 't_' . $tax_name;
 				// MLA_List_Table::$default_sortable_columns [] = none at this time
 			} // supported taxonomy
 		} // foreach $tax_name
+		
+		MLA_List_Table::$default_columns = array_merge( MLA_List_Table::$default_columns, MLAOptions::mla_custom_field_support( 'default_columns' ) );
+		MLA_List_Table::$default_hidden_columns = array_merge( MLA_List_Table::$default_hidden_columns, MLAOptions::mla_custom_field_support( 'default_hidden_columns' ) );
+		MLA_List_Table::$default_sortable_columns = array_merge( MLA_List_Table::$default_sortable_columns, MLAOptions::mla_custom_field_support( 'default_sortable_columns' ) );
 	}
 	
 	/**
@@ -413,7 +424,7 @@ class MLA_List_Table extends WP_List_Table {
 				if ( empty( $terms ) )
 					return 'none';
 				else {
-					$list = array( );
+					$list = array();
 					foreach ( $terms as $term ) {
 						$list[ ] = sprintf( '<a href="%s">%s</a>', esc_url( add_query_arg( array(
 							 'page' => 'mla-menu',
@@ -429,7 +440,10 @@ class MLA_List_Table extends WP_List_Table {
 			else {
 				return 'not supported';
 			}
-		}
+		} // 't_'
+		elseif ( 'c_' == substr( $column_name, 0, 2 ) ) {
+			return get_post_meta( $item->ID, MLA_List_Table::$default_columns[ $column_name ], true );
+		} // 'c_'
 		else {
 			//Show the whole array for troubleshooting purposes
 			return 'column_default: ' . $column_name . ', ' . print_r( $item, true );
@@ -478,7 +492,7 @@ class MLA_List_Table extends WP_List_Table {
 	 * @return	array	Names and URLs of row-level actions
 	 */
 	private function _build_rollover_actions( $item, $column ) {
-		$actions = array( );
+		$actions = array();
 		
 		if ( ( $this->rollover_id != $item->ID ) && !in_array( $column, $this->currently_hidden ) ) {
 			/*
@@ -1085,7 +1099,7 @@ class MLA_List_Table extends WP_List_Table {
 	function get_views( ) {
 		global $wpdb;
 		
-		$type_links = array( );
+		$type_links = array();
 		$_num_posts = (array) wp_count_attachments();
 		$_total_posts = array_sum( $_num_posts ) - $_num_posts['trash'];
 		$total_orphans = $wpdb->get_var(
@@ -1159,7 +1173,7 @@ class MLA_List_Table extends WP_List_Table {
 	 */
 	function get_bulk_actions( )
 	{
-		$actions = array( );
+		$actions = array();
 		
 		if ( $this->is_trash ) {
 			$actions['restore'] = 'Restore';

@@ -38,7 +38,7 @@ class MLA {
 	 *
 	 * @var	string
 	 */
-	const CURRENT_MLA_VERSION = '1.00';
+	const CURRENT_MLA_VERSION = '1.10';
 
 	/**
 	 * Minimum version of PHP required for this plugin
@@ -167,6 +167,15 @@ class MLA {
 	const MLA_ADMIN_SINGLE_TRASH = 'single_item_trash';
 	
 	/**
+	 * mla_admin_action value for mapping Custom Field metadata
+	 *
+	 * @since 1.10
+	 *
+	 * @var	string
+	 */
+	const MLA_ADMIN_SINGLE_CUSTOM_FIELD_MAP = 'single_item_custom_field_map';
+	
+	/**
 	 * mla_admin_action value for mapping IPTC/EXIF metadata
 	 *
 	 * @since 1.00
@@ -182,7 +191,7 @@ class MLA {
 	 *
 	 * @var	array
 	 */
-	private static $page_hooks = array( );
+	private static $page_hooks = array();
 	
 	/**
 	 * Initialization function, similar to __construct()
@@ -208,13 +217,42 @@ class MLA {
 	}
 	
 	/**
-	 * Load the plugin's Ajax handler
+	 * Load the plugin's Ajax handler or process Edit Media update actions
 	 *
 	 * @since 0.20
 	 *
 	 * @return	void
 	 */
 	public static function mla_admin_init_action() {
+		/*
+		 * Process row-level actions from the Edit Media screen
+		 */
+		if ( !empty( $_REQUEST['mla_admin_action'] ) ) {
+			check_admin_referer( self::MLA_ADMIN_NONCE );
+			
+			switch ( $_REQUEST['mla_admin_action'] ) {
+				case self::MLA_ADMIN_SINGLE_CUSTOM_FIELD_MAP:
+					$updates = MLAOptions::mla_evaluate_custom_field_mapping( $_REQUEST['mla_item_ID'], 'single_attachment_mapping' );
+					
+					if ( !empty( $updates ) )
+						$item_content = MLAData::mla_update_single_item( $_REQUEST['mla_item_ID'], $updates );
+
+					$view_args = isset( $_REQUEST['mla_source'] ) ? array( 'mla_source' => $_REQUEST['mla_source']) : array();
+					wp_redirect( add_query_arg( $view_args, admin_url( 'post.php' ) . '?post=' . $_REQUEST['mla_item_ID'] . '&action=edit&message=101' ), 302 );
+					exit;
+				case self::MLA_ADMIN_SINGLE_MAP:
+					$item = get_post( $_REQUEST['mla_item_ID'] );
+					$updates = MLAOptions::mla_evaluate_iptc_exif_mapping( $item, 'iptc_exif_mapping' );
+					$page_content = MLAData::mla_update_single_item( $_REQUEST['mla_item_ID'], $updates );
+
+					$view_args = isset( $_REQUEST['mla_source'] ) ? array( 'mla_source' => $_REQUEST['mla_source']) : array();
+					wp_redirect( add_query_arg( $view_args, admin_url( 'post.php' ) . '?post=' . $_REQUEST['mla_item_ID'] . '&action=edit&message=102' ), 302 );
+					exit;
+				default:
+					// ignore the rest
+			} // switch ($_REQUEST['mla_admin_action'])
+		} // (!empty($_REQUEST['mla_admin_action'])
+		
 		add_action( 'wp_ajax_' . self::JAVASCRIPT_INLINE_EDIT_SLUG, 'MLA::mla_inline_edit_action' );
 	}
 	
@@ -303,41 +341,6 @@ class MLA {
 		}
 		
 		add_filter( 'parent_file', 'MLA::mla_parent_file_filter', 10, 1 );
-
-		/*
-		 * For WordPress 3.5 and later we are using the native Edit Media screen,
-		 * so we want to get control back when the edits are completed.
-		 */
-		if( MLATest::$wordpress_3point5_plus ) {
-			add_filter( 'load-upload.php', 'MLA::mla_load_upload_php_action' );
-			add_filter( 'load-post.php', 'MLA::mla_load_post_php_action' );
-		}
-	}
-	
-	/**
-	 * Intercept return from Edit Media screen
-	 *
-	 * @since 0.60
-	 *
-	 * @return	void
-	 */
-	public static function mla_load_upload_php_action( ) {
-//		error_log('mla_load_upload_php_action current_screen = ' . var_export( get_current_screen(), true), 0 ); /* DGL */
-//		error_log('mla_load_upload_php_action $_REQUEST = ' . var_export($_REQUEST, true ), 0 ); /* DGL */
-//		error_log('mla_load_upload_php_action wp_get_referer() = ' . var_export(wp_get_referer(), true ), 0 ); /* DGL */
-	}
-	
-	/**
-	 * Intercept call to Edit Media screen
-	 *
-	 * @since 0.60
-	 *
-	 * @return	void
-	 */
-	public static function mla_load_post_php_action( ) {
-//		error_log('mla_load_post_php_action current_screen = ' . var_export( get_current_screen(), true), 0 ); /* DGL */
-//		error_log('mla_load_post_php_action $_REQUEST = ' . var_export($_REQUEST, true ), 0 ); /* DGL */
-//		error_log('mla_load_post_php_action wp_get_referer() = ' . var_export(wp_get_referer(), true ), 0 ); /* DGL */
 	}
 	
 	/**
@@ -423,7 +426,7 @@ class MLA {
 		/*
 		 * Provide explicit control over tab order
 		 */
-		$tab_array = array( );
+		$tab_array = array();
 		
 		foreach ( $template_array as $id => $content ) {
 			$match_count = preg_match( '#\<!-- title="(.+)" order="(.+)" --\>#', $content, $matches, PREG_OFFSET_CAPTURE );
@@ -571,7 +574,7 @@ class MLA {
 		
 		echo "<div class=\"wrap\">\r\n";
 		echo "<div id=\"icon-upload\" class=\"icon32\"><br/></div>\r\n";
-		echo "<h2>Media Library Assistant"; // omit trailing </h2> for now
+		echo "<h2>Media Library Assistant"; // trailing </h2> is action-specific
 		
 		if ( !current_user_can( 'upload_files' ) ) {
 			echo " - Error</h2>\r\n";
@@ -587,7 +590,7 @@ class MLA {
 		 * The category taxonomy is a special case because post_categories_meta_box() changes the input name
 		 */
 		if ( !isset( $_REQUEST['tax_input'] ) )
-			$_REQUEST['tax_input'] = array ();
+			$_REQUEST['tax_input'] = array();
 				
 		if ( isset( $_REQUEST['post_category'] ) ) {
 			$_REQUEST['tax_input']['category'] = $_REQUEST['post_category'];
@@ -609,14 +612,22 @@ class MLA {
 							$item_content = self::_delete_single_item( $post_id );
 							break;
 						case 'edit':
-							if ( !empty( $_REQUEST['bulk_map'] ) ) {
-								$item = get_post( $post_id );
-								$updates = MLAOptions::mla_evaluate_iptc_exif_mapping( $item, 'iptc_exif_mapping' );
+							if ( !empty( $_REQUEST['bulk_custom_field_map'] ) ) {
+								$updates = MLAOptions::mla_evaluate_custom_field_mapping( $post_id, 'single_attachment_mapping' );
+								
 								$item_content = MLAData::mla_update_single_item( $post_id, $updates );
 								break;
 							}
 							
-							$new_data = array ( ) ;
+							if ( !empty( $_REQUEST['bulk_map'] ) ) {
+								$item = get_post( $post_id );
+								$updates = MLAOptions::mla_evaluate_iptc_exif_mapping( $item, 'iptc_exif_mapping' );
+
+								$item_content = MLAData::mla_update_single_item( $post_id, $updates );
+								break;
+							}
+							
+							$new_data = array() ;
 							if ( isset( $_REQUEST['post_parent'] ) && is_numeric( $_REQUEST['post_parent'] ) )
 								$new_data['post_parent'] = $_REQUEST['post_parent'];
 							
@@ -680,11 +691,6 @@ class MLA {
 					break;
 				case self::MLA_ADMIN_SINGLE_TRASH:
 					$page_content = self::_trash_single_item( $_REQUEST['mla_item_ID'] );
-					break;
-				case self::MLA_ADMIN_SINGLE_MAP:
-					$item = get_post( $_REQUEST['mla_item_ID'] );
-					$updates = MLAOptions::mla_evaluate_iptc_exif_mapping( $item, 'iptc_exif_mapping' );
-					$page_content = MLAData::mla_update_single_item( $_REQUEST['mla_item_ID'], $updates );
 					break;
 				default:
 					$page_content = array(
@@ -852,7 +858,7 @@ class MLA {
 		 * The category taxonomy is a special case because post_categories_meta_box() changes the input name
 		 */
 		if ( !isset( $_REQUEST['tax_input'] ) )
-			$_REQUEST['tax_input'] = array ();
+			$_REQUEST['tax_input'] = array();
 				
 		if ( isset( $_REQUEST['post_category'] ) ) {
 			$_REQUEST['tax_input']['category'] = $_REQUEST['post_category'];
@@ -863,7 +869,7 @@ class MLA {
 			/*
 			 * Flat taxonomy strings must be cleaned up and duplicates removed
 			 */
-			$tax_output = array ();
+			$tax_output = array();
 			$tax_input = $_REQUEST['tax_input'];
 			foreach ( $tax_input as $tax_name => $tax_value ) {
 				if ( ! is_array( $tax_value ) ) {
@@ -879,7 +885,7 @@ class MLA {
 					if ( ',' != $comma )
 						$tax_value = str_replace( ',', $comma, $tax_value );
 					
-					$tax_array = array ();
+					$tax_array = array();
 					$dedup_array = explode( $comma, $tax_value );
 					foreach ( $dedup_array as $tax_value )
 						$tax_array [$tax_value] = $tax_value;
@@ -1398,7 +1404,7 @@ class MLA {
 		/*
 		 * Posts are restored to "draft" status, so this must be updated.
 		 */
-		$update_post = array( );
+		$update_post = array();
 		$update_post['ID'] = $post_id;
 		$update_post['post_status'] = 'inherit';
 		wp_update_post( $update_post );

@@ -177,7 +177,20 @@ class MLAShortcodes {
 			'mla_link_text' => '',
 			'mla_rollover_text' => '',
 			'mla_caption' => '',
-			'mla_debug' => false
+			'mla_debug' => false,
+			// Photonic-specific
+			'id' => NULL,
+			'style' => NULL,
+			'type' => 'default',
+			'thumb_width' => 75,
+			'thumb_height' => 75,
+			'thumbnail_size' => 'thumbnail',
+			'slide_size' => 'large',
+			'slideshow_height' => 500,
+			'fx' => 'fade',
+			'timeout' => 4000,
+			'speed' => 1000,
+			'pause' => true
 		);
 		
 		/*
@@ -200,6 +213,24 @@ class MLAShortcodes {
 			}
 		} // empty $attachments
 	
+		/*
+		 * Look for Photonic-enhanced gallery
+		 */
+		global $photonic;
+		
+		if ( is_object( $photonic ) && ! empty( $arguments['style'] ) ) {
+			if ( 'default' != strtolower( $arguments['type'] ) ) 
+				return '<p><strong>Photonic-enhanced [mla_gallery]</strong> type must be <strong>default</strong>, query = ' . var_export( $attr, true ) . '</p>';
+
+			$images = array();
+			foreach ($attachments as $key => $val) {
+				$images[$val->ID] = $attachments[$key];
+			}
+
+			$output = $photonic->build_gallery( $images, $arguments['style'], $arguments );
+			return $output;
+		}
+		
 		$size = $size_class = $arguments['size'];
 		if ( 'icon'	 == strtolower( $size) ) {
 			$size = array( 60, 60 );
@@ -302,7 +333,6 @@ class MLAShortcodes {
 				 */
 				$new_text = str_replace( '{+', '[+', str_replace( '+}', '+]', $arguments['mla_link_text'] . $arguments['mla_rollover_text'] . $arguments['mla_caption'] ) );
 				$placeholders = MLAData::mla_get_template_placeholders( $item_template . $new_text );
-// error_log( '$placeholders = ' . var_export( $placeholders, true ), 0);				
 				foreach ($placeholders as $key => $value ) {
 					switch ( $value['prefix'] ) {
 						case 'terms':
@@ -387,7 +417,7 @@ class MLAShortcodes {
 			}
 			else {
 				$base_file = $post_meta['mla_wp_attached_file'];
-				$sizes = array( );
+				$sizes = array();
 			}
 
 			if ( isset( $post_meta['mla_wp_attachment_image_alt'] ) )
@@ -664,9 +694,9 @@ class MLAShortcodes {
 			'order' => 'ASC', // or 'DESC' or 'RAND'
 			'orderby' => 'menu_order ID',
 			'id' => NULL,
-			'ids' => array ( ),
-			'include' => array ( ),
-			'exclude' => array ( ),
+			'ids' => array(),
+			'include' => array(),
+			'exclude' => array(),
 			// MLA extensions, from WP_Query
 			// Force 'get_children' style query
 			'post_parent' => NULL, // post/page ID or 'current' or 'all'
@@ -676,17 +706,17 @@ class MLAShortcodes {
 			// Category
 			'cat' => 0,
 			'category_name' => '',
-			'category__and' => array ( ),
-			'category__in' => array ( ),
-			'category__not_in' => array ( ),
+			'category__and' => array(),
+			'category__in' => array(),
+			'category__not_in' => array(),
 			// Tag
 			'tag' => '',
 			'tag_id' => 0,
-			'tag__and' => array ( ),
-			'tag__in' => array ( ),
-			'tag__not_in' => array ( ),
-			'tag_slug__and' => array ( ),
-			'tag_slug__in' => array ( ),
+			'tag__and' => array(),
+			'tag__in' => array(),
+			'tag__not_in' => array(),
+			'tag_slug__and' => array(),
+			'tag_slug__in' => array(),
 			// Taxonomy parameters are handled separately
 			// {tax_slug} => 'term' | array ( 'term, 'term, ... )
 			// 'tax_query' => ''
@@ -734,7 +764,7 @@ class MLAShortcodes {
 		 * Extract taxonomy arguments
 		 */
 		$taxonomies = get_taxonomies( array ( 'show_ui' => 'true' ), 'names' ); // 'objects'
-		$query_arguments = array ( );
+		$query_arguments = array();
 		if ( ! empty( $attr ) ) {
 			foreach ( $attr as $key => $value ) {
 				if ( 'tax_query' == $key ) {

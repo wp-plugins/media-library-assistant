@@ -14,20 +14,6 @@
  */
 class MLASettings {
 	/**
-	 * Provides a unique name for the ALT Text SQL VIEW
-	 *
-	 * @since 0.40
-	 *
-	 * @var	array
-	 */
-	public static $mla_alt_text_view = null;
-	
-	/**
-	 * Provides a unique suffix for the ALT Text SQL VIEW
-	 */
-	const MLA_ALT_TEXT_VIEW_SUFFIX = 'alt_text_view';
-	
-	/**
 	 * Provides a unique name for the settings page
 	 */
 	const MLA_SETTINGS_SLUG = 'mla-settings-menu';
@@ -40,12 +26,8 @@ class MLASettings {
 	 * @return	void
 	 */
 	public static function initialize( ) {
-		global $table_prefix;
-		
-		self::$mla_alt_text_view = $table_prefix . MLA_OPTION_PREFIX . self::MLA_ALT_TEXT_VIEW_SUFFIX;
 		add_action( 'admin_menu', 'MLASettings::mla_admin_menu_action' );
 		self::_version_upgrade();
-		self::_create_alt_text_view();
 	}
 	
 	/**
@@ -88,39 +70,6 @@ class MLASettings {
 	}
 	
 	/**
-	 * Add a view to the database to support sorting the listing on 'ALT Text'
-	 *
-	 * This function is called on each plugin invocation because the plugin upgrade process
-	 * does not call the activation hook.
-	 *
-	 * @since 0.50
-	 *
-	 * @return	void
-	 */
-	private static function _create_alt_text_view( ) {
-		global $wpdb, $table_prefix;
-		
-		$view_name = $table_prefix . MLA_OPTION_PREFIX . self::MLA_ALT_TEXT_VIEW_SUFFIX;
-		$table_name = $table_prefix . 'postmeta';
-		$result = $wpdb->query(
-				"
-				SHOW TABLES LIKE '{$view_name}'
-				"
-		);
-
-		if ( 0 == $result ) {
-			$result = $wpdb->query(
-					"
-					CREATE OR REPLACE VIEW {$view_name} AS
-					SELECT post_id, meta_value
-					FROM {$table_name}
-					WHERE {$table_name}.meta_key = '_wp_attachment_image_alt'
-					"
-			);
-		}
-	}
-	
-	/**
 	 * Perform one-time actions on plugin activation
 	 *
 	 * Adds a view to the database to support sorting the listing on 'ALT Text'.
@@ -130,13 +79,13 @@ class MLASettings {
 	 * @return	void
 	 */
 	public static function mla_activation_hook( ) {
-		self::_create_alt_text_view();
+		// self::_create_alt_text_view(); DELETED v1.10, NO LONGER REQUIRED
 	}
 	
 	/**
 	 * Perform one-time actions on plugin deactivation
 	 *
-	 * Removes a view from the database that supports sorting the listing on 'ALT Text'.
+	 * Removes (if present) a view from the database that supports sorting the listing on 'ALT Text'.
 	 *
 	 * @since 0.40
 	 *
@@ -145,19 +94,11 @@ class MLASettings {
 	public static function mla_deactivation_hook( ) {
 		global $wpdb, $table_prefix;
 		
-		$view_name = $table_prefix . MLA_OPTION_PREFIX . self::MLA_ALT_TEXT_VIEW_SUFFIX;
-		$result = $wpdb->query(
-				"
-				SHOW TABLES LIKE '{$view_name}'
-				"
-		);
+		$view_name = $table_prefix . MLA_OPTION_PREFIX . MLAData::MLA_ALT_TEXT_VIEW_SUFFIX;
+		$result = $wpdb->query( "SHOW TABLES LIKE '{$view_name}'" );
 
 		if ( $result) {		
-			$result = $wpdb->query(
-					"
-					DROP VIEW {$view_name}
-					"
-			);
+			$result = $wpdb->query(	"DROP VIEW {$view_name}" );
 		}
 	}
 	
@@ -432,6 +373,7 @@ class MLASettings {
 	private static $mla_tablist = array(
 		'general' => array( 'title' => 'General', 'render' => '_compose_general_tab' ),
 		'mla-gallery' => array( 'title' => 'MLA Gallery', 'render' => '_compose_mla_gallery_tab' ),
+		'custom-field' => array( 'title' => 'Custom Fields', 'render' => '_compose_custom_field_tab' ),
 		'iptc-exif' => array( 'title' => 'IPTC/EXIF', 'render' => '_compose_iptc_exif_tab' ),
 		'documentation' => array( 'title' => 'Documentation', 'render' => '_compose_documentation_tab' )
 	);
@@ -848,6 +790,111 @@ class MLASettings {
 	}
 	
 	/**
+	 * Compose the Custom Field tab content for the Settings subpage
+	 *
+	 * @since 1.10
+	 * @uses $page_template_array contains tab content template(s)
+ 	 *
+	 * @return	array	'message' => status/error messages, 'body' => tab content
+	 */
+	private static function _compose_custom_field_tab( ) {
+		/*
+		 * Check for action or submit buttons.
+		 * Initialize page messages and content.
+		 */
+		if ( isset( $_REQUEST['custom_field_mapping'] ) && is_array( $_REQUEST['custom_field_mapping'] ) ) {
+			check_admin_referer( MLA::MLA_ADMIN_NONCE, '_wpnonce' );
+
+			/*
+			 * Check for page-level submit buttons to change settings or map attachments.
+			 * Initialize page messages and content.
+			 */
+			if ( !empty( $_REQUEST['custom-field-options-save'] ) ) {
+				$page_content = self::_save_custom_field_settings( );
+			}
+			elseif ( !empty( $_REQUEST['custom-field-options-map'] ) ) {
+				$page_content = self::_process_custom_field_mapping( );
+			}
+			else {
+				$page_content = array(
+					 'message' => '',
+					'body' => '' 
+				);
+
+				/*
+				 * Check for single-rule action buttons
+				 */
+				foreach( $_REQUEST['custom_field_mapping'] as $key => $value ) {
+					if ( isset( $value['action'] ) ) {
+						$settings = array( $key => $value );
+						foreach ( $value['action'] as $action => $label ) {
+							switch( $action ) {
+								case 'delete_field':
+									$delete_result = self::_delete_custom_field( $value );
+								case 'delete_rule':
+								case 'add_rule':
+								case 'add_field':
+								case 'update_rule':
+									$page_content = self::_save_custom_field_settings( $settings );
+									if ( isset( $delete_result ) )
+										$page_content['message'] = $delete_result . $page_content['message'];
+									break;
+								case 'map_now':
+									$page_content = self::_process_custom_field_mapping( $settings );
+									break;
+								case 'add_rule_map':
+								case 'add_field_map':
+									$page_content = self::_save_custom_field_settings( $settings );
+									$map_content = self::_process_custom_field_mapping( $settings );
+									$page_content['message'] .= '<br>&nbsp;<br>' . $map_content['message'];
+									break;
+								default:
+									// ignore everything else
+							} //switch action
+						} // foreach action
+					} /// isset action
+				} // foreach rule
+			} // specific rule check
+		} // isset custom_field_mapping
+		else {
+			$page_content = array(
+				 'message' => '',
+				'body' => '' 
+			);
+		}
+		
+		if ( !empty( $page_content['body'] ) ) {
+			return $page_content;
+		}
+		
+		$page_values = array(
+			'options_list' => '',
+			'custom_options_list' => '',
+			'_wpnonce' => wp_nonce_field( MLA::MLA_ADMIN_NONCE, '_wpnonce', true, false ),
+			'_wp_http_referer' => wp_referer_field( false )
+		);
+		
+		/*
+		 * Start with any page-level options
+		 */
+		$options_list = '';
+		foreach ( MLAOptions::$mla_option_definitions as $key => $value ) {
+			if ( 'custom-field' == $value['tab'] )
+				$options_list .= self::_compose_option_row( $key, $value );
+		}
+		
+		$page_values['options_list'] = $options_list;
+		
+		/*
+		 * Add mapping options
+		 */
+		$page_values['custom_options_list'] = MLAOptions::mla_custom_field_option_handler( 'render', 'custom_field_mapping', MLAOptions::$mla_option_definitions['custom_field_mapping'] );
+		
+		$page_content['body'] = MLAData::mla_parse_template( self::$page_template_array['custom-field-tab'], $page_values );
+		return $page_content;
+	}
+	
+	/**
 	 * Compose the IPTC/EXIF tab content for the Settings subpage
 	 *
 	 * @since 1.00
@@ -856,7 +903,6 @@ class MLASettings {
 	 * @return	array	'message' => status/error messages, 'body' => tab content
 	 */
 	private static function _compose_iptc_exif_tab( ) {
-// error_log( '_compose_iptc_exif_tab $_REQUEST = ' . var_export( $_REQUEST, true ), 0 );
 		/*
 		 * Check for submit buttons to change or reset settings.
 		 * Initialize page messages and content.
@@ -1019,10 +1065,10 @@ class MLASettings {
 		 * Get the current style contents for comparison
 		 */
 		$old_templates = MLAOptions::mla_get_style_templates();
-		$new_templates = array( );
+		$new_templates = array();
 		$new_names = $_REQUEST['mla_style_templates_name'];
 		$new_values = stripslashes_deep( $_REQUEST['mla_style_templates_value'] );
-		$new_deletes = isset( $_REQUEST['mla_style_templates_delete'] ) ? $_REQUEST['mla_style_templates_delete']: array( );
+		$new_deletes = isset( $_REQUEST['mla_style_templates_delete'] ) ? $_REQUEST['mla_style_templates_delete']: array();
 		
 		/*
 		 * Build new style template array, noting changes
@@ -1043,12 +1089,12 @@ class MLASettings {
 				if ( '' == $new_slug )
 					continue;
 				elseif ( 'blank' == $new_slug ) {
-					$error_list .= "<br>Error: reserved name '{$new_slug}', new style template discarded.";
+					$error_list .= "<br>ERROR: reserved name '{$new_slug}', new style template discarded.";
 					continue;
 				}
 				
 				if( array_key_exists( $new_slug, $old_templates ) ) {
-					$error_list .= "<br>Error: duplicate name '{$new_slug}', new style template discarded.";
+					$error_list .= "<br>ERROR: duplicate name '{$new_slug}', new style template discarded.";
 					continue;
 				}
 				else {
@@ -1061,13 +1107,13 @@ class MLASettings {
 			 * Handle name changes, check for duplicates
 			 */
 			if ( '' == $new_slug ) {
-				$error_list .= "<br>Error: blank style template name value, reverting to '{$name}'.";
+				$error_list .= "<br>ERROR: blank style template name value, reverting to '{$name}'.";
 				$new_slug = $name;
 			}
 			
 			if ( $new_slug != $name ) {
 				if( array_key_exists( $new_slug, $old_templates ) ) {
-					$error_list .= "<br>Error: duplicate new style template name '{$new_slug}', reverting to '{$name}'.";
+					$error_list .= "<br>ERROR: duplicate new style template name '{$new_slug}', reverting to '{$name}'.";
 					$new_slug = $name;
 				}
 				elseif ( 'blank' != $name ) {
@@ -1087,21 +1133,21 @@ class MLASettings {
 		if ( $templates_changed ) {
 			$settings_changed = true;
 			if ( false == MLAOptions::mla_put_style_templates( $new_templates ) )
-				$error_list .= "<br>Error: update of style templates failed.";
+				$error_list .= "<br>ERROR: update of style templates failed.";
 		}
 		
 		/*
 		 * Get the current markup contents for comparison
 		 */
 		$old_templates = MLAOptions::mla_get_markup_templates();
-		$new_templates = array( );
+		$new_templates = array();
 		$new_names = $_REQUEST['mla_markup_templates_name'];
 		$new_values['open'] = stripslashes_deep( $_REQUEST['mla_markup_templates_open'] );
 		$new_values['row-open'] = stripslashes_deep( $_REQUEST['mla_markup_templates_row_open'] );
 		$new_values['item'] = stripslashes_deep( $_REQUEST['mla_markup_templates_item'] );
 		$new_values['row-close'] = stripslashes_deep( $_REQUEST['mla_markup_templates_row_close'] );
 		$new_values['close'] = stripslashes_deep( $_REQUEST['mla_markup_templates_close'] );
-		$new_deletes = isset( $_REQUEST['mla_markup_templates_delete'] ) ? $_REQUEST['mla_markup_templates_delete']: array( );
+		$new_deletes = isset( $_REQUEST['mla_markup_templates_delete'] ) ? $_REQUEST['mla_markup_templates_delete']: array();
 		
 		/*
 		 * Build new markup template array, noting changes
@@ -1123,12 +1169,12 @@ class MLASettings {
 					continue;
 					
 				if ( 'blank' == $new_slug ) {
-					$error_list .= "<br>Error: reserved name '{$new_slug}', new markup template discarded.";
+					$error_list .= "<br>ERROR: reserved name '{$new_slug}', new markup template discarded.";
 					continue;
 				}
 				
 				if( array_key_exists( $new_slug, $old_templates ) ) {
-					$error_list .= "<br>Error: duplicate name '{$new_slug}', new markup template discarded.";
+					$error_list .= "<br>ERROR: duplicate name '{$new_slug}', new markup template discarded.";
 					continue;
 				}
 				else {
@@ -1141,18 +1187,18 @@ class MLASettings {
 			 * Handle name changes, check for duplicates
 			 */
 			if ( '' == $new_slug ) {
-				$error_list .= "<br>Error: blank markup template name value, reverting to '{$name}'.";
+				$error_list .= "<br>ERROR: blank markup template name value, reverting to '{$name}'.";
 				$new_slug = $name;
 			}
 			
 			if ( $new_slug != $name ) {
 				if( array_key_exists( $new_slug, $old_templates ) ) {
-					$error_list .= "<br>Error: duplicate new markup template name '{$new_slug}', reverting to '{$name}'.";
+					$error_list .= "<br>ERROR: duplicate new markup template name '{$new_slug}', reverting to '{$name}'.";
 					$new_slug = $name;
 				}
 				
 				if( array_key_exists( $new_slug, $old_templates ) ) {
-					$error_list .= "<br>Error: duplicate new markup template name '{$new_slug}', reverting to '{$name}'.";
+					$error_list .= "<br>ERROR: duplicate new markup template name '{$new_slug}', reverting to '{$name}'.";
 					$new_slug = $name;
 				}
 				elseif ( 'blank' != $name ) {
@@ -1198,7 +1244,7 @@ class MLASettings {
 		if ( $templates_changed ) {
 			$settings_changed = true;
 			if ( false == MLAOptions::mla_put_markup_templates( $new_templates ) )
-				$error_list .= "<br>Error: update of markup templates failed.";
+				$error_list .= "<br>ERROR: update of markup templates failed.";
 		}
 		
 		if ( $settings_changed )
@@ -1218,6 +1264,123 @@ class MLASettings {
 
 		return $page_content;
 	} // _save_gallery_settings
+	
+	/**
+	 * Process custom field settings against all image attachments
+	 * without saving the settings to the mla_option
+ 	 *
+	 * @since 1.10
+	 * @uses $_REQUEST if passed a NULL parameter
+	 *
+	 * @param	array | NULL	specific custom_field_mapping values 
+	 *
+	 * @return	array	Message(s) reflecting the results of the operation
+	 */
+	private static function _process_custom_field_mapping( $settings = NULL ) {
+		global $wpdb;
+		
+		if ( NULL == $settings ) {
+			$settings = ( isset( $_REQUEST['custom_field_mapping'] ) ) ? $_REQUEST['custom_field_mapping'] : array();
+			if ( isset( $settings[ MLAOptions::MLA_NEW_CUSTOM_FIELD ] ) )
+				unset( $settings[ MLAOptions::MLA_NEW_CUSTOM_FIELD ] );
+			if ( isset( $settings[ MLAOptions::MLA_NEW_CUSTOM_RULE ] ) )
+				unset( $settings[ MLAOptions::MLA_NEW_CUSTOM_RULE ] );
+		}
+		
+		if ( empty( $settings ) )
+			return array(
+				'message' => 'ERROR: No custom field mapping rules to process.',
+				'body' => '' 
+			);
+
+		$examine_count = 0;
+		$update_count = 0;
+		$post_ids = $wpdb->get_col( "SELECT ID FROM {$wpdb->posts} WHERE `post_type` = 'attachment'" );
+
+		foreach( $post_ids as $key => $post_id ) {
+			$updates = MLAOptions::mla_evaluate_custom_field_mapping( (integer) $post_id, 'custom_field_mapping', $settings );
+
+			$examine_count += 1;
+			if ( ! empty( $updates ) ) {
+				$results = MLAData::mla_update_single_item( (integer) $post_id, $updates );
+				if ( stripos( $results['message'], 'updated.' ) )
+					$update_count += 1;
+			}
+		} // foreach post
+		
+		if ( $update_count )
+			$message = "Custom field mapping completed; {$examine_count} attachment(s) examined, {$update_count} updated.\r\n";
+		else
+			$message = "Custom field mapping completed; {$examine_count} attachment(s) examined, no changes detected.\r\n";
+		
+		return array(
+			'message' => $message,
+			'body' => '' 
+		);
+	} // _process_custom_field_mapping
+	
+	/**
+	 * Delete a custom field from the wp_postmeta table
+ 	 *
+	 * @since 1.10
+	 *
+	 * @param	array specific custom_field_mapping rule
+	 *
+	 * @return	array	Message(s) reflecting the results of the operation
+	 */
+	private static function _delete_custom_field( $value ) {
+		global $wpdb;
+
+		$post_meta_ids = $wpdb->get_col( $wpdb->prepare( "SELECT meta_id FROM {$wpdb->postmeta} LEFT JOIN {$wpdb->posts} ON ( {$wpdb->posts}.ID = {$wpdb->postmeta}.post_id ) WHERE {$wpdb->postmeta}.meta_key = '%s' AND {$wpdb->posts}.post_type = 'attachment'", $value['name'] ));
+		foreach ( $post_meta_ids as $mid )
+			delete_metadata_by_mid( 'post', $mid );
+
+		$count = count( $post_meta_ids );
+		if ( $count )
+			return sprintf( 'Deleted custom field value from ' . _n('%s attachment.', '%s attachments.', $count), $count);
+		else
+			return 'No attachments contained this custom field';
+	} // _delete_custom_field
+	
+	/**
+	 * Save custom field settings to the options table
+ 	 *
+	 * @since 1.10
+	 * @uses $_REQUEST if passed a NULL parameter
+	 *
+	 * @param	array | NULL	specific custom_field_mapping values 
+	 *
+	 * @return	array	Message(s) reflecting the results of the operation
+	 */
+	private static function _save_custom_field_settings( $new_values = NULL ) {
+		$message_list = '';
+		$option_messages = '';
+
+		if ( NULL == $new_values ) {
+			/*
+			 * Start with any page-level options
+			 */
+			foreach ( MLAOptions::$mla_option_definitions as $key => $value ) {
+				if ( 'custom-field' == $value['tab'] )
+					$option_messages .= self::_update_option_row( $key, $value );
+			}
+	
+			/*
+			 * Add mapping options
+			 */
+			$new_values = ( isset( $_REQUEST['custom_field_mapping'] ) ) ? $_REQUEST['custom_field_mapping'] : array();
+		} // NULL
+
+		/*
+		 * Uncomment this for debugging.
+		 */
+		// $message_list = $option_messages . '<br>';
+		
+		return array(
+			'message' => $message_list . MLAOptions::mla_custom_field_option_handler( 'update', 'custom_field_mapping', MLAOptions::$mla_option_definitions['custom_field_mapping'], $new_values ),
+			'body' => '' 
+		);
+	} // _save_custom_field_settings
 	
 	/**
 	 * Process IPTC/EXIF standard field settings against all image attachments
@@ -1291,7 +1454,7 @@ class MLASettings {
 
 			$examine_count += 1;
 			if ( ! empty( $updates ) ) {
-				$results = MLAData::mla_update_single_item( $post->ID, array( ), $updates['taxonomy_updates']['inputs'], $updates['taxonomy_updates']['actions'] );
+				$results = MLAData::mla_update_single_item( $post->ID, array(), $updates['taxonomy_updates']['inputs'], $updates['taxonomy_updates']['actions'] );
 				if ( stripos( $results['message'], 'updated.' ) )
 					$update_count += 1;
 			}

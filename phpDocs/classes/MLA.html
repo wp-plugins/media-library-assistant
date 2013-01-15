@@ -56,12 +56,10 @@
 <li class="method public "><a href="#mla_add_help_tab" title="mla_add_help_tab :: Add contextual help tabs to all the MLA pages"><span class="description">Add contextual help tabs to all the MLA pages</span><pre>mla_add_help_tab()</pre></a></li>
 <li class="method public "><a href="#mla_add_menu_options" title='mla_add_menu_options :: Add the "XX Entries per page" filter to the Screen Options tab'><span class="description">Add the "XX Entries per page" filter to the Screen Options tab</span><pre>mla_add_menu_options()</pre></a></li>
 <li class="method public "><a href="#mla_admin_enqueue_scripts_action" title="mla_admin_enqueue_scripts_action :: Load the plugin's Style Sheet and Javascript files"><span class="description">Load the plugin's Style Sheet and Javascript files</span><pre>mla_admin_enqueue_scripts_action()</pre></a></li>
-<li class="method public "><a href="#mla_admin_init_action" title="mla_admin_init_action :: Load the plugin's Ajax handler"><span class="description">Load the plugin's Ajax handler</span><pre>mla_admin_init_action()</pre></a></li>
+<li class="method public "><a href="#mla_admin_init_action" title="mla_admin_init_action :: Load the plugin's Ajax handler or process Edit Media update actions"><span class="description">Load the plugin's Ajax handler or process Edit Media update actions</span><pre>mla_admin_init_action()</pre></a></li>
 <li class="method public "><a href="#mla_admin_menu_action" title="mla_admin_menu_action :: Add the submenu pages"><span class="description">Add the submenu pages</span><pre>mla_admin_menu_action()</pre></a></li>
 <li class="method public "><a href="#mla_edit_tax_redirect" title="mla_edit_tax_redirect :: Redirect to the Edit Tags/Categories page"><span class="description">Redirect to the Edit Tags/Categories page</span><pre>mla_edit_tax_redirect()</pre></a></li>
 <li class="method public "><a href="#mla_inline_edit_action" title="mla_inline_edit_action :: Ajax handler for inline editing (quick and bulk edit)"><span class="description">Ajax handler for inline editing (quick and bulk edit)</span><pre>mla_inline_edit_action()</pre></a></li>
-<li class="method public "><a href="#mla_load_post_php_action" title="mla_load_post_php_action :: Intercept call to Edit Media screen"><span class="description">Intercept call to Edit Media screen</span><pre>mla_load_post_php_action()</pre></a></li>
-<li class="method public "><a href="#mla_load_upload_php_action" title="mla_load_upload_php_action :: Intercept return from Edit Media screen"><span class="description">Intercept return from Edit Media screen</span><pre>mla_load_upload_php_action()</pre></a></li>
 <li class="method public "><a href="#mla_parent_file_filter" title="mla_parent_file_filter :: Cleanup menus for Edit Tags/Categories page"><span class="description">Cleanup menus for Edit Tags/Categories page</span><pre>mla_parent_file_filter()</pre></a></li>
 <li class="method public "><a href="#mla_render_admin_page" title='mla_render_admin_page :: Render the "Assistant" subpage in the Media section, using the list_table package'><span class="description">Render the "Assistant" subpage in the Media section, using the list_table package</span><pre>mla_render_admin_page()</pre></a></li>
 <li class="method public "><a href="#mla_screen_options_show_screen_filter" title="mla_screen_options_show_screen_filter :: Only show screen options on the table-list screen"><span class="description">Only show screen options on the table-list screen</span><pre>mla_screen_options_show_screen_filter()</pre></a></li>
@@ -91,6 +89,7 @@ change the meta data for a single attachment.</span><pre>_display_single_item()<
 <li class="constant  "><a href="#MIN_PHP_VERSION" title="MIN_PHP_VERSION :: Minimum version of PHP required for this plugin"><span class="description">Minimum version of PHP required for this plugin</span><pre>MIN_PHP_VERSION</pre></a></li>
 <li class="constant  "><a href="#MIN_WORDPRESS_VERSION" title="MIN_WORDPRESS_VERSION :: Minimum version of WordPress required for this plugin"><span class="description">Minimum version of WordPress required for this plugin</span><pre>MIN_WORDPRESS_VERSION</pre></a></li>
 <li class="constant  "><a href="#MLA_ADMIN_NONCE" title="MLA_ADMIN_NONCE :: Action name; uniquely identifies the nonce"><span class="description">Action name; uniquely identifies the nonce</span><pre>MLA_ADMIN_NONCE</pre></a></li>
+<li class="constant  "><a href="#MLA_ADMIN_SINGLE_CUSTOM_FIELD_MAP" title="MLA_ADMIN_SINGLE_CUSTOM_FIELD_MAP :: mla_admin_action value for mapping Custom Field metadata"><span class="description">mla_admin_action value for mapping Custom Field metadata</span><pre>MLA_ADMIN_SINGLE_CUSTOM_FIELD_MAP</pre></a></li>
 <li class="constant  "><a href="#MLA_ADMIN_SINGLE_DELETE" title="MLA_ADMIN_SINGLE_DELETE :: mla_admin_action value for permanently deleting a single item"><span class="description">mla_admin_action value for permanently deleting a single item</span><pre>MLA_ADMIN_SINGLE_DELETE</pre></a></li>
 <li class="constant  "><a href="#MLA_ADMIN_SINGLE_EDIT_DISPLAY" title="MLA_ADMIN_SINGLE_EDIT_DISPLAY :: mla_admin_action value for displaying a single item"><span class="description">mla_admin_action value for displaying a single item</span><pre>MLA_ADMIN_SINGLE_EDIT_DISPLAY</pre></a></li>
 <li class="constant  "><a href="#MLA_ADMIN_SINGLE_EDIT_UPDATE" title="MLA_ADMIN_SINGLE_EDIT_UPDATE :: mla_admin_action value for updating a single item"><span class="description">mla_admin_action value for updating a single item</span><pre>MLA_ADMIN_SINGLE_EDIT_UPDATE</pre></a></li>
@@ -183,7 +182,7 @@ set up the Assistant submenu.</p></p>
 </div></div>
 </div>
 <a name="mla_admin_init_action" id="mla_admin_init_action"></a><div class="element clickable method public mla_admin_init_action" data-toggle="collapse" data-target=".mla_admin_init_action .collapse">
-<h2>Load the plugin's Ajax handler</h2>
+<h2>Load the plugin's Ajax handler or process Edit Media update actions</h2>
 <pre>mla_admin_init_action() : void</pre>
 <div class="labels"></div>
 <div class="row collapse"><div class="detail-description">
@@ -235,30 +234,6 @@ The filter is not required for WordPress 3.5 and later.</p></p>
 <table class="table table-bordered"><tr>
 <th>since</th>
 <td>0.20</td>
-</tr></table>
-</div></div>
-</div>
-<a name="mla_load_post_php_action" id="mla_load_post_php_action"></a><div class="element clickable method public mla_load_post_php_action" data-toggle="collapse" data-target=".mla_load_post_php_action .collapse">
-<h2>Intercept call to Edit Media screen</h2>
-<pre>mla_load_post_php_action() : void</pre>
-<div class="labels"></div>
-<div class="row collapse"><div class="detail-description">
-<p class="long_description"></p>
-<table class="table table-bordered"><tr>
-<th>since</th>
-<td>0.60</td>
-</tr></table>
-</div></div>
-</div>
-<a name="mla_load_upload_php_action" id="mla_load_upload_php_action"></a><div class="element clickable method public mla_load_upload_php_action" data-toggle="collapse" data-target=".mla_load_upload_php_action .collapse">
-<h2>Intercept return from Edit Media screen</h2>
-<pre>mla_load_upload_php_action() : void</pre>
-<div class="labels"></div>
-<div class="row collapse"><div class="detail-description">
-<p class="long_description"></p>
-<table class="table table-bordered"><tr>
-<th>since</th>
-<td>0.60</td>
 </tr></table>
 </div></div>
 </div>
@@ -610,6 +585,18 @@ change the meta data for a single attachment.</h2>
 </tr></table>
 </div></div>
 </div>
+<a name="MLA_ADMIN_SINGLE_CUSTOM_FIELD_MAP" id="MLA_ADMIN_SINGLE_CUSTOM_FIELD_MAP"> </a><div class="element clickable constant  MLA_ADMIN_SINGLE_CUSTOM_FIELD_MAP" data-toggle="collapse" data-target=".MLA_ADMIN_SINGLE_CUSTOM_FIELD_MAP .collapse">
+<h2>mla_admin_action value for mapping Custom Field metadata</h2>
+<pre>MLA_ADMIN_SINGLE_CUSTOM_FIELD_MAP : string</pre>
+<div class="labels"></div>
+<div class="row collapse"><div class="detail-description">
+<p class="long_description"></p>
+<table class="table table-bordered"><tr>
+<th>since</th>
+<td>1.10</td>
+</tr></table>
+</div></div>
+</div>
 <a name="MLA_ADMIN_SINGLE_DELETE" id="MLA_ADMIN_SINGLE_DELETE"> </a><div class="element clickable constant  MLA_ADMIN_SINGLE_DELETE" data-toggle="collapse" data-target=".MLA_ADMIN_SINGLE_DELETE .collapse">
 <h2>mla_admin_action value for permanently deleting a single item</h2>
 <pre>MLA_ADMIN_SINGLE_DELETE : string</pre>
@@ -713,7 +700,7 @@ change the meta data for a single attachment.</h2>
 <div class="row"><footer class="span12">
             Template is built using <a href="http://twitter.github.com/bootstrap/">Twitter Bootstrap 2</a> and icons provided by <a href="http://glyphicons.com/">Glyphicons</a>.<br>
             Documentation is powered by <a href="http://www.phpdoc.org/">phpDocumentor 2.0.0a8</a> and<br>
-            generated on 2012-12-29T12:42:47-08:00.<br></footer></div>
+            generated on 2013-01-14T20:41:50-08:00.<br></footer></div>
 </div>
 </body>
 </html>

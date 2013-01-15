@@ -64,7 +64,7 @@
 <li class="method public "><a href="#mla_load_template" title="mla_load_template :: Load an HTML template from a file"><span class="description">Load an HTML template from a file</span><pre>mla_load_template()</pre></a></li>
 <li class="method public "><a href="#mla_parse_template" title="mla_parse_template :: Expand a template, replacing place holders with their values"><span class="description">Expand a template, replacing place holders with their values</span><pre>mla_parse_template()</pre></a></li>
 <li class="method public "><a href="#mla_query_list_table_items" title="mla_query_list_table_items :: Retrieve attachment objects for list table display"><span class="description">Retrieve attachment objects for list table display</span><pre>mla_query_list_table_items()</pre></a></li>
-<li class="method public "><a href="#mla_query_posts_join_filter" title="mla_query_posts_join_filter :: Adds a JOIN clause, if required"><span class="description">Adds a JOIN clause, if required</span><pre>mla_query_posts_join_filter()</pre></a></li>
+<li class="method public "><a href="#mla_query_posts_join_filter" title="mla_query_posts_join_filter :: Adds a JOIN clause, if required, to handle sorting/searching on ALT Text"><span class="description">Adds a JOIN clause, if required, to handle sorting/searching on ALT Text</span><pre>mla_query_posts_join_filter()</pre></a></li>
 <li class="method public "><a href="#mla_query_posts_orderby_filter" title="mla_query_posts_orderby_filter :: Adds a ORDERBY clause, if required"><span class="description">Adds a ORDERBY clause, if required</span><pre>mla_query_posts_orderby_filter()</pre></a></li>
 <li class="method public "><a href="#mla_query_posts_search_filter" title="mla_query_posts_search_filter :: Adds a keyword search to the WHERE clause, if required"><span class="description">Adds a keyword search to the WHERE clause, if required</span><pre>mla_query_posts_search_filter()</pre></a></li>
 <li class="method public "><a href="#mla_query_posts_where_filter" title="mla_query_posts_where_filter :: Adds a WHERE clause for detached items"><span class="description">Adds a WHERE clause for detached items</span><pre>mla_query_posts_where_filter()</pre></a></li>
@@ -83,8 +83,12 @@ for a single attachment.</span><pre>mla_update_single_item()</pre></a></li>
 <i class="icon-custom icon-property"></i> Properties</li>
 <li class="nav-header private">» Private</li>
 <li class="property private "><a href="#%24galleries" title="$galleries :: Objects containing [gallery] shortcodes"><span class="description">Objects containing [gallery] shortcodes</span><pre>$galleries</pre></a></li>
+<li class="property private "><a href="#%24mla_alt_text_view" title="$mla_alt_text_view :: Provides a unique name for the ALT Text SQL VIEW"><span class="description">Provides a unique name for the ALT Text SQL VIEW</span><pre>$mla_alt_text_view</pre></a></li>
 <li class="property private "><a href="#%24mla_galleries" title="$mla_galleries :: Objects containing [mla_gallery] shortcodes"><span class="description">Objects containing [mla_gallery] shortcodes</span><pre>$mla_galleries</pre></a></li>
 <li class="property private "><a href="#%24query_parameters" title='$query_parameters :: WP_Query filter "parameters"'><span class="description">WP_Query filter "parameters"</span><pre>$query_parameters</pre></a></li>
+<li class="nav-header">
+<i class="icon-custom icon-constant"></i> Constants</li>
+<li class="constant  "><a href="#MLA_ALT_TEXT_VIEW_SUFFIX" title="MLA_ALT_TEXT_VIEW_SUFFIX :: Provides a unique suffix for the ALT Text SQL VIEW"><span class="description">Provides a unique suffix for the ALT Text SQL VIEW</span><pre>MLA_ALT_TEXT_VIEW_SUFFIX</pre></a></li>
 </ul>
 </div>
 <div class="span8">
@@ -258,10 +262,16 @@ as a Featured Image or inserted in the post as an image or link.</p></p>
 <div class="row collapse"><div class="detail-description">
 <p class="long_description"><p>The (associative) array will contain every field that can be found in
 the posts and postmeta tables, and all references to the attachment.</p></p>
-<table class="table table-bordered"><tr>
+<table class="table table-bordered">
+<tr>
 <th>since</th>
 <td>0.1</td>
-</tr></table>
+</tr>
+<tr>
+<th>uses</th>
+<td>\global\$post</td>
+</tr>
+</table>
 <h3>Parameters</h3>
 <div class="subelement argument">
 <h4>$post_id</h4>
@@ -368,7 +378,7 @@ Modeled after wp_edit_attachments_query in wp-admin/post.php</p></p>
 </div></div>
 </div>
 <a name="mla_query_posts_join_filter" id="mla_query_posts_join_filter"></a><div class="element clickable method public mla_query_posts_join_filter" data-toggle="collapse" data-target=".mla_query_posts_join_filter .collapse">
-<h2>Adds a JOIN clause, if required</h2>
+<h2>Adds a JOIN clause, if required, to handle sorting/searching on ALT Text</h2>
 <pre>mla_query_posts_join_filter(string $join_clause) : string</pre>
 <div class="labels"></div>
 <div class="row collapse"><div class="detail-description">
@@ -383,7 +393,7 @@ Modeled after wp_edit_attachments_query in wp-admin/post.php</p></p>
 <code>string</code><p>query clause before modification</p></div>
 <h3>Returns</h3>
 <div class="subelement response">
-<code>string</code>query clause after "detached" item modification</div>
+<code>string</code>query clause after "LEFT JOIN view ON post_id" item modification</div>
 </div></div>
 </div>
 <a name="mla_query_posts_orderby_filter" id="mla_query_posts_orderby_filter"></a><div class="element clickable method public mla_query_posts_orderby_filter" data-toggle="collapse" data-target=".mla_query_posts_orderby_filter .collapse">
@@ -671,6 +681,18 @@ Each inner array has these elements:
 </tr></table>
 </div></div>
 </div>
+<a name="%24mla_alt_text_view" id="$mla_alt_text_view"> </a><div class="element clickable property private $mla_alt_text_view" data-toggle="collapse" data-target=".$mla_alt_text_view .collapse">
+<h2>Provides a unique name for the ALT Text SQL VIEW</h2>
+<pre>$mla_alt_text_view : array</pre>
+<div class="labels"></div>
+<div class="row collapse"><div class="detail-description">
+<p class="long_description"></p>
+<table class="table table-bordered"><tr>
+<th>since</th>
+<td>0.40</td>
+</tr></table>
+</div></div>
+</div>
 <a name="%24mla_galleries" id="$mla_galleries"> </a><div class="element clickable property private $mla_galleries" data-toggle="collapse" data-target=".$mla_galleries .collapse">
 <h2>Objects containing [mla_gallery] shortcodes</h2>
 <pre>$mla_galleries : array</pre>
@@ -699,6 +721,20 @@ any further logic required to translate those values is contained in the filters
 </tr></table>
 </div></div>
 </div>
+<h3>
+<i class="icon-custom icon-constant"></i> Constants</h3>
+<a name="MLA_ALT_TEXT_VIEW_SUFFIX" id="MLA_ALT_TEXT_VIEW_SUFFIX"> </a><div class="element clickable constant  MLA_ALT_TEXT_VIEW_SUFFIX" data-toggle="collapse" data-target=".MLA_ALT_TEXT_VIEW_SUFFIX .collapse">
+<h2>Provides a unique suffix for the ALT Text SQL VIEW</h2>
+<pre>MLA_ALT_TEXT_VIEW_SUFFIX </pre>
+<div class="labels"></div>
+<div class="row collapse"><div class="detail-description">
+<p class="long_description"></p>
+<table class="table table-bordered"><tr>
+<th>since</th>
+<td>0.40</td>
+</tr></table>
+</div></div>
+</div>
 </div>
 </div>
 </div>
@@ -706,7 +742,7 @@ any further logic required to translate those values is contained in the filters
 <div class="row"><footer class="span12">
             Template is built using <a href="http://twitter.github.com/bootstrap/">Twitter Bootstrap 2</a> and icons provided by <a href="http://glyphicons.com/">Glyphicons</a>.<br>
             Documentation is powered by <a href="http://www.phpdoc.org/">phpDocumentor 2.0.0a8</a> and<br>
-            generated on 2012-12-29T12:42:47-08:00.<br></footer></div>
+            generated on 2013-01-14T20:41:50-08:00.<br></footer></div>
 </div>
 </body>
 </html>

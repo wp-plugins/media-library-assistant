@@ -716,7 +716,7 @@ created in time to affect the "screen options" setup.</p></p>
 <pre>mla_get_attachment_mime_types() : array</pre>
 <div class="labels"></div>
 <div class="row collapse"><div class="detail-description">
-<p class="long_description"><p>Modeled after get_post_mime_types in wp-admin/includes/post.php,
+<p class="long_description"><p>Modeled after get_post_mime_types in wp-includes/post.php,
 with additional entries.</p></p>
 <table class="table table-bordered"><tr>
 <th>since</th>
@@ -924,7 +924,8 @@ use the special slug "cb".</p>
 column in your table you must create a column_cb() method. If you don't need
 bulk actions or checkboxes, simply leave the 'cb' entry out of your array.</p>
 
-<p>Taxonomy columns are added to this array by mla_admin_init_action.</p></p>
+<p>Taxonomy columns are added to this array by mla_admin_init_action.
+Custom field columns are added to this array by mla_admin_init_action.</p></p>
 <table class="table table-bordered"><tr>
 <th>since</th>
 <td>0.1</td>
@@ -942,7 +943,8 @@ the user has not altered the selection of hidden columns.</p>
 <p>The value on the right-hand side must match the column slug, e.g.,
 array(0 => 'ID_parent, 1 => 'title_name').</p>
 
-<p>Taxonomy columns are added to this array by mla_admin_init_action.</p></p>
+<p>Taxonomy columns are added to this array by mla_admin_init_action.
+Custom field columns are added to this array by mla_admin_init_action.</p></p>
 <table class="table table-bordered"><tr>
 <th>since</th>
 <td>0.1</td>
@@ -960,7 +962,10 @@ to sort by. Often, the key and value will be the same, but this is not always
 the case (as the value is a column name from the database, not the list table).</p>
 
 <p>The array value also contains a boolean which is 'true' if the data is currently
-sorted by that column. This is computed each time the table is displayed.</p></p>
+sorted by that column. This is computed each time the table is displayed.</p>
+
+<p>Taxonomy columns, if any, are added to this array by mla_admin_init_action.
+Custom field columns are added to this array by mla_admin_init_action.</p></p>
 <table class="table table-bordered"><tr>
 <th>since</th>
 <td>0.1</td>
@@ -986,7 +991,7 @@ sorted by that column. This is computed each time the table is displayed.</p></p
 <div class="row"><footer class="span12">
             Template is built using <a href="http://twitter.github.com/bootstrap/">Twitter Bootstrap 2</a> and icons provided by <a href="http://glyphicons.com/">Glyphicons</a>.<br>
             Documentation is powered by <a href="http://www.phpdoc.org/">phpDocumentor 2.0.0a8</a> and<br>
-            generated on 2012-12-29T12:42:47-08:00.<br></footer></div>
+            generated on 2013-01-14T20:41:50-08:00.<br></footer></div>
 </div>
 </body>
 </html>
