@@ -4,7 +4,7 @@ Donate link: http://fairtradejudaica.org/make-a-difference/donate/
 Tags: attachment, attachments, documents, gallery, image, images, media, library, media library, media-tags, media tags, tags, media categories, categories, IPTC, EXIF, meta, metadata, photo, photos, photograph, photographs, photoblog, photo albums
 Requires at least: 3.3
 Tested up to: 3.5
-Stable tag: 1.10
+Stable tag: 1.11
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -22,7 +22,7 @@ The Media Library Assistant provides several enhancements for managing the Media
 
 * **IPTC** and **EXIF** metadata can be assigned to standard WordPress fields, taxonomy terms and custom fields. You can update all existing attachments from the Settings page IPTC/EXIF tab, groups of existing attachments with a Bulk Action or one existing attachment from the Edit Media/Edit Single Item screen. Display **IPTC** and **EXIF** metadata with `[mla_gallery]` custom templates.
 
-* **Enhanced Search Media box**. Search can be extended to the name/slug, ALT text and caption fields. The connector between search terms can be "and" or "or".
+* **Enhanced Search Media box**. Search can be extended to the name/slug, ALT text and caption fields. The connector between search terms can be "and" or "or". Search by attachment ID is supported.
 
 * **Where-used reporting** shows which posts use a media item as the "featured image", an inserted image or link, an entry in a `[gallery]` and/or an entry in an `[mla_gallery]`.
 
@@ -116,6 +116,11 @@ All of the MLA source code has been annotated with "DocBlocks", a special type o
 8. The Settings page Custom Field Processing Options screen, where you can map attachment metadata to custom fields for display in [mla_gallery] shortcodes and as sortable columns in the Media/Assistant submenu.
 
 == Changelog ==
+
+= 1.11 =
+* New: If the search box contains (only) a numeric value it is interpreted as a search by attachment ID. You can search for a numeric value in the text fields, e.g., title, by putting quotes around the value.
+* Fix: The edit taxonomy screen "Attachments" column is now computed correctly when adding new terms, avoiding fatal errors and other odd results.
+* Fix: Adopted new WordPress standard for JavaScript files, i.e., use ".min.js" for minified (production) files.
 
 = 1.10 =
 * New: Attachment metadata such as file size, dimensions and where-used status can be assigned to WordPress custom fields. These custom fields can be added to the Media/Assistant submenu table as sortable columns and displayed in `[mla_gallery]` shortcode output.
@@ -232,6 +237,9 @@ All of the MLA source code has been annotated with "DocBlocks", a special type o
 * Initial release.
 
 == Upgrade Notice ==
+
+= 1.11 =
+Search by attachment ID, avoid fatal errors and other odd results when adding taxonomy terms. One other fix.
 
 = 1.10 =
 Map attachment metadata to custom fields; add them to [mla_gallery] display and as sortable columns on the Media/Assistant submenu table. Get Photonic Gallery (plugin) integration and six other fixes.
@@ -452,72 +460,17 @@ The MLA Gallery tab on the Settings page lets you add, change and delete custom 
 In a template, substitution parameters are surrounded by opening ('[+') and closing ('+]') tags to separate them from the template text; see the default templates for many examples.
 
 <h4>Substitution parameters for style templates</h4>
-* `mla_style`: shortcode parameter, default = 'default'
-* `mla_markup`: shortcode parameter, default = 'default'
-* `instance`: starts at '1', incremented for each additional shortcode in the post/page
-* `id`: post_ID of the post/page in which the gallery appears
-* `itemtag`: shortcode parameter, default = 'dl'
-* `icontag`: shortcode parameter, default = 'dt'
-* `captiontag`: shortcode parameter, default = 'dd'
-* `columns`: shortcode parameter, default = '3'
-* `itemwidth`: shortcode parameter, default = '97' if 'columns' is zero, or 97/columns, e.g., '32' if columns is '3'
-* `margin`: shortcode parameter, default = '1.5' (percent)
-* `float`: 'right' if current locale is RTL, 'left' if not
-* `selector`: "mla_gallery-{$instance}", e.g., mla_gallery-1
-* `size_class`: shortcode 'size' parameter, default = 'thumbnail'</td>
+
+A complete list of the <strong>13 style substitution parameters</strong> is on the plugin's Settings page.
+
 <h4>Substitution parameters for markup templates</h4>
-* `mla_style`: shortcode parameter, default = 'default'
-* `mla_markup`: shortcode parameter, default = 'default'
-* `instance`: starts at '1', incremented for each additional shortcode in the post/page
-* `id`: post_ID of the post/page in which the gallery appears
-* `itemtag`: shortcode parameter, default = 'dl'
-* `icontag`: shortcode parameter, default = 'dt'
-* `captiontag`: shortcode parameter, default = 'dd'
-* `columns`: shortcode parameter, default = '3'
-* `itemwidth`: shortcode parameter, default = '97' if 'columns' is zero, or 97/columns, e.g., '32' if columns is '3'
-* `margin`: shortcode parameter, default = '1.5' (percent)
-* `float`: 'right' if current locale is RTL, 'left' if not
-* `selector`: "mla_gallery-{$instance}", e.g., mla_gallery-1
-* `size_class`: shortcode 'size' parameter, default = 'thumbnail'. If this parameter contains "none" or an empty string (size="") the attachment title will be displayed instead of the image/icon.
-* `base_url`: absolute URL to the upload directory, without trailing slash
-* `base_dir`: full path to the upload directory, without trailing slash
+
+A complete list of the <strong>15 markup substitution parameters</strong> is on the plugin's Settings page.
 
 <h4>Attachment-specific substitution parameters for markup templates</h4>
-* `index`: starts at '1', incremented for each attachment in the gallery
-* `caption`: if captiontag is not empty, contains caption/post_excerpt
-* `excerpt`: always contains post_excerpt
-* `attachment_ID`: attachment post_ID
-* `mime_type`: attachment post_mime_type
-* `menu_order`: attachment menu_order
-* `date`: attachment post_date
-* `modified`: attachment post_modified
-* `parent`: attachment post_parent (ID)
-* `parent_title`: post_title of the parent, or '(unattached)'
-* `parent_type`: 'post', 'page' or custom post type of the parent
-* `parent_date`: upload date of the parent
-* `title`: attachment post_title
-* `slug`: attachment post_name
-* `width`: width in pixels, for image types
-* `height`: height in pixels, for image types
-* `image_meta`: image metadata, for image types
-* `image_alt`: ALT text, for image types
-* `base_file`: path and file name relative to uploads directory
-* `path`: path portion of base_file
-* `file`: file name portion of base_file
-* `description`: attachment post_content
-* `file_url`: attachment guid
-* `author_id`: attachment post_author
-* `author`: author display_name, or 'unknown'
-* `link`: hyperlink to the attachment page (default) or file (shortcode 'link' parameter = "file")
-* `pagelink`: always contains a hyperlink to the attachment page
-* `filelink`: always contains a hyperlink to the attachment file
-* `link_url`: the URL portion of `link`
-* `pagelink_url`: the URL portion of `pagelink`
-* `filelink_url`: the URL portion of `filelink`
-* `thumbnail_content`: complete content of the gallery item link. This will either be an image (img) tag or a text string for non-image items.
-* `thumbnail_width`: for image/icon items, width of the gallery image/icon
-* `thumbnail_height`: for image/icon items, height of the gallery image/icon
-* `thumbnail_url`: for image/icon items, URL of the gallery image/icon
+
+A complete list of the <strong>35 attachment-specific substitution parameters</strong> is on the plugin's Settings page.
+
 <h3>Field-level Markup Substitution Parameters</h3>
 
 Field-level substitution parameters let you access custom fields, taxonomy terms, IPTC metadata and EXIF metadata for display in an MLA gallery. For these parameters, the value you code within the surrounding the ('[+') and ('+]') delimiters has three parts; the prefix, the field name and the optional ",single" indicator.
@@ -622,42 +575,7 @@ Several of the data elements are sourced from the WordPress "image_meta" array. 
 
 <strong>NOTE:</strong> Sorting by custom fields in the Media/Assistant submenu is by string values. For numeric data this can cause odd-looking results, e.g., dimensions of "1200x768" will sort before "640x480". The "file_size", "pixels", "width" and "height" data sources are converted to srtings and padded on the left with spaces if you use the "commas" format. This padding makes them sort more sensibly.
 
-* `path`: path portion of the base_file value, e.g., 2012/11/
-* `file_name`: file name portion of the base_file value, e.g., image.jpg
-* `extension`: extension portion of the base_file value, e.g., jpg
-* `file_size`: file size in bytes
-* `dimensions`: for image types, width x height, e.g., 1024x768
-* `pixels`: for image types, size in pixels, e.g., 307200 for a 640x480 image
-* `width`: for image types, width in pixels
-* `height`: for image types, height in pixels
-* `hwstring_small`: HTML dimensions of a "small" image, i.e., 128 or less width, 96 or less height. Not computed for images uploaded in WordPress 3.5 and later.
-* `size_keys`: image size names for thumbnail versions of the image, e.g., "thumbnail, medium, large"
-* `size_names`: image file names for thumbnail versions of the image, e.g., "image-150x150.jpg, image-300x225.jpg, image-600x288.jpg"
-* `size_bytes`: file size in bytes for thumbnail versions of the image, e.g., "5127, 11829, 33968"
-* `size_pixels`: image size in pixels for thumbnail versions of the image, e.g., "22500, 67500, 172800"
-* `size_dimensions`: image dimensions for thumbnail versions of the image, e.g., "150x150, 300x225, 600x288"
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">size_name[size]`: image file name for a specific thumbnail version, e.g., size_name[medium] = image-300x225.jpg; set to empty string if the specified size does not exist. There will be a [size] choice for every thumbnail version registered with WordPress for the site.
-* `size_bytes[size]`: file size in bytes for a specific thumbnail version, e.g., size_bytes[medium] = "11829"
-* `size_pixels[size]`: image size in pixels for a specific thumbnail version, e.g., size_pixels[medium] = "67500"
-<tr>
-<tr>
-<td style="width: 12em; padding-right: 10px; vertical-align: top; font-weight:bold">size_dimensions[size]`: image dimensions for a specific thumbnail version, e.g., size_dimensions[medium] = 300x225; set to empty string if the specified size does not exist. There will be a [size] choice for every thumbnail version registered with WordPress for the site.
-* `parent_type`: for "attached" (post_parent not zero) objects, post type of the parent object
-<tr>
-* `parent_name`: for "attached" (post_parent not zero) objects, post title of the parent object
-<tr>
-* `parent_issues`: summary of parent status (only) "issues", e.g., bad parent, invalid parent, unattached
-* `reference_issues`: summary of all reference and parent status "issues", e.g., orphan, bad parent, invalid parent, unattached
-* `aperture`: for image types, the value stored in WordPress "image_meta" array
-* `credit`: for image types, the value stored in WordPress "image_meta" array
-* `camera`: for image types, the value stored in WordPress "image_meta" array
-* `caption`: for image types, the value stored in WordPress "image_meta" array
-* `created_timestamp`: for image types, the value stored in WordPress "image_meta" array
-* `copyright`: for image types, the value stored in WordPress "image_meta" array
-* `focal_length`: for image types, the value stored in WordPress "image_meta" array
-* `iso`: for image types, the value stored in WordPress "image_meta" array
-* `shutter_speed`: for image types, the value stored in WordPress "image_meta" array
-* `title`: for image types, the value stored in WordPress "image_meta" array
+A complete list of the <strong>32 data source elements</strong> is on the plugin's Settings page.
 
 ==IPTC &amp; EXIF Processing Options==
 
@@ -746,6 +664,7 @@ The priority order for mapping the post_content value from non-blank IPTC/EXIF m
 <h4>Search Media</h4>
 <p>The &#8220;Search Media&#8221; box supports a keyword search of several attachment fields; enter words and/or phrases in the box, separated by spaces. Click the Search Media button for a case-insensitive "SQL LIKE" search. Each keyword in the search phrase is matched independently, so the order of search words does not have to match the order in the text. For example, searching on "friend" and "best" will match "Best Friend". If you put quotes around a search phrase then word order is required for a match (and spaces between words must match as well). You can also match on partial words, e.g., "rien" will match "friend".</p>
 <p>Once you&#8217;ve entered the terms you want, use the options below the box to tailor your search. You can pick the connector used between search terms; "or" means any of the terms will match, "and" means all of the terms must match. Use the checkboxes to extend your search to more fields in the database.</p>
+<p>If you enter a numeric value (only) in the search box, it is interpreted as a search by attachment ID. You can search for a numeric value in the text fields, e.g., title, by putting quotes around the value.</p>
 <h4>Bulk Actions</h4>
 <p>The &#8220;Bulk Actions&#8221; dropdown list works with the check box column to let you make changes to many items at once. Click the check box in the column title row to select all items on the page, or click the check box in a row to select items individually.</p>
 <p>Once you&#8217;ve selected the items you want, pick an action from the dropdown list and click Apply to perform the action on the selected items. The available actions will vary depending on the file type/status view you have picked.</p>

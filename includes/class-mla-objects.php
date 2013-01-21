@@ -110,9 +110,18 @@ class MLAObjects {
 	 * @return	array	updated column definitions for the edit taxonomy list table
 	 */
 	public static function mla_taxonomy_get_columns_filter( $columns ) {
-		$screen = get_current_screen();
-		
-		if ( 'attachment' == $screen->post_type ) {
+		/*
+		 * Adding a tag is done with AJAX, and there's no current screen object
+		 */
+		if ( isset( $_POST['action'] ) && ( 'add-tag' == $_POST['action'] ) ) {
+			$post_type = !empty($_POST['post_type']) ? $_POST['post_type'] : 'post';
+		}
+		else {
+			$screen = get_current_screen();
+			$post_type = !empty( $screen->post_type ) ? $screen->post_type : 'post';
+		}
+
+		if ( 'attachment' == $post_type ) {
 			if ( isset ( $columns[ 'posts' ] ) )
 				unset( $columns[ 'posts' ] );
 				
@@ -136,13 +145,21 @@ class MLAObjects {
 	 *					and alink to retrieve a list of them
 	 */
 	public static function mla_taxonomy_column_filter( $place_holder, $column_name, $term_id ) {
-		$screen = get_current_screen();
-		$tax_object = get_taxonomy( $screen->taxonomy );
-		
-		$term = get_term( $term_id, $tax_object->name );
+		/*
+		 * Adding a tag is done with AJAX, and there's no current screen object
+		 */
+		if ( isset( $_POST['action'] ) && ( 'add-tag' == $_POST['action'] ) ) {
+			$taxonomy = !empty($_POST['taxonomy']) ? $_POST['taxonomy'] : 'post_tag';
+		}
+		else {
+			$screen = get_current_screen();
+			$taxonomy = !empty( $screen->taxonomy ) ? $screen->taxonomy : 'post_tag';
+		}
+
+		$term = get_term( $term_id, $taxonomy );
 		
 		if ( is_wp_error( $term ) ) {
-			error_log( "ERROR: mla_taxonomy_column_filter( {$tax_object->name} ) - get_term " . $objects->get_error_message(), 0 );
+			error_log( "ERROR: mla_taxonomy_column_filter( {$taxonomy} ) - get_term " . $term->get_error_message(), 0 );
 			return 0;
 		}
 		
@@ -151,7 +168,7 @@ class MLAObjects {
 			'post_status' => 'inherit',
 			'tax_query' => array(
 				array(
-					'taxonomy' => $tax_object->name,
+					'taxonomy' => $taxonomy,
 					'field' => 'slug',
 					'terms' => $term->slug,
 					'include_children' => false 
@@ -160,12 +177,14 @@ class MLAObjects {
 				
 		$results = new WP_Query( $request );
 		if ( ! empty( $results->error ) ){
-			error_log( "ERROR: mla_taxonomy_column_filter( {$tax_object->name} ) - WP_Query " . $results->error, 0 );
+			error_log( "ERROR: mla_taxonomy_column_filter( {$taxonomy} ) - WP_Query " . $results->error, 0 );
 			return 0;
 		}
 		
+		$tax_object = get_taxonomy($taxonomy);
+
 		return sprintf( '<a href="%s">%d</a>', esc_url( add_query_arg(
-				array( 'page' => 'mla-menu', 'mla-tax' => $tax_object->name, 'mla-term' => $term->slug, 'heading_suffix' => urlencode( $tax_object->label . ':' . $term->name ) ), 'upload.php' ) ), $results->post_count );
+				array( 'page' => 'mla-menu', 'mla-tax' => $taxonomy, 'mla-term' => $term->slug, 'heading_suffix' => urlencode( $tax_object->label . ':' . $term->name ) ), 'upload.php' ) ), $results->post_count );
 	}
 } //Class MLAObjects
 ?>

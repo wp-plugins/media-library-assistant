@@ -1,1 +1,256 @@
-(function(a){inlineEditAttachment={init:function(){var c=this,d=a("#inline-edit"),b=a("#bulk-edit");c.type="attachment";c.what="#attachment-";d.keyup(function(f){if(f.which==27){return inlineEditAttachment.revert()}});b.keyup(function(f){if(f.which==27){return inlineEditAttachment.revert()}});a("a.cancel",d).click(function(){return inlineEditAttachment.revert()});a("a.save",d).click(function(){return inlineEditAttachment.save(this)});a("td",d).keydown(function(f){if(f.which==13){return inlineEditAttachment.save(this)}});a("a.cancel",b).click(function(){return inlineEditAttachment.revert()});a("a.editinline").live("click",function(){inlineEditAttachment.edit(this);return false});a("span.catshow").click(function(){a(this).hide().next().show().parent().next().addClass("cat-hover")});a("span.cathide").click(function(){a(this).hide().prev().show().parent().next().removeClass("cat-hover")});a('select[name="_status"] option[value="future"]',b).remove();a("#doaction, #doaction2").click(function(f){var g=a(this).attr("id").substr(2);if(a('select[name="'+g+'"]').val()=="edit"){f.preventDefault();c.setBulk()}else{if(a("form#posts-filter tr.inline-editor").length>0){c.revert()}}});a("#post-query-submit").mousedown(function(f){c.revert();a('select[name^="action"]').val("-1")})},toggle:function(c){var b=this;a(b.what+b.getId(c)).css("display")=="none"?b.revert():b.edit(c)},setBulk:function(){var b="",d=true;this.revert();a("#bulk-edit td").attr("colspan",a(".widefat:first thead th:visible").length);a("table.widefat tbody").prepend(a("#bulk-edit"));a("#bulk-edit").addClass("inline-editor").show();a('tbody th.check-column input[type="checkbox"]').each(function(e){if(a(this).prop("checked")){d=false;var f=a(this).val(),c;c=a("#inline_"+f+" .post_title").text()||mla_inline_edit_vars.notitle;b+='<div id="ttle'+f+'"><a id="_'+f+'" class="ntdelbutton" title="'+mla_inline_edit_vars.ntdeltitle+'">X</a>'+c+"</div>"}});if(d){return this.revert()}a("#bulk-titles").html(b);a("#bulk-titles a").click(function(){var c=a(this).attr("id").substr(1);a('table.widefat input[value="'+c+'"]').prop("checked",false);a("#ttle"+c).remove()});a("textarea.mla_tags").each(function(){var c=a(this).attr("name").replace("]","").replace("tax_input[","");a(this).suggest(ajaxurl+"?action=ajax-tag-search&tax="+c,{delay:500,minchars:2,multiple:true,multipleSep:mla_inline_edit_vars.comma+" "})});a("html, body").animate({scrollTop:0},"fast")},edit:function(g){var d=this,b,c,e,f;d.revert();if(typeof(g)=="object"){g=d.getId(g)}b=["post_title","post_name","post_excerpt","image_alt","post_parent","menu_order","post_author"];c=a("#inline-edit").clone(true);a("td",c).attr("colspan",a(".widefat:first thead th:visible").length);if(a(d.what+g).hasClass("alternate")){a(c).addClass("alternate")}a(d.what+g).hide().after(c);e=a("#inline_"+g);if(!a(':input[name="post_author"] option[value="'+a(".post_author",e).text()+'"]',c).val()){a(':input[name="post_author"]',c).prepend('<option value="'+a(".post_author",e).text()+'">'+a("#"+d.type+"-"+g+" .author").text()+"</option>")}if(a(':input[name="post_author"] option',c).length==1){a("label.inline-edit-author",c).hide()}for(f=0;f<b.length;f++){a(':input[name="'+b[f]+'"]',c).val(a("."+b[f],e).text())}if(a(".image_alt",e).length==0){a("label.inline-edit-image-alt",c).hide()}a(".mla_category",e).each(function(){var h=a(this).text();if(h){taxname=a(this).attr("id").replace("_"+g,"");a("ul."+taxname+"-checklist :checkbox",c).val(h.split(","))}});a(".mla_tags",e).each(function(){var j=a(this).text(),k=a(this).attr("id").replace("_"+g,""),i=a("textarea.tax_input_"+k,c),h=mla_inline_edit_vars.comma;if(j){if(","!==h){j=j.replace(/,/g,h)}i.val(j)}i.suggest(ajaxurl+"?action=ajax-tag-search&tax="+k,{delay:500,minchars:2,multiple:true,multipleSep:mla_inline_edit_vars.comma+" "})});a(c).attr("id","edit-"+g).addClass("inline-editor").show();a(".ptitle",c).focus();return false},save:function(e){var d,b,c=a(".post_status_page").val()||"";if(typeof(e)=="object"){e=this.getId(e)}a("table.widefat .inline-edit-save .waiting").show();d={action:mla_inline_edit_vars.ajax_action,nonce:mla_inline_edit_vars.ajax_nonce,post_type:typenow,post_ID:e,edit_date:"true",post_status:c};b=a("#edit-"+e+" :input").serialize();d=b+"&"+a.param(d);a.post(ajaxurl,d,function(f){a("table.widefat .inline-edit-save .waiting").hide();if(f){if(-1!=f.indexOf("<tr")){a(inlineEditAttachment.what+e).remove();a("#edit-"+e).before(f).remove();a(inlineEditAttachment.what+e).hide().fadeIn()}else{f=f.replace(/<.[^<>]*?>/g,"");a("#edit-"+e+" .inline-edit-save .error").html(f).show()}}else{a("#edit-"+e+" .inline-edit-save .error").html(mla_inline_edit_vars.error).show()}},"html");return false},revert:function(){var b=a("table.widefat tr.inline-editor").attr("id");if(b){a("table.widefat .inline-edit-save .waiting").hide();if("bulk-edit"==b){a("table.widefat #bulk-edit").removeClass("inline-editor").hide();a("#bulk-titles").html("");a("#inlineedit").append(a("#bulk-edit"))}else{a("#"+b).remove();b=b.substr(b.lastIndexOf("-")+1);a(this.what+b).show()}}return false},getId:function(c){var d=a(c).closest("tr").attr("id"),b=d.split("-");return b[b.length-1]}};a(document).ready(function(){inlineEditAttachment.init()})})(jQuery);
+// These functions are adapted from wp-admin/js/inline-edit-post.js
+(function($) {
+inlineEditAttachment = {
+
+	init : function(){
+		var t = this, qeRow = $('#inline-edit'), bulkRow = $('#bulk-edit');
+
+		t.type = 'attachment';
+		t.what = '#attachment-';
+
+		// prepare the edit rows
+		qeRow.keyup(function(e){
+			if (e.which == 27)
+				return inlineEditAttachment.revert();
+		});
+		bulkRow.keyup(function(e){
+			if (e.which == 27)
+				return inlineEditAttachment.revert();
+		});
+
+		$('a.cancel', qeRow).click(function(){
+			return inlineEditAttachment.revert();
+		});
+		$('a.save', qeRow).click(function(){
+			return inlineEditAttachment.save(this);
+		});
+		$('td', qeRow).keydown(function(e){
+			if ( e.which == 13 )
+				return inlineEditAttachment.save(this);
+		});
+
+		$('a.cancel', bulkRow).click(function(){
+			return inlineEditAttachment.revert();
+		});
+
+		// add events
+		$('a.editinline').live('click', function(){
+			inlineEditAttachment.edit(this);
+			return false;
+		});
+
+		// hiearchical taxonomies expandable?
+		$('span.catshow').click(function(){
+			$(this).hide().next().show().parent().next().addClass("cat-hover");
+		});
+
+		$('span.cathide').click(function(){
+			$(this).hide().prev().show().parent().next().removeClass("cat-hover");
+		});
+
+		$('select[name="_status"] option[value="future"]', bulkRow).remove();
+
+		$('#doaction, #doaction2').click(function(e){
+			var n = $(this).attr('id').substr(2);
+
+			if ( $('select[name="'+n+'"]').val() == 'edit' ) {
+				e.preventDefault();
+				t.setBulk();
+			} else if ( $('form#posts-filter tr.inline-editor').length > 0 ) {
+				t.revert();
+			}
+		});
+		
+		// Filter button (dates, categories) in top nav bar
+		$('#post-query-submit').mousedown(function(e){
+			t.revert();
+			$('select[name^="action"]').val('-1');
+		});
+	},
+
+	toggle : function(el){
+		var t = this;
+		$(t.what+t.getId(el)).css('display') == 'none' ? t.revert() : t.edit(el);
+	},
+
+	setBulk : function(){
+		var te = '', c = true;
+		this.revert();
+
+		$('#bulk-edit td').attr('colspan', $('.widefat:first thead th:visible').length);
+		$('table.widefat tbody').prepend( $('#bulk-edit') );
+		$('#bulk-edit').addClass('inline-editor').show();
+
+		$('tbody th.check-column input[type="checkbox"]').each(function(i){
+			if ( $(this).prop('checked') ) {
+				c = false;
+				var id = $(this).val(), theTitle;
+				theTitle = $('#inline_'+id+' .post_title').text() || mla_inline_edit_vars.notitle;
+				te += '<div id="ttle'+id+'"><a id="_'+id+'" class="ntdelbutton" title="'+mla_inline_edit_vars.ntdeltitle+'">X</a>'+theTitle+'</div>';
+			}
+		});
+
+		if ( c )
+			return this.revert();
+
+		$('#bulk-titles').html(te);
+		$('#bulk-titles a').click(function(){
+			var id = $(this).attr('id').substr(1);
+
+			$('table.widefat input[value="' + id + '"]').prop('checked', false);
+			$('#ttle'+id).remove();
+		});
+
+			// support multi taxonomies?
+//			tax = 'post_tag';
+//			$('tr.inline-editor textarea[name="tax_input['+tax+']"]').suggest( ajaxurl + '?action=ajax-tag-search&tax=' + tax, { delay: 500, minchars: 2, multiple: true, multipleSep: mla_inline_edit_vars.comma + ' ' } );
+
+		//flat taxonomies
+		$('textarea.mla_tags').each(function(){
+			var taxname = $(this).attr('name').replace(']', '').replace('tax_input[', '');
+
+			$(this).suggest( ajaxurl + '?action=ajax-tag-search&tax=' + taxname, { delay: 500, minchars: 2, multiple: true, multipleSep: mla_inline_edit_vars.comma + ' ' } );
+		});
+
+		$('html, body').animate( { scrollTop: 0 }, 'fast' );
+	},
+
+	edit : function(id) {
+		var t = this, fields, editRow, rowData, fIndex;
+		t.revert();
+
+		if ( typeof(id) == 'object' )
+			id = t.getId(id);
+
+		fields = ['post_title', 'post_name', 'post_excerpt', 'image_alt', 'post_parent', 'menu_order', 'post_author'];
+
+		// add the new blank row
+		editRow = $('#inline-edit').clone(true);
+		$('td', editRow).attr('colspan', $('.widefat:first thead th:visible').length);
+
+		if ( $(t.what+id).hasClass('alternate') )
+			$(editRow).addClass('alternate');
+		$(t.what+id).hide().after(editRow);
+
+		// populate the data
+		rowData = $('#inline_'+id);
+		if ( !$(':input[name="post_author"] option[value="' + $('.post_author', rowData).text() + '"]', editRow).val() ) {
+			// author no longer has edit caps, so we need to add them to the list of authors
+			$(':input[name="post_author"]', editRow).prepend('<option value="' + $('.post_author', rowData).text() + '">' + $('#' + t.type + '-' + id + ' .author').text() + '</option>');
+		}
+
+		if ( $(':input[name="post_author"] option', editRow).length == 1 ) {
+			$('label.inline-edit-author', editRow).hide();
+		}
+
+		for ( fIndex = 0; fIndex < fields.length; fIndex++ ) {
+			$(':input[name="' + fields[fIndex] + '"]', editRow).val( $('.'+fields[fIndex], rowData).text() );
+		}
+
+		if ( $('.image_alt', rowData).length == 0) {
+			$('label.inline-edit-image-alt', editRow).hide();
+		}
+
+		// hierarchical taxonomies
+		$('.mla_category', rowData).each(function(){
+			var term_ids = $(this).text();
+
+			if ( term_ids ) {
+				taxname = $(this).attr('id').replace('_'+id, '');
+				$('ul.'+taxname+'-checklist :checkbox', editRow).val(term_ids.split(','));
+			}
+		});
+
+		//flat taxonomies
+		$('.mla_tags', rowData).each(function(){
+			var terms = $(this).text(),
+				taxname = $(this).attr('id').replace('_' + id, ''),
+				textarea = $('textarea.tax_input_' + taxname, editRow),
+				comma = mla_inline_edit_vars.comma;
+
+			if ( terms ) {
+				if ( ',' !== comma )
+					terms = terms.replace(/,/g, comma);
+				textarea.val(terms);
+			}
+
+			textarea.suggest( ajaxurl + '?action=ajax-tag-search&tax=' + taxname, { delay: 500, minchars: 2, multiple: true, multipleSep: mla_inline_edit_vars.comma + ' ' } );
+		});
+
+		$(editRow).attr('id', 'edit-'+id).addClass('inline-editor').show();
+		$('.ptitle', editRow).focus();
+
+		return false;
+	},
+
+	save : function(id) {
+		var params, fields, page = $('.post_status_page').val() || '';
+
+		if ( typeof(id) == 'object' )
+			id = this.getId(id);
+
+		$('table.widefat .inline-edit-save .waiting').show();
+
+		params = {
+			action: mla_inline_edit_vars.ajax_action,
+			nonce: mla_inline_edit_vars.ajax_nonce,
+			post_type: typenow,
+			post_ID: id,
+			edit_date: 'true',
+			post_status: page
+		};
+
+		fields = $('#edit-'+id+' :input').serialize();
+		params = fields + '&' + $.param(params);
+
+		// make ajax request
+		$.post( ajaxurl, params,
+			function(r) {
+				$('table.widefat .inline-edit-save .waiting').hide();
+
+				if (r) {
+					if ( -1 != r.indexOf('<tr') ) {
+						$(inlineEditAttachment.what+id).remove();
+						$('#edit-'+id).before(r).remove();
+						$(inlineEditAttachment.what+id).hide().fadeIn();
+					} else {
+						r = r.replace( /<.[^<>]*?>/g, '' );
+						$('#edit-'+id+' .inline-edit-save .error').html(r).show();
+					}
+				} else {
+					$('#edit-'+id+' .inline-edit-save .error').html(mla_inline_edit_vars.error).show();
+				}
+			}
+		, 'html');
+		return false;
+	},
+
+	revert : function(){
+		var id = $('table.widefat tr.inline-editor').attr('id');
+
+		if ( id ) {
+			$('table.widefat .inline-edit-save .waiting').hide();
+
+			if ( 'bulk-edit' == id ) {
+				$('table.widefat #bulk-edit').removeClass('inline-editor').hide();
+				$('#bulk-titles').html('');
+				$('#inlineedit').append( $('#bulk-edit') );
+			} else {
+				$('#'+id).remove();
+				id = id.substr( id.lastIndexOf('-') + 1 );
+				$(this.what+id).show();
+			}
+		}
+
+		return false;
+	},
+
+	getId : function(o) {
+		var id = $(o).closest('tr').attr('id'),
+			parts = id.split('-');
+		return parts[parts.length - 1];
+	}
+};
+
+$(document).ready(function(){inlineEditAttachment.init();});
+})(jQuery);

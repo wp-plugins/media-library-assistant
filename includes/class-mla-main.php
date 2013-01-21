@@ -38,7 +38,7 @@ class MLA {
 	 *
 	 * @var	string
 	 */
-	const CURRENT_MLA_VERSION = '1.10';
+	const CURRENT_MLA_VERSION = '1.11';
 
 	/**
 	 * Minimum version of PHP required for this plugin
@@ -272,7 +272,7 @@ class MLA {
 		wp_register_style( self::STYLESHEET_SLUG, MLA_PLUGIN_URL . 'css/mla-style.css', false, self::CURRENT_MLA_VERSION );
 		wp_enqueue_style( self::STYLESHEET_SLUG );
 
-		$suffix = defined('SCRIPT_DEBUG') && SCRIPT_DEBUG ? '.dev' : '';
+		$suffix = defined('SCRIPT_DEBUG') && SCRIPT_DEBUG ? '' : '.min';
 		
 		if ( isset( $_REQUEST['mla_admin_action'] ) && ( $_REQUEST['mla_admin_action'] == self::MLA_ADMIN_SINGLE_EDIT_DISPLAY ) ) {
 			wp_enqueue_script( self::JAVASCRIPT_SINGLE_EDIT_SLUG, MLA_PLUGIN_URL . "js/mla-single-edit-scripts{$suffix}.js", 

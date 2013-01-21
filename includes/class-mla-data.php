@@ -595,6 +595,13 @@ class MLAData {
 		 */
 		$search_clause = '';
 		if ( isset( self::$query_parameters['s'] ) ) {
+			/*
+			 * Interpret a numeric value as the ID of a specific attactment
+			 */
+			if(is_numeric( self::$query_parameters['s'] )) {
+				return ' AND ( ' . $wpdb->posts . '.ID = ' . absint( self::$query_parameters['s'] ) . ' ) ';
+			}
+			
 			if (  self::$query_parameters['sentence'] ) {
 				$search_terms = array( self::$query_parameters['s'] );
 			} else {
