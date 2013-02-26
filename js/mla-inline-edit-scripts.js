@@ -101,10 +101,6 @@ inlineEditAttachment = {
 			$('#ttle'+id).remove();
 		});
 
-			// support multi taxonomies?
-//			tax = 'post_tag';
-//			$('tr.inline-editor textarea[name="tax_input['+tax+']"]').suggest( ajaxurl + '?action=ajax-tag-search&tax=' + tax, { delay: 500, minchars: 2, multiple: true, multipleSep: mla_inline_edit_vars.comma + ' ' } );
-
 		//flat taxonomies
 		$('textarea.mla_tags').each(function(){
 			var taxname = $(this).attr('name').replace(']', '').replace('tax_input[', '');
@@ -122,8 +118,8 @@ inlineEditAttachment = {
 		if ( typeof(id) == 'object' )
 			id = t.getId(id);
 
-		fields = ['post_title', 'post_name', 'post_excerpt', 'image_alt', 'post_parent', 'menu_order', 'post_author'];
-
+		fields = mla_inline_edit_vars.fields;
+		
 		// add the new blank row
 		editRow = $('#inline-edit').clone(true);
 		$('td', editRow).attr('colspan', $('.widefat:first thead th:visible').length);

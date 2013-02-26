@@ -423,26 +423,39 @@ class MLA_List_Table extends WP_List_Table {
 			if ( !is_wp_error( $terms ) ) {
 				if ( empty( $terms ) )
 					return 'none';
-				else {
-					$list = array();
-					foreach ( $terms as $term ) {
-						$list[ ] = sprintf( '<a href="%s">%s</a>', esc_url( add_query_arg( array(
-							 'page' => 'mla-menu',
-							'mla-tax' => $taxonomy,
-							'mla-term' => $term->slug,
-							'heading_suffix' => urlencode( $tax_object->label . ':' . $term->name ) 
-						), 'upload.php' ) ), esc_html( sanitize_term_field( 'name', $term->name, $term->term_id, 'category', 'display' ) ) );
-					} // foreach $term
-					
-					return join( ', ', $list );
-				} // !empty $terms
+
+				$list = array();
+				foreach ( $terms as $term ) {
+					$list[ ] = sprintf( '<a href="%s">%s</a>', esc_url( add_query_arg( array(
+						'page' => 'mla-menu',
+						'mla-tax' => $taxonomy,
+						'mla-term' => $term->slug,
+						'heading_suffix' => urlencode( $tax_object->label . ': ' . $term->name ) 
+					), 'upload.php' ) ), esc_html( sanitize_term_field( 'name', $term->name, $term->term_id, 'category', 'display' ) ) );
+				} // foreach $term
+				
+				return join( ', ', $list );
 			} // if !is_wp_error
 			else {
 				return 'not supported';
 			}
 		} // 't_'
 		elseif ( 'c_' == substr( $column_name, 0, 2 ) ) {
-			return get_post_meta( $item->ID, MLA_List_Table::$default_columns[ $column_name ], true );
+			$values = get_post_meta( $item->ID, MLA_List_Table::$default_columns[ $column_name ], false );
+			if ( empty( $values ) )
+				return '';
+			
+			$list = array();
+			foreach( $values as $index => $value ) {
+				$list[ ] = sprintf( '<a href="%s">%s</a>', esc_url( add_query_arg( array(
+					'page' => 'mla-menu',
+					'mla-metakey' => urlencode( MLA_List_Table::$default_columns[ $column_name ] ),
+					'mla-metavalue' => urlencode( $value ),
+					'heading_suffix' => urlencode( MLA_List_Table::$default_columns[ $column_name ] . ': ' . $value ) 
+				), 'upload.php' ) ), esc_html( $value ) );
+			}
+
+			return join( ', ', $list );
 		} // 'c_'
 		else {
 			//Show the whole array for troubleshooting purposes
@@ -585,6 +598,13 @@ class MLA_List_Table extends WP_List_Table {
 		$inline_data .= '	<div class="post_parent">' . $item->post_parent . "</div>\r\n";
 		$inline_data .= '	<div class="menu_order">' . $item->menu_order . "</div>\r\n";
 		$inline_data .= '	<div class="post_author">' . $item->post_author . "</div>\r\n";
+		
+		$custom_fields = MLAOptions::mla_custom_field_support( 'quick_edit' );
+		$custom_fields = array_merge( $custom_fields, MLAOptions::mla_custom_field_support( 'bulk_edit' ) );
+		foreach ($custom_fields as $slug => $label ) {
+			$value = get_metadata( 'post', $item->ID, $label, true );
+			$inline_data .= '	<div class="' . $slug . '">' . $value . "</div>\r\n";
+		}
 		
 		$taxonomies = get_object_taxonomies( 'attachment', 'objects' );
 		
@@ -868,7 +888,12 @@ class MLA_List_Table extends WP_List_Table {
 	 */
 	function column_alt_text( $item ) {
 		if ( isset( $item->mla_wp_attachment_image_alt ) )
-			return esc_attr( $item->mla_wp_attachment_image_alt );
+			return sprintf( '<a href="%s">%s</a>', esc_url( add_query_arg( array(
+				'page' => 'mla-menu',
+				'mla-metakey' => '_wp_attachment_image_alt',
+				'mla-metavalue' => urlencode( $item->mla_wp_attachment_image_alt ),
+				'heading_suffix' => urlencode( 'ALT Text: ' . $item->mla_wp_attachment_image_alt ) 
+			), 'upload.php' ) ), esc_html( $item->mla_wp_attachment_image_alt ) );
 		else
 			return '';
 	}

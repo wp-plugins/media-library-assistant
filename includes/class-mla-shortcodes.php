@@ -143,6 +143,21 @@ class MLAShortcodes {
 	private static $mla_debug = false;
 	
 	/**
+	 * WP_Query filter "parameters"
+	 *
+	 * This array defines parameters for the query's where filter, mla_shortcode_query_posts_where_filter.
+	 * The parameters are set up in the mla_get_shortcode_attachments function, and
+	 * any further logic required to translate those values is contained in the filter.
+	 *
+	 * Array index values are: post_parent
+	 *
+	 * @since 1.13
+	 *
+	 * @var	array
+	 */
+	private static $query_parameters = array();
+
+	/**
 	 * The MLA Gallery shortcode.
 	 *
 	 * This is a superset of the WordPress Gallery shortcode for displaying images on a post,
@@ -178,6 +193,10 @@ class MLAShortcodes {
 			'mla_rollover_text' => '',
 			'mla_caption' => '',
 			'mla_debug' => false,
+			'mla_viewer' => false,
+			'mla_viewer_extensions' => 'doc,xls,ppt,pdf,txt',
+			'mla_viewer_page' => '1',
+			'mla_viewer_width' => '150',
 			// Photonic-specific
 			'id' => NULL,
 			'style' => NULL,
@@ -201,6 +220,9 @@ class MLAShortcodes {
 		self::$mla_debug = !empty( $arguments['mla_debug'] ) && ( 'true' == strtolower( $arguments['mla_debug'] ) );
 
 		$attachments = self::mla_get_shortcode_attachments( $post->ID, $attr );
+		if ( is_string( $attachments ) )
+			return $attachments;
+			
 		if ( empty($attachments) ) {
 			if ( self::$mla_debug ) {
 				$output = '<p><strong>mla_debug</strong> empty gallery, query = ' . var_export( $attr, true ) . '</p>';
@@ -232,7 +254,7 @@ class MLAShortcodes {
 		}
 		
 		$size = $size_class = $arguments['size'];
-		if ( 'icon'	 == strtolower( $size) ) {
+		if ( 'icon' == strtolower( $size) ) {
 			$size = array( 60, 60 );
 			$show_icon = true;
 		}
@@ -246,6 +268,16 @@ class MLAShortcodes {
 			return $output;
 		}
 
+		/*
+		 * Check for Google File Viewer arguments
+		 */
+		$arguments['mla_viewer'] = !empty( $arguments['mla_viewer'] ) && ( 'true' == strtolower( $arguments['mla_viewer'] ) );
+		if ( $arguments['mla_viewer'] ) {
+			$arguments['mla_viewer_extensions'] = array_filter( array_map( 'trim', explode( ',', $arguments['mla_viewer_extensions'] ) ) );
+			$arguments['mla_viewer_page'] = absint( $arguments['mla_viewer_page'] );
+			$arguments['mla_viewer_width'] = absint( $arguments['mla_viewer_width'] );
+		}
+			
 		// $instance supports multiple galleries in one page/post	
 		static $instance = 0;
 		$instance++;
@@ -286,7 +318,8 @@ class MLAShortcodes {
 		);
 	
 		$style_template = $gallery_style = '';
-		if ( apply_filters( 'use_mla_gallery_style', true ) ) {
+		$use_mla_gallery_style = ( 'none' != strtolower( $style_values['mla_style'] ) );
+		if ( apply_filters( 'use_mla_gallery_style', $use_mla_gallery_style ) ) {
 			$style_template = MLAOptions::mla_fetch_gallery_template( $style_values['mla_style'], 'style' );
 			if ( empty( $style_template ) ) {
 				$style_values['mla_style'] = 'default';
@@ -492,7 +525,7 @@ class MLAShortcodes {
 				$markup_values[ $key ] = $text;
 			} // $custom_placeholders
 			
-			if ( !empty( $iptc_placeholders ) || !empty( $iptc_placeholders ) ) {
+			if ( !empty( $iptc_placeholders ) || !empty( $exif_placeholders ) ) {
 				$image_metadata = MLAData::mla_fetch_attachment_image_metadata( $attachment->ID );
 			}
 			
@@ -522,17 +555,7 @@ class MLAShortcodes {
 			} // $iptc_placeholders
 			
 			foreach ( $exif_placeholders as $key => $value ) {
-				$text = '';
-				if ( array_key_exists( $value['value'], $image_metadata['mla_exif_metadata'] ) ) {
-					$record = $image_metadata['mla_exif_metadata'][ $value['value'] ];
-					if ( is_array( $record ) ) {
-						$text = var_export( $record, true);
-					} // is_array
-					else
-						$text = $record;
-				}
-					
-				$markup_values[ $key ] = $text;
+				$markup_values[ $key ] = MLAData::mla_exif_metadata_value( $value['value'], $image_metadata );
 			} // $exif_placeholders
 			
 			unset(
@@ -569,7 +592,6 @@ class MLAShortcodes {
 
 			$markup_values['pagelink'] = wp_get_attachment_link($attachment->ID, $size, true, $show_icon, $link_text);
 			$markup_values['filelink'] = wp_get_attachment_link($attachment->ID, $size, false, $show_icon, $link_text);
-			
 			if ( ! empty( $arguments['mla_rollover_text'] ) ) {
 				$new_text = str_replace( '{+', '[+', str_replace( '+}', '+]', $arguments['mla_rollover_text'] ) );
 				$new_text = MLAData::mla_parse_template( $new_text, $markup_values );
@@ -646,6 +668,26 @@ class MLAShortcodes {
 				$markup_values['thumbnail_url'] = '';
 			}
 
+			/*
+			 * Check for Google file viewer substitution
+			 */
+			if ( $arguments['mla_viewer'] && empty( $markup_values['thumbnail_url'] ) ) {
+				$last_dot = strrpos( $markup_values['file'], '.' );
+				if ( !( false === $last_dot) ) {
+					$extension = substr( $markup_values['file'], $last_dot + 1 );
+					if ( in_array( $extension, $arguments['mla_viewer_extensions'] ) ) {
+						$markup_values['thumbnail_content'] = sprintf( '<img src="http://docs.google.com/viewer?url=%1$s&a=bi&pagenumber=%2$d&w=%3$d">', $markup_values['filelink_url'], $arguments['mla_viewer_page'], $arguments['mla_viewer_width'] );
+						$markup_values['pagelink'] = sprintf( '<a href="%1$s" title="%2$s">%3$s</a>', $markup_values['pagelink_url'], $markup_values['title'], $markup_values['thumbnail_content'] );
+						$markup_values['filelink'] = sprintf( '<a href="%1$s" title="%2$s">%3$s</a>', $markup_values['filelink_url'], $markup_values['title'], $markup_values['thumbnail_content'] );
+
+						if ( 'permalink' == $arguments['link'] )
+							$markup_values['link'] = $markup_values['pagelink'];
+						else
+							$markup_values['link'] = $markup_values['filelink'];
+					} // viewer extension
+				} // has extension
+			} // mla_viewer
+			
 			/*
 			 * Start of row markup
 			 */
@@ -749,6 +791,7 @@ class MLAShortcodes {
 			$attr = shortcode_parse_atts( $attr );
 			
 		$arguments = shortcode_atts( $default_arguments, $attr );
+		self::$query_parameters = array();
 
 		if ( 'RAND' == $arguments['order'] )
 			$arguments['orderby'] = 'none';
@@ -804,11 +847,24 @@ class MLAShortcodes {
 			$children_ok = true;
 			switch ( $key ) {
 			case 'post_parent':
-				if ( 'current' == strtolower( $value ) )
-					$value = $post_parent;
-				elseif ( 'all' == strtolower( $value ) ) {
+				switch ( strtolower( $value ) ) {
+				case 'all':
 					$value = NULL;
 					$use_children = false;
+					break;
+				case 'any':
+					self::$query_parameters['post_parent'] = 'any';
+					$value = NULL;
+					$use_children = false;
+					break;
+				case 'current':
+					$value = $post_parent;
+					break;
+				case 'none':
+					self::$query_parameters['post_parent'] = 'none';
+					$value = NULL;
+					$use_children = false;
+					break;
 				}
 				// fallthru
 			case 'id':
@@ -990,7 +1046,6 @@ class MLAShortcodes {
 		}
 		
 		return $attachments;
-	
 	}
 
 	/**
@@ -998,6 +1053,7 @@ class MLAShortcodes {
 	 * 
 	 * Captures debug information. Adds whitespace to the post_type = 'attachment'
 	 * phrase to circumvent subsequent Role Scoper modification of the clause.
+	 * Handles post_parent "any" and "none" cases.
 	 * Defined as public because it's a filter.
 	 *
 	 * @since 0.70
@@ -1010,15 +1066,27 @@ class MLAShortcodes {
 		global $table_prefix;
 
 		if ( self::$mla_debug ) {
+			$old_clause = $where_clause;
 			self::$mla_debug_messages .= '<p><strong>mla_debug</strong> WHERE filter = ' . var_export( $where_clause, true ) . '</p>';
 		}
 		
 		if ( strpos( $where_clause, "post_type = 'attachment'" ) ) {
 			$where_clause = str_replace( "post_type = 'attachment'", "post_type  =  'attachment'", $where_clause );
-			
-			if ( self::$mla_debug ) 
-				self::$mla_debug_messages .= '<p><strong>mla_debug</strong> modified WHERE filter = ' . var_export( $where_clause, true ) . '</p>';
 		}
+
+		if ( isset( self::$query_parameters['post_parent'] ) ) {
+			switch ( self::$query_parameters['post_parent'] ) {
+			case 'any':
+				$where_clause .= " AND {$table_prefix}posts.post_parent > 0";
+				break;
+			case 'none':
+				$where_clause .= " AND {$table_prefix}posts.post_parent < 1";
+				break;
+			}
+		}
+
+		if ( self::$mla_debug && ( $old_clause != $where_clause ) ) 
+			self::$mla_debug_messages .= '<p><strong>mla_debug</strong> modified WHERE filter = ' . var_export( $where_clause, true ) . '</p>';
 
 		return $where_clause;
 	}

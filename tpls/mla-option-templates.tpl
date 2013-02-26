@@ -44,7 +44,7 @@
 <!-- template="custom-field-table" -->
         <tr valign="top">
 		<td colspan="2" style="text-align:left;">
-          <table class="iptc-exif-custom-table">
+          <table class="custom-field-table">
 		  <thead>
 		  <tr style="text-align:center">
 		    <th scope="col">
@@ -61,6 +61,12 @@
 			</th>
 		    <th scope="col">
 			MLA Column
+			</th>
+		    <th scope="col">
+			Quick Edit
+			</th>
+		    <th scope="col">
+			Bulk Edit
 			</th>
 			</tr>
 			</thead>
@@ -106,6 +112,12 @@
 		<td style="text-align:center;">
             <input type="checkbox" name="custom_field_mapping[[+key+]][mla_column]" id="custom_field_mla_column_[+key+]" [+mla_column_checked+] value="checked" />
         </td>
+		<td style="text-align:center;">
+            <input type="checkbox" name="custom_field_mapping[[+key+]][quick_edit]" id="custom_field_quick_edit_[+key+]" [+quick_edit_checked+] value="checked" />
+        </td>
+		<td style="text-align:center;">
+            <input type="checkbox" name="custom_field_mapping[[+key+]][bulk_edit]" id="custom_field_bulk_edit_[+key+]" [+bulk_edit_checked+] value="checked" />
+        </td>
 		</tr>
         <tr valign="top">
 		<td colspan="[+column_count+]" style="padding-bottom: 10px">
@@ -148,6 +160,12 @@
 		<td style="text-align:center;">
             <input type="checkbox" name="custom_field_mapping[[+key+]][mla_column]" id="custom_field_mla_column_[+key+]" [+mla_column_checked+] value="checked" />
         </td>
+		<td style="text-align:center;">
+            <input type="checkbox" name="custom_field_mapping[[+key+]][quick_edit]" id="custom_field_quick_edit_[+key+]" [+quick_edit_checked+] value="checked" />
+        </td>
+		<td style="text-align:center;">
+            <input type="checkbox" name="custom_field_mapping[[+key+]][bulk_edit]" id="custom_field_bulk_edit_[+key+]" [+bulk_edit_checked+] value="checked" />
+        </td>
 		</tr>
         <tr valign="top">
 		<td colspan="[+column_count+]">
@@ -185,6 +203,12 @@
         </td>
 		<td style="text-align:center;">
             <input type="checkbox" name="custom_field_mapping[[+key+]][mla_column]" id="custom_field_mla_column_[+key+]" [+mla_column_checked+] value="checked" />
+        </td>
+		<td style="text-align:center;">
+            <input type="checkbox" name="custom_field_mapping[[+key+]][quick_edit]" id="custom_field_quick_edit_[+key+]" [+quick_edit_checked+] value="checked" />
+        </td>
+		<td style="text-align:center;">
+            <input type="checkbox" name="custom_field_mapping[[+key+]][bulk_edit]" id="custom_field_bulk_edit_[+key+]" [+bulk_edit_checked+] value="checked" />
         </td>
 		</tr>
         <tr valign="top">

@@ -66,6 +66,21 @@ class MLASettings {
 		MLAOptions::mla_delete_option( 'attachment_tag' );
 		} // version is less than .30
 		
+		if ( ((float)'1.13') > ((float)$current_version) ) {
+			/*
+			 * Add quick_edit and bulk_edit values to custom field mapping rules
+			 */
+			$new_values = array();
+			
+			foreach( MLAOptions::mla_get_option( 'custom_field_mapping' ) as $key => $value ) {
+				$value['quick_edit'] = ( isset( $value['quick_edit'] ) && $value['quick_edit'] ) ? true : false;
+				$value['bulk_edit'] = ( isset( $value['bulk_edit'] ) && $value['bulk_edit'] ) ? true : false;
+				$new_values[ $key ] = $value;
+			}
+
+			MLAOptions::mla_update_option( 'custom_field_mapping', $new_values );
+		} // version is less than 1.13
+		
 		MLAOptions::mla_update_option( MLAOptions::MLA_VERSION_OPTION, MLA::CURRENT_MLA_VERSION );
 	}
 	

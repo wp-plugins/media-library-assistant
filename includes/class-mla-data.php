@@ -279,6 +279,8 @@ class MLAData {
 	 * The parameters are set up in the _prepare_list_table_query function, and
 	 * any further logic required to translate those values is contained in the filters.
 	 *
+	 * Array index values are: use_postmeta_view, postmeta_key, detached, orderby, order, s, mla-search-connector, mla-search-fields, sentence, exact
+	 *
 	 * @since 0.30
 	 *
 	 * @var	array
@@ -393,6 +395,10 @@ class MLAData {
 				case 'mla-search-fields':
 					$clean_request[ $key ] = $value;
 					break;
+				case 'mla-metakey':
+				case 'mla-metavalue':
+					$clean_request[ $key ] = stripslashes( $value );
+					break;
 				default:
 					// ignore anything else in $_REQUEST
 			} // switch $key
@@ -401,7 +407,7 @@ class MLAData {
 		/*
 		 * Pass query parameters to the filters for _execute_list_table_query
 		 */
-		self::$query_parameters = array( 'use_alt_text_view' => false );
+		self::$query_parameters = array( 'use_postmeta_view' => false );
 		self::$query_parameters['detached'] = isset( $clean_request['detached'] );
 		self::$query_parameters['orderby'] = $clean_request['orderby'];
 		self::$query_parameters['order'] = $clean_request['order'];
@@ -419,7 +425,8 @@ class MLAData {
 				self::$query_parameters['exact'] = isset( $clean_request['exact'] );
 				
 			 	if ( in_array( 'alt-text', self::$query_parameters['mla-search-fields'] ) )
-					self::$query_parameters['use_alt_text_view'] = true;
+					self::$query_parameters['use_postmeta_view'] = true;
+					self::$query_parameters['postmeta_key'] = '_wp_attachment_image_alt';
 			} // !empty
 			
 			unset( $clean_request['s'] );
@@ -436,9 +443,12 @@ class MLAData {
 		if ( 'c_' == substr( self::$query_parameters['orderby'], 0, 2 ) ) {
 			$option_value = MLAOptions::mla_custom_field_option_value( self::$query_parameters['orderby'] );
 			if ( isset( $option_value['name'] ) ) {
-				$clean_request['meta_key'] = $option_value['name'];
-				$clean_request['orderby'] = 'meta_value';
-				$clean_request['order'] = self::$query_parameters['order'];
+				self::$query_parameters['use_postmeta_view'] = true;
+				self::$query_parameters['postmeta_key'] = $option_value['name'];
+				if ( isset($clean_request['orderby']) )
+					unset($clean_request['orderby']);
+				if ( isset($clean_request['order']) )
+					unset($clean_request['order']);
 			}
 		} // custom field
 		else {
@@ -447,7 +457,8 @@ class MLAData {
 				 * '_wp_attachment_image_alt' is special; we'll handle it in the JOIN and ORDERBY filters
 				 */
 				case '_wp_attachment_image_alt':
-					self::$query_parameters['use_alt_text_view'] = true;
+					self::$query_parameters['use_postmeta_view'] = true;
+					self::$query_parameters['postmeta_key'] = '_wp_attachment_image_alt';
 					if ( isset($clean_request['orderby']) )
 						unset($clean_request['orderby']);
 					if ( isset($clean_request['order']) )
@@ -508,7 +519,7 @@ class MLAData {
 			unset( $clean_request['mla_filter_term'] );
 		} // isset mla_filter_term
 		
-		if ( isset( $clean_request['mla-tax'] ) ) {
+		if ( isset( $clean_request['mla-tax'] )  && isset( $clean_request['mla-term'] )) {
 			$clean_request['tax_query'] = array(
 				array(
 					'taxonomy' => $clean_request['mla-tax'],
@@ -520,6 +531,14 @@ class MLAData {
 			
 			unset( $clean_request['mla-tax'] );
 			unset( $clean_request['mla-term'] );
+		} // isset mla_tax
+		
+		if ( isset( $clean_request['mla-metakey'] ) && isset( $clean_request['mla-metavalue'] ) ) {
+			$clean_request['meta_key'] = $clean_request['mla-metakey'];
+			$clean_request['meta_value'] = $clean_request['mla-metavalue'];
+			
+			unset( $clean_request['mla-metakey'] );
+			unset( $clean_request['mla-metavalue'] );
 		} // isset mla_tax
 		
 		return $clean_request;
@@ -538,12 +557,13 @@ class MLAData {
 		global $wpdb, $table_prefix;
 		
 		/*
-		 * ALT Text is special; we have to use an SQL VIEW to build 
+		 * Custom fields are special; we have to use an SQL VIEW to build 
 		 * an intermediate table and modify the JOIN to include posts
-		 * with no value for this metadata field.
+		 * with no value for the metadata field.
 		 */
-		if ( self::$query_parameters['use_alt_text_view'] ) {
+		if ( self::$query_parameters['use_postmeta_view'] ) {
 			$view_name = self::$mla_alt_text_view;
+			$key_name = self::$query_parameters['postmeta_key'];
 			$table_name = $table_prefix . 'postmeta';
 
 			$result = $wpdb->query(
@@ -551,7 +571,7 @@ class MLAData {
 					CREATE OR REPLACE VIEW {$view_name} AS
 					SELECT post_id, meta_value
 					FROM {$table_name}
-					WHERE {$table_name}.meta_key = '_wp_attachment_image_alt'
+					WHERE {$table_name}.meta_key = '{$key_name}'
 					"
 			);
 		}
@@ -568,7 +588,7 @@ class MLAData {
 		remove_filter( 'posts_join', 'MLAData::mla_query_posts_join_filter' );
 		remove_filter( 'posts_search', 'MLAData::mla_query_posts_search_filter' );
 
-		if ( self::$query_parameters['use_alt_text_view'] ) {
+		if ( self::$query_parameters['use_postmeta_view'] ) {
 			$result = $wpdb->query( "DROP VIEW {$view_name}" );
 		}
 
@@ -674,7 +694,7 @@ class MLAData {
 		 * build an intermediate table and modify the JOIN to include posts with
 		 * no value for this metadata field.
 		 */
-		if ( self::$query_parameters['use_alt_text_view'] ) {
+		if ( self::$query_parameters['use_postmeta_view'] ) {
 			$view_name = self::$mla_alt_text_view;
 			$join_clause .= " LEFT JOIN {$view_name} ON ({$table_prefix}posts.ID = {$view_name}.post_id)";
 		}
@@ -720,7 +740,7 @@ class MLAData {
 
 		if ( isset( self::$query_parameters['orderby'] ) ) {
 			if ( 'c_' == substr( self::$query_parameters['orderby'], 0, 2 ) ) {
-				$orderby = $table_prefix . 'postmeta.meta_value';
+				$orderby = self::$mla_alt_text_view . '.meta_value';
 			} // custom field sort
 			else {
 				switch ( self::$query_parameters['orderby'] ) {
@@ -1347,6 +1367,37 @@ class MLAData {
 	}
 		
 	/**
+	 * Parse one EXIF metadata field
+	 * 
+	 * Returns a string value, converting array data to a string as necessary.
+	 * Also handles the special pseudo-values 'ALL_EXIF' and 'ALL_IPTC'.
+	 *
+	 * @since 1.13
+	 *
+	 * @param	string	field name
+	 * @param	string	metadata array containing 'mla_exif_metadata' and 'mla_iptc_metadata' arrays
+	 *
+	 * @return	string	string representation of metadata value or an empty string
+	 */
+	public static function mla_exif_metadata_value( $key, $image_metadata ) {
+		$text = '';
+		if ( array_key_exists( $key, $image_metadata['mla_exif_metadata'] ) ) {
+			$record = $image_metadata['mla_exif_metadata'][ $key ];
+			if ( is_array( $record ) ) {
+				$text = var_export( $record, true);
+			} // is_array
+			else
+				$text = $record;
+		} elseif ( 'ALL_EXIF' == $key ) {
+				$text = var_export( $image_metadata['mla_exif_metadata'], true);
+		} elseif ( 'ALL_IPTC' == $key ) {
+				$text = var_export( $image_metadata['mla_iptc_metadata'], true);
+		}
+		
+		return $text;
+	}
+		
+	/**
 	 * Fetch and filter IPTC and EXIF meta data for an image attachment
 	 * 
 	 * Returns 
@@ -1364,8 +1415,6 @@ class MLAData {
 			'mla_exif_metadata' => array()
 			);
 
-//		$post_meta = get_metadata( 'post', $post_id, '_wp_attachment_metadata' );
-//		if ( is_array( $post_meta ) && isset( $post_meta[0]['file'] ) ) {
 		if ( 0 != $post_id )
 			$path = get_attached_file($post_id);
 			
@@ -1397,6 +1446,17 @@ class MLAData {
 			if ( is_callable( 'exif_read_data' ) && in_array( $size[2], array( IMAGETYPE_JPEG, IMAGETYPE_TIFF_II, IMAGETYPE_TIFF_MM ) ) ) {
 				$results['mla_exif_metadata'] = exif_read_data( $path );
 			}
+		}
+		
+		/*
+		 * Expand EXIF array values
+		 */
+		foreach ( $results['mla_exif_metadata'] as $exif_key => $exif_value ) {
+			if ( is_array( $exif_value ) ) {
+				foreach ( $exif_value as $key => $value ) {
+					$results['mla_exif_metadata'][ $exif_key . '.' . $key ] = $value;
+				}
+			} // is_array
 		}
 		
 		return $results;

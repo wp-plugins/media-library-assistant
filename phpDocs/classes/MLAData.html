@@ -54,6 +54,7 @@
 <i class="icon-custom icon-method"></i> Methods</li>
 <li class="method public "><a href="#initialize" title="initialize :: Initialization function, similar to __construct()"><span class="description">Initialization function, similar to __construct()</span><pre>initialize()</pre></a></li>
 <li class="method public "><a href="#mla_count_list_table_items" title="mla_count_list_table_items :: Get the total number of attachment posts"><span class="description">Get the total number of attachment posts</span><pre>mla_count_list_table_items()</pre></a></li>
+<li class="method public "><a href="#mla_exif_metadata_value" title="mla_exif_metadata_value :: Parse one EXIF metadata field"><span class="description">Parse one EXIF metadata field</span><pre>mla_exif_metadata_value()</pre></a></li>
 <li class="method public "><a href="#mla_fetch_attachment_image_metadata" title="mla_fetch_attachment_image_metadata :: Fetch and filter IPTC and EXIF meta data for an image attachment"><span class="description">Fetch and filter IPTC and EXIF meta data for an image attachment</span><pre>mla_fetch_attachment_image_metadata()</pre></a></li>
 <li class="method public "><a href="#mla_fetch_attachment_metadata" title="mla_fetch_attachment_metadata :: Fetch and filter meta data for an attachment"><span class="description">Fetch and filter meta data for an attachment</span><pre>mla_fetch_attachment_metadata()</pre></a></li>
 <li class="method public "><a href="#mla_fetch_attachment_parent_data" title="mla_fetch_attachment_parent_data :: Returns information about an attachment's parent, if found"><span class="description">Returns information about an attachment's parent, if found</span><pre>mla_fetch_attachment_parent_data()</pre></a></li>
@@ -148,6 +149,30 @@ Templates separate HTML markup from PHP code for easier maintenance and localiza
 <h3>Returns</h3>
 <div class="subelement response">
 <code>integer</code>Number of attachment posts</div>
+</div></div>
+</div>
+<a name="mla_exif_metadata_value" id="mla_exif_metadata_value"></a><div class="element clickable method public mla_exif_metadata_value" data-toggle="collapse" data-target=".mla_exif_metadata_value .collapse">
+<h2>Parse one EXIF metadata field</h2>
+<pre>mla_exif_metadata_value(string $key, string $image_metadata) : string</pre>
+<div class="labels"></div>
+<div class="row collapse"><div class="detail-description">
+<p class="long_description"><p>Returns a string value, converting array data to a string as necessary.
+Also handles the special pseudo-values 'ALL_EXIF' and 'ALL_IPTC'.</p></p>
+<table class="table table-bordered"><tr>
+<th>since</th>
+<td>1.13</td>
+</tr></table>
+<h3>Parameters</h3>
+<div class="subelement argument">
+<h4>$key</h4>
+<code>string</code><p>field name</p></div>
+<div class="subelement argument">
+<h4>$image_metadata</h4>
+<code>string</code><p>metadata array containing 'mla_exif_metadata' and 'mla_iptc_metadata' arrays</p>
+</div>
+<h3>Returns</h3>
+<div class="subelement response">
+<code>string</code>string representation of metadata value or an empty string</div>
 </div></div>
 </div>
 <a name="mla_fetch_attachment_image_metadata" id="mla_fetch_attachment_image_metadata"></a><div class="element clickable method public mla_fetch_attachment_image_metadata" data-toggle="collapse" data-target=".mla_fetch_attachment_image_metadata .collapse">
@@ -714,7 +739,9 @@ each page load and cached for subsequent calls.</p></p>
 <div class="row collapse"><div class="detail-description">
 <p class="long_description"><p>This array defines parameters for the query's join, where and orderby filters.
 The parameters are set up in the _prepare_list_table_query function, and
-any further logic required to translate those values is contained in the filters.</p></p>
+any further logic required to translate those values is contained in the filters.</p>
+
+<p>Array index values are: use_postmeta_view, postmeta_key, detached, orderby, order, s, mla-search-connector, mla-search-fields, sentence, exact</p></p>
 <table class="table table-bordered"><tr>
 <th>since</th>
 <td>0.30</td>
@@ -742,7 +769,7 @@ any further logic required to translate those values is contained in the filters
 <div class="row"><footer class="span12">
             Template is built using <a href="http://twitter.github.com/bootstrap/">Twitter Bootstrap 2</a> and icons provided by <a href="http://glyphicons.com/">Glyphicons</a>.<br>
             Documentation is powered by <a href="http://www.phpdoc.org/">phpDocumentor 2.0.0a8</a> and<br>
-            generated on 2013-01-14T20:41:50-08:00.<br></footer></div>
+            generated on 2013-02-26T09:38:18-08:00.<br></footer></div>
 </div>
 </body>
 </html>

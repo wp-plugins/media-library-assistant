@@ -26,6 +26,10 @@
             <input type="radio" name="tax_action[[+tax_attr+]]" id="tax_remove_[+tax_attr+]" value="remove" /> Remove&nbsp;
             <input type="radio" name="tax_action[[+tax_attr+]]" id="tax_reset_[+tax_attr+]" value="replace" /> Replace&nbsp;
             </div>
+<!-- template="custom_field" -->
+              <label class="inline-edit-[+slug+]"> <span class="title">[+label+]</span> <span class="input-text-wrap">
+                <input type="text" name="[+slug+]" value="" />
+                </span> </label>
 <!-- template="page" -->
 <form method="get" action="">
   <table width="99%" style="display: none">
@@ -54,6 +58,7 @@
                 <input type="text" name="menu_order" value="" />
                 </span> </label>
 [+authors+]
+[+custom_fields+]
             </div>
           </fieldset>
 [+quick_middle_column+]
@@ -86,6 +91,7 @@
                 <input type="text" name="post_parent" value="" />
                 </span> </label>
 [+bulk_authors+]
+[+bulk_custom_fields+]
             </div>
           </fieldset>
           <p class="submit inline-edit-save">

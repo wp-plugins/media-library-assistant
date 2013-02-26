@@ -69,7 +69,7 @@ Two [mla_gallery] parameters provide a way to apply custom style and markup temp
 <table>
 <tr>
 <td style="padding-right: 10px; vertical-align: top; font-weight:bold">mla_style</td>
-<td>replaces the default style template for an [mla_gallery] shortcode</td>
+<td>replaces the default style template for an [mla_gallery] shortcode. You can code "none" to suppress the addition of CSS inline styles entirely.</td>
 </tr>
 <tr>
 <td style="padding-right: 10px; vertical-align: top; font-weight:bold">mla_markup</td>
@@ -117,6 +117,30 @@ Three [mla_gallery] parameters provide an easy way to control the contents of ga
 <p>
 All three of these parameters support the Markup and Attachment-specific substitution arguments defined for Markup Templates. For example, if you code `mla_rollover_text="{+date+} : {+description+}"`, the rollover text will contain the upload date, a colon, and the full description of each gallery item. Simply add "{+" before the substitution parameter name and add "+}" after the name. Note that the enclosing delimiters are different than those used in the templates, since the shortcode parser reserves square brackets ("[" and "]") for its own use.
 </p>
+<h4>Google File Viewer Support</h4>
+<p>
+Four [mla_gallery] parameters provide an easy way to generate thumbnail images for the non-image file types.
+</p>
+<table>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">mla_viewer</td>
+<td>must be "true" to enable thumbnail generation</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">mla_viewer_extensions</td>
+<td>a comma-delimited list of the file extensions to be processed; the default is "pdf,txt,doc,xls,ppt" (do not include the dot (".") preceding the file extension). You may add or remove extensions, but these are known to generate reasonable thumbnail images. Sadly, the newer "docx,xlsx,pptx" extensions do not work well with the Google File Viewer.</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">mla_viewer_page</td>
+<td>the page number (default "1") to be used for the thumbnail image. If you specify a value greater than the number of pages in the file, no image is generated.</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">mla_viewer_width</td>
+<td>the width in pixels (default "150") of the generated thumbnail image. The height will be set automatically and cannot be specified.</td>
+</tr>
+</table>
+<p>
+When this feature is active, gallery items for which WordPress can generate a thumbnail image are not altered. If WordPress generation fails, the gallery thumbnail is replaced by an "img" html tag whose "src" attribute contains a url reference to the Google File Viewer. The Google File Viewer arguments include the url of the source file, the page number and the width. Note that the source file must be Internet accessible; files behind firewalls and on local servers will not generate a thumbnail image.</p>
 <h4>Order, Orderby</h4>
 <p>
 To order the gallery randomly, use "orderby=rand". To suppress gallery ordering you can use "orderby=none" or "order=rand".
@@ -149,7 +173,10 @@ The "id" parameter lets you specify a post ID for your query. If the "id" parame
 For WordPress 3.5 and later, the "ids" parameter lets you specify a list of Post IDs. The attachment(s) matching the "ids" values will be displayed in the order specified by the list.
 </p>
 <p>
-You can use the "post_parent" to override the default behavior. If you set "post_parent" to a specific post ID, only the items attached to that post are displayed. If you set "post_parent" to "current", only the items attached to the current post are displayed. If you set "post_parent" to "all", the query will not have a post ID or post_parent parameter.
+You can use the "post_parent" to override the default behavior. If you set "post_parent" to a specific post ID, only the items attached to that post are displayed. If you set "post_parent" to <strong>"current"</strong>, only the items attached to the current post are displayed. If you set "post_parent" to <strong>"all"</strong>, the query will not have a post ID or post_parent parameter.
+</p>
+<p>
+Two other "post_parent" values let you restrict the gallery to attached or unattached items. If you set "post_parent" to <strong>"any"</strong>, only the items attached to a post or page are displayed. If you set "post_parent" to <strong>"none"</strong>, only the unattached items are displayed.
 </p>
 <p>
 For example, [mla_gallery tag="artisan"] will display all images having the specified tag value, regardless of which post (if any) they are attached to. If you use [mla_gallery tag="artisan" post_parent="current"] it will display images having the specified tag value only if they are attached to the current post.
@@ -160,11 +187,11 @@ You can query by author's id or the "user_nicename" value (not the "display_name
 </p>
 <h4>Category Parameters</h4>
 <p>
-Remember to use "post_parent=current" if you want to restrict your query to items attached to the current post.
+The Category parameters search in the WordPress core &quot;Categories&quot; taxonomy. Remember to use "post_parent=current" if you want to restrict your query to items attached to the current post.
 </p>
 <h4>Tag Parameters</h4>
 <p>
-Remember to use "post_parent=current" if you want to restrict your query to items attached to the current post.
+The Tag parameters search in the WordPress core &quot;Tags&quot; taxonomy. Remember to use "post_parent=current" if you want to restrict your query to items attached to the current post.
 </p>
 <p>
 Note that the "tag_id" parameter requires exactly one tag ID; multiple IDs are not allowed. You can use the "tag__in" parameter to query for multiple values.
@@ -180,7 +207,13 @@ For simple queries, enter the taxonomy name and the term(s) that must be matched
 <li>[mla_gallery attachment_category='separate-category,another-category']</li>
 </ul>
 <p>
-Note that you must use the name/slug strings for taxonomy and terms, not the "title" strings.
+Note that you must use the name/slug strings for taxonomy and terms, not the "title" strings. If you are using the "Att. Tag" taxonomy built in to MLA then your shortcode should be something like:
+</p>
+<ul class="mla_settings">
+<li>[mla_gallery attachment_tag=artisan post_parent=all]</li>
+</ul>
+<p>
+In this example, "attachment_tag" is the WordPress taxonomy name/slug for the taxonomy. If you're using "Att. Category&quot;, the slug would be "attachment_category".
 </p>
 <p>
 More complex queries can be specified by using "tax_query", e.g.:
@@ -578,7 +611,11 @@ There are four prefix values for field-level data. Prefix values must be coded a
 		Though the specification is not currently maintained by any industry or standards organization, almost all camera manufacturers use it. It is also supported by many image editing programs such as Adobe PhotoShop.
 		For this category, you can code any of the field names embedded in the image by the camera or editing software. The is no official list of standard field names, so you just have to know the names your camera and software use; field names are case-sensitive.
 		<br />&nbsp;<br />
-		You can find more information in the <a href="http://en.wikipedia.org/wiki/Exchangeable_image_file_format" title="IPTC-NAA Information Interchange Model Version No. 4.1 specification" target="_blank">Exchangeable image file format</a> article on Wikipedia.</td>
+		You can find more information in the <a href="http://en.wikipedia.org/wiki/Exchangeable_image_file_format" title="IPTC-NAA Information Interchange Model Version No. 4.1 specification" target="_blank">Exchangeable image file format</a> article on Wikipedia. You can find External Links to EXIF standards and tag listings at the end of the Wikipedia article.
+		<br />&nbsp;<br />
+		MLA uses a standard PHP function, <a href="http://php.net/manual/en/function.exif-read-data.php" title="PHP Manual page for exif_read_data" target="_blank">exif_read_data</a>, to extract EXIF data from images. The function returns three arrays in addition to the raw EXIF data; COMPUTED, THUMBNAIL and COMMENT. You can access the array elements by prefacing the element you want with the array name. For example, the user comment text is available as "COMPUTED.UserComment" and "COMPUTED.UserCommentEncoding". You can also get "COMPUTED.Copyright" and its two parts (if present), "COMPUTED.Copyright.Photographer" and "COMPUTED.Copyright.Editor". The THUMBNAIL and COMMENT arrays work in a similar fashion.
+		<br />&nbsp;<br />
+		Two special exif "pseudo-values" are available; <strong>ALL_IPTC</strong> and <strong>ALL_EXIF</strong>. These return a string representation of all IPTC or EXIF data respectively. You can use these pseudo-values to examine the metadata in an image, find field names and see what values are embedded in the image.</td>
 	</tr>
 </table>
 
@@ -669,7 +706,7 @@ This is a powerful tool, but it comes at the price of additional database storag
 </p>
 <ul class="mla_settings">
 <li>You can add the data to an [mla_gallery] with a field-level markup substitution parameter. For example, add the image dimensions or a list of all the intermediate sizes available for the image.</li>
-<li>You can add the data as a sortable column to the Media/Assistant submenu table. For example, you can find all the "orphans" in your library by adding "reference_issues" and then sorting by that column.</li>
+<li>You can add the data as a sortable, searchable column to the Media/Assistant submenu table. For example, you can find all the "orphans" in your library by adding "reference_issues" and then sorting by that column. You can also click on any value in the column to filter the display on a single custom field value.</li>
 </ul>
 <p>
 Most of the data elements are static, i.e., they do not change after the attachment is added to the Media Library.
@@ -677,6 +714,9 @@ The parent/reference information (parent_type, parent_name, parent_issues, refer
 </p>
 <p>
 Several of the data elements are sourced from the WordPress "image_meta" array. The credit, caption, copyright and title elements are taken from the IPTC/EXIF metadata (if any), but they go through a number of filtering rules that are not easy to replicate with the MLA IPTC/EXIF processing rules. You may find these "image_meta" elements more useful than the raw IPTC/EXIF metadata.
+</p>
+<p>
+If you just want to add a custom field to the Media/Assistant submenu, the quick edit area and/or the bulk edit area you can bypass the mapping logic by leaving the Data Source value as "-- None (select a value) --".
 </p>
 <a name="mla_custom_field_parameters"></a>
 &nbsp;
@@ -688,6 +728,10 @@ Several of the data elements are sourced from the WordPress "image_meta" array. 
 <strong>NOTE:</strong> Sorting by custom fields in the Media/Assistant submenu is by string values. For numeric data this can cause odd-looking results, e.g., dimensions of "1200x768" will sort before "640x480". The "file_size", "pixels", "width" and "height" data sources are converted to srtings and padded on the left with spaces if you use the "commas" format. This padding makes them sort more sensibly.
 </p>
 <table>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">-- None (select a value --</td>
+<td>nothing, i.e., no change to existing value (if any). Use this source if you just want to add a custom field to the Media/Assistant submenu and/or the inline edit areas.</td>
+</tr>
 <tr>
 <td style="padding-right: 10px; vertical-align: top; font-weight:bold">path</td>
 <td>path portion of the base_file value, e.g., 2012/11/</td>
@@ -849,7 +893,11 @@ The three mapping tables on the IPTC/EXIF tab have the following columns:
 </dd>
 <dt>EXIF Value</dt>
 <dd>The EXIF (EXchangeable Image File) metadata, if any, embedded in a JPEG DCT or TIFF Rev 6.0 image file. 
- Though the specification is not currently maintained by any industry or standards organization, almost all camera manufacturers use it. For this category, you can code any of the field names embedded in the image by the camera or editing software. The is no official list of standard field names, so you just have to know the names your camera and software use; field names are case-sensitive. You can find more information in the <a href="http://en.wikipedia.org/wiki/Exchangeable_image_file_format" title="Exchangeable image file format Wikipedia article" target="_blank">Exchangeable image file format</a> article on Wikipedia.
+ Though the specification is not currently maintained by any industry or standards organization, almost all camera manufacturers use it. For this category, you can code any of the field names embedded in the image by the camera or editing software. The is no official list of standard field names, so you just have to know the names your camera and software use; field names are case-sensitive. You can find more information in the <a href="http://en.wikipedia.org/wiki/Exchangeable_image_file_format" title="Exchangeable image file format Wikipedia article" target="_blank">Exchangeable image file format</a> article on Wikipedia. You can find External Links to EXIF standards and tag listings at the end of the Wikipedia article.
+		<br />&nbsp;<br />
+		MLA uses a standard PHP function, <a href="http://php.net/manual/en/function.exif-read-data.php" title="PHP Manual page for exif_read_data" target="_blank">exif_read_data</a>, to extract EXIF data from images. The function returns three arrays in addition to the raw EXIF data; COMPUTED, THUMBNAIL and COMMENT. You can access the array elements by prefacing the element you want with the array name. For example, the user comment text is available as "COMPUTED.UserComment" and "COMPUTED.UserCommentEncoding". You can also get "COMPUTED.Copyright" and its two parts (if present), "COMPUTED.Copyright.Photographer" and "COMPUTED.Copyright.Editor". The THUMBNAIL and COMMENT arrays work in a similar fashion.
+		<br />&nbsp;<br />
+		Two special exif "pseudo-values" are available; <strong>ALL_IPTC</strong> and <strong>ALL_EXIF</strong>. These return a string representation of all IPTC or EXIF data respectively. You can use these pseudo-values to examine the metadata in an image, find field names and see what values are embedded in the image.
 </dd>
 <dt>Priority</dt>
 <dd>If both the IPTC Value and the EXIF Value are non-blank for a particular image, you can select which of the values will be used for the mapping.

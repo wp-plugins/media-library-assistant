@@ -935,29 +935,39 @@ class MLAOptions {
  	 *
 	 * @since 1.10
 	 *
-	 * @param	string	array format; 'default_columns' (default), 'default_hidden_columns' or 'default_sortable_columns'
+	 * @param	string	array format; 'default_columns' (default), 'default_hidden_columns', 'default_sortable_columns', 'quick_edit' or 'bulk_edit'
 	 *
-	 * @return	array	default, hidden or sortable colums in appropriate format
+	 * @return	array	default, hidden, sortable quick_edit or bulk_edit colums in appropriate format
 	 */
 	public static function mla_custom_field_support( $support_type = 'default_columns' ) {
 		$option_values = self::mla_get_option( 'custom_field_mapping' );
 		$results = array();
 
 		foreach( $option_values as $key => $value ) {
-			if ( $value['mla_column'] ) {
-				$slug = 'c_' . sanitize_title( $key );
-				switch( $support_type ) {
-					case 'default_columns':
+			$slug = 'c_' . sanitize_title( $key );
+
+			switch( $support_type ) {
+				case 'default_columns':
+					if ( $value['mla_column'] )
 						$results[ $slug ] = $value['name'];
-						break;
-					case 'default_hidden_columns':
+					break;
+				case 'default_hidden_columns':
+					if ( $value['mla_column'] )
 						$results[ ] = $slug;
-						break;
-					case 'default_sortable_columns':
+					break;
+				case 'default_sortable_columns':
+					if ( $value['mla_column'] )
 						$results[ $slug ] = array( $slug, false );
-						break;
-				} // switch support_type
-			} // is mla_column
+					break;
+				case 'quick_edit':
+					if ( $value['quick_edit'] )
+						$results[ $slug ] = $value['name'];
+					break;
+				case 'bulk_edit':
+					if ( $value['bulk_edit'] )
+						$results[ $slug ] = $value['name'];
+					break;
+			} // switch support_type
 		} // foreach option_value
 		
 		return $results;
@@ -1053,6 +1063,9 @@ class MLAOptions {
 		static $upload_dir, $intermediate_sizes = NULL, $wp_attached_files = NULL, $wp_attachment_metadata = NULL;
 		static $current_id = 0, $file_info = NULL;
 		
+		if ( 'none' == $data_source )
+			return '';
+			
 		/*
 		 * Do this once per page load; cache attachment metadata if mapping all attachments
 		 */
@@ -1082,13 +1095,16 @@ class MLAOptions {
 				$meta_value = get_metadata( 'post', $post_id, '_wp_attached_file' );
 				$wp_attached_files = array( $post_id => (object) array( 'post_id' => $post_id, 'meta_value' =>  $meta_value[0] ) );
 				
-				if ( NULL == $attachment_metadata )
-					$attachment_metadata = get_metadata( 'post', $post_id, '_wp_attachment_metadata' );
+				if ( NULL == $attachment_metadata ) {
+					$metadata = get_metadata( 'post', $post_id, '_wp_attachment_metadata' );
+					if ( isset( $metadata[0] ) )
+						$attachment_metadata = $metadata[0];
+				}
 
 				if ( empty( $attachment_metadata ) )
 					$attachment_metadata = array();
 					
-				$wp_attachment_metadata = array( $post_id => (object) array( 'post_id' => $post_id, 'meta_value' => serialize( $attachment_metadata[0] ) ) );
+				$wp_attachment_metadata = array( $post_id => (object) array( 'post_id' => $post_id, 'meta_value' => serialize( $attachment_metadata ) ) );
 			}
 		
  			$file_info = self::_evaluate_file_information( $upload_dir, $wp_attached_files, $wp_attachment_metadata, $post_id );
@@ -1487,7 +1503,9 @@ class MLAOptions {
 					'data_source' => 'none',
 					'keep_existing' => true,
 					'format' => 'native',
-					'mla_column' => false
+					'mla_column' => false,
+					'quick_edit' => false,
+					'bulk_edit' => false
 				);
 			}
 
@@ -1540,6 +1558,34 @@ class MLAOptions {
 				$old_values['mla_column'] = $boolean_value;
 			}
 			
+			if ( isset( $new_value['quick_edit'] ) ) {
+				$boolean_value = true;
+				$boolean_text = 'unchecked to checked';
+			}
+			else {
+				$boolean_value = false;
+				$boolean_text = 'checked to unchecked';
+			}
+			if ( $old_values['quick_edit'] != $boolean_value ) {
+				$any_setting_changed = true;
+				$message_list .= "<br>{$old_values['name']} changing Quick Edit value from {$boolean_text}.\r\n";
+				$old_values['quick_edit'] = $boolean_value;
+			}
+			
+			if ( isset( $new_value['bulk_edit'] ) ) {
+				$boolean_value = true;
+				$boolean_text = 'unchecked to checked';
+			}
+			else {
+				$boolean_value = false;
+				$boolean_text = 'checked to unchecked';
+			}
+			if ( $old_values['bulk_edit'] != $boolean_value ) {
+				$any_setting_changed = true;
+				$message_list .= "<br>{$old_values['name']} changing Bulk Edit value from {$boolean_text}.\r\n";
+				$old_values['bulk_edit'] = $boolean_value;
+			}
+			
 			if ( $any_setting_changed ) {
 				$settings_changed = true;
 				$current_values[ $new_key ] = $old_values;
@@ -1573,7 +1619,7 @@ class MLAOptions {
 		switch ( $action ) {
 			case 'render':
 				if (empty( $current_values ) ) {
-					$table_rows = MLAData::mla_parse_template( self::$mla_option_templates['custom-field-empty-row'], array( 'column_count' => 5 ) );
+					$table_rows = MLAData::mla_parse_template( self::$mla_option_templates['custom-field-empty-row'], array( 'column_count' => 7 ) );
 				}
 				else {
 					$row_template = self::$mla_option_templates['custom-field-rule-row'];
@@ -1590,7 +1636,9 @@ class MLAOptions {
 						'native_format' => '',
 						'commas_format' => '',
 						'mla_column_checked' => '',
-						'column_count' => 5
+						'quick_edit_checked' => '',
+						'bulk_edit_checked' => '',
+						'column_count' => 7
 					);
 					
 					if ( $current_value['keep_existing'] )
@@ -1612,6 +1660,12 @@ class MLAOptions {
 					if ( $current_value['mla_column'] )
 						$row_values['mla_column_checked'] = 'checked="checked"';
 
+					if ( $current_value['quick_edit'] )
+						$row_values['quick_edit_checked'] = 'checked="checked"';
+
+					if ( $current_value['bulk_edit'] )
+						$row_values['bulk_edit_checked'] = 'checked="checked"';
+
 					$table_rows .= MLAData::mla_parse_template( $row_template, $row_values );
 				} // foreach current_value
 
@@ -1628,7 +1682,9 @@ class MLAOptions {
 					'native_format' => 'selected="selected"',
 					'commas_format' => '',
 					'mla_column_checked' => '',
-					'column_count' => 5
+					'quick_edit_checked' => '',
+					'bulk_edit_checked' => '',
+					'column_count' => 7
 				);
 				$table_rows .= MLAData::mla_parse_template( $row_template, $row_values );
 					
@@ -1645,7 +1701,9 @@ class MLAOptions {
 					'native_format' => 'selected="selected"',
 					'commas_format' => '',
 					'mla_column_checked' => '',
-					'column_count' => 5
+					'quick_edit_checked' => '',
+					'bulk_edit_checked' => '',
+					'column_count' => 7
 				);
 				$table_rows .= MLAData::mla_parse_template( $row_template, $row_values );
 					
@@ -1702,7 +1760,6 @@ class MLAOptions {
 	public static function mla_evaluate_iptc_exif_mapping( $post, $category, $settings = NULL ) {
 		$metadata = MLAData::mla_fetch_attachment_image_metadata( $post->ID );
 		$iptc_metadata = $metadata['mla_iptc_metadata'];
-		$exif_metadata = $metadata['mla_exif_metadata'];
 		$updates = array();
 		$update_all = ( 'iptc_exif_mapping' == $category );
 		if ( NULL == $settings )
@@ -1711,7 +1768,7 @@ class MLAOptions {
 		if ( $update_all || ( 'iptc_exif_standard_mapping' == $category ) ) {}{
 			foreach( $settings['standard'] as $new_key => $new_value ) {
 				$iptc_value = ( isset( $iptc_metadata[ $new_value['iptc_value'] ] ) ) ? $iptc_metadata[ $new_value['iptc_value'] ] : '';
-				$exif_value = ( isset( $exif_metadata[ $new_value['exif_value'] ] ) ) ? $exif_metadata[ $new_value['exif_value'] ] : '';
+				$exif_value = MLAData::mla_exif_metadata_value( $new_value['exif_value'], $metadata );
 				$keep_existing = (boolean) $new_value['keep_existing'];
 				
 				if ( $new_value['iptc_first'] )
@@ -1761,7 +1818,7 @@ class MLAOptions {
 			
 			foreach( $settings['taxonomy'] as $new_key => $new_value ) {
 				$iptc_value = ( isset( $iptc_metadata[ $new_value['iptc_value'] ] ) ) ? $iptc_metadata[ $new_value['iptc_value'] ] : '';
-				$exif_value = ( isset( $exif_metadata[ $new_value['exif_value'] ] ) ) ? $exif_metadata[ $new_value['exif_value'] ] : '';
+				$exif_value = MLAData::mla_exif_metadata_value( $new_value['exif_value'], $metadata );
 				
 				$tax_action = ( $new_value['keep_existing'] ) ? 'add' : 'replace';
 				$tax_parent = ( isset( $new_value['parent'] ) && (0 != (integer) $new_value['parent'] ) ) ? (integer) $new_value['parent'] : 0;
@@ -1813,7 +1870,7 @@ class MLAOptions {
 			
 			foreach( $settings['custom'] as $new_key => $new_value ) {
 				$iptc_value = ( isset( $iptc_metadata[ $new_value['iptc_value'] ] ) ) ? $iptc_metadata[ $new_value['iptc_value'] ] : '';
-				$exif_value = ( isset( $exif_metadata[ $new_value['exif_value'] ] ) ) ? $exif_metadata[ $new_value['exif_value'] ] : '';
+				$exif_value = MLAData::mla_exif_metadata_value( $new_value['exif_value'], $metadata );
 
 				if ( $new_value['iptc_first'] )
 					if ( ! empty( $iptc_value ) )

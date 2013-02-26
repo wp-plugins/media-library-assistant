@@ -38,7 +38,7 @@ class MLA {
 	 *
 	 * @var	string
 	 */
-	const CURRENT_MLA_VERSION = '1.11';
+	const CURRENT_MLA_VERSION = '1.13';
 
 	/**
 	 * Minimum version of PHP required for this plugin
@@ -102,6 +102,24 @@ class MLA {
 	 * @var	string
 	 */
 	const JAVASCRIPT_INLINE_EDIT_OBJECT = 'mla_inline_edit_vars';
+
+	/**
+	 * Slug for localizing and enqueueing JavaScript - Add Media and related dialogs
+	 *
+	 * @since 1.13
+	 *
+	 * @var	string
+	 */
+	const JAVASCRIPT_MEDIA_POPUP_SLUG = 'mla-media-popup-scripts';
+
+	/**
+	 * Object name for localizing JavaScript - Add Media and related dialogs
+	 *
+	 * @since 1.13
+	 *
+	 * @var	string
+	 */
+	const JAVASCRIPT_MEDIA_POPUP_OBJECT = 'mla_media_popup_vars';
 
 	/**
 	 * Slug for adding plugin submenu
@@ -266,14 +284,28 @@ class MLA {
 	 * @return	void
 	 */
 	public static function mla_admin_enqueue_scripts_action( $page_hook ) {
+// error_log('mla_admin_enqueue_scripts_action $page_hook = ' . var_export( $page_hook, true ), 0 );
+		$suffix = defined('SCRIPT_DEBUG') && SCRIPT_DEBUG ? '' : '.min';
+		
+/*		if( 'post.php' == $page_hook ) {
+			wp_enqueue_script( self::JAVASCRIPT_MEDIA_POPUP_SLUG, MLA_PLUGIN_URL . "js/mla-media-popup-scripts{$suffix}.js", 
+				array( 'media-views' ), self::CURRENT_MLA_VERSION, false );
+			$script_variables = array(
+				'menu_title' => 'MLA Custom Menu',
+				'button_title' => 'MLA Custom Button',
+				'comma' => _x( ',', 'tag delimiter' ),
+				'ajax_action' => self::JAVASCRIPT_MEDIA_POPUP_SLUG,
+				'ajax_nonce' => wp_create_nonce( self::MLA_ADMIN_NONCE ) 
+			);
+			wp_localize_script( self::JAVASCRIPT_MEDIA_POPUP_SLUG, self::JAVASCRIPT_MEDIA_POPUP_OBJECT, $script_variables );
+		} */
+		
 		if ( ( 'media_page_mla-menu' != $page_hook ) && ( 'settings_page_mla-settings-menu' != $page_hook ) )
 			return;
 
 		wp_register_style( self::STYLESHEET_SLUG, MLA_PLUGIN_URL . 'css/mla-style.css', false, self::CURRENT_MLA_VERSION );
 		wp_enqueue_style( self::STYLESHEET_SLUG );
 
-		$suffix = defined('SCRIPT_DEBUG') && SCRIPT_DEBUG ? '' : '.min';
-		
 		if ( isset( $_REQUEST['mla_admin_action'] ) && ( $_REQUEST['mla_admin_action'] == self::MLA_ADMIN_SINGLE_EDIT_DISPLAY ) ) {
 			wp_enqueue_script( self::JAVASCRIPT_SINGLE_EDIT_SLUG, MLA_PLUGIN_URL . "js/mla-single-edit-scripts{$suffix}.js", 
 				array( 'wp-lists', 'suggest', 'jquery' ), self::CURRENT_MLA_VERSION, false );
@@ -286,7 +318,16 @@ class MLA {
 		else {
 			wp_enqueue_script( self::JAVASCRIPT_INLINE_EDIT_SLUG, MLA_PLUGIN_URL . "js/mla-inline-edit-scripts{$suffix}.js", 
 				array( 'wp-lists', 'suggest', 'jquery' ), self::CURRENT_MLA_VERSION, false );
+				
+			$fields = array( 'post_title', 'post_name', 'post_excerpt', 'image_alt', 'post_parent', 'menu_order', 'post_author' );
+			$custom_fields = MLAOptions::mla_custom_field_support( 'quick_edit' );
+			$custom_fields = array_merge( $custom_fields, MLAOptions::mla_custom_field_support( 'bulk_edit' ) );
+			foreach ($custom_fields as $slug => $label ) {
+				$fields[] = $slug;
+			}
+
 			$script_variables = array(
+				'fields' => $fields,
 				'error' => 'Error while saving the changes.',
 				'ntdeltitle' => 'Remove From Bulk Edit',
 				'notitle' => '(no title)',
@@ -634,6 +675,20 @@ class MLA {
 							if ( isset( $_REQUEST['post_author'] ) && ( -1 != $_REQUEST['post_author'] ) )
 								$new_data['post_author'] = $_REQUEST['post_author'];
 							
+							/*
+							 * Custom field support
+							 */
+							$custom_fields = array();
+							foreach (MLAOptions::mla_custom_field_support( 'bulk_edit' ) as $slug => $label ) {
+								$field_name =  $slug;
+								if ( isset( $_REQUEST[ $field_name ] ) && ( ! empty( $_REQUEST[ $field_name ] ) ) ) {
+									$custom_fields[ $label ] = $_REQUEST[ $field_name ];
+								  }
+							}
+					
+							if ( ! empty( $custom_fields ) )
+								$new_data[ 'custom_updates' ] = $custom_fields;
+							
 							$item_content = MLAData::mla_update_single_item( $post_id, $new_data, $_REQUEST['tax_input'], $_REQUEST['tax_action'] );
 							break;
 						case 'restore':
@@ -725,7 +780,7 @@ class MLA {
 			), $_SERVER['REQUEST_URI'] );
 			
 			if ( !empty( $_REQUEST['heading_suffix'] ) ) {
-				echo ' - ' . $_REQUEST['heading_suffix'] . "</h2>\r\n";
+				echo ' - ' . esc_html( $_REQUEST['heading_suffix'] ) . "</h2>\r\n";
 			} elseif ( !empty( $_REQUEST['s'] ) && !empty( $_REQUEST['mla-search-fields'] ) ) {
 				echo ' - search results for "' . stripslashes( trim( $_REQUEST['s'] ) ) . "\"</h2>\r\n";
 			} else
@@ -855,6 +910,21 @@ class MLA {
 			wp_die( __( 'You are not allowed to edit this Attachment.' ) );
 
 		/*
+		 * Custom field support
+		 */
+		$custom_fields = array();
+		foreach (MLAOptions::mla_custom_field_support( 'quick_edit' ) as $slug => $label ) {
+			$field_name =  $slug;
+			if ( isset( $_REQUEST[ $field_name ] ) ) {
+				$custom_fields[ $label ] = $_REQUEST[ $field_name ];
+				unset ( $_REQUEST[ $field_name ] );
+			  }
+		}
+
+		if ( ! empty( $custom_fields ) )
+			$_REQUEST[ 'custom_updates' ] = $custom_fields;
+		
+		/*
 		 * The category taxonomy is a special case because post_categories_meta_box() changes the input name
 		 */
 		if ( !isset( $_REQUEST['tax_input'] ) )
@@ -947,6 +1017,15 @@ class MLA {
 		else
 			$authors_dropdown = '';
 
+		$custom_fields = '';
+		foreach (MLAOptions::mla_custom_field_support( 'quick_edit' ) as $slug => $label ) {
+			  $page_values = array(
+				  'slug' => $slug,
+				  'label' => esc_attr( $label ),
+			  );
+			  $custom_fields .= MLAData::mla_parse_template( $page_template_array['custom_field'], $page_values );
+		}
+		
 		/*
 		 * The middle column contains the hierarchical taxonomies, e.g., Attachment Category
 		 */
@@ -1032,14 +1111,25 @@ class MLA {
 		else
 			$bulk_authors_dropdown = '';
 
+		$bulk_custom_fields = '';
+		foreach (MLAOptions::mla_custom_field_support( 'bulk_edit' ) as $slug => $label ) {
+			  $page_values = array(
+				  'slug' => $slug,
+				  'label' => esc_attr( $label ),
+			  );
+			  $bulk_custom_fields .= MLAData::mla_parse_template( $page_template_array['custom_field'], $page_values );
+		}
+
 		$page_values = array(
 			'colspan' => count( $MLAListTable->get_columns() ),
 			'authors' => $authors_dropdown,
+			'custom_fields' => $custom_fields,
 			'quick_middle_column' => $quick_middle_column,
 			'quick_right_column' => $quick_right_column,
 			'bulk_middle_column' => $bulk_middle_column,
 			'bulk_right_column' => $bulk_right_column,
-			'bulk_authors' => $bulk_authors_dropdown
+			'bulk_authors' => $bulk_authors_dropdown,
+			'bulk_custom_fields' => $bulk_custom_fields			
 		);
 		$page_template = MLAData::mla_parse_template( $page_template_array['page'], $page_values );
 		return $page_template;

@@ -213,10 +213,13 @@ Custom field mapping can be applied automatically when an attachment is added to
 If you click any of the "Map All Attachments" buttons, the rule currently displayed for that field will be immediately applied to <strong><em>ALL</em></strong> of the attachments in your site. Rule changes are <strong><em>NOT</em></strong> saved when you click any of these buttons, and <strong><em>THERE IS NO UNDO FOR THESE ACTIONS!</em></strong>
 </p>
 <p>
+If you just want to add a custom field to the Media/Assistant submenu, the quick edit area and/or the bulk edit area you can bypass the mapping logic by leaving the Data Source value as "-- None (select a value) --".
+</p>
+<p>
 You can find more information about all of these topics on the <a href="http:/wp-admin/options-general.php?page=mla-settings-menu&amp;mla_tab=documentation#mla_custom_field_mapping" title="Custom Field Processing Options documentation">Documentation tab</a>.
 </p>
 <p>
-<strong>NOTE:</strong> Check the box in the "MLA Column" column to make the field a sortable column in the Media/Assistant submenu table. The "file_size", "pixels", "width" and "height" data sources will sort more sensibly if you use the "Commas" format.
+<strong>NOTE:</strong> Check the box in the "MLA Column" column to make the field a sortable, searchable column in the Media/Assistant submenu table. The "file_size", "pixels", "width" and "height" data sources will sort more sensibly if you use the "Commas" format. Check the "Quick Edit" or "Bulk Edit" box to add the field to the quick edit or bulk edit areas of the Media/Assistant submenu.
 </p>
 <form method="post" class="mla-display-settings-page" id="mla-display-settings-custom-field-tab">
 &nbsp;<br />

@@ -67,6 +67,7 @@
 <li class="property private "><a href="#%24mla_iptc_formats" title="$mla_iptc_formats :: IPTC file format identifiers and descriptions"><span class="description">IPTC file format identifiers and descriptions</span><pre>$mla_iptc_formats</pre></a></li>
 <li class="property private "><a href="#%24mla_iptc_image_types" title="$mla_iptc_image_types :: IPTC image type identifiers and descriptions"><span class="description">IPTC image type identifiers and descriptions</span><pre>$mla_iptc_image_types</pre></a></li>
 <li class="property private "><a href="#%24mla_iptc_records" title="$mla_iptc_records :: IPTC Dataset identifiers and names"><span class="description">IPTC Dataset identifiers and names</span><pre>$mla_iptc_records</pre></a></li>
+<li class="property private "><a href="#%24query_parameters" title='$query_parameters :: WP_Query filter "parameters"'><span class="description">WP_Query filter "parameters"</span><pre>$query_parameters</pre></a></li>
 </ul>
 </div>
 <div class="span8">
@@ -169,6 +170,7 @@ Enhancements include many additional selection parameters and full taxonomy supp
 <div class="row collapse"><div class="detail-description">
 <p class="long_description"><p>Captures debug information. Adds whitespace to the post_type = 'attachment'
 phrase to circumvent subsequent Role Scoper modification of the clause.
+Handles post_parent "any" and "none" cases.
 Defined as public because it's a filter.</p></p>
 <table class="table table-bordered"><tr>
 <th>since</th>
@@ -274,6 +276,22 @@ the "IPTC-NAA Information Interchange Model Version No. 4.1".</p></p>
 </tr></table>
 </div></div>
 </div>
+<a name="%24query_parameters" id="$query_parameters"> </a><div class="element clickable property private $query_parameters" data-toggle="collapse" data-target=".$query_parameters .collapse">
+<h2>WP_Query filter "parameters"</h2>
+<pre>$query_parameters : array</pre>
+<div class="labels"></div>
+<div class="row collapse"><div class="detail-description">
+<p class="long_description"><p>This array defines parameters for the query's where filter, mla_shortcode_query_posts_where_filter.
+The parameters are set up in the mla_get_shortcode_attachments function, and
+any further logic required to translate those values is contained in the filter.</p>
+
+<p>Array index values are: post_parent</p></p>
+<table class="table table-bordered"><tr>
+<th>since</th>
+<td>1.13</td>
+</tr></table>
+</div></div>
+</div>
 </div>
 </div>
 </div>
@@ -281,7 +299,7 @@ the "IPTC-NAA Information Interchange Model Version No. 4.1".</p></p>
 <div class="row"><footer class="span12">
             Template is built using <a href="http://twitter.github.com/bootstrap/">Twitter Bootstrap 2</a> and icons provided by <a href="http://glyphicons.com/">Glyphicons</a>.<br>
             Documentation is powered by <a href="http://www.phpdoc.org/">phpDocumentor 2.0.0a8</a> and<br>
-            generated on 2013-01-14T20:41:51-08:00.<br></footer></div>
+            generated on 2013-02-26T09:38:18-08:00.<br></footer></div>
 </div>
 </body>
 </html>
