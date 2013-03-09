@@ -2,7 +2,7 @@
 Contributors: dglingren
 Donate link: 
 Tags: attachments, documents, gallery, image, images, media, library, media library, media-tags, media tags, tags, media categories, categories
-Requires at least: 3.1
+Requires at least: 3.3
 Tested up to: 3.4.1
 Stable tag: 0.1
 License: GPLv2 or later
