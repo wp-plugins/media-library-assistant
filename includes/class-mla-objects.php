@@ -164,7 +164,7 @@ class MLAObjects {
 		}
 		
 		$request = array (
-			'fields' => 'ids',
+//			'fields' => 'ids',
 			'post_type' => 'attachment', 
 			'post_status' => 'inherit',
 			'orderby' => 'none',
