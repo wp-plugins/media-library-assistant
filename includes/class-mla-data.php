@@ -1726,7 +1726,6 @@ class MLAData {
 		$tags = array_map( 'intval', $tags );
 		$tags = array_unique( $tags );
 		$terms_after = array_diff( array_map( 'intval', $terms_before ), $tags );
-
 		return $terms_after;
 	}
 	

@@ -111,9 +111,9 @@ class MLAObjects {
 	 */
 	public static function mla_taxonomy_get_columns_filter( $columns ) {
 		/*
-		 * Adding a tag is done with AJAX, and there's no current screen object
+		 * Adding or inline-editing a tag is done with AJAX, and there's no current screen object
 		 */
-		if ( isset( $_POST['action'] ) && ( 'add-tag' == $_POST['action'] ) ) {
+		if ( isset( $_POST['action'] ) && in_array( $_POST['action'], array( 'add-tag', 'inline-save-tax' ) ) ) {
 			$post_type = !empty($_POST['post_type']) ? $_POST['post_type'] : 'post';
 		}
 		else {
@@ -146,9 +146,9 @@ class MLAObjects {
 	 */
 	public static function mla_taxonomy_column_filter( $place_holder, $column_name, $term_id ) {
 		/*
-		 * Adding a tag is done with AJAX, and there's no current screen object
+		 * Adding or inline-editing a tag is done with AJAX, and there's no current screen object
 		 */
-		if ( isset( $_POST['action'] ) && ( 'add-tag' == $_POST['action'] ) ) {
+		if ( isset( $_POST['action'] ) && in_array( $_POST['action'], array( 'add-tag', 'inline-save-tax' ) ) ) {
 			$taxonomy = !empty($_POST['taxonomy']) ? $_POST['taxonomy'] : 'post_tag';
 		}
 		else {
@@ -164,8 +164,14 @@ class MLAObjects {
 		}
 		
 		$request = array (
+			'fields' => 'ids',
 			'post_type' => 'attachment', 
 			'post_status' => 'inherit',
+			'orderby' => 'none',
+			'nopaging' => true,
+			'posts_per_page' => 0,
+			'posts_per_archive_page' => 0,
+			'update_post_term_cache' => false,
 			'tax_query' => array(
 				array(
 					'taxonomy' => $taxonomy,
@@ -183,8 +189,8 @@ class MLAObjects {
 		
 		$tax_object = get_taxonomy($taxonomy);
 
-		return sprintf( '<a href="%s">%d</a>', esc_url( add_query_arg(
-				array( 'page' => 'mla-menu', 'mla-tax' => $taxonomy, 'mla-term' => $term->slug, 'heading_suffix' => urlencode( $tax_object->label . ':' . $term->name ) ), 'upload.php' ) ), $results->post_count );
+		return sprintf( '<a href="%1$s">%2$s</a>', esc_url( add_query_arg(
+				array( 'page' => 'mla-menu', 'mla-tax' => $taxonomy, 'mla-term' => $term->slug, 'heading_suffix' => urlencode( $tax_object->label . ':' . $term->name ) ), 'upload.php' ) ), number_format_i18n( $results->post_count ) );
 	}
 } //Class MLAObjects
 ?>

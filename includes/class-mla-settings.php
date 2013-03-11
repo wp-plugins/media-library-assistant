@@ -1497,6 +1497,9 @@ class MLASettings {
 	 * @return	array	Message(s) reflecting the results of the operation
 	 */
 	private static function _process_iptc_exif_custom( ) {
+		if ( isset( $_REQUEST['iptc_exif_mapping']['custom'][ MLAOptions::MLA_NEW_CUSTOM_FIELD ] ) )
+			unset( $_REQUEST['iptc_exif_mapping']['custom'][ MLAOptions::MLA_NEW_CUSTOM_FIELD ] );
+		
 		if ( ! isset( $_REQUEST['iptc_exif_mapping']['custom'] ) )
 			return array(
 				'message' => 'ERROR: No custom field settings to process.',

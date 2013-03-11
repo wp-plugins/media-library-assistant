@@ -174,6 +174,12 @@ class MLAShortcodes {
 		global $post;
 
 		/*
+		 * Some do_shortcode callers may not have a specific post in mind
+		 */
+		if ( ! is_object( $post ) )
+			$post = (object) array( 'ID' => 0 );
+			
+		/*
 		 * These are the parameters for gallery display
 		 */
 		$default_arguments = array(
@@ -192,6 +198,7 @@ class MLAShortcodes {
 			'mla_link_text' => '',
 			'mla_rollover_text' => '',
 			'mla_caption' => '',
+			'mla_target' => '',
 			'mla_debug' => false,
 			'mla_viewer' => false,
 			'mla_viewer_extensions' => 'doc,xls,ppt,pdf,txt',
@@ -220,6 +227,7 @@ class MLAShortcodes {
 		self::$mla_debug = !empty( $arguments['mla_debug'] ) && ( 'true' == strtolower( $arguments['mla_debug'] ) );
 
 		$attachments = self::mla_get_shortcode_attachments( $post->ID, $attr );
+			
 		if ( is_string( $attachments ) )
 			return $attachments;
 			
@@ -592,6 +600,12 @@ class MLAShortcodes {
 
 			$markup_values['pagelink'] = wp_get_attachment_link($attachment->ID, $size, true, $show_icon, $link_text);
 			$markup_values['filelink'] = wp_get_attachment_link($attachment->ID, $size, false, $show_icon, $link_text);
+			
+			if ( ! empty( $arguments['mla_target'] ) ) {
+				$markup_values['pagelink'] = str_replace( '<a href=', '<a target="' . $arguments['mla_target'] . '" href=', $markup_values['pagelink'] );
+				$markup_values['filelink'] = str_replace( '<a href=', '<a target="' . $arguments['mla_target'] . '" href=', $markup_values['filelink'] );
+			}
+			
 			if ( ! empty( $arguments['mla_rollover_text'] ) ) {
 				$new_text = str_replace( '{+', '[+', str_replace( '+}', '+]', $arguments['mla_rollover_text'] ) );
 				$new_text = MLAData::mla_parse_template( $new_text, $markup_values );
@@ -717,6 +731,21 @@ class MLAShortcodes {
 	
 		return $output;
 	}
+
+	/**
+	 * Cleans up damage caused by the Visual Editor to the tax_query and meta_query specifications
+	 *
+	 * @since 1.14
+	 *
+	 * @param string query specification; PHP nested arrays
+	 *
+	 * @return string query specification with HTML escape sequences and line breaks removed
+	 */
+	private static function _sanitize_query_specification( $specification ) {
+		$specification = wp_specialchars_decode( $specification );
+		$specification = str_replace( array( '<br />', '<p>', '</p>', "\r", "\n" ), ' ', $specification );
+		return $specification;
+	}
 	
 	/**
 	 * Parses shortcode parameters and returns the gallery objects
@@ -762,6 +791,7 @@ class MLAShortcodes {
 			// Taxonomy parameters are handled separately
 			// {tax_slug} => 'term' | array ( 'term, 'term, ... )
 			// 'tax_query' => ''
+			'tax_operator' => '',
 			// Post 
 			'post_type' => 'attachment',
 			'post_status' => 'inherit',
@@ -792,13 +822,20 @@ class MLAShortcodes {
 			
 		$arguments = shortcode_atts( $default_arguments, $attr );
 		self::$query_parameters = array();
-
-		if ( 'RAND' == $arguments['order'] )
+		
+		/*
+		 * 'RAND' is not documented in the codex, but is present in the code.
+		 */
+		if ( 'RAND' == strtoupper( $arguments['order'] ) ) {
 			$arguments['orderby'] = 'none';
-	
+			unset( $arguments['order'] );
+		}
+
 		if ( !empty( $arguments['ids'] ) ) {
-			// 'ids' is explicitly ordered
-			$arguments['orderby'] = 'post__in';
+			// 'ids' is explicitly ordered, unless you specify otherwise.
+			if ( empty( $attr['orderby'] ) )
+				$arguments['orderby'] = 'post__in';
+
 			$arguments['include'] = $arguments['ids'];
 		}
 		unset( $arguments['ids'] );
@@ -814,6 +851,7 @@ class MLAShortcodes {
 					if ( is_array( $value ) )
 						$query_arguments[ $key ] = $value;
 					else {
+						$value = self::_sanitize_query_specification( $value );
 						$function = @create_function('', 'return ' . $value . ';' );
 
 						if ( is_callable( $function ) )
@@ -823,7 +861,13 @@ class MLAShortcodes {
 					} // not array
 				}  // tax_query
 				elseif ( array_key_exists( $key, $taxonomies ) ) {
-					$query_arguments[ $key ] = implode(',', array_filter( array_map( 'trim', explode( ",", $value ) ) ) );
+					$query_arguments[ $key ] = implode(',', array_filter( array_map( 'trim', explode( ',', $value ) ) ) );
+					
+					if ( in_array( strtoupper( $arguments['tax_operator'] ), array( 'IN', 'NOT IN', 'AND' ) ) ) {
+						$query_arguments['tax_query'] =	array( array( 'taxonomy' => $key, 'field' => 'slug', 'terms' => explode( ',', $query_arguments[ $key ] ), 'operator' => strtoupper( $arguments['tax_operator'] ) ) );
+						unset( $query_arguments[ $key ] );
+					}
+					
 				} // array_key_exists
 			} //foreach $attr
 		} // ! empty
@@ -922,9 +966,9 @@ class MLAShortcodes {
 			case 'tag__and':
 			case 'tag__in':
 			case 'tag__not_in':
+			case 'include':
 				$children_ok = false;
 				// fallthru
-			case 'include':
 			case 'exclude':
 				if ( ! empty( $value ) ) {
 					if ( is_array( $value ) )
@@ -966,13 +1010,20 @@ class MLAShortcodes {
 			case 'post_type':
 			case 'post_status':
 			case 'post_mime_type':
-			case 'order':
 			case 'orderby':
 				if ( ! empty( $value ) ) {
 					$query_arguments[ $key ] = $value;
 					
 					if ( ! $children_ok )
 						$use_children = false;
+				}
+				unset( $arguments[ $key ] );
+				break;
+			case 'order':
+				if ( ! empty( $value ) ) {
+					$value = strtoupper( $value );
+					if ( in_array( $value, array( 'ASC', 'DESC' ) ) )
+						$query_arguments[ $key ] = $value;
 				}
 				unset( $arguments[ $key ] );
 				break;
@@ -1017,9 +1068,6 @@ class MLAShortcodes {
 
 		if ( isset( $query_arguments['orderby'] ) && ('rand' == $query_arguments['orderby'] ) )
 			unset ( $query_arguments['order'] );
-
-		if ( isset( $query_arguments['order'] ) && ('rand' == $query_arguments['order'] ) )
-			unset ( $query_arguments['orderby'] );
 
 		if ( isset( $query_arguments['post_mime_type'] ) && ('all' == strtolower( $query_arguments['post_mime_type'] ) ) )
 			unset ( $query_arguments['post_mime_type'] );

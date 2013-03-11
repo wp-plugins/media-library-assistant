@@ -420,8 +420,9 @@
 	#[+selector+] .gallery-item .gallery-icon img {
 		border: 2px solid #cfcfcf;
 	}
-	#[+selector+] .gallery-caption { vertical-align:
+	#[+selector+] .gallery-caption {
 		margin-left: 0;
+		vertical-align: top;
 	}
 </style>
 <!-- see mla_gallery_shortcode() in media-library-assistant/includes/class-mla-shortcodes.php -->

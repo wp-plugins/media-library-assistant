@@ -4,7 +4,7 @@ Donate link: http://fairtradejudaica.org/make-a-difference/donate/
 Tags: attachment, attachments, documents, gallery, image, images, media, library, media library, media-tags, media tags, tags, media categories, categories, IPTC, EXIF, meta, metadata, photo, photos, photograph, photographs, photoblog, photo albums
 Requires at least: 3.3
 Tested up to: 3.5.1
-Stable tag: 1.13
+Stable tag: 1.14
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -115,6 +115,21 @@ All of the MLA source code has been annotated with "DocBlocks", a special type o
 8. The Settings page Custom Field Processing Options screen, where you can map attachment metadata to custom fields for display in [mla_gallery] shortcodes and as sortable, searchable columns in the Media/Assistant submenu.
 
 == Changelog ==
+
+= 1.14 =
+* New: In the `[mla_gallery]` shortcode, a new `mla_target` parameter allows you to specify the HTML `target` attribute in the gallery item links, e.g., `mla_target="_blank"` will open the items in a new window or tab.
+* New: In the `[mla_gallery]` shortcode, a new `tax_operator` parameter allows you to specify "AND" or "NOT IN" operators in the simple `tax_name=term(s)` version of taxonomy queries. See the Settings/Media Library Assistant Documentation page for details.
+* New: In the `[mla_gallery]` shortcode, `tax_query` corruption caused by the Visual mode of the post/page editor is now cleaned up before the query is submitted; Line breaks, HTML markup and escape sequences added by the Visual editor are removed.
+* Fix: IPTC/EXIF values containing an arrray, e.g., "2#025 keywords", will be converted to a comma-separated string before assignment to Standard fields or Custom fields.
+* Fix: Custom Field Mapping will always ignore rules with Data Source set to "-- None (select a value) --". 
+* Fix: In the `[mla_gallery]` shortcode, the `orderby` parameter will override the explicit order in the `ids` parameter.
+* Fix: In the `[mla_gallery]` shortcode, the `ids` and `include` parameters no longer require `post_parent=all` to match items not attached to the current post/page.
+* Fix: The `[mla_gallery]' shortcode can now be called without a current post, e.g., from a PHP file that contains  `do_shortcode("[mla_gallery]");`.
+* Fix: The value in the Attachments column in the edit taxonomy screen(s) is now correct. In previous versions this value was not correct if a term appeared in more than ten (10) attachments.
+* Fix: The Attachments column in the edit taxonomy screen(s) is now updated in response to the WordPress "Quick Edit" action for taxonomy terms. In previous versions the Attachments value was not returned and the Posts/Media value was used instead.
+* Fix: The Attachments column in the edit taxonomy screen(s) is now center-justified, following the standard set by the WordPress Posts/Media column. In previous versions it was left-justified.
+* Fix: Corrected `vertical-align` attribute in `.gallery-caption` style of the default `mla_style` template.
+* Fix: Better handling of minimum PHP and WordPress version violations; removed wp_die() calls.
 
 = 1.13 =
 * New: Any custom field can be added as a sortable, searchable (click on a value to filter the table display) column in the Media/Assistant submenu. Custom fields can also be added to the quick edit and bulk edit areas. Use the Settings/Media Library Assistant Custom Field tab to control all three uses.
@@ -249,8 +264,8 @@ All of the MLA source code has been annotated with "DocBlocks", a special type o
 
 == Upgrade Notice ==
 
-= 1.13 =
-Add custom fields to the quick and bulk edit areas; sort and search on them in the Media/Assistant submenu. Expanded EXIF data access, including COMPUTED values. Google File Viewer support, two other enhancements and two fixes.
+= 1.14 =
+New [mla_gallery] mla_target and tax_operator parameters, tax_query cleanup and ids/include fix. Attachments column fix. IPTC/EXIF and Custom Field mapping fixes. Three other fixes.
 
 == Other Notes ==
 
@@ -303,7 +318,7 @@ These parameters are only important if the gallery thumbnails are too large to f
 
 <h4>Gallery Display Content</h4>
 
-Three `[mla_gallery]` parameters provide an easy way to control the contents of gallery items without requiring the use of custom Markup templates.  
+Four `[mla_gallery]` parameters provide an easy way to control the contents of gallery items without requiring the use of custom Markup templates.  
 
 * `mla_link_text`: replaces the thumbnail image or attachment title text displayed for each gallery item.
 
@@ -311,7 +326,11 @@ Three `[mla_gallery]` parameters provide an easy way to control the contents of 
 
 * `mla_caption`: replaces the attachment caption text displayed beneath the thumbnail of each gallery item.
 
-All three of these parameters support the Markup and Attachment-specific substitution arguments defined for Markup Templates. For example, if you code `mla_rollover_text="{+date+} : {+description+}"`, the rollover text will contain the upload date, a colon, and the full description of each gallery item. Simply add "{+" before the substitution parameter name and add "+}" after the name. Note that the enclosing delimiters are different than those used in the templates, since the shortcode parser reserves square brackets ("[" and "]") for its own use.
+* `mla_target`: adds an HTML "target" attribute to the hyperlink for each gallery item; see below.
+
+The first three parameters support the Markup and Attachment-specific substitution arguments defined for Markup Templates. For example, if you code `mla_rollover_text='{+date+} : {+description+}'`, the rollover text will contain the upload date, a colon, and the full description of each gallery item. Simply add "{+" before the substitution parameter name and add "+}" after the name. Note that the enclosing delimiters are different than those used in the templates, since the shortcode parser reserves square brackets ("[" and "]") for its own use.
+
+The "mla_target" parameter accepts any value and adds an HTML "target" attribute to the hyperlink with that value. For example, if you code `mla_target="_blank"` the item will open in a new window or tab. You can also use "_self", "_parent", "_top" or the "<em>framename</em>" of a named frame.
 
 <h4>Google File Viewer Support</h4>
 
@@ -373,7 +392,7 @@ The Tag parameters search in the WordPress core "Tags" taxonomy. Remember to use
 
 Note that the "tag_id" parameter requires exactly one tag ID; multiple IDs are not allowed. You can use the "tag__in" parameter to query for multiple values.
 
-<h4>Taxonomy Parameters</h4>
+<h4>Taxonomy Parameters, "tax_operator"</h4>
 
 The `[mla_gallery]` shortcode supports the simple "{tax} (string)" values (deprecated as of WordPress version 3.1) as well as the more powerful "tax_query" value. 
 
@@ -387,6 +406,10 @@ Note that you must use the name/slug strings for taxonomy and terms, not the "ti
  
 In this example, "attachment_tag" is the WordPress taxonomy name/slug for the taxonomy. If you're using "Att. Category", the slug would be "attachment_category".
  
+The default behavior of the simple taxonomy query will match any of the terms in the list. MLA enhances the simple taxonomy query form by providing an additional parameter, "tax_operator", which can be "IN", "NOT IN" or "AND". If you specify a "tax_operator", MLA will convert your query to the more powerful "tax_query" form, searching on the "slug" field and using the operator you specify. For example, a query for two terms in which <strong>both</strong> terms must match would be coded as:
+
+* `[mla_gallery attachment_category='separate-category,another-category' tax_operator=AND]`
+
 More complex queries can be specified by using "tax_query", e.g.:
 
 * `[mla_gallery tax_query="array(array('taxonomy' => 'attachment_tag','field' => 'slug','terms' => 'artisan'))"]`

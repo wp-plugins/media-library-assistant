@@ -207,7 +207,7 @@ class MLAOptions {
 		
 		'taxonomy_support' =>
 			array('tab' => 'general',
-				'help' => 'Check the "Support" box to add the taxonomy to the Assistant.<br>Check the "Inline Edit" box to display the taxonomy in the Quick Edit and Bulk Edit areas.<br>Use the "List Filter" option to select the taxonomy on which to filter the Assistant table listing.',
+				'help' => 'Check the "Support" box to add the taxonomy to the Assistant and the Edit Media screen.<br>Check the "Inline Edit" box to display the taxonomy in the Quick Edit and Bulk Edit areas.<br>Use the "List Filter" option to select the taxonomy on which to filter the Assistant table listing.',
 				'std' =>  array (
 					'tax_support' => array (
 				    	'attachment_category' => 'checked',
@@ -1306,6 +1306,9 @@ class MLAOptions {
 		$custom_updates = array();
 		
 		foreach( $settings as $new_key => $new_value ) {
+			if ( 'none' == $new_value['data_source'] )
+				continue;
+				
 			if ( $new_value['keep_existing'] ) 
 				$old_text = get_metadata( 'post', $post_id, $new_key, true );
 			else
@@ -1782,6 +1785,10 @@ class MLAOptions {
 					else
 						$new_text = $iptc_value;
 
+				if ( is_array( $new_text ) ) {
+				$new_text = implode( ',', $new_text );
+				}
+				
 				$new_text = trim( convert_chars( $new_text ) );
 				if ( !empty( $new_text ) )
 					switch ( $new_key ) {
@@ -1888,6 +1895,10 @@ class MLAOptions {
 				else
 					$old_text = '';
 					
+				if ( is_array( $new_text ) ) {
+				$new_text = implode( ',', $new_text );
+				}
+				
 				if ( empty( $old_text ) ) {
 					$custom_updates[ $new_key ] = $new_text;
 				}

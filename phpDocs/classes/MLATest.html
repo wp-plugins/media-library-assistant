@@ -101,7 +101,7 @@ to ensure the plugin can run in the current WordPress envrionment.</p>
 </div>
 <a name="min_WordPress_version" id="min_WordPress_version"></a><div class="element clickable method public min_WordPress_version" data-toggle="collapse" data-target=".min_WordPress_version .collapse">
 <h2>Test that your WordPress version is at least that of the $min_version</h2>
-<pre>min_WordPress_version(string $min_version, string $plugin_name) : void</pre>
+<pre>min_WordPress_version(string $min_version) : string</pre>
 <div class="labels"></div>
 <div class="row collapse"><div class="detail-description">
 <p class="long_description"></p>
@@ -114,14 +114,14 @@ to ensure the plugin can run in the current WordPress envrionment.</p>
 <h4>$min_version</h4>
 <code>string</code><p>representing the minimum required version of WordPress, e.g. '3.3.0'</p>
 </div>
-<div class="subelement argument">
-<h4>$plugin_name</h4>
-<code>string</code><p>Name of the plugin for messaging purposes</p></div>
+<h3>Returns</h3>
+<div class="subelement response">
+<code>string</code>'' if pass else error message</div>
 </div></div>
 </div>
 <a name="min_php_version" id="min_php_version"></a><div class="element clickable method public min_php_version" data-toggle="collapse" data-target=".min_php_version .collapse">
 <h2>Test that your PHP version is at least that of the $min_php_version</h2>
-<pre>min_php_version(string $min_version, string $plugin_name) : void</pre>
+<pre>min_php_version(string $min_version) : string</pre>
 <div class="labels"></div>
 <div class="row collapse"><div class="detail-description">
 <p class="long_description"></p>
@@ -134,9 +134,9 @@ to ensure the plugin can run in the current WordPress envrionment.</p>
 <h4>$min_version</h4>
 <code>string</code><p>representing the minimum required version of PHP, e.g. '5.3.2'</p>
 </div>
-<div class="subelement argument">
-<h4>$plugin_name</h4>
-<code>string</code><p>Name of the plugin for messaging purposes</p></div>
+<h3>Returns</h3>
+<div class="subelement response">
+<code>string</code>'' if pass else error message</div>
 </div></div>
 </div>
 <h3>
@@ -160,7 +160,7 @@ to ensure the plugin can run in the current WordPress envrionment.</p>
 <div class="row"><footer class="span12">
             Template is built using <a href="http://twitter.github.com/bootstrap/">Twitter Bootstrap 2</a> and icons provided by <a href="http://glyphicons.com/">Glyphicons</a>.<br>
             Documentation is powered by <a href="http://www.phpdoc.org/">phpDocumentor 2.0.0a8</a> and<br>
-            generated on 2013-02-26T09:38:18-08:00.<br></footer></div>
+            generated on 2013-03-10T17:53:00-07:00.<br></footer></div>
 </div>
 </body>
 </html>

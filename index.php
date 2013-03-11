@@ -6,7 +6,7 @@
  * will the rest of the plugin be loaded and run.
  *
  * @package Media Library Assistant
- * @version 1.13
+ * @version 1.14
  */
 
 /*
@@ -14,7 +14,7 @@ Plugin Name: Media Library Assistant
 Plugin URI: http://fairtradejudaica.org/media-library-assistant-a-wordpress-plugin/
 Description: Enhances the Media Library; powerful[mla_gallery], taxonomy support, IPTC/EXIF processing, bulk & quick edit actions and where-used reporting.
 Author: David Lingren
-Version: 1.13
+Version: 1.14
 Author URI: http://fairtradejudaica.org/our-story/staff/
 */
 
@@ -55,11 +55,13 @@ $mla_name_conflict_candidates =
 	array (
 		'MLA' => 'class',
 		'MLAData' => 'class',
+		'MLAEdit' => 'class',
+		'MLAModal' => 'class',
 		'MLAObjects' => 'class',
 		'MLASettings' => 'class',
 		'MLAShortcodes' => 'class',
 		'MLATest' => 'class',
-		'MLA_List_Table' => 'class',
+		'MLA_List_Table' => 'class'
 	);
 
 /*
@@ -93,7 +95,7 @@ function mla_name_conflict_reporting_action () {
 	
 	echo '<div class="error"><p><strong>The Media Library Assistant cannot load.</strong> Another plugin or theme has declared conflicting class, function or constant names:</p>'."\r\n";
 	echo "<ul>{$mla_name_conflict_error_messages}</ul>\r\n";
-	echo '<p>You most resolve these conflicts before this plugin can safely load.</p></div>'."\r\n";
+	echo '<p>You must resolve these conflicts before this plugin can safely load.</p></div>'."\r\n";
 }
 
 /*

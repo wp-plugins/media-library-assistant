@@ -38,25 +38,7 @@ class MLA {
 	 *
 	 * @var	string
 	 */
-	const CURRENT_MLA_VERSION = '1.13';
-
-	/**
-	 * Minimum version of PHP required for this plugin
-	 *
-	 * @since 0.1
-	 *
-	 * @var	string
-	 */
-	const MIN_PHP_VERSION = '5.2';
-
-	/**
-	 * Minimum version of WordPress required for this plugin
-	 *
-	 * @since 0.1
-	 *
-	 * @var	string
-	 */
-	const MIN_WORDPRESS_VERSION = '3.3';
+	const CURRENT_MLA_VERSION = '1.14';
 
 	/**
 	 * Slug for registering and enqueueing plugin style sheet
@@ -102,24 +84,6 @@ class MLA {
 	 * @var	string
 	 */
 	const JAVASCRIPT_INLINE_EDIT_OBJECT = 'mla_inline_edit_vars';
-
-	/**
-	 * Slug for localizing and enqueueing JavaScript - Add Media and related dialogs
-	 *
-	 * @since 1.13
-	 *
-	 * @var	string
-	 */
-	const JAVASCRIPT_MEDIA_POPUP_SLUG = 'mla-media-popup-scripts';
-
-	/**
-	 * Object name for localizing JavaScript - Add Media and related dialogs
-	 *
-	 * @since 1.13
-	 *
-	 * @var	string
-	 */
-	const JAVASCRIPT_MEDIA_POPUP_OBJECT = 'mla_media_popup_vars';
 
 	/**
 	 * Slug for adding plugin submenu
@@ -224,9 +188,6 @@ class MLA {
 	 */
 	public static function initialize( )
 	{
-		MLATest::min_php_version( self::MIN_PHP_VERSION, self::PLUGIN_NAME );
-		MLATest::min_WordPress_version( self::MIN_WORDPRESS_VERSION, self::PLUGIN_NAME );
-		
 		add_action( 'admin_init', 'MLA::mla_admin_init_action' );
 		add_action( 'admin_enqueue_scripts', 'MLA::mla_admin_enqueue_scripts_action' );
 		add_action( 'admin_menu', 'MLA::mla_admin_menu_action' );
@@ -284,21 +245,13 @@ class MLA {
 	 * @return	void
 	 */
 	public static function mla_admin_enqueue_scripts_action( $page_hook ) {
-// error_log('mla_admin_enqueue_scripts_action $page_hook = ' . var_export( $page_hook, true ), 0 );
 		$suffix = defined('SCRIPT_DEBUG') && SCRIPT_DEBUG ? '' : '.min';
 		
-/*		if( 'post.php' == $page_hook ) {
-			wp_enqueue_script( self::JAVASCRIPT_MEDIA_POPUP_SLUG, MLA_PLUGIN_URL . "js/mla-media-popup-scripts{$suffix}.js", 
-				array( 'media-views' ), self::CURRENT_MLA_VERSION, false );
-			$script_variables = array(
-				'menu_title' => 'MLA Custom Menu',
-				'button_title' => 'MLA Custom Button',
-				'comma' => _x( ',', 'tag delimiter' ),
-				'ajax_action' => self::JAVASCRIPT_MEDIA_POPUP_SLUG,
-				'ajax_nonce' => wp_create_nonce( self::MLA_ADMIN_NONCE ) 
-			);
-			wp_localize_script( self::JAVASCRIPT_MEDIA_POPUP_SLUG, self::JAVASCRIPT_MEDIA_POPUP_OBJECT, $script_variables );
-		} */
+		if( 'edit-tags.php' == $page_hook ) {
+			wp_register_style( self::STYLESHEET_SLUG, MLA_PLUGIN_URL . 'css/mla-edit-tags-style.css', false, self::CURRENT_MLA_VERSION );
+			wp_enqueue_style( self::STYLESHEET_SLUG );
+			return;
+		}
 		
 		if ( ( 'media_page_mla-menu' != $page_hook ) && ( 'settings_page_mla-settings-menu' != $page_hook ) )
 			return;

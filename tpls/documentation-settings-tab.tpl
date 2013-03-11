@@ -94,11 +94,11 @@ Three [mla_gallery] parameters provide control over the placement, size and spac
 </tr>
 </table>
 <p>
-These parameters are only important if the gallery thumbnails are too large to fit within the width of the page on which they appear. For example, if you code [mla_gallery size=full], the browser will automatically scale down large images to fit within the width attribute (in percent) of the ".gallery-item" style. The default 1.5% margin will ensure that the images do not overlap; you can increase it to add more space between the gallery items. You can also reduce the itemwidth parameter to increase the left and right space between the items.
+These parameters are only important if the gallery thumbnails are too large to fit within the width of the page on which they appear. For example, if you code "[mla_gallery size=full]", the browser will automatically scale down large images to fit within the width attribute (in percent) of the ".gallery-item" style. The default 1.5% margin will ensure that the images do not overlap; you can increase it to add more space between the gallery items. You can also reduce the itemwidth parameter to increase the left and right space between the items.
 </p>
 <h4>Gallery Display Content</h4>
 <p>
-Three [mla_gallery] parameters provide an easy way to control the contents of gallery items without requiring the use of custom Markup templates.  
+Four [mla_gallery] parameters provide an easy way to control the contents of gallery items without requiring the use of custom Markup templates.  
 </p>
 <table>
 <tr>
@@ -113,9 +113,16 @@ Three [mla_gallery] parameters provide an easy way to control the contents of ga
 <td style="padding-right: 10px; vertical-align: top; font-weight:bold">mla_caption</td>
 <td>replaces the attachment caption text displayed beneath the thumbnail of each gallery item</td>
 </tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">mla_target</td>
+<td>adds an HTML "target" attribute to the hyperlink for each gallery item; see below</td>
+</tr>
 </table>
 <p>
-All three of these parameters support the Markup and Attachment-specific substitution arguments defined for Markup Templates. For example, if you code `mla_rollover_text="{+date+} : {+description+}"`, the rollover text will contain the upload date, a colon, and the full description of each gallery item. Simply add "{+" before the substitution parameter name and add "+}" after the name. Note that the enclosing delimiters are different than those used in the templates, since the shortcode parser reserves square brackets ("[" and "]") for its own use.
+The first three parameters support the Markup and Attachment-specific substitution arguments defined for Markup Templates. For example, if you code "mla_rollover_text='{+date+} : {+description+}'", the rollover text will contain the upload date, a colon, and the full description of each gallery item. Simply add "{+" before the substitution parameter name and add "+}" after the name. Note that the enclosing delimiters are different than those used in the templates, since the shortcode parser reserves square brackets ("[" and "]") for its own use.
+</p>
+<p>
+The "mla_target" parameter accepts any value and adds an HTML "target" attribute to the hyperlink with that value. For example, if you code mla_target="_blank" the item will open in a new window or tab. You can also use "_self", "_parent", "_top" or the "<em>framename</em>" of a named frame.
 </p>
 <h4>Google File Viewer Support</h4>
 <p>
@@ -143,9 +150,13 @@ Four [mla_gallery] parameters provide an easy way to generate thumbnail images f
 When this feature is active, gallery items for which WordPress can generate a thumbnail image are not altered. If WordPress generation fails, the gallery thumbnail is replaced by an "img" html tag whose "src" attribute contains a url reference to the Google File Viewer. The Google File Viewer arguments include the url of the source file, the page number and the width. Note that the source file must be Internet accessible; files behind firewalls and on local servers will not generate a thumbnail image.</p>
 <h4>Order, Orderby</h4>
 <p>
-To order the gallery randomly, use "orderby=rand". To suppress gallery ordering you can use "orderby=none" or "order=rand".
+The default value of the "order" parameter is "ASC" (ascending). The only other allowed value is "DESC" (descending).
 </p>
-<p>The Orderby parameter specifies which database field is used to sort the gallery. You can order the gallery by any of the values documented for the WP_Query class reference in the Codex; you are NOT restricted to the values documented for the [gallery] shortcode.
+<p>
+The Orderby parameter specifies which database field is used to sort the gallery. You can order the gallery by any of the values documented for the WP_Query class reference in the Codex; you are NOT restricted to the values documented for the [gallery] shortcode.
+</p>
+<p>
+To order the gallery randomly, use "orderby=rand". To suppress gallery ordering, use "orderby=none".
 </p>
 <h4>Size</h4>
 <p>
@@ -196,9 +207,9 @@ The Tag parameters search in the WordPress core &quot;Tags&quot; taxonomy. Remem
 <p>
 Note that the "tag_id" parameter requires exactly one tag ID; multiple IDs are not allowed. You can use the "tag__in" parameter to query for multiple values.
 </p>
-<h4>Taxonomy Parameters</h4>
+<h4>Taxonomy Parameters, "tax_operator"</h4>
 <p>
-The [mla_gallery] shortcode supports the simple "{tax} (string)" values (deprecated as of WordPress version 3.1) as well as the more powerful "tax_query" value. 
+The [mla_gallery] shortcode supports the simple "{tax} (string)" values (deprecated as of WordPress version 3.1) as well as the more powerful "<a href="https://codex.wordpress.org/Class_Reference/WP_Query#Taxonomy_Parameters" title="WordPress Codex Documentaton for tax_query" target="_blank">tax_query</a>" value. 
 </p>
 <p>
 For simple queries, enter the taxonomy name and the term(s) that must be matched, e.g.:
@@ -213,10 +224,16 @@ Note that you must use the name/slug strings for taxonomy and terms, not the "ti
 <li>[mla_gallery attachment_tag=artisan post_parent=all]</li>
 </ul>
 <p>
-In this example, "attachment_tag" is the WordPress taxonomy name/slug for the taxonomy. If you're using "Att. Category&quot;, the slug would be "attachment_category".
+In this example, "attachment_tag" is the WordPress taxonomy name/slug for the taxonomy. If you're using "Att. Category", the slug would be "attachment_category".
 </p>
 <p>
-More complex queries can be specified by using "tax_query", e.g.:
+The default behavior of the simple taxonomy query will match any of the terms in the list. MLA enhances the simple taxonomy query form by providing an additional parameter, "tax_operator", which can be "IN", "NOT IN" or "AND". If you specify a "tax_operator", MLA will convert your query to the more powerful "tax_query" form, searching on the "slug" field and using the operator you specify. For example, a query for two terms in which <strong>both</strong> terms must match would be coded as:
+</p>
+<ul class="mla_settings">
+<li>[mla_gallery attachment_category='separate-category,another-category' tax_operator=AND]</li>
+</ul>
+<p>
+More complex queries can be specified by using <a href="https://codex.wordpress.org/Class_Reference/WP_Query#Taxonomy_Parameters" title="WordPress Codex Documentaton for tax_query" target="_blank">WP_Query's "tax_query"</a>, e.g.:
 </p>
 <ul class="mla_settings">
 <li>[mla_gallery tax_query="array(array('taxonomy' => 'attachment_tag','field' => 'slug','terms' => 'artisan'))"]</li>
@@ -226,7 +243,7 @@ More complex queries can be specified by using "tax_query", e.g.:
 The first example is equivalent to the simple query "attachment_tag=artisan". The second example matches items of all MIME types, attached to the current post, having an attachment_category ID of 11 or 12.
 </p>
 <p>
-When embedding the shortcode in the body of a post, be very careful when coding the tax_query; it must be a valid PHP array specification. In particular, code the query on one line; splitting it across lines can insert HTML &#8249;br&#8250; tags and corrupt your query. 
+When embedding the shortcode in the body of a post, be very careful when coding the tax_query; it must be a valid PHP array specification. Splitting your query over multiple lines or using the "Visual" editor will introduce HTML markup and escape sequences that can render your query invalid. MLA will clean up most of the damage, but if your query fails use the "mla_debug=true" parameter to see if your query has been corrupted. 
 </p>
 <p>
 Remember to use "post_parent=current" if you want to restrict your query to items attached to the current post.
@@ -245,7 +262,7 @@ Support for time parameters is not included in the current version. I may add it
 </p>
 <h4>Custom Field Parameters</h4>
 <p>
-The [mla_gallery] shortcode supports the simple custom field parameters as well as the more powerful "meta_query" parameters made available as of WordPress 3.1.
+The [mla_gallery] shortcode supports the simple custom field parameters as well as the more powerful <a href="https://codex.wordpress.org/Class_Reference/WP_Query#Custom_Field_Parameters" title="WordPress Codex documentation for meta_query" target="_blank">"WP_Query meta_query"</a> parameters made available as of WordPress 3.1.
 </p>
 <p>
 When embedding the shortcode in the body of a post, be very careful when coding the meta_query; it must be a valid PHP array specification. In particular, code the query on one line; splitting it across lines can insert HTML <br> tags and corrupt your query.
@@ -259,7 +276,7 @@ The search parameter ("s=keyword") will perform a keyword search. A cursory insp
 </p>
 <h4>Debugging Output</h4>
 <p>
-The "mla_debug" parameter controls the display of information about the query parameters and SQL statements used to retrieve gallery items. If you code `mla_debug=true` you will see a lot of information added to the post or page containing the gallery. Of course, this parameter should <strong><em>ONLY</em></strong> be used in a development/debugging environment; it's quite ugly.
+The "mla_debug" parameter controls the display of information about the query parameters and SQL statements used to retrieve gallery items. If you code "mla_debug=true" you will see a lot of information added to the post or page containing the gallery. Of course, this parameter should <strong><em>ONLY</em></strong> be used in a development/debugging environment; it's quite ugly.
 </p>
 <a name="photonic_gallery"></a>
 &nbsp;
