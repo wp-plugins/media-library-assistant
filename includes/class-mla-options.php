@@ -52,6 +52,31 @@ class MLAOptions {
 	const MLA_NEW_CUSTOM_FIELD = '__NEW FIELD__';
 	
 	/**
+	 * Provides a unique name for the Media Manager toolbar option
+	 */
+	const MLA_MEDIA_MODAL_TOOLBAR = 'media_modal_toolbar';
+	
+	/**
+	 * Provides a unique name for the Media Manager toolbar MIME Types option
+	 */
+	const MLA_MEDIA_MODAL_MIMETYPES = 'media_modal_mimetypes';
+	
+	/**
+	 * Provides a unique name for the Media Manager toolbar Month and Year option
+	 */
+	const MLA_MEDIA_MODAL_MONTHS = 'media_modal_months';
+	
+	/**
+	 * Provides a unique name for the Media Manager toolbar Taxonomy Terms option
+	 */
+	const MLA_MEDIA_MODAL_TERMS = 'media_modal_terms';
+	
+	/**
+	 * Provides a unique name for the Media Manager toolbar Search Box option
+	 */
+	const MLA_MEDIA_MODAL_SEARCHBOX = 'media_modal_searchbox';
+	
+	/**
 	 * Option setting for "Featured in" reporting
 	 *
 	 * This setting is false if the "Featured in" database access setting is "disabled", else true.
@@ -248,6 +273,46 @@ class MLAOptions {
 				'texts' => array('Ascending', 'Descending'),
 				'help' => 'Choose the sort order.'),
 
+		'media_modal_heading' =>
+			array('tab' => 'general',
+				'name' => 'Media Manager Enhancements',
+				'type' => 'header'),
+		
+		self::MLA_MEDIA_MODAL_TOOLBAR =>
+			array('tab' => 'general',
+				'name' => 'Enable Media Manager Enhancements',
+				'type' => 'checkbox',
+				'std' => 'checked',
+				'help' => 'Check/uncheck this option to enable/disable Media Manager Enhancements.'),
+	
+		self::MLA_MEDIA_MODAL_MIMETYPES =>
+			array('tab' => 'general',
+				'name' => 'Media Manager Enhanced MIME Type filter',
+				'type' => 'checkbox',
+				'std' => 'checked',
+				'help' => 'Check this option to filter by more MIME Types, e.g., text, applications.'),
+	
+		self::MLA_MEDIA_MODAL_MONTHS =>
+			array('tab' => 'general',
+				'name' => 'Media Manager Month and Year filter',
+				'type' => 'checkbox',
+				'std' => 'checked',
+				'help' => 'Check this option to filter by month and year uploaded.'),
+	
+		self::MLA_MEDIA_MODAL_TERMS =>
+			array('tab' => 'general',
+				'name' => 'Media Manager Category/Tag filter',
+				'type' => 'checkbox',
+				'std' => 'checked',
+				'help' => 'Check this option to filter by taxonomy terms.'),
+	
+		self::MLA_MEDIA_MODAL_SEARCHBOX =>
+			array('tab' => 'general',
+				'name' => 'Media Manager Enhanced Search Media box',
+				'type' => 'checkbox',
+				'std' => 'checked',
+				'help' => 'Check this option to enable search box enhancements.'),
+	
 		'template_heading' =>
 			array('tab' => 'mla-gallery',
 				'name' => 'Default [mla_gallery] Templates',

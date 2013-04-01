@@ -65,6 +65,7 @@
 <li class="method public "><a href="#mla_load_template" title="mla_load_template :: Load an HTML template from a file"><span class="description">Load an HTML template from a file</span><pre>mla_load_template()</pre></a></li>
 <li class="method public "><a href="#mla_parse_template" title="mla_parse_template :: Expand a template, replacing place holders with their values"><span class="description">Expand a template, replacing place holders with their values</span><pre>mla_parse_template()</pre></a></li>
 <li class="method public "><a href="#mla_query_list_table_items" title="mla_query_list_table_items :: Retrieve attachment objects for list table display"><span class="description">Retrieve attachment objects for list table display</span><pre>mla_query_list_table_items()</pre></a></li>
+<li class="method public "><a href="#mla_query_media_modal_items" title="mla_query_media_modal_items :: Retrieve attachment objects for the WordPress Media Manager"><span class="description">Retrieve attachment objects for the WordPress Media Manager</span><pre>mla_query_media_modal_items()</pre></a></li>
 <li class="method public "><a href="#mla_query_posts_join_filter" title="mla_query_posts_join_filter :: Adds a JOIN clause, if required, to handle sorting/searching on ALT Text"><span class="description">Adds a JOIN clause, if required, to handle sorting/searching on ALT Text</span><pre>mla_query_posts_join_filter()</pre></a></li>
 <li class="method public "><a href="#mla_query_posts_orderby_filter" title="mla_query_posts_orderby_filter :: Adds a ORDERBY clause, if required"><span class="description">Adds a ORDERBY clause, if required</span><pre>mla_query_posts_orderby_filter()</pre></a></li>
 <li class="method public "><a href="#mla_query_posts_search_filter" title="mla_query_posts_search_filter :: Adds a keyword search to the WHERE clause, if required"><span class="description">Adds a keyword search to the WHERE clause, if required</span><pre>mla_query_posts_search_filter()</pre></a></li>
@@ -400,6 +401,31 @@ Modeled after wp_edit_attachments_query in wp-admin/post.php</p></p>
 <h3>Returns</h3>
 <div class="subelement response">
 <code>array</code>attachment objects (posts) including parent data, meta data and references</div>
+</div></div>
+</div>
+<a name="mla_query_media_modal_items" id="mla_query_media_modal_items"></a><div class="element clickable method public mla_query_media_modal_items" data-toggle="collapse" data-target=".mla_query_media_modal_items .collapse">
+<h2>Retrieve attachment objects for the WordPress Media Manager</h2>
+<pre>mla_query_media_modal_items(array $request, int $offset, int $count) : array</pre>
+<div class="labels"></div>
+<div class="row collapse"><div class="detail-description">
+<p class="long_description"><p>Supports month-year and taxonomy-term filters as well as the enhanced search box</p></p>
+<table class="table table-bordered"><tr>
+<th>since</th>
+<td>1.20</td>
+</tr></table>
+<h3>Parameters</h3>
+<div class="subelement argument">
+<h4>$request</h4>
+<code>array</code><p>query parameters from Media Manager</p></div>
+<div class="subelement argument">
+<h4>$offset</h4>
+<code>int</code><p>number of rows to skip over to reach desired page</p></div>
+<div class="subelement argument">
+<h4>$count</h4>
+<code>int</code><p>number of rows on each page</p></div>
+<h3>Returns</h3>
+<div class="subelement response">
+<code>array</code>attachment objects (posts)</div>
 </div></div>
 </div>
 <a name="mla_query_posts_join_filter" id="mla_query_posts_join_filter"></a><div class="element clickable method public mla_query_posts_join_filter" data-toggle="collapse" data-target=".mla_query_posts_join_filter .collapse">
@@ -741,7 +767,7 @@ each page load and cached for subsequent calls.</p></p>
 The parameters are set up in the _prepare_list_table_query function, and
 any further logic required to translate those values is contained in the filters.</p>
 
-<p>Array index values are: use_postmeta_view, postmeta_key, detached, orderby, order, s, mla-search-connector, mla-search-fields, sentence, exact</p></p>
+<p>Array index values are: use_postmeta_view, postmeta_key, detached, orderby, order, s, mla_search_connector, mla_search_fields, sentence, exact</p></p>
 <table class="table table-bordered"><tr>
 <th>since</th>
 <td>0.30</td>
@@ -769,7 +795,7 @@ any further logic required to translate those values is contained in the filters
 <div class="row"><footer class="span12">
             Template is built using <a href="http://twitter.github.com/bootstrap/">Twitter Bootstrap 2</a> and icons provided by <a href="http://glyphicons.com/">Glyphicons</a>.<br>
             Documentation is powered by <a href="http://www.phpdoc.org/">phpDocumentor 2.0.0a8</a> and<br>
-            generated on 2013-03-10T17:53:00-07:00.<br></footer></div>
+            generated on 2013-03-29T17:10:59-07:00.<br></footer></div>
 </div>
 </body>
 </html>

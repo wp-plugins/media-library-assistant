@@ -273,13 +273,31 @@ class MLAData {
 	}
 	
 	/**
+	 * Retrieve attachment objects for the WordPress Media Manager
+	 *
+	 * Supports month-year and taxonomy-term filters as well as the enhanced search box
+	 *
+	 * @since 1.20
+	 *
+	 * @param	array	query parameters from Media Manager
+	 * @param	int		number of rows to skip over to reach desired page
+	 * @param	int		number of rows on each page
+	 *
+	 * @return	array	attachment objects (posts)
+	 */
+	public static function mla_query_media_modal_items( $request, $offset, $count ) {
+		$request = self::_prepare_list_table_query( $request, $offset, $count );
+		return self::_execute_list_table_query( $request );
+	}
+	
+	/**
 	 * WP_Query filter "parameters"
 	 *
 	 * This array defines parameters for the query's join, where and orderby filters.
 	 * The parameters are set up in the _prepare_list_table_query function, and
 	 * any further logic required to translate those values is contained in the filters.
 	 *
-	 * Array index values are: use_postmeta_view, postmeta_key, detached, orderby, order, s, mla-search-connector, mla-search-fields, sentence, exact
+	 * Array index values are: use_postmeta_view, postmeta_key, detached, orderby, order, s, mla_search_connector, mla_search_fields, sentence, exact
 	 *
 	 * @since 0.30
 	 *
@@ -317,8 +335,8 @@ class MLAData {
 			'order' => MLAOptions::mla_get_option( 'default_order' ),
 			'post_type' => 'attachment',
 			'post_status' => 'inherit',
-			'mla-search-connector' => 'AND',
-			'mla-search-fields' => array()
+			'mla_search_connector' => 'AND',
+			'mla_search_fields' => array()
 		);
 		
 		foreach ( $raw_request as $key => $value ) {
@@ -351,6 +369,7 @@ class MLAData {
 						$clean_request[ $key ] = $value;
 					break;
 				case 'parent':
+				case 'post_parent':
 					$clean_request[ 'post_parent' ] = absint( $value );
 					break;
 				/*
@@ -386,13 +405,13 @@ class MLAData {
 					break;
 				/*
 				 * ['s'] - Search Media by one or more keywords
-				 * ['mla-search-connector'], ['mla-search-fields'] - Search Media options
+				 * ['mla_search_connector'], ['mla_search_fields'] - Search Media options
 				 */
 				case 's':
 					$clean_request[ $key ] = stripslashes( trim( $value ) );
 					break;
-				case 'mla-search-connector':
-				case 'mla-search-fields':
+				case 'mla_search_connector':
+				case 'mla_search_fields':
 					$clean_request[ $key ] = $value;
 					break;
 				case 'mla-metakey':
@@ -417,21 +436,21 @@ class MLAData {
 		 * There must be at least one search field to do a search.
 		 */
 		if ( isset( $clean_request['s'] ) ) {
-			if ( ! empty( $clean_request['mla-search-fields'] ) ) {
+			if ( ! empty( $clean_request['mla_search_fields'] ) ) {
 				self::$query_parameters['s'] = $clean_request['s'];
-				self::$query_parameters['mla-search-connector'] = $clean_request['mla-search-connector'];
-				self::$query_parameters['mla-search-fields'] = $clean_request['mla-search-fields'];
+				self::$query_parameters['mla_search_connector'] = $clean_request['mla_search_connector'];
+				self::$query_parameters['mla_search_fields'] = $clean_request['mla_search_fields'];
 				self::$query_parameters['sentence'] = isset( $clean_request['sentence'] );
 				self::$query_parameters['exact'] = isset( $clean_request['exact'] );
 				
-			 	if ( in_array( 'alt-text', self::$query_parameters['mla-search-fields'] ) )
+			 	if ( in_array( 'alt-text', self::$query_parameters['mla_search_fields'] ) )
 					self::$query_parameters['use_postmeta_view'] = true;
 					self::$query_parameters['postmeta_key'] = '_wp_attachment_image_alt';
 			} // !empty
 			
 			unset( $clean_request['s'] );
-			unset( $clean_request['mla-search-connector'] );
-			unset( $clean_request['mla-search-fields'] );
+			unset( $clean_request['mla_search_connector'] );
+			unset( $clean_request['mla_search_fields'] );
 			unset( $clean_request['sentence'] );
 			unset( $clean_request['exact'] );
 		}
@@ -616,10 +635,11 @@ class MLAData {
 		$search_clause = '';
 		if ( isset( self::$query_parameters['s'] ) ) {
 			/*
-			 * Interpret a numeric value as the ID of a specific attactment
+			 * Interpret a numeric value as the ID of a specific attachment or the ID of a parent post/page
 			 */
 			if(is_numeric( self::$query_parameters['s'] )) {
-				return ' AND ( ' . $wpdb->posts . '.ID = ' . absint( self::$query_parameters['s'] ) . ' ) ';
+				$id = absint( self::$query_parameters['s'] );
+				return ' AND ( ( ' . $wpdb->posts . '.ID = ' . $id . ' ) OR ( ' . $wpdb->posts . '.post_parent = ' . $id . ' ) ) ';
 			}
 			
 			if (  self::$query_parameters['sentence'] ) {
@@ -629,7 +649,7 @@ class MLAData {
 				$search_terms = array_map('_search_terms_tidy', $matches[0]);
 			}
 			
-			$fields = self::$query_parameters['mla-search-fields'];
+			$fields = self::$query_parameters['mla_search_fields'];
 			$percent = self::$query_parameters['exact'] ? '' : '%';
 			$connector = '';
 			foreach ( $search_terms as $term ) {
@@ -663,7 +683,7 @@ class MLAData {
 				}
 				
 				$search_clause .= ")";
-				$connector = ' ' . self::$query_parameters['mla-search-connector'] . ' ';
+				$connector = ' ' . self::$query_parameters['mla_search_connector'] . ' ';
 			} // foreach
 
 			if ( !empty($search_clause) ) {

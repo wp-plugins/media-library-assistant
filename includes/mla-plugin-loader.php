@@ -78,10 +78,10 @@ else {
 	/*
 	 * WordPress 3.5 and later Media Manager (Modal window) additions
 	 */
-/*	if ( version_compare( get_bloginfo( 'version' ), '3.5', '>=' ) ) {
+	if ( version_compare( get_bloginfo( 'version' ), '3.5', '>=' ) ) {
 		require_once( MLA_PLUGIN_PATH . 'includes/class-mla-media-modal.php');
 		add_action('init', 'MLAModal::initialize');
-	} // */
+	}
 	
 	/*
 	 * Plugin settings management

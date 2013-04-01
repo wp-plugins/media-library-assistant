@@ -186,7 +186,7 @@ class MLAObjects {
 			error_log( "ERROR: mla_taxonomy_column_filter( {$taxonomy} ) - WP_Query " . $results->error, 0 );
 			return 0;
 		}
-		
+
 		$tax_object = get_taxonomy($taxonomy);
 
 		return sprintf( '<a href="%1$s">%2$s</a>', esc_url( add_query_arg(

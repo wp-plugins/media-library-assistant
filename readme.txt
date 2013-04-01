@@ -4,7 +4,7 @@ Donate link: http://fairtradejudaica.org/make-a-difference/donate/
 Tags: attachment, attachments, documents, gallery, image, images, media, library, media library, media-tags, media tags, tags, media categories, categories, IPTC, EXIF, meta, metadata, photo, photos, photograph, photographs, photoblog, photo albums
 Requires at least: 3.3
 Tested up to: 3.5.1
-Stable tag: 1.14
+Stable tag: 1.20
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -113,8 +113,21 @@ All of the MLA source code has been annotated with "DocBlocks", a special type o
 6. The Settings page MLA Gallery tab, where you can add custom style and markup templates for `[mla_gallery]` shortcode output.
 7. The Settings page IPTC &amp; EXIF Processing Options screen, where you can map image metadata to standard fields (e.g. caption), taxonomy terms and custom fields.
 8. The Settings page Custom Field Processing Options screen, where you can map attachment metadata to custom fields for display in [mla_gallery] shortcodes and as sortable, searchable columns in the Media/Assistant submenu.
+9. The Media Manager popup modal window showing additional filters for date and taxonomy terms. Also shows the enhanced Search Media box.
 
 == Changelog ==
+
+= 1.20 =
+* New: The long-awaited enhancements to the WordPress (3.5+) Media Manager (Add Media, etc.). Filter your attachments by additional MIME types, month and year uploaded and/or taxonomy terms. Keyword search can be extended to the name/slug, ALT text and caption fields. The connector between search terms can be "and" or "or". Search by attachment ID or parent ID is supported. Enable/disable any or all enhancements on the Settings page.
+* New: In the `[mla_gallery]` shortcode, enhanced parameters for sorting the gallery results. For example,  `orderby=caption` and `orderby=description` are now available to sort gallery results by the Caption (post_excerpt) and Description (post_content) fields. You can also sort on multiple fields, e.g., `orderby="author, date DESC"`, with field-level ASC/DESC control. The "Other Notes" section here or the Documentation tab on the Settings/Media Library Assistant page of the plugin have details.
+* New: For `[mla_gallery]`, field-level substitution parameters now include query arguments. You can pass any values you need to the Gallery Display Content parameters and to your custom style and markup templates.
+* New: Gallery Display Content parameters now include `mla_link_href`, so you can change the destination and arguments of the URL your gallery items link to.
+* New: Markup Substitution Parameters now include `site_url`.
+* New: If the search box contains (only) a numeric value it is interpreted as a search by attachment ID **or parent ID (post_parent)**. You can search for a numeric value in the text fields, e.g., title, by putting quotes around the value.
+* Fix: For `[mla_gallery]`, `numberposts` is now accepted as a synonym for `posts_per_page`. If both are present, `posts_per_page` wins.
+* Fix:  For `[mla_gallery]`, handling of `id=0` and `post_parent=0` now match the WordPress `[gallery]` implementation, restricting the query to children of post '0', i.e., unattached media items.
+* Fix: Corrected handling of Photonic Gallery `pause` parameter to match Photonic 1.43 implementation. Pause will be `true` if any non-empty value other than 'false' or '0' is present.
+* Fix: A Donate button has been added to the top-right corner of the Settings/Media Library Assistant screen.
 
 = 1.14 =
 * New: In the `[mla_gallery]` shortcode, a new `mla_target` parameter allows you to specify the HTML `target` attribute in the gallery item links, e.g., `mla_target="_blank"` will open the items in a new window or tab.
@@ -264,8 +277,8 @@ All of the MLA source code has been annotated with "DocBlocks", a special type o
 
 == Upgrade Notice ==
 
-= 1.14 =
-New [mla_gallery] mla_target and tax_operator parameters, tax_query cleanup and ids/include fix. Attachments column fix. IPTC/EXIF and Custom Field mapping fixes. Three other fixes.
+= 1.20 =
+Media Manager (Add Media, etc.) enhancements: filter by more MIME types, date, taxonomy terms; enhanced search box for name/slug, ALT text, caption and attachment ID. New [mla_gallery] sort options. Four other enhancements, four fixes.
 
 == Other Notes ==
 
@@ -318,7 +331,9 @@ These parameters are only important if the gallery thumbnails are too large to f
 
 <h4>Gallery Display Content</h4>
 
-Four `[mla_gallery]` parameters provide an easy way to control the contents of gallery items without requiring the use of custom Markup templates.  
+Five `[mla_gallery]` parameters provide an easy way to control the contents of gallery items without requiring the use of custom Markup templates.  
+
+* `mla_link_href`: replaces the HTML "href" attribute in the hyperlink for each gallery item; see below.
 
 * `mla_link_text`: replaces the thumbnail image or attachment title text displayed for each gallery item.
 
@@ -328,7 +343,9 @@ Four `[mla_gallery]` parameters provide an easy way to control the contents of g
 
 * `mla_target`: adds an HTML "target" attribute to the hyperlink for each gallery item; see below.
 
-The first three parameters support the Markup and Attachment-specific substitution arguments defined for Markup Templates. For example, if you code `mla_rollover_text='{+date+} : {+description+}'`, the rollover text will contain the upload date, a colon, and the full description of each gallery item. Simply add "{+" before the substitution parameter name and add "+}" after the name. Note that the enclosing delimiters are different than those used in the templates, since the shortcode parser reserves square brackets ("[" and "]") for its own use.
+The first four parameters support the Markup and Attachment-specific substitution arguments defined for Markup Templates. For example, if you code `mla_rollover_text='{+date+} : {+description+}'`, the rollover text will contain the upload date, a colon, and the full description of each gallery item. Simply add "{+" before the substitution parameter name and add "+}" after the name. Note that the enclosing delimiters are different than those used in the templates, since the shortcode parser reserves square brackets ("[" and "]") for its own use.
+
+The "mla_link_href" parameter is a great way to change the destination your gallery item links to or add arguments to the link for later processing. For example, to make a gallery item link back to the page/post it is attached to, you can code: "mla_link_href='{+site_url+}/?page_id={+parent+}'". You can also add arguments to the link, e.g., "mla_link_href='{+link_url+}&amp;amp;myarg=myvalue'". Note the use of the HTML entity name "&amp;amp;" to put an ampersand in the value; the WordPress "visual" post editor will replace "&", "<" and ">" with "&amp;amp;", "&amp;lt;" and "&amp;gt;" whether you like it not. The **only** markup parameter modified by this parameter is "link". Other markup parameters such as "pagelink", "filelink" and "link_url" are not modified. 
 
 The "mla_target" parameter accepts any value and adds an HTML "target" attribute to the hyperlink with that value. For example, if you code `mla_target="_blank"` the item will open in a new window or tab. You can also use "_self", "_parent", "_top" or the "<em>framename</em>" of a named frame.
 
@@ -348,9 +365,28 @@ When this feature is active, gallery items for which WordPress can generate a th
 
 <h4>Order, Orderby</h4>
 
-To order the gallery randomly, use "orderby=rand". To suppress gallery ordering you can use "orderby=none" or "order=rand".
+The Orderby parameter specifies which database field(s) are used to sort the gallery. You can sort the gallery by one or more of these values (there is additional information on some of these values in the Codex WP_Query class reference):
 
-The Orderby parameter specifies which database field is used to sort the gallery. You can order the gallery by any of the values documented for the WP_Query class reference in the Codex; you are NOT restricted to the values documented for the `[gallery]` shortcode.
+* `none`: No order.
+* `ID`: Order by post id. Note capitalization.
+* `author`: Order by author (id, not display name).
+* `date`: Order by date uploaded.
+* `description, content`: Order by attachment description. 
+* `title`: Order by attachment title.
+* `caption, excerpt`: Order by attachment caption. 
+* `slug, name`: Order by attachment name.
+* `modified`: Order by last modified date.
+* `parent`: Order by `: Order by attachment parent id.
+* `menu_order`: Order by page order.
+* `mime_type`: Order by attachment MIME type.
+* `comment_count`: Order by number of comments.
+* `rand`: Random order.
+* `<keyname>, meta_value, meta_value_num`: Order by custom field value. Note that a 'meta_key=keyname' must also be present in the query.
+* `post__in`: Preserve order given in the `ids`, `include` or `post__in` array.
+				
+You can sort on more than one value, e.g., `orderby="author, date DESC"` and you can specify ASC/DESC on a value by value basis. **NOTE: multiple orderby values are separated by commas, not spaces.** This is a change from WP_Query.
+
+The `order` parameter (default ASC) can give an ASC/DESC default for any value that doesn't have a specific choice. For example, `orderby="author, date DESC, mime_type" order=ASC` is the same as `orderby="author ASC, date DESC, mime_type ASC"`.
 
 <h4>Size</h4>
 
@@ -471,7 +507,7 @@ A complete list of the <strong>13 style substitution parameters</strong> is on t
 
 <h4>Substitution parameters for markup templates</h4>
 
-A complete list of the <strong>15 markup substitution parameters</strong> is on the plugin's Settings page.
+A complete list of the <strong>16 markup substitution parameters</strong> is on the plugin's Settings page.
 
 <h4>Attachment-specific substitution parameters for markup templates</h4>
 
@@ -479,7 +515,7 @@ A complete list of the <strong>35 attachment-specific substitution parameters</s
 
 <h3>Field-level Markup Substitution Parameters</h3>
 
-Field-level substitution parameters let you access custom fields, taxonomy terms, IPTC metadata and EXIF metadata for display in an MLA gallery. For these parameters, the value you code within the surrounding the ('[+') and ('+]') delimiters has three parts; the prefix, the field name and the optional ",single" indicator.
+Field-level substitution parameters let you access query arguments, custom fields, taxonomy terms, IPTC metadata and EXIF metadata for display in an MLA gallery. For these parameters, the value you code within the surrounding the ('[+') and ('+]') delimiters has three parts; the prefix, the field name and the optional ",single" indicator.
 
 The <strong>prefix</strong> defines which type of field-level data you are accessing. It must immediately follow the opening ('[+') delimiter and end with a colon (':'). There can be no spaces in this part of the parameter.
 
@@ -487,8 +523,9 @@ The <strong>field name</strong> defines which field-level data element you are a
 
 The optional <strong>",single" indicator</strong> defines how to handle fields with multiple values. It must immediately follow the field name and end with the closing delimiter ('+]'). There can be no spaces in this part of the parameter. If this part of the parameter is present, only the first value of the field will be returned. Use this indicator to limit the data returned for a custom field, taxonomy or metadata field that can have many values.
 
-There are four prefix values for field-level data. Prefix values must be coded as shown; all lowercase letters.
+There are five prefix values for field-level data. Prefix values must be coded as shown; all lowercase letters.
 
+* `query`: The parameters defined in the `[mla_gallery]` shortcode. For example, if your shortcode is `[mla gallery attachment_tag=my-tag div-class=some_class]` you can access the parameters as `[+query:attachment_tag+]` and `[+query:div-class+]` respectively. Only the parameters actually coded in the shortcode are accessible; default values for parameters not actually coded are not available. You can define your own parameters, e.g., `div-class`; they will be accessible as field-level data but will otherwise be ignored.
 * `custom`: WordPress custom fields, which you can define and populate on the Edit Media screen. The field name, or key, can contain spaces and some punctuation characters. You <strong>cannot use the plus sign ('+')</strong> in a field name you want to use with `[mla_gallery]`. Custom field names are case-sensitive; "client" and "Client" are not the same.
 * `terms`: WordPress Category, tag or custom taxonomy terms. For this category, you code the name of the taxonomy as the field name. The term(s) associated with the attachment will be displayed in the `[mla_gallery]`. Note that you must use the name/slug string for taxonomy, not the "title" string. For example, use "attachment-category" or "attachment-tag", not "Att. Category" or "Attachment Category".
 

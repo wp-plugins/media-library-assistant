@@ -184,8 +184,7 @@ class MLA_List_Table extends WP_List_Table {
 	 *
 	 * @return	array	default list of hidden columns
 	 */
-	private static function _default_hidden_columns( )
-	{
+	private static function _default_hidden_columns( ) {
 		return MLA_List_Table::$default_hidden_columns;
 	}
 	
@@ -222,8 +221,7 @@ class MLA_List_Table extends WP_List_Table {
 	 *
 	 * @return	array	Mime type names and HTML markup for views
 	 */
-	public static function mla_get_attachment_mime_types( )
-	{
+	public static function mla_get_attachment_mime_types( ) {
 		return array(
 			'image' => array(
 				0 => 'Images',
@@ -286,6 +284,53 @@ class MLA_List_Table extends WP_List_Table {
 				) 
 			) 
 		);
+	}
+	
+	/**
+	 * Get dropdown box of terms to filter by, if available
+	 *
+	 * @since 1.20
+	 *
+	 * @param	integer	currently selected term_id || zero (default)
+	 *
+	 * @return	string	HTML markup for dropdown box
+	 */
+	public static function mla_get_taxonomy_filter_dropdown( $selected = 0 ) {
+		$dropdown = '';
+		$tax_filter =  MLAOptions::mla_taxonomy_support('', 'filter');
+		
+		if ( ( '' != $tax_filter ) && ( is_object_in_taxonomy( 'attachment', $tax_filter ) ) ) {
+			$tax_object = get_taxonomy( $tax_filter );
+			$dropdown_options = array(
+				'show_option_all' => 'All ' . $tax_object->labels->name,
+				'show_option_none' => 'No ' . $tax_object->labels->name,
+				'orderby' => 'ID',
+				'order' => 'ASC',
+				'show_count' => false,
+				'hide_empty' => false,
+				'child_of' => 0,
+				'exclude' => '',
+				// 'exclude_tree => '', 
+				'echo' => true,
+				'depth' => 3,
+				'tab_index' => 0,
+				'name' => 'mla_filter_term',
+				'id' => 'name',
+				'class' => 'postform',
+				'selected' => $selected,
+				'hierarchical' => true,
+				'pad_counts' => false,
+				'taxonomy' => $tax_filter,
+				'hide_if_empty' => false 
+			);
+			
+			ob_start();
+			wp_dropdown_categories( $dropdown_options );
+			$dropdown = ob_get_contents();
+			ob_end_clean();
+		}
+			
+		return $dropdown;
 	}
 	
 	/**
@@ -1234,34 +1279,7 @@ class MLA_List_Table extends WP_List_Table {
 		if ( 'top' == $which ) {
 			$this->months_dropdown( 'attachment' );
 			
-			$tax_filter =  MLAOptions::mla_taxonomy_support('', 'filter');
-			if ( ( '' != $tax_filter ) && ( is_object_in_taxonomy( 'attachment', $tax_filter ) ) ) {
-				$tax_object = get_taxonomy( $tax_filter );
-				$dropdown_options = array(
-					'show_option_all' => 'All ' . $tax_object->labels->name,
-					'show_option_none' => 'No ' . $tax_object->labels->name,
-					'orderby' => 'ID',
-					'order' => 'ASC',
-					'show_count' => false,
-					'hide_empty' => false,
-					'child_of' => 0,
-					'exclude' => '',
-					// 'exclude_tree => '', 
-					'echo' => true,
-					'depth' => 3,
-					'tab_index' => 0,
-					'name' => 'mla_filter_term',
-					'id' => 'name',
-					'class' => 'postform',
-					'selected' => isset( $_REQUEST['mla_filter_term'] ) ? $_REQUEST['mla_filter_term'] : 0,
-					'hierarchical' => true,
-					'pad_counts' => false,
-					'taxonomy' => $tax_filter,
-					'hide_if_empty' => false 
-				);
-				
-				wp_dropdown_categories( $dropdown_options );
-			}
+			echo self::mla_get_taxonomy_filter_dropdown( isset( $_REQUEST['mla_filter_term'] ) ? $_REQUEST['mla_filter_term'] : 0 );
 			
 			submit_button( __( 'Filter' ), 'secondary', 'mla_filter', false, array(
 				 'id' => 'post-query-submit' 

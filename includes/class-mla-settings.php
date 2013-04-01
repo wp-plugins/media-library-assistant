@@ -454,6 +454,7 @@ class MLASettings {
 		$page_values = array(
 			'shortcode_list' => '',
 			'options_list' => '',
+			'donateURL' => MLA_PLUGIN_URL . 'images/DonateButton.jpg',
 			'_wpnonce' => wp_nonce_field( MLA::MLA_ADMIN_NONCE, '_wpnonce', true, false ),
 			'_wp_http_referer' => wp_referer_field( false )
 		);
@@ -1021,6 +1022,7 @@ class MLASettings {
 		$current_tab = isset( $_REQUEST['mla_tab'] ) ? $_REQUEST['mla_tab']: 'general';
 		$page_values = array(
 			'version' => 'v' . MLA::CURRENT_MLA_VERSION,
+			'donateURL' => MLA_PLUGIN_URL . 'images/DonateButton.jpg',
 			'messages' => '',
 			'tablist' => self::_compose_settings_tabs( $current_tab ),
 			'tab_content' => ''

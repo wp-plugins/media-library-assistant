@@ -92,6 +92,7 @@ and the value is db column to sort by.</span><pre>get_sortable_columns()</pre></
 <li class="method public "><a href="#mla_admin_init_action" title="mla_admin_init_action :: Adds support for taxonomy columns"><span class="description">Adds support for taxonomy columns</span><pre>mla_admin_init_action()</pre></a></li>
 <li class="method public "><a href="#mla_get_attachment_mime_types" title="mla_get_attachment_mime_types :: Get possible mime types for view preparation"><span class="description">Get possible mime types for view preparation</span><pre>mla_get_attachment_mime_types()</pre></a></li>
 <li class="method public "><a href="#mla_get_sortable_columns" title="mla_get_sortable_columns :: Return the names and display values of the sortable columns"><span class="description">Return the names and display values of the sortable columns</span><pre>mla_get_sortable_columns()</pre></a></li>
+<li class="method public "><a href="#mla_get_taxonomy_filter_dropdown" title="mla_get_taxonomy_filter_dropdown :: Get dropdown box of terms to filter by, if available"><span class="description">Get dropdown box of terms to filter by, if available</span><pre>mla_get_taxonomy_filter_dropdown()</pre></a></li>
 <li class="method public "><a href="#mla_manage_columns_filter" title="mla_manage_columns_filter :: Handler for filter 'manage_media_page_mla-menu_columns'"><span class="description">Handler for filter 'manage_media_page_mla-menu_columns'</span><pre>mla_manage_columns_filter()</pre></a></li>
 <li class="method public "><a href="#mla_manage_hidden_columns_filter" title="mla_manage_hidden_columns_filter :: Handler for filter 'get_user_option_managemedia_page_mla-menucolumnshidden'"><span class="description">Handler for filter 'get_user_option_managemedia_page_mla-menucolumnshidden'</span><pre>mla_manage_hidden_columns_filter()</pre></a></li>
 <li class="method public "><a href="#prepare_items" title="prepare_items :: Prepares the list of items for displaying"><span class="description">Prepares the list of items for displaying</span><pre>prepare_items()</pre></a></li>
@@ -742,6 +743,26 @@ with additional entries.</p></p>
 <code>array</code>name => array( orderby value, heading ) for sortable columns</div>
 </div></div>
 </div>
+<a name="mla_get_taxonomy_filter_dropdown" id="mla_get_taxonomy_filter_dropdown"></a><div class="element clickable method public mla_get_taxonomy_filter_dropdown" data-toggle="collapse" data-target=".mla_get_taxonomy_filter_dropdown .collapse">
+<h2>Get dropdown box of terms to filter by, if available</h2>
+<pre>mla_get_taxonomy_filter_dropdown(integer $selected) : string</pre>
+<div class="labels"></div>
+<div class="row collapse"><div class="detail-description">
+<p class="long_description"></p>
+<table class="table table-bordered"><tr>
+<th>since</th>
+<td>1.20</td>
+</tr></table>
+<h3>Parameters</h3>
+<div class="subelement argument">
+<h4>$selected</h4>
+<code>integer</code><p>currently selected term_id || zero (default)</p>
+</div>
+<h3>Returns</h3>
+<div class="subelement response">
+<code>string</code>HTML markup for dropdown box</div>
+</div></div>
+</div>
 <a name="mla_manage_columns_filter" id="mla_manage_columns_filter"></a><div class="element clickable method public mla_manage_columns_filter" data-toggle="collapse" data-target=".mla_manage_columns_filter .collapse">
 <h2>Handler for filter 'manage_media_page_mla-menu_columns'</h2>
 <pre>mla_manage_columns_filter() : array</pre>
@@ -991,7 +1012,7 @@ Custom field columns are added to this array by mla_admin_init_action.</p></p>
 <div class="row"><footer class="span12">
             Template is built using <a href="http://twitter.github.com/bootstrap/">Twitter Bootstrap 2</a> and icons provided by <a href="http://glyphicons.com/">Glyphicons</a>.<br>
             Documentation is powered by <a href="http://www.phpdoc.org/">phpDocumentor 2.0.0a8</a> and<br>
-            generated on 2013-03-10T17:53:00-07:00.<br></footer></div>
+            generated on 2013-03-29T17:10:59-07:00.<br></footer></div>
 </div>
 </body>
 </html>

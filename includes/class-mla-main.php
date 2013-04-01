@@ -38,7 +38,7 @@ class MLA {
 	 *
 	 * @var	string
 	 */
-	const CURRENT_MLA_VERSION = '1.14';
+	const CURRENT_MLA_VERSION = '1.20';
 
 	/**
 	 * Slug for registering and enqueueing plugin style sheet
@@ -734,7 +734,7 @@ class MLA {
 			
 			if ( !empty( $_REQUEST['heading_suffix'] ) ) {
 				echo ' - ' . esc_html( $_REQUEST['heading_suffix'] ) . "</h2>\r\n";
-			} elseif ( !empty( $_REQUEST['s'] ) && !empty( $_REQUEST['mla-search-fields'] ) ) {
+			} elseif ( !empty( $_REQUEST['s'] ) && !empty( $_REQUEST['mla_search_fields'] ) ) {
 				echo ' - search results for "' . stripslashes( trim( $_REQUEST['s'] ) ) . "\"</h2>\r\n";
 			} else
 				echo "</h2>\r\n";
@@ -757,10 +757,10 @@ class MLA {
 			/*
 			 * Compose the Search Media box
 			 */
-			if ( !empty( $_REQUEST['s'] ) && !empty( $_REQUEST['mla-search-fields'] ) ) {
+			if ( !empty( $_REQUEST['s'] ) && !empty( $_REQUEST['mla_search_fields'] ) ) {
 				$search_value = esc_attr( stripslashes( trim( $_REQUEST['s'] ) ) );
-				$search_fields = $_REQUEST['mla-search-fields'];
-				$search_connector = $_REQUEST['mla-search-connector'];
+				$search_fields = $_REQUEST['mla_search_fields'];
+				$search_connector = $_REQUEST['mla_search_connector'];
 			} else {
 				$search_value = '';
 				$search_fields = array ( 'title', 'content' );
@@ -772,37 +772,37 @@ class MLA {
 			echo '<input type="text" size="45"  id="media-search-input" name="s" value="' . $search_value . '" />' . "\r\n";
 			echo '<input type="submit" name="mla-search-submit" id="search-submit" class="button" value="Search Media"  /><br>' . "\r\n";
 			if ( 'OR' == $search_connector ) {
-				echo '<input type="radio" name="mla-search-connector" value="AND" />&nbsp;and&nbsp;' . "\r\n";
-				echo '<input type="radio" name="mla-search-connector" checked="checked" value="OR" />&nbsp;or&nbsp;' . "\r\n";
+				echo '<input type="radio" name="mla_search_connector" value="AND" />&nbsp;and&nbsp;' . "\r\n";
+				echo '<input type="radio" name="mla_search_connector" checked="checked" value="OR" />&nbsp;or&nbsp;' . "\r\n";
 			} else {
-				echo '<input type="radio" name="mla-search-connector" checked="checked" value="AND" />&nbsp;and&nbsp;' . "\r\n";
-				echo '<input type="radio" name="mla-search-connector" value="OR" />&nbsp;or&nbsp;' . "\r\n";
+				echo '<input type="radio" name="mla_search_connector" checked="checked" value="AND" />&nbsp;and&nbsp;' . "\r\n";
+				echo '<input type="radio" name="mla_search_connector" value="OR" />&nbsp;or&nbsp;' . "\r\n";
 			}
 
 			if ( in_array( 'title', $search_fields ) )
-				echo '<input type="checkbox" name="mla-search-fields[]" id="search-title" checked="checked" value="title" />&nbsp;title&nbsp;' . "\r\n";
+				echo '<input type="checkbox" name="mla_search_fields[]" id="search-title" checked="checked" value="title" />&nbsp;title&nbsp;' . "\r\n";
 			else
-				echo '<input type="checkbox" name="mla-search-fields[]" id="search-title" value="title" />&nbsp;title&nbsp;' . "\r\n";
+				echo '<input type="checkbox" name="mla_search_fields[]" id="search-title" value="title" />&nbsp;title&nbsp;' . "\r\n";
 				
 			if ( in_array( 'name', $search_fields ) )
-				echo '<input type="checkbox" name="mla-search-fields[]" id="search-name" checked="checked" value="name" />&nbsp;name&nbsp;' . "\r\n";
+				echo '<input type="checkbox" name="mla_search_fields[]" id="search-name" checked="checked" value="name" />&nbsp;name&nbsp;' . "\r\n";
 			else
-				echo '<input type="checkbox" name="mla-search-fields[]" id="search-name" value="name" />&nbsp;name&nbsp;' . "\r\n";
+				echo '<input type="checkbox" name="mla_search_fields[]" id="search-name" value="name" />&nbsp;name&nbsp;' . "\r\n";
 
 			if ( in_array( 'alt-text', $search_fields ) )
-				echo '<input type="checkbox" name="mla-search-fields[]" id="search-alt-text" checked="checked" value="alt-text" />&nbsp;ALT text&nbsp;' . "\r\n";
+				echo '<input type="checkbox" name="mla_search_fields[]" id="search-alt-text" checked="checked" value="alt-text" />&nbsp;ALT text&nbsp;' . "\r\n";
 			else
-				echo '<input type="checkbox" name="mla-search-fields[]" id="search-alt-text" value="alt-text" />&nbsp;ALT text&nbsp;' . "\r\n";
+				echo '<input type="checkbox" name="mla_search_fields[]" id="search-alt-text" value="alt-text" />&nbsp;ALT text&nbsp;' . "\r\n";
 
 			if ( in_array( 'excerpt', $search_fields ) )
-				echo '<input type="checkbox" name="mla-search-fields[]" id="search-excerpt" checked="checked" value="excerpt" />&nbsp;caption&nbsp;' . "\r\n";
+				echo '<input type="checkbox" name="mla_search_fields[]" id="search-excerpt" checked="checked" value="excerpt" />&nbsp;caption&nbsp;' . "\r\n";
 			else
-				echo '<input type="checkbox" name="mla-search-fields[]" id="search-excerpt" value="excerpt" />&nbsp;caption&nbsp;' . "\r\n";
+				echo '<input type="checkbox" name="mla_search_fields[]" id="search-excerpt" value="excerpt" />&nbsp;caption&nbsp;' . "\r\n";
 
 			if ( in_array( 'content', $search_fields ) )
-				echo '<input type="checkbox" name="mla-search-fields[]" id="search-content" checked="checked" value="content" />&nbsp;description&nbsp;' . "\r\n";
+				echo '<input type="checkbox" name="mla_search_fields[]" id="search-content" checked="checked" value="content" />&nbsp;description&nbsp;' . "\r\n";
 			else
-				echo '<input type="checkbox" name="mla-search-fields[]" id="search-content" value="content" />&nbsp;description&nbsp;' . "\r\n";
+				echo '<input type="checkbox" name="mla_search_fields[]" id="search-content" value="content" />&nbsp;description&nbsp;' . "\r\n";
 
 			echo '</p>' . "\r\n";
 

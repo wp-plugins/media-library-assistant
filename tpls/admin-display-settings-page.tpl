@@ -3,6 +3,8 @@
 &nbsp;
 <div class="wrap">
 <div id="icon-options-general" class="icon32"><br/></div>
+<div id="donate-button-div" style="text-align: center; width: 100px; height: 40px; float: right;">
+<a href="http://fairtradejudaica.org/make-a-difference/donate/" title="Support our work" target="_blank" style="border: none;"><img border="0" src="[+donateURL+]" width="100" height="40" alt="Donate"></a></div>
 <h2>Media Library Assistant [+version+] Settings</h2>
 [+messages+]
 [+tablist+]
@@ -107,7 +109,7 @@
 <h3>Support Our Work</h3>
 <table width="700" border="0" cellpadding="10">
 	<tr>
-		<td><a href="http://fairtradejudaica.org/make-a-difference/donate/" title="Donate to FTJ" target="_blank" style="border: none;"><img border="0" src="http://fairtradejudaica.org/wp-content/uploads/newsletter/images/DonateButton.jpg" width="100" height="40" alt="Donate"></a></td>
+		<td><a href="http://fairtradejudaica.org/make-a-difference/donate/" title="Donate to FTJ" target="_blank" style="border: none;"><img border="0" src="[+donateURL+]" width="100" height="40" alt="Donate"></a></td>
 		<td>This plugin was inspired by my work on the WordPress web site for our nonprofit, Fair Trade Judaica. If you find the Media Library Assistant plugin useful and would like to support a great cause, consider a <a href="http://fairtradejudaica.org/make-a-difference/donate/" title="Donate to FTJ" target="_blank" style="font-weight:bold">tax-deductible donation</a> to our work. Thank you!</td>
 	</tr>
 </table>

@@ -143,21 +143,6 @@ class MLAShortcodes {
 	private static $mla_debug = false;
 	
 	/**
-	 * WP_Query filter "parameters"
-	 *
-	 * This array defines parameters for the query's where filter, mla_shortcode_query_posts_where_filter.
-	 * The parameters are set up in the mla_get_shortcode_attachments function, and
-	 * any further logic required to translate those values is contained in the filter.
-	 *
-	 * Array index values are: post_parent
-	 *
-	 * @since 1.13
-	 *
-	 * @var	array
-	 */
-	private static $query_parameters = array();
-
-	/**
 	 * The MLA Gallery shortcode.
 	 *
 	 * This is a superset of the WordPress Gallery shortcode for displaying images on a post,
@@ -195,6 +180,7 @@ class MLAShortcodes {
 			'mla_float' => is_rtl() ? 'right' : 'left',
 			'mla_itemwidth' => NULL,
 			'mla_margin' => '1.5',
+			'mla_link_href' => '',
 			'mla_link_text' => '',
 			'mla_rollover_text' => '',
 			'mla_caption' => '',
@@ -216,7 +202,7 @@ class MLAShortcodes {
 			'fx' => 'fade',
 			'timeout' => 4000,
 			'speed' => 1000,
-			'pause' => true
+			'pause' => NULL
 		);
 		
 		/*
@@ -256,6 +242,9 @@ class MLAShortcodes {
 			foreach ($attachments as $key => $val) {
 				$images[$val->ID] = $attachments[$key];
 			}
+			
+			if ( isset( $arguments['pause'] ) && ( 'false' == $arguments['pause'] ) )
+				$arguments['pause'] = NULL;
 
 			$output = $photonic->build_gallery( $images, $arguments['style'], $arguments );
 			return $output;
@@ -341,12 +330,14 @@ class MLAShortcodes {
 		
 		$upload_dir = wp_upload_dir();
 		$markup_values = $style_values;
+		$markup_values['site_url'] = site_url();
 		$markup_values['base_url'] = $upload_dir['baseurl'];
 		$markup_values['base_dir'] = $upload_dir['basedir'];
 
 		/*
 		 * Variable item-level placeholders
 		 */
+		$query_placeholders = array();
 		$terms_placeholders = array();
 		$custom_placeholders = array();
 		$iptc_placeholders = array();
@@ -372,10 +363,13 @@ class MLAShortcodes {
 				/*
 				 * Look for variable item-level placeholders
 				 */
-				$new_text = str_replace( '{+', '[+', str_replace( '+}', '+]', $arguments['mla_link_text'] . $arguments['mla_rollover_text'] . $arguments['mla_caption'] ) );
+				$new_text = str_replace( '{+', '[+', str_replace( '+}', '+]', $arguments['mla_link_href'] . $arguments['mla_link_text'] . $arguments['mla_rollover_text'] . $arguments['mla_caption'] ) );
 				$placeholders = MLAData::mla_get_template_placeholders( $item_template . $new_text );
 				foreach ($placeholders as $key => $value ) {
 					switch ( $value['prefix'] ) {
+						case 'query':
+							$query_placeholders[ $key ] = $value;
+							break;
 						case 'terms':
 							$terms_placeholders[ $key ] = $value;
 							break;
@@ -494,6 +488,13 @@ class MLAShortcodes {
 			/*
 			 * Add variable placeholders
 			 */
+			foreach ( $query_placeholders as $key => $value ) {
+				if ( isset( $attr[ $value['value'] ] ) )
+					$markup_values[ $key ] = $attr[ $value['value'] ];
+				else
+					$markup_values[ $key ] = '';
+			} // $query_placeholders
+			
 			foreach ( $terms_placeholders as $key => $value ) {
 				$text = '';
 				$terms = wp_get_object_terms( $attachment->ID, $value['value'] );
@@ -663,6 +664,20 @@ class MLAShortcodes {
 			else
 				$markup_values['link_url'] = '';
 
+			/*
+			 * Override the link value; leave filelink and pagelink unchanged
+			 */
+			if ( ! empty( $arguments['mla_link_href'] ) ) {
+				$new_text = str_replace( '{+', '[+', str_replace( '+}', '+]', $arguments['mla_link_href'] ) );
+				$new_text = MLAData::mla_parse_template( $new_text, $markup_values );
+
+				/*
+				 * Replace single- and double-quote delimited values
+				 */
+				$markup_values['link'] = preg_replace('# href=\'([^\']*)\'#', " href='{$new_text}'", $markup_values['link'] );
+				$markup_values['link'] = preg_replace('# href=\"([^\"]*)\"#', " href=\"{$new_text}\"", $markup_values['link'] );
+			}
+			
 			$match_count = preg_match_all( '#\<a [^\>]+\>(.*)\</a\>#', $markup_values['link'], $matches, PREG_OFFSET_CAPTURE );
 			if ( ! ( ( $match_count == false ) || ( $match_count == 0 ) ) ) {
 				$markup_values['thumbnail_content'] = $matches[1][0][0];
@@ -733,6 +748,22 @@ class MLAShortcodes {
 	}
 
 	/**
+	 * WP_Query filter "parameters"
+	 *
+	 * This array defines parameters for the query's where and orderby filters,
+	 * mla_shortcode_query_posts_where_filter and mla_shortcode_query_posts_orderby_filter.
+	 * The parameters are set up in the mla_get_shortcode_attachments function, and
+	 * any further logic required to translate those values is contained in the filter.
+	 *
+	 * Array index values are: orderby, post_parent
+	 *
+	 * @since 1.13
+	 *
+	 * @var	array
+	 */
+	private static $query_parameters = array();
+
+	/**
 	 * Cleans up damage caused by the Visual Editor to the tax_query and meta_query specifications
 	 *
 	 * @since 1.14
@@ -747,6 +778,91 @@ class MLAShortcodes {
 		return $specification;
 	}
 	
+	/**
+	 * Translates query parameters to a valid SQL order by clause.
+	 *
+	 * Accepts one or more valid columns, with or without ASC/DESC.
+	 * Enhanced version of /wp-includes/formatting.php function sanitize_sql_orderby().
+	 *
+	 * @since 1.20
+	 *
+	 * @param array Validated query parameters
+	 * @return string|bool Returns the orderby clause if present, false otherwise.
+	 */
+	private static function _validate_sql_orderby( $query_parameters ){
+		global $wpdb;
+
+		$results = array ();
+		$order = isset( $query_parameters['order'] ) ? ' ' . $query_parameters['order'] : '';
+		$orderby = isset( $query_parameters['orderby'] ) ? $query_parameters['orderby'] : '';
+		$meta_key = isset( $query_parameters['meta_key'] ) ? $query_parameters['meta_key'] : '';
+		$post__in = isset( $query_parameters['post__in'] ) ? implode(',', array_map( 'absint', $query_parameters['post__in'] )) : '';
+
+		if ( empty( $orderby ) ) {
+			$orderby = "$wpdb->posts.post_date " . $order;
+		} elseif ( 'none' == $orderby ) {
+			return '';
+		} elseif ( $orderby == 'post__in' && ! empty( $post__in ) ) {
+			$orderby = "FIELD( {$wpdb->posts}.ID, {$post__in} )";
+		} else {
+			$allowed_keys = array('ID', 'author', 'date', 'description', 'content', 'title', 'caption', 'excerpt', 'slug', 'name', 'modified', 'parent', 'menu_order', 'mime_type', 'comment_count', 'rand');
+			if ( ! empty( $meta_key ) ) {
+				$allowed_keys[] = $meta_key;
+				$allowed_keys[] = 'meta_value';
+				$allowed_keys[] = 'meta_value_num';
+			}
+		
+			$obmatches = preg_split('/\s*,\s*/', trim($query_parameters['orderby']));
+			foreach( $obmatches as $index => $value ) {
+				$count = preg_match('/([a-z0-9_]+)(\s+(ASC|DESC))?/i', $value, $matches);
+
+				if ( $count && ( $value == $matches[0] ) && in_array( $matches[1], $allowed_keys ) ) {
+					if ( 'rand' == $matches[1] )
+							$results[] = 'RAND()';
+					else {
+						switch ( $matches[1] ) {
+							case 'ID':
+								$matches[1] = "$wpdb->posts.ID";
+								break;
+							case 'description':
+								$matches[1] = "$wpdb->posts.post_content";
+								break;
+							case 'caption':
+								$matches[1] = "$wpdb->posts.post_excerpt";
+								break;
+							case 'slug':
+								$matches[1] = "$wpdb->posts.post_name";
+								break;
+							case 'menu_order':
+								$matches[1] = "$wpdb->posts.menu_order";
+								break;
+							case 'comment_count':
+								$matches[1] = "$wpdb->posts.comment_count";
+								break;
+							case $meta_key:
+							case 'meta_value':
+								$matches[1] = "$wpdb->postmeta.meta_value";
+								break;
+							case 'meta_value_num':
+								$matches[1] = "$wpdb->postmeta.meta_value+0";
+								break;
+							default:
+								$matches[1] = "$wpdb->posts.post_" . $matches[1];
+						} // switch $matches[1]
+	
+						$results[] = isset( $matches[2] ) ? $matches[1] . $matches[2] : $matches[1] . $order;
+					} // not 'rand'
+				} // valid column specification
+			} // foreach $obmatches
+
+			$orderby = implode( ', ', $results );
+			if ( empty( $orderby ) )
+				return false;
+		} // else filter by allowed keys, etc.
+
+		return $orderby;
+	}
+
 	/**
 	 * Parses shortcode parameters and returns the gallery objects
 	 *
@@ -763,7 +879,7 @@ class MLAShortcodes {
 		 */
 		$default_arguments = array(
 			'order' => 'ASC', // or 'DESC' or 'RAND'
-			'orderby' => 'menu_order ID',
+			'orderby' => 'menu_order,ID',
 			'id' => NULL,
 			'ids' => array(),
 			'include' => array(),
@@ -798,6 +914,7 @@ class MLAShortcodes {
 			'post_mime_type' => 'image',
 			// Pagination - no default for most of these
 			'nopaging' => true,
+			'numberposts' => 0,
 			'posts_per_page' => 0,
 			'posts_per_archive_page' => 0,
 			'paged' => NULL, // page number or 'current'
@@ -814,6 +931,11 @@ class MLAShortcodes {
 		);
 		
 		/*
+		 * Parameters passed to the where and orderby filter functions
+		 */
+		self::$query_parameters = array();
+
+		/*
 		 * Merge input arguments with defaults, then extract the query arguments.
 		 */
 		 
@@ -821,8 +943,7 @@ class MLAShortcodes {
 			$attr = shortcode_parse_atts( $attr );
 			
 		$arguments = shortcode_atts( $default_arguments, $attr );
-		self::$query_parameters = array();
-		
+
 		/*
 		 * 'RAND' is not documented in the codex, but is present in the code.
 		 */
@@ -867,18 +988,11 @@ class MLAShortcodes {
 						$query_arguments['tax_query'] =	array( array( 'taxonomy' => $key, 'field' => 'slug', 'terms' => explode( ',', $query_arguments[ $key ] ), 'operator' => strtoupper( $arguments['tax_operator'] ) ) );
 						unset( $query_arguments[ $key ] );
 					}
-					
 				} // array_key_exists
 			} //foreach $attr
 		} // ! empty
+		unset( $arguments['tax_operator'] );
 		
-		// We're trusting author input, but let's at least make sure it looks like a valid orderby statement
-		if ( isset( $arguments['orderby'] ) ) {
-			$arguments['orderby'] = sanitize_sql_orderby( $arguments['orderby'] );
-			if ( ! $arguments['orderby'] )
-				unset( $arguments['orderby'] );
-		}
-	
 		/*
 		 * $query_arguments has been initialized in the taxonomy code above.
 		 */
@@ -912,14 +1026,20 @@ class MLAShortcodes {
 				}
 				// fallthru
 			case 'id':
+				if ( is_numeric( $value ) ) {
+					$query_arguments[ $key ] = intval( $value );
+					if ( ! $children_ok )
+						$use_children = false;
+				}
+				unset( $arguments[ $key ] );
+				break;
+			case 'numberposts':
 			case 'posts_per_page':
 			case 'posts_per_archive_page':
 				if ( is_numeric( $value ) ) {
 					$value =  intval( $value );
 					if ( ! empty( $value ) ) {
 						$query_arguments[ $key ] = $value;
-						if ( ! $children_ok )
-							$use_children = false;
 					}
 				}
 				unset( $arguments[ $key ] );
@@ -1052,8 +1172,8 @@ class MLAShortcodes {
 		/*
 		 * Decide whether to use a "get_children" style query
 		 */
-		if ( $use_children && empty( $query_arguments['post_parent'] ) ) {
-			if ( empty( $query_arguments['id'] ) )
+		if ( $use_children && ! isset( $query_arguments['post_parent'] ) ) {
+			if ( ! isset( $query_arguments['id'] ) )
 				$query_arguments['post_parent'] = $post_parent;
 			else				
 				$query_arguments['post_parent'] = $query_arguments['id'];
@@ -1061,16 +1181,18 @@ class MLAShortcodes {
 			unset( $query_arguments['id'] );
 		}
 
+		if ( isset( $query_arguments['numberposts'] ) && ! isset( $query_arguments['posts_per_page'] )) {
+			$query_arguments['posts_per_page'] = $query_arguments['numberposts'];
+		}
+		unset( $query_arguments['numberposts'] );
+
 		if ( isset( $query_arguments['posts_per_page'] ) || isset( $query_arguments['posts_per_archive_page'] ) ||
 			isset( $query_arguments['paged'] ) || isset( $query_arguments['offset'] ) ) {
-			unset ( $query_arguments['nopaging'] );
+			unset( $query_arguments['nopaging'] );
 		}
 
-		if ( isset( $query_arguments['orderby'] ) && ('rand' == $query_arguments['orderby'] ) )
-			unset ( $query_arguments['order'] );
-
 		if ( isset( $query_arguments['post_mime_type'] ) && ('all' == strtolower( $query_arguments['post_mime_type'] ) ) )
-			unset ( $query_arguments['post_mime_type'] );
+			unset( $query_arguments['post_mime_type'] );
 
 		if ( ! empty($query_arguments['include']) ) {
 			$incposts = wp_parse_id_list( $query_arguments['include'] );
@@ -1082,15 +1204,28 @@ class MLAShortcodes {
 		$query_arguments['ignore_sticky_posts'] = true;
 		$query_arguments['no_found_rows'] = true;
 	
+		/*
+		 * We will always handle "orderby" in our filter
+		 */ 
+		self::$query_parameters['orderby'] = self::_validate_sql_orderby( $query_arguments );
+		if ( false === self::$query_parameters['orderby'] )
+			unset( self::$query_parameters['orderby'] );
+			
+		unset( $query_arguments['orderby'] );
+		unset( $query_arguments['order'] );
+	
+		add_filter( 'posts_orderby', 'MLAShortcodes::mla_shortcode_query_posts_orderby_filter' );
 		add_filter( 'posts_where', 'MLAShortcodes::mla_shortcode_query_posts_where_filter' );
 		$get_posts = new WP_Query;
 		$attachments = $get_posts->query($query_arguments);
 		remove_filter( 'posts_where', 'MLAShortcodes::mla_shortcode_query_posts_where_filter' );
+		remove_filter( 'posts_orderby', 'MLAShortcodes::mla_shortcode_query_posts_orderby_filter' );
 		
 		if ( self::$mla_debug ) {
 			self::$mla_debug_messages .= '<p><strong>mla_debug</strong> query = ' . var_export( $query_arguments, true ) . '</p>';
 			self::$mla_debug_messages .= '<p><strong>mla_debug</strong> request = ' . var_export( $get_posts->request, true ) . '</p>';
 			self::$mla_debug_messages .= '<p><strong>mla_debug</strong> query_vars = ' . var_export( $get_posts->query_vars, true ) . '</p>';
+			self::$mla_debug_messages .= '<p><strong>mla_debug</strong> post_count = ' . var_export( $get_posts->post_count, true ) . '</p>';
 		}
 		
 		return $attachments;
@@ -1137,6 +1272,27 @@ class MLAShortcodes {
 			self::$mla_debug_messages .= '<p><strong>mla_debug</strong> modified WHERE filter = ' . var_export( $where_clause, true ) . '</p>';
 
 		return $where_clause;
+	}
+
+	/**
+	 * Filters the ORDERBY clause for shortcode queries
+	 * 
+	 * This is an enhanced version of the code found in wp-includes/query.php, function get_posts.
+	 * Defined as public because it's a filter.
+	 *
+	 * @since 1.20
+	 *
+	 * @param	string	query clause before modification
+	 *
+	 * @return	string	query clause after modification
+	 */
+	public static function mla_shortcode_query_posts_orderby_filter( $orderby_clause ) {
+		global $wpdb;
+
+		if ( isset( self::$query_parameters['orderby'] ) )
+			return self::$query_parameters['orderby'];
+		else
+			return $orderby_clause;
 	}
 
 	/**

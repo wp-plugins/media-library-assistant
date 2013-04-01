@@ -56,9 +56,11 @@
 <li class="method public "><a href="#mla_attachment_list_shortcode" title="mla_attachment_list_shortcode :: WordPress Shortcode; renders a complete list of all attachments and references to them"><span class="description">WordPress Shortcode; renders a complete list of all attachments and references to them</span><pre>mla_attachment_list_shortcode()</pre></a></li>
 <li class="method public "><a href="#mla_gallery_shortcode" title="mla_gallery_shortcode :: The MLA Gallery shortcode."><span class="description">The MLA Gallery shortcode.</span><pre>mla_gallery_shortcode()</pre></a></li>
 <li class="method public "><a href="#mla_get_shortcode_attachments" title="mla_get_shortcode_attachments :: Parses shortcode parameters and returns the gallery objects"><span class="description">Parses shortcode parameters and returns the gallery objects</span><pre>mla_get_shortcode_attachments()</pre></a></li>
+<li class="method public "><a href="#mla_shortcode_query_posts_orderby_filter" title="mla_shortcode_query_posts_orderby_filter :: Filters the ORDERBY clause for shortcode queries"><span class="description">Filters the ORDERBY clause for shortcode queries</span><pre>mla_shortcode_query_posts_orderby_filter()</pre></a></li>
 <li class="method public "><a href="#mla_shortcode_query_posts_where_filter" title="mla_shortcode_query_posts_where_filter :: Filters the WHERE clause for shortcode queries"><span class="description">Filters the WHERE clause for shortcode queries</span><pre>mla_shortcode_query_posts_where_filter()</pre></a></li>
 <li class="nav-header private">» Private</li>
 <li class="method private "><a href="#_sanitize_query_specification" title="_sanitize_query_specification :: Cleans up damage caused by the Visual Editor to the tax_query and meta_query specifications"><span class="description">Cleans up damage caused by the Visual Editor to the tax_query and meta_query specifications</span><pre>_sanitize_query_specification()</pre></a></li>
+<li class="method private "><a href="#_validate_sql_orderby" title="_validate_sql_orderby :: Translates query parameters to a valid SQL order by clause."><span class="description">Translates query parameters to a valid SQL order by clause.</span><pre>_validate_sql_orderby()</pre></a></li>
 <li class="nav-header">
 <i class="icon-custom icon-property"></i> Properties</li>
 <li class="property public "><a href="#%24mla_debug_messages" title="$mla_debug_messages :: Accumulates debug messages"><span class="description">Accumulates debug messages</span><pre>$mla_debug_messages</pre></a></li>
@@ -165,6 +167,26 @@ Enhancements include many additional selection parameters and full taxonomy supp
 <code>array</code>List of attachments returned from WP_Query</div>
 </div></div>
 </div>
+<a name="mla_shortcode_query_posts_orderby_filter" id="mla_shortcode_query_posts_orderby_filter"></a><div class="element clickable method public mla_shortcode_query_posts_orderby_filter" data-toggle="collapse" data-target=".mla_shortcode_query_posts_orderby_filter .collapse">
+<h2>Filters the ORDERBY clause for shortcode queries</h2>
+<pre>mla_shortcode_query_posts_orderby_filter(string $orderby_clause) : string</pre>
+<div class="labels"></div>
+<div class="row collapse"><div class="detail-description">
+<p class="long_description"><p>This is an enhanced version of the code found in wp-includes/query.php, function get_posts.
+Defined as public because it's a filter.</p></p>
+<table class="table table-bordered"><tr>
+<th>since</th>
+<td>1.20</td>
+</tr></table>
+<h3>Parameters</h3>
+<div class="subelement argument">
+<h4>$orderby_clause</h4>
+<code>string</code><p>query clause before modification</p></div>
+<h3>Returns</h3>
+<div class="subelement response">
+<code>string</code>query clause after modification</div>
+</div></div>
+</div>
 <a name="mla_shortcode_query_posts_where_filter" id="mla_shortcode_query_posts_where_filter"></a><div class="element clickable method public mla_shortcode_query_posts_where_filter" data-toggle="collapse" data-target=".mla_shortcode_query_posts_where_filter .collapse">
 <h2>Filters the WHERE clause for shortcode queries</h2>
 <pre>mla_shortcode_query_posts_where_filter(string $where_clause) : string</pre>
@@ -204,6 +226,26 @@ Defined as public because it's a filter.</p></p>
 <h3>Returns</h3>
 <div class="subelement response">
 <code>string</code>query specification with HTML escape sequences and line breaks removed</div>
+</div></div>
+</div>
+<a name="_validate_sql_orderby" id="_validate_sql_orderby"></a><div class="element clickable method private _validate_sql_orderby" data-toggle="collapse" data-target="._validate_sql_orderby .collapse">
+<h2>Translates query parameters to a valid SQL order by clause.</h2>
+<pre>_validate_sql_orderby(array $query_parameters) : string | bool</pre>
+<div class="labels"></div>
+<div class="row collapse"><div class="detail-description">
+<p class="long_description"><p>Accepts one or more valid columns, with or without ASC/DESC.
+Enhanced version of /wp-includes/formatting.php function sanitize_sql_orderby().</p></p>
+<table class="table table-bordered"><tr>
+<th>since</th>
+<td>1.20</td>
+</tr></table>
+<h3>Parameters</h3>
+<div class="subelement argument">
+<h4>$query_parameters</h4>
+<code>array</code><p>Validated query parameters</p></div>
+<h3>Returns</h3>
+<div class="subelement response">
+<code>string</code><code>bool</code>Returns the orderby clause if present, false otherwise.</div>
 </div></div>
 </div>
 <h3>
@@ -302,11 +344,12 @@ the "IPTC-NAA Information Interchange Model Version No. 4.1".</p></p>
 <pre>$query_parameters : array</pre>
 <div class="labels"></div>
 <div class="row collapse"><div class="detail-description">
-<p class="long_description"><p>This array defines parameters for the query's where filter, mla_shortcode_query_posts_where_filter.
+<p class="long_description"><p>This array defines parameters for the query's where and orderby filters,
+mla_shortcode_query_posts_where_filter and mla_shortcode_query_posts_orderby_filter.
 The parameters are set up in the mla_get_shortcode_attachments function, and
 any further logic required to translate those values is contained in the filter.</p>
 
-<p>Array index values are: post_parent</p></p>
+<p>Array index values are: orderby, post_parent</p></p>
 <table class="table table-bordered"><tr>
 <th>since</th>
 <td>1.13</td>
@@ -320,7 +363,7 @@ any further logic required to translate those values is contained in the filter.
 <div class="row"><footer class="span12">
             Template is built using <a href="http://twitter.github.com/bootstrap/">Twitter Bootstrap 2</a> and icons provided by <a href="http://glyphicons.com/">Glyphicons</a>.<br>
             Documentation is powered by <a href="http://www.phpdoc.org/">phpDocumentor 2.0.0a8</a> and<br>
-            generated on 2013-03-10T17:53:00-07:00.<br></footer></div>
+            generated on 2013-03-29T17:11:00-07:00.<br></footer></div>
 </div>
 </body>
 </html>

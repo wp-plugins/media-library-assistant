@@ -98,9 +98,13 @@ These parameters are only important if the gallery thumbnails are too large to f
 </p>
 <h4>Gallery Display Content</h4>
 <p>
-Four [mla_gallery] parameters provide an easy way to control the contents of gallery items without requiring the use of custom Markup templates.  
+Five [mla_gallery] parameters provide an easy way to control the contents of gallery items without requiring the use of custom Markup templates.  
 </p>
 <table>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">mla_link_href</td>
+<td>replaces the HTML "href" attribute in the hyperlink for each gallery item; see below</td>
+</tr>
 <tr>
 <td style="padding-right: 10px; vertical-align: top; font-weight:bold">mla_link_text</td>
 <td>replaces the thumbnail image or attachment title text displayed for each gallery item</td>
@@ -119,7 +123,10 @@ Four [mla_gallery] parameters provide an easy way to control the contents of gal
 </tr>
 </table>
 <p>
-The first three parameters support the Markup and Attachment-specific substitution arguments defined for Markup Templates. For example, if you code "mla_rollover_text='{+date+} : {+description+}'", the rollover text will contain the upload date, a colon, and the full description of each gallery item. Simply add "{+" before the substitution parameter name and add "+}" after the name. Note that the enclosing delimiters are different than those used in the templates, since the shortcode parser reserves square brackets ("[" and "]") for its own use.
+The first four parameters support the <a href="#mla_markup_parameters">Markup</a> and <a href="#mla_attachment_parameters">Attachment-specific</a> substitution arguments defined for Markup Templates. For example, if you code "mla_rollover_text='{+date+} : {+description+}'", the rollover text will contain the upload date, a colon, and the full description of each gallery item. Simply add "{+" before the substitution parameter name and add "+}" after the name. Note that the enclosing delimiters are different than those used in the templates, since the shortcode parser reserves square brackets ("[" and "]") for its own use.
+</p>
+<p>
+The "mla_link_href" parameter is a great way to change the destination your gallery item links to or add arguments to the link for later processing. For example, to make a gallery item link back to the page/post it is attached to, you can code: "mla_link_href='{+site_url+}/?page_id={+parent+}'". You can also add arguments to the link, e.g., "mla_link_href='{+link_url+}&amp;amp;myarg=myvalue'". Note the use of the HTML entity name "&amp;amp;" to put an ampersand in the value; the WordPress "visual" post editor will replace "&", "<" and ">" with "&amp;amp;", "&amp;lt;" and "&amp;gt;" whether you like it not. The <strong>only</strong> markup parameter modified by this parameter is "link". Other markup parameters such as "pagelink", "filelink" and "link_url" are not modified.
 </p>
 <p>
 The "mla_target" parameter accepts any value and adds an HTML "target" attribute to the hyperlink with that value. For example, if you code mla_target="_blank" the item will open in a new window or tab. You can also use "_self", "_parent", "_top" or the "<em>framename</em>" of a named frame.
@@ -150,13 +157,74 @@ Four [mla_gallery] parameters provide an easy way to generate thumbnail images f
 When this feature is active, gallery items for which WordPress can generate a thumbnail image are not altered. If WordPress generation fails, the gallery thumbnail is replaced by an "img" html tag whose "src" attribute contains a url reference to the Google File Viewer. The Google File Viewer arguments include the url of the source file, the page number and the width. Note that the source file must be Internet accessible; files behind firewalls and on local servers will not generate a thumbnail image.</p>
 <h4>Order, Orderby</h4>
 <p>
-The default value of the "order" parameter is "ASC" (ascending). The only other allowed value is "DESC" (descending).
+The Orderby parameter specifies which database field(s) are used to sort the gallery. You can sort the gallery by one or more of these values (there is additional information on some of these values in the <a href="https://codex.wordpress.org/Class_Reference/WP_Query#Order_.26_Orderby_Parameters" title="WordPress Codex link" target="_blank">Codex WP_Query class reference</a>):
 </p>
+<table>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">none</td>
+<td>No order.</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">ID</td>
+<td>Order by post id. Note capitalization.</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">author</td>
+<td>Order by author (id, not display name).</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">date</td>
+<td>Order by date uploaded.</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">description, content</td>
+<td>Order by attachment description.</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">title</td>
+<td>Order by attachment title.</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">caption, excerpt</td>
+<td>Order by attachment caption. </td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">slug, name</td>
+<td>Order by attachment name.</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">modified</td>
+<td>Order by last modified date.</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">menu_order</td>
+<td>Order by page order.</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">mime_type</td>
+<td>Order by attachment MIME type.</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">comment_count</td>
+<td>Order by number of comments.</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">rand</td>
+<td>Random order.</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">&lt;keyname&gt;, meta_value,<br />meta_value_num</td>
+<td style="vertical-align: top;">Order by custom field value. Note that a <em>'meta_key=keyname'</em> must also be present in the query.</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">post__in</td>
+<td>Preserve order given in the <em>ids, include</em> or <em>post__in</em> array.</td>
+</tr>
+</table>
 <p>
-The Orderby parameter specifies which database field is used to sort the gallery. You can order the gallery by any of the values documented for the WP_Query class reference in the Codex; you are NOT restricted to the values documented for the [gallery] shortcode.
-</p>
+You can sort on more than one value, e.g., <em>orderby="author, date DESC"</em> and you can specify ASC/DESC on a value by value basis. <strong>NOTE: multiple orderby values are separated by commas, not spaces.</strong> This is a change from WP_Query. </p>
 <p>
-To order the gallery randomly, use "orderby=rand". To suppress gallery ordering, use "orderby=none".
+The order parameter (default ASC) can give an ASC/DESC default for any value that doesn't have a specific choice. For example, <em>orderby="author, date DESC, mime_type" order=ASC</em> is the same as <em>orderby="author ASC, date DESC, mime_type ASC"</em>.
 </p>
 <h4>Size</h4>
 <p>
@@ -254,7 +322,7 @@ For compatibility with the WordPress [gallery] shortcode, these parameters defau
 </p>
 <h4>Pagination Parameters</h4>
 <p>
-The [mla_gallery] shortcode supplies "nopaging=true" as a default parameter. If you are working with a template that supports pagination you can replace this with specific values for "posts_per_page", "posts_per_archive_page", "paged" and/or "offset" . You can also pass "paged=current" to suppress the "nopaging" default; "current" will be replaced by the appropriate value (get_query_var('paged')).
+The [mla_gallery] shortcode supplies "nopaging=true" as a default parameter. If you are working with a template that supports pagination you can replace this with specific values for "numberposts", "posts_per_page", "posts_per_archive_page", "paged" and/or "offset" . You can also pass "paged=current" to suppress the "nopaging" default; "current" will be replaced by the appropriate value (get_query_var('paged')).
 </p>
 <h4>Time Parameters</h4>
 <p>
@@ -428,6 +496,10 @@ In a template, substitution parameters are surrounded by opening ('[+') and clos
 <td>shortcode 'size' parameter, default = "thumbnail". If this parameter contains "none" or an empty string (size="") the attachment title will be displayed instead of the image/icon.</td>
 </tr>
 <tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">site_url</td>
+<td>absolute URL to the site directory, without trailing slash</td>
+</tr>
+<tr>
 <td style="padding-right: 10px; vertical-align: top; font-weight:bold">base_url</td>
 <td>absolute URL to the upload directory, without trailing slash</td>
 </tr>
@@ -591,7 +663,7 @@ In a template, substitution parameters are surrounded by opening ('[+') and clos
 </p>
 <h3>Field-level Markup Substitution Parameters</h3>
 <p>
-Field-level substitution parameters let you access custom fields, taxonomy terms, IPTC metadata and EXIF metadata for display in an MLA gallery. For these parameters, the value you code within the surrounding the ('[+') and ('+]') delimiters has three parts; the prefix, the field name and the optional ",single" indicator.
+Field-level substitution parameters let you access query arguments, custom fields, taxonomy terms, IPTC metadata and EXIF metadata for display in an MLA gallery. For these parameters, the value you code within the surrounding the ('[+') and ('+]') delimiters has three parts; the prefix, the field name and the optional ",single" indicator.
 </p>
 <p>
 The <strong>prefix</strong> defines which type of field-level data you are accessing. It must immediately follow the opening ('[+') delimiter and end with a colon (':'). There can be no spaces in this part of the parameter.
@@ -603,9 +675,13 @@ The <strong>field name</strong> defines which field-level data element you are a
 The optional <strong>",single" indicator</strong> defines how to handle fields with multiple values. It must immediately follow the field name and end with the closing delimiter ('+]'). There can be no spaces in this part of the parameter. If this part of the parameter is present, only the first value of the field will be returned. Use this indicator to limit the data returned for a custom field, taxonomy or metadata field that can have many values.
 </p>
 <p>
-There are four prefix values for field-level data. Prefix values must be coded as shown; all lowercase letters.
+There are five prefix values for field-level data. Prefix values must be coded as shown; all lowercase letters.
 </p>
 <table>
+	<tr>
+		<td style="padding-right: 10px; vertical-align: top; font-weight:bold">query</td>
+		<td>The parameters defined in the [mla_gallery] shortcode. For example, if your shortcode is [mla gallery attachment_tag=my-tag div-class=some_class] you can access the parameters as [+query:attachment_tag+] and [+query:div-class+] respectively. Only the parameters actually coded in the shortcode are accessible; default values for parameters not actually coded are not available. You can define your own parameters, e.g., "div-class"; they will be accessible as field-level data but will otherwise be ignored.</td>
+	</tr>
 	<tr>
 		<td style="padding-right: 10px; vertical-align: top; font-weight:bold">custom</td>
 		<td>WordPress Custom Fields, which you can define and populate on the Edit Media screen. The field name, or key, can contain spaces and some punctuation characters. You <strong><em>cannot use the plus sign ('+')</em></strong> in a field name you want to use with [mla_gallery]. Custom field names are case-sensitive; "client" and "Client" are not the same.</td>
