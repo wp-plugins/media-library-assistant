@@ -183,6 +183,7 @@
 					mlaSettings.searchValue = event.target.value;
 				case 'mla_search_submit':
 					this.model.set({
+						's': mlaSettings.searchValue + mlaSettings.searchFields + mlaSettings.searchConnector,
 						'mla_search_value': mlaSettings.searchValue,
 						'mla_search_fields': mlaSettings.searchFields,
 						'mla_search_connector': mlaSettings.searchConnector });

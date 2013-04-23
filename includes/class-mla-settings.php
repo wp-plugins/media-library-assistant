@@ -81,6 +81,22 @@ class MLASettings {
 			MLAOptions::mla_update_option( 'custom_field_mapping', $new_values );
 		} // version is less than 1.13
 		
+		if ( ((float)'1.30') > ((float)$current_version) ) {
+			/*
+			 * Add metadata values to custom field mapping rules
+			 */
+			$new_values = array();
+			
+			foreach( MLAOptions::mla_get_option( 'custom_field_mapping' ) as $key => $value ) {
+				$value['meta_name'] = isset( $value['meta_name'] ) ? $value['meta_name'] : '';
+				$value['meta_single'] = ( isset( $value['meta_single'] ) && $value['meta_single'] ) ? true : false;
+				$value['meta_export'] = ( isset( $value['meta_export'] ) && $value['meta_export'] ) ? true : false;
+				$new_values[ $key ] = $value;
+			}
+
+			MLAOptions::mla_update_option( 'custom_field_mapping', $new_values );
+		} // version is less than 1.30
+		
 		MLAOptions::mla_update_option( MLAOptions::MLA_VERSION_OPTION, MLA::CURRENT_MLA_VERSION );
 	}
 	
@@ -544,6 +560,9 @@ class MLASettings {
 		/*
 		 * Build default template selection lists
 		 */
+		MLAOptions::$mla_option_definitions['default_style']['options'][] = 'none';
+		MLAOptions::$mla_option_definitions['default_style']['texts'][] = '-- none --';
+
 		$templates = MLAOptions::mla_get_style_templates();
 		ksort($templates);
 		foreach ($templates as $key => $value ) {
@@ -920,33 +939,68 @@ class MLASettings {
 	 */
 	private static function _compose_iptc_exif_tab( ) {
 		/*
-		 * Check for submit buttons to change or reset settings.
 		 * Initialize page messages and content.
+		 * Check for submit buttons to change or reset settings.
 		 */
-		if ( !empty( $_REQUEST['iptc-exif-options-save'] ) ) {
+		$page_content = array(
+			'message' => '',
+			'body' => '' 
+		);
+
+		if ( isset( $_REQUEST['iptc_exif_mapping'] ) && is_array( $_REQUEST['iptc_exif_mapping'] ) ) {
 			check_admin_referer( MLA::MLA_ADMIN_NONCE, '_wpnonce' );
-			$page_content = self::_save_iptc_exif_settings( );
-		}
-		elseif ( !empty( $_REQUEST['iptc-exif-options-process-standard'] ) ) {
-			check_admin_referer( MLA::MLA_ADMIN_NONCE, '_wpnonce' );
-			$page_content = self::_process_iptc_exif_standard( );
-		}
-		elseif ( !empty( $_REQUEST['iptc-exif-options-process-taxonomy'] ) ) {
-			check_admin_referer( MLA::MLA_ADMIN_NONCE, '_wpnonce' );
-			$page_content = self::_process_iptc_exif_taxonomy( );
-		}
-		elseif ( !empty( $_REQUEST['iptc-exif-options-process-custom'] ) ) {
-			check_admin_referer( MLA::MLA_ADMIN_NONCE, '_wpnonce' );
-			$page_content = self::_process_iptc_exif_custom( );
-		} else {
-			$page_content = array(
-				 'message' => '',
-				'body' => '' 
-			);
-		}
-		
-		if ( !empty( $page_content['body'] ) ) {
-			return $page_content;
+
+			if ( !empty( $_REQUEST['iptc-exif-options-save'] ) ) {
+				$page_content = self::_save_iptc_exif_settings( );
+			}
+			elseif ( !empty( $_REQUEST['iptc-exif-options-process-standard'] ) ) {
+				$page_content = self::_process_iptc_exif_standard( );
+			}
+			elseif ( !empty( $_REQUEST['iptc-exif-options-process-taxonomy'] ) ) {
+				$page_content = self::_process_iptc_exif_taxonomy( );
+			}
+			elseif ( !empty( $_REQUEST['iptc-exif-options-process-custom'] ) ) {
+				$page_content = self::_process_iptc_exif_custom( );
+			}
+			else {
+				/*
+				 * Check for single-rule action buttons
+				 */
+				foreach( $_REQUEST['iptc_exif_mapping']['custom'] as $key => $value ) {
+					if ( isset( $value['action'] ) ) {
+						$settings = array( 'custom' => array( $key => $value ) );
+						foreach ( $value['action'] as $action => $label ) {
+							switch( $action ) {
+								case 'delete_field':
+									$delete_result = self::_delete_custom_field( $value );
+								case 'delete_rule':
+								case 'add_rule':
+								case 'add_field':
+								case 'update_rule':
+									$page_content = self::_save_iptc_exif_custom_settings( $settings );
+									if ( isset( $delete_result ) )
+										$page_content['message'] = $delete_result . $page_content['message'];
+									break;
+								case 'map_now':
+									$page_content = self::_process_iptc_exif_custom( $settings );
+									break;
+								case 'add_rule_map':
+								case 'add_field_map':
+									$page_content = self::_save_iptc_exif_custom_settings( $settings );
+									$map_content = self::_process_iptc_exif_custom( $settings );
+									$page_content['message'] .= '<br>&nbsp;<br>' . $map_content['message'];
+									break;
+								default:
+									// ignore everything else
+							} //switch action
+						} // foreach action
+					} /// isset action
+				} // foreach rule
+			}
+			
+			if ( !empty( $page_content['body'] ) ) {
+				return $page_content;
+			}
 		}
 		
 		$page_values = array(
@@ -1354,9 +1408,9 @@ class MLASettings {
 
 		$count = count( $post_meta_ids );
 		if ( $count )
-			return sprintf( 'Deleted custom field value from ' . _n('%s attachment.', '%s attachments.', $count), $count);
+			return sprintf( 'Deleted custom field value from ' . _n('%s attachment.<br>', '%s attachments.<br>', $count), $count);
 		else
-			return 'No attachments contained this custom field';
+			return 'No attachments contained this custom field.<br>';
 	} // _delete_custom_field
 	
 	/**
@@ -1494,15 +1548,22 @@ class MLASettings {
  	 *
 	 * @since 1.00
 	 *
-	 * @uses $_REQUEST
+	 * @uses $_REQUEST if passed a NULL parameter
+	 *
+	 * @param	array | NULL	specific iptc_exif_custom_mapping values 
 	 *
 	 * @return	array	Message(s) reflecting the results of the operation
 	 */
-	private static function _process_iptc_exif_custom( ) {
-		if ( isset( $_REQUEST['iptc_exif_mapping']['custom'][ MLAOptions::MLA_NEW_CUSTOM_FIELD ] ) )
-			unset( $_REQUEST['iptc_exif_mapping']['custom'][ MLAOptions::MLA_NEW_CUSTOM_FIELD ] );
+	private static function _process_iptc_exif_custom( $settings = NULL ) {
+		if ( NULL == $settings ) {
+			$settings = ( isset( $_REQUEST['iptc_exif_mapping'] ) ) ? $_REQUEST['iptc_exif_mapping'] : array();
+			if ( isset( $settings['custom'][ MLAOptions::MLA_NEW_CUSTOM_FIELD ] ) )
+				unset( $settings['custom'][ MLAOptions::MLA_NEW_CUSTOM_FIELD ] );
+			if ( isset( $settings['custom'][ MLAOptions::MLA_NEW_CUSTOM_RULE ] ) )
+				unset( $settings['custom'][ MLAOptions::MLA_NEW_CUSTOM_RULE ] );
+		}
 		
-		if ( ! isset( $_REQUEST['iptc_exif_mapping']['custom'] ) )
+		if ( empty( $settings['custom'] ) )
 			return array(
 				'message' => 'ERROR: No custom field settings to process.',
 				'body' => '' 
@@ -1515,7 +1576,7 @@ class MLASettings {
 		$posts = MLAShortcodes::mla_get_shortcode_attachments( 0, $query );
 		
 		foreach( $posts as $key => $post ) {
-			$updates = MLAOptions::mla_evaluate_iptc_exif_mapping( $post, 'iptc_exif_custom_mapping', $_REQUEST['iptc_exif_mapping'] );
+			$updates = MLAOptions::mla_evaluate_iptc_exif_mapping( $post, 'iptc_exif_custom_mapping', $settings );
 
 			$examine_count += 1;
 			if ( ! empty( $updates ) ) {
@@ -1535,6 +1596,22 @@ class MLASettings {
 			'body' => '' 
 		);
 	} // _process_iptc_exif_custom
+	
+	/**
+	 * Save IPTC/EXIF custom field settings to the options table
+ 	 *
+	 * @since 1.30
+	 *
+	 * @param	array	specific iptc_exif_custom_mapping values 
+	 *
+	 * @return	array	Message(s) reflecting the results of the operation
+	 */
+	private static function _save_iptc_exif_custom_settings( $new_values ) {
+		return array(
+			'message' => MLAOptions::mla_iptc_exif_option_handler( 'update', 'iptc_exif_custom_mapping', MLAOptions::$mla_option_definitions['iptc_exif_mapping'], $new_values ),
+			'body' => '' 
+		);
+	} // _save_iptc_exif_custom_settings
 	
 	/**
 	 * Save IPTC/EXIF settings to the options table

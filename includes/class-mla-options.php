@@ -250,6 +250,13 @@ class MLAOptions {
 				'delete' => 'mla_taxonomy_option_handler',
 				'reset' => 'mla_taxonomy_option_handler'),
 	
+		'attachments_column' =>
+			array('tab' => '',
+				'name' => 'Attachments Column',
+				'type' => 'hidden', // checkbox',
+				'std' => 'checked',
+				'help' => 'Check this option to replace the Posts column with the Attachments Column.'),
+		
 		'orderby_heading' =>
 			array('tab' => 'general',
 				'name' => 'Default Table Listing Sort Order',
@@ -378,7 +385,7 @@ class MLAOptions {
 		
 		'iptc_exif_standard_mapping' =>
 			array('tab' => '',
-				'help' => 'Update the standard field mapping values above, then click Save Changes to make the updates permanent.<br>You can also make temporary updates and click Map All Attachments Now to apply the updates to all attachments without saving the rule changes.',
+				'help' => 'Update the standard field mapping values above, then click <strong>Save Changes</strong> to make the updates permanent.<br>You can also make temporary updates and click <strong>Map All Attachments, Standard Fields Now</strong> to apply the updates to all attachments without saving the rule changes.',
 				'std' =>  NULL, 
 				'type' => 'custom',
 				'render' => 'mla_iptc_exif_option_handler',
@@ -388,7 +395,7 @@ class MLAOptions {
 	
 		'iptc_exif_taxonomy_mapping' =>
 			array('tab' => '',
-				'help' => 'Update the taxonomy term mapping values above, then click Save Changes or Map All Attachments Now.',
+				'help' => 'Update the taxonomy term mapping values above, then click <strong>Save Changes</strong> or <strong>Map All Attachments, Taxonomy Terms Now</strong>.',
 				'std' =>  NULL,
 				'type' => 'custom',
 				'render' => 'mla_iptc_exif_option_handler',
@@ -398,7 +405,7 @@ class MLAOptions {
 	
 		'iptc_exif_custom_mapping' =>
 			array('tab' => '',
-				'help' => 'Update the custom field mapping values above.<br>To define a new custom field, enter a field name in the "Field Title" text box at the end of the list and Save Changes.',
+				'help' => '<strong>Update</strong> individual custom field mapping values above, or make several updates and click <strong>Save Changes</strong> below to apply them all at once.<br>You can also <strong>add a new rule</strong> for an existing field or <strong>add a new field</strong> and rule.<br>You can make temporary updates and click <strong>Map All Attachments, Custom Fields Now</strong> to apply the updates to all attachments without saving the rule changes.',
 				'std' =>  NULL, 
 				'type' => 'custom',
 				'render' => 'mla_iptc_exif_option_handler',
@@ -573,8 +580,9 @@ class MLAOptions {
 		}
 		
 		$array_key = $key . '-' . $type;
-		if ( array_key_exists( $array_key, self::$mla_option_templates ) )
+		if ( array_key_exists( $array_key, self::$mla_option_templates ) ) {
 			return self::$mla_option_templates[ $array_key ];
+		}
 		else {
 			MLAShortcodes::$mla_debug_messages .= "<p><strong>_fetch_template( {$key}, {$type} )</strong> not found";
 			return false;
@@ -638,39 +646,40 @@ class MLAOptions {
 		
 		$templates = array();
 		foreach ( self::$mla_option_templates as $key => $value ) {
-				$tail = strrpos( $key, '-row-open-markup' );
-				if ( ! ( false === $tail ) ) {
-					$name = substr( $key, 0, $tail );
-					$templates[ $name ]['row-open'] = $value;
-					continue;
-				}
-					
-				$tail = strrpos( $key, '-open-markup' );
-				if ( ! ( false === $tail ) ) {
-					$name = substr( $key, 0, $tail );
-					$templates[ $name ]['open'] = $value;
-					continue;
-				}
-					
-				$tail = strrpos( $key, '-item-markup' );
-				if ( ! ( false === $tail ) ) {
-					$name = substr( $key, 0, $tail );
-					$templates[ $name ]['item'] = $value;
-					continue;
-				}
-					
-				$tail = strrpos( $key, '-row-close-markup' );
-				if ( ! ( false === $tail ) ) {
-					$name = substr( $key, 0, $tail );
-					$templates[ $name ]['row-close'] = $value;
-					continue;
-				}
-					
-				$tail = strrpos( $key, '-close-markup' );
-				if ( ! ( false === $tail ) ) {
-					$name = substr( $key, 0, $tail );
-					$templates[ $name ]['close'] = $value;
-				}
+			// Note order: -row-open must precede -open!
+			$tail = strrpos( $key, '-row-open-markup' );
+			if ( ! ( false === $tail ) ) {
+				$name = substr( $key, 0, $tail );
+				$templates[ $name ]['row-open'] = $value;
+				continue;
+			}
+				
+			$tail = strrpos( $key, '-open-markup' );
+			if ( ! ( false === $tail ) ) {
+				$name = substr( $key, 0, $tail );
+				$templates[ $name ]['open'] = $value;
+				continue;
+			}
+				
+			$tail = strrpos( $key, '-item-markup' );
+			if ( ! ( false === $tail ) ) {
+				$name = substr( $key, 0, $tail );
+				$templates[ $name ]['item'] = $value;
+				continue;
+			}
+				
+			$tail = strrpos( $key, '-row-close-markup' );
+			if ( ! ( false === $tail ) ) {
+				$name = substr( $key, 0, $tail );
+				$templates[ $name ]['row-close'] = $value;
+				continue;
+			}
+				
+			$tail = strrpos( $key, '-close-markup' );
+			if ( ! ( false === $tail ) ) {
+				$name = substr( $key, 0, $tail );
+				$templates[ $name ]['close'] = $value;
+			}
 		} // foreach
 		
 		return $templates;
@@ -1063,22 +1072,20 @@ class MLAOptions {
 			'sizes' => array()
 		);
 
-		$attached_file = isset( $wp_attached_files[ $post_id ]->meta_value ) ? $wp_attached_files[ $post_id ]->meta_value : '';
+		$base_file = isset( $wp_attached_files[ $post_id ]->meta_value ) ? $wp_attached_files[ $post_id ]->meta_value : '';
+		$sizes = array();
+		
 		$attachment_metadata = isset( $wp_attachment_metadata[ $post_id ]->meta_value ) ? unserialize( $wp_attachment_metadata[ $post_id ]->meta_value ) : array();
- 
 		if ( !empty( $attachment_metadata ) ) {
-			$base_file = $attachment_metadata['file'];
 			$sizes = isset( $attachment_metadata['sizes'] ) ? $attachment_metadata['sizes'] : array();
-			$results['width'] = $attachment_metadata['width'];
-			$results['height'] = $attachment_metadata['height'];
+			$results['width'] = isset( $attachment_metadata['width'] ) ? $attachment_metadata['width'] : '';;
+			$results['height'] = isset( $attachment_metadata['height'] ) ? $attachment_metadata['height'] : '';;
 			$results['hwstring_small'] = isset( $attachment_metadata['hwstring_small'] ) ? $attachment_metadata['hwstring_small'] : '';
 
-			foreach( $attachment_metadata['image_meta'] as $key => $value )
-				$results[ $key ] = $value;
-		}
-		else {
-			$base_file = $attached_file;
-			$sizes = array();
+			if ( isset( $attachment_metadata['image_meta'] ) ) {
+				foreach( $attachment_metadata['image_meta'] as $key => $value )
+					$results[ $key ] = $value;
+			}
 		}
 
 		if ( ! empty( $base_file ) ) {
@@ -1117,20 +1124,21 @@ class MLAOptions {
 	 *
 	 * @param	integer	post->ID of attachment
 	 * @param	string 	category/scope to evaluate against: custom_field_mapping or single_attachment_mapping
-	 * @param	string	data source name
-	 * @param	string	desired results format, default 'native'
+	 * @param	array	data source specification (name, format, meta_name, meta_single, meta_export)
 	 * @param	array 	(optional) attachment_metadata, default NULL (use current postmeta database value)
 	 *
 	 * @return	string	data source value
 	 */
-	private static function _evaluate_data_source( $post_id, $category, $data_source, $format = 'native', $attachment_metadata = NULL ) {
+	private static function _evaluate_data_source( $post_id, $category, $data_value, $attachment_metadata = NULL ) {
 		global $wpdb;
 		static $upload_dir, $intermediate_sizes = NULL, $wp_attached_files = NULL, $wp_attachment_metadata = NULL;
 		static $current_id = 0, $file_info = NULL;
 		
-		if ( 'none' == $data_source )
+		if ( 'none' == $data_value['data_source'] )
 			return '';
-			
+
+		$data_source = $data_value['data_source'];
+		
 		/*
 		 * Do this once per page load; cache attachment metadata if mapping all attachments
 		 */
@@ -1186,6 +1194,12 @@ class MLAOptions {
 		$result = '';
 		
 		switch( $data_source ) {
+			case 'meta':
+				$meta_single = ( isset( $data_value['meta_single'] ) && $data_value['meta_single'] );
+				$meta_export = ( isset( $data_value['meta_export'] ) && $data_value['meta_export'] );
+				$attachment_metadata = isset( $wp_attachment_metadata[ $post_id ]->meta_value ) ? unserialize( $wp_attachment_metadata[ $post_id ]->meta_value ) : array();
+				$result = MLAData::mla_find_array_element( $data_value['meta_name'], $attachment_metadata, $meta_single, $meta_export  );
+				break;
 			case 'path':
 			case 'file_name':
 			case 'extension':
@@ -1202,7 +1216,8 @@ class MLAOptions {
 			case 'iso':
 			case 'shutter_speed':
 			case 'title':
-				$result = $file_info[ $data_source ];
+				if ( isset( $file_info[ $data_source ] ) )
+					$result = $file_info[ $data_source ];
 				break;
 			case 'file_size':
 				$filesize = @ filesize( $file_info['absolute_path'] . $file_info['file_name'] );
@@ -1331,10 +1346,10 @@ class MLAOptions {
 				return '';
 		} // switch $data_source
 		
-		switch( $format ) {
+		switch( $data_value['format'] ) {
 			case 'commas':
 				if ( is_numeric( $result ) )
-					$result = number_format( (float)$result );
+					$result = str_pad( number_format( (float)$result ), 15, ' ', STR_PAD_LEFT );
 				break;
 			default:
 				// no change
@@ -1373,14 +1388,16 @@ class MLAOptions {
 		foreach( $settings as $new_key => $new_value ) {
 			if ( 'none' == $new_value['data_source'] )
 				continue;
-				
-			if ( $new_value['keep_existing'] ) 
+
+			$new_text = self::_evaluate_data_source( $post_id, $category, $new_value, $attachment_metadata );
+			if ( $new_value['keep_existing'] ) {
 				$old_text = get_metadata( 'post', $post_id, $new_key, true );
-			else
-				$old_text = '';
-				
-			if ( empty( $old_text ) )
-				$custom_updates[ $new_value['name'] ] = self::_evaluate_data_source( $post_id, $category, $new_value['data_source'], $new_value['format'], $attachment_metadata );
+				if ( ( ! empty( $new_text ) ) && empty( $old_text ) )
+					$custom_updates[ $new_value['name'] ] = $new_text;
+			}
+			else {
+				$custom_updates[ $new_value['name'] ] = $new_text;
+			}
 		} // foreach new setting
 		
 		if ( ! empty( $custom_updates ) )
@@ -1396,10 +1413,11 @@ class MLAOptions {
 	 * @uses $mla_option_templates contains row and table templates
 	 *
 	 * @param	string 	current selection or 'none' (default)
+	 * @param	array 	optional list of terms to exclude from the list
 	 *
 	 * @return	string	HTML markup with select field options
 	 */
-	private static function _compose_custom_field_option_list( $selection = 'none' ) {
+	private static function _compose_custom_field_option_list( $selection = 'none', $blacklist = array() ) {
 		$option_template = self::$mla_option_templates['custom-field-select-option'];
 		$option_values = array (
 			'selected' => ( 'none' == $selection ) ? 'selected="selected"' : '',
@@ -1408,8 +1426,11 @@ class MLAOptions {
 		);
 		
 		$custom_field_options = MLAData::mla_parse_template( $option_template, $option_values );					
-		$custom_field_names = MLAOptions::_get_custom_field_names();
+		$custom_field_names = self::_get_custom_field_names();
 		foreach ( $custom_field_names as $value ) {
+			if ( array_key_exists( $value, $blacklist ) )
+				continue;
+				
 			$option_values = array (
 				'selected' => ( $value == $selection ) ? 'selected="selected"' : '',
 				'value' => $value,
@@ -1476,15 +1497,22 @@ class MLAOptions {
 	 */
 	private static function _compose_data_source_option_list( $selection = 'none' ) {
 		$option_template = self::$mla_option_templates['custom-field-select-option'];
+
 		$option_values = array (
 			'selected' => ( 'none' == $selection ) ? 'selected="selected"' : '',
 			'value' => 'none',
 			'text' => ' -- None (select a value) -- '
 		);
-		
 		$custom_field_options = MLAData::mla_parse_template( $option_template, $option_values );
-		$intermediate_sizes = get_intermediate_image_sizes();
 
+		$option_values = array (
+			'selected' => ( 'meta' == $selection ) ? 'selected="selected"' : '',
+			'value' => 'meta',
+			'text' => ' -- Metadata (see below) -- '
+		);
+		$custom_field_options .= MLAData::mla_parse_template( $option_template, $option_values );
+		
+		$intermediate_sizes = get_intermediate_image_sizes();
 		foreach ( self::$custom_field_data_sources as $value ) {
 			$size_pos = strpos( $value, '[size]' );
 			if ( $size_pos ) {
@@ -1573,7 +1601,10 @@ class MLAOptions {
 					'format' => 'native',
 					'mla_column' => false,
 					'quick_edit' => false,
-					'bulk_edit' => false
+					'bulk_edit' => false,
+					'meta_name' => '',
+					'meta_single' => false,
+					'meta_export' => false
 				);
 			}
 
@@ -1588,6 +1619,13 @@ class MLAOptions {
 
 			if ( $old_values['data_source'] != $new_value['data_source'] ) {
 				$any_setting_changed = true;
+				
+				if ( 'meta' == $old_values['data_source'] ) {
+					$new_value['meta_name'] = '';
+					unset( $new_value['meta_single'] ); 
+					unset( $new_value['meta_export'] ); 
+				}
+
 				$message_list .= "<br>{$old_values['name']} changing Data Source from {$old_values['data_source']} to {$new_value['data_source']}.\r\n";
 				$old_values['data_source'] = $new_value['data_source'];
 			}
@@ -1654,6 +1692,41 @@ class MLAOptions {
 				$old_values['bulk_edit'] = $boolean_value;
 			}
 			
+			if ( $old_values['meta_name'] != $new_value['meta_name'] ) {
+				$any_setting_changed = true;
+				
+				$message_list .= "<br>{$old_values['name']} changing Metavalue name from {$old_values['meta_name']} to {$new_value['meta_name']}.\r\n";
+				$old_values['meta_name'] = $new_value['meta_name'];
+			}
+
+			if ( isset( $new_value['meta_single'] ) ) {
+				$boolean_value = true;
+				$boolean_text = 'unchecked to checked';
+			}
+			else {
+				$boolean_value = false;
+				$boolean_text = 'checked to unchecked';
+			}
+			if ( $old_values['meta_single'] != $boolean_value ) {
+				$any_setting_changed = true;
+				$message_list .= "<br>{$old_values['name']} changing Single value from {$boolean_text}.\r\n";
+				$old_values['meta_single'] = $boolean_value;
+			}
+			
+			if ( isset( $new_value['meta_export'] ) ) {
+				$boolean_value = true;
+				$boolean_text = 'unchecked to checked';
+			}
+			else {
+				$boolean_value = false;
+				$boolean_text = 'checked to unchecked';
+			}
+			if ( $old_values['meta_export'] != $boolean_value ) {
+				$any_setting_changed = true;
+				$message_list .= "<br>{$old_values['name']} changing Export value from {$boolean_text}.\r\n";
+				$old_values['meta_export'] = $boolean_value;
+			}
+			
 			if ( $any_setting_changed ) {
 				$settings_changed = true;
 				$current_values[ $new_key ] = $old_values;
@@ -1694,6 +1767,7 @@ class MLAOptions {
 					$table_rows = '';
 				}
 				
+				ksort( $current_values );
 				foreach ( $current_values as $row_name => $current_value ) {
 					$row_values = array (
 						'key' => sanitize_title( $row_name ),
@@ -1706,7 +1780,12 @@ class MLAOptions {
 						'mla_column_checked' => '',
 						'quick_edit_checked' => '',
 						'bulk_edit_checked' => '',
-						'column_count' => 7
+						'column_count' => 7,
+						'meta_name_size' => 30,
+						'meta_name' => $current_value['meta_name'],
+						'column_count_meta' => (7 - 2),
+						'meta_single_checked' => '',
+						'meta_export_checked' => ''
 					);
 					
 					if ( $current_value['keep_existing'] )
@@ -1734,6 +1813,12 @@ class MLAOptions {
 					if ( $current_value['bulk_edit'] )
 						$row_values['bulk_edit_checked'] = 'checked="checked"';
 
+					if ( $current_value['meta_single'] )
+						$row_values['meta_single_checked'] = 'checked="checked"';
+
+					if ( $current_value['meta_export'] )
+						$row_values['meta_export_checked'] = 'checked="checked"';
+
 					$table_rows .= MLAData::mla_parse_template( $row_template, $row_values );
 				} // foreach current_value
 
@@ -1743,7 +1828,7 @@ class MLAOptions {
 				$row_template = self::$mla_option_templates['custom-field-new-rule-row'];
 				$row_values = array (
 					'key' => self::MLA_NEW_CUSTOM_RULE,
-					'field_name_options' => self::_compose_custom_field_option_list( 'none' ),
+					'field_name_options' => self::_compose_custom_field_option_list( 'none', $current_values ),
 					'data_source_options' => self::_compose_data_source_option_list( 'none' ),
 					'keep_selected' => '',
 					'replace_selected' => 'selected="selected"',
@@ -1752,7 +1837,12 @@ class MLAOptions {
 					'mla_column_checked' => '',
 					'quick_edit_checked' => '',
 					'bulk_edit_checked' => '',
-					'column_count' => 7
+					'column_count' => 7,
+					'meta_name_size' => 30,
+					'meta_name' => '',
+					'column_count_meta' => (7 - 2),
+					'meta_single_checked' => '',
+					'meta_export_checked' => ''
 				);
 				$table_rows .= MLAData::mla_parse_template( $row_template, $row_values );
 					
@@ -1771,7 +1861,12 @@ class MLAOptions {
 					'mla_column_checked' => '',
 					'quick_edit_checked' => '',
 					'bulk_edit_checked' => '',
-					'column_count' => 7
+					'column_count' => 7,
+					'meta_name_size' => 30,
+					'meta_name' => '',
+					'column_count_meta' => (7 - 2),
+					'meta_single_checked' => '',
+					'meta_export_checked' => ''
 				);
 				$table_rows .= MLAData::mla_parse_template( $row_template, $row_values );
 					
@@ -1833,7 +1928,7 @@ class MLAOptions {
 		if ( NULL == $settings )
 			$settings = self::mla_get_option( 'iptc_exif_mapping' );
 
-		if ( $update_all || ( 'iptc_exif_standard_mapping' == $category ) ) {}{
+		if ( $update_all || ( 'iptc_exif_standard_mapping' == $category ) ) {
 			foreach( $settings['standard'] as $new_key => $new_value ) {
 				$iptc_value = ( isset( $iptc_metadata[ $new_value['iptc_value'] ] ) ) ? $iptc_metadata[ $new_value['iptc_value'] ] : '';
 				$exif_value = MLAData::mla_exif_metadata_value( $new_value['exif_value'], $metadata );
@@ -1955,16 +2050,17 @@ class MLAOptions {
 					else
 						$new_text = $iptc_value;
 
-				if ( $new_value['keep_existing'] )
-					$old_text = get_metadata( 'post', $post->ID, $new_key, true );
-				else
-					$old_text = '';
-					
 				if ( is_array( $new_text ) ) {
 				$new_text = implode( ',', $new_text );
 				}
 				
-				if ( empty( $old_text ) ) {
+				if ( $new_value['keep_existing'] ) {
+					$old_value =  get_metadata( 'post', $post->ID, $new_key, true );
+					if ( ( ! empty( $new_text ) ) && empty( $old_value ) ) {
+						$custom_updates[ $new_key ] = $new_text;
+					}
+				} // keep_existing
+				else {
 					$custom_updates[ $new_key ] = $new_text;
 				}
 			} // foreach new setting
@@ -2228,20 +2324,35 @@ class MLAOptions {
 		$error_list = '';
 		$message_list = '';
 		$settings_changed = false;
+		$custom_field_names = self::_get_custom_field_names();
 
 		foreach ( $new_values['custom'] as $new_key => $new_value ) {
 			$any_setting_changed = false;
 			
 			/*
-			 * Check for the addition of a new field
+			 * Check for the addition of a new field or new rule
 			 */
 			if ( self::MLA_NEW_CUSTOM_FIELD == $new_key ) {
 				$new_key = trim( $new_value['name'] );
 
 				if ( empty( $new_key ) )
 					continue;
+				
+				if ( in_array( $new_key, $custom_field_names ) ) {
+					$error_list .= "<br>ERROR: new field {$new_key} already exists.\r\n";
+					continue;
+				}
 
 				$message_list .= "<br>Adding new field {$new_key}.\r\n";
+				$any_setting_changed = true;
+			}
+			elseif ( self::MLA_NEW_CUSTOM_RULE == $new_key ) {
+				$new_key = trim( $new_value['name'] );
+
+				if ( 'none' == $new_key )
+					continue;
+
+				$message_list .= "<br>Adding new rule for {$new_key}.\r\n";
 				$any_setting_changed = true;
 			}
 			
@@ -2259,6 +2370,16 @@ class MLAOptions {
 				);
 			}
 			
+			if ( isset( $new_value['action'] ) ) {
+				if ( array_key_exists( 'delete_rule', $new_value['action'] ) || array_key_exists( 'delete_field', $new_value['action'] ) ) {
+					$settings_changed = true;
+					$message_list .= "<br>deleting rule for {$old_values['name']}.\r\n";
+					unset( $current_values['custom'][ $new_key ] );
+					$settings_changed = true;
+					continue;
+				} // delete rule
+			} // isset action
+
 			if ( $old_values['iptc_value'] != $new_value['iptc_value'] ) {
 				$any_setting_changed = true;
 				$message_list .= "<br>{$old_values['name']} changing IPTC Value from {$old_values['iptc_value']} to {$new_value['iptc_value']}.\r\n";
@@ -2465,22 +2586,21 @@ class MLAOptions {
 						
 						return MLAData::mla_parse_template( self::$mla_option_templates['iptc-exif-taxonomy-table'], $option_values );
 					case 'iptc_exif_custom_mapping':
-						$custom_field_names = MLAOptions::_get_custom_field_names();
-						$row_template = self::$mla_option_templates['iptc-exif-custom-row'];
-						$table_rows = '';
-
-						/*
-						 * Add fields defined here but not yet assigned to any attachments
-						 */
-						foreach ( $current_values['custom'] as $row_name => $row_values ) {
-							if ( in_array( $row_name, $custom_field_names ) )
-								continue;
-
-							$custom_field_names[] = $row_name;
+						if ( empty( $current_values['custom'] ) ) {
+							$table_rows = MLAData::mla_parse_template( self::$mla_option_templates['iptc-exif-custom-empty-row'], array( 'column_count' => 5 ) );
+						}
+						else {
+							$row_template = self::$mla_option_templates['iptc-exif-custom-rule-row'];
+							$table_rows = '';
 						}
 
-						foreach ( $custom_field_names as $row_name ) {
+						/*
+						 * One row for each existing rule
+						 */
+						ksort( $current_values['custom'] );
+						foreach ( $current_values['custom'] as $row_name => $current_value ) {
 							$row_values = array (
+								'column_count' => 5,
 								'key' => $row_name,
 								'name' => $row_name,
 								'iptc_field_options' => '',
@@ -2491,38 +2611,49 @@ class MLAOptions {
 								'keep_selected' => '',
 								'replace_selected' => ''
 							);
+						
+							$row_values['iptc_field_options'] = self::_compose_iptc_option_list( $current_value['iptc_value'] );
+							$row_values['exif_text'] = $current_value['exif_value'];
 							
-							if ( array_key_exists( $row_name, $current_values['custom'] ) ) {
-								$current_value = $current_values['custom'][ $row_name ];
-								$row_values['iptc_field_options'] = self::_compose_iptc_option_list( $current_value['iptc_value'] );
-								$row_values['exif_text'] = $current_value['exif_value'];
-								
-								if ( $current_value['iptc_first'] )
-									$row_values['iptc_selected'] = 'selected="selected"';
-								else
-									$row_values['exif_selected'] = 'selected="selected"';
-									
-								if ( $current_value['keep_existing'] )
-									$row_values['keep_selected'] = 'selected="selected"';
-								else
-									$row_values['replace_selected'] = 'selected="selected"';
-							}
-							else {
-								$row_values['iptc_field_options'] = self::_compose_iptc_option_list( 'none' );
+							if ( $current_value['iptc_first'] )
 								$row_values['iptc_selected'] = 'selected="selected"';
+							else
+								$row_values['exif_selected'] = 'selected="selected"';
+								
+							if ( $current_value['keep_existing'] )
 								$row_values['keep_selected'] = 'selected="selected"';
-
-							}
+							else
+								$row_values['replace_selected'] = 'selected="selected"';
 
 							$table_rows .= MLAData::mla_parse_template( $row_template, $row_values );
-						} // foreach row
+						} // foreach existing rule
 
 						/*
-						 * Add a row for defining a new Custom Field
+						 * Add a row for defining a new rule, existing Custom Field
 						 */
+						$row_template = self::$mla_option_templates['iptc-exif-custom-new-rule-row'];
 						$row_values = array (
+							'column_count' => 5 ,
+							'key' => self::MLA_NEW_CUSTOM_RULE,
+							'field_name_options' => self::_compose_custom_field_option_list( 'none', $current_values['custom'] ),
+							'iptc_field_options' => self::_compose_iptc_option_list( 'none' ),
+							'exif_size' => 20,
+							'exif_text' => '',
+							'iptc_selected' => 'selected="selected"',
+							'exif_selected' => '',
+							'keep_selected' => 'selected="selected"',
+							'replace_selected' => ''
+						);
+						$table_rows .= MLAData::mla_parse_template( $row_template, $row_values );
+							
+						/*
+						 * Add a row for defining a new rule, new Custom Field
+						 */
+						$row_template = self::$mla_option_templates['iptc-exif-custom-new-field-row'];
+						$row_values = array (
+							'column_count' => 5 ,
 							'key' => self::MLA_NEW_CUSTOM_FIELD,
-							'name' => '            <input name="iptc_exif_mapping[custom][' . self::MLA_NEW_CUSTOM_FIELD . '][name]" id="iptc_exif_standard_exif_field_' . self::MLA_NEW_CUSTOM_FIELD . '" type="text" size="20" value="" />',
+							'field_name_size' => '24',
 							'iptc_field_options' => self::_compose_iptc_option_list( 'none' ),
 							'exif_size' => 20,
 							'exif_text' => '',

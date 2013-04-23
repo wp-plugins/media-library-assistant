@@ -85,6 +85,7 @@ without saving the settings to the mla_option</span><pre>_process_iptc_exif_taxo
 <li class="method private "><a href="#_save_custom_field_settings" title="_save_custom_field_settings :: Save custom field settings to the options table"><span class="description">Save custom field settings to the options table</span><pre>_save_custom_field_settings()</pre></a></li>
 <li class="method private "><a href="#_save_gallery_settings" title="_save_gallery_settings :: Save MLA Gallery settings to the options table"><span class="description">Save MLA Gallery settings to the options table</span><pre>_save_gallery_settings()</pre></a></li>
 <li class="method private "><a href="#_save_general_settings" title="_save_general_settings :: Save General settings to the options table"><span class="description">Save General settings to the options table</span><pre>_save_general_settings()</pre></a></li>
+<li class="method private "><a href="#_save_iptc_exif_custom_settings" title="_save_iptc_exif_custom_settings :: Save IPTC/EXIF custom field settings to the options table"><span class="description">Save IPTC/EXIF custom field settings to the options table</span><pre>_save_iptc_exif_custom_settings()</pre></a></li>
 <li class="method private "><a href="#_save_iptc_exif_settings" title="_save_iptc_exif_settings :: Save IPTC/EXIF settings to the options table"><span class="description">Save IPTC/EXIF settings to the options table</span><pre>_save_iptc_exif_settings()</pre></a></li>
 <li class="method private "><a href="#_update_option_row" title="_update_option_row :: Update or delete a single MLA option value"><span class="description">Update or delete a single MLA option value</span><pre>_update_option_row()</pre></a></li>
 <li class="method private "><a href="#_version_upgrade" title="_version_upgrade :: Database and option update check, for installing new versions"><span class="description">Database and option update check, for installing new versions</span><pre>_version_upgrade()</pre></a></li>
@@ -419,7 +420,7 @@ without saving the settings to the mla_option</h2>
 <a name="_process_iptc_exif_custom" id="_process_iptc_exif_custom"></a><div class="element clickable method private _process_iptc_exif_custom" data-toggle="collapse" data-target="._process_iptc_exif_custom .collapse">
 <h2>Process IPTC/EXIF custom field settings against all image attachments
 without saving the settings to the mla_option</h2>
-<pre>_process_iptc_exif_custom() : array</pre>
+<pre>_process_iptc_exif_custom(array $settings) : array</pre>
 <div class="labels"></div>
 <div class="row collapse"><div class="detail-description">
 <p class="long_description"></p>
@@ -433,6 +434,10 @@ without saving the settings to the mla_option</h2>
 <td>\global\$_REQUEST</td>
 </tr>
 </table>
+<h3>Parameters</h3>
+<div class="subelement argument">
+<h4>$settings</h4>
+<code>array</code><p>| NULL specific iptc_exif_custom_mapping values</p></div>
 <h3>Returns</h3>
 <div class="subelement response">
 <code>array</code>Message(s) reflecting the results of the operation</div>
@@ -564,6 +569,25 @@ without saving the settings to the mla_option</h2>
 <code>array</code>Message(s) reflecting the results of the operation</div>
 </div></div>
 </div>
+<a name="_save_iptc_exif_custom_settings" id="_save_iptc_exif_custom_settings"></a><div class="element clickable method private _save_iptc_exif_custom_settings" data-toggle="collapse" data-target="._save_iptc_exif_custom_settings .collapse">
+<h2>Save IPTC/EXIF custom field settings to the options table</h2>
+<pre>_save_iptc_exif_custom_settings(array $new_values) : array</pre>
+<div class="labels"></div>
+<div class="row collapse"><div class="detail-description">
+<p class="long_description"></p>
+<table class="table table-bordered"><tr>
+<th>since</th>
+<td>1.30</td>
+</tr></table>
+<h3>Parameters</h3>
+<div class="subelement argument">
+<h4>$new_values</h4>
+<code>array</code><p>specific iptc_exif_custom_mapping values</p></div>
+<h3>Returns</h3>
+<div class="subelement response">
+<code>array</code>Message(s) reflecting the results of the operation</div>
+</div></div>
+</div>
 <a name="_save_iptc_exif_settings" id="_save_iptc_exif_settings"></a><div class="element clickable method private _save_iptc_exif_settings" data-toggle="collapse" data-target="._save_iptc_exif_settings .collapse">
 <h2>Save IPTC/EXIF settings to the options table</h2>
 <pre>_save_iptc_exif_settings() : array</pre>
@@ -674,7 +698,7 @@ each page load and cached for subsequent use.</p></p>
 <div class="row"><footer class="span12">
             Template is built using <a href="http://twitter.github.com/bootstrap/">Twitter Bootstrap 2</a> and icons provided by <a href="http://glyphicons.com/">Glyphicons</a>.<br>
             Documentation is powered by <a href="http://www.phpdoc.org/">phpDocumentor 2.0.0a8</a> and<br>
-            generated on 2013-03-29T17:11:00-07:00.<br></footer></div>
+            generated on 2013-04-22T17:09:54-07:00.<br></footer></div>
 </div>
 </body>
 </html>

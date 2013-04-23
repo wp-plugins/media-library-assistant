@@ -186,7 +186,7 @@ class MLAData {
 			
 		foreach ( $matches[0] as $match ) {
 			$key = substr( $match, 2, (strlen( $match ) - 4 ) );
-			$result = array( 'prefix' => '', 'value' => '', 'single' => false);
+			$result = array( 'prefix' => '', 'value' => '', 'single' => false, 'export' => false );
 			$match_count = preg_match( '/\[\+(.+):(.+)/', $match, $matches );
 			if ( 1 == $match_count ) {
 				$result['prefix'] = $matches[1];
@@ -196,10 +196,11 @@ class MLAData {
 				$tail = substr( $match, 2);
 			}
 			
-			$match_count = preg_match( '/([^,]+)(,single)\+\]/', $tail, $matches );
+			$match_count = preg_match( '/([^,]+)(,(single|export))\+\]/', $tail, $matches );
 			if ( 1 == $match_count ) {
-				$result['single'] = true;
 				$result['value'] = $matches[1];
+				$result['single'] = 'single' == $matches[3];
+				$result['export'] = 'export' == $matches[3];
 			}
 			else {
 				$result['value'] = substr( $tail, 0, (strlen( $tail ) - 2 ) );
@@ -430,7 +431,13 @@ class MLAData {
 		self::$query_parameters['detached'] = isset( $clean_request['detached'] );
 		self::$query_parameters['orderby'] = $clean_request['orderby'];
 		self::$query_parameters['order'] = $clean_request['order'];
-		
+
+		/*
+		 * We must patch the WHERE clause if there are leading spaces in the meta_value
+		 */
+		if ( isset( $clean_request['mla-metavalue'] ) && (' ' == $clean_request['mla-metavalue'][0] ) )
+			self::$query_parameters['mla-metavalue'] = $clean_request['mla-metavalue'];
+
 		/*
 		 * We will handle keyword search in the mla_query_posts_search_filter.
 		 * There must be at least one search field to do a search.
@@ -555,7 +562,7 @@ class MLAData {
 		if ( isset( $clean_request['mla-metakey'] ) && isset( $clean_request['mla-metavalue'] ) ) {
 			$clean_request['meta_key'] = $clean_request['mla-metakey'];
 			$clean_request['meta_value'] = $clean_request['mla-metavalue'];
-			
+
 			unset( $clean_request['mla-metakey'] );
 			unset( $clean_request['mla-metavalue'] );
 		} // isset mla_tax
@@ -737,9 +744,16 @@ class MLAData {
 	public static function mla_query_posts_where_filter( $where_clause ) {
 		global $table_prefix;
 
+		/*
+		 * WordPress filters meta_value thru trim() - which we must reverse
+		 */
+		if ( isset( self::$query_parameters['mla-metavalue'] ) ) {
+			$where_clause = preg_replace( '/(^.*meta_value AS CHAR\) = \')([^\']*)/', '${1}' . self::$query_parameters['mla-metavalue'], $where_clause );
+		}
+			
 		if ( self::$query_parameters['detached'] )
 			$where_clause .= " AND {$table_prefix}posts.post_parent < 1";
-			
+
 		return $where_clause;
 	}
 
@@ -874,6 +888,50 @@ class MLAData {
 	}
 	
 	/**
+	 * Finds the value of a key in a possibily nested array structure
+	 *
+	 * Used primarily to extract fields from the _wp_attachment_metadata custom field.
+	 * Could also be used with the ID3 metadata exposed in WordPress 3.6 and later.
+	 *
+	 * @since 1.30
+	 *
+	 * @param string key value, e.g. array1.array2.element
+	 * @param array PHP nested arrays
+	 * @param boolean return first element of an array result
+	 * @param boolean return results in var_export() format
+	 *
+	 * @return string value matching key(.key ...) or ''
+	 */
+	public static function mla_find_array_element( $needle, $haystack, $single = false, $export = false  ) {
+		$key_array = explode( '.', $needle );
+		if ( is_array( $key_array ) ) {
+			foreach( $key_array as $key ) {
+				if ( is_array( $haystack ) ) {
+					if ( isset( $haystack[ $key ] ) )
+						$haystack = $haystack[ $key ];
+					else
+						$haystack = '';
+				}
+				else
+					$haystack = '';
+			} // foreach $key
+		}
+		else $haystack = '';
+
+		if ( $single && is_array( $haystack )) 
+			$haystack = current( $haystack );
+			
+		if ( is_array( $haystack ) ) {
+			if ( $export )
+				$haystack = var_export( $haystack, true );
+			else
+				$haystack = implode( ',', $haystack );
+		}
+			
+		return sanitize_text_field( $haystack );
+	} // mla_find_array_element
+	
+	/**
 	 * Fetch and filter meta data for an attachment
 	 * 
 	 * Returns a filtered array of a post's meta data. Internal values beginning with '_'
@@ -1006,21 +1064,15 @@ class MLAData {
 		if ( isset( $parent_data['parent_title'] ) ) 
 			$references['parent_title'] =  $parent_data['parent_title'];
 
+		$references['base_file'] = get_post_meta( $ID, '_wp_attached_file', true );
 		$attachment_metadata = get_post_meta( $ID, '_wp_attachment_metadata', true );
-		if ( empty( $attachment_metadata ) ) {
-			$references['base_file'] = get_post_meta( $ID, '_wp_attached_file', true );
-		} // empty( $attachment_metadata )
-		else {
-			$references['base_file'] = $attachment_metadata['file'];
-			$sizes = isset( $attachment_metadata['sizes'] ) ? $attachment_metadata['sizes'] : NULL;
-			if ( !empty( $sizes ) ) {
-				/* Using the name as the array key ensures each name is added only once */
-				foreach ( $sizes as $size ) {
-					$references['files'][ $references['path'] . $size['file'] ] = $size;
-				}
-				
+		$sizes = isset( $attachment_metadata['sizes'] ) ? $attachment_metadata['sizes'] : NULL;
+		if ( !empty( $sizes ) ) {
+			/* Using the name as the array key ensures each name is added only once */
+			foreach ( $sizes as $size ) {
+				$references['files'][ $references['path'] . $size['file'] ] = $size;
 			}
-		} // ! empty( $attachment_metadata )
+		}
 		
 		$references['files'][ $references['base_file'] ] = $references['base_file'];
 		$last_slash = strrpos( $references['base_file'], '/' );
@@ -1672,10 +1724,25 @@ class MLAData {
 					$old_meta_value = $post_data[ 'mla_item_' . $meta_key ];
 				else
 					$old_meta_value = '';
-
-				if ( $old_meta_value != $meta_value ) {
-					$message .= sprintf( 'Changing %1$s from "%2$s" to "%3$s"<br>', $meta_key, $old_meta_value, $meta_value );
-					$results = update_post_meta( $post_id, $meta_key, $meta_value );
+					
+				if ( is_array( $old_meta_value ) ) {
+					$do_update = false;
+					
+					foreach ( $old_meta_value as $old_key => $old_value ) {
+						if ( $old_value != $meta_value ) {
+							$message .= sprintf( 'Changing %1$s[%2$d] from "%3$s" to "%4$s"<br>', $meta_key, $old_key, $old_value, $meta_value );
+							$do_update = true;
+						}
+					} // foreach $old_meta_value
+					
+					if ($do_update)
+						$results = update_post_meta( $post_id, $meta_key, $meta_value );
+				}
+				else {
+					if ( $old_meta_value != $meta_value ) {
+						$message .= sprintf( 'Changing %1$s from "%2$s" to "%3$s"<br>', $meta_key, $old_meta_value, $meta_value );
+						$results = update_post_meta( $post_id, $meta_key, $meta_value );
+					}
 				}
 			} // foreach $new_meta
 		}

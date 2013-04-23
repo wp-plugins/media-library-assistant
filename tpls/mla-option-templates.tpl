@@ -120,6 +120,19 @@
         </td>
 		</tr>
         <tr valign="top">
+		<td>
+			&nbsp;
+        </td>
+		<td style="text-align:left;">
+            <input name="custom_field_mapping[[+key+]][meta_name]" id="custom_field_meta_name_[+key+]" type="text" size="[+meta_name_size+]" value="[+meta_name+]" />
+        </td>
+		<td colspan="[+column_count_meta+]" style="text-align:left; vertical-align:middle;">
+            <input type="checkbox" name="custom_field_mapping[[+key+]][meta_single]" id="custom_field_meta_single_[+key+]" [+meta_single_checked+] value="checked" /> <strong>Single</strong>
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            <input type="checkbox" name="custom_field_mapping[[+key+]][meta_export]" id="custom_field_meta_export_[+key+]" [+meta_export_checked+] value="checked" /> <strong>Export</strong>
+        </td>
+		</tr>
+        <tr valign="top">
 		<td colspan="[+column_count+]" style="padding-bottom: 10px">
 	        <input type="submit" name="custom_field_mapping[[+key+]][action][delete_rule]" class="button-primary" style="height: 18px; line-height: 16px" value="Delete Rule" />
 	        <input type="submit" name="custom_field_mapping[[+key+]][action][delete_field]" class="button-primary" style="height: 18px; line-height: 16px" value="Delete Rule AND Field" />
@@ -168,6 +181,19 @@
         </td>
 		</tr>
         <tr valign="top">
+		<td>
+			&nbsp;
+        </td>
+		<td style="text-align:left;">
+            <input name="custom_field_mapping[[+key+]][meta_name]" id="custom_field_meta_name_[+key+]" type="text" size="[+meta_name_size+]" value="[+meta_name+]" />
+        </td>
+		<td colspan="[+column_count_meta+]" style="text-align:left; vertical-align:middle;">
+            <input type="checkbox" name="custom_field_mapping[[+key+]][meta_single]" id="custom_field_meta_single_[+key+]" [+meta_single_checked+] value="checked" /> <strong>Single</strong>
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            <input type="checkbox" name="custom_field_mapping[[+key+]][meta_export]" id="custom_field_meta_export_[+key+]" [+meta_export_checked+] value="checked" /> <strong>Export</strong>
+        </td>
+		</tr>
+        <tr valign="top">
 		<td colspan="[+column_count+]">
 	        <input type="submit" name="custom_field_mapping[[+key+]][action][add_rule]" type="submit" class="button-primary" value="Add Rule" />
 	        <input type="submit" name="custom_field_mapping[[+key+]][action][add_rule_map]" type="submit" class="button-secondary" value="Add Rule and Map All Attachments" />
@@ -209,6 +235,19 @@
         </td>
 		<td style="text-align:center;">
             <input type="checkbox" name="custom_field_mapping[[+key+]][bulk_edit]" id="custom_field_bulk_edit_[+key+]" [+bulk_edit_checked+] value="checked" />
+        </td>
+		</tr>
+        <tr valign="top">
+		<td>
+			&nbsp;
+        </td>
+		<td style="text-align:left;">
+            <input name="custom_field_mapping[[+key+]][meta_name]" id="custom_field_meta_name_[+key+]" type="text" size="[+meta_name_size+]" value="[+meta_name+]" />
+        </td>
+		<td colspan="[+column_count_meta+]" style="text-align:left; vertical-align:middle;">
+            <input type="checkbox" name="custom_field_mapping[[+key+]][meta_single]" id="custom_field_meta_single_[+key+]" [+meta_single_checked+] value="checked" /> <strong>Single</strong>
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            <input type="checkbox" name="custom_field_mapping[[+key+]][meta_export]" id="custom_field_meta_export_[+key+]" [+meta_export_checked+] value="checked" /> <strong>Export</strong>
         </td>
 		</tr>
         <tr valign="top">
@@ -378,10 +417,18 @@
         </td>
 		</tr>
 
-<!-- template="iptc-exif-custom-row" -->
+<!-- template="iptc-exif-custom-empty-row" -->
+        <tr>
+		<td colspan="[+column_count+]" style="font-weight:bold; height: 4em; text-align:center; vertical-align:middle">
+		No Custom Field Mapping Rules Defined
+        </td>
+		</tr>
+
+<!-- template="iptc-exif-custom-rule-row" -->
         <tr valign="top">
-		<td>
+		<td style="text-align:left; vertical-align:middle">
             [+name+]&nbsp;
+			<input type="hidden" name="iptc_exif_mapping[custom][[+key+]][name]" id="iptc_exif_custom_name_[+key+]" value="[+name+]" />
         </td>
 		<td style="text-align:left;">
             <select name="iptc_exif_mapping[custom][[+key+]][iptc_value]" id="iptc_exif_custom_iptc_field_[+key+]">
@@ -402,6 +449,92 @@
                 <option [+keep_selected+] value="1">Keep</option>
                 <option [+replace_selected+] value="">Replace</option>
             </select>
+        </td>
+		</tr>
+        <tr valign="top">
+		<td colspan="[+column_count+]" style="padding-bottom: 10px">
+	        <input type="submit" name="iptc_exif_mapping[custom][[+key+]][action][delete_rule]" class="button-primary" style="height: 18px; line-height: 16px" value="Delete Rule" />
+	        <input type="submit" name="iptc_exif_mapping[custom][[+key+]][action][delete_field]" class="button-primary" style="height: 18px; line-height: 16px" value="Delete Rule AND Field" />
+	        <input type="submit" name="iptc_exif_mapping[custom][[+key+]][action][update_rule]" class="button-primary" style="height: 18px; line-height: 16px" value="Update Rule" />
+	        <input type="submit" name="iptc_exif_mapping[custom][[+key+]][action][map_now]" class="button-secondary" style="height: 18px; line-height: 16px" value="Map All Attachments" />
+        </td>
+		</tr>
+
+<!-- template="iptc-exif-custom-new-rule-row" -->
+        <tr>
+		<td colspan="[+column_count+]" style="font-weight:bold; height: 3em; vertical-align:bottom">
+		Add a new Mapping Rule
+        </td>
+		</tr>
+        <tr valign="top">
+		<td style="text-align:left;">
+            <select name="iptc_exif_mapping[custom][[+key+]][name]" id="iptc_exif_custom_name_[+key+]">
+[+field_name_options+]
+            </select>
+        </td>
+		<td style="text-align:left;">
+            <select name="iptc_exif_mapping[custom][[+key+]][iptc_value]" id="iptc_exif_custom_iptc_field_[+key+]">
+[+iptc_field_options+]
+            </select>
+        </td>
+		<td style="text-align:center;">
+            <input name="iptc_exif_mapping[custom][[+key+]][exif_value]" id="iptc_exif_custom_exif_field_[+key+]" type="text" size="[+exif_size+]" value="[+exif_text+]" />
+        </td>
+		<td style="text-align:left;">
+            <select name="iptc_exif_mapping[custom][[+key+]][iptc_first]" id="iptc_exif_custom_priority_[+key+]">
+                <option [+iptc_selected+] value="1">IPTC</option>
+                <option [+exif_selected+] value="">EXIF</option>
+            </select>
+        </td>
+		<td style="text-align:left;">
+            <select name="iptc_exif_mapping[custom][[+key+]][keep_existing]" id="iptc_exif_custom_existing_[+key+]">
+                <option [+keep_selected+] value="1">Keep</option>
+                <option [+replace_selected+] value="">Replace</option>
+            </select>
+        </td>
+		</tr>
+        <tr valign="top">
+		<td colspan="[+column_count+]">
+	        <input type="submit" name="iptc_exif_mapping[custom][[+key+]][action][add_rule]" type="submit" class="button-primary" value="Add Rule" />
+	        <input type="submit" name="iptc_exif_mapping[custom][[+key+]][action][add_rule_map]" type="submit" class="button-secondary" value="Add Rule and Map All Attachments" />
+        </td>
+		</tr>
+
+<!-- template="iptc-exif-custom-new-field-row" -->
+        <tr>
+		<td colspan="[+column_count+]" style="font-weight:bold; height: 3em; vertical-align:bottom">
+		Add a new Custom Field and Mapping Rule
+        </td>
+		</tr>
+        <tr valign="top">
+		<td style="text-align:left;">
+            <input name="iptc_exif_mapping[custom][[+key+]][name]" id="iptc_exif_custom_name_[+key+]" type="text" size="[+field_name_size+]" value="" />
+        </td>
+		<td style="text-align:left;">
+            <select name="iptc_exif_mapping[custom][[+key+]][iptc_value]" id="iptc_exif_custom_iptc_field_[+key+]">
+[+iptc_field_options+]
+            </select>
+        </td>
+		<td style="text-align:center;">
+            <input name="iptc_exif_mapping[custom][[+key+]][exif_value]" id="iptc_exif_custom_exif_field_[+key+]" type="text" size="[+exif_size+]" value="[+exif_text+]" />
+        </td>
+		<td style="text-align:left;">
+            <select name="iptc_exif_mapping[custom][[+key+]][iptc_first]" id="iptc_exif_custom_priority_[+key+]">
+                <option [+iptc_selected+] value="1">IPTC</option>
+                <option [+exif_selected+] value="">EXIF</option>
+            </select>
+        </td>
+		<td style="text-align:left;">
+            <select name="iptc_exif_mapping[custom][[+key+]][keep_existing]" id="iptc_exif_custom_existing_[+key+]">
+                <option [+keep_selected+] value="1">Keep</option>
+                <option [+replace_selected+] value="">Replace</option>
+            </select>
+        </td>
+		</tr>
+        <tr valign="top">
+		<td colspan="[+column_count+]">
+	        <input type="submit" name="iptc_exif_mapping[custom][[+key+]][action][add_field]" type="submit" class="button-primary" value="Add Field" />
+	        <input type="submit" name="iptc_exif_mapping[custom][[+key+]][action][add_field_map]" type="submit" class="button-secondary" value="Add Field and Map All Attachments" />
         </td>
 		</tr>
 

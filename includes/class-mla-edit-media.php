@@ -123,7 +123,7 @@ class MLAEdit {
 			
 			$image_metadata = get_metadata( 'post', $post->ID, '_wp_attachment_metadata', true );
 			if ( !empty( $image_metadata ) )
-				add_meta_box( 'mla-image-metadata', 'Image Metadata', 'MLAEdit::mla_image_metadata_handler', 'attachment', 'normal', 'core' );
+				add_meta_box( 'mla-image-metadata', 'Attachment Metadata', 'MLAEdit::mla_image_metadata_handler', 'attachment', 'normal', 'core' );
 
 			if ( MLAOptions::$process_featured_in )
 				add_meta_box( 'mla-featured-in', 'Featured in', 'MLAEdit::mla_featured_in_handler', 'attachment', 'normal', 'core' );
@@ -254,7 +254,7 @@ class MLAEdit {
 		else
 			$value = '';
 
-		echo '<label class="screen-reader-text" for="mla_image_metadata">Image Metadata</label><textarea class="readonly" id="mla_image_metadata" rows="5" cols="80" readonly="readonly" name="mla_image_metadata" >' . esc_textarea( $value ) . "</textarea>\r\n";
+		echo '<label class="screen-reader-text" for="mla_image_metadata">Attachment Metadata</label><textarea class="readonly" id="mla_image_metadata" rows="5" cols="80" readonly="readonly" name="mla_image_metadata" >' . esc_textarea( $value ) . "</textarea>\r\n";
 	}
 	
 	/**

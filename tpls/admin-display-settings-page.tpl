@@ -235,8 +235,9 @@ You can find more information about all of these topics on the <a href="http:/wp
         <input name="custom-field-options-map" type="submit" class="button-secondary" style="margin-left: 20px" value="Map All Rules, All Attachments Now" />
     </p>
 	<p>
-	Click Save Changes to update the "Enable custom field mapping..." checkbox and/or all rule changes and additions at once.<br />
+	Click <strong>Save Changes</strong> to update the "Enable custom field mapping..." checkbox and/or all rule changes and additions at once. <strong>No rule mapping will be performed.</strong><br />
 	Click Map All Rules, All Attachments Now to apply all the rules at once (rule changes will be applied but not saved).
+    </p>
 [+_wpnonce+]
 [+_wp_http_referer+]
 </form>
@@ -244,27 +245,33 @@ You can find more information about all of these topics on the <a href="http:/wp
 <!-- template="iptc-exif-tab" -->
 <h3>IPTC &amp; EXIF Processing Options</h3>
 <p>In this tab you can define the rules for mapping IPTC (International Press Telecommunications Council) and EXIF (EXchangeable Image File) metadata to WordPress standard attachment fields, taxonomy terms and custom fields. <strong>NOTE:</strong> settings changes will not be made permanent until you click "Save Changes" at the bottom of this page.</p>
-<p>If you click any of the three "Map All Attachments Now" buttons, the rules currently displayed in that category will be immediately applied to <strong>all</strong> of the attachments in your site. Rule changes are <strong>not</strong> saved when you click any of these buttons.<strong>THERE IS NO UNDO FOR THESE ACTIONS!</strong></p>
+<p>If you click any of the three "Map All Attachments, ... Now" buttons, the rules currently displayed in that category will be immediately applied to <strong>all</strong> of the attachments in your site. Rule changes are <strong>not</strong> saved when you click any of these buttons.<strong>THERE IS NO UNDO FOR THESE ACTIONS!</strong></p>
+<p>
+If you just want to add a custom field to the Media/Assistant submenu, the quick edit area and/or the bulk edit area go to the "Custom Fields" tab and follow the instructions there.
+</p>
 <p>
 You can find more information about all of these topics on the <a href="http:/wp-admin/options-general.php?page=mla-settings-menu&amp;mla_tab=documentation#mla_iptc_exif_mapping" title="IPTC &amp; EXIF Processing Options documentation">Documentation tab</a>.
 </p>
 <form method="post" class="mla-display-settings-page" id="mla-display-settings-iptc-exif-tab">
 &nbsp;<br />
 [+options_list+]
-<h4>Standard field mapping <input name="iptc-exif-options-process-standard" type="submit" class="button-secondary" style="margin-left: 20px" value="Map All Attachments Now" /></h4>
+<h4>Standard field mapping <input name="iptc-exif-options-process-standard" type="submit" class="button-secondary" style="margin-left: 20px" value="Map All Attachments, Standard Fields Now" /></h4>
     <table class="optiontable">
 [+standard_options_list+]
 	</table>
-<h4>Taxonomy term mapping <input name="iptc-exif-options-process-taxonomy" type="submit" class="button-secondary" style="margin-left: 10px" value="Map All Attachments Now" /></h4>
+<h4>Taxonomy term mapping <input name="iptc-exif-options-process-taxonomy" type="submit" class="button-secondary" style="margin-left: 10px" value="Map All Attachments, Taxonomy Terms Now" /></h4>
     <table class="optiontable">
 [+taxonomy_options_list+]
 	</table>
-<h4>Custom field mapping <input name="iptc-exif-options-process-custom" type="submit" class="button-secondary" style="margin-left: 25px" value="Map All Attachments Now" /></h4>
+<h4>Custom field mapping <input name="iptc-exif-options-process-custom" type="submit" class="button-secondary" style="margin-left: 25px" value="Map All Attachments, Custom Fields Now" /></h4>
     <table class="optiontable">
 [+custom_options_list+]
 	</table>
     <p class="submit" style="padding-bottom: 0;">
         <input name="iptc-exif-options-save" type="submit" class="button-primary" value="Save Changes" />
+    </p>
+	<p>
+	Click <strong>Save Changes</strong> to update the "Enable IPTC/EXIF mapping..." checkbox and/or all rule changes and additions at once. <strong>No rule mapping will be performed.</strong><br />
     </p>
 [+_wpnonce+]
 [+_wp_http_referer+]

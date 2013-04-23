@@ -93,9 +93,13 @@ class MLAObjects {
 		foreach ( $taxonomies as $tax_name ) {
 			if ( MLAOptions::mla_taxonomy_support( $tax_name ) ) {
 				register_taxonomy_for_object_type( $tax_name, 'attachment');
-				add_filter( "manage_edit-{$tax_name}_columns", 'MLAObjects::mla_taxonomy_get_columns_filter', 10, 1 ); // $columns
-				add_filter( "manage_{$tax_name}_custom_column", 'MLAObjects::mla_taxonomy_column_filter', 10, 3 ); // $place_holder, $column_name, $tag->term_id
-			}
+				if (  'checked' == MLAOptions::mla_get_option( 'attachments_column' )
+) {
+
+					add_filter( "manage_edit-{$tax_name}_columns", 'MLAObjects::mla_taxonomy_get_columns_filter', 10, 1 ); // $columns
+					add_filter( "manage_{$tax_name}_custom_column", 'MLAObjects::mla_taxonomy_column_filter', 10, 3 ); // $place_holder, $column_name, $tag->term_id
+				} // option is checked
+			} // taxonomy support
 		} // foreach
 	} // _build_taxonomies
 	

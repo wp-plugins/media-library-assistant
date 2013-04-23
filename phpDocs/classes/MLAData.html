@@ -59,6 +59,7 @@
 <li class="method public "><a href="#mla_fetch_attachment_metadata" title="mla_fetch_attachment_metadata :: Fetch and filter meta data for an attachment"><span class="description">Fetch and filter meta data for an attachment</span><pre>mla_fetch_attachment_metadata()</pre></a></li>
 <li class="method public "><a href="#mla_fetch_attachment_parent_data" title="mla_fetch_attachment_parent_data :: Returns information about an attachment's parent, if found"><span class="description">Returns information about an attachment's parent, if found</span><pre>mla_fetch_attachment_parent_data()</pre></a></li>
 <li class="method public "><a href="#mla_fetch_attachment_references" title="mla_fetch_attachment_references :: Find Featured Image and inserted image/link references to an attachment"><span class="description">Find Featured Image and inserted image/link references to an attachment</span><pre>mla_fetch_attachment_references()</pre></a></li>
+<li class="method public "><a href="#mla_find_array_element" title="mla_find_array_element :: Finds the value of a key in a possibily nested array structure"><span class="description">Finds the value of a key in a possibily nested array structure</span><pre>mla_find_array_element()</pre></a></li>
 <li class="method public "><a href="#mla_flush_mla_galleries" title="mla_flush_mla_galleries :: Invalidates the $mla_galleries or $galleries array and cached values"><span class="description">Invalidates the $mla_galleries or $galleries array and cached values</span><pre>mla_flush_mla_galleries()</pre></a></li>
 <li class="method public "><a href="#mla_get_attachment_by_id" title="mla_get_attachment_by_id :: Retrieve an Attachment array given a $post_id"><span class="description">Retrieve an Attachment array given a $post_id</span><pre>mla_get_attachment_by_id()</pre></a></li>
 <li class="method public "><a href="#mla_get_template_placeholders" title="mla_get_template_placeholders :: Analyze a template, returning an array of the place holders it contains"><span class="description">Analyze a template, returning an array of the place holders it contains</span><pre>mla_get_template_placeholders()</pre></a></li>
@@ -262,6 +263,36 @@ as a Featured Image or inserted in the post as an image or link.</p></p>
 <h3>Returns</h3>
 <div class="subelement response">
 <code>array</code>Reference information; see $references array comments</div>
+</div></div>
+</div>
+<a name="mla_find_array_element" id="mla_find_array_element"></a><div class="element clickable method public mla_find_array_element" data-toggle="collapse" data-target=".mla_find_array_element .collapse">
+<h2>Finds the value of a key in a possibily nested array structure</h2>
+<pre>mla_find_array_element(string $needle, array $haystack, boolean $single, boolean $export) : string</pre>
+<div class="labels"></div>
+<div class="row collapse"><div class="detail-description">
+<p class="long_description"><p>Used primarily to extract fields from the _wp_attachment_metadata custom field.
+Could also be used with the ID3 metadata exposed in WordPress 3.6 and later.</p></p>
+<table class="table table-bordered"><tr>
+<th>since</th>
+<td>1.30</td>
+</tr></table>
+<h3>Parameters</h3>
+<div class="subelement argument">
+<h4>$needle</h4>
+<code>string</code><p>key value, e.g. array1.array2.element</p></div>
+<div class="subelement argument">
+<h4>$haystack</h4>
+<code>array</code><p>PHP nested arrays</p></div>
+<div class="subelement argument">
+<h4>$single</h4>
+<code>boolean</code><p>return first element of an array result</p></div>
+<div class="subelement argument">
+<h4>$export</h4>
+<code>boolean</code><p>return results in var_export() format</p>
+</div>
+<h3>Returns</h3>
+<div class="subelement response">
+<code>string</code>value matching key(.key ...) or ''</div>
 </div></div>
 </div>
 <a name="mla_flush_mla_galleries" id="mla_flush_mla_galleries"></a><div class="element clickable method public mla_flush_mla_galleries" data-toggle="collapse" data-target=".mla_flush_mla_galleries .collapse">
@@ -795,7 +826,7 @@ any further logic required to translate those values is contained in the filters
 <div class="row"><footer class="span12">
             Template is built using <a href="http://twitter.github.com/bootstrap/">Twitter Bootstrap 2</a> and icons provided by <a href="http://glyphicons.com/">Glyphicons</a>.<br>
             Documentation is powered by <a href="http://www.phpdoc.org/">phpDocumentor 2.0.0a8</a> and<br>
-            generated on 2013-03-29T17:10:59-07:00.<br></footer></div>
+            generated on 2013-04-22T17:09:54-07:00.<br></footer></div>
 </div>
 </body>
 </html>

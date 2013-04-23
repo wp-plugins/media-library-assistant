@@ -38,7 +38,7 @@ class MLA {
 	 *
 	 * @var	string
 	 */
-	const CURRENT_MLA_VERSION = '1.20';
+	const CURRENT_MLA_VERSION = '1.30';
 
 	/**
 	 * Slug for registering and enqueueing plugin style sheet
@@ -1185,6 +1185,8 @@ class MLA {
 	 * Display a single item sub page; prepare the form to 
 	 * change the meta data for a single attachment.
 	 * 
+	 * This function is not used in WordPress 3.5 and later.
+	 *
 	 * @since 0.1
 	 * 
 	 * @param	int		The WordPress Post ID of the attachment item
@@ -1212,8 +1214,8 @@ class MLA {
 
 		if ( !empty( $post_data['mla_wp_attachment_metadata'] ) ) {
 			$page_template_array = MLAData::mla_load_template( MLA_PLUGIN_PATH . 'tpls/admin-display-single-image.tpl' );
-			$width = $post_data['mla_wp_attachment_metadata']['width'];
-			$height = $post_data['mla_wp_attachment_metadata']['height'];
+			$width = isset( $post_data['mla_wp_attachment_metadata']['width'] ) ? $post_data['mla_wp_attachment_metadata']['width'] : '';
+			$height = isset( $post_data['mla_wp_attachment_metadata']['height'] ) ? $post_data['mla_wp_attachment_metadata']['height'] : '';
 			$image_meta = var_export( $post_data['mla_wp_attachment_metadata'], true );
 			
 			if ( !isset( $post_data['mla_wp_attachment_image_alt'] ) )
@@ -1412,7 +1414,7 @@ class MLA {
 			'side_info_column' => $side_info_column 
 		);
 		
-		if ( !empty( $post_data['mla_wp_attachment_metadata'] ) ) {
+		if ( !empty( $post_data['mla_wp_attachment_image_alt'] ) ) {
 			$page_values['image_alt_attr'] = esc_attr( $post_data['mla_wp_attachment_image_alt'] );
 		}
 

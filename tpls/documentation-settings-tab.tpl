@@ -6,6 +6,9 @@
 <a href="#mla_gallery"><strong>MLA Gallery Shortcode</strong></a>
 </li>
 <li>
+<a href="#alt_shortcode"><strong>Support for Other Gallery-generating Shortcodes</strong></a>
+</li>
+<li>
 <a href="#photonic_gallery"><strong>Support for &#8220;Photonic Gallery&#8221;</strong></a>
 </li>
 <li>
@@ -58,6 +61,8 @@ The [mla_gallery] shortcode is used in a post, page or custom post type to add a
 <li>Support for all post_mime_type values, not just images.</li>
 <li>Media Library items need not be "attached" to the post. You can build a gallery with any combination of items in the Library using taxonomy terms, custom fields and more.</li>
 <li>Control over the styles, markup and content of each gallery using the Style and Markup Templates documented below.</li>
+<li>You can combine [mla_gallery] data selection with other popular gallery-generating plugins to get the best of both.
+</li>
 </ul>
 <p>
 All of the options/parameters documented for the [gallery] shortcode are supported by the [mla_gallery] shortcode; you can find them in the WordPress Codex. Most of the parameters documented for the WP_Query class are also supported; see the WordPress Codex. Because the [mla_gallery] shortcode is designed to work with Media Library items, there are some parameter differences and extensions; these are documented below.
@@ -197,6 +202,10 @@ The Orderby parameter specifies which database field(s) are used to sort the gal
 <td>Order by last modified date.</td>
 </tr>
 <tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">parent</td>
+<td>Order by post/page parent id.</td>
+</tr>
+<tr>
 <td style="padding-right: 10px; vertical-align: top; font-weight:bold">menu_order</td>
 <td>Order by page order.</td>
 </tr>
@@ -235,7 +244,7 @@ The [mla_gallery] shortcode supports an additional Size value, "icon", which sho
 </p>
 <h4>Link</h4>
 <p>
-The Link parameter specifies the target for the link from the gallery to the attachment. The default value, "permalink", links to the attachment's media page. The "file" and "full" values link directly to the attachment file.
+The Link parameter specifies the target for the link from the gallery to the attachment. The default value, "permalink" (or its synonym "post"), links to the attachment's media page. The "file" and "full" values link directly to the attachment file.
 </p>
 <p>
 For image attachments you can also specify the size of the image file you want to link to. Valid values include "thumbnail", "medium", "large" and any additional image size that was registered with add_image_size(). If the specified size is not available or if the attachment is not an image, the link will go directly to the attachment file.
@@ -277,7 +286,7 @@ Note that the "tag_id" parameter requires exactly one tag ID; multiple IDs are n
 </p>
 <h4>Taxonomy Parameters, "tax_operator"</h4>
 <p>
-The [mla_gallery] shortcode supports the simple "{tax} (string)" values (deprecated as of WordPress version 3.1) as well as the more powerful "<a href="https://codex.wordpress.org/Class_Reference/WP_Query#Taxonomy_Parameters" title="WordPress Codex Documentaton for tax_query" target="_blank">tax_query</a>" value. 
+The [mla_gallery] shortcode supports the simple "{tax} (string)" values (deprecated as of WordPress version 3.1) as well as the more powerful "<a href="https://codex.wordpress.org/Class_Reference/WP_Query#Taxonomy_Parameters" title="WordPress Codex Documentation for tax_query" target="_blank">tax_query</a>" value. 
 </p>
 <p>
 For simple queries, enter the taxonomy name and the term(s) that must be matched, e.g.:
@@ -301,7 +310,7 @@ The default behavior of the simple taxonomy query will match any of the terms in
 <li>[mla_gallery attachment_category='separate-category,another-category' tax_operator=AND]</li>
 </ul>
 <p>
-More complex queries can be specified by using <a href="https://codex.wordpress.org/Class_Reference/WP_Query#Taxonomy_Parameters" title="WordPress Codex Documentaton for tax_query" target="_blank">WP_Query's "tax_query"</a>, e.g.:
+More complex queries can be specified by using <a href="https://codex.wordpress.org/Class_Reference/WP_Query#Taxonomy_Parameters" title="WordPress Codex Documentation for tax_query" target="_blank">WP_Query's "tax_query"</a>, e.g.:
 </p>
 <ul class="mla_settings">
 <li>[mla_gallery tax_query="array(array('taxonomy' => 'attachment_tag','field' => 'slug','terms' => 'artisan'))"]</li>
@@ -346,6 +355,59 @@ The search parameter ("s=keyword") will perform a keyword search. A cursory insp
 <p>
 The "mla_debug" parameter controls the display of information about the query parameters and SQL statements used to retrieve gallery items. If you code "mla_debug=true" you will see a lot of information added to the post or page containing the gallery. Of course, this parameter should <strong><em>ONLY</em></strong> be used in a development/debugging environment; it's quite ugly.
 </p>
+<a name="alt_shortcode"></a>
+&nbsp;
+<p>
+<a href="#backtotop">Go to Top</a>
+</p>
+<h3>Support for Other Gallery-generating Shortcodes</h3>
+<p>
+The [mla_gallery] shortcode can be used in combination with other gallery-generating shortcodes to give you the data selection power of [mla_gallery] and the formatting/display power of popular alternatives such as the WordPress.com Jetpack Carousel and Tiled Galleries modules. Any shortcode that accepts "ids=" or a similar parameter listing the attachment ID values for the gallery can be used. Two parameters implement this feature:
+</p>
+<table>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">mla_alt_shortcode</td>
+<td>the name of the shortcode to be called for gallery format and display</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">mla_alt_ids_name</td>
+<td>(optional, default "ids") the name of the parameter used to pass a list of attachment ID values to the alternate shortcode</td>
+</tr>
+</table>
+<p>
+For example, if you want to select images using the MLA Att. Category taxonomy but want to display a "Tiled Mosaic" gallery, you can code:
+</p>
+<pre>
+[mla_gallery attachment_category=vegetable tax_operator="NOT IN" mla_alt_shortcode=gallery type="rectangular" mla_alt_ids_name=include]
+</pre>
+<p>
+This example selects all the images that are "NOT IN" the Att. Category "vegetable". The selected images are passed to the [gallery] shortcode in an "include" parameter, along with the "type=rectangular" parameter. The result is as if you had coded:
+</p>
+<pre>
+[gallery include="1,2,3" type="rectangular"]
+</pre>
+<p>
+In the above example, the "mla_alt_ids_name=include" parameter isn't really necessary, since the [gallery] shortcode accepts the "ids" parameter. It was included in the example just to show how the "mla_alt_ids_name" might be used for some other shortcode that requires a different name for the parameter.
+</p>
+<p>
+You can pass any parameters you need through the [mla_gallery] shortcode and on to the alternate shortcode you're using. Here's another example, using the Photonic Gallery plugin:
+</p>
+<pre>
+[mla_gallery attachment_tag=fauna orderby=rand mla_alt_shortcode=gallery type=default style=strip-below slideshow_height=320 slide_size=medium]
+</pre>
+<p>
+Here, [mla_gallery] selects the images with an Att. Tag of "fauna" and sorts them in a random order. It then calls on the [gallery] shortcode (which Photonic also uses):
+</p>
+<pre>
+[gallery ids="3,1,4,2,7" type=default style=strip-below slideshow_height=320 slide_size=medium]
+</pre>
+<p>
+Photonic recognizes the "type=default" parameter and takes over, using the other three parameters to format its results. This example is a less convenient but more flexible alternative to the native Photonic support built-in to [mla_gallery] (see next section).
+</p>
+<p>
+<strong>NOTE:</strong> When you use "mla_alt_shortcode" to pass format/display responsibility off to another shortcode you will lose the [mla_gallery] Gallery Display Style (e.g. "mla_float") and Gallery Display Content (e.g. "mla_caption") parameters. There is no reliable way for [mla_gallery] to pass this information on to the other shortcode you've specified.
+</p>
+<p>
 <a name="photonic_gallery"></a>
 &nbsp;
 <p>
@@ -368,10 +430,10 @@ You can use the "Photonic" screen of the Insert Media dialog to build the displa
 The Style and Markup templates give you great flexibility for the content and format of each [mla_gallery]. You can define as many templates as you need.
 </p>
 <p>
-Style templates provide gallery-specific CSS inline styles. Markup templates provide the HTML markup for 1) the beginning of the gallery, 2) the beginning of each row, 3) each gallery item, 4) the end of each row and 5) the end of the gallery. The attachment-specific markup parameters let you choose among most of the attachment fields, not just the caption.
+Style templates provide gallery-specific CSS inline styles (you can code "mla_style=none" to suppress the addition of CSS inline styles entirely). Markup templates provide the HTML markup for 1) the beginning of the gallery, 2) the beginning of each row, 3) each gallery item, 4) the end of each row and 5) the end of the gallery. The attachment-specific markup parameters let you choose among most of the attachment fields, not just the caption.
 </p>
 <p>
-The MLA Gallery tab on the Settings page lets you add, change and delete custom templates. The default tempates are also displayed on this tab for easy reference.
+The MLA Gallery tab on the Settings page lets you add, change and delete custom templates. The default templates are also displayed on this tab for easy reference.
 </p>
 <p>
 In a template, substitution parameters are surrounded by opening ('[+') and closing ('+]') delimiters to separate them from the template text; see the default templates for many examples.
@@ -663,19 +725,21 @@ In a template, substitution parameters are surrounded by opening ('[+') and clos
 </p>
 <h3>Field-level Markup Substitution Parameters</h3>
 <p>
-Field-level substitution parameters let you access query arguments, custom fields, taxonomy terms, IPTC metadata and EXIF metadata for display in an MLA gallery. For these parameters, the value you code within the surrounding the ('[+') and ('+]') delimiters has three parts; the prefix, the field name and the optional ",single" indicator.
+Field-level substitution parameters let you access query arguments, custom fields, taxonomy terms, IPTC metadata and EXIF metadata for display in an MLA gallery. For these parameters, the value you code within the surrounding the ('[+') and ('+]') delimiters has three parts; the prefix, the field name and the optional ",single" or &quot;,export&quot; indicator.
 </p>
 <p>
 The <strong>prefix</strong> defines which type of field-level data you are accessing. It must immediately follow the opening ('[+') delimiter and end with a colon (':'). There can be no spaces in this part of the parameter.
 </p>
 <p>
-The <strong>field name</strong> defines which field-level data element you are accessing. It must immediately follow the colon (':'). There can be no spaces between the colon and the field name. Spaces are allowed within the field name to accomodate custom field names that contain them. 
+The <strong>field name</strong> defines which field-level data element you are accessing. It must immediately follow the colon (':'). There can be no spaces between the colon and the field name. Spaces are allowed within the field name to accommodate custom field names that contain them. <strong>Compound names</strong> are used to access elements within arrays, e.g., &quot;<strong>sizes.thumbnail.file</strong>&quot; is used to specify the file name for the thumbnail version of an image. </p>
+<p>
+The optional <strong>",single" indicator</strong> defines how to handle fields with multiple values. It must immediately follow the field name and end with the closing delimiter ('+]'). There can be no spaces in this part of the parameter. If this part of the parameter is present, only the first value of the field will be returned. Use this indicator to limit the data returned for a custom field, taxonomy or metadata field that can have many values. For example, if you code `[+meta:sizes.thumbnail,single+]` the result will be "20120313-ASK_5605-150x150.jpg".
 </p>
 <p>
-The optional <strong>",single" indicator</strong> defines how to handle fields with multiple values. It must immediately follow the field name and end with the closing delimiter ('+]'). There can be no spaces in this part of the parameter. If this part of the parameter is present, only the first value of the field will be returned. Use this indicator to limit the data returned for a custom field, taxonomy or metadata field that can have many values.
+The optional <strong>",export" indicator</strong> for display of array fields with multiple values. It must immediately follow the field name and end with the closing delimiter ('+]'). There can be no spaces in this part of the parameter. If this part of the parameter is present, the PHP var_export function is used to return a string representation of all the elements in an array field. For example, if you code `[+meta:sizes.thumbnail,export+]` the result will be "array ('file' => '20120313-ASK_5605-150x150.jpg', 'width' => 150, 'height' => 150, 'mime-type' => 'image/jpeg'".
 </p>
 <p>
-There are five prefix values for field-level data. Prefix values must be coded as shown; all lowercase letters.
+There are six prefix values for field-level data. Prefix values must be coded as shown; all lowercase letters.
 </p>
 <table>
 	<tr>
@@ -691,6 +755,10 @@ There are five prefix values for field-level data. Prefix values must be coded a
 		<td>WordPress Category, tag or custom taxonomy terms. For this category, you code the name of the taxonomy as the field name. The term(s) associated with the attachment will be displayed in the [mla_gallery]. Note that you must use the name/slug string for taxonomy, not the "title" string. For example, use "attachment-category" or "attachment-tag", not "Att. Category" or "Attachment Category".</td>
 	</tr>
 	<tr>
+		<td style="padding-right: 10px; vertical-align: top; font-weight:bold">meta</td>
+		<td>WordPress attachment metadata, if any, embedded in the image/audio/video file. For this category, you can code any of the field names embedded in the _wp_attachment_metadata array. The "Attachment Metadata" display in the Media/Edit Media screen will show you the names and values of these fields. Note that the fields available differ among image, audio and video attachments.</td>
+	</tr>
+	<tr>
 		<td style="padding-right: 10px; vertical-align: top; font-weight:bold">iptc</td>
 		<td>
 		The IPTC (International Press Telecommunications Council) metadata, if any, embedded in the image file. For this category, you can code any of the IPTC DataSet tag and field identifiers, e.g., "2#025" for the Keywords field. You can also use the "friendly name" MLA defines for most of the IPTC fields; see the <a href="#mla_iptc_identifiers">table of identifiers and friendly names</a> below. <br />
@@ -702,7 +770,7 @@ There are five prefix values for field-level data. Prefix values must be coded a
 		<td>
 		The EXIF (EXchangeable Image File) metadata, if any, embedded in a JPEG DCT or TIFF Rev 6.0 image file. 
 		Though the specification is not currently maintained by any industry or standards organization, almost all camera manufacturers use it. It is also supported by many image editing programs such as Adobe PhotoShop.
-		For this category, you can code any of the field names embedded in the image by the camera or editing software. The is no official list of standard field names, so you just have to know the names your camera and software use; field names are case-sensitive.
+		For this category, you can code any of the field names embedded in the image by the camera or editing software. There is no official list of standard field names, so you just have to know the names your camera and software use; field names are case-sensitive.
 		<br />&nbsp;<br />
 		You can find more information in the <a href="http://en.wikipedia.org/wiki/Exchangeable_image_file_format" title="IPTC-NAA Information Interchange Model Version No. 4.1 specification" target="_blank">Exchangeable image file format</a> article on Wikipedia. You can find External Links to EXIF standards and tag listings at the end of the Wikipedia article.
 		<br />&nbsp;<br />
@@ -818,12 +886,16 @@ If you just want to add a custom field to the Media/Assistant submenu, the quick
 </p>
 <h4>Data sources for custom field mapping</h4>
 <p>
-<strong>NOTE:</strong> Sorting by custom fields in the Media/Assistant submenu is by string values. For numeric data this can cause odd-looking results, e.g., dimensions of "1200x768" will sort before "640x480". The "file_size", "pixels", "width" and "height" data sources are converted to srtings and padded on the left with spaces if you use the "commas" format. This padding makes them sort more sensibly.
+<strong>NOTE:</strong> Sorting by custom fields in the Media/Assistant submenu is by string values. For numeric data this can cause odd-looking results, e.g., dimensions of "1200x768" will sort before "640x480". Data sources like "file_size", "pixels", "width" and "height" are converted to strings and padded on the left with spaces if you use the "commas" format. This padding makes them sort more sensibly.
 </p>
 <table>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">-- None (select a value --</td>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">-- None (select a value) --</td>
 <td>nothing, i.e., no change to existing value (if any). Use this source if you just want to add a custom field to the Media/Assistant submenu and/or the inline edit areas.</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">-- Metadata (see below) --</td>
+<td>WordPress attachment metadata, from the <em>_wp_attachment_metadata</em> array. Enter the field you want in the text box below the dropdown list. More coding guidelines are given below this table.</td>
 </tr>
 <tr>
 <td style="padding-right: 10px; vertical-align: top; font-weight:bold">path</td>
@@ -956,6 +1028,13 @@ If you just want to add a custom field to the Media/Assistant submenu, the quick
 <td>for image types, the value stored in WordPress "image_meta" array</td>
 </tr>
 </table>
+<h4>Custom field mapping for metadata fields</h4>
+<p>
+If you select "<strong>-- Metadata (see below) --</strong>" as the data source you must specify the name of the field you want in the text box below the data source dropdown box. Any of the fields in the <em>_wp_attachment_metadata</em> array may be named, including the new audio/video fields available with WordPress 3.6 and later. For example, "length_formatted" will return the length of a video attachment. You can specify fields within an array with a compound name, e.g., "audio.sample_rate" to get the sampling rate field from the "audio" array of a video attachment. If you simply specify "audio", you will get the values of every array element, e.g., "mp4,ISO/IEC 14496 AAC,48000,2,16,false,stereo". 
+</p>
+<p>
+The "Single" and "Export" checkboxes can further refine your specification. The "Single" box will return just the first value of an array, e.g., "mp4" for the above "audio" example. The "Export" box will return all the field names and values (including nested arrays). For example, the above audio data would be returned in Export format as "array ('dataformat' => 'mp4', 'codec' => 'ISO/IEC 14496-3 AAC', 'sample_rate' => 48000, 'channels' => 2, 'bits_per_sample' => 16, 'lossless' => false, 'channelmode' => 'stereo'".
+</p> 
 <a name="mla_iptc_exif_mapping"></a>
 &nbsp;
 <p>
@@ -972,7 +1051,7 @@ The Media Library Assistant has powerful tools for copying image metadata to:
 <li>taxonomy terms, e.g., in categories, tags or custom taxonomies</li>
 <li>WordPress Custom Fields</li>
 </ul>
-You can define the rules for mapping metadata on the "IPTC/EXIF" tab of the Settings page. You can choose to automatically apply the rules when new media are added to the Library (or not). You can click the "Map IPTC/EXIF metadata" button on the Edit Media/Edit Single Item screen or in the bulk edit area to selectivelly apply the rules to one or more images. You can click the "Map All Attachments Now" to apply the rules to <strong><em>ALL of the images in your library</em></strong> at one time.
+You can define the rules for mapping metadata on the "IPTC/EXIF" tab of the Settings page. You can choose to automatically apply the rules when new media are added to the Library (or not). You can click the "Map IPTC/EXIF metadata" button on the Edit Media/Edit Single Item screen or in the bulk edit area to selectively apply the rules to one or more images. You can click the "Map All Attachments Now" to apply the rules to <strong><em>ALL of the images in your library</em></strong> at one time.
 </p>
 <h4>Mapping tables</h4>
 <p>
@@ -986,7 +1065,7 @@ The three mapping tables on the IPTC/EXIF tab have the following columns:
 </dd>
 <dt>EXIF Value</dt>
 <dd>The EXIF (EXchangeable Image File) metadata, if any, embedded in a JPEG DCT or TIFF Rev 6.0 image file. 
- Though the specification is not currently maintained by any industry or standards organization, almost all camera manufacturers use it. For this category, you can code any of the field names embedded in the image by the camera or editing software. The is no official list of standard field names, so you just have to know the names your camera and software use; field names are case-sensitive. You can find more information in the <a href="http://en.wikipedia.org/wiki/Exchangeable_image_file_format" title="Exchangeable image file format Wikipedia article" target="_blank">Exchangeable image file format</a> article on Wikipedia. You can find External Links to EXIF standards and tag listings at the end of the Wikipedia article.
+ Though the specification is not currently maintained by any industry or standards organization, almost all camera manufacturers use it. For this category, you can code any of the field names embedded in the image by the camera or editing software. There is no official list of standard field names, so you just have to know the names your camera and software use; field names are case-sensitive. You can find more information in the <a href="http://en.wikipedia.org/wiki/Exchangeable_image_file_format" title="Exchangeable image file format Wikipedia article" target="_blank">Exchangeable image file format</a> article on Wikipedia. You can find External Links to EXIF standards and tag listings at the end of the Wikipedia article.
 		<br />&nbsp;<br />
 		MLA uses a standard PHP function, <a href="http://php.net/manual/en/function.exif-read-data.php" title="PHP Manual page for exif_read_data" target="_blank">exif_read_data</a>, to extract EXIF data from images. The function returns three arrays in addition to the raw EXIF data; COMPUTED, THUMBNAIL and COMMENT. You can access the array elements by prefacing the element you want with the array name. For example, the user comment text is available as "COMPUTED.UserComment" and "COMPUTED.UserCommentEncoding". You can also get "COMPUTED.Copyright" and its two parts (if present), "COMPUTED.Copyright.Photographer" and "COMPUTED.Copyright.Editor". The THUMBNAIL and COMMENT arrays work in a similar fashion.
 		<br />&nbsp;<br />
@@ -1103,16 +1182,16 @@ The priority order for mapping the post_content value from non-blank IPTC/EXIF m
 <tr><td style="padding-right: 10px; vertical-align: top; font-weight:bold">country-or-primary-location-name</td><td style="padding-right: 10px; vertical-align: top">2#101</td><td style="padding-right: 10px; vertical-align: top">Max 64 characters of publishable country/geographical location name; repeatable</td></tr>
 <tr><td style="padding-right: 10px; vertical-align: top; font-weight:bold">original-transmission-reference</td><td style="padding-right: 10px; vertical-align: top">2#103</td><td style="padding-right: 10px; vertical-align: top">Max 32 characters of a code representing the location of original transmission</td></tr>
 <tr><td style="padding-right: 10px; vertical-align: top; font-weight:bold">headline</td><td style="padding-right: 10px; vertical-align: top">2#105</td><td style="padding-right: 10px; vertical-align: top">Max 256 Characters of a publishable entry providing a synopsis of the contents of the objectdata</td></tr>
-<tr><td style="padding-right: 10px; vertical-align: top; font-weight:bold">credit</td><td style="padding-right: 10px; vertical-align: top">2#110</td><td style="padding-right: 10px; vertical-align: top">Max 32 Characters that identifies the provider of the objectdata (Vs the owner/creator)</td></tr>
+<tr><td style="padding-right: 10px; vertical-align: top; font-weight:bold">credit</td><td style="padding-right: 10px; vertical-align: top">2#110</td><td style="padding-right: 10px; vertical-align: top">Max 32 Characters that identifies the provider of the objectdata (Vs. the owner/creator)</td></tr>
 <tr><td style="padding-right: 10px; vertical-align: top; font-weight:bold">source</td><td style="padding-right: 10px; vertical-align: top">2#115</td><td style="padding-right: 10px; vertical-align: top">Max 32 Characters that identifies the original owner of the intellectual content</td></tr>
 <tr><td style="padding-right: 10px; vertical-align: top; font-weight:bold">copyright-notice</td><td style="padding-right: 10px; vertical-align: top">2#116</td><td style="padding-right: 10px; vertical-align: top">Max 128 Characters that contains any necessary copyright notice</td></tr>
-<tr><td style="padding-right: 10px; vertical-align: top; font-weight:bold">contact</td><td style="padding-right: 10px; vertical-align: top">2#118</td><td style="padding-right: 10px; vertical-align: top">Max 128 characters that identifies the person or organisation which can provide further background information; repeatable</td></tr>
+<tr><td style="padding-right: 10px; vertical-align: top; font-weight:bold">contact</td><td style="padding-right: 10px; vertical-align: top">2#118</td><td style="padding-right: 10px; vertical-align: top">Max 128 characters that identifies the person or organization which can provide further background information; repeatable</td></tr>
 <tr><td style="padding-right: 10px; vertical-align: top; font-weight:bold">caption-or-abstract</td><td style="padding-right: 10px; vertical-align: top">2#120</td><td style="padding-right: 10px; vertical-align: top">Max 2000 Characters of a textual description of the objectdata</td></tr>
 <tr><td style="padding-right: 10px; vertical-align: top; font-weight:bold">caption-writer-or-editor</td><td style="padding-right: 10px; vertical-align: top">2#122</td><td style="padding-right: 10px; vertical-align: top">Max 32 Characters that the identifies the person involved in the writing, editing or correcting the objectdata or caption/abstract; repeatable</td></tr>
 <tr><td style="padding-right: 10px; vertical-align: top; font-weight:bold">rasterized-caption</td><td style="padding-right: 10px; vertical-align: top">2#125</td><td style="padding-right: 10px; vertical-align: top">7360 binary octets of the rasterized caption - 1 bit per pixel, 460x128-pixel image</td></tr>
 <tr><td style="padding-right: 10px; vertical-align: top; font-weight:bold">image-type</td><td style="padding-right: 10px; vertical-align: top">2#130</td><td style="padding-right: 10px; vertical-align: top">2 characters of color composition type and information</td></tr>
 <tr><td style="padding-right: 10px; vertical-align: top; font-weight:bold">image-orientation</td><td style="padding-right: 10px; vertical-align: top">2#131</td><td style="padding-right: 10px; vertical-align: top">1 alphabetic character indicating the image area layout - P=portrait, L=landscape, S=square</td></tr>
-<tr><td style="padding-right: 10px; vertical-align: top; font-weight:bold">language-identifier</td><td style="padding-right: 10px; vertical-align: top">2#135</td><td style="padding-right: 10px; vertical-align: top">2 or 3 aphabetic characters containing the major national language of the object, according to the ISO 639:1988 codes</td></tr>
+<tr><td style="padding-right: 10px; vertical-align: top; font-weight:bold">language-identifier</td><td style="padding-right: 10px; vertical-align: top">2#135</td><td style="padding-right: 10px; vertical-align: top">2 or 3 alphabetic characters containing the major national language of the object, according to the ISO 639:1988 codes</td></tr>
 <tr><td style="padding-right: 10px; vertical-align: top; font-weight:bold">audio-type</td><td style="padding-right: 10px; vertical-align: top">2#150</td><td style="padding-right: 10px; vertical-align: top">2 characters identifying monaural/stereo and exact type of audio content</td></tr>
 <tr><td style="padding-right: 10px; vertical-align: top; font-weight:bold">audio-sampling-rate</td><td style="padding-right: 10px; vertical-align: top">2#151</td><td style="padding-right: 10px; vertical-align: top">6 numeric characters representing the audio sampling rate in hertz (Hz)</td></tr>
 <tr><td style="padding-right: 10px; vertical-align: top; font-weight:bold">audio-sampling-resolution</td><td style="padding-right: 10px; vertical-align: top">2#152</td><td style="padding-right: 10px; vertical-align: top">2 numeric characters representing the number of bits in each audio sample</td></tr>

@@ -500,7 +500,10 @@ class MLA_List_Table extends WP_List_Table {
 				), 'upload.php' ) ), esc_html( $value ) );
 			}
 
-			return join( ', ', $list );
+			if ( count( $list ) > 1 )
+				return '[' . join( '], [', $list ) . ']';
+			else
+				return $list[0];
 		} // 'c_'
 		else {
 			//Show the whole array for troubleshooting purposes

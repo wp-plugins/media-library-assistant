@@ -385,6 +385,8 @@ class MLAModal {
 		if ( isset( $query['mla_search_value'] ) ) {
 			if ( ! empty( $query['mla_search_value'] ) )
 				$query['s'] = $query['mla_search_value'];
+			else
+				unset( $query['s'] );
 				
 			unset( $query['mla_search_value'] );
 		}

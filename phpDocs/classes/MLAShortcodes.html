@@ -56,6 +56,8 @@
 <li class="method public "><a href="#mla_attachment_list_shortcode" title="mla_attachment_list_shortcode :: WordPress Shortcode; renders a complete list of all attachments and references to them"><span class="description">WordPress Shortcode; renders a complete list of all attachments and references to them</span><pre>mla_attachment_list_shortcode()</pre></a></li>
 <li class="method public "><a href="#mla_gallery_shortcode" title="mla_gallery_shortcode :: The MLA Gallery shortcode."><span class="description">The MLA Gallery shortcode.</span><pre>mla_gallery_shortcode()</pre></a></li>
 <li class="method public "><a href="#mla_get_shortcode_attachments" title="mla_get_shortcode_attachments :: Parses shortcode parameters and returns the gallery objects"><span class="description">Parses shortcode parameters and returns the gallery objects</span><pre>mla_get_shortcode_attachments()</pre></a></li>
+<li class="method public "><a href="#mla_shortcode_query_posts_clauses_filter" title="mla_shortcode_query_posts_clauses_filter :: Filters all clauses for shortcode queries, pre caching plugins"><span class="description">Filters all clauses for shortcode queries, pre caching plugins</span><pre>mla_shortcode_query_posts_clauses_filter()</pre></a></li>
+<li class="method public "><a href="#mla_shortcode_query_posts_clauses_request_filter" title="mla_shortcode_query_posts_clauses_request_filter :: Filters all clauses for shortcode queries, post caching plugins"><span class="description">Filters all clauses for shortcode queries, post caching plugins</span><pre>mla_shortcode_query_posts_clauses_request_filter()</pre></a></li>
 <li class="method public "><a href="#mla_shortcode_query_posts_orderby_filter" title="mla_shortcode_query_posts_orderby_filter :: Filters the ORDERBY clause for shortcode queries"><span class="description">Filters the ORDERBY clause for shortcode queries</span><pre>mla_shortcode_query_posts_orderby_filter()</pre></a></li>
 <li class="method public "><a href="#mla_shortcode_query_posts_where_filter" title="mla_shortcode_query_posts_where_filter :: Filters the WHERE clause for shortcode queries"><span class="description">Filters the WHERE clause for shortcode queries</span><pre>mla_shortcode_query_posts_where_filter()</pre></a></li>
 <li class="nav-header private">» Private</li>
@@ -66,6 +68,7 @@
 <li class="property public "><a href="#%24mla_debug_messages" title="$mla_debug_messages :: Accumulates debug messages"><span class="description">Accumulates debug messages</span><pre>$mla_debug_messages</pre></a></li>
 <li class="property public "><a href="#%24mla_iptc_keys" title="$mla_iptc_keys :: IPTC Dataset friendly name/slug and identifiers"><span class="description">IPTC Dataset friendly name/slug and identifiers</span><pre>$mla_iptc_keys</pre></a></li>
 <li class="nav-header private">» Private</li>
+<li class="property private "><a href="#%24data_selection_parameters" title="$data_selection_parameters :: Data selection parameters for the WP_Query in [mla_gallery]"><span class="description">Data selection parameters for the WP_Query in [mla_gallery]</span><pre>$data_selection_parameters</pre></a></li>
 <li class="property private "><a href="#%24mla_debug" title="$mla_debug :: Turn debug collection and display on or off"><span class="description">Turn debug collection and display on or off</span><pre>$mla_debug</pre></a></li>
 <li class="property private "><a href="#%24mla_iptc_descriptions" title="$mla_iptc_descriptions :: IPTC Dataset descriptions"><span class="description">IPTC Dataset descriptions</span><pre>$mla_iptc_descriptions</pre></a></li>
 <li class="property private "><a href="#%24mla_iptc_formats" title="$mla_iptc_formats :: IPTC file format identifiers and descriptions"><span class="description">IPTC file format identifiers and descriptions</span><pre>$mla_iptc_formats</pre></a></li>
@@ -165,6 +168,46 @@ Enhancements include many additional selection parameters and full taxonomy supp
 <h3>Returns</h3>
 <div class="subelement response">
 <code>array</code>List of attachments returned from WP_Query</div>
+</div></div>
+</div>
+<a name="mla_shortcode_query_posts_clauses_filter" id="mla_shortcode_query_posts_clauses_filter"></a><div class="element clickable method public mla_shortcode_query_posts_clauses_filter" data-toggle="collapse" data-target=".mla_shortcode_query_posts_clauses_filter .collapse">
+<h2>Filters all clauses for shortcode queries, pre caching plugins</h2>
+<pre>mla_shortcode_query_posts_clauses_filter(array $pieces) : array</pre>
+<div class="labels"></div>
+<div class="row collapse"><div class="detail-description">
+<p class="long_description"><p>This is for debug purposes only.
+Defined as public because it's a filter.</p></p>
+<table class="table table-bordered"><tr>
+<th>since</th>
+<td>1.30</td>
+</tr></table>
+<h3>Parameters</h3>
+<div class="subelement argument">
+<h4>$pieces</h4>
+<code>array</code><p>query clauses before modification</p></div>
+<h3>Returns</h3>
+<div class="subelement response">
+<code>array</code>query clauses after modification (none)</div>
+</div></div>
+</div>
+<a name="mla_shortcode_query_posts_clauses_request_filter" id="mla_shortcode_query_posts_clauses_request_filter"></a><div class="element clickable method public mla_shortcode_query_posts_clauses_request_filter" data-toggle="collapse" data-target=".mla_shortcode_query_posts_clauses_request_filter .collapse">
+<h2>Filters all clauses for shortcode queries, post caching plugins</h2>
+<pre>mla_shortcode_query_posts_clauses_request_filter(array $pieces) : array</pre>
+<div class="labels"></div>
+<div class="row collapse"><div class="detail-description">
+<p class="long_description"><p>This is for debug purposes only.
+Defined as public because it's a filter.</p></p>
+<table class="table table-bordered"><tr>
+<th>since</th>
+<td>1.30</td>
+</tr></table>
+<h3>Parameters</h3>
+<div class="subelement argument">
+<h4>$pieces</h4>
+<code>array</code><p>query clauses before modification</p></div>
+<h3>Returns</h3>
+<div class="subelement response">
+<code>array</code>query clauses after modification (none)</div>
 </div></div>
 </div>
 <a name="mla_shortcode_query_posts_orderby_filter" id="mla_shortcode_query_posts_orderby_filter"></a><div class="element clickable method public mla_shortcode_query_posts_orderby_filter" data-toggle="collapse" data-target=".mla_shortcode_query_posts_orderby_filter .collapse">
@@ -275,6 +318,18 @@ the "IPTC-NAA Information Interchange Model Version No. 4.1".</p></p>
 </tr></table>
 </div></div>
 </div>
+<a name="%24data_selection_parameters" id="$data_selection_parameters"> </a><div class="element clickable property private $data_selection_parameters" data-toggle="collapse" data-target=".$data_selection_parameters .collapse">
+<h2>Data selection parameters for the WP_Query in [mla_gallery]</h2>
+<pre>$data_selection_parameters : array</pre>
+<div class="labels"></div>
+<div class="row collapse"><div class="detail-description">
+<p class="long_description"></p>
+<table class="table table-bordered"><tr>
+<th>since</th>
+<td>1.30</td>
+</tr></table>
+</div></div>
+</div>
 <a name="%24mla_debug" id="$mla_debug"> </a><div class="element clickable property private $mla_debug" data-toggle="collapse" data-target=".$mla_debug .collapse">
 <h2>Turn debug collection and display on or off</h2>
 <pre>$mla_debug : boolean</pre>
@@ -363,7 +418,7 @@ any further logic required to translate those values is contained in the filter.
 <div class="row"><footer class="span12">
             Template is built using <a href="http://twitter.github.com/bootstrap/">Twitter Bootstrap 2</a> and icons provided by <a href="http://glyphicons.com/">Glyphicons</a>.<br>
             Documentation is powered by <a href="http://www.phpdoc.org/">phpDocumentor 2.0.0a8</a> and<br>
-            generated on 2013-03-29T17:11:00-07:00.<br></footer></div>
+            generated on 2013-04-22T17:09:54-07:00.<br></footer></div>
 </div>
 </body>
 </html>

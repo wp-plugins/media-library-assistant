@@ -576,7 +576,7 @@ settings are being updated or reset.</h2>
 </div>
 <a name="_compose_custom_field_option_list" id="_compose_custom_field_option_list"></a><div class="element clickable method private _compose_custom_field_option_list" data-toggle="collapse" data-target="._compose_custom_field_option_list .collapse">
 <h2>Compose a Custom Field Options list with current selection</h2>
-<pre>_compose_custom_field_option_list(string $selection) : string</pre>
+<pre>_compose_custom_field_option_list(string $selection, array $blacklist) : string</pre>
 <div class="labels"></div>
 <div class="row collapse"><div class="detail-description">
 <p class="long_description"></p>
@@ -595,6 +595,9 @@ settings are being updated or reset.</h2>
 <h4>$selection</h4>
 <code>string</code><p>current selection or 'none' (default)</p>
 </div>
+<div class="subelement argument">
+<h4>$blacklist</h4>
+<code>array</code><p>optional list of terms to exclude from the list</p></div>
 <h3>Returns</h3>
 <div class="subelement response">
 <code>string</code>HTML markup with select field options</div>
@@ -683,7 +686,7 @@ settings are being updated or reset.</h2>
 </div>
 <a name="_evaluate_data_source" id="_evaluate_data_source"></a><div class="element clickable method private _evaluate_data_source" data-toggle="collapse" data-target="._evaluate_data_source .collapse">
 <h2>Evaluate custom field mapping data source</h2>
-<pre>_evaluate_data_source(integer $post_id, string $category, string $data_source, string $format, array $attachment_metadata) : string</pre>
+<pre>_evaluate_data_source(integer $post_id, string $category, array $data_value, array $attachment_metadata) : string</pre>
 <div class="labels"></div>
 <div class="row collapse"><div class="detail-description">
 <p class="long_description"></p>
@@ -701,11 +704,8 @@ settings are being updated or reset.</h2>
 <code>string</code><p>category/scope to evaluate against: custom_field_mapping or single_attachment_mapping</p>
 </div>
 <div class="subelement argument">
-<h4>$data_source</h4>
-<code>string</code><p>data source name</p></div>
-<div class="subelement argument">
-<h4>$format</h4>
-<code>string</code><p>desired results format, default 'native'</p>
+<h4>$data_value</h4>
+<code>array</code><p>data source specification (name, format, meta_name, meta_single, meta_export)</p>
 </div>
 <div class="subelement argument">
 <h4>$attachment_metadata</h4>
@@ -1042,7 +1042,7 @@ reset => reset function for 'custom' options; returns nothing. Usage:
 <div class="row"><footer class="span12">
             Template is built using <a href="http://twitter.github.com/bootstrap/">Twitter Bootstrap 2</a> and icons provided by <a href="http://glyphicons.com/">Glyphicons</a>.<br>
             Documentation is powered by <a href="http://www.phpdoc.org/">phpDocumentor 2.0.0a8</a> and<br>
-            generated on 2013-03-29T17:11:00-07:00.<br></footer></div>
+            generated on 2013-04-22T17:09:54-07:00.<br></footer></div>
 </div>
 </body>
 </html>

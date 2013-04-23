@@ -4,7 +4,7 @@ Donate link: http://fairtradejudaica.org/make-a-difference/donate/
 Tags: attachment, attachments, documents, gallery, image, images, media, library, media library, media-tags, media tags, tags, media categories, categories, IPTC, EXIF, meta, metadata, photo, photos, photograph, photographs, photoblog, photo albums
 Requires at least: 3.3
 Tested up to: 3.5.1
-Stable tag: 1.20
+Stable tag: 1.30
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -93,7 +93,7 @@ Hover over the item you want to modify and click the "Edit" action. On the Edit 
 
 = The Media/Assistant submenu seems sluggish; is there anything I can do to make it faster? =
 
-Some of the MLA features such as where-used reporting and ALT Text sorting/searching require a lot of database procesing. If this is an issue for you, go to the Settings page and adjust the "Where-used database access tuning" settings. For any where-used category you can enable or disable processing. For the "Gallery in" and "MLA Gallery in" you can also choose to update the results on every page load or to cache the results for fifteen minutes between updates. The cache is also flushed automatically when posts, pages or attachments are inserted or updated.
+Some of the MLA features such as where-used reporting and ALT Text sorting/searching require a lot of database processing. If this is an issue for you, go to the Settings page and adjust the "Where-used database access tuning" settings. For any where-used category you can enable or disable processing. For the "Gallery in" and "MLA Gallery in" you can also choose to update the results on every page load or to cache the results for fifteen minutes between updates. The cache is also flushed automatically when posts, pages or attachments are inserted or updated.
 
 = Are other language versions available? =
 
@@ -101,7 +101,7 @@ Not at this time; I don't have working knowledge of anything but English. If you
 
 = What's in the "phpDocs" directory and do I need it? =
 
-All of the MLA source code has been annotated with "DocBlocks", a special type of comment used by phpDocumentor to generate API documentation. If you'd like a deeper understanding of the code, click on "index.html" in the phpDocs dorectory and have a look. Note that these pages require JavaScript for much of their functionality.
+All of the MLA source code has been annotated with "DocBlocks", a special type of comment used by phpDocumentor to generate API documentation. If you'd like a deeper understanding of the code, click on "index.html" in the phpDocs directory and have a look. Note that these pages require JavaScript for much of their functionality.
 
 == Screenshots ==
 
@@ -116,6 +116,20 @@ All of the MLA source code has been annotated with "DocBlocks", a special type o
 9. The Media Manager popup modal window showing additional filters for date and taxonomy terms. Also shows the enhanced Search Media box.
 
 == Changelog ==
+
+= 1.30 =
+* New: **ALL** metadata fields, including the **new fields extracted from audio and video files in WordPress 3.6**, can be mapped to custom fields and added as sortable columns to the Media/Assistant submenu table.
+* New: For `[mla_gallery]`, field-level substitution parameters now include **ALL** metadata fields, including the **new fields extracted from audio and video files in WordPress 3.6**.
+* New: Use `[mla_gallery]` to determine which items are included in a gallery, then pass them on to another gallery-generating shortcode for formatting and display. The new `mla_alt_shortcode` and `mla_alt_ids_name` parameters let you use any gallery-generating shortcode that accepts a list of attachment ID values. For example, you can use the WordPress.com Jetpack Carousel and Tiled Galleries to create elegant mosaic layouts and immersive full-screen experiences. The "Other Notes" section here or the Documentation tab on the Settings/Media Library Assistant page of the plugin have details.
+* New: Improved User Interface for the "IPTC/EXIF" tab on the Settings/Media Library Assistant screen. The "Custom Fields" section of this screen is enhanced to match the "Custom Fields" Settings tab.
+* Fix: Media Manager enhanced Search Media box more reliably re-queries the server when search parameters change.
+* Fix: For `[mla_gallery]`, `posts_where` and `posts_orderby` filters now have a very low priority to run later and avoid conflicts with  other plugins, e.g, "Post Types Order".
+* Fix: For `[mla_gallery]`, field-level "query" substitution parameters are now processed in all custom style and markup template parts.
+* Fix: For `[mla_gallery]`, empty style and markup template parts are now allowed; empty "Open:" markup will not cause reversion to default template.
+* Fix: Default `mla_style` settings now include "-- none --", to suppress generation of default inline CSS styles for the `[mla_gallery]` shortcodes.
+* Fix: Improved handling and display of Custom fields with multiple values.
+* Fix: For `[mla_gallery]`, `link=post` (added in WordPress 3.5) is now accepted to link gallery items to the corresponding attachment page. The `link=permalink` value continues to work as well.
+* Fix: Filtering the Media/Media Library Assistant table display on custom field values with leading spaces (i.e., format=commas) now works properly.
 
 = 1.20 =
 * New: The long-awaited enhancements to the WordPress (3.5+) Media Manager (Add Media, etc.). Filter your attachments by additional MIME types, month and year uploaded and/or taxonomy terms. Keyword search can be extended to the name/slug, ALT text and caption fields. The connector between search terms can be "and" or "or". Search by attachment ID or parent ID is supported. Enable/disable any or all enhancements on the Settings page.
@@ -133,7 +147,7 @@ All of the MLA source code has been annotated with "DocBlocks", a special type o
 * New: In the `[mla_gallery]` shortcode, a new `mla_target` parameter allows you to specify the HTML `target` attribute in the gallery item links, e.g., `mla_target="_blank"` will open the items in a new window or tab.
 * New: In the `[mla_gallery]` shortcode, a new `tax_operator` parameter allows you to specify "AND" or "NOT IN" operators in the simple `tax_name=term(s)` version of taxonomy queries. See the Settings/Media Library Assistant Documentation page for details.
 * New: In the `[mla_gallery]` shortcode, `tax_query` corruption caused by the Visual mode of the post/page editor is now cleaned up before the query is submitted; Line breaks, HTML markup and escape sequences added by the Visual editor are removed.
-* Fix: IPTC/EXIF values containing an arrray, e.g., "2#025 keywords", will be converted to a comma-separated string before assignment to Standard fields or Custom fields.
+* Fix: IPTC/EXIF values containing an array, e.g., "2#025 keywords", will be converted to a comma-separated string before assignment to Standard fields or Custom fields.
 * Fix: Custom Field Mapping will always ignore rules with Data Source set to "-- None (select a value) --". 
 * Fix: In the `[mla_gallery]` shortcode, the `orderby` parameter will override the explicit order in the `ids` parameter.
 * Fix: In the `[mla_gallery]` shortcode, the `ids` and `include` parameters no longer require `post_parent=all` to match items not attached to the current post/page.
@@ -194,7 +208,7 @@ All of the MLA source code has been annotated with "DocBlocks", a special type o
 * Fix: Quick edit support of WordPress standard Categories taxonomy fixed.
 
 = 0.80 =
-* New: MLA Gllery Style and Markup Templates, for control over CSS styles, HTML markup and data content of `[mla_gallery]` shortcode output.
+* New: MLA Gallery Style and Markup Templates, for control over CSS styles, HTML markup and data content of `[mla_gallery]` shortcode output.
 * New: The `[mla_gallery]` "mla_link_text", "mla_rollover_text" and "mla_caption", parameters allow easy customization of gallery display.
 * New: The `[mla_gallery]` "link" parameter now accepts size values, e.g., "medium", to generate a link to image sizes other than "full".
 * New: The `[mla_gallery]` "mla_debug" parameter provides debugging information for query parameters.
@@ -277,8 +291,8 @@ All of the MLA source code has been annotated with "DocBlocks", a special type o
 
 == Upgrade Notice ==
 
-= 1.20 =
-Media Manager (Add Media, etc.) enhancements: filter by more MIME types, date, taxonomy terms; enhanced search box for name/slug, ALT text, caption and attachment ID. New [mla_gallery] sort options. Four other enhancements, four fixes.
+= 1.30 =
+New "mla_alt_shortcode" parameter combines [mla_gallery] with other gallery display shortcodes, e.g., Jetpack Carousel and Tiled Mosaic. Support for new 3.6 audio/video metadata. One other enhancement, eight fixes.
 
 == Other Notes ==
 
@@ -290,6 +304,8 @@ In this section, scroll down to see:
 * MLA Gallery Style and Markup Template Documentation
 * Custom Field Processing Options
 * IPTC &amp; EXIF Processing Options
+
+**NOTE:** More complete documentation is included on the plugin's Settings page and the drop-down "Help" content in the admin screens.
 
 == Acknowledgements ==
 
@@ -308,182 +324,129 @@ The `[mla_gallery]` shortcode is used in a post, page or custom post type to add
 * Support for all post_mime_type values, not just images.
 * Media Library items need not be "attached" to the post. You can build a gallery with any combination of items in the Library using taxonomy terms, custom fields and more.
 * Control over the styles, markup and content of each gallery using the Style and Markup Templates documented below.
+* Combine [mla_gallery] data selection with other popular gallery-generating plugins to get the best of both.
 
 All of the options/parameters documented for the `[gallery]` shortcode are supported by the `[mla_gallery]` shortcode; you can find them in the WordPress Codex. Most of the parameters documented for the WP_Query class are also supported; see the WordPress Codex. Because the `[mla_gallery]` shortcode is designed to work with Media Library items, there are some parameter differences and extensions; these are documented below.
 
 <h4>Gallery Display Style</h4>
 
-Two `[mla_gallery]` parameters provide a way to apply custom style and markup templates to your `[mla_gallery]` display. These parameters replace the default style and/or markup templates with templates you define on the "MLA Gallery" tab of the Settings page. On the "MLA Gallery" tab you can also select one of your custom templates to replace the built-in default template for all `[mla_gallery`] shortcodes the do not contain one of these parameters.
+Two parameters provide a way to apply custom style and markup templates to your `[mla_gallery]` display: These parameters replace the default style and/or markup templates with templates you define on the "MLA Gallery" tab of the Settings page.
 
-* `mla_style`: replaces the default style template for an `[mla_gallery]` shortcode
+* mla_style
+* mla_markup
 
-* `mla_markup`: replaces the default markup template for an `[mla_gallery]` shortcode
+Three parameters provide control over the placement, size and spacing of gallery items without requiring the use of custom Style templates.
 
-Three `[mla_gallery]` parameters provide control over the placement, size and spacing of gallery items without requiring the use of custom Style templates.
-
-* `mla_float`: specifies the float attribute of the ".gallery-item" style. Acceptable values are "left", "none", "right"; the default value is "right" if current locale is RTL, "left" on LTR (left-to-right inline flow, e.g., English).
-
-* `mla_margin`: specifies the margin attribute (in percent) of the ".gallery-item" style. The default value is "1.5" percent.
-
-* `mla_itemwidth`: specifies the width attribute (in percent) of the ".gallery-item" style. The default value is calculated by subtracting twice the margin from 100%, then dividing by the number of gallery columns. For example, the default value is "32", or (100 - (2 * 1.5)) / 3.
-
-These parameters are only important if the gallery thumbnails are too large to fit within the width of the page on which they appear. For example, if you code `[mla_gallery size=full]`, the browser will automatically scale down large images to fit within the width attribute (in percent) of the ".gallery-item" style. The default 1.5% margin will ensure that the images do not overlap; you can increase it to add more space between the gallery items. You can also reduce the itemwidth parameter to increase the left and right space between the items.
+* mla_float
+* mla_margin
+* mla_itemwidth
 
 <h4>Gallery Display Content</h4>
 
-Five `[mla_gallery]` parameters provide an easy way to control the contents of gallery items without requiring the use of custom Markup templates.  
+Five parameters provide an easy way to control the contents of gallery items without requiring the use of custom Markup templates.  
 
-* `mla_link_href`: replaces the HTML "href" attribute in the hyperlink for each gallery item; see below.
-
-* `mla_link_text`: replaces the thumbnail image or attachment title text displayed for each gallery item.
-
-* `mla_rollover_text`: replaces the attachment title text displayed when the mouse rolls or hovers over the gallery thumbnail.
-
-* `mla_caption`: replaces the attachment caption text displayed beneath the thumbnail of each gallery item.
-
-* `mla_target`: adds an HTML "target" attribute to the hyperlink for each gallery item; see below.
-
-The first four parameters support the Markup and Attachment-specific substitution arguments defined for Markup Templates. For example, if you code `mla_rollover_text='{+date+} : {+description+}'`, the rollover text will contain the upload date, a colon, and the full description of each gallery item. Simply add "{+" before the substitution parameter name and add "+}" after the name. Note that the enclosing delimiters are different than those used in the templates, since the shortcode parser reserves square brackets ("[" and "]") for its own use.
-
-The "mla_link_href" parameter is a great way to change the destination your gallery item links to or add arguments to the link for later processing. For example, to make a gallery item link back to the page/post it is attached to, you can code: "mla_link_href='{+site_url+}/?page_id={+parent+}'". You can also add arguments to the link, e.g., "mla_link_href='{+link_url+}&amp;amp;myarg=myvalue'". Note the use of the HTML entity name "&amp;amp;" to put an ampersand in the value; the WordPress "visual" post editor will replace "&", "<" and ">" with "&amp;amp;", "&amp;lt;" and "&amp;gt;" whether you like it not. The **only** markup parameter modified by this parameter is "link". Other markup parameters such as "pagelink", "filelink" and "link_url" are not modified. 
-
-The "mla_target" parameter accepts any value and adds an HTML "target" attribute to the hyperlink with that value. For example, if you code `mla_target="_blank"` the item will open in a new window or tab. You can also use "_self", "_parent", "_top" or the "<em>framename</em>" of a named frame.
+* mla_link_href
+* mla_link_text
+* mla_rollover_text
+* mla_caption
+* mla_target
 
 <h4>Google File Viewer Support</h4>
 
-Four `[mla_gallery]` parameters provide an easy way to generate thumbnail images for the non-image file types.
+Four parameters provide an easy way to generate thumbnail images for the non-image file types.
 
-* `mla_viewer`: must be "true" to enable thumbnail generation
-
-* `mla_viewer_extensions`: a comma-delimited list of the file extensions to be processed; the default is "pdf,txt,doc,xls,ppt" (do not include the dot (".") preceding the file extension). You may add or remove extensions, but these are known to generate reasonable thumbnail images. Sadly, the newer "docx,xlsx,pptx" extensions do not work well with the Google File Viewer.
-
-* `mla_viewer_page`: the page number (default "1") to be used for the thumbnail image. If you specify a value greater than the number of pages in the file, no image is generated.
-
-* `mla_viewer_width`: the width in pixels (default "150") of the generated thumbnail image. The height will be set automatically and cannot be specified.
-
-When this feature is active, gallery items for which WordPress can generate a thumbnail image are not altered. If WordPress generation fails, the gallery thumbnail is replaced by an "img" html tag whose "src" attribute contains a url reference to the Google File Viewer. The Google File Viewer arguments include the url of the source file, the page number and the width. Note that the source file must be Internet accessible; files behind firewalls and on local servers will not generate a thumbnail image.
+* mla_viewer
+* mla_viewer_extensions
+* mla_viewer_page
+* mla_viewer_width
 
 <h4>Order, Orderby</h4>
 
-The Orderby parameter specifies which database field(s) are used to sort the gallery. You can sort the gallery by one or more of these values (there is additional information on some of these values in the Codex WP_Query class reference):
+You can sort the gallery by one or more of these values:
 
-* `none`: No order.
-* `ID`: Order by post id. Note capitalization.
-* `author`: Order by author (id, not display name).
-* `date`: Order by date uploaded.
-* `description, content`: Order by attachment description. 
-* `title`: Order by attachment title.
-* `caption, excerpt`: Order by attachment caption. 
-* `slug, name`: Order by attachment name.
-* `modified`: Order by last modified date.
-* `parent`: Order by `: Order by attachment parent id.
-* `menu_order`: Order by page order.
-* `mime_type`: Order by attachment MIME type.
-* `comment_count`: Order by number of comments.
-* `rand`: Random order.
-* `<keyname>, meta_value, meta_value_num`: Order by custom field value. Note that a 'meta_key=keyname' must also be present in the query.
-* `post__in`: Preserve order given in the `ids`, `include` or `post__in` array.
+* none
+* ID
+* author
+* date
+* description, content
+* title
+* caption, excerpt
+* slug, name
+* modified
+* parent
+* menu_order
+* mime_type
+* comment_count
+* rand
+* &lt;keyname&gt;, meta_value, meta_value_num
+* post__in
 				
-You can sort on more than one value, e.g., `orderby="author, date DESC"` and you can specify ASC/DESC on a value by value basis. **NOTE: multiple orderby values are separated by commas, not spaces.** This is a change from WP_Query.
-
-The `order` parameter (default ASC) can give an ASC/DESC default for any value that doesn't have a specific choice. For example, `orderby="author, date DESC, mime_type" order=ASC` is the same as `orderby="author ASC, date DESC, mime_type ASC"`.
+You can sort on more than one value, e.g., `orderby="author, date DESC"` and you can specify ASC/DESC on a value by value basis.
 
 <h4>Size</h4>
-
-The Size parameter specifies the image size to use for the thumbnail display. Valid values include "thumbnail", "medium", "large", "full" and any additional image size that was registered with add_image_size(). The default value is "thumbnail". You can use "none" or "" to suppress thumbnail display and substitute the item title string for the image/icon.
 
 The `[mla_gallery]` shortcode supports an additional Size value, "icon", which shows a 60x60 pixel thumbnail for image items and an appropriate icon for non-image items such as PDF or text files.
 
 <h4>Link</h4>
 
-The Link parameter specifies the target for the link from the gallery to the attachment. The default value, "permalink", links to the attachment's media page. The "file" and "full" values link directly to the attachment file.
-
 For image attachments you can also specify the size of the image file you want to link to. Valid values include "thumbnail", "medium", "large" and any additional image size that was registered with add_image_size(). If the specified size is not available or if the attachment is not an image, the link will go directly to the attachment file.
-
-<h4>Include, Exclude</h4>
-
-You can use "post_parent=all" to include or exclude attachments regardless of which post or page they are attached to. You can use "post_mime_type=all" to include or exclude attachments of all MIME types, not just images.
 
 <h4>Post ID, "ids", Post Parent</h4>
 
-The "id" parameter lets you specify a post ID for your query. If the "id" parameter is not specified, the `[mla_gallery]` behavior differs from the `[gallery]` behavior. If your query uses taxonomy or custom field parameters, "author", "author_name" or "s" (search term), then the query will NOT be restricted to items attached to the current post. This lets you build a gallery with any combination of Media Library items that match the parameters.
-
-For WordPress 3.5 and later, the "ids" parameter lets you specify a list of Post IDs. The attachment(s) matching the "ids" values will be displayed in the order specified by the list.
-
-You can use the "post_parent" to override the default behavior. If you set "post_parent" to a specific post ID, only the items attached to that post are displayed. If you set "post_parent" to "current", only the items attached to the current post are displayed. If you set "post_parent" to "all", the query will not have a post ID or post_parent parameter.
-
-For example, `[mla_gallery tag="artisan"]` will display all images having the specified tag value, regardless of which post (if any) they are attached to. If you use `[mla_gallery tag="artisan" post_parent="current"]` it will display images having the specified tag value only if they are attached to the current post.
+You can use the "post_parent" to override the default behavior. If you set "post_parent" to "current", only the items attached to the current post are displayed. If you set "post_parent" to "all", the query will not have a post ID or post_parent parameter. If you set "post_parent" to "any", only the attached items are displayed. If you set "post_parent" to "none", only the unattached items are displayed.
 
 <h4>Author, Author Name</h4>
 
 You can query by author's id or the "user_nicename" value (not the "display_name" value). Multiple author ID values are allowed, but only one author name value can be entered.
 
-<h4>Category Parameters</h4>
+<h4>Category and Tag Parameters</h4>
 
-The Category parameters search in the WordPress core "Categories" taxonomy. Remember to use "post_parent=current" if you want to restrict your query to items attached to the current post.
-
-<h4>Tag Parameters</h4>
-
-The Tag parameters search in the WordPress core "Tags" taxonomy. Remember to use "post_parent=current" if you want to restrict your query to items attached to the current post.
-
-Note that the "tag_id" parameter requires exactly one tag ID; multiple IDs are not allowed. You can use the "tag__in" parameter to query for multiple values.
+The Category parameters search in the WordPress core "Categories" taxonomy. The Tag parameters search in the WordPress core "Tags" taxonomy.
 
 <h4>Taxonomy Parameters, "tax_operator"</h4>
 
-The `[mla_gallery]` shortcode supports the simple "{tax} (string)" values (deprecated as of WordPress version 3.1) as well as the more powerful "tax_query" value. 
+The `[mla_gallery]` shortcode supports the simple "{tax} (string)" values (deprecated as of WordPress version 3.1) as well as the more powerful "tax_query" value. For simple queries, enter the taxonomy name and the term(s) that must be matched. MLA enhances the simple taxonomy query form by providing an additional parameter, "tax_operator", which can be "IN", "NOT IN" or "AND". More complex queries can be specified by using "tax_query".
 
-For simple queries, enter the taxonomy name and the term(s) that must be matched, e.g.:
+<h4>Post MIME Type</h4>
 
-* `[mla_gallery attachment_category='separate-category,another-category']`
-
-Note that you must use the name/slug strings for taxonomy and terms, not the "title" strings. If you are using the "Att. Tag" taxonomy built in to MLA then your shortcode should be something like:
-
-* `[mla_gallery attachment_tag=artisan post_parent=all]`
- 
-In this example, "attachment_tag" is the WordPress taxonomy name/slug for the taxonomy. If you're using "Att. Category", the slug would be "attachment_category".
- 
-The default behavior of the simple taxonomy query will match any of the terms in the list. MLA enhances the simple taxonomy query form by providing an additional parameter, "tax_operator", which can be "IN", "NOT IN" or "AND". If you specify a "tax_operator", MLA will convert your query to the more powerful "tax_query" form, searching on the "slug" field and using the operator you specify. For example, a query for two terms in which <strong>both</strong> terms must match would be coded as:
-
-* `[mla_gallery attachment_category='separate-category,another-category' tax_operator=AND]`
-
-More complex queries can be specified by using "tax_query", e.g.:
-
-* `[mla_gallery tax_query="array(array('taxonomy' => 'attachment_tag','field' => 'slug','terms' => 'artisan'))"]`
-* `[mla_gallery tax_query="array(array('taxonomy' => 'attachment_category','field' => 'id','terms' => array(11, 12)))" post_parent=current post_mime_type='']`
-
-The first example is equivalent to the simple query "attachment_tag=artisan". The second example matches items of all MIME types, attached to the current post, having an attachment_category ID of 11 or 12.
-
-When embedding the shortcode in the body of a post, be very careful when coding the tax_query; it must be a valid PHP array specification. In particular, code the query on one line; splitting it across lines can insert HTML &#8249;br&#8250; tags and corrupt your query. 
-
-Remember to use "post_parent=current" if you want to restrict your query to items attached to the current post.
-
-<h4>Post Type, Post Status and Post MIME Type</h4>
-
-For compatibility with the WordPress `[gallery]` shortcode, these parameters default to "post_type=attachment", "post_status=inherit" and "post_mime_type=image". You can override the defaults to, for example, display items in the trash ("post_status=trash") or PDF documents ("post_mime_type=application/pdf") or all MIME types ("post_mime_type=all"). I'm not sure why you'd want to override "post_type", but you are welcome to experiment and let me know what you find.
+You can override the default to, for example, display PDF documents ("post_mime_type=application/pdf") or all MIME types ("post_mime_type=all").
 
 <h4>Pagination Parameters</h4>
 
-The `[mla_gallery]` shortcode supplies "nopaging=true" as a default parameter. If you are working with a template that supports pagination you can replace this with specific values for "posts_per_page", "posts_per_archive_page", "paged" and/or "offset" . You can also pass "paged=current" to suppress the "nopaging" default; "current" will be replaced by the appropriate value (get_query_var('paged')).
-
-<h4>Time Parameters</h4>
-
-Support for time parameters is not included in the current version. I may add it later - let me know if you need it.
+If you are working with a template that supports pagination you can use specific values for "posts_per_page", "posts_per_archive_page", "paged" and/or "offset" .
 
 <h4>Custom Field Parameters</h4>
 
 The `[mla_gallery]` shortcode supports the simple custom field parameters as well as the more powerful "meta_query" parameters made available as of WordPress 3.1.
 
-When embedding the shortcode in the body of a post, be very careful when coding the meta_query; it must be a valid PHP array specification. In particular, code the query on one line; splitting it across lines can insert HTML <br> tags and corrupt your query.
+== Support for Other Gallery-generating Shortcodes ==
 
-Remember to use "post_parent=current" if you want to restrict your query to items attached to the current post.
+The [mla_gallery] shortcode can be used in combination with other gallery-generating shortcodes to give you the data selection power of [mla_gallery] and the formatting/display power of popular alternatives such as the WordPress.com Jetpack Carousel and Tiled Galleries modules. Any shortcode that accepts "ids=" or a similar parameter listing the attachment ID values for the gallery can be used. Two parameters implement this feature:
 
-<h4>Search Keywords</h4>
+* `mla_alt_shortcode`: the name of the shortcode to be called for gallery format and display
+* `mla_alt_ids_name`: (optional, default "ids") the name of the parameter used to pass a list of attachment ID values 
 
-The search parameter ("s=keyword") will perform a keyword search. A cursory inspection of the code in /wp-includes/query.php reveals that the search includes the "post_title" and "post_content" (Description) fields but not the "post_excerpt" (Caption) field. An SQL "LIKE" clause is composed and added to the search criteria. I haven't done much testing of this parameter.
+For example, if you want to select images using the MLA Att. Category taxonomy but want to display a "Tiled Mosaic" gallery, you can code:
 
-<h4>Debugging Output</h4>
+`[mla_gallery attachment_category=vegetable tax_operator="NOT IN" mla_alt_shortcode=gallery type="rectangular" mla_alt_ids_name=include]`
 
-The "mla_debug" parameter controls the display of information about the query parameters and SQL statements used to retrieve gallery items. If you code `mla_debug=true` you will see a lot of information added to the post or page containing the gallery. Of course, this parameter should <strong>only</strong> be used in a development/debugging environment; it's quite ugly.
+This example selects all the images that are "NOT IN" the Att. Category "vegetable". The selected images are passed to the [gallery] shortcode in an "include" parameter, along with the "type=rectangular" parameter. The result is as if you had coded:
+
+`[gallery include="1,2,3" type="rectangular"]`
+
+In the above example, the "mla_alt_ids_name=include" parameter isn't really necessary, since the [gallery] shortcode accepts the "ids" parameter. It was included in the example just to show how the "mla_alt_ids_name" might be used for some other shortcode that requires a different name for the parameter.
+
+You can pass any parameters you need through the [mla_gallery] shortcode and on to the alternate shortcode you're using. Here's another example, using the Photonic Gallery plugin:
+
+`[mla_gallery attachment_tag=fauna orderby=rand mla_alt_shortcode=gallery type=default style=strip-below slideshow_height=320 slide_size=medium]`
+
+Here, [mla_gallery] selects the images with an Att. Tag of "fauna" and sorts them in a random order. It then calls on the [gallery] shortcode (which Photonic also uses):
+
+`[gallery ids="3,1,4,2,7" type=default style=strip-below slideshow_height=320 slide_size=medium]`
+
+Photonic recognizes the "type=default" parameter and takes over, using the other three parameters to format its results. This example is a less convenient but more flexible alternative to the native Photonic support built-in to [mla_gallery] (see next section).
+
+<strong>NOTE:</strong> When you use "mla_alt_shortcode" to pass format/display responsibility off to another shortcode you will lose the [mla_gallery] Gallery Display Style (e.g. "mla_float") and Gallery Display Content (e.g. "mla_caption") parameters. There is no reliable way for [mla_gallery] to pass this information on to the other shortcode you've specified.
 
 == Support for &ldquo;Photonic Gallery for Flickr, Picasa, SmugMug, 500px and Instagram&rdquo; ==
 
@@ -497,7 +460,7 @@ The Style and Markup templates give you great flexibility for the content and fo
 
 Style templates provide gallery-specific CSS inline styles. Markup templates provide the HTML markup for 1) the beginning of the gallery, 2) the beginning of each row, 3) each gallery item, 4) the end of each row and 5) the end of the gallery. The attachment-specific markup parameters let you choose among most of the attachment fields, not just the caption.
 
-The MLA Gallery tab on the Settings page lets you add, change and delete custom templates. The default tempates are also displayed on this tab for easy reference.
+The MLA Gallery tab on the Settings page lets you add, change and delete custom templates. The default templates are also displayed on this tab for easy reference.
 
 In a template, substitution parameters are surrounded by opening ('[+') and closing ('+]') tags to separate them from the template text; see the default templates for many examples.
 
@@ -515,30 +478,32 @@ A complete list of the <strong>35 attachment-specific substitution parameters</s
 
 <h3>Field-level Markup Substitution Parameters</h3>
 
-Field-level substitution parameters let you access query arguments, custom fields, taxonomy terms, IPTC metadata and EXIF metadata for display in an MLA gallery. For these parameters, the value you code within the surrounding the ('[+') and ('+]') delimiters has three parts; the prefix, the field name and the optional ",single" indicator.
+Field-level substitution parameters let you access query arguments, custom fields, taxonomy terms, and attachment metadata for display in an MLA gallery. For these parameters, the value you code within the surrounding the ('[+') and ('+]') delimiters has three parts; the prefix, the field name and the optional ",single" indicator.
 
 The <strong>prefix</strong> defines which type of field-level data you are accessing. It must immediately follow the opening ('[+') delimiter and end with a colon (':'). There can be no spaces in this part of the parameter.
 
-The <strong>field name</strong> defines which field-level data element you are accessing. It must immediately follow the colon (':'). There can be no spaces between the colon and the field name. Spaces are allowed within the field name to accomodate custom field names that contain them. 
+The <strong>field name</strong> defines which field-level data element you are accessing. It must immediately follow the colon (':'). There can be no spaces between the colon and the field name. Spaces are allowed within the field name to accommodate custom field names that contain them. 
 
 The optional <strong>",single" indicator</strong> defines how to handle fields with multiple values. It must immediately follow the field name and end with the closing delimiter ('+]'). There can be no spaces in this part of the parameter. If this part of the parameter is present, only the first value of the field will be returned. Use this indicator to limit the data returned for a custom field, taxonomy or metadata field that can have many values.
 
-There are five prefix values for field-level data. Prefix values must be coded as shown; all lowercase letters.
+The optional <strong>",export" indicator</strong> for display of array fields with multiple values. It must immediately follow the field name and end with the closing delimiter ('+]'). There can be no spaces in this part of the parameter. If this part of the parameter is present, the PHP `var_export` function is used to return a string representation of all the elements in an array field.
+
+There are six prefix values for field-level data. Prefix values must be coded as shown; all lowercase letters.
 
 * `query`: The parameters defined in the `[mla_gallery]` shortcode. For example, if your shortcode is `[mla gallery attachment_tag=my-tag div-class=some_class]` you can access the parameters as `[+query:attachment_tag+]` and `[+query:div-class+]` respectively. Only the parameters actually coded in the shortcode are accessible; default values for parameters not actually coded are not available. You can define your own parameters, e.g., `div-class`; they will be accessible as field-level data but will otherwise be ignored.
 * `custom`: WordPress custom fields, which you can define and populate on the Edit Media screen. The field name, or key, can contain spaces and some punctuation characters. You <strong>cannot use the plus sign ('+')</strong> in a field name you want to use with `[mla_gallery]`. Custom field names are case-sensitive; "client" and "Client" are not the same.
 * `terms`: WordPress Category, tag or custom taxonomy terms. For this category, you code the name of the taxonomy as the field name. The term(s) associated with the attachment will be displayed in the `[mla_gallery]`. Note that you must use the name/slug string for taxonomy, not the "title" string. For example, use "attachment-category" or "attachment-tag", not "Att. Category" or "Attachment Category".
+
+* `meta`: The WordPress "attachment metadata", if any, embedded in the image/audio/video file. For this category, you can code any of the field names embedded in the `_wp_attachment_metadata` array. The "Attachment Metadata" display in the Media/Edit Media screen will show you the names and values of these fields. Note that the fields available differ among image, audio and video attachments.
 
 * `iptc`: The IPTC (International Press Telecommunications Council) metadata, if any, embedded in the image file. For this category, you can code any of the IPTC DataSet tag and field identifiers, e.g., "2#025" for the Keywords field. You can also use the "friendly name" MLA defines for most of the IPTC fields; see the table of identifiers and friendly names in the MLA documentation. You can find more information in the <a href="http://www.iptc.org/std/IIM/4.1/specification/IIMV4.1.pdf" title="IPTC-NAA Information Interchange Model Version No. 4.1 specification" target="_blank">IPTC-NAA Information Interchange Model Version No. 4.1 specification</a>.
 
 * `exif`: The EXIF (EXchangeable Image File) metadata, if any, embedded in a JPEG DCT or TIFF Rev 6.0 image file. 
  Though the specification is not currently maintained by any industry or standards organization, almost all camera manufacturers use it. It is also supported by many image editing programs such as Adobe PhotoShop.
  For this category, you can code any of the field names embedded in the image by the camera or editing software. The is no official list of standard field names, so you just have to know the names your camera and software use; field names are case-sensitive. You can find more information in the <a href="http://en.wikipedia.org/wiki/Exchangeable_image_file_format" title="IPTC-NAA Information Interchange Model Version No. 4.1 specification" target="_blank">Exchangeable image file format</a> article on Wikipedia. You can find External Links to EXIF standards and tag listings at the end of the Wikipedia article.
-		<br />&nbsp;<br />
-		MLA uses a standard PHP function, <a href="http://php.net/manual/en/function.exif-read-data.php" title="PHP Manual page for exif_read_data" target="_blank">exif_read_data</a>, to extract EXIF data from images. The function returns three arrays in addition to the raw EXIF data; COMPUTED, THUMBNAIL and COMMENT. You can access the array elements by prefacing the element you want with the array name. For example, the user comment text is available as "COMPUTED.UserComment" and "COMPUTED.UserCommentEncoding". You can also get "COMPUTED.Copyright" and its two parts (if present), "COMPUTED.Copyright.Photographer" and "COMPUTED.Copyright.Editor". The THUMBNAIL and COMMENT arrays work in a similar fashion.
-		<br />&nbsp;<br />
-		Two special exif "pseudo-values" are available; <strong>ALL_IPTC</strong> and <strong>ALL_EXIF</strong>. These return a string representation of all IPTC or EXIF data respectively. You can use these pseudo-values to examine the metadata in an image, find field names and see what values are embedded in the image.
- 
+
+Two special exif "pseudo-values" are available; <strong>ALL_IPTC</strong> and <strong>ALL_EXIF</strong>. These return a string representation of all IPTC or EXIF data respectively. You can use these pseudo-values to examine the metadata in an image, find field names and see what values are embedded in the image.
+
 <h3>A Table-based Template Example</h3>
 <p>
 Here's a small example that shows a gallery using table markup. The Item markup section shows how to use the "terms", "custom", "iptc" and "exif" substitution parameters.
@@ -620,9 +585,9 @@ Several of the data elements are sourced from the WordPress "image_meta" array. 
 
 <h4>Data sources for custom field mapping</h4>
 
-<strong>NOTE:</strong> Sorting by custom fields in the Media/Assistant submenu is by string values. For numeric data this can cause odd-looking results, e.g., dimensions of "1200x768" will sort before "640x480". The "file_size", "pixels", "width" and "height" data sources are converted to srtings and padded on the left with spaces if you use the "commas" format. This padding makes them sort more sensibly.
+<strong>NOTE:</strong> Sorting by custom fields in the Media/Assistant submenu is by string values. For numeric data this can cause odd-looking results, e.g., dimensions of "1200x768" will sort before "640x480". The "file_size", "pixels", "width" and "height" data sources are converted to strings and padded on the left with spaces if you use the "commas" format. This padding makes them sort more sensibly.
 
-A complete list of the <strong>32 data source elements</strong> is on the plugin's Settings page.
+A complete list of the <strong>32 data source elements</strong> is on the plugin's Settings page. In addition, you can map any of the fields found in the attachment's WordPress metadata array to a custom field.
 
 ==IPTC &amp; EXIF Processing Options==
 
@@ -634,7 +599,7 @@ The Media Library Assistant has powerful tools for copying image metadata to:
 * taxonomy terms, e.g., in categories, tags or custom taxonomies
 * WordPress custom fields
 
-You can define the rules for mapping metadata on the "IPTC/EXIF" tab of the Settings page. You can choose to automatically apply the rules when new media are added to the Library (or not). You can click the "Map IPTC/EXIF metadata" button on the Edit Media/Edit Single Item screen or in the bulk edit area to selectivelly apply the rules to one or more images. You can click the "Map All Attachments Now" to apply the rules to <strong>all of the images in your library</strong> at one time.
+You can define the rules for mapping metadata on the "IPTC/EXIF" tab of the Settings page. You can choose to automatically apply the rules when new media are added to the Library (or not). You can click the "Map IPTC/EXIF metadata" button on the Edit Media/Edit Single Item screen or in the bulk edit area to selectively apply the rules to one or more images. You can click the "Map All Attachments Now" to apply the rules to <strong>all of the images in your library</strong> at one time.
 
 <h4>Mapping tables</h4>
 
