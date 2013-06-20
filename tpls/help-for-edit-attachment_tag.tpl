@@ -13,7 +13,7 @@
 </ul>
 <!-- template="mla-attachments-column" -->
 <!-- title="Attachments Column" order="3" -->
-<p>The &#8220;Attachments&#8221; colunm at the right of the table gives you the number of attachments associated with each tag. You can click on the number to get a list of all the attachments with that tag. The heading on the list page(s) will display the tag value you&#8217;ve selected.</p>
+<p>The &#8220;Attachments&#8221; column at the right of the table gives you the number of attachments associated with each tag. You can click on the number to get a list of all the attachments with that tag. The heading on the list page(s) will display the tag value you&#8217;ve selected.</p>
 <!-- template="sidebar" -->
 <p><strong>For more information:</strong></p>
 <p><a href="http://codex.wordpress.org/Posts_Tags_Screen" target="_blank">Documentation on Tags</a></p>

@@ -77,6 +77,31 @@ class MLAOptions {
 	const MLA_MEDIA_MODAL_SEARCHBOX = 'media_modal_searchbox';
 	
 	/**
+	 * Provides a unique name for the Post MIME Types option
+	 */
+	const MLA_POST_MIME_TYPES = 'post_mime_types';
+	
+	/**
+	 * Provides a unique name for the Enable Post MIME Types option
+	 */
+	const MLA_ENABLE_POST_MIME_TYPES = 'enable_post_mime_types';
+	
+	/**
+	 * Provides a unique name for the Upload MIME Types option
+	 */
+	const MLA_UPLOAD_MIMES = 'upload_mimes';
+	
+	/**
+	 * Provides a unique name for the Enable Upload MIME Types option
+	 */
+	const MLA_ENABLE_UPLOAD_MIMES = 'enable_upload_mimes';
+	
+	/**
+	 * Provides a unique name for the Enable MLA Icons option
+	 */
+	const MLA_ENABLE_MLA_ICONS = 'enable_mla_icons';
+	
+	/**
 	 * Option setting for "Featured in" reporting
 	 *
 	 * This setting is false if the "Featured in" database access setting is "disabled", else true.
@@ -202,10 +227,10 @@ class MLAOptions {
 			array('tab' => 'general',
 				'name' => 'Inserted in',
 				'type' => 'select',
-				'std' => 'enabled',
-				'options' => array('enabled', 'disabled'),
-				'texts' => array('Enabled', 'Disabled'),
-				'help' => 'Search database posts and pages for attachments embedded in content.'),
+				'std' => 'base',
+				'options' => array('enabled', 'base', 'disabled'),
+				'texts' => array('Enabled', 'Base', 'Disabled'),
+				'help' => 'Search database posts and pages for attachments embedded in content.<br>&nbsp;&nbsp;Base = ignore intermediate size suffixes; use path, base name and extension only.'),
 	
 		self::MLA_GALLERY_IN_TUNING =>
 			array('tab' => 'general',
@@ -259,7 +284,7 @@ class MLAOptions {
 		
 		'orderby_heading' =>
 			array('tab' => 'general',
-				'name' => 'Default Table Listing Sort Order',
+				'name' => 'Media/Assistant Table Defaults',
 				'type' => 'header'),
 		
 		'default_orderby' =>
@@ -280,6 +305,14 @@ class MLAOptions {
 				'texts' => array('Ascending', 'Descending'),
 				'help' => 'Choose the sort order.'),
 
+		'table_views_width' =>
+			array('tab' => 'general',
+				'name' => 'Views Width',
+				'type' => 'text',
+				'std' => '',
+				'size' => 10,
+				'help' => 'Enter the width for the views list, in pixels (px) or percent (%)'),
+		
 		'media_modal_heading' =>
 			array('tab' => 'general',
 				'name' => 'Media Manager Enhancements',
@@ -321,12 +354,12 @@ class MLAOptions {
 				'help' => 'Check this option to enable search box enhancements.'),
 	
 		'template_heading' =>
-			array('tab' => 'mla-gallery',
+			array('tab' => 'mla_gallery',
 				'name' => 'Default [mla_gallery] Templates',
 				'type' => 'header'),
 		
 		'default_style' =>
-			array('tab' => 'mla-gallery',
+			array('tab' => 'mla_gallery',
 				'name' => 'Style Template',
 				'type' => 'select',
 				'std' => 'default',
@@ -335,7 +368,7 @@ class MLAOptions {
 				'help' => 'Select the default style template for your [mla_gallery] shortcodes.'),
 	
 		'default_markup' =>
-			array('tab' => 'mla-gallery',
+			array('tab' => 'mla_gallery',
 				'name' => 'Markup Template',
 				'type' => 'select',
 				'std' => 'default',
@@ -360,7 +393,7 @@ class MLAOptions {
 				'std' => array()),
 	
 		'enable_custom_field_mapping' =>
-			array('tab' => 'custom-field',
+			array('tab' => 'custom_field',
 				'name' => 'Enable custom field mapping when adding new media',
 				'type' => 'checkbox',
 				'std' => '',
@@ -377,7 +410,7 @@ class MLAOptions {
 				'reset' => 'mla_custom_field_option_handler'),
 	
 		'enable_iptc_exif_mapping' =>
-			array('tab' => 'iptc-exif',
+			array('tab' => 'iptc_exif',
 				'name' => 'Enable IPTC/EXIF Mapping when adding new media',
 				'type' => 'checkbox',
 				'std' => '',
@@ -465,16 +498,124 @@ class MLAOptions {
 				'delete' => 'mla_iptc_exif_option_handler',
 				'reset' => 'mla_iptc_exif_option_handler'),
 	
+		self::MLA_ENABLE_POST_MIME_TYPES =>
+			array('tab' => 'view',
+				'name' => 'Enable View and Post MIME Type Support',
+				'type' => 'checkbox',
+				'std' => 'checked',
+				'help' => 'Check/uncheck this option to enable/disable Post MIME Type Support, then click <strong>Save Changes</strong> to record the new setting.'),
+	
+		self::MLA_POST_MIME_TYPES =>
+			array('tab' => '',
+				'type' => 'custom',
+				'render' => 'mla_post_mime_types_option_handler',
+				'update' => 'mla_post_mime_types_option_handler',
+				'delete' => 'mla_post_mime_types_option_handler',
+				'reset' => 'mla_post_mime_types_option_handler',
+				'help' => 'Post MIME Types help.',
+				'std' => array(
+					'all' => array(
+						'singular' => 'All',
+						'plural' => 'All',
+						'specification' => '',
+						'post_mime_type' => false,
+						'table_view' => true,
+						'menu_order' => 0,
+						'description' => 'Built-in view'
+					),
+					'image' => array(
+						'singular' => 'Image',
+						'plural' => 'Images',
+						'specification' => '',
+						'post_mime_type' => true,
+						'table_view' => true,
+						'menu_order' => 0,
+						'description' => 'All image subtypes'
+					),
+					'audio' => array(
+						'singular' => 'Audio',
+						'plural' => 'Audio',
+						'specification' => '',
+						'post_mime_type' => true,
+						'table_view' => true,
+						'menu_order' => 0,
+						'description' => 'All audio subtypes'
+					),
+					'video' => array(
+						'singular' => 'Video',
+						'plural' => 'Video',
+						'specification' => '',
+						'post_mime_type' => true,
+						'table_view' => true,
+						'menu_order' => 0,
+						'description' => 'All video subtypes'
+					),
+					'text' => array(
+						'singular' => 'Text',
+						'plural' => 'Text',
+						'specification' => '',
+						'post_mime_type' => true,
+						'table_view' => true,
+						'menu_order' => 0,
+						'description' => 'All text subtypes'
+					),
+					'application' => array(
+						'singular' => 'Application',
+						'plural' => 'Applications',
+						'specification' => '',
+						'post_mime_type' => true,
+						'table_view' => true,
+						'menu_order' => 0,
+						'description' => 'All application subtypes'
+					),
+					'unattached' => array(
+						'singular' => 'Unattached',
+						'plural' => 'Unattached',
+						'specification' => '',
+						'post_mime_type' => false,
+						'table_view' => true,
+						'menu_order' => 0,
+						'description' => 'Built-in view'
+					),
+					'trash' => array(
+						'singular' => 'Trash',
+						'plural' => 'Trash',
+						'specification' => '',
+						'post_mime_type' => false,
+						'table_view' => true,
+						'menu_order' => 0,
+						'description' => 'Built-in view'
+					)
+				)),
+	
+		self::MLA_ENABLE_UPLOAD_MIMES =>
+			array('tab' => 'upload',
+				'name' => 'Enable Upload MIME Type Support',
+				'type' => 'checkbox',
+				'std' => 'checked',
+				'help' => 'Check/uncheck this option to enable/disable Upload MIME Type Support, then click <strong>Save Changes</strong> to record the new setting.'),
+	
+		self::MLA_UPLOAD_MIMES =>
+			array('tab' => '',
+				'type' => 'custom',
+				'render' => 'mla_upload_mimes_option_handler',
+				'update' => 'mla_upload_mimes_option_handler',
+				'delete' => 'mla_upload_mimes_option_handler',
+				'reset' => 'mla_upload_mimes_option_handler',
+				'help' => 'Upload MIME Types help.',
+				'std' => false), // false to detect first-time load; will become an array
+	
+		self::MLA_ENABLE_MLA_ICONS =>
+			array('tab' => 'upload',
+				'name' => 'Enable MLA File Type Icons Support',
+				'type' => 'checkbox',
+				'std' => 'checked',
+				'help' => 'Check/uncheck this option to enable/disable MLA File Type Icons Support, then click <strong>Save Changes</strong> to record the new setting.'),
+	
 		/* Here are examples of the other option types
-		'text' =>
-			array('name' => 'Text Field',
-				'type' => 'text',
-				'std' => 'default text',
-				'size' => 20,
-				'help' => 'Enter the text...'),
-
 		'textarea' =>
-			array('name' => 'Text Area',
+			array('tab' => '',
+				'name' => 'Text Area',
 				'type' => 'textarea',
 				'std' => 'default text area',
 				'cols' => 60,
@@ -708,18 +849,26 @@ class MLAOptions {
 	 * @since 0.1
 	 *
 	 * @param	string 	Name of the desired option
+	 * @param	boolean	True to ignore current setting and return default values
+	 * @param	boolean	True to ignore default values and return only stored values
 	 *
 	 * @return	mixed	Value(s) for the option or false if the option is not a defined MLA option
 	 */
-	public static function mla_get_option( $option ) {
-		if ( array_key_exists( $option, self::$mla_option_definitions ) ) {
-			if ( array_key_exists( 'std', self::$mla_option_definitions[ $option ] ) )
-				return get_option( MLA_OPTION_PREFIX . $option, self::$mla_option_definitions[ $option ]['std'] );
-			else
-				return get_option( MLA_OPTION_PREFIX . $option, false );
-		}
+	public static function mla_get_option( $option, $get_default = false, $get_stored = false ) {
+		if ( ! array_key_exists( $option, self::$mla_option_definitions ) )
+			return false;
 		
-		return false;
+		if ( $get_default ) {
+			if ( array_key_exists( 'std', self::$mla_option_definitions[ $option ] ) )
+				return self::$mla_option_definitions[ $option ]['std'];
+			else
+				return false;
+		} // $get_default
+		
+		if ( ! $get_stored && array_key_exists( 'std', self::$mla_option_definitions[ $option ] ) )
+			return get_option( MLA_OPTION_PREFIX . $option, self::$mla_option_definitions[ $option ]['std'] );
+
+		return get_option( MLA_OPTION_PREFIX . $option, false );
 	}
 	
 	/**
@@ -848,7 +997,7 @@ class MLAOptions {
 	public static function mla_taxonomy_option_handler( $action, $key, $value, $args = null ) {
 		switch ( $action ) {
 			case 'render':
-				$taxonomies = get_taxonomies( array ( 'show_ui' => 'true' ), 'objects' );
+				$taxonomies = get_taxonomies( array ( 'show_ui' => true ), 'objects' );
 				$current_values = self::mla_get_option( $key );
 				$tax_support = isset( $current_values['tax_support'] ) ? $current_values['tax_support'] : array();
 				$tax_quick_edit = isset( $current_values['tax_quick_edit'] ) ? $current_values['tax_quick_edit'] : array();
@@ -1118,13 +1267,82 @@ class MLAOptions {
 	} // _evaluate_file_information
 	
 	/**
+	 * Evaluate post information for custom field mapping
+ 	 *
+	 * @since 1.40
+	 *
+	 * @param	integer	post->ID of attachment
+	 * @param	string 	category/scope to evaluate against: custom_field_mapping or single_attachment_mapping
+	 * @param	string	data source name ( post_date or post_parent )
+	 *
+	 * @return	mixed	'post_date' => (string) upload date, 'post_parent' => (integer) ID of parent or zero )
+	 */
+	private static function _evaluate_post_information( $post_id, $category, $data_source ) {
+		global $wpdb;
+		static $post_info = NULL;
+		
+		if ( NULL == $post_info ) {
+			if ( 'custom_field_mapping' == $category ) {
+				$post_info = $wpdb->get_results( "SELECT ID, post_date, post_parent FROM {$wpdb->posts} WHERE post_type = 'attachment'", OBJECT_K );
+			}
+			else {
+				$post_info = $wpdb->get_results( "SELECT ID, post_date, post_parent FROM {$wpdb->posts} WHERE ID = '{$post_id}'", OBJECT_K );
+			}
+		}
+			
+		switch ( $data_source ) {
+			case 'post_date':
+				return isset( $post_info[ $post_id ]->post_date ) ? $post_info[ $post_id ]->post_date : '';
+			case 'post_parent':
+				return isset( $post_info[ $post_id ]->post_parent ) ? $post_info[ $post_id ]->post_parent : 0;
+			default:
+				return false;
+		}
+	} // _evaluate_post_information
+	
+	/**
+	 * Evaluate post information for custom field mapping
+ 	 *
+	 * @since 1.40
+	 *
+	 * @param	array	field value(s)
+	 * @param	string 	format option text|single|export|array|multi
+	 * @param	boolean	keep existing value(s) - for 'multi' option
+	 *
+	 * @return	mixed	array for option = array|multi else string
+	 */
+	private static function _evaluate_array_result( $value, $option, $keep_existing ) {
+		if ( empty( $value ) )
+			return '';
+			
+		if ( is_array( $value ) ) {
+			if ( 'single' == $option || 1 == count( $value ) )
+				return current( $value );
+			elseif ( 'export' == $option )
+				return  var_export( $value, true );
+			elseif ( 'text' == $option )
+				return implode( ',', $value );
+			elseif ( 'multi' == $option ) {
+				$value[0x80000000] = $option;
+				$value[0x80000001] = $keep_existing;
+				return $value;
+			}
+		}
+
+		/*
+		 * $option = array returns the array
+		 */
+		return $value;
+	} // _evaluate_array_result
+	
+	/**
 	 * Evaluate custom field mapping data source
  	 *
 	 * @since 1.10
 	 *
 	 * @param	integer	post->ID of attachment
 	 * @param	string 	category/scope to evaluate against: custom_field_mapping or single_attachment_mapping
-	 * @param	array	data source specification (name, format, meta_name, meta_single, meta_export)
+	 * @param	array	data source specification ( name, data_source, keep_existing, format, mla_column, quick_edit, bulk_edit, meta_name, no_null, option )
 	 * @param	array 	(optional) attachment_metadata, default NULL (use current postmeta database value)
 	 *
 	 * @return	string	data source value
@@ -1132,7 +1350,7 @@ class MLAOptions {
 	private static function _evaluate_data_source( $post_id, $category, $data_value, $attachment_metadata = NULL ) {
 		global $wpdb;
 		static $upload_dir, $intermediate_sizes = NULL, $wp_attached_files = NULL, $wp_attachment_metadata = NULL;
-		static $current_id = 0, $file_info = NULL;
+		static $current_id = 0, $file_info = NULL, $parent_info = NULL, $references = NULL;
 		
 		if ( 'none' == $data_value['data_source'] )
 			return '';
@@ -1164,6 +1382,9 @@ class MLAOptions {
 		 */
 		if ( $current_id != $post_id ) {
 			$current_id = $post_id;
+			$parent_info = NULL;
+			$references = NULL;
+			
 			if ( 'single_attachment_mapping' == $category ) {
 				$meta_value = get_metadata( 'post', $post_id, '_wp_attached_file' );
 				$wp_attached_files = array( $post_id => (object) array( 'post_id' => $post_id, 'meta_value' =>  $meta_value[0] ) );
@@ -1195,10 +1416,8 @@ class MLAOptions {
 		
 		switch( $data_source ) {
 			case 'meta':
-				$meta_single = ( isset( $data_value['meta_single'] ) && $data_value['meta_single'] );
-				$meta_export = ( isset( $data_value['meta_export'] ) && $data_value['meta_export'] );
 				$attachment_metadata = isset( $wp_attachment_metadata[ $post_id ]->meta_value ) ? unserialize( $wp_attachment_metadata[ $post_id ]->meta_value ) : array();
-				$result = MLAData::mla_find_array_element( $data_value['meta_name'], $attachment_metadata, $meta_single, $meta_export  );
+				$result = MLAData::mla_find_array_element( $data_value['meta_name'], $attachment_metadata, $data_value['option'], $data_value['keep_existing']  );
 				break;
 			case 'path':
 			case 'file_name':
@@ -1224,6 +1443,9 @@ class MLAOptions {
 				if ( ! (false === $filesize ) )
 					$result = $filesize;
 				break;
+			case 'upload_date':
+					$result = self::_evaluate_post_information( $post_id, $category, 'post_date' );
+				break;
 			case 'dimensions':
 				$result = $file_info['width'] . 'x' . $file_info['height'];
 				if ( 'x' == $result )
@@ -1237,26 +1459,27 @@ class MLAOptions {
 					$result = (string) $result;
 				break;
 			case 'size_keys':
-				foreach( $file_info['sizes'] as $key => $value ) {
-					$result .= $key . ', ';
-				}
-				if ( $result )
-					$result = rtrim( $result, ', ' );
+				$result = array();
+				foreach( $file_info['sizes'] as $key => $value )
+					$result[] = $key;
+
+				$result = self::_evaluate_array_result( $result, $data_value['option'], $data_value['keep_existing'] );
 				break;
 			case 'size_names':
-				foreach( $file_info['sizes'] as $key => $value ) {
-					$result .= $value['file'] . ', ';
-				}
-				if ( $result )
-					$result = rtrim( $result, ', ' );
+				$result = array();
+				foreach( $file_info['sizes'] as $key => $value )
+					$result[] = $value['file'];
+
+				$result = self::_evaluate_array_result( $result, $data_value['option'], $data_value['keep_existing'] );
 				break;
 			case 'size_bytes':
+				$result = array();
 				foreach( $file_info['sizes'] as $key => $value ) {
 					$filesize = @ filesize( $file_info['absolute_path'] . $value['file'] );
 					if ( false === $filesize )
-						$result .= '?, ';
+						$result[] = '?';
 					else {
-						switch( $format ) {
+						switch( $data_value['format'] ) {
 							case 'commas':
 								if ( is_numeric( $filesize ) )
 									$filesize = number_format( (float)$filesize );
@@ -1264,17 +1487,18 @@ class MLAOptions {
 							default:
 								// no change
 						} // format
-						$result .= $filesize . ', ';
+						$result[] = $filesize;
 					}
 				}
-				if ( $result )
-					$result =  rtrim( $result, ', ' );
+
+				$result = self::_evaluate_array_result( $result, $data_value['option'], $data_value['keep_existing'] );
 				break;
 			case 'size_pixels':
+				$result = array();
 				foreach( $file_info['sizes'] as $key => $value ) {
 					$pixels = absint( (int) $value['width'] * (int) $value['height'] );
 
-					switch( $format ) {
+					switch( $data_value['format'] ) {
 						case 'commas':
 							if ( is_numeric( $pixels ) )
 								$pixels = number_format( (float)$pixels );
@@ -1282,17 +1506,18 @@ class MLAOptions {
 						default:
 							// no change
 					} // format
-					$result .= $pixels . ', ';
+					$result[] = $pixels;
 				}
-				if ( $result )
-					$result =  rtrim( $result, ', ' );
+
+				$result = self::_evaluate_array_result( $result, $data_value['option'], $data_value['keep_existing'] );
 				break;
 			case 'size_dimensions':
+				$result = array();
 				foreach( $file_info['sizes'] as $key => $value ) {
-					$result .= $value['width'] . 'x' . $value['height'] . ', ';
+					$result[] = $value['width'] . 'x' . $value['height'];
 				}
-				if ( $result )
-					$result = rtrim( $result, ', ' );
+
+				$result = self::_evaluate_array_result( $result, $data_value['option'], $data_value['keep_existing'] );
 				break;
 			case 'size_name[size]':
 				$result = $size_info['file'];
@@ -1300,7 +1525,7 @@ class MLAOptions {
 			case 'size_bytes[size]':
 				$result = @ filesize( $file_info['absolute_path'] . $size_info['file'] );
 				if ( false === $result )
-					$result .= '?';
+					$result = '?';
 				break;
 			case 'size_pixels[size]':
 				$result = absint( (int) $size_info['width'] * (int) $size_info['height'] );
@@ -1310,20 +1535,23 @@ class MLAOptions {
 				if ( 'x' == $result )
 					$result = '';
 				break;
+			case 'parent':
+				$result = absint( self::_evaluate_post_information( $post_id, $category, 'post_parent' ) );
+				break;
+			case 'parent_date':
 			case 'parent_type':
 			case 'parent_title':
-				$parent_info = $wpdb->get_col( "SELECT post_parent FROM {$wpdb->posts} WHERE ID = '{$post_id}'" );
-				if ( is_array( $parent_info) ) {
-					$parent_info = MLAData::mla_fetch_attachment_parent_data( $parent_info[0] );
-					if ( isset( $parent_info[ $data_source ] ) )
-						$result = $parent_info[ $data_source ];
+				if ( is_null( $parent_info ) ) {
+					$parent_info = MLAData::mla_fetch_attachment_parent_data( self::_evaluate_post_information( $post_id, $category, 'post_parent' ) );
 				}
+				
+				if ( isset( $parent_info[ $data_source ] ) )
+					$result = $parent_info[ $data_source ];
 				break;
 			case 'parent_issues':
-				$parent_info = $wpdb->get_col( "SELECT post_parent FROM {$wpdb->posts} WHERE ID = '{$post_id}'" );
-				$parent_id = is_array( $parent_info) ? $parent_info[0] : 0;
-				$references = MLAData::mla_fetch_attachment_references( $post_id, $parent_id );
-					
+				if ( is_null( $references ) )
+					$references = MLAData::mla_fetch_attachment_references( $post_id, self::_evaluate_post_information( $post_id, $category, 'post_parent' ) );
+
 				if ( !empty( $references['parent_errors'] ) ) {
 					$result = $references['parent_errors'];
 					/*
@@ -1336,11 +1564,85 @@ class MLAOptions {
 				}
 				break;
 			case 'reference_issues':
-				$parent_info = $wpdb->get_col( "SELECT post_parent FROM {$wpdb->posts} WHERE ID = '{$post_id}'" );
-				$parent_id = is_array( $parent_info) ? $parent_info[0] : 0;
-				$references = MLAData::mla_fetch_attachment_references( $post_id, $parent_id );
+				if ( is_null( $references ) )
+					$references = MLAData::mla_fetch_attachment_references( $post_id, self::_evaluate_post_information( $post_id, $category, 'post_parent' ) );
+
 				if ( !empty( $references['parent_errors'] ) )
 					$result = $references['parent_errors'];
+				break;
+			case 'featured_in':
+			case 'featured_in_title':
+				if ( is_null( $references ) )
+					$references = MLAData::mla_fetch_attachment_references( $post_id, self::_evaluate_post_information( $post_id, $category, 'post_parent' ) );
+
+				if ( !empty( $references['features'] ) ) {
+					$result = array();
+					foreach ( $references['features'] as $ID => $value )
+						if ( 'featured_in' == $data_source )
+								$result[] = sprintf( '%1$s (%2$s %3$d)', $value->post_title, $value->post_type, $ID ); 
+							else
+								$result[] = $value->post_title; 
+
+					$result = self::_evaluate_array_result( $result, $data_value['option'], $data_value['keep_existing'] );
+				}
+				else
+					$result = '';
+				break;
+			case 'inserted_in':
+			case 'inserted_in_title':
+				if ( is_null( $references ) )
+					$references = MLAData::mla_fetch_attachment_references( $post_id, self::_evaluate_post_information( $post_id, $category, 'post_parent' ) );
+
+				if ( !empty( $references['inserts'] ) ) {
+					$result = array();
+					foreach ( $references['inserts'] as $base_file => $inserts )
+						foreach ( $inserts as $value )
+							if ( 'inserted_in' == $data_source )
+									$result[] = sprintf( '%1$s (%2$s %3$d)', $value->post_title, $value->post_type, $value->ID ); 
+								else
+									$result[] = $value->post_title; 
+					ksort( $result );
+
+					$result = self::_evaluate_array_result( $result, $data_value['option'], $data_value['keep_existing'] );
+				}
+				else
+					$result = '';
+				break;
+			case 'gallery_in':
+			case 'gallery_in_title':
+				if ( is_null( $references ) )
+					$references = MLAData::mla_fetch_attachment_references( $post_id, self::_evaluate_post_information( $post_id, $category, 'post_parent' ) );
+
+				if ( !empty( $references['galleries'] ) ) {
+					$result = array();
+					foreach ( $references['galleries'] as $ID => $value )
+						if ( 'gallery_in' == $data_source )
+								$result[] = sprintf( '%1$s (%2$s %3$d)', $value['post_title'], $value['post_type'], $ID ); 
+							else
+								$result[] = $value['post_title']; 
+
+					$result = self::_evaluate_array_result( $result, $data_value['option'], $data_value['keep_existing'] );
+				}
+				else
+					$result = '';
+				break;
+			case 'mla_gallery_in':
+			case 'mla_gallery_in_title':
+				if ( is_null( $references ) )
+					$references = MLAData::mla_fetch_attachment_references( $post_id, self::_evaluate_post_information( $post_id, $category, 'post_parent' ) );
+
+				if ( !empty( $references['mla_galleries'] ) ) {
+					$result = array();
+					foreach ( $references['mla_galleries'] as $ID => $value )
+						if ( 'mla_gallery_in' == $data_source )
+								$result[] = sprintf( '%1$s (%2$s %3$d)', $value['post_title'], $value['post_type'], $ID ); 
+							else
+								$result[] = $value['post_title']; 
+
+					$result = self::_evaluate_array_result( $result, $data_value['option'], $data_value['keep_existing'] );
+				}
+				else
+					$result = '';
 				break;
  			default:
 				return '';
@@ -1381,7 +1683,6 @@ class MLAOptions {
 	public static function mla_evaluate_custom_field_mapping( $post_id, $category, $settings = NULL, $attachment_metadata = NULL ) {
 		if ( NULL == $settings )
 			$settings = self::mla_get_option( 'custom_field_mapping' );
-
 		$updates = array();
 		$custom_updates = array();
 		
@@ -1389,17 +1690,48 @@ class MLAOptions {
 			if ( 'none' == $new_value['data_source'] )
 				continue;
 
+		/*
+		 * Convert checkbox value(s)
+		 */
+		$new_value['no_null'] = isset( $new_value['no_null'] ) ? (boolean) isset( $new_value['no_null'] ) : false;
+
 			$new_text = self::_evaluate_data_source( $post_id, $category, $new_value, $attachment_metadata );
-			if ( $new_value['keep_existing'] ) {
-				$old_text = get_metadata( 'post', $post_id, $new_key, true );
-				if ( ( ! empty( $new_text ) ) && empty( $old_text ) )
-					$custom_updates[ $new_value['name'] ] = $new_text;
-			}
-			else {
+			if ( 'multi' == $new_value['option'] ) {
+				if ( ' ' == $new_text ) {
+					$new_text = array(
+						0x80000000 => $new_value['option'],
+						0x80000001 => $new_value['keep_existing'],
+						0x80000002 => $new_value['no_null']
+					);
+					
+					if ( ! $new_value['no_null'] )
+						$new_text [0x00000000] = ' ';
+				}
+				elseif ( is_string( $new_text ) )
+					$new_text = array(
+						0x00000000 => $new_text,
+						0x80000000 => $new_value['option'],
+						0x80000001 => $new_value['keep_existing']
+					);
+
 				$custom_updates[ $new_value['name'] ] = $new_text;
 			}
+			else {
+				if ( $new_value['keep_existing'] ) {
+					if ( is_string( $old_text = get_metadata( 'post', $post_id, $new_value['name'], true ) ) )
+						$old_text = trim( $old_text );
+						
+					if ( ( ' ' != $new_text ) && empty( $old_text ) )
+						$custom_updates[ $new_value['name'] ] = $new_text;
+				}
+				else {
+					if ( ' ' == $new_text && $new_value['no_null'] )
+						$new_text = NULL;
+						
+					$custom_updates[ $new_value['name'] ] = $new_text;
+				}
+			} // ! multi
 		} // foreach new setting
-		
 		if ( ! empty( $custom_updates ) )
 			$updates['custom_updates'] = $custom_updates;
 
@@ -1455,6 +1787,7 @@ class MLAOptions {
 		'file_name',
 		'extension',
 		'file_size',
+		'upload_date',
 		'dimensions',
 		'pixels',
 		'width',
@@ -1469,10 +1802,20 @@ class MLAOptions {
 		'size_bytes[size]',
 		'size_pixels[size]',
 		'size_dimensions[size]',
+		'parent',
+		'parent_date',
 		'parent_type',
 		'parent_title',
 		'parent_issues',
 		'reference_issues',
+		'featured_in',
+		'featured_in_title',
+		'inserted_in',
+		'inserted_in_title',
+		'gallery_in',
+		'gallery_in_title',
+		'mla_gallery_in',
+		'mla_gallery_in_title',
 		'aperture',
 		'credit',
 		'camera',
@@ -1603,8 +1946,8 @@ class MLAOptions {
 					'quick_edit' => false,
 					'bulk_edit' => false,
 					'meta_name' => '',
-					'meta_single' => false,
-					'meta_export' => false
+					'option' => 'text',
+					'no_null' => false
 				);
 			}
 
@@ -1622,8 +1965,6 @@ class MLAOptions {
 				
 				if ( 'meta' == $old_values['data_source'] ) {
 					$new_value['meta_name'] = '';
-					unset( $new_value['meta_single'] ); 
-					unset( $new_value['meta_export'] ); 
 				}
 
 				$message_list .= "<br>{$old_values['name']} changing Data Source from {$old_values['data_source']} to {$new_value['data_source']}.\r\n";
@@ -1699,7 +2040,13 @@ class MLAOptions {
 				$old_values['meta_name'] = $new_value['meta_name'];
 			}
 
-			if ( isset( $new_value['meta_single'] ) ) {
+			if ( $old_values['option'] != $new_value['option'] ) {
+				$any_setting_changed = true;
+				$message_list .= "<br>{$old_values['name']} changing Option from {$old_values['option']} to {$new_value['option']}.\r\n";
+				$old_values['option'] = $new_value['option'];
+			}
+
+			if ( isset( $new_value['no_null'] ) ) {
 				$boolean_value = true;
 				$boolean_text = 'unchecked to checked';
 			}
@@ -1707,24 +2054,10 @@ class MLAOptions {
 				$boolean_value = false;
 				$boolean_text = 'checked to unchecked';
 			}
-			if ( $old_values['meta_single'] != $boolean_value ) {
+			if ( $old_values['no_null'] != $boolean_value ) {
 				$any_setting_changed = true;
-				$message_list .= "<br>{$old_values['name']} changing Single value from {$boolean_text}.\r\n";
-				$old_values['meta_single'] = $boolean_value;
-			}
-			
-			if ( isset( $new_value['meta_export'] ) ) {
-				$boolean_value = true;
-				$boolean_text = 'unchecked to checked';
-			}
-			else {
-				$boolean_value = false;
-				$boolean_text = 'checked to unchecked';
-			}
-			if ( $old_values['meta_export'] != $boolean_value ) {
-				$any_setting_changed = true;
-				$message_list .= "<br>{$old_values['name']} changing Export value from {$boolean_text}.\r\n";
-				$old_values['meta_export'] = $boolean_value;
+				$message_list .= "<br>{$old_values['name']} changing Delete NULL value from {$boolean_text}.\r\n";
+				$old_values['no_null'] = $boolean_value;
 			}
 			
 			if ( $any_setting_changed ) {
@@ -1784,8 +2117,12 @@ class MLAOptions {
 						'meta_name_size' => 30,
 						'meta_name' => $current_value['meta_name'],
 						'column_count_meta' => (7 - 2),
-						'meta_single_checked' => '',
-						'meta_export_checked' => ''
+						'text_option' => '',
+						'single_option' => '',
+						'export_option' => '',
+						'array_option' => '',
+						'multi_option' => '',
+						'no_null_checked' => ''
 					);
 					
 					if ( $current_value['keep_existing'] )
@@ -1813,11 +2150,25 @@ class MLAOptions {
 					if ( $current_value['bulk_edit'] )
 						$row_values['bulk_edit_checked'] = 'checked="checked"';
 
-					if ( $current_value['meta_single'] )
-						$row_values['meta_single_checked'] = 'checked="checked"';
+					switch( $current_value['option'] ) {
+						case 'single':
+							$row_values['single_option'] = 'selected="selected"';
+							break;
+						case 'export':
+							$row_values['export_option'] = 'selected="selected"';
+							break;
+						case 'array':
+							$row_values['array_option'] = 'selected="selected"';
+							break;
+						case 'multi':
+							$row_values['multi_option'] = 'selected="selected"';
+							break;
+						default:
+							$row_values['text_option'] = 'selected="selected"';
+					} // option
 
-					if ( $current_value['meta_export'] )
-						$row_values['meta_export_checked'] = 'checked="checked"';
+					if ( $current_value['no_null'] )
+						$row_values['no_null_checked'] = 'checked="checked"';
 
 					$table_rows .= MLAData::mla_parse_template( $row_template, $row_values );
 				} // foreach current_value
@@ -1841,8 +2192,12 @@ class MLAOptions {
 					'meta_name_size' => 30,
 					'meta_name' => '',
 					'column_count_meta' => (7 - 2),
-					'meta_single_checked' => '',
-					'meta_export_checked' => ''
+					'text_option' => '',
+					'single_option' => '',
+					'export_option' => '',
+					'array_option' => '',
+					'multi_option' => '',
+					'no_null_checked' => ''
 				);
 				$table_rows .= MLAData::mla_parse_template( $row_template, $row_values );
 					
@@ -1865,8 +2220,12 @@ class MLAOptions {
 					'meta_name_size' => 30,
 					'meta_name' => '',
 					'column_count_meta' => (7 - 2),
-					'meta_single_checked' => '',
-					'meta_export_checked' => ''
+					'text_option' => '',
+					'single_option' => '',
+					'export_option' => '',
+					'array_option' => '',
+					'multi_option' => '',
+					'no_null_checked' => ''
 				);
 				$table_rows .= MLAData::mla_parse_template( $row_template, $row_values );
 					
@@ -2517,7 +2876,7 @@ class MLAOptions {
 						$row_template = self::$mla_option_templates['iptc-exif-taxonomy-row'];
 						$select_template = self::$mla_option_templates['iptc-exif-select'];
 						$table_rows = '';
-						$taxonomies = get_taxonomies( array ( 'show_ui' => 'true' ), 'objects' );
+						$taxonomies = get_taxonomies( array ( 'show_ui' => true ), 'objects' );
 				
 						foreach ( $taxonomies as $row_name => $row_value ) {
 							$row_values = array (

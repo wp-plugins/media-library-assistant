@@ -94,7 +94,7 @@ class MLAEdit {
 		echo "</div><!-- .misc-pub-section -->\r\n";
 		echo '<div class="misc-pub-section mla-links">' . "\r\n";
 		
-		$view_args = array( 'page' => 'mla-menu', 'mla_item_ID' => $post->ID );
+		$view_args = array( 'page' => MLA::ADMIN_PAGE_SLUG, 'mla_item_ID' => $post->ID );
 		if ( isset( $_REQUEST['mla_source'] ) )
 			$view_args['mla_source'] = $_REQUEST['mla_source'];
 			
@@ -111,12 +111,18 @@ class MLAEdit {
 	 *
 	 * @since 0.80
 	 *
-	 * @param	string	type of the current post, e.g., 'attachment'
-	 * @param	object	current post
+	 * @param	string	type of the current post, e.g., 'attachment' (optional, default 'unknown') 
+	 * @param	object	current post (optional, default (object) array ( 'ID' => 0 ))
 	 *
 	 * @return	void
 	 */
-	public static function mla_add_meta_boxes_action( $post_type, $post ) {
+	public static function mla_add_meta_boxes_action( $post_type = 'unknown', $post = NULL ) {
+		/*
+		 * Plugins call this action with varying numbers of arguments!
+		 */
+		if ( NULL == $post )
+			$post = (object) array ( 'ID' => 0 );
+		
 		if ( 'attachment' == $post_type ) {
 			add_meta_box( 'mla-parent-info', 'Parent Info', 'MLAEdit::mla_parent_info_handler', 'attachment', 'normal', 'core' );
 			add_meta_box( 'mla-menu-order', 'Menu Order', 'MLAEdit::mla_menu_order_handler', 'attachment', 'normal', 'core' );

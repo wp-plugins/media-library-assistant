@@ -38,7 +38,7 @@ class MLA {
 	 *
 	 * @var	string
 	 */
-	const CURRENT_MLA_VERSION = '1.30';
+	const CURRENT_MLA_VERSION = '1.40';
 
 	/**
 	 * Slug for registering and enqueueing plugin style sheet
@@ -253,7 +253,7 @@ class MLA {
 			return;
 		}
 		
-		if ( ( 'media_page_mla-menu' != $page_hook ) && ( 'settings_page_mla-settings-menu' != $page_hook ) )
+		if ( 'media_page_' . self::ADMIN_PAGE_SLUG != $page_hook )
 			return;
 
 		wp_register_style( self::STYLESHEET_SLUG, MLA_PLUGIN_URL . 'css/mla-style.css', false, self::CURRENT_MLA_VERSION );
@@ -331,7 +331,10 @@ class MLA {
 				self::$page_hooks[ $hook ] = 't_' . $tax_name;
 			} // foreach $taxonomies
 			
-			add_action( 'load-edit-tags.php', 'MLA::mla_add_help_tab' );
+			/*
+			 * Load here, not 'load-edit-tags.php', to put our tab after the defaults
+			 */
+			add_action( 'admin_head-edit-tags.php', 'MLA::mla_add_help_tab' );
 		}
 		
 		add_filter( 'parent_file', 'MLA::mla_parent_file_filter', 10, 1 );
@@ -366,13 +369,14 @@ class MLA {
 	public static function mla_add_help_tab( )
 	{
 		$screen = get_current_screen();
-		
 		/*
 		 * Is this one of our pages?
 		 */
-		if ( !array_key_exists( $screen->id, self::$page_hooks ) ) {
+		if ( !array_key_exists( $screen->id, self::$page_hooks ) )
 			return;
-		}
+		
+		if ( 'edit-tags' == $screen->base && 'attachment' != $screen->post_type )
+			return;
 		
 		$file_suffix = $screen->id;
 		
@@ -412,10 +416,14 @@ class MLA {
 			return;
 		}
 		
-		if ( !empty( $template_array['sidebar'] ) ) {
-			$screen->set_help_sidebar( $template_array['sidebar'] );
-			unset( $template_array['sidebar'] );
-		}
+		/*
+		 * Don't add sidebar to the WordPress category and post_tag screens
+		 */
+		if ( ! ( 'edit-tags' == $screen->base && in_array( $screen->taxonomy, array( 'post_tag', 'category' ) ) ) )
+			if ( !empty( $template_array['sidebar'] ) ) {
+				$screen->set_help_sidebar( $template_array['sidebar'] );
+				unset( $template_array['sidebar'] );
+			}
 		
 		/*
 		 * Provide explicit control over tab order
@@ -438,6 +446,13 @@ class MLA {
 		
 		ksort( $tab_array, SORT_NUMERIC );
 		foreach ( $tab_array as $indx => $value ) {
+			/*
+			 * Don't add duplicate tabs to the WordPress category and post_tag screens
+			 */
+			if ( 'edit-tags' == $screen->base && in_array( $screen->taxonomy, array( 'post_tag', 'category' ) ) )
+				if ( 'mla-attachments-column' != $value['id'] )
+					continue;
+			
 			$screen->add_help_tab( $value );
 		}
 	}
@@ -455,8 +470,8 @@ class MLA {
 	public static function mla_screen_options_show_screen_filter( $show_screen, $this_screen ) {
 		if ( isset( $_REQUEST['mla_admin_action'] ) && ( $_REQUEST['mla_admin_action'] == self::MLA_ADMIN_SINGLE_EDIT_DISPLAY ) )
 			return false;
-		else
-			return $show_screen;
+
+		return $show_screen;
 	}
 	
 	/**
@@ -464,7 +479,7 @@ class MLA {
 	 *
 	 * @since 0.1
 	 *
-	 * @param	boolean	Unknown - always false?
+	 * @param	mixed	false or value returned by previous filter
 	 * @param	string	Name of the option being changed
 	 * @param	string	New value of the option
 	 *
@@ -474,6 +489,8 @@ class MLA {
 	{
 		if ( 'mla_entries_per_page' == $option )
 			return $value;
+		elseif ( $status )
+			return $status;
 	}
 	
 	/**
@@ -527,7 +544,7 @@ class MLA {
 		 * Make sure the "Assistant" submenu line is bolded when we go to the Edit Media page
 		 */
 		if ( isset( $_REQUEST['mla_source'] ) )
-			$submenu_file = 'mla-menu';
+			$submenu_file = self::ADMIN_PAGE_SLUG;
 			
 		/*
 		 * WordPress 3.5 adds native support for taxonomies
@@ -711,7 +728,12 @@ class MLA {
 		
 		if ( !empty( $page_content['body'] ) ) {
 			if ( !empty( $page_content['message'] ) ) {
-				echo "  <div  class=\"mla_messages\"><p>\r\n";
+				if ( false !== strpos( $page_content['message'], 'ERROR:' ) )
+					$messages_class = 'mla_errors';
+				else
+					$messages_class = 'mla_messages';
+
+				echo "  <div class=\"{$messages_class}\"><p>\r\n";
 				echo '    ' . $page_content['message'] . "\r\n";
 				echo "  </p></div>\r\n"; // id="message"
 			}
@@ -740,11 +762,32 @@ class MLA {
 				echo "</h2>\r\n";
 			
 			if ( !empty( $page_content['message'] ) ) {
-				echo "  <div class=\"mla_messages\"><p>\r\n";
+				if ( false !== strpos( $page_content['message'], 'ERROR:' ) )
+					$messages_class = 'mla_errors';
+				else
+					$messages_class = 'mla_messages';
+
+				echo "  <div class=\"{$messages_class}\"><p>\r\n";
 				echo '    ' . $page_content['message'] . "\r\n";
 				echo "  </p></div>\r\n"; // id="message"
 			}
 			
+			/*
+			 * Optional - limit width of the views list
+			 */
+			$view_width = MLAOptions::mla_get_option( 'table_views_width' );
+			if ( !empty( $view_width ) ) {
+				if ( is_numeric( $view_width ) )
+					$view_width .= 'px';
+					
+				echo "  <style type='text/css'>\r\n";
+				echo "    ul.subsubsub {\r\n";
+				echo "      width: {$view_width};\r\n";
+				echo "      max-width: {$view_width};\r\n";
+				echo "    }\r\n";
+				echo "  </style>\r\n";
+			}
+
 			//	Create an instance of our package class...
 			$MLAListTable = new MLA_List_Table();
 			
@@ -753,7 +796,7 @@ class MLA {
 			$MLAListTable->views();
 			
 			//	 Forms are NOT created automatically, so you need to wrap the table in one to use features like bulk actions
-			echo '<form id="mla-filter" action="' . admin_url( 'upload.php' ) . "\" method=\"get\">\r\n";
+			echo '<form action="' . admin_url( 'upload.php' ) . '" method="get" id="mla-filter">' . "\r\n";
 			/*
 			 * Compose the Search Media box
 			 */

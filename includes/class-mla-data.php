@@ -176,7 +176,7 @@ class MLAData {
 	 * @param	string	A formatting string containing [+placeholders+]
 	 *
 	 * @return	array	Placeholder information: each entry is an array with
-	 * 					['prefix'] => string, ['value'] => string, ['single'] => boolean
+	 * 					['prefix'] => string, ['value'] => string, ['option'] => string 'single'|'export'
 	 */
 	public static function mla_get_template_placeholders( $tpl ) {
 		$results = array();
@@ -186,7 +186,7 @@ class MLAData {
 			
 		foreach ( $matches[0] as $match ) {
 			$key = substr( $match, 2, (strlen( $match ) - 4 ) );
-			$result = array( 'prefix' => '', 'value' => '', 'single' => false, 'export' => false );
+			$result = array( 'prefix' => '', 'value' => '', 'option' => 'text' );
 			$match_count = preg_match( '/\[\+(.+):(.+)/', $match, $matches );
 			if ( 1 == $match_count ) {
 				$result['prefix'] = $matches[1];
@@ -199,8 +199,7 @@ class MLAData {
 			$match_count = preg_match( '/([^,]+)(,(single|export))\+\]/', $tail, $matches );
 			if ( 1 == $match_count ) {
 				$result['value'] = $matches[1];
-				$result['single'] = 'single' == $matches[3];
-				$result['export'] = 'export' == $matches[3];
+				$result['option'] = $matches[3];
 			}
 			else {
 				$result['value'] = substr( $tail, 0, (strlen( $tail ) - 2 ) );
@@ -213,18 +212,37 @@ class MLAData {
 	}
 	
 	/**
+	 * Cache the results of mla_count_list_table_items for reuse in mla_query_list_table_items
+	 *
+	 * @since 1.40
+	 *
+	 * @var	array
+	 */
+	private static $mla_list_table_items = NULL;
+	
+	/**
 	 * Get the total number of attachment posts
 	 *
 	 * @since 0.30
 	 *
 	 * @param	array	Query variables, e.g., from $_REQUEST
+	 * @param	int		(optional) number of rows to skip over to reach desired page
+	 * @param	int		(optional) number of rows on each page
 	 *
 	 * @return	integer	Number of attachment posts
 	 */
-	public static function mla_count_list_table_items( $request )
+	public static function mla_count_list_table_items( $request, $offset = NULL, $count = NULL )
 	{
+		if ( NULL != $offset && NULL != $count ) {
+			$request = self::_prepare_list_table_query( $request, $offset, $count );
+			self::$mla_list_table_items = self::_execute_list_table_query( $request );
+			return self::$mla_list_table_items->found_posts;
+		}
+
 		$request = self::_prepare_list_table_query( $request );
 		$results = self::_execute_list_table_query( $request );
+		self::$mla_list_table_items = NULL;
+		
 		return $results->found_posts;
 	}
 	
@@ -243,10 +261,12 @@ class MLAData {
 	 * @return	array	attachment objects (posts) including parent data, meta data and references
 	 */
 	public static function mla_query_list_table_items( $request, $offset, $count ) {
-		$request = self::_prepare_list_table_query( $request, $offset, $count );
-		$results = self::_execute_list_table_query( $request );
-		$attachments = $results->posts;
-		
+		if ( NULL == self::$mla_list_table_items ) {
+			$request = self::_prepare_list_table_query( $request, $offset, $count );
+			self::$mla_list_table_items = self::_execute_list_table_query( $request );
+		}
+
+		$attachments = self::$mla_list_table_items->posts;
 		foreach ( $attachments as $index => $attachment ) {
 			/*
 			 * Add parent data
@@ -298,7 +318,7 @@ class MLAData {
 	 * The parameters are set up in the _prepare_list_table_query function, and
 	 * any further logic required to translate those values is contained in the filters.
 	 *
-	 * Array index values are: use_postmeta_view, postmeta_key, detached, orderby, order, s, mla_search_connector, mla_search_fields, sentence, exact
+	 * Array index values are: use_postmeta_view, postmeta_key, postmeta_value, patterns, detached, orderby, order, mla-metavalue, debug, s, mla_search_connector, mla_search_fields, sentence, exact
 	 *
 	 * @since 0.30
 	 *
@@ -366,8 +386,7 @@ class MLAData {
 					}
 					break;
 				case 'post_mime_type':
-					if ( array_key_exists( $value, MLA_List_Table::mla_get_attachment_mime_types( ) ) )
-						$clean_request[ $key ] = $value;
+					$clean_request[ $key ] = $value;
 					break;
 				case 'parent':
 				case 'post_parent':
@@ -409,7 +428,22 @@ class MLAData {
 				 * ['mla_search_connector'], ['mla_search_fields'] - Search Media options
 				 */
 				case 's':
-					$clean_request[ $key ] = stripslashes( trim( $value ) );
+					switch ( substr( $value, 0, 3 ) ) {
+						case '>|<':
+							$clean_request['debug'] = 'console';
+							break;
+						case '<|>':
+							$clean_request['debug'] = 'log';
+							break;
+					}
+					
+					if ( isset( $clean_request['debug'] ) )
+						$value = substr( $value, 3 );
+				
+					$value = stripslashes( trim( $value ) );
+					
+					if ( ! empty( $value ) )
+						$clean_request[ $key ] = $value;
 					break;
 				case 'mla_search_connector':
 				case 'mla_search_fields':
@@ -419,6 +453,15 @@ class MLAData {
 				case 'mla-metavalue':
 					$clean_request[ $key ] = stripslashes( $value );
 					break;
+				case 'meta_query':
+					if ( ! empty( $value ) ) {
+						if ( is_array( $value ) )
+							$clean_request[ $key ] = $value;
+						else {
+							$clean_request[ $key ] = unserialize( stripslashes( $value ) );
+						} // not array
+					}
+					break;
 				default:
 					// ignore anything else in $_REQUEST
 			} // switch $key
@@ -427,11 +470,29 @@ class MLAData {
 		/*
 		 * Pass query parameters to the filters for _execute_list_table_query
 		 */
-		self::$query_parameters = array( 'use_postmeta_view' => false );
+		self::$query_parameters = array( 'use_postmeta_view' => false, 'orderby' => $clean_request['orderby'], 'order' => $clean_request['order'] );
 		self::$query_parameters['detached'] = isset( $clean_request['detached'] );
-		self::$query_parameters['orderby'] = $clean_request['orderby'];
-		self::$query_parameters['order'] = $clean_request['order'];
+		
+		/*
+		 * Matching a meta_value to NULL requires a LEFT JOIN to a view and a special WHERE clause
+		 * Matching a wildcard pattern requires mainpulating the WHERE clause, too
+		 */
+		if ( isset( $clean_request['meta_query']['key'] ) ) {
+			self::$query_parameters['use_postmeta_view'] = true;
+			self::$query_parameters['postmeta_key'] = $clean_request['meta_query']['key'];
+			self::$query_parameters['postmeta_value'] = NULL;
+			unset( $clean_request['meta_query'] );
+		}
+		elseif ( isset( $clean_request['meta_query']['patterns'] ) ) {
+			self::$query_parameters['patterns'] = $clean_request['meta_query']['patterns'];
+			unset( $clean_request['meta_query']['patterns'] );
+		}
 
+		if ( isset( $clean_request['debug'] ) ) {
+			self::$query_parameters['debug'] = $clean_request['debug'];
+			unset( $clean_request['debug'] );
+		}
+		
 		/*
 		 * We must patch the WHERE clause if there are leading spaces in the meta_value
 		 */
@@ -581,7 +642,7 @@ class MLAData {
 	 */
 	private static function _execute_list_table_query( $request ) {
 		global $wpdb, $table_prefix;
-		
+
 		/*
 		 * Custom fields are special; we have to use an SQL VIEW to build 
 		 * an intermediate table and modify the JOIN to include posts
@@ -608,6 +669,23 @@ class MLAData {
 		add_filter( 'posts_orderby', 'MLAData::mla_query_posts_orderby_filter' );
 
 		$results = new WP_Query( $request );
+		
+		if ( isset( self::$query_parameters['debug'] ) ) {
+			if ( 'console' == self::$query_parameters['debug'] ) {
+				trigger_error( '_execute_list_table_query $request = ' . var_export( $request, true ), E_USER_WARNING );
+				trigger_error( '_execute_list_table_query self::$query_parameters = ' . var_export( self::$query_parameters, true ), E_USER_WARNING );
+				trigger_error( '_execute_list_table_query $results->request = ' . var_export( $results->request, true ), E_USER_WARNING );
+				trigger_error( '_execute_list_table_query $results->post_count = ' . var_export( $results->post_count, true ), E_USER_WARNING );
+				trigger_error( '_execute_list_table_query $results->found_posts = ' . var_export( $results->found_posts, true ), E_USER_WARNING );
+			}
+			else {
+				error_log( '_execute_list_table_query $request = ' . var_export( $request, true ), 0 );
+				error_log( '_execute_list_table_query self::$query_parameters = ' . var_export( self::$query_parameters, true ), 0 );
+				error_log( '_execute_list_table_query $results->request = ' . var_export( $results->request, true ), 0 );
+				error_log( '_execute_list_table_query $results->post_count = ' . var_export( $results->post_count, true ), 0 );
+				error_log( '_execute_list_table_query $results->found_posts = ' . var_export( $results->found_posts, true ) . "\r\n", 0 );
+			}
+		} // debug
 
 		remove_filter( 'posts_orderby', 'MLAData::mla_query_posts_orderby_filter' );
 		remove_filter( 'posts_where', 'MLAData::mla_query_posts_where_filter' );
@@ -635,18 +713,38 @@ class MLAData {
 	 */
 	public static function mla_query_posts_search_filter( $search_string, &$query_object ) {
 		global $table_prefix, $wpdb;
-
 		/*
 		 * Process the keyword search argument, if present.
 		 */
 		$search_clause = '';
 		if ( isset( self::$query_parameters['s'] ) ) {
+		
+			if ( isset( self::$query_parameters['debug'] ) ) {
+				if ( 'console' == self::$query_parameters['debug'] ) {
+					trigger_error( 'mla_query_posts_search_filter search = ' . var_export( self::$query_parameters['s'], true ), E_USER_WARNING );
+				}
+				else {
+					error_log( 'mla_query_posts_search_filter search = ' . var_export( self::$query_parameters['s'], true ), 0 );
+				}
+			} // debug
+	
 			/*
 			 * Interpret a numeric value as the ID of a specific attachment or the ID of a parent post/page
 			 */
-			if(is_numeric( self::$query_parameters['s'] )) {
+			if( is_numeric( self::$query_parameters['s'] ) ) {
 				$id = absint( self::$query_parameters['s'] );
-				return ' AND ( ( ' . $wpdb->posts . '.ID = ' . $id . ' ) OR ( ' . $wpdb->posts . '.post_parent = ' . $id . ' ) ) ';
+				$search_clause = ' AND ( ( ' . $wpdb->posts . '.ID = ' . $id . ' ) OR ( ' . $wpdb->posts . '.post_parent = ' . $id . ' ) ) ';
+		
+				if ( isset( self::$query_parameters['debug'] ) ) {
+					if ( 'console' == self::$query_parameters['debug'] ) {
+						trigger_error( 'mla_query_posts_search_filter $search_clause = ' . var_export( $search_clause, true ), E_USER_WARNING );
+					}
+					else {
+						error_log( 'mla_query_posts_search_filter $search_clause = ' . var_export( $search_clause, true ), 0 );
+					}
+				} // debug
+		
+				return $search_clause;
 			}
 			
 			if (  self::$query_parameters['sentence'] ) {
@@ -704,7 +802,7 @@ class MLAData {
 	}
 
 	/**
-	 * Adds a JOIN clause, if required, to handle sorting/searching on ALT Text
+	 * Adds a JOIN clause, if required, to handle sorting/searching on custom fields or ALT Text
 	 * 
 	 * Defined as public because it's a filter.
 	 *
@@ -751,6 +849,26 @@ class MLAData {
 			$where_clause = preg_replace( '/(^.*meta_value AS CHAR\) = \')([^\']*)/', '${1}' . self::$query_parameters['mla-metavalue'], $where_clause );
 		}
 			
+		/*
+		 * Matching a NULL meta value 
+		 */
+		if ( array_key_exists( 'postmeta_value', self::$query_parameters ) && NULL == self::$query_parameters['postmeta_value'] ) {
+			$where_clause .= ' AND ' . self::$mla_alt_text_view . '.meta_value IS NULL';
+		}
+		
+		/*
+		 * WordPress modifies the LIKE clause - which we must reverse
+		 */
+		if ( isset( self::$query_parameters['patterns'] ) ) {
+			foreach ( self::$query_parameters['patterns'] as $pattern ) {
+				$match_clause = '%' . str_replace( '%', '\\\\%', $pattern ) . '%';
+				$where_clause = str_replace( "LIKE '{$match_clause}'", "LIKE '{$pattern}'", $where_clause );
+			}
+		}
+			
+		/*
+		 * Unattached items require some help
+		 */
 		if ( self::$query_parameters['detached'] )
 			$where_clause .= " AND {$table_prefix}posts.post_parent < 1";
 
@@ -780,6 +898,7 @@ class MLAData {
 				switch ( self::$query_parameters['orderby'] ) {
 					case 'none':
 						$orderby = '';
+						$orderby_clause = '';
 						break;
 					/*
 					 * There are two columns defined that end up sorting on post_title,
@@ -829,6 +948,14 @@ class MLAData {
 	 */
 	function mla_get_attachment_by_id( $post_id ) {
 		global $post;
+		static $save_id = -1, $post_data;
+		
+		if ( $post_id == $save_id )
+			return $post_data;
+		elseif ( $post_id == -1 ) {
+			$save_id = -1;
+			return NULL;
+		}
 		
 		$item = get_post( $post_id );
 		if ( empty( $item ) ) {
@@ -860,6 +987,7 @@ class MLAData {
 		 */
 		$post_data['mla_references'] = self::mla_fetch_attachment_references( $post_id, $post_data['post_parent'] );
 		
+		$save_id = $post_id;
 		return $post_data;
 	}
 	
@@ -873,6 +1001,11 @@ class MLAData {
 	 * @return	array	Parent information; post_date, post_title and post_type
 	 */
 	public static function mla_fetch_attachment_parent_data( $parent_id ) {
+		static $save_id = -1, $parent_data;
+		
+		if ( $save_id == $parent_id )
+			return $parent_data;
+			
 		$parent_data = array();
 		if ( $parent_id ) {
 			$parent = get_post( $parent_id );
@@ -884,6 +1017,7 @@ class MLAData {
 				$parent_data['parent_type'] = $parent->post_type;
 		}
 		
+		$save_id = $parent_id;
 		return $parent_data;
 	}
 	
@@ -897,12 +1031,12 @@ class MLAData {
 	 *
 	 * @param string key value, e.g. array1.array2.element
 	 * @param array PHP nested arrays
-	 * @param boolean return first element of an array result
-	 * @param boolean return results in var_export() format
+	 * @param string format option  'text'|'single'|'export'|'array'|'multi'
+	 * @param boolean keep existing values - for 'multi' option
 	 *
 	 * @return string value matching key(.key ...) or ''
 	 */
-	public static function mla_find_array_element( $needle, $haystack, $single = false, $export = false  ) {
+	public static function mla_find_array_element( $needle, $haystack, $option, $keep_existing = false ) {
 		$key_array = explode( '.', $needle );
 		if ( is_array( $key_array ) ) {
 			foreach( $key_array as $key ) {
@@ -918,14 +1052,24 @@ class MLAData {
 		}
 		else $haystack = '';
 
-		if ( $single && is_array( $haystack )) 
+		if ( 'single' == $option && is_array( $haystack )) 
 			$haystack = current( $haystack );
 			
 		if ( is_array( $haystack ) ) {
-			if ( $export )
-				$haystack = var_export( $haystack, true );
-			else
-				$haystack = implode( ',', $haystack );
+			switch ( $option ) {
+				case 'export':
+					$haystack = var_export( $haystack, true );
+					break;
+				case 'multi':
+					$haystack[0x80000000] = $option;
+					$haystack[0x80000001] = $keep_existing;
+					// fallthru
+				case 'array':
+					return $haystack;
+					break;
+				default:
+					$haystack = implode( ',', $haystack );
+			} // $option
 		}
 			
 		return sanitize_text_field( $haystack );
@@ -945,6 +1089,11 @@ class MLAData {
 	 * @return	array	Meta data variables
 	 */
 	public static function mla_fetch_attachment_metadata( $post_id ) {
+		static $save_id = 0, $results;
+		
+		if ( $save_id == $post_id )
+			return $results;
+			
 		$attached_file = NULL;
 		$results = array();
 		$post_meta = get_metadata( 'post', $post_id );
@@ -994,6 +1143,7 @@ class MLAData {
 			} // $attached_file
 		} // is_array($post_meta)
 		
+		$save_id = $post_id;
 		return $results;
 	}
 	
@@ -1012,6 +1162,10 @@ class MLAData {
 	 */
 	public static function mla_fetch_attachment_references( $ID, $parent ) {
 		global $wpdb;
+		static $save_id = 0, $references, $inserted_in_option = NULL;
+		
+		if ( $save_id == $ID )
+			return $references;
 		
 		/*
 		 * tested_reference	true if any of the four where-used types was processed
@@ -1075,15 +1229,12 @@ class MLAData {
 		}
 		
 		$references['files'][ $references['base_file'] ] = $references['base_file'];
-		$last_slash = strrpos( $references['base_file'], '/' );
-		if ( false === $last_slash ) {
+		$pathinfo = pathinfo($references['base_file']);
+		$references['file'] = $pathinfo['basename'];
+		if ( '.' == $pathinfo['dirname'] )
 			$references['path'] = '';
-			$references['file'] = $references['base_file'];
-		}
-		else {
-			$references['path'] = substr( $references['base_file'], 0, $last_slash + 1 );
-			$references['file'] = substr( $references['base_file'], $last_slash + 1 );
-		}
+		else
+			$references['path'] = $pathinfo['dirname'] . '/';
 
 		/*
 		 * Process the where-used settings option
@@ -1138,8 +1289,12 @@ class MLAData {
 		 */
 		if ( MLAOptions::$process_inserted_in ) {
 			$reference_tests++;
-			foreach ( $references['files'] as $file => $file_data ) {
-				$like = like_escape( $file );
+
+			if ( NULL == $inserted_in_option )
+				$inserted_in_option = MLAOptions::mla_get_option( MLAOptions::MLA_INSERTED_IN_TUNING );
+				
+			if ( 'base' == $inserted_in_option ) {
+				$like = like_escape( $references['path'] . $pathinfo['filename'] ) . '%.' . like_escape( $pathinfo['extension'] );
 				$inserts = $wpdb->get_results(
 					$wpdb->prepare(
 						"
@@ -1154,7 +1309,7 @@ class MLAData {
 				
 				if ( !empty( $inserts ) ) {
 					$references['found_reference'] = true;
-					$references['inserts'][ $file ] = $inserts;
+					$references['inserts'][ $pathinfo['filename'] ] = $inserts;
 					
 					foreach ( $inserts as $insert ) {
 						if ( $insert->ID == $parent ) {
@@ -1162,7 +1317,34 @@ class MLAData {
 						}
 					} // foreach $insert
 				} // !empty
-			} // foreach $file
+			} // process base names
+			else {
+				foreach ( $references['files'] as $file => $file_data ) {
+					$like = like_escape( $file );
+					$inserts = $wpdb->get_results(
+						$wpdb->prepare(
+							"
+							SELECT ID, post_type, post_title 
+							FROM {$wpdb->posts}
+							WHERE {$exclude_revisions}(
+								CONVERT(`post_content` USING utf8 )
+								LIKE %s)
+							", "%{$like}%"
+						)
+					);
+					
+					if ( !empty( $inserts ) ) {
+						$references['found_reference'] = true;
+						$references['inserts'][ $file ] = $inserts;
+						
+						foreach ( $inserts as $insert ) {
+							if ( $insert->ID == $parent ) {
+								$references['found_parent'] = true;
+							}
+						} // foreach $insert
+					} // !empty
+				} // foreach $file
+			} // process intermediate sizes
 		} // $process_inserted_in
 		
 		/*
@@ -1234,6 +1416,8 @@ class MLAData {
 			$errors .= '(INVALID PARENT) ';
 
 		$references['parent_errors'] = trim( $errors );
+		
+		$save_id = $ID;
 		return $references;
 	}
 	
@@ -1244,12 +1428,13 @@ class MLAData {
 	 * and array(s) of which attachments each [gallery] contains. The arrays are built once
 	 * each page load and cached for subsequent calls.
 	 *
-	 * The outer array is keyed by post_id. It contains an array of [gallery] entries numbered from one (1).
-	 * Each inner array has these elements:
+	 * The outer array is keyed by post_id. It contains an associative array with:
 	 * ['parent_title'] post_title of the gallery parent, 
 	 * ['parent_type'] 'post' or 'page' or the custom post_type of the gallery parent,
-	 * ['query'] contains a string with the arguments of the [gallery], 
-	 * ['results'] contains an array of post_ids for the objects in the gallery.
+	 * ['results'] array ( ID => ID ) of attachments appearing in ANY of the parent's galleries.
+	 * ['galleries'] array of [gallery] entries numbered from one (1), containing:
+	 * galleries[X]['query'] contains a string with the arguments of the [gallery], 
+	 * galleries[X]['results'] contains an array ( ID ) of post_ids for the objects in the gallery.
 	 *
 	 * @since 0.70
 	 *
@@ -1374,7 +1559,7 @@ class MLAData {
 			return false;
 			
 		foreach ( $results as $result ) {
-			$count = preg_match_all( "/\\{$shortcode}(.*)\\]/", $result->post_content, $matches, PREG_PATTERN_ORDER );
+			$count = preg_match_all( "/\\{$shortcode}([^\\]]*)\\]/", $result->post_content, $matches, PREG_PATTERN_ORDER );
 			if ( $count ) {
 				$result_id = $result->ID;
 				$galleries_array[ $result_id ]['parent_title'] = $result->post_title;
@@ -1394,16 +1579,20 @@ class MLAData {
 						
 						$post = $result; // set global variable for mla_gallery_shortcode
 						$attachments = MLAShortcodes::mla_get_shortcode_attachments( $result_id, $galleries_array[ $result_id ]['galleries'][ $instance ]['query'] );
-						if ( ! empty( $attachments ) )
+
+						if ( is_string( $attachments ) ) {
+							trigger_error( htmlentities( sprintf( '(%1$s) %2$s (ID %3$d) query "%4$s" failed, returning "%5$s"', $result->post_type, $result->post_title, $result->ID, $galleries_array[ $result_id ]['galleries'][ $instance ]['query'], $attachments) ), E_USER_WARNING );
+						}
+						elseif ( ! empty( $attachments ) )
 							foreach ( $attachments as $attachment ) {
 								$galleries_array[ $result_id ]['results'][ $attachment->ID ] = $attachment->ID;
 								$galleries_array[ $result_id ]['galleries'][ $instance ]['results'][] = $attachment->ID;
-							}
+							} // foreach $attachment
 					} // exact match
 				} // foreach $match
 			} // if $count
 		} // foreach $result
-	
+
 	/*
 	 * Maybe cache the results
 	 */	
@@ -1532,6 +1721,131 @@ class MLAData {
 		}
 		
 		return $results;
+	}
+	
+	/**
+	 * Update custom field data for a single attachment.
+	 * 
+	 * @since 1.40
+	 * 
+	 * @param	int		The ID of the attachment to be updated
+	 * @param	array	Field name => value pairs
+	 *
+	 * @return	string	success/failure message(s)
+	 */
+	public static function mla_update_item_postmeta( $post_id, $new_meta ) {
+		$post_data = MLAData::mla_fetch_attachment_metadata( $post_id );
+		$message = '';
+		
+		foreach ( $new_meta as $meta_key => $meta_value ) {
+			if ( $multi_key = isset( $meta_value[0x80000000] ) )
+				unset( $meta_value[0x80000000] );
+				
+			if ( $keep_existing = isset( $meta_value[0x80000001] ) ) {
+				$keep_existing = (boolean) $meta_value[0x80000001];
+				unset( $meta_value[0x80000001] );
+			}
+				
+			if ( $no_null = isset( $meta_value[0x80000002] ) ) {
+				$no_null = (boolean) $meta_value[0x80000002];
+				unset( $meta_value[0x80000002] );
+			}
+				
+			if ( isset( $post_data[ 'mla_item_' . $meta_key ] ) ) {
+				$old_meta_value = $post_data[ 'mla_item_' . $meta_key ];
+				
+				if ( $multi_key && $no_null ) {
+					if ( is_string( $old_meta_value ) )
+						$old_meta_value = trim( $old_meta_value );
+						
+					$delete = empty( $old_meta_value );
+				}
+				else 
+					$delete = NULL == $meta_value;
+				
+				if ( $delete) {
+					if ( delete_post_meta( $post_id, $meta_key ) )
+						$message .= sprintf( 'Deleting %1$s<br>', $meta_key );
+						
+					continue;
+				}
+			}
+			else {
+				if ( NULL != $meta_value ) {
+					if ( $multi_key )
+						foreach ( $meta_value as $new_value ) {
+							if ( add_post_meta( $post_id, $meta_key, $new_value ) )
+								$message .= sprintf( 'Adding %1$s = [%2$s]<br>', $meta_key, $new_value );
+						}
+					else		
+						if ( add_post_meta( $post_id, $meta_key, $meta_value ) )
+							$message .= sprintf( 'Adding %1$s = %2$s<br>', $meta_key, $meta_value );
+				}
+
+				continue; // no change or message if old and new are both NULL
+			} // no old value
+			
+			if ( is_array( $old_meta_value ) ) {
+				$old_text = var_export( $old_meta_value, true );
+			}
+			else
+				$old_text = $old_meta_value;
+
+			/*
+			 * Multi-key change from existing values to new values
+			 */
+			if ( $multi_key ) {
+				/*
+				 * Test for "no changes"
+				 */
+				if ( $meta_value == (array) $old_meta_value )
+					continue;
+					
+				if ( ! $keep_existing ) {
+					if ( delete_post_meta( $post_id, $meta_key ) )
+						$message .= sprintf( 'Deleting old %1$s values<br>', $meta_key );
+					$old_meta_value = array();
+				}
+				elseif ( $old_text == $old_meta_value ) // single value
+					$old_meta_value = array( $old_meta_value );
+
+				$updated = 0;
+				foreach ( $meta_value as $new_value ) {
+					if ( ! in_array( $new_value, $old_meta_value ) ) {
+						add_post_meta( $post_id, $meta_key, $new_value );
+						$old_meta_value[] = $new_value; // prevent duplicates
+						$updated++;
+					}
+				}
+					
+				if ( $updated ) {
+					$meta_value = get_post_meta( $post_id, $meta_key );
+					if ( is_array( $meta_value ) )
+						if ( 1 == count( $meta_value ) )
+							$new_text = $meta_value[0];
+						else
+							$new_text = var_export( $meta_value, true );
+					else
+						$new_text = $meta_value;
+	
+						$message .= sprintf( 'Changing %1$s from "%2$s" to "%3$s"; %4$d updates<br>', $meta_key, $old_text, $new_text, $updated );
+				}
+			}
+			elseif ( $old_meta_value != $meta_value ) {
+				if ( is_array( $old_meta_value ) )
+					delete_post_meta( $post_id, $meta_key );
+
+				if ( is_array( $meta_value ) )
+					$new_text = var_export( $meta_value, true );
+				else
+					$new_text = $meta_value;
+				
+				$message .= sprintf( 'Changing %1$s from "%2$s" to "%3$s"<br>', $meta_key, $old_text, $new_text );
+				$results = update_post_meta( $post_id, $meta_key, $meta_value );
+			}
+		} // foreach $new_meta
+		
+		return $message;
 	}
 	
 	/**
@@ -1718,34 +2032,8 @@ class MLAData {
 			} // foreach $tax_input
 		} // !empty $tax_input
 		
-		if ( is_array( $new_meta ) ) {
-			foreach ( $new_meta as $meta_key => $meta_value ) {
-				if ( isset( $post_data[ 'mla_item_' . $meta_key ] ) )
-					$old_meta_value = $post_data[ 'mla_item_' . $meta_key ];
-				else
-					$old_meta_value = '';
-					
-				if ( is_array( $old_meta_value ) ) {
-					$do_update = false;
-					
-					foreach ( $old_meta_value as $old_key => $old_value ) {
-						if ( $old_value != $meta_value ) {
-							$message .= sprintf( 'Changing %1$s[%2$d] from "%3$s" to "%4$s"<br>', $meta_key, $old_key, $old_value, $meta_value );
-							$do_update = true;
-						}
-					} // foreach $old_meta_value
-					
-					if ($do_update)
-						$results = update_post_meta( $post_id, $meta_key, $meta_value );
-				}
-				else {
-					if ( $old_meta_value != $meta_value ) {
-						$message .= sprintf( 'Changing %1$s from "%2$s" to "%3$s"<br>', $meta_key, $old_meta_value, $meta_value );
-						$results = update_post_meta( $post_id, $meta_key, $meta_value );
-					}
-				}
-			} // foreach $new_meta
-		}
+		if ( is_array( $new_meta ) )
+			$message .= self::mla_update_item_postmeta( $post_id, $new_meta );
 		
 		if ( empty( $message ) )
 			return array(
@@ -1753,12 +2041,15 @@ class MLAData {
 				'body' => '' 
 			);
 		else {
+			MLAData::mla_get_attachment_by_id( -1 ); // invalidate the cached item
+
 			if ( wp_update_post( $updates ) ) {
 				$final_message = 'Item: ' . $post_id . ' updated.';
 				/*
 				 * Uncomment this for debugging.
 				 */
 				// $final_message .= '<br>' . $message;
+				// error_log( 'message = ' . var_export( $message, true ), 0 );
 				
 				return array(
 					'message' => $final_message,

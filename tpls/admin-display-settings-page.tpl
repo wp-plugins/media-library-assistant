@@ -3,7 +3,7 @@
 &nbsp;
 <div class="wrap">
 <div id="icon-options-general" class="icon32"><br/></div>
-<div id="donate-button-div" style="text-align: center; width: 100px; height: 40px; float: right;">
+<div id="donate-button-div" style="text-align: center; width: 100px; height: 40px; float: right; clear:right; margin-top: 5px">
 <a href="http://fairtradejudaica.org/make-a-difference/donate/" title="Support our work" target="_blank" style="border: none;"><img border="0" src="[+donateURL+]" width="100" height="40" alt="Donate"></a></div>
 <h2>Media Library Assistant [+version+] Settings</h2>
 [+messages+]
@@ -71,7 +71,7 @@
             <div style="font-size:8pt;padding-bottom:10px;">&nbsp;&nbsp;[+help+]</div>
         </td></tr>
 <!-- template="messages" -->
-<div class="mla_messages">
+<div class="[+mla_messages_class+]">
 <p>
 [+messages+]
 </p></div>
@@ -91,8 +91,10 @@
 <!-- template="tablist-item" -->
 <a data-tab-id="[+data-tab-id+]" class="nav-tab [+nav-tab-active+]" href="?page=[+settings-page+]&amp;mla_tab=[+data-tab-id+]">[+title+]</a>
 <!-- template="general-tab" -->
+<h3>General Processing Options</h3>
+<p>In this tab you can find a number of options for controlling the plugin's operation. Scroll down to find options for <strong>Where-used Reporting</strong>, <strong>Taxonomy Support</strong>, <strong>Media/Assistant Table Defaults</strong> and <strong>Media Manager Enhancements</strong>. Be sure to click "Save Changes" at the bottom of the tab to save any changes you make.</p>
 [+shortcode_list+]
-<form method="post" class="mla-display-settings-page" id="mla-display-settings-general-tab">
+<form action="[+form_url+]" method="post" class="mla-display-settings-page" id="mla-display-settings-general-tab">
     <table class="optiontable">
 [+options_list+]
 	</table>
@@ -186,7 +188,7 @@
 <h3>MLA Gallery Options</h3>
 <p><a href="#markup">Go to Markup Templates</a></p>
 <p>In this tab you can view the default style and markup templates. You can also define additional templates and use the <code>mla_style</code> and <code>mla_markup</code> parameters to apply them in your <code>[mla_gallery]</code> shortcodes.<strong>NOTE:</strong> template additions and changes will not be made permanent until you click "Save Changes" at the bottom of this page.</p>
-<form method="post" class="mla-display-settings-page" id="mla-display-settings-mla-gallery-tab">
+<form action="[+form_url+]" method="post" class="mla-display-settings-page" id="mla-display-settings-mla-gallery-tab">
 [+options_list+]
 <h4>Style Templates</h4>
     <table class="optiontable">
@@ -218,12 +220,12 @@ If you click any of the "Map All Attachments" buttons, the rule currently displa
 If you just want to add a custom field to the Media/Assistant submenu, the quick edit area and/or the bulk edit area you can bypass the mapping logic by leaving the Data Source value as "-- None (select a value) --".
 </p>
 <p>
-You can find more information about all of these topics on the <a href="http:/wp-admin/options-general.php?page=mla-settings-menu&amp;mla_tab=documentation#mla_custom_field_mapping" title="Custom Field Processing Options documentation">Documentation tab</a>.
+You can find more information about all of these topics on the <a href="http:/wp-admin/options-general.php?page=mla-settings-menu-documentation&amp;mla_tab=documentation#mla_custom_field_mapping" title="Custom Field Processing Options documentation">Documentation tab</a>.
 </p>
 <p>
 <strong>NOTE:</strong> Check the box in the "MLA Column" column to make the field a sortable, searchable column in the Media/Assistant submenu table. The "file_size", "pixels", "width" and "height" data sources will sort more sensibly if you use the "Commas" format. Check the "Quick Edit" or "Bulk Edit" box to add the field to the quick edit or bulk edit areas of the Media/Assistant submenu.
 </p>
-<form method="post" class="mla-display-settings-page" id="mla-display-settings-custom-field-tab">
+<form action="[+form_url+]" method="post" class="mla-display-settings-page" id="mla-display-settings-custom-field-tab">
 &nbsp;<br />
 [+options_list+]
 <h4>Custom field mapping</h4>
@@ -250,9 +252,9 @@ You can find more information about all of these topics on the <a href="http:/wp
 If you just want to add a custom field to the Media/Assistant submenu, the quick edit area and/or the bulk edit area go to the "Custom Fields" tab and follow the instructions there.
 </p>
 <p>
-You can find more information about all of these topics on the <a href="http:/wp-admin/options-general.php?page=mla-settings-menu&amp;mla_tab=documentation#mla_iptc_exif_mapping" title="IPTC &amp; EXIF Processing Options documentation">Documentation tab</a>.
+You can find more information about all of these topics on the <a href="http:/wp-admin/options-general.php?page=mla-settings-menu-documentation&amp;mla_tab=documentation#mla_iptc_exif_mapping" title="IPTC &amp; EXIF Processing Options documentation">Documentation tab</a>.
 </p>
-<form method="post" class="mla-display-settings-page" id="mla-display-settings-iptc-exif-tab">
+<form action="[+form_url+]" method="post" class="mla-display-settings-page" id="mla-display-settings-iptc-exif-tab">
 &nbsp;<br />
 [+options_list+]
 <h4>Standard field mapping <input name="iptc-exif-options-process-standard" type="submit" class="button-secondary" style="margin-left: 20px" value="Map All Attachments, Standard Fields Now" /></h4>

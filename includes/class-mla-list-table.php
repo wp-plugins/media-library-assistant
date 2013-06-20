@@ -133,6 +133,7 @@ class MLA_List_Table extends WP_List_Table {
 		'author',
 		'attached_to',
 		// taxonomy columns added by mla_admin_init_action
+		// custom field columns added by mla_admin_init_action
 	);
 	
 	/**
@@ -189,14 +190,14 @@ class MLA_List_Table extends WP_List_Table {
 	}
 	
 	/**
-	 * Get mime types with one or more attachments for view preparation
+	 * Get MIME types with one or more attachments for view preparation
 	 *
 	 * Modeled after get_available_post_mime_types in wp-admin/includes/post.php,
-	 * with additional entries.
+	 * but uses the output of wp_count_attachments() as input.
 	 *
 	 * @since 0.1
 	 *
-	 * @param	array	Number of posts for each mime type
+	 * @param	array	Number of posts for each MIME type
 	 *
 	 * @return	array	Mime type names
 	 */
@@ -209,81 +210,6 @@ class MLA_List_Table extends WP_List_Table {
 		}
 		
 		return $available;
-	}
-	
-	/**
-	 * Get possible mime types for view preparation
-	 *
-	 * Modeled after get_post_mime_types in wp-includes/post.php,
-	 * with additional entries.
-	 *
-	 * @since 0.1
-	 *
-	 * @return	array	Mime type names and HTML markup for views
-	 */
-	public static function mla_get_attachment_mime_types( ) {
-		return array(
-			'image' => array(
-				0 => 'Images',
-				1 => 'Manage Images',
-				2 => array(
-					 0 => 'Image <span class="count">(%s)</span>',
-					1 => 'Images <span class="count">(%s)</span>',
-					'singular' => 'Image <span class="count">(%s)</span>',
-					'plural' => 'Images <span class="count">(%s)</span>',
-					'context' => NULL,
-					'domain' => NULL 
-				) 
-			),
-			'audio' => array(
-				 0 => 'Audio',
-				1 => 'Manage Audio',
-				2 => array(
-					 0 => 'Audio <span class="count">(%s)</span>',
-					1 => 'Audio <span class="count">(%s)</span>',
-					'singular' => 'Audio <span class="count">(%s)</span>',
-					'plural' => 'Audio <span class="count">(%s)</span>',
-					'context' => NULL,
-					'domain' => NULL 
-				) 
-			),
-			'video' => array(
-				 0 => 'Video',
-				1 => 'Manage Video',
-				2 => array(
-					 0 => 'Video <span class="count">(%s)</span>',
-					1 => 'Video <span class="count">(%s)</span>',
-					'singular' => 'Video <span class="count">(%s)</span>',
-					'plural' => 'Video <span class="count">(%s)</span>',
-					'context' => NULL,
-					'domain' => NULL 
-				) 
-			),
-			'text' => array(
-				 0 => 'Text',
-				1 => 'Manage Text',
-				2 => array(
-					 0 => 'Text <span class="count">(%s)</span>',
-					1 => 'Text <span class="count">(%s)</span>',
-					'singular' => 'Text <span class="count">(%s)</span>',
-					'plural' => 'Text <span class="count">(%s)</span>',
-					'context' => NULL,
-					'domain' => NULL 
-				) 
-			),
-			'application' => array(
-				 0 => 'Applications',
-				1 => 'Manage Applications',
-				2 => array(
-					 0 => 'Application <span class="count">(%s)</span>',
-					1 => 'Applications <span class="count">(%s)</span>',
-					'singular' => 'Application <span class="count">(%s)</span>',
-					'plural' => 'Applications <span class="count">(%s)</span>',
-					'context' => NULL,
-					'domain' => NULL 
-				) 
-			) 
-		);
 	}
 	
 	/**
@@ -304,7 +230,7 @@ class MLA_List_Table extends WP_List_Table {
 			$dropdown_options = array(
 				'show_option_all' => 'All ' . $tax_object->labels->name,
 				'show_option_none' => 'No ' . $tax_object->labels->name,
-				'orderby' => 'ID',
+				'orderby' => 'name',
 				'order' => 'ASC',
 				'show_count' => false,
 				'hide_empty' => false,
@@ -391,7 +317,7 @@ class MLA_List_Table extends WP_List_Table {
 	}
 	
 	/**
-	 * Adds support for taxonomy columns
+	 * Adds support for taxonomy and custom field columns
 	 *
 	 * Called in the admin_init action because the list_table object isn't
 	 * created in time to affect the "screen options" setup.
@@ -402,7 +328,7 @@ class MLA_List_Table extends WP_List_Table {
 	 */
 	public static function mla_admin_init_action( )
 	{
-		$taxonomies = get_taxonomies( array ( 'show_ui' => 'true' ), 'names' );
+		$taxonomies = get_taxonomies( array ( 'show_ui' => true ), 'names' );
 
 		foreach ( $taxonomies as $tax_name ) {
 			if ( MLAOptions::mla_taxonomy_support( $tax_name ) ) {
@@ -435,7 +361,7 @@ class MLA_List_Table extends WP_List_Table {
 			'singular' => 'attachment', //singular name of the listed records
 			'plural' => 'attachments', //plural name of the listed records
 			'ajax' => true, //does this table support ajax?
-			'screen' => 'media_page_mla-menu'
+			'screen' => 'media_page_' . MLA::ADMIN_PAGE_SLUG
 		) );
 		
 		$this->currently_hidden = self::get_hidden_columns();
@@ -449,9 +375,9 @@ class MLA_List_Table extends WP_List_Table {
 	/**
 	 * Supply a column value if no column-specific function has been defined
 	 *
-	 * Called when the parent class can't find a method specifically built for a
-	 * given column. The taxonomy columns are handled here. All other columns should
-	 * have a specific method, so this function returns a troubleshooting message.
+	 * Called when the parent class can't find a method specifically built for a given column.
+	 * The taxonomy and custom field columns are handled here. All other columns should have
+	 * a specific method, so this function returns a troubleshooting message.
 	 *
 	 * @since 0.1
 	 *
@@ -472,7 +398,7 @@ class MLA_List_Table extends WP_List_Table {
 				$list = array();
 				foreach ( $terms as $term ) {
 					$list[ ] = sprintf( '<a href="%s">%s</a>', esc_url( add_query_arg( array(
-						'page' => 'mla-menu',
+						'page' => MLA::ADMIN_PAGE_SLUG,
 						'mla-tax' => $taxonomy,
 						'mla-term' => $term->slug,
 						'heading_suffix' => urlencode( $tax_object->label . ': ' . $term->name ) 
@@ -492,12 +418,19 @@ class MLA_List_Table extends WP_List_Table {
 			
 			$list = array();
 			foreach( $values as $index => $value ) {
-				$list[ ] = sprintf( '<a href="%s">%s</a>', esc_url( add_query_arg( array(
-					'page' => 'mla-menu',
-					'mla-metakey' => urlencode( MLA_List_Table::$default_columns[ $column_name ] ),
-					'mla-metavalue' => urlencode( $value ),
-					'heading_suffix' => urlencode( MLA_List_Table::$default_columns[ $column_name ] . ': ' . $value ) 
-				), 'upload.php' ) ), esc_html( $value ) );
+				/*
+				 * For display purposes, convert array values.
+				 * They are not links because no search will match them.
+				 */
+				if ( is_array( $value ) )
+					$list[ ] = 'array( ' . implode( ', ', $value ) . ' )';
+				else
+					$list[ ] = sprintf( '<a href="%s">%s</a>', esc_url( add_query_arg( array(
+						'page' => MLA::ADMIN_PAGE_SLUG,
+						'mla-metakey' => urlencode( MLA_List_Table::$default_columns[ $column_name ] ),
+						'mla-metavalue' => urlencode( $value ),
+						'heading_suffix' => urlencode( MLA_List_Table::$default_columns[ $column_name ] . ': ' . $value ) 
+					), 'upload.php' ) ), esc_html( $value ) );
 			}
 
 			if ( count( $list ) > 1 )
@@ -538,7 +471,10 @@ class MLA_List_Table extends WP_List_Table {
 	 */
 	function column_icon( $item )
 	{
-		return wp_get_attachment_image( $item->ID, array( 80, 60 ), true );
+		if ( 'checked' == MLAOptions::mla_get_option( MLAOptions::MLA_ENABLE_MLA_ICONS ) )
+			return wp_get_attachment_image( $item->ID, array( 64, 64 ), true );
+		else
+			return wp_get_attachment_image( $item->ID, array( 80, 60 ), true );
 	}
 	
 	/**
@@ -687,7 +623,7 @@ class MLA_List_Table extends WP_List_Table {
 				$parent_title = '(no title: bad ID)';
 
 			$parent = sprintf( '<a href="%1$s">(parent:%2$s)</a>', esc_url( add_query_arg( array(
-					'page' => 'mla-menu',
+					'page' => MLA::ADMIN_PAGE_SLUG,
 					'parent' => $item->post_parent,
 					'heading_suffix' => urlencode( 'Parent: ' .  $parent_title ) 
 				), 'upload.php' ) ), (string) $item->post_parent );
@@ -719,7 +655,7 @@ class MLA_List_Table extends WP_List_Table {
 			$errors = '';
 		
 		if ( !empty( $row_actions ) ) {
-			return sprintf( '%1$s<br>%2$s<br>%3$s%4$s', /*%1$s*/ $post_title, /*%2$s*/ $post_name, /*%3$s*/ $errors, /*%4$s*/ $this->row_actions( $row_actions ) );
+			return sprintf( '%1$s<br>%2$s<br>%3$s%4$s%5$s', /*%1$s*/ $post_title, /*%2$s*/ $post_name, /*%3$s*/ $errors, /*%4$s*/ $this->row_actions( $row_actions ), /*%5$s*/ $this->_build_inline_data( $item ) );
 		} else {
 			return sprintf( '%1$s<br>%2$s<br>%3$s', /*%1$s*/ $post_title, /*%2$s*/ $post_name, /*%3$s*/ $errors );
 		}
@@ -737,7 +673,7 @@ class MLA_List_Table extends WP_List_Table {
 		$row_actions = self::_build_rollover_actions( $item, 'post_title' );
 		
 		if ( !empty( $row_actions ) ) {
-			return sprintf( '%1$s<br>%2$s', /*%1$s*/ esc_attr( $item->post_title ), /*%2$s*/ $this->row_actions( $row_actions ) );
+			return sprintf( '%1$s<br>%2$s%3$s', /*%1$s*/ esc_attr( $item->post_title ), /*%2$s*/ $this->row_actions( $row_actions ), /*%3$s*/ $this->_build_inline_data( $item ) );
 		} else {
 			return esc_attr( $item->post_title );
 		}
@@ -755,7 +691,7 @@ class MLA_List_Table extends WP_List_Table {
 		$row_actions = self::_build_rollover_actions( $item, 'post_name' );
 		
 		if ( !empty( $row_actions ) ) {
-			return sprintf( '%1$s<br>%2$s', /*%1$s*/ esc_attr( $item->post_name ), /*%2$s*/ $this->row_actions( $row_actions ) );
+			return sprintf( '%1$s<br>%2$s%3$s', /*%1$s*/ esc_attr( $item->post_name ), /*%2$s*/ $this->row_actions( $row_actions ), /*%3$s*/ $this->_build_inline_data( $item ) );
 		} else {
 			return esc_attr( $item->post_name );
 		}
@@ -777,7 +713,7 @@ class MLA_List_Table extends WP_List_Table {
 				$parent_title = '(no title: bad ID)';
 
 			return sprintf( '<a href="%s">%s</a>', esc_url( add_query_arg( array(
-				'page' => 'mla-menu',
+				'page' => MLA::ADMIN_PAGE_SLUG,
 				'parent' => $item->post_parent,
 				'heading_suffix' => urlencode( 'Parent: ' . $parent_title ) 
 			), 'upload.php' ) ), (string) $item->post_parent );
@@ -937,7 +873,7 @@ class MLA_List_Table extends WP_List_Table {
 	function column_alt_text( $item ) {
 		if ( isset( $item->mla_wp_attachment_image_alt ) )
 			return sprintf( '<a href="%s">%s</a>', esc_url( add_query_arg( array(
-				'page' => 'mla-menu',
+				'page' => MLA::ADMIN_PAGE_SLUG,
 				'mla-metakey' => '_wp_attachment_image_alt',
 				'mla-metavalue' => urlencode( $item->mla_wp_attachment_image_alt ),
 				'heading_suffix' => urlencode( 'ALT Text: ' . $item->mla_wp_attachment_image_alt ) 
@@ -979,7 +915,11 @@ class MLA_List_Table extends WP_List_Table {
 	 * @return	string	HTML markup to be placed inside the column
 	 */
 	function column_post_mime_type( $item ) {
-		return $item->post_mime_type;
+		return sprintf( '<a href="%s">%s</a>', esc_url( add_query_arg( array(
+			'page' => MLA::ADMIN_PAGE_SLUG,
+			'post_mime_type' => urlencode( $item->post_mime_type ),
+			'heading_suffix' => urlencode( 'MIME Type: ' . $item->post_mime_type ) 
+		), 'upload.php' ) ), esc_html( $item->post_mime_type ) );
 	}
 	
 	/**
@@ -1065,7 +1005,7 @@ class MLA_List_Table extends WP_List_Table {
 		
 		if ( isset( $user->data->display_name ) )
 			return sprintf( '<a href="%s">%s</a>', esc_url( add_query_arg( array(
-				 'page' => 'mla-menu',
+				 'page' => MLA::ADMIN_PAGE_SLUG,
 				'author' => $item->post_author,
 				'heading_suffix' => urlencode( 'Author: ' . $user->data->display_name ) 
 			), 'upload.php' ) ), esc_html( $user->data->display_name ) );
@@ -1124,7 +1064,7 @@ class MLA_List_Table extends WP_List_Table {
 	 */
 	function get_hidden_columns( )
 	{
-		$columns = get_user_option( 'managemedia_page_mla-menucolumnshidden' );
+		$columns = get_user_option( 'managemedia_page_' . MLA::ADMIN_PAGE_SLUG . 'columnshidden' );
 
 		if ( is_array( $columns ) )
 			return $columns;
@@ -1162,6 +1102,132 @@ class MLA_List_Table extends WP_List_Table {
 	}
 	
 	/**
+	 * Returns HTML markup for one view that can be used with this table
+	 *
+	 * @since 1.40
+	 *
+	 * @param	string	View slug, key to MLA_POST_MIME_TYPES array 
+	 * @param	string	Slug for current view 
+	 * 
+	 * @return	string | false	HTML for link to display the view, false if count = zero
+	 */
+	function _get_view( $view_slug, $current_view ) {
+		global $wpdb;
+		static $mla_types = NULL, $posts_per_type, $post_mime_types, $avail_post_mime_types, $matches, $num_posts, $base_url;
+		
+		$class = ( $view_slug == $current_view ) ? ' class="current"' : '';
+
+		/*
+		 * Calculate the common values once per page load
+		 */
+		if ( is_null( $mla_types ) ) {
+			$query_types = MLAMime::mla_query_view_items( array( 'orderby' => 'menu_order' ), 0, 0 );
+			if ( ! is_array( $query_types ) )
+				$query_types = array ();
+				
+			$mla_types = array ();
+			foreach( $query_types as $value )
+				$mla_types[ $value->slug ] = $value;
+
+			$posts_per_type = (array) wp_count_attachments();
+			$post_mime_types = get_post_mime_types();
+			$avail_post_mime_types = $this->_avail_mime_types( $posts_per_type );
+			$matches = wp_match_mime_types( array_keys( $post_mime_types ), array_keys( $posts_per_type ) );
+
+			foreach ( $matches as $type => $reals )
+				foreach ( $reals as $real )
+					$num_posts[ $type ] = ( isset( $num_posts[ $type ] ) ) ? $num_posts[ $type ] + $posts_per_type[ $real ] : $posts_per_type[ $real ];
+			
+			/*
+			 * Remember the view filters
+			 */
+			$base_url = 'upload.php?page=' . MLA::ADMIN_PAGE_SLUG;
+			
+			if ( isset( $_REQUEST['m'] ) )
+				$base_url = add_query_arg( array(
+					 'm' => $_REQUEST['m'] 
+				), $base_url );
+			
+			if ( isset( $_REQUEST['mla_filter_term'] ) )
+				$base_url = add_query_arg( array(
+					 'mla_filter_term' => $_REQUEST['mla_filter_term'] 
+				), $base_url );
+		}
+
+		/*
+		 * Handle the special cases: all, unattached and trash
+		 */
+		switch( $view_slug ) {
+			case 'all':
+				$total_items = array_sum( $posts_per_type ) - $posts_per_type['trash'];
+				return "<a href='{$base_url}'$class>" . sprintf( _nx( 'All <span class="count">(%s)</span>', 'All <span class="count">(%s)</span>', $total_items, 'uploaded files' ), number_format_i18n( $total_items ) ) . '</a>';
+			case 'unattached':
+				$total_items = $wpdb->get_var(
+						"
+						SELECT COUNT( * ) FROM {$wpdb->posts}
+						WHERE post_type = 'attachment' AND post_status != 'trash' AND post_parent < 1
+						"
+				);
+
+				if ( $total_items )
+					return '<a href="' . add_query_arg( array( 'detached' => '1' ), $base_url ) . '"' . $class . '>' . sprintf( _nx( 'Unattached <span class="count">(%s)</span>', 'Unattached <span class="count">(%s)</span>', $total_items, 'detached files' ), number_format_i18n( $total_items ) ) . '</a>';
+				else
+					return false;
+			case 'trash':
+				if ( $posts_per_type['trash'] )
+					return '<a href="' . add_query_arg( array(
+						 'status' => 'trash' 
+					), $base_url ) . '"' . $class . '>' . sprintf( _nx( 'Trash <span class="count">(%s)</span>', 'Trash <span class="count">(%s)</span>', $posts_per_type['trash'], 'uploaded files' ), number_format_i18n( $posts_per_type['trash'] ) ) . '</a>';
+				else
+					return false;
+		} // switch special cases
+
+		/*
+		 * Make sure the slug is in our list
+		 */
+		if ( array_key_exists( $view_slug, $mla_types ) )
+			$mla_type = $mla_types[ $view_slug ];
+		else
+			return false;
+		
+		/*
+		 * Handle post_mime_types
+		 */
+		if ( $mla_type->post_mime_type ) {
+			if ( !empty( $num_posts[ $view_slug ] ) )
+				return "<a href='" . add_query_arg( array(
+					 'post_mime_type' => $view_slug 
+				), $base_url ) . "'$class>" . sprintf( translate_nooped_plural( $post_mime_types[ $view_slug ][ 2 ], $num_posts[ $view_slug ] ), number_format_i18n( $num_posts[ $view_slug ] ) ) . '</a>';
+			else
+				return false;
+		}
+
+		/*
+		 * Handle extended specification types
+		 */
+		if ( empty( $mla_type->specification ) )
+			$query = array ( 'post_mime_type' => $view_slug );
+		else
+			$query = MLAMime::mla_prepare_view_query( $mla_type->specification );
+			
+		$total_items = MLAData::mla_count_list_table_items( $query );
+		if ( $total_items ) {
+			$singular = sprintf('%s <span class="count">(%%s)</span>', $mla_type->singular );
+			$plural = sprintf('%s <span class="count">(%%s)</span>', $mla_type->plural );
+			$nooped_plural = _n_noop( $singular, $plural );
+			
+			if ( isset( $query['post_mime_type'] ) ) 
+				$query['post_mime_type'] = urlencode( $query['post_mime_type'] );
+			else
+				$query['meta_query'] = urlencode( serialize( $query['meta_query'] ) );
+
+			return "<a href='" . add_query_arg( $query, $base_url ) . "'$class>" . sprintf( translate_nooped_plural( $nooped_plural, $total_items ), number_format_i18n( $total_items ) ) . '</a>';
+		}
+
+		return false;
+	} // _get_view
+	
+	/**
 	 * Returns an associative array listing all the views that can be used with this table.
 	 * These are listed across the top of the page and managed by WordPress.
 	 *
@@ -1170,70 +1236,32 @@ class MLA_List_Table extends WP_List_Table {
 	 * @return	array	View information,e.g., array ( id => link )
 	 */
 	function get_views( ) {
-		global $wpdb;
-		
-		$type_links = array();
-		$_num_posts = (array) wp_count_attachments();
-		$_total_posts = array_sum( $_num_posts ) - $_num_posts['trash'];
-		$total_orphans = $wpdb->get_var(
-				"
-				SELECT COUNT( * ) FROM {$wpdb->posts}
-				WHERE post_type = 'attachment' AND post_status != 'trash' AND post_parent < 1
-				"
-		);
-		
-		$post_mime_types = self::mla_get_attachment_mime_types();
-		$avail_post_mime_types = $this->_avail_mime_types( $_num_posts );
-		$matches = wp_match_mime_types( array_keys( $post_mime_types ), array_keys( $_num_posts ) );
-		
 		/*
-		 * Remember the view filters
+		 * Find current view
 		 */
-		$base_url = 'upload.php?page=mla-menu';
+		if ( $this->detached  )
+			$current_view = 'unattached';
+		elseif ( $this->is_trash )
+			$current_view = 'trash';
+		elseif ( empty( $_REQUEST['post_mime_type'] ) )
+			$current_view = 'all';
+		else
+			$current_view = $_REQUEST['post_mime_type'];
 		
-		if ( isset( $_REQUEST['m'] ) )
-			$base_url = add_query_arg( array(
-				 'm' => $_REQUEST['m'] 
-			), $base_url );
-		
-		if ( isset( $_REQUEST['mla_filter_term'] ) )
-			$base_url = add_query_arg( array(
-				 'mla_filter_term' => $_REQUEST['mla_filter_term'] 
-			), $base_url );
-		
-		foreach ( $matches as $type => $reals )
-			foreach ( $reals as $real )
-				$num_posts[ $type ] = ( isset( $num_posts[ $type ] ) ) ? $num_posts[ $type ] + $_num_posts[ $real ] : $_num_posts[ $real ];
-		
-		$class = ( empty( $_REQUEST['post_mime_type'] ) && !$this->detached && !$this->is_trash ) ? ' class="current"' : '';
-		$type_links['all'] = "<a href='{$base_url}'$class>" . sprintf( _nx( 'All <span class="count">(%s)</span>', 'All <span class="count">(%s)</span>', $_total_posts, 'uploaded files' ), number_format_i18n( $_total_posts ) ) . '</a>';
+		$mla_types = MLAMime::mla_query_view_items( array( 'orderby' => 'menu_order' ), 0, 0 );
+		if ( ! is_array( $mla_types ) )
+			$mla_types = array ();
+			
+		/*
+		 * Filter the list, generate the views
+		 */
+		$view_links = array();
+		foreach ( $mla_types as $value ) {
+			if ( $value->table_view && $link = self::_get_view( $value->slug, $current_view ) )
+				$view_links[ $value->slug ] = $link;
+		}
 
-		foreach ( $post_mime_types as $mime_type => $label ) {
-			$class = '';
-			
-			if ( !wp_match_mime_types( $mime_type, $avail_post_mime_types ) )
-				continue;
-			
-			if ( !empty( $_REQUEST['post_mime_type'] ) && wp_match_mime_types( $mime_type, $_REQUEST['post_mime_type'] ) )
-				$class = ' class="current"';
-			
-			if ( !empty( $num_posts[ $mime_type ] ) ) {
-				$type_links[ $mime_type ] = "<a href='" . add_query_arg( array(
-					 'post_mime_type' => $mime_type 
-				), $base_url ) . "'$class>" . sprintf( translate_nooped_plural( $label[ 2 ], $num_posts[ $mime_type ] ), number_format_i18n( $num_posts[ $mime_type ] ) ) . '</a>';
-			}
-		} // foreach post_mime_type
-		
-		$type_links['detached'] = '<a href="' . add_query_arg( array(
-			 'detached' => '1' 
-		), $base_url ) . '"' . ( $this->detached ? ' class="current"' : '' ) . '>' . sprintf( _nx( 'Unattached <span class="count">(%s)</span>', 'Unattached <span class="count">(%s)</span>', $total_orphans, 'detached files' ), number_format_i18n( $total_orphans ) ) . '</a>';
-		
-		if ( !empty( $_num_posts['trash'] ) )
-			$type_links['trash'] = '<a href="' . add_query_arg( array(
-				 'status' => 'trash' 
-			), $base_url ) . '"' . ( $this->is_trash ? ' class="current"' : '' ) . '>' . sprintf( _nx( 'Trash <span class="count">(%s)</span>', 'Trash <span class="count">(%s)</span>', $_num_posts['trash'], 'uploaded files' ), number_format_i18n( $_num_posts['trash'] ) ) . '</a>';
-		
-		return $type_links;
+		return $view_links;
 	}
 	
 	/**
@@ -1318,7 +1346,6 @@ class MLA_List_Table extends WP_List_Table {
 		/*
 		 * REQUIRED for pagination.
 		 */
-		$total_items = MLAData::mla_count_list_table_items( $_REQUEST );
 		$user = get_current_user_id();
 		$screen = get_current_screen();
 		$option = $screen->get_option( 'per_page', 'option' );
@@ -1326,6 +1353,16 @@ class MLA_List_Table extends WP_List_Table {
 		if ( empty( $per_page ) || $per_page < 1 ) {
 			$per_page = $screen->get_option( 'per_page', 'default' );
 		}
+
+//		$current_page = $this->get_pagenum();
+		$current_page = isset( $_REQUEST['paged'] ) ? absint( $_REQUEST['paged'] ) : 1;
+
+		/*
+		 * REQUIRED. Assign sorted and paginated data to the items property, where 
+		 * it can be used by the rest of the class.
+		 */
+		$total_items = MLAData::mla_count_list_table_items( $_REQUEST, ( ( $current_page - 1 ) * $per_page ), $per_page );
+		$this->items = MLAData::mla_query_list_table_items( $_REQUEST, ( ( $current_page - 1 ) * $per_page ), $per_page );
 		
 		/*
 		 * REQUIRED. We also have to register our pagination options & calculations.
@@ -1335,14 +1372,6 @@ class MLA_List_Table extends WP_List_Table {
 			'per_page' => $per_page, //WE have to determine how many items to show on a page
 			'total_pages' => ceil( $total_items / $per_page ) //WE have to calculate the total number of pages
 		) );
-
-		$current_page = $this->get_pagenum();
-
-		/*
-		 * REQUIRED. Assign sorted and paginated data to the items property, where 
-		 * it can be used by the rest of the class.
-		 */
-		$this->items = MLAData::mla_query_list_table_items( $_REQUEST, ( ( $current_page - 1 ) * $per_page ), $per_page );
 	}
 	
 	/**
@@ -1370,6 +1399,6 @@ class MLA_List_Table extends WP_List_Table {
  */
 add_action( 'admin_init', 'MLA_List_Table::mla_admin_init_action' );
  
-add_filter( 'get_user_option_managemedia_page_mla-menucolumnshidden', 'MLA_List_Table::mla_manage_hidden_columns_filter', 10, 3 );
-add_filter( 'manage_media_page_mla-menu_columns', 'MLA_List_Table::mla_manage_columns_filter', 10, 0 );
+add_filter( 'get_user_option_managemedia_page_' . MLA::ADMIN_PAGE_SLUG . 'columnshidden', 'MLA_List_Table::mla_manage_hidden_columns_filter', 10, 3 );
+add_filter( 'manage_media_page_' . MLA::ADMIN_PAGE_SLUG . '_columns', 'MLA_List_Table::mla_manage_columns_filter', 10, 0 );
 ?>

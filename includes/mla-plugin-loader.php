@@ -62,6 +62,12 @@ else {
 	add_action('init', 'MLAObjects::initialize');
 	
 	/*
+	 * MIME Type functions.
+	 */
+	require_once( MLA_PLUGIN_PATH . 'includes/class-mla-mime-types.php' );
+	add_action('init', 'MLAMime::initialize');
+	
+	/*
 	 * Shortcodes
 	 */
 	require_once( MLA_PLUGIN_PATH . 'includes/class-mla-shortcodes.php');
@@ -94,6 +100,12 @@ else {
 	 */
 	require_once( MLA_PLUGIN_PATH . 'includes/class-mla-settings.php' );
 	add_action( 'init', 'MLASettings::initialize' );
+	
+	/*
+	 * Main program
+	 */
+	require_once( MLA_PLUGIN_PATH . 'includes/class-mla-main.php');
+	add_action('init', 'MLA::initialize');
 	 
 	/*
 	 * Custom list table package that extends the core WP_List_Table class.
@@ -102,9 +114,21 @@ else {
 	require_once( MLA_PLUGIN_PATH . 'includes/class-mla-list-table.php' );
 	
 	/*
-	 * Main program
+	 * Custom list table package for the Post MIME Type Views.
+	 * Doesn't need an initialize function; has a constructor.
 	 */
-	require_once( MLA_PLUGIN_PATH . 'includes/class-mla-main.php');
-	add_action('init', 'MLA::initialize');
+	require_once( MLA_PLUGIN_PATH . 'includes/class-mla-view-list-table.php' );
+	
+	/*
+	 * Custom list table package for the Optional Upload MIME Type Views.
+	 * Doesn't need an initialize function; has a constructor.
+	 */
+	require_once( MLA_PLUGIN_PATH . 'includes/class-mla-upload-optional-list-table.php' );
+	
+	/*
+	 * Custom list table package for the Upoload MIME Type Views.
+	 * Doesn't need an initialize function; has a constructor.
+	 */
+	require_once( MLA_PLUGIN_PATH . 'includes/class-mla-upload-list-table.php' );
 }
 ?>

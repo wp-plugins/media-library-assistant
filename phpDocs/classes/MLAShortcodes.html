@@ -61,6 +61,7 @@
 <li class="method public "><a href="#mla_shortcode_query_posts_orderby_filter" title="mla_shortcode_query_posts_orderby_filter :: Filters the ORDERBY clause for shortcode queries"><span class="description">Filters the ORDERBY clause for shortcode queries</span><pre>mla_shortcode_query_posts_orderby_filter()</pre></a></li>
 <li class="method public "><a href="#mla_shortcode_query_posts_where_filter" title="mla_shortcode_query_posts_where_filter :: Filters the WHERE clause for shortcode queries"><span class="description">Filters the WHERE clause for shortcode queries</span><pre>mla_shortcode_query_posts_where_filter()</pre></a></li>
 <li class="nav-header private">» Private</li>
+<li class="method private "><a href="#_process_shortcode_parameter" title="_process_shortcode_parameter :: Handles brace/bracket escaping and parses template for a shortcode parameter"><span class="description">Handles brace/bracket escaping and parses template for a shortcode parameter</span><pre>_process_shortcode_parameter()</pre></a></li>
 <li class="method private "><a href="#_sanitize_query_specification" title="_sanitize_query_specification :: Cleans up damage caused by the Visual Editor to the tax_query and meta_query specifications"><span class="description">Cleans up damage caused by the Visual Editor to the tax_query and meta_query specifications</span><pre>_sanitize_query_specification()</pre></a></li>
 <li class="method private "><a href="#_validate_sql_orderby" title="_validate_sql_orderby :: Translates query parameters to a valid SQL order by clause."><span class="description">Translates query parameters to a valid SQL order by clause.</span><pre>_validate_sql_orderby()</pre></a></li>
 <li class="nav-header">
@@ -252,6 +253,30 @@ Defined as public because it's a filter.</p></p>
 <code>string</code>query clause after modification</div>
 </div></div>
 </div>
+<a name="_process_shortcode_parameter" id="_process_shortcode_parameter"></a><div class="element clickable method private _process_shortcode_parameter" data-toggle="collapse" data-target="._process_shortcode_parameter .collapse">
+<h2>Handles brace/bracket escaping and parses template for a shortcode parameter</h2>
+<pre>_process_shortcode_parameter(string $text, string $markup_values) : string</pre>
+<div class="labels"></div>
+<div class="row collapse"><div class="detail-description">
+<p class="long_description"></p>
+<table class="table table-bordered"><tr>
+<th>since</th>
+<td>1.14</td>
+</tr></table>
+<h3>Parameters</h3>
+<div class="subelement argument">
+<h4>$text</h4>
+<code>string</code><p>raw shortcode parameter, e.g., "text {+field+} {brackets} \{braces\}"</p>
+</div>
+<div class="subelement argument">
+<h4>$markup_values</h4>
+<code>string</code><p>template substitution values, e.g., ('instance' => '1', ... )</p>
+</div>
+<h3>Returns</h3>
+<div class="subelement response">
+<code>string</code>query specification with HTML escape sequences and line breaks removed</div>
+</div></div>
+</div>
 <a name="_sanitize_query_specification" id="_sanitize_query_specification"></a><div class="element clickable method private _sanitize_query_specification" data-toggle="collapse" data-target="._sanitize_query_specification .collapse">
 <h2>Cleans up damage caused by the Visual Editor to the tax_query and meta_query specifications</h2>
 <pre>_sanitize_query_specification(string $specification) : string</pre>
@@ -418,7 +443,7 @@ any further logic required to translate those values is contained in the filter.
 <div class="row"><footer class="span12">
             Template is built using <a href="http://twitter.github.com/bootstrap/">Twitter Bootstrap 2</a> and icons provided by <a href="http://glyphicons.com/">Glyphicons</a>.<br>
             Documentation is powered by <a href="http://www.phpdoc.org/">phpDocumentor 2.0.0a8</a> and<br>
-            generated on 2013-04-22T17:09:54-07:00.<br></footer></div>
+            generated on 2013-06-18T20:19:59-07:00.<br></footer></div>
 </div>
 </body>
 </html>

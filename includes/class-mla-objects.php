@@ -1,6 +1,6 @@
 <?php
 /**
- * Media Library Assistant Custom Taxonomy and Post Type objects
+ * Media Library Assistant Custom Taxonomy objects
  *
  * @package Media Library Assistant
  * @since 0.1
@@ -89,7 +89,7 @@ class MLAObjects {
 			);
 		}
 	
-		$taxonomies = get_taxonomies( array ( 'show_ui' => 'true' ), 'names' );
+		$taxonomies = get_taxonomies( array ( 'show_ui' => true ), 'names' );
 		foreach ( $taxonomies as $tax_name ) {
 			if ( MLAOptions::mla_taxonomy_support( $tax_name ) ) {
 				register_taxonomy_for_object_type( $tax_name, 'attachment');
@@ -194,7 +194,7 @@ class MLAObjects {
 		$tax_object = get_taxonomy($taxonomy);
 
 		return sprintf( '<a href="%1$s">%2$s</a>', esc_url( add_query_arg(
-				array( 'page' => 'mla-menu', 'mla-tax' => $taxonomy, 'mla-term' => $term->slug, 'heading_suffix' => urlencode( $tax_object->label . ':' . $term->name ) ), 'upload.php' ) ), number_format_i18n( $results->post_count ) );
+				array( 'page' => MLA::ADMIN_PAGE_SLUG, 'mla-tax' => $taxonomy, 'mla-term' => $term->slug, 'heading_suffix' => urlencode( $tax_object->label . ':' . $term->name ) ), 'upload.php' ) ), number_format_i18n( $results->post_count ) );
 	}
 } //Class MLAObjects
 ?>

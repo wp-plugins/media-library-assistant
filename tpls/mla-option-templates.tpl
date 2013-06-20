@@ -120,16 +120,23 @@
         </td>
 		</tr>
         <tr valign="top">
-		<td>
-			&nbsp;
+		<td>&nbsp;
+			
         </td>
 		<td style="text-align:left;">
             <input name="custom_field_mapping[[+key+]][meta_name]" id="custom_field_meta_name_[+key+]" type="text" size="[+meta_name_size+]" value="[+meta_name+]" />
         </td>
 		<td colspan="[+column_count_meta+]" style="text-align:left; vertical-align:middle;">
-            <input type="checkbox" name="custom_field_mapping[[+key+]][meta_single]" id="custom_field_meta_single_[+key+]" [+meta_single_checked+] value="checked" /> <strong>Single</strong>
+			<strong>Option:</strong>&nbsp;
+            <select name="custom_field_mapping[[+key+]][option]" id="custom_field_option_[+key+]">
+                <option [+text_option+] value="text">Text</option>
+                <option [+single_option+] value="single">Single</option>
+                <option [+export_option+] value="export">Export</option>
+                <option [+array_option+] value="array">Array</option>
+                <option [+multi_option+] value="multi">Multi</option>
+            </select>
             &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-            <input type="checkbox" name="custom_field_mapping[[+key+]][meta_export]" id="custom_field_meta_export_[+key+]" [+meta_export_checked+] value="checked" /> <strong>Export</strong>
+            <input type="checkbox" name="custom_field_mapping[[+key+]][no_null]" id="custom_field_no_null_[+key+]" [+no_null_checked+] value="1" /> <strong>Delete NULL values</strong>
         </td>
 		</tr>
         <tr valign="top">
@@ -181,16 +188,23 @@
         </td>
 		</tr>
         <tr valign="top">
-		<td>
-			&nbsp;
+		<td>&nbsp;
+			
         </td>
 		<td style="text-align:left;">
             <input name="custom_field_mapping[[+key+]][meta_name]" id="custom_field_meta_name_[+key+]" type="text" size="[+meta_name_size+]" value="[+meta_name+]" />
         </td>
 		<td colspan="[+column_count_meta+]" style="text-align:left; vertical-align:middle;">
-            <input type="checkbox" name="custom_field_mapping[[+key+]][meta_single]" id="custom_field_meta_single_[+key+]" [+meta_single_checked+] value="checked" /> <strong>Single</strong>
+			<strong>Option:</strong>&nbsp;
+            <select name="custom_field_mapping[[+key+]][option]" id="custom_field_option_[+key+]">
+                <option [+text_option+] value="text">Text</option>
+                <option [+single_option+] value="single">Single</option>
+                <option [+export_option+] value="export">Export</option>
+                <option [+array_option+] value="array">Array</option>
+                <option [+multi_option+] value="multi">Multi</option>
+            </select>
             &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-            <input type="checkbox" name="custom_field_mapping[[+key+]][meta_export]" id="custom_field_meta_export_[+key+]" [+meta_export_checked+] value="checked" /> <strong>Export</strong>
+            <input type="checkbox" name="custom_field_mapping[[+key+]][no_null]" id="custom_field_no_null_[+key+]" [+no_null_checked+] value="1" /> <strong>Delete NULL values</strong>
         </td>
 		</tr>
         <tr valign="top">
@@ -238,16 +252,23 @@
         </td>
 		</tr>
         <tr valign="top">
-		<td>
-			&nbsp;
+		<td>&nbsp;
+			
         </td>
 		<td style="text-align:left;">
             <input name="custom_field_mapping[[+key+]][meta_name]" id="custom_field_meta_name_[+key+]" type="text" size="[+meta_name_size+]" value="[+meta_name+]" />
         </td>
 		<td colspan="[+column_count_meta+]" style="text-align:left; vertical-align:middle;">
-            <input type="checkbox" name="custom_field_mapping[[+key+]][meta_single]" id="custom_field_meta_single_[+key+]" [+meta_single_checked+] value="checked" /> <strong>Single</strong>
+			<strong>Option:</strong>&nbsp;
+            <select name="custom_field_mapping[[+key+]][option]" id="custom_field_option_[+key+]">
+                <option [+text_option+] value="text">Text</option>
+                <option [+single_option+] value="single">Single</option>
+                <option [+export_option+] value="export">Export</option>
+                <option [+array_option+] value="array">Array</option>
+                <option [+multi_option+] value="multi">Multi</option>
+            </select>
             &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-            <input type="checkbox" name="custom_field_mapping[[+key+]][meta_export]" id="custom_field_meta_export_[+key+]" [+meta_export_checked+] value="checked" /> <strong>Export</strong>
+            <input type="checkbox" name="custom_field_mapping[[+key+]][no_null]" id="custom_field_no_null_[+key+]" [+no_null_checked+] value="1" /> <strong>Delete NULL values</strong>
         </td>
 		</tr>
         <tr valign="top">

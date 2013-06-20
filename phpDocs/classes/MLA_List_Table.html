@@ -55,6 +55,7 @@
 <li class="method public "><a href="#__construct" title="__construct :: Initializes some properties from $_REQUEST vairables, then
 calls the parent constructor to set some default configs."><span class="description">Initializes some properties from $_REQUEST vairables, then
 calls the parent constructor to set some default configs.</span><pre>__construct()</pre></a></li>
+<li class="method public "><a href="#_get_view" title="_get_view :: Returns HTML markup for one view that can be used with this table"><span class="description">Returns HTML markup for one view that can be used with this table</span><pre>_get_view()</pre></a></li>
 <li class="method public "><a href="#column_ID_parent" title="column_ID_parent :: Supply the content for a custom column"><span class="description">Supply the content for a custom column</span><pre>column_ID_parent()</pre></a></li>
 <li class="method public "><a href="#column_alt_text" title="column_alt_text :: Supply the content for a custom column"><span class="description">Supply the content for a custom column</span><pre>column_alt_text()</pre></a></li>
 <li class="method public "><a href="#column_attached_to" title="column_attached_to :: Supply the content for a custom column"><span class="description">Supply the content for a custom column</span><pre>column_attached_to()</pre></a></li>
@@ -89,8 +90,7 @@ from default values if the option is not set</span><pre>get_hidden_columns()</pr
 and the value is db column to sort by."><span class="description">Returns an array where the  key is the column that needs to be sortable
 and the value is db column to sort by.</span><pre>get_sortable_columns()</pre></a></li>
 <li class="method public "><a href="#get_views" title="get_views :: Returns an associative array listing all the views that can be used with this table."><span class="description">Returns an associative array listing all the views that can be used with this table.</span><pre>get_views()</pre></a></li>
-<li class="method public "><a href="#mla_admin_init_action" title="mla_admin_init_action :: Adds support for taxonomy columns"><span class="description">Adds support for taxonomy columns</span><pre>mla_admin_init_action()</pre></a></li>
-<li class="method public "><a href="#mla_get_attachment_mime_types" title="mla_get_attachment_mime_types :: Get possible mime types for view preparation"><span class="description">Get possible mime types for view preparation</span><pre>mla_get_attachment_mime_types()</pre></a></li>
+<li class="method public "><a href="#mla_admin_init_action" title="mla_admin_init_action :: Adds support for taxonomy and custom field columns"><span class="description">Adds support for taxonomy and custom field columns</span><pre>mla_admin_init_action()</pre></a></li>
 <li class="method public "><a href="#mla_get_sortable_columns" title="mla_get_sortable_columns :: Return the names and display values of the sortable columns"><span class="description">Return the names and display values of the sortable columns</span><pre>mla_get_sortable_columns()</pre></a></li>
 <li class="method public "><a href="#mla_get_taxonomy_filter_dropdown" title="mla_get_taxonomy_filter_dropdown :: Get dropdown box of terms to filter by, if available"><span class="description">Get dropdown box of terms to filter by, if available</span><pre>mla_get_taxonomy_filter_dropdown()</pre></a></li>
 <li class="method public "><a href="#mla_manage_columns_filter" title="mla_manage_columns_filter :: Handler for filter 'manage_media_page_mla-menu_columns'"><span class="description">Handler for filter 'manage_media_page_mla-menu_columns'</span><pre>mla_manage_columns_filter()</pre></a></li>
@@ -98,7 +98,7 @@ and the value is db column to sort by.</span><pre>get_sortable_columns()</pre></
 <li class="method public "><a href="#prepare_items" title="prepare_items :: Prepares the list of items for displaying"><span class="description">Prepares the list of items for displaying</span><pre>prepare_items()</pre></a></li>
 <li class="method public "><a href="#single_row" title="single_row :: Generates (echoes) content for a single row of the table"><span class="description">Generates (echoes) content for a single row of the table</span><pre>single_row()</pre></a></li>
 <li class="nav-header private">» Private</li>
-<li class="method private "><a href="#_avail_mime_types" title="_avail_mime_types :: Get mime types with one or more attachments for view preparation"><span class="description">Get mime types with one or more attachments for view preparation</span><pre>_avail_mime_types()</pre></a></li>
+<li class="method private "><a href="#_avail_mime_types" title="_avail_mime_types :: Get MIME types with one or more attachments for view preparation"><span class="description">Get MIME types with one or more attachments for view preparation</span><pre>_avail_mime_types()</pre></a></li>
 <li class="method private "><a href="#_build_inline_data" title="_build_inline_data :: Add hidden fields with the data for use in the inline editor"><span class="description">Add hidden fields with the data for use in the inline editor</span><pre>_build_inline_data()</pre></a></li>
 <li class="method private "><a href="#_build_rollover_actions" title="_build_rollover_actions :: Add rollover actions to exactly one of the following displayed columns:
 'ID_parent', 'title_name', 'post_title', 'post_name'"><span class="description">Add rollover actions to exactly one of the following displayed columns:
@@ -151,6 +151,28 @@ calls the parent constructor to set some default configs.</h2>
 <th>since</th>
 <td>0.1</td>
 </tr></table>
+</div></div>
+</div>
+<a name="_get_view" id="_get_view"></a><div class="element clickable method public _get_view" data-toggle="collapse" data-target="._get_view .collapse">
+<h2>Returns HTML markup for one view that can be used with this table</h2>
+<pre>_get_view(string $view_slug, string $current_view) : string</pre>
+<div class="labels"></div>
+<div class="row collapse"><div class="detail-description">
+<p class="long_description"></p>
+<table class="table table-bordered"><tr>
+<th>since</th>
+<td>1.40</td>
+</tr></table>
+<h3>Parameters</h3>
+<div class="subelement argument">
+<h4>$view_slug</h4>
+<code>string</code><p>View slug, key to MLA_POST_MIME_TYPES array</p></div>
+<div class="subelement argument">
+<h4>$current_view</h4>
+<code>string</code><p>Slug for current view</p></div>
+<h3>Returns</h3>
+<div class="subelement response">
+<code>string</code>| false HTML for link to display the view, false if count = zero</div>
 </div></div>
 </div>
 <a name="column_ID_parent" id="column_ID_parent"></a><div class="element clickable method public column_ID_parent" data-toggle="collapse" data-target=".column_ID_parent .collapse">
@@ -319,9 +341,9 @@ is given special treatment when columns are processed.</p></p>
 <pre>column_default(array $item, array $column_name) : string</pre>
 <div class="labels"></div>
 <div class="row collapse"><div class="detail-description">
-<p class="long_description"><p>Called when the parent class can't find a method specifically built for a
-given column. The taxonomy columns are handled here. All other columns should
-have a specific method, so this function returns a troubleshooting message.</p></p>
+<p class="long_description"><p>Called when the parent class can't find a method specifically built for a given column.
+The taxonomy and custom field columns are handled here. All other columns should have
+a specific method, so this function returns a troubleshooting message.</p></p>
 <table class="table table-bordered"><tr>
 <th>since</th>
 <td>0.1</td>
@@ -700,7 +722,7 @@ if set.</p></p>
 </div></div>
 </div>
 <a name="mla_admin_init_action" id="mla_admin_init_action"></a><div class="element clickable method public mla_admin_init_action" data-toggle="collapse" data-target=".mla_admin_init_action .collapse">
-<h2>Adds support for taxonomy columns</h2>
+<h2>Adds support for taxonomy and custom field columns</h2>
 <pre>mla_admin_init_action() : void</pre>
 <div class="labels"></div>
 <div class="row collapse"><div class="detail-description">
@@ -710,22 +732,6 @@ created in time to affect the "screen options" setup.</p></p>
 <th>since</th>
 <td>0.30</td>
 </tr></table>
-</div></div>
-</div>
-<a name="mla_get_attachment_mime_types" id="mla_get_attachment_mime_types"></a><div class="element clickable method public mla_get_attachment_mime_types" data-toggle="collapse" data-target=".mla_get_attachment_mime_types .collapse">
-<h2>Get possible mime types for view preparation</h2>
-<pre>mla_get_attachment_mime_types() : array</pre>
-<div class="labels"></div>
-<div class="row collapse"><div class="detail-description">
-<p class="long_description"><p>Modeled after get_post_mime_types in wp-includes/post.php,
-with additional entries.</p></p>
-<table class="table table-bordered"><tr>
-<th>since</th>
-<td>0.1</td>
-</tr></table>
-<h3>Returns</h3>
-<div class="subelement response">
-<code>array</code>Mime type names and HTML markup for views</div>
 </div></div>
 </div>
 <a name="mla_get_sortable_columns" id="mla_get_sortable_columns"></a><div class="element clickable method public mla_get_sortable_columns" data-toggle="collapse" data-target=".mla_get_sortable_columns .collapse">
@@ -840,12 +846,12 @@ $this->set_pagination_args().</p></p>
 </div></div>
 </div>
 <a name="_avail_mime_types" id="_avail_mime_types"></a><div class="element clickable method private _avail_mime_types" data-toggle="collapse" data-target="._avail_mime_types .collapse">
-<h2>Get mime types with one or more attachments for view preparation</h2>
+<h2>Get MIME types with one or more attachments for view preparation</h2>
 <pre>_avail_mime_types(array $num_posts) : array</pre>
 <div class="labels"></div>
 <div class="row collapse"><div class="detail-description">
 <p class="long_description"><p>Modeled after get_available_post_mime_types in wp-admin/includes/post.php,
-with additional entries.</p></p>
+but uses the output of wp_count_attachments() as input.</p></p>
 <table class="table table-bordered"><tr>
 <th>since</th>
 <td>0.1</td>
@@ -853,7 +859,7 @@ with additional entries.</p></p>
 <h3>Parameters</h3>
 <div class="subelement argument">
 <h4>$num_posts</h4>
-<code>array</code><p>Number of posts for each mime type</p></div>
+<code>array</code><p>Number of posts for each MIME type</p></div>
 <h3>Returns</h3>
 <div class="subelement response">
 <code>array</code>Mime type names</div>
@@ -1012,7 +1018,7 @@ Custom field columns are added to this array by mla_admin_init_action.</p></p>
 <div class="row"><footer class="span12">
             Template is built using <a href="http://twitter.github.com/bootstrap/">Twitter Bootstrap 2</a> and icons provided by <a href="http://glyphicons.com/">Glyphicons</a>.<br>
             Documentation is powered by <a href="http://www.phpdoc.org/">phpDocumentor 2.0.0a8</a> and<br>
-            generated on 2013-04-22T17:09:54-07:00.<br></footer></div>
+            generated on 2013-06-18T20:19:59-07:00.<br></footer></div>
 </div>
 </body>
 </html>

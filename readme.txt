@@ -1,10 +1,10 @@
 === Plugin Name ===
 Contributors: dglingren
 Donate link: http://fairtradejudaica.org/make-a-difference/donate/
-Tags: attachment, attachments, documents, gallery, image, images, media, library, media library, media-tags, media tags, tags, media categories, categories, IPTC, EXIF, meta, metadata, photo, photos, photograph, photographs, photoblog, photo albums
+Tags: attachment, attachments, documents, gallery, image, images, media, library, media library, media-tags, media tags, tags, media categories, categories, IPTC, EXIF, meta, metadata, photo, photos, photograph, photographs, photoblog, photo albums, lightroom, photoshop, MIME, mime-type, icon, upload, file extensions
 Requires at least: 3.3
 Tested up to: 3.5.1
-Stable tag: 1.30
+Stable tag: 1.40
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -16,9 +16,11 @@ The Media Library Assistant provides several enhancements for managing the Media
 
 * The **`[mla_gallery]` shortcode**, used in a post, page or custom post type to add a gallery of images and/or other Media Library items (such as PDF documents). [MLA Gallery](http://wordpress.org/extend/plugins/media-library-assistant/other_notes/ "Complete Documentation") is a superset of the WordPress `[gallery]` shortcode; it is compatible with `[gallery]` and provides many enhancements. These include: 1) full query and display support for WordPress categories, tags, custom taxonomies and custom fields, 2) support for all post_mime_type values, not just images 3) media Library items need not be "attached" to the post, and 4) control over the styles, markup and content of each gallery using Style and Markup Templates.
 
-* **Attachment metadata** such as file size, image dimensions and where-used issues can be assigned to WordPress custom fields. You can then use the custom fields in your `[mla_gallery]` display and you can add custom fields as sortable, searchable columns in the Media/Assistant submenu table.
+* **Attachment metadata** such as file size, image dimensions and where-used information can be assigned to WordPress custom fields. You can then use the custom fields in your `[mla_gallery]` display and you can add custom fields as sortable, searchable columns in the Media/Assistant submenu table.
 
 * **IPTC** and **EXIF** metadata can be assigned to standard WordPress fields, taxonomy terms and custom fields. You can update all existing attachments from the Settings page IPTC/EXIF tab, groups of existing attachments with a Bulk Action or one existing attachment from the Edit Media/Edit Single Item screen. Display **IPTC** and **EXIF** metadata with `[mla_gallery]` custom templates.
+
+* Complete control over **Post MIME Types, File Upload extensions/MIME Types and file type icon images**. Fifty four (54) additional upload types, 112 file type icon images and a searchable list of over 1,500 file extension/MIME type associations.
 
 * **Integrates with Photonic Gallery** (plugin), so you can add slideshows, thumbnail strips and special effects to your `[mla_gallery]` galleries.
 
@@ -30,7 +32,7 @@ The Media Library Assistant provides several enhancements for managing the Media
 * An inline **"Quick Edit"** action for many common fields and for custom fields
 * Displays more attachment information such as parent information, file URL and image metadata. Uses and enhances the new Edit Media screen for WordPress 3.5 and above.
 * Allows you to edit the post_parent, the menu_order and to "unattach" items
-* Provides additional view filters for mime types and taxonomies
+* Provides additional view filters for MIME types and taxonomies
 * Provides many more listing columns (more than 20) to choose from
 
 The Assistant is designed to work like the standard Media Library pages, so the learning curve is short and gentle. Contextual help is provided on every new screen to highlight new features.
@@ -116,6 +118,30 @@ All of the MLA source code has been annotated with "DocBlocks", a special type o
 9. The Media Manager popup modal window showing additional filters for date and taxonomy terms. Also shows the enhanced Search Media box.
 
 == Changelog ==
+
+= 1.40 =
+* New: **"base" selection** for the where-used database access tuning "Inserted in" option **can significantly improve performance** while retaining the most useful part of the where-used information. It's on the Settings/Media Library Assistant screen, General tab.
+* New: **Add Post MIME Types and define new views** for the Media/Library screen and the Media Manager/Add Media "media items" drop down list. 
+* New: MLA's Media/Assistant screen and the Media Manager/Add Media "media items" drop down list use an enhanced version of the list, **Table Views**, to support views with multiple MIME Types (e.g., "audio,video") and wildcard specifications (e.g. "*/*ms*"). You can also create views based on custom field values.
+* New: Add file extensions and MIME types for uploads to the Media Library. Search the list of over 1,500 extension/MIME type associations to get the best matches possible.
+* New: **Choose from 112 enhanced file type images** to associate more specific and colorful icons with non-image file extensions for admin screens and `[gallery]` or `[mla_gallery]` displays.
+* New: For `[mla_gallery]`, four new "Gallery Display Content" parameters, `mla_link_attributes`, `mla_image_attributes`, `mla_image_class` and `mla_image_alt`, give you complete control over the link and image portions of gallery items without requiring custom style or markup templates. 
+* New: `upload_date`, `parent_date` and eight "where used" values added to the custom field data sources list.
+* New: Five options for mapping multi-value custom fields, "text", "single", "export", "array" and "multi", give more control over the process.
+* New: "Delete NULL values" option offers better control over storing custom field values mapped from MLA data sources.
+* New: The Media/Assistant "MIME Type" column now links to a table listing filtered by MIME Type.
+* Fix: Better performance for database-intensive oprations such as custom field mapping rules processing.
+* Fix: MLA help tabs are not added to edit taxonomy screens when post_type is not "attachment".
+* Fix: Duplicate MLA help tabs not added to the WordPress Edit Tags and Categories screens.
+* Fix: Quick edit data now populates in Title/Name, Title or Name columns when ID/Parent column is hidden.
+* Fix: Terms dropdown list is now sorted by name (was by term-id) on the Media/Assistant table listing and on the Media Manager "Add Media" dialog box. 
+* Fix: Where-used reporting "Gallery in" and "MLA Gallery in" results now properly handle `[gallery]` and `[mla_gallery]` shortcodes embedded within other (enclosing) shortcodes.
+* Fix: Taxonomy support now properly handles custom taxonomies registered with `show_ui = '1'` and other variations of boolean "true", e.g., those created by the "Magic Fields 2" plugin.
+* Fix: Better error handling and reporting when processing invalid `[mla_gallery]` and `[gallery]` shortcodes.
+* Fix: Unusual calls to the 'add_meta_boxes' action, e.g., missing arguments, no longer generate Warning messages.
+* Fix: For `[mla_gallery]`, `mla_target` now works when `mla_viewer=true`.
+* Fix: For `[mla_gallery]`, `mla_debug` now works with `mla_alt_shortcode`.
+* Fix: For `[mla_gallery]`, the default `caption` value is now available to the `mla_caption` parameter.
 
 = 1.30 =
 * New: **ALL** metadata fields, including the **new fields extracted from audio and video files in WordPress 3.6**, can be mapped to custom fields and added as sortable columns to the Media/Assistant submenu table.
@@ -291,8 +317,8 @@ All of the MLA source code has been annotated with "DocBlocks", a special type o
 
 == Upgrade Notice ==
 
-= 1.30 =
-New "mla_alt_shortcode" parameter combines [mla_gallery] with other gallery display shortcodes, e.g., Jetpack Carousel and Tiled Mosaic. Support for new 3.6 audio/video metadata. One other enhancement, eight fixes.
+= 1.40 =
+Better performance! New custom table views, Post MIME Type and Upload file/MIMEs control; 112 file type icons to choose from. Four new Gallery Display Content parameters. four other enhancements, twelve fixes.
 
 == Other Notes ==
 
@@ -302,6 +328,8 @@ In this section, scroll down to see:
 * MLA Gallery Shortcode Documentation
 * Support for &ldquo;Photonic Gallery for Flickr, Picasa, SmugMug, 500px and Instagram&rdquo;
 * MLA Gallery Style and Markup Template Documentation
+* Library Views/Post MIME Type Processing
+* File Extension/MIME Type Processing
 * Custom Field Processing Options
 * IPTC &amp; EXIF Processing Options
 
@@ -315,6 +343,8 @@ I have used and learned much from the following books (among many):
 * Professional WordPress Plugin Development, by Brad Williams, Ozh Richard and Justin Tadlock (Mar 15, 2011) ISBN-13: 978-0470916223
 * WordPress 3 Plugin Development Essentials, by Brian Bondari and Everett Griffiths (Mar 24, 2011) ISBN-13: 978-1849513524
 * WordPress and Ajax, by Ronald Huereca (Jan 13, 2011) ISBN-13: 978-1451598650
+
+Media Library Assistant includes many images drawn (with permission) from the [Crystal Project Icons](http://www.softicons.com/free-icons/system-icons/crystal-project-icons-by-everaldo-coelho), created by [Everaldo Coelho](http://www.everaldo.com), founder of [Yellowicon](http://www.yellowicon.com).
 
 == MLA Gallery Shortcode ==
 
@@ -343,11 +373,15 @@ Three parameters provide control over the placement, size and spacing of gallery
 
 <h4>Gallery Display Content</h4>
 
-Five parameters provide an easy way to control the contents of gallery items without requiring the use of custom Markup templates.  
+Nine parameters provide an easy way to control the contents of gallery items without requiring the use of custom Markup templates.  
 
+* mla_link_attributes
 * mla_link_href
 * mla_link_text
 * mla_rollover_text
+* mla_image_attributes
+* mla_image_class
+* mla_ image_alt
 * mla_caption
 * mla_target
 
@@ -385,7 +419,7 @@ You can sort on more than one value, e.g., `orderby="author, date DESC"` and you
 
 <h4>Size</h4>
 
-The `[mla_gallery]` shortcode supports an additional Size value, "icon", which shows a 60x60 pixel thumbnail for image items and an appropriate icon for non-image items such as PDF or text files.
+The `[mla_gallery]` shortcode supports an additional Size value, "icon", which shows a 60x60 or 64x64 pixel thumbnail for image items and an appropriate icon for non-image items such as PDF or text files.
 
 <h4>Link</h4>
 
@@ -409,7 +443,7 @@ The `[mla_gallery]` shortcode supports the simple "{tax} (string)" values (depre
 
 <h4>Post MIME Type</h4>
 
-You can override the default to, for example, display PDF documents ("post_mime_type=application/pdf") or all MIME types ("post_mime_type=all").
+You can override the default to, for example, display PDF documents (`post_mime_type=application/pdf`) or all MIME types (`post_mime_type=all`). You can select several MIME types with a comma-separated list, e.g., `post_mime_type='audio,video'`. Wildcard specifications are also supported. For example, `post_mime_type='*/mpeg'` to select audio and video mpeg formats or `post_mime_type='application/*ms*'` to select all Microsoft application formats (Word, Excel, etc.).
 
 <h4>Pagination Parameters</h4>
 
@@ -478,15 +512,17 @@ A complete list of the <strong>35 attachment-specific substitution parameters</s
 
 <h3>Field-level Markup Substitution Parameters</h3>
 
-Field-level substitution parameters let you access query arguments, custom fields, taxonomy terms, and attachment metadata for display in an MLA gallery. For these parameters, the value you code within the surrounding the ('[+') and ('+]') delimiters has three parts; the prefix, the field name and the optional ",single" indicator.
+Field-level substitution parameters let you access query arguments, custom fields, taxonomy terms, and attachment metadata for display in an MLA gallery. For these parameters, the value you code within the surrounding the ('[+') and ('+]') delimiters has three parts; the prefix, the field name and, if desired, a formatting option.
 
 The <strong>prefix</strong> defines which type of field-level data you are accessing. It must immediately follow the opening ('[+') delimiter and end with a colon (':'). There can be no spaces in this part of the parameter.
 
-The <strong>field name</strong> defines which field-level data element you are accessing. It must immediately follow the colon (':'). There can be no spaces between the colon and the field name. Spaces are allowed within the field name to accommodate custom field names that contain them. 
+The <strong>field name</strong> defines which field-level data element you are accessing. It must immediately follow the colon (':'). There can be no spaces between the colon and the field name. Spaces are allowed within the field name to accommodate custom field names that contain them.
 
-The optional <strong>",single" indicator</strong> defines how to handle fields with multiple values. It must immediately follow the field name and end with the closing delimiter ('+]'). There can be no spaces in this part of the parameter. If this part of the parameter is present, only the first value of the field will be returned. Use this indicator to limit the data returned for a custom field, taxonomy or metadata field that can have many values.
+If no formatting option is present, fields with multiple values are formatted as a comma-delimited text list. The formatting option, if present, immediately follows the field name using a comma (,) separator and ends with the closing delimiter ('+]'). There can be no spaces in this part of the parameter.
 
-The optional <strong>",export" indicator</strong> for display of array fields with multiple values. It must immediately follow the field name and end with the closing delimiter ('+]'). There can be no spaces in this part of the parameter. If this part of the parameter is present, the PHP `var_export` function is used to return a string representation of all the elements in an array field.
+The <strong>",single" option</strong> defines how to handle fields with multiple values. If this option is present, only the first value of the field will be returned. Use this option to limit the data returned for a custom field, taxonomy or metadata field that can have many values.
+
+The <strong>",export" option</strong> changed the display of array fields with multiple values. If this option is present, the PHP `var_export` function is used to return a string representation of all the elements in an array field.
 
 There are six prefix values for field-level data. Prefix values must be coded as shown; all lowercase letters.
 
@@ -569,6 +605,30 @@ Here's a small example that shows a gallery using table markup. The Item markup 
 
 	</table>
 
+== Library Views/Post MIME Type Processing ==
+
+WordPress uses Post MIME Types (a terrible name; they have nothing to do with Posts or Pages), to define the views for the Media/Library screen and the Media Manager/Add Media "media items" drop down list. MLA's Media/Assistant screen uses an enhanced version of the list, Table Views, to support views with multiple MIME Types (e.g., "audio,video") and wildcard specifications (e.g. "`*/*ms*`"). 
+
+The first time it is invoked, MLA will retrieve the current list of Post MIME Types and use it to initialize the list. MLA will add any custom items it finds added to the list by other plugins and code. Once the list is initialized, MLA's list will be used and other plugins and code will have no effect. You can disable MLA handling of the list by clearing the Enable View and Post MIME Type Support checkbox at the bottom of the screen and clicking "Save Changes". 
+
+The Table View list adds several enhancements to the Post MIME Type list. In the Specification field you can select several MIME types with a comma-separated list, e.g., `post_mime_type='audio,video'`. Wildcard specifications are also supported. For example, `post_mime_type='*/mpeg'` to select audio and video mpeg formats or `post_mime_type='application/*ms*'` to select all Microsoft application formats (Word, Excel, etc.). In the Menu Order field you can enter numeric values to re-arrange the order in which the list entries are displayed in, for example, the Media/Assistant screen. 
+
+The Table View list also supports custom field queries. You can choose from three forms of the custom field specification: 
+
+* To return all items that have a non-NULL value in the field, simply enter the prefix "custom:" followed by the custom field name. For example, custom:My Featured Items
+* To return all items that have a NULL value in the field, enter the prefix "custom:" followed by the custom field name and then ",null". For example, custom:My Featured Items,null
+* To return all items that match one or more values, enter the prefix "custom:" followed by the custom field name and then "=" followed by a list of values. For example, custom:Color=red or custom:Color=red,green,blue. Wildcard specifications are also supported; for example, "*post" to match anything ending in "post" or "th*da*" to match values like "the date" and "this day".
+
+== File Extension/MIME Type and Icon Processing ==
+
+The file extension/MIME Type associations are used by WordPress to decide what kind of files can be uploaded to the Media Library and to fill in the post_mime_type value for files added to the Media Library. To upload a file, the file extension must be in this list and be active. 
+
+WordPress maintains a list of "file types" which associate file extensions with type names used to select an icon image. For example, an "audio" file type is associated with an image of musical notes. There are nine of these types: archive, audio, code, default, document, interactive, spreadsheet, text and video. MLA has a much longer list; 112 icon types/images in all. If the "Enable MLA File Type Icons Support" checkbox at the bottom of the Settings screen, Uploads tab is checked, the enhanced icon images will be used in place of the WordPress images.
+
+The MLA icon images are slightly larger than the default images and square; 64x64 pixels. The images are drawn (with permission) from the Crystal Project Icons, created by Everaldo Coelho, founder of Yellowicon.
+
+If you come across a new file extension, or if the existing extension/MIME type association does not suit you, you can search the MLA list of over 1,500 alternatives. The list was compiled from several Internet sources and a vigorous attempt was made to get a Description for each choice. If you find a mistake or an entry missing from the list, let me know! 
+
 ==Custom Field Processing Options==
 
 On the Custom Fields tab of the Settings screen you can define the rules for mapping several types of file and image metadata to WordPress custom fields. Custom field mapping can be applied automatically when an attachment is added to the Media Library. You can refresh the mapping for <strong><em>ALL</em></strong> attachments using the command buttons on the screen. You can selectively apply the mapping in the bulk edit area of the Media/Assistant submenu table and/or on the Edit Media screen for a single attachment.
@@ -587,7 +647,7 @@ Several of the data elements are sourced from the WordPress "image_meta" array. 
 
 <strong>NOTE:</strong> Sorting by custom fields in the Media/Assistant submenu is by string values. For numeric data this can cause odd-looking results, e.g., dimensions of "1200x768" will sort before "640x480". The "file_size", "pixels", "width" and "height" data sources are converted to strings and padded on the left with spaces if you use the "commas" format. This padding makes them sort more sensibly.
 
-A complete list of the <strong>32 data source elements</strong> is on the plugin's Settings page. In addition, you can map any of the fields found in the attachment's WordPress metadata array to a custom field.
+A complete list of the <strong>42 data source elements</strong> is on the plugin's Settings page. In addition, you can map any of the fields found in the attachment's WordPress metadata array to a custom field.
 
 ==IPTC &amp; EXIF Processing Options==
 

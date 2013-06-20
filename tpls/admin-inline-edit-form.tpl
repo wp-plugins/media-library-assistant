@@ -31,10 +31,10 @@
                 <input type="text" name="[+slug+]" value="" />
                 </span> </label>
 <!-- template="page" -->
-<form method="get" action="">
+<form>
   <table width="99%" style="display: none">
     <tbody id="inlineedit">
-      <tr id="inline-edit" class="inline-edit-row inline-edit-row-attachment inline-edit-attachment quick-edit-row quick-edit-row-attachment inline-edit-attachment" style="display: none">
+      <tr id="inline-edit" class="inline-edit-row inline-edit-row-attachment inline-edit-attachment quick-edit-row quick-edit-row-attachment quick-edit-attachment" style="display: none">
         <td colspan="[+colspan+]" class="colspanchange">
           <fieldset class="inline-edit-col-left">
             <div class="inline-edit-col">
@@ -73,7 +73,7 @@
           </p>
         </td>
       </tr>
-      <tr id="bulk-edit" class="inline-edit-row inline-edit-row-post inline-edit-attachment bulk-edit-row bulk-edit-row-attachment bulk-edit-attachment" style="display: none">
+      <tr id="bulk-edit" class="inline-edit-row inline-edit-row-attachment inline-edit-attachment bulk-edit-row bulk-edit-row-attachment bulk-edit-attachment" style="display: none">
         <td colspan="[+colspan+]" class="colspanchange">
           <fieldset class="inline-edit-col-left">
             <div class="inline-edit-col">

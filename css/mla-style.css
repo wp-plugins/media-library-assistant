@@ -19,6 +19,16 @@ div.mla_messages {
 	-webkit-border-radius:5px;
 }
 
+div.mla_errors {
+	background:#FFE0E0;
+	border:1px solid #CCC;
+	padding:0 10px;
+	margin-top:5px;
+	border-radius:5px;
+	-moz-border-radius:5px;
+	-webkit-border-radius:5px;
+}
+
 /*
  * MLA List Table ID_parent column
  */
@@ -119,6 +129,47 @@ textarea[readonly] {
 .quick-edit-row-attachment fieldset.inline-edit-col-right label span.title,
 .bulk-edit-row-attachment fieldset.inline-edit-col-right label.inline-edit-tags span.title {
 	width: 99%
+}
+
+/*
+ * MLA Settings page, Views and Uploads tab inline editing - adapted from load-styles.php
+ */
+#wpbody-content .bulk-edit-row-upload .inline-edit-col-left,
+#wpbody-content .bulk-edit-row-view .inline-edit-col-left {
+	width: 40%
+}
+
+#wpbody-content .bulk-edit-row-upload .inline-edit-col-right,
+#wpbody-content .bulk-edit-row-view .inline-edit-col-right {
+	width: 59%
+}
+
+.quick-edit-row-upload fieldset.inline-edit-col label span.title,
+.bulk-edit-row-upload fieldset.inline-edit-col-right label span.title,
+.quick-edit-row-view fieldset.inline-edit-col label span.title,
+.bulk-edit-row-view fieldset.inline-edit-col-right label span.title {
+	width: 8em
+}
+
+.quick-edit-row-upload fieldset.inline-edit-col label span.input-text-wrap,
+.bulk-edit-row-upload fieldset.inline-edit-col-right label span.input-text-wrap,
+.quick-edit-row-view fieldset.inline-edit-col label span.input-text-wrap,
+.bulk-edit-row-view fieldset.inline-edit-col-right label span.input-text-wrap {
+	margin-left: 8em;
+	width: 12em
+}
+
+.quick-edit-row-upload fieldset.inline-edit-col label,
+.quick-edit-row-view fieldset.inline-edit-col label {
+	float:left;
+	width: 23em
+}
+
+.quick-edit-row-upload fieldset.inline-edit-col input.inline-edit-menu-order,
+.bulk-edit-row-upload fieldset.inline-edit-col-right label.inline-edit-menu-order span.input-text-wrap,
+.quick-edit-row-view fieldset.inline-edit-col input.inline-edit-menu-order,
+.bulk-edit-row-view fieldset.inline-edit-col-right label.inline-edit-menu-order span.input-text-wrap {
+	width: 5em
 }
 
 /*

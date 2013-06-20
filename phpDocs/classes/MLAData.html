@@ -67,11 +67,12 @@
 <li class="method public "><a href="#mla_parse_template" title="mla_parse_template :: Expand a template, replacing place holders with their values"><span class="description">Expand a template, replacing place holders with their values</span><pre>mla_parse_template()</pre></a></li>
 <li class="method public "><a href="#mla_query_list_table_items" title="mla_query_list_table_items :: Retrieve attachment objects for list table display"><span class="description">Retrieve attachment objects for list table display</span><pre>mla_query_list_table_items()</pre></a></li>
 <li class="method public "><a href="#mla_query_media_modal_items" title="mla_query_media_modal_items :: Retrieve attachment objects for the WordPress Media Manager"><span class="description">Retrieve attachment objects for the WordPress Media Manager</span><pre>mla_query_media_modal_items()</pre></a></li>
-<li class="method public "><a href="#mla_query_posts_join_filter" title="mla_query_posts_join_filter :: Adds a JOIN clause, if required, to handle sorting/searching on ALT Text"><span class="description">Adds a JOIN clause, if required, to handle sorting/searching on ALT Text</span><pre>mla_query_posts_join_filter()</pre></a></li>
+<li class="method public "><a href="#mla_query_posts_join_filter" title="mla_query_posts_join_filter :: Adds a JOIN clause, if required, to handle sorting/searching on custom fields or ALT Text"><span class="description">Adds a JOIN clause, if required, to handle sorting/searching on custom fields or ALT Text</span><pre>mla_query_posts_join_filter()</pre></a></li>
 <li class="method public "><a href="#mla_query_posts_orderby_filter" title="mla_query_posts_orderby_filter :: Adds a ORDERBY clause, if required"><span class="description">Adds a ORDERBY clause, if required</span><pre>mla_query_posts_orderby_filter()</pre></a></li>
 <li class="method public "><a href="#mla_query_posts_search_filter" title="mla_query_posts_search_filter :: Adds a keyword search to the WHERE clause, if required"><span class="description">Adds a keyword search to the WHERE clause, if required</span><pre>mla_query_posts_search_filter()</pre></a></li>
 <li class="method public "><a href="#mla_query_posts_where_filter" title="mla_query_posts_where_filter :: Adds a WHERE clause for detached items"><span class="description">Adds a WHERE clause for detached items</span><pre>mla_query_posts_where_filter()</pre></a></li>
 <li class="method public "><a href="#mla_save_post_action" title="mla_save_post_action :: Invalidates $mla_galleries and $galleries arrays and cached values after post, page or attachment updates"><span class="description">Invalidates $mla_galleries and $galleries arrays and cached values after post, page or attachment updates</span><pre>mla_save_post_action()</pre></a></li>
+<li class="method public "><a href="#mla_update_item_postmeta" title="mla_update_item_postmeta :: Update custom field data for a single attachment."><span class="description">Update custom field data for a single attachment.</span><pre>mla_update_item_postmeta()</pre></a></li>
 <li class="method public "><a href="#mla_update_single_item" title="mla_update_single_item :: Update a single item; change the meta data
 for a single attachment."><span class="description">Update a single item; change the meta data
 for a single attachment.</span><pre>mla_update_single_item()</pre></a></li>
@@ -88,6 +89,7 @@ for a single attachment.</span><pre>mla_update_single_item()</pre></a></li>
 <li class="property private "><a href="#%24galleries" title="$galleries :: Objects containing [gallery] shortcodes"><span class="description">Objects containing [gallery] shortcodes</span><pre>$galleries</pre></a></li>
 <li class="property private "><a href="#%24mla_alt_text_view" title="$mla_alt_text_view :: Provides a unique name for the ALT Text SQL VIEW"><span class="description">Provides a unique name for the ALT Text SQL VIEW</span><pre>$mla_alt_text_view</pre></a></li>
 <li class="property private "><a href="#%24mla_galleries" title="$mla_galleries :: Objects containing [mla_gallery] shortcodes"><span class="description">Objects containing [mla_gallery] shortcodes</span><pre>$mla_galleries</pre></a></li>
+<li class="property private "><a href="#%24mla_list_table_items" title="$mla_list_table_items :: Cache the results of mla_count_list_table_items for reuse in mla_query_list_table_items"><span class="description">Cache the results of mla_count_list_table_items for reuse in mla_query_list_table_items</span><pre>$mla_list_table_items</pre></a></li>
 <li class="property private "><a href="#%24query_parameters" title='$query_parameters :: WP_Query filter "parameters"'><span class="description">WP_Query filter "parameters"</span><pre>$query_parameters</pre></a></li>
 <li class="nav-header">
 <i class="icon-custom icon-constant"></i> Constants</li>
@@ -135,7 +137,7 @@ Templates separate HTML markup from PHP code for easier maintenance and localiza
 </div>
 <a name="mla_count_list_table_items" id="mla_count_list_table_items"></a><div class="element clickable method public mla_count_list_table_items" data-toggle="collapse" data-target=".mla_count_list_table_items .collapse">
 <h2>Get the total number of attachment posts</h2>
-<pre>mla_count_list_table_items(array $request) : integer</pre>
+<pre>mla_count_list_table_items(array $request, int $offset, int $count) : integer</pre>
 <div class="labels"></div>
 <div class="row collapse"><div class="detail-description">
 <p class="long_description"></p>
@@ -147,6 +149,14 @@ Templates separate HTML markup from PHP code for easier maintenance and localiza
 <div class="subelement argument">
 <h4>$request</h4>
 <code>array</code><p>Query variables, e.g., from $_REQUEST</p>
+</div>
+<div class="subelement argument">
+<h4>$offset</h4>
+<code>int</code><p>(optional) number of rows to skip over to reach desired page</p>
+</div>
+<div class="subelement argument">
+<h4>$count</h4>
+<code>int</code><p>(optional) number of rows on each page</p>
 </div>
 <h3>Returns</h3>
 <div class="subelement response">
@@ -267,7 +277,7 @@ as a Featured Image or inserted in the post as an image or link.</p></p>
 </div>
 <a name="mla_find_array_element" id="mla_find_array_element"></a><div class="element clickable method public mla_find_array_element" data-toggle="collapse" data-target=".mla_find_array_element .collapse">
 <h2>Finds the value of a key in a possibily nested array structure</h2>
-<pre>mla_find_array_element(string $needle, array $haystack, boolean $single, boolean $export) : string</pre>
+<pre>mla_find_array_element(string $needle, array $haystack, string $option, boolean $keep_existing) : string</pre>
 <div class="labels"></div>
 <div class="row collapse"><div class="detail-description">
 <p class="long_description"><p>Used primarily to extract fields from the _wp_attachment_metadata custom field.
@@ -284,11 +294,12 @@ Could also be used with the ID3 metadata exposed in WordPress 3.6 and later.</p>
 <h4>$haystack</h4>
 <code>array</code><p>PHP nested arrays</p></div>
 <div class="subelement argument">
-<h4>$single</h4>
-<code>boolean</code><p>return first element of an array result</p></div>
+<h4>$option</h4>
+<code>string</code><p>format option 'text'|'single'|'export'|'array'|'multi'</p>
+</div>
 <div class="subelement argument">
-<h4>$export</h4>
-<code>boolean</code><p>return results in var_export() format</p>
+<h4>$keep_existing</h4>
+<code>boolean</code><p>keep existing values - for 'multi' option</p>
 </div>
 <h3>Returns</h3>
 <div class="subelement response">
@@ -355,7 +366,7 @@ the posts and postmeta tables, and all references to the attachment.</p></p>
 </div>
 <h3>Returns</h3>
 <div class="subelement response">
-<code>array</code>Placeholder information: each entry is an array with ['prefix'] => string, ['value'] => string, ['single'] => boolean</div>
+<code>array</code>Placeholder information: each entry is an array with ['prefix'] => string, ['value'] => string, ['option'] => string 'single'|'export'</div>
 </div></div>
 </div>
 <a name="mla_load_template" id="mla_load_template"></a><div class="element clickable method public mla_load_template" data-toggle="collapse" data-target=".mla_load_template .collapse">
@@ -460,7 +471,7 @@ Modeled after wp_edit_attachments_query in wp-admin/post.php</p></p>
 </div></div>
 </div>
 <a name="mla_query_posts_join_filter" id="mla_query_posts_join_filter"></a><div class="element clickable method public mla_query_posts_join_filter" data-toggle="collapse" data-target=".mla_query_posts_join_filter .collapse">
-<h2>Adds a JOIN clause, if required, to handle sorting/searching on ALT Text</h2>
+<h2>Adds a JOIN clause, if required, to handle sorting/searching on custom fields or ALT Text</h2>
 <pre>mla_query_posts_join_filter(string $join_clause) : string</pre>
 <div class="labels"></div>
 <div class="row collapse"><div class="detail-description">
@@ -555,6 +566,29 @@ Defined as public because it's a filter.</p></p>
 <h4>$post_id</h4>
 <code>integer</code><p>ID of post/page/attachment; not used at this time</p>
 </div>
+</div></div>
+</div>
+<a name="mla_update_item_postmeta" id="mla_update_item_postmeta"></a><div class="element clickable method public mla_update_item_postmeta" data-toggle="collapse" data-target=".mla_update_item_postmeta .collapse">
+<h2>Update custom field data for a single attachment.</h2>
+<pre>mla_update_item_postmeta(int $post_id, array $new_meta) : string</pre>
+<div class="labels"></div>
+<div class="row collapse"><div class="detail-description">
+<p class="long_description"></p>
+<table class="table table-bordered"><tr>
+<th>since</th>
+<td>1.40</td>
+</tr></table>
+<h3>Parameters</h3>
+<div class="subelement argument">
+<h4>$post_id</h4>
+<code>int</code><p>The ID of the attachment to be updated</p></div>
+<div class="subelement argument">
+<h4>$new_meta</h4>
+<code>array</code><p>Field name => value pairs</p>
+</div>
+<h3>Returns</h3>
+<div class="subelement response">
+<code>string</code>success/failure message(s)</div>
 </div></div>
 </div>
 <a name="mla_update_single_item" id="mla_update_single_item"></a><div class="element clickable method public mla_update_single_item" data-toggle="collapse" data-target=".mla_update_single_item .collapse">
@@ -751,12 +785,13 @@ Modeled after wp_edit_attachments_query in wp-admin/post.php</p></p>
 and array(s) of which attachments each [gallery] contains. The arrays are built once
 each page load and cached for subsequent calls.</p>
 
-<p>The outer array is keyed by post_id. It contains an array of [gallery] entries numbered from one (1).
-Each inner array has these elements:
+<p>The outer array is keyed by post_id. It contains an associative array with:
 ['parent_title'] post_title of the gallery parent,
 ['parent_type'] 'post' or 'page' or the custom post_type of the gallery parent,
-['query'] contains a string with the arguments of the [gallery],
-['results'] contains an array of post_ids for the objects in the gallery.</p></p>
+['results'] array ( ID => ID ) of attachments appearing in ANY of the parent's galleries.
+['galleries'] array of [gallery] entries numbered from one (1), containing:
+galleries[X]['query'] contains a string with the arguments of the [gallery],
+galleries[X]['results'] contains an array ( ID ) of post_ids for the objects in the gallery.</p></p>
 <table class="table table-bordered"><tr>
 <th>since</th>
 <td>0.70</td>
@@ -789,6 +824,18 @@ each page load and cached for subsequent calls.</p></p>
 </tr></table>
 </div></div>
 </div>
+<a name="%24mla_list_table_items" id="$mla_list_table_items"> </a><div class="element clickable property private $mla_list_table_items" data-toggle="collapse" data-target=".$mla_list_table_items .collapse">
+<h2>Cache the results of mla_count_list_table_items for reuse in mla_query_list_table_items</h2>
+<pre>$mla_list_table_items : array</pre>
+<div class="labels"></div>
+<div class="row collapse"><div class="detail-description">
+<p class="long_description"></p>
+<table class="table table-bordered"><tr>
+<th>since</th>
+<td>1.40</td>
+</tr></table>
+</div></div>
+</div>
 <a name="%24query_parameters" id="$query_parameters"> </a><div class="element clickable property private $query_parameters" data-toggle="collapse" data-target=".$query_parameters .collapse">
 <h2>WP_Query filter "parameters"</h2>
 <pre>$query_parameters : array</pre>
@@ -798,7 +845,7 @@ each page load and cached for subsequent calls.</p></p>
 The parameters are set up in the _prepare_list_table_query function, and
 any further logic required to translate those values is contained in the filters.</p>
 
-<p>Array index values are: use_postmeta_view, postmeta_key, detached, orderby, order, s, mla_search_connector, mla_search_fields, sentence, exact</p></p>
+<p>Array index values are: use_postmeta_view, postmeta_key, postmeta_value, patterns, detached, orderby, order, mla-metavalue, debug, s, mla_search_connector, mla_search_fields, sentence, exact</p></p>
 <table class="table table-bordered"><tr>
 <th>since</th>
 <td>0.30</td>
@@ -826,7 +873,7 @@ any further logic required to translate those values is contained in the filters
 <div class="row"><footer class="span12">
             Template is built using <a href="http://twitter.github.com/bootstrap/">Twitter Bootstrap 2</a> and icons provided by <a href="http://glyphicons.com/">Glyphicons</a>.<br>
             Documentation is powered by <a href="http://www.phpdoc.org/">phpDocumentor 2.0.0a8</a> and<br>
-            generated on 2013-04-22T17:09:54-07:00.<br></footer></div>
+            generated on 2013-06-18T20:19:59-07:00.<br></footer></div>
 </div>
 </body>
 </html>

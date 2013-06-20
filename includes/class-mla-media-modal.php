@@ -179,7 +179,7 @@ class MLAModal {
 	 */
 	public static function mla_media_view_settings_filter( $settings, $post ) {
 		self::$mla_media_modal_settings['ajaxNonce'] = wp_create_nonce( MLA::MLA_ADMIN_NONCE );
-		self::$mla_media_modal_settings['mimeTypes'] = wp_list_pluck( MLA_List_Table::mla_get_attachment_mime_types( ), 0 );
+		self::$mla_media_modal_settings['mimeTypes'] = MLAMime::mla_pluck_table_views();
 		self::$mla_media_modal_settings['mimeTypes']['detached'] = 'Unattached';
 		self::$mla_media_modal_settings['months'] = self::_months_dropdown('attachment');
 
@@ -377,9 +377,16 @@ class MLAModal {
 			'mla_search_value', 'mla_search_fields', 'mla_search_connector'
 		) ) );
 
-		if ( isset( $query['post_mime_type'] ) && ( 'detached' == $query['post_mime_type'] ) ) {
-			$query['detached'] = '1';
-			unset( $query['post_mime_type'] );
+		if ( isset( $query['post_mime_type'] ) ) {
+			if ( 'detached' == $query['post_mime_type'] ) {
+				$query['detached'] = '1';
+				unset( $query['post_mime_type'] );
+			}
+			else {
+				$view = $query['post_mime_type'];
+				unset( $query['post_mime_type'] );
+				$query = array_merge( $query, MLAMime::mla_prepare_view_query( $view ) );
+			}
 		}
 		
 		if ( isset( $query['mla_search_value'] ) ) {
