@@ -385,6 +385,11 @@ class MLAData {
 						} // foreach
 					}
 					break;
+				/*
+				 * post__in and post__not_in are used in the Media Modal Ajax queries
+				 */
+				case 'post__in':
+				case 'post__not_in':
 				case 'post_mime_type':
 					$clean_request[ $key ] = $value;
 					break;
@@ -566,6 +571,8 @@ class MLAData {
 			$clean_request['offset'] = $offset;
 			$clean_request['posts_per_page'] = $count;
 		}
+		elseif ( ( (int) $count ) == -1 )
+			$clean_request['posts_per_page'] = $count;
 		
 		/*
 		 * ['mla_filter_term'] - filter by taxonomy
@@ -668,22 +675,28 @@ class MLAData {
 		add_filter( 'posts_where', 'MLAData::mla_query_posts_where_filter' );
 		add_filter( 'posts_orderby', 'MLAData::mla_query_posts_orderby_filter' );
 
+		if ( isset( self::$query_parameters['debug'] ) ) {
+			global $wp_filter;
+			$debug_array = array( 'posts_search' => $wp_filter['posts_search'], 'posts_join' => $wp_filter['posts_join'], 'posts_where' => $wp_filter['posts_where'], 'posts_orderby' => $wp_filter['posts_orderby'] );
+			
+			if ( 'console' == self::$query_parameters['debug'] ) {
+				trigger_error( '_execute_list_table_query $wp_filter = ' . var_export( $debug_array, true ), E_USER_WARNING );
+			}
+			else {
+				error_log( '_execute_list_table_query $wp_filter = ' . var_export( $debug_array, true ), 0 );
+			}
+		} // debug
+
 		$results = new WP_Query( $request );
 		
 		if ( isset( self::$query_parameters['debug'] ) ) {
+			$debug_array = array( 'request' => $request, 'query_parameters' => self::$query_parameters, 'SQL_request' => $results->request, 'post_count' => $results->post_count, 'found_posts' => $results->found_posts );
+
 			if ( 'console' == self::$query_parameters['debug'] ) {
-				trigger_error( '_execute_list_table_query $request = ' . var_export( $request, true ), E_USER_WARNING );
-				trigger_error( '_execute_list_table_query self::$query_parameters = ' . var_export( self::$query_parameters, true ), E_USER_WARNING );
-				trigger_error( '_execute_list_table_query $results->request = ' . var_export( $results->request, true ), E_USER_WARNING );
-				trigger_error( '_execute_list_table_query $results->post_count = ' . var_export( $results->post_count, true ), E_USER_WARNING );
-				trigger_error( '_execute_list_table_query $results->found_posts = ' . var_export( $results->found_posts, true ), E_USER_WARNING );
+				trigger_error( '_execute_list_table_query WP_Query = ' . var_export( $debug_array, true ), E_USER_WARNING );
 			}
 			else {
-				error_log( '_execute_list_table_query $request = ' . var_export( $request, true ), 0 );
-				error_log( '_execute_list_table_query self::$query_parameters = ' . var_export( self::$query_parameters, true ), 0 );
-				error_log( '_execute_list_table_query $results->request = ' . var_export( $results->request, true ), 0 );
-				error_log( '_execute_list_table_query $results->post_count = ' . var_export( $results->post_count, true ), 0 );
-				error_log( '_execute_list_table_query $results->found_posts = ' . var_export( $results->found_posts, true ) . "\r\n", 0 );
+				error_log( '_execute_list_table_query WP_Query = ' . var_export( $debug_array, true ), 0 );
 			}
 		} // debug
 
@@ -720,12 +733,7 @@ class MLAData {
 		if ( isset( self::$query_parameters['s'] ) ) {
 		
 			if ( isset( self::$query_parameters['debug'] ) ) {
-				if ( 'console' == self::$query_parameters['debug'] ) {
-					trigger_error( 'mla_query_posts_search_filter search = ' . var_export( self::$query_parameters['s'], true ), E_USER_WARNING );
-				}
-				else {
-					error_log( 'mla_query_posts_search_filter search = ' . var_export( self::$query_parameters['s'], true ), 0 );
-				}
+				$debug_array = array( 's' => self::$query_parameters['s'] );
 			} // debug
 	
 			/*
@@ -736,11 +744,14 @@ class MLAData {
 				$search_clause = ' AND ( ( ' . $wpdb->posts . '.ID = ' . $id . ' ) OR ( ' . $wpdb->posts . '.post_parent = ' . $id . ' ) ) ';
 		
 				if ( isset( self::$query_parameters['debug'] ) ) {
+					$debug_array['search_clause'] = $search_clause;
+					$debug_array['search_string'] = $search_string;
+					
 					if ( 'console' == self::$query_parameters['debug'] ) {
-						trigger_error( 'mla_query_posts_search_filter $search_clause = ' . var_export( $search_clause, true ), E_USER_WARNING );
+						trigger_error( 'mla_query_posts_search_filter is_numeric = ' . var_export( $debug_array, true ), E_USER_WARNING );
 					}
 					else {
-						error_log( 'mla_query_posts_search_filter $search_clause = ' . var_export( $search_clause, true ), 0 );
+						error_log( 'mla_query_posts_search_filter is_numeric = ' . var_export( $debug_array, true ), 0 );
 					}
 				} // debug
 		
@@ -796,6 +807,18 @@ class MLAData {
 				if ( !is_user_logged_in() )
 					$search_clause .= " AND ($wpdb->posts.post_password = '') ";
 			}
+			
+			if ( isset( self::$query_parameters['debug'] ) ) {
+				$debug_array['search_clause'] = $search_clause;
+				$debug_array['search_string'] = $search_string;
+				
+				if ( 'console' == self::$query_parameters['debug'] ) {
+					trigger_error( 'mla_query_posts_search_filter not numeric = ' . var_export( $debug_array, true ), E_USER_WARNING );
+				}
+				else {
+					error_log( 'mla_query_posts_search_filter not numeric = ' . var_export( $debug_array, true ), 0 );
+				}
+			} // debug
 		} // isset 's'
 		
 		return $search_clause;
@@ -1628,6 +1651,672 @@ class MLAData {
 	}
 		
 	/**
+	 * Array of PDF indirect objects
+	 *
+	 * This array contains all of the indirect object offsets and lengths
+	 *
+	 * @since 1.4x
+	 *
+	 * @var	array
+	 */
+	private static $pdf_indirect_objects = NULL;
+
+	/**
+	 * Build an array of indirect object definitions
+	 * 
+	 * Creates the array of indirect object offsets and lengths
+	 * @since 1.4x
+	 *
+	 * @param	string	The entire PDF document, passsed by reference
+	 *
+	 * @return	void
+	 */
+	private static function _build_pdf_indirect_objects( &$string ) {
+		$match_count = preg_match_all( '!(\d+)\h+(\d+)\h+obj\x0D|endobj\x0D|stream(\x0D\x0A|\x0A)|endstream!', $string, $matches, PREG_OFFSET_CAPTURE );
+//error_log( '_build_pdf_indirect_objects $match_count = ' . var_export( $match_count, true ), 0 );
+//error_log( '_build_pdf_indirect_objects $matches = ' . var_export( $matches, true ), 0 );
+
+		self::$pdf_indirect_objects = array();
+		$object_level = 0;
+		$is_stream = false;
+		for ( $index = 0; $index < $match_count; $index++ ) {
+		//error_log( '_build_pdf_indirect_objects match dump = ' . var_export( self::_hex_dump( $matches[0][ $index ][0], strlen( $matches[0][ $index ][0] ), 16 ), true ), 0 );
+			if ( $is_stream ) {
+				if ( 'endstream' == substr( $matches[0][ $index ][0], 0, 9 ) ) {
+					$is_stream = false;
+		//error_log( '_build_pdf_indirect_objects $pdf endstream = ' . "\r\n" . var_export( self::_hex_dump( substr( $pdf, $matches[0][ $index ][1] - 64) , 128, 32 ), true ) . "\r\n", 0 );
+				}
+			}
+			elseif ( 'endobj' == substr( $matches[0][ $index ][0], 0, 6 ) ) {
+				$object_level--;
+				$object_entry['length'] = $matches[0][ $index ][1] - $object_entry['start'];
+				self::$pdf_indirect_objects[ ($object_entry['number'] * 1000) + $object_entry['generation'] ] = $object_entry;
+			}
+			elseif ( 'obj' == substr( $matches[0][ $index ][0], -4, 3 ) ) {
+		//error_log( '_build_pdf_indirect_objects pdf $matches[1] = ' . var_export( $matches[1][ $index ], true ), 0 );
+		//error_log( '_build_pdf_indirect_objects pdf $matches[2] = ' . var_export( $matches[2][ $index ], true ), 0 );
+		//error_log( '_build_pdf_indirect_objects pdf $matches[3] = ' . var_export( $matches[3][ $index ], true ), 0 );
+				$object_level++;
+				$object_entry = array( 
+					'number' => $matches[1][ $index ][0],
+					'generation' => $matches[2][ $index ][0],
+					'start' => $matches[0][ $index ][1] + strlen( $matches[0][ $index ][0] )
+					);
+			}
+			elseif ( 'stream' == substr( $matches[0][ $index ][0], 0, 6 ) ) {
+				$is_stream = true;
+		//error_log( '_build_pdf_indirect_objects $pdf stream = ' . "\r\n" . var_export( self::_hex_dump( substr( $pdf, $matches[0][ $index ][1] - 64) , 128, 32 ), true ) . "\r\n", 0 );
+			}
+			else
+				error_log( 'bad value $index = ' . $index, 0 );
+			
+		//error_log( "in_stream[ {$is_stream} ] Level is {$level} Object Level is {$object_level} after index {$index} at offset " . var_export( $matches[0][ $index ][1], true ), 0 );
+		}
+//error_log( '_build_pdf_indirect_objects self::$pdf_indirect_objects = ' . var_export( self::$pdf_indirect_objects, true ), 0 );
+	}
+		
+	/**
+	 * Parse a PDF dictionary object
+	 * 
+	 * Returns an array of dictionary contents, classified by object type: boolean, numeric, string, hex (string), indirect (object), name, array, dictionary, stream, and null.
+	 * @since 1.4x
+	 *
+	 * @param	string	dictionary content, without enclosing << and >> delimiters
+	 *
+	 * @return	array	( key => array( 'type' => type, 'value' => value ) ) for each dictionary field
+	 */
+	private static function _parse_pdf_dictionary( $string ) {
+error_log( '_parse_pdf_dictionary $string dump = ' . var_export( self::_hex_dump( $string, strlen( $string ), 16 ), true ), 0 );
+//error_log( '_parse_pdf_dictionary $string = '. var_export( $string, true ), 0 );
+		$dictionary = array();
+		while ( 0 < strlen( $string) ) {
+// \x00-\x20 for whitespace
+// \(|\)|\<|\>|\[|\]|\{|\}|\/|\% for delimiters
+			$match_count = preg_match_all( '!/([^\x00-\x20|\(|\)|\<|\>|\[|\]|\{|\}|\/|\%]*)([\x00-\x20]*)!', $string, $matches, PREG_OFFSET_CAPTURE );
+//error_log( '_parse_pdf_dictionary trailer dictionary name $match_count = ' . var_export( $match_count, true ), 0 );
+//error_log( '_extract_pdf_metadata trailer dictionary name $matches[1] = ' . var_export( $matches[1], true ), 0 );
+//error_log( '_parse_pdf_dictionary trailer dictionary name $matches = ' . var_export( $matches, true ), 0 );
+
+			for ( $match_index = 0; $match_index < $match_count; $match_index++ ) {
+				$name = $matches[1][ $match_index ][0];
+//error_log( '_parse_pdf_dictionary name = ' . var_export( $name, true ), 0 );
+				$value_count = preg_match(
+					'!(\/?[^\/\x0D\x0A]*)!',
+					substr( $string, $matches[2][ $match_index ][1] + strlen( $matches[2][ $match_index ][0] ) ), $value_matches, PREG_OFFSET_CAPTURE );
+//error_log( '_parse_pdf_dictionary $value_count = ' . var_export( $value_count, true ), 0 );
+//error_log( '_parse_pdf_dictionary $value_matches = ' . var_export( $value_matches, true ), 0 );
+
+				if ( 1 == $value_count ) {
+					$value = $value_matches[0][0];
+					$dictionary[ $name ]['value'] = $value;
+					if ( ! isset( $value[0] ) ) {
+error_log( 'bad value $name = ' . var_export( $name, true ), 0 );
+error_log( 'bad value $value = ' . var_export( $value, true ), 0 );
+					}
+					if ( in_array( $value, array( 'true', 'false' ) ) )
+						$dictionary[ $name ]['type'] = 'boolean';
+					elseif ( is_numeric( $value ) )
+						$dictionary[ $name ]['type'] = 'numeric';
+					elseif ( '(' == $value[0] )
+						$dictionary[ $name ]['type'] = 'string';
+					elseif ( '<' == $value[0] ) {
+						if ( '<' == $value[1] )
+							$dictionary[ $name ]['type'] = 'dictionary';
+						else
+							$dictionary[ $name ]['type'] = 'hex';
+					}
+					elseif ( '/' == $value[0] ) {
+						$dictionary[ $name ]['type'] = 'name';
+						$match_index++; // Skip to the next key
+					}
+					elseif ( '[' == $value[0] )
+						$dictionary[ $name ]['type'] = 'array';
+					elseif ( 'null' == $value )
+						$dictionary[ $name ]['type'] = 'null';
+					elseif ( 'stream' == substr( $value, 0, 6 ) )
+						$dictionary[ $name ]['type'] = 'stream';
+					else {
+						$object_count = preg_match( '!(\d+)\h+(\d+)\h+R!', $value, $object_matches );
+						if ( 1 == $object_count ) {
+							$dictionary[ $name ]['type'] = 'indirect';
+							$dictionary[ $name ]['object'] = $object_matches[1];
+							$dictionary[ $name ]['generation'] = $object_matches[2];
+//error_log( '_parse_pdf_dictionary object_matches = ' . var_export( $object_matches, true ), 0 );
+						}
+						else {
+//error_log( '_parse_pdf_dictionary unknown dump = ' . var_export( self::_hex_dump( $value, strlen( $value ), 16 ), true ), 0 );
+//error_log( '_parse_pdf_dictionary unknown numeric = ' . var_export( is_numeric( $value ), true ), 0 );
+//error_log( '_parse_pdf_dictionary unknown length = ' . var_export( strlen( $value ), true ), 0 );
+//error_log( '_parse_pdf_dictionary unknown $value = ' . var_export( $value, true ), 0 );
+							$dictionary[ $name ]['type'] = 'unknown';
+						}
+					}
+				}
+				else {
+					$dictionary[ $matches[1][ $match_index ][0] ] = array( 'value' => '' );
+					$dictionary[ $matches[1][ $match_index ][0] ]['type'] = 'nomatch';
+				}
+			} // foreach match
+			
+			$string = '';
+		}
+		
+error_log( '_parse_pdf_dictionary $dictionary = '. var_export( $dictionary, true ), 0 );
+		return $dictionary;
+	}
+		
+	/**
+	 * Extract Metadata from a PDF file
+	 * 
+	 * @since 1.4x
+	 *
+	 * @param	string	full path to the desired file
+	 *
+	 * @return	array	( key => value ) for each metadata field, in string format
+	 */
+	private static function _extract_pdf_metadata( $string ) {
+error_log( '_extract_pdf_metadata $string = '. var_export( $string, true ), 0 );
+		$metadata = array();
+		$pdf = file_get_contents( $string, true );
+		if ( $pdf == false ) {
+			error_log( 'ERROR: PDF file not found ' . var_export( $path, true ), 0 );
+			return $metadata;
+		}
+		
+//error_log( '_extract_pdf_metadata $pdf start = ' . "\r\n" . var_export( self::_hex_dump( $pdf, 2048, 32 ), true ) . "\r\n", 0 );
+
+		self::_build_pdf_indirect_objects( $pdf );
+		
+		$header = substr( $pdf, 0, 8 );
+		if ( '%PDF-' == substr( $header, 0, 5 ) ) {
+			$metadata['Version'] = substr( $header, 1, 7 );
+			$metadata['VersionNumber'] = substr( $header, 5, 3 );
+		}
+
+//		$match_count = preg_match_all( '/[\r|\n]+<<(.*)>>[\r|\n]+/', $pdf, $matches, PREG_OFFSET_CAPTURE );
+//		$match_count = preg_match_all( '/[\r|\n]+startxref[\r|\n]+([0-9]+)[\r|\n]+\%\%EOF[\r|\n]*/', $pdf, $matches, PREG_OFFSET_CAPTURE );
+
+		$match_count = preg_match_all( '/[\r|\n]+trailer[\r|\n]+/', $pdf, $matches, PREG_OFFSET_CAPTURE );
+		if ( 0 < $match_count ) {
+			$tail = substr( $pdf, (integer) $matches[0][ $match_count - 1 ][1] );
+//			$match_count = preg_match_all( '/[\r|\n]+<<(.*)>>[\r|\n]+/', $pdf, $matches ); //, PREG_OFFSET_CAPTURE );
+			$match_count = preg_match_all( '/[\r|\n]+<<(.*)>>[\r|\n]+/', $tail, $matches ); //, PREG_OFFSET_CAPTURE );
+//error_log( '_extract_pdf_metadata trailer dictionary  $match_count = ' . var_export( $match_count, true ), 0 );
+//error_log( '_extract_pdf_metadata trailer dictionary $matches = ' . var_export( $matches, true ), 0 );
+			 if ( 0 < $match_count ) {
+//				 for ( $index = 0; $index < $match_count; $index++ )
+//					 $dictionary = self::_parse_pdf_dictionary( $matches[1][ $index ] );
+				 $dictionary = self::_parse_pdf_dictionary( $matches[1][ $match_count - 1 ] );
+				 
+				 if ( isset( $dictionary['Info'] ) ) {
+//error_log( '_extract_pdf_metadata trailer dictionary  Info = ' . var_export( $dictionary['Info'], true ), 0 );
+					 $info_ref = ($dictionary['Info']['object'] * 1000) + $dictionary['Info']['generation'];
+//error_log( '_extract_pdf_metadata trailer dictionary  $info_ref = ' . var_export( $info_ref, true ), 0 );
+					 if ( isset( self::$pdf_indirect_objects[ $info_ref ] ) ) {
+//error_log( '_extract_pdf_metadata trailer dictionary  start = ' . var_export( self::$pdf_indirect_objects[ $info_ref ], true ), 0 );
+//error_log( '_extract_pdf_metadata Object = ' . "\r\n" . var_export( self::_hex_dump( substr( $pdf, self::$pdf_indirect_objects[ $info_ref ]['start'], self::$pdf_indirect_objects[ $info_ref ]['length'] ), self::$pdf_indirect_objects[ $info_ref ]['length'], 32 ), true ) . "\r\n", 0 );
+						 $info_dictionary = self::_parse_pdf_dictionary( substr( $pdf, self::$pdf_indirect_objects[ $info_ref ]['start'], self::$pdf_indirect_objects[ $info_ref ]['length'] ) );
+					 } // found Info object
+				 } // found Info ref
+			 } // found dictionary
+		} // found trailer
+		
+		return $metadata;
+	}
+		
+	/**
+	 * UTF-8 replacements for invalid SQL characters
+	 *
+	 * @since 1.41
+	 *
+	 * @var	array
+	 */
+	private static $utf8_chars = array(
+		"\xC2\x80", "\xC2\x81", "\xC2\x82", "\xC2\x83", "\xC2\x84", "\xC2\x85", "\xC2\x86", "\xC2\x87", 
+		"\xC2\x88", "\xC2\x89", "\xC2\x8A", "\xC2\x8B", "\xC2\x8C", "\xC2\x8D", "\xC2\x8E", "\xC2\x8F", 
+		"\xC2\x90", "\xC2\x91", "\xC2\x92", "\xC2\x93", "\xC2\x94", "\xC2\x95", "\xC2\x96", "\xC2\x97", 
+		"\xC2\x98", "\xC2\x99", "\xC2\x9A", "\xC2\x9B", "\xC2\x9C", "\xC2\x9D", "\xC2\x9E", "\xC2\x9F", 
+		"\xC2\xA0", "\xC2\xA1", "\xC2\xA2", "\xC2\xA3", "\xC2\xA4", "\xC2\xA5", "\xC2\xA6", "\xC2\xA7", 
+		"\xC2\xA8", "\xC2\xA9", "\xC2\xAA", "\xC2\xAB", "\xC2\xAC", "\xC2\xAD", "\xC2\xAE", "\xC2\xAF", 
+		"\xC2\xB0", "\xC2\xB1", "\xC2\xB2", "\xC2\xB3", "\xC2\xB4", "\xC2\xB5", "\xC2\xB6", "\xC2\xB7", 
+		"\xC2\xB8", "\xC2\xB9", "\xC2\xBA", "\xC2\xBB", "\xC2\xBC", "\xC2\xBD", "\xC2\xBE", "\xC2\xBF", 
+		"\xC3\x80", "\xC3\x81", "\xC3\x82", "\xC3\x83", "\xC3\x84", "\xC3\x85", "\xC3\x86", "\xC3\x87", 
+		"\xC3\x88", "\xC3\x89", "\xC3\x8A", "\xC3\x8B", "\xC3\x8C", "\xC3\x8D", "\xC3\x8E", "\xC3\x8F", 
+		"\xC3\x90", "\xC3\x91", "\xC3\x92", "\xC3\x93", "\xC3\x94", "\xC3\x95", "\xC3\x96", "\xC3\x97", 
+		"\xC3\x98", "\xC3\x99", "\xC3\x9A", "\xC3\x9B", "\xC3\x9C", "\xC3\x9D", "\xC3\x9E", "\xC3\x9F", 
+		"\xC3\xA0", "\xC3\xA1", "\xC3\xA2", "\xC3\xA3", "\xC3\xA4", "\xC3\xA5", "\xC3\xA6", "\xC3\xA7", 
+		"\xC3\xA8", "\xC3\xA9", "\xC3\xAA", "\xC3\xAB", "\xC3\xAC", "\xC3\xAD", "\xC3\xAE", "\xC3\xAF", 
+		"\xC3\xB0", "\xC3\xB1", "\xC3\xB2", "\xC3\xB3", "\xC3\xB4", "\xC3\xB5", "\xC3\xB6", "\xC3\xB7", 
+		"\xC3\xB8", "\xC3\xB9", "\xC3\xBA", "\xC3\xBB", "\xC3\xBC", "\xC3\xBD", "\xC3\xBE", "\xC3\xBF"
+	);
+
+	/**
+	 * Replace SQL incorrect characters (0x80 - 0xFF) with their UTF-8 equivalents
+	 * 
+	 * @since 1.41
+	 *
+	 * @param	string	unencoded string
+	 *
+	 * @return	string	UTF-8 encoded string
+	 */
+	private static function _bin_to_utf8( $string ) {
+		if ( seems_utf8( $string ) )
+			return $string;
+
+		if(function_exists('utf8_encode'))
+			return utf8_encode( $string );
+
+		$output = '';
+		for ($index = 0; $index < strlen( $string ); $index++ ) {
+			$value = ord( $string[ $index ] );
+			if ( $value < 0x80 )
+				$output .= chr( $value );
+			else
+				$output .= self::$utf8_chars[ $value - 0x80 ];
+		}
+
+		return $output;
+	}
+		
+	/**
+	 * IPTC Dataset identifiers and names
+	 *
+	 * This array contains the identifiers and names of Datasets defined in
+	 * the "IPTC-NAA Information Interchange Model Version No. 4.1".
+	 *
+	 * @since 0.90
+	 *
+	 * @var	array
+	 */
+	private static $mla_iptc_records = array(
+		// Envelope Record
+		"1#000" => "Model Version",
+		"1#005" => "Destination",
+		"1#020" => "File Format",
+		"1#022" => "File Format Version",
+		"1#030" => "Service Identifier",
+		"1#040" => "Envelope Number",
+		"1#050" => "Product ID",
+		"1#060" => "Envelope Priority",
+		"1#070" => "Date Sent",
+		"1#080" => "Time Sent",
+		"1#090" => "Coded Character Set",
+		"1#100" => "UNO",
+		"1#120" => "ARM Identifier",
+		"1#122" => "ARM Version",
+		
+		// Application Record
+		"2#000" => "Record Version",
+		"2#003" => "Object Type Reference",
+		"2#004" => "Object Attribute Reference",
+		"2#005" => "Object Name",
+		"2#007" => "Edit Status",
+		"2#008" => "Editorial Update",
+		"2#010" => "Urgency",
+		"2#012" => "Subject Reference",
+		"2#015" => "Category",
+		"2#020" => "Supplemental Category",
+		"2#022" => "Fixture Identifier",
+		"2#025" => "Keywords",
+		"2#026" => "Content Location Code",
+		"2#027" => "Content Location Name",
+		"2#030" => "Release Date",
+		"2#035" => "Release Time",
+		"2#037" => "Expiration Date",
+		"2#038" => "Expiration Time",
+		"2#040" => "Special Instructions",
+		"2#042" => "Action Advised",
+		"2#045" => "Reference Service",
+		"2#047" => "Reference Date",
+		"2#050" => "Reference Number",
+		"2#055" => "Date Created",
+		"2#060" => "Time Created",
+		"2#062" => "Digital Creation Date",
+		"2#063" => "Digital Creation Time",
+		"2#065" => "Originating Program",
+		"2#070" => "Program Version",
+		"2#075" => "Object Cycle",
+		"2#080" => "By-line",
+		"2#085" => "By-line Title",
+		"2#090" => "City",
+		"2#092" => "Sub-location",
+		"2#095" => "Province or State",
+		"2#100" => "Country or Primary Location Code",
+		"2#101" => "Country or Primary Location Name",
+		"2#103" => "Original Transmission Reference",
+		"2#105" => "Headline",
+		"2#110" => "Credit",
+		"2#115" => "Source",
+		"2#116" => "Copyright Notice",
+		"2#118" => "Contact",
+		"2#120" => "Caption or Abstract",
+		"2#122" => "Caption Writer or Editor",
+		"2#125" => "Rasterized Caption",
+		"2#130" => "Image Type",
+		"2#131" => "Image Orientation",
+		"2#135" => "Language Identifier",
+		"2#150" => "Audio Type",
+		"2#151" => "Audio Sampling Rate",
+		"2#152" => "Audio Sampling Resolution",
+		"2#153" => "Audio Duration",
+		"2#154" => "Audio Outcue",
+		"2#200" => "ObjectData Preview File Format",
+		"2#201" => "ObjectData Preview File Format Version",
+		"2#202" => "ObjectData Preview Data",
+		
+		// Pre ObjectData Descriptor Record
+		"7#010"  => "Size Mode",
+		"7#020"  => "Max Subfile Size",
+		"7#090"  => "ObjectData Size Announced",
+		"7#095"  => "Maximum ObjectData Size",
+		
+		// ObjectData Record
+		"8#010"  => "Subfile",
+		
+		// Post ObjectData Descriptor Record
+		"9#010"  => "Confirmed ObjectData Size"
+	);
+
+	/**
+	 * IPTC Dataset friendly name/slug and identifiers
+	 *
+	 * This array contains the sanitized names and identifiers of Datasets defined in
+	 * the "IPTC-NAA Information Interchange Model Version No. 4.1".
+	 *
+	 * @since 0.90
+	 *
+	 * @var	array
+	 */
+	public static $mla_iptc_keys = array(
+		// Envelope Record
+		'model-version' => '1#000',
+		'destination' => '1#005',
+		'file-format' => '1#020',
+		'file-format-version' => '1#022',
+		'service-identifier' => '1#030',
+		'envelope-number' => '1#040',
+		'product-id' => '1#050',
+		'envelope-priority' => '1#060',
+		'date-sent' => '1#070',
+		'time-sent' => '1#080',
+		'coded-character-set' => '1#090',
+		'uno' => '1#100',
+		'arm-identifier' => '1#120',
+		'arm-version' => '1#122',
+
+		// Application Record
+		'record-version' => '2#000',
+		'object-type-reference' => '2#003',
+		'object-attribute-reference' => '2#004',
+		'object-name' => '2#005',
+		'edit-status' => '2#007',
+		'editorial-update' => '2#008',
+		'urgency' => '2#010',
+		'subject-reference' => '2#012',
+		'category' => '2#015',
+		'supplemental-category' => '2#020',
+		'fixture-identifier' => '2#022',
+		'keywords' => '2#025',
+		'content-location-code' => '2#026',
+		'content-location-name' => '2#027',
+		'release-date' => '2#030',
+		'release-time' => '2#035',
+		'expiration-date' => '2#037',
+		'expiration-time' => '2#038',
+		'special-instructions' => '2#040',
+		'action-advised' => '2#042',
+		'reference-service' => '2#045',
+		'reference-date' => '2#047',
+		'reference-number' => '2#050',
+		'date-created' => '2#055',
+		'time-created' => '2#060',
+		'digital-creation-date' => '2#062',
+		'digital-creation-time' => '2#063',
+		'originating-program' => '2#065',
+		'program-version' => '2#070',
+		'object-cycle' => '2#075',
+		'by-line' => '2#080',
+		'by-line-title' => '2#085',
+		'city' => '2#090',
+		'sub-location' => '2#092',
+		'province-or-state' => '2#095',
+		'country-or-primary-location-code' => '2#100',
+		'country-or-primary-location-name' => '2#101',
+		'original-transmission-reference' => '2#103',
+		'headline' => '2#105',
+		'credit' => '2#110',
+		'source' => '2#115',
+		'copyright-notice' => '2#116',
+		'contact' => '2#118',
+		'caption-or-abstract' => '2#120',
+		'caption-writer-or-editor' => '2#122',
+		'rasterized-caption' => '2#125',
+		'image-type' => '2#130',
+		'image-orientation' => '2#131',
+		'language-identifier' => '2#135',
+		'audio-type' => '2#150',
+		'audio-sampling-rate' => '2#151',
+		'audio-sampling-resolution' => '2#152',
+		'audio-duration' => '2#153',
+		'audio-outcue' => '2#154',
+		'objectdata-preview-file-format' => '2#200',
+		'objectdata-preview-file-format-version' => '2#201',
+		'objectdata-preview-data' => '2#202',
+		
+		// Pre ObjectData Descriptor Record
+		'size-mode' => '7#010',
+		'max-subfile-size' => '7#020',
+		'objectdata-size-announced' => '7#090',
+		'maximum-objectdata-size' => '7#095',
+		
+		// ObjectData Record
+		'subfile' => '8#010',
+		
+		// Post ObjectData Descriptor Record
+		'confirmed-objectdata-size' => '9#010'
+);
+
+	/**
+	 * IPTC Dataset descriptions
+	 *
+	 * This array contains the descriptions of Datasets defined in
+	 * the "IPTC-NAA Information Interchange Model Version No. 4.1".
+	 *
+	 * @since 0.90
+	 *
+	 * @var	array
+	 */
+	private static $mla_iptc_descriptions = array(
+		// Envelope Record
+		"1#000" => "2 octet binary IIM version number",
+		"1#005" => "Max 1024 characters of Destination (ISO routing information); repeatable",
+		"1#020" => "2 octet binary file format number, see IPTC-NAA V4 Appendix A",
+		"1#022" => "2 octet binary file format version number",
+		"1#030" => "Max 10 characters of Service Identifier and product",
+		"1#040" => "8 Character Envelope Number",
+		"1#050" => "Max 32 characters subset of provider's overall service; repeatable",
+		"1#060" => "1 numeric character of envelope handling priority (not urgency)",
+		"1#070" => "8 numeric characters of Date Sent by service - CCYYMMDD",
+		"1#080" => "11 characters of Time Sent by service - HHMMSS±HHMM",
+		"1#090" => "Max 32 characters of control functions, etc.",
+		"1#100" => "14 to 80 characters of eternal, globally unique identification for objects",
+		"1#120" => "2 octet binary Abstract Relationship Model Identifier",
+		"1#122" => "2 octet binary Abstract Relationship Model Version",
+		
+		// Application Record
+		"2#000" => "2 octet binary Information Interchange Model, Part II version number",
+		"2#003" => "3 to 67 Characters of Object Type Reference number and optional text",
+		"2#004" => "3 to 67 Characters of Object Attribute Reference number and optional text; repeatable",
+		"2#005" => "Max 64 characters of the object name or shorthand reference",
+		"2#007" => "Max 64 characters of the status of the objectdata",
+		"2#008" => "2 numeric characters of the type of update this object provides",
+		"2#010" => "1 numeric character of the editorial urgency of content",
+		"2#012" => "13 to 236 characters of a structured definition of the subject matter; repeatable",
+		"2#015" => "Max 3 characters of the subject of the objectdata, DEPRECATED",
+		"2#020" => "Max 32 characters (each) of further refinement of subject, DEPRECATED; repeatable",
+		"2#022" => "Max 32 characters identifying recurring, predictable content",
+		"2#025" => "Max 64 characters (each) of tags; repeatable",
+		"2#026" => "3 characters of ISO3166 country code or IPTC-assigned code; repeatable",
+		"2#027" => "Max 64 characters of publishable country/geographical location name; repeatable",
+		"2#030" => "8 numeric characters of Release Date - CCYYMMDD",
+		"2#035" => "11 characters of Release Time (earliest use) - HHMMSS±HHMM",
+		"2#037" => "8 numeric characters of Expiration Date (latest use) -  CCYYMDD",
+		"2#038" => "11 characters of Expiration Time (latest use) - HHMMSS±HHMM",
+		"2#040" => "Max 256 Characters of editorial instructions, e.g., embargoes and warnings",
+		"2#042" => "2 numeric characters of type of action this object provides to a previous object",
+		"2#045" => "Max 10 characters of the Service ID (1#030) of a prior envelope; repeatable",
+		"2#047" => "8 numeric characters of prior envelope Reference Date (1#070) - CCYYMMDD; repeatable",
+		"2#050" => "8 characters of prior envelope Reference Number (1#040); repeatable",
+		"2#055" => "8 numeric characters of intellectual content Date Created - CCYYMMDD",
+		"2#060" => "11 characters of intellectual content Time Created - HHMMSS±HHMM",
+		"2#062" => "8 numeric characters of digital representation creation date - CCYYMMDD",
+		"2#063" => "11 characters of digital representation creation time - HHMMSS±HHMM",
+		"2#065" => "Max 32 characters of the program used to create the objectdata",
+		"2#070" => "Program Version - Max 10 characters of the version of the program used to create the objectdata",
+		"2#075" => "1 character where a=morning, p=evening, b=both",
+		"2#080" => "Max 32 Characters of the name of the objectdata creator, e.g., the writer, photographer; repeatable",
+		"2#085" => "Max 32 characters of the title of the objectdata creator; repeatable",
+		"2#090" => "Max 32 Characters of the city of objectdata origin",
+		"2#092" => "Max 32 Characters of the location within the city of objectdata origin",
+		"2#095" => "Max 32 Characters of the objectdata origin Province or State",
+		"2#100" => "3 characters of ISO3166 or IPTC-assigned code for Country of objectdata origin",
+		"2#101" => "Max 64 characters of publishable country/geographical location name of objectdata origin",
+		"2#103" => "Max 32 characters of a code representing the location of original transmission",
+		"2#105" => "Max 256 Characters of a publishable entry providing a synopsis of the contents of the objectdata",
+		"2#110" => "Max 32 Characters that identifies the provider of the objectdata (Vs the owner/creator)",
+		"2#115" => "Max 32 Characters that identifies the original owner of the intellectual content",
+		"2#116" => "Max 128 Characters that contains any necessary copyright notice",
+		"2#118" => "Max 128 characters that identifies the person or organisation which can provide further background information; repeatable",
+		"2#120" => "Max 2000 Characters of a textual description of the objectdata",
+		"2#122" => "Max 32 Characters that the identifies the person involved in the writing, editing or correcting the objectdata or caption/abstract; repeatable",
+		"2#125" => "7360 binary octets of the rasterized caption - 1 bit per pixel, 460x128-pixel image",
+		"2#130" => "2 characters of color composition type and information",
+		"2#131" => "1 alphabetic character indicating the image area layout - P=portrait, L=landscape, S=square",
+		"2#135" => "2 or 3 aphabetic characters containing the major national language of the object, according to the ISO 639:1988 codes",
+		"2#150" => "2 characters identifying monaural/stereo and exact type of audio content",
+		"2#151" => "6 numeric characters representing the audio sampling rate in hertz (Hz)",
+		"2#152" => "2 numeric characters representing the number of bits in each audio sample",
+		"2#153" => "6 numeric characters of the Audio Duration - HHMMSS",
+		"2#154" => "Max 64 characters of the content of the end of an audio objectdata",
+		"2#200" => "2 octet binary file format of the ObjectData Preview",
+		"2#201" => "2 octet binary particular version of the ObjectData Preview File Format",
+		"2#202" => "Max 256000 binary octets containing the ObjectData Preview data",
+		
+		// Pre ObjectData Descriptor Record
+		"7#010"  => "1 numeric character - 0=objectdata size not known, 1=objectdata size known at beginning of transfer",
+		"7#020"  => "4 octet binary maximum subfile dataset(s) size",
+		"7#090"  => "4 octet binary objectdata size if known at beginning of transfer",
+		"7#095"  => "4 octet binary largest possible objectdata size",
+		
+		// ObjectData Record
+		"8#010"  => "Subfile DataSet containing the objectdata itself; repeatable",
+		
+		// Post ObjectData Descriptor Record
+		"9#010"  => "4 octet binary total objectdata size"
+	);
+
+	/**
+	 * IPTC file format identifiers and descriptions
+	 *
+	 * This array contains the file format identifiers and descriptions defined in
+	 * the "IPTC-NAA Information Interchange Model Version No. 4.1" for dataset 1#020.
+	 *
+	 * @since 0.90
+	 *
+	 * @var	array
+	 */
+	private static $mla_iptc_formats = array(
+		00 => "No ObjectData",
+		01 => "IPTC-NAA Digital Newsphoto Parameter Record",
+		02 => "IPTC7901 Recommended Message Format",
+		03 => "Tagged Image File Format (Adobe/Aldus Image data)",
+		04 => "Illustrator (Adobe Graphics data)",
+		05 => "AppleSingle (Apple Computer Inc)",
+		06 => "NAA 89-3 (ANPA 1312)",
+		07 => "MacBinary II",
+		08 => "IPTC Unstructured Character Oriented File Format (UCOFF)",
+		09 => "United Press International ANPA 1312 variant",
+		10 => "United Press International Down-Load Message",
+		11 => "JPEG File Interchange (JFIF)",
+		12 => "Photo-CD Image-Pac (Eastman Kodak)",
+		13 => "Microsoft Bit Mapped Graphics File [*.BMP]",
+		14 => "Digital Audio File [*.WAV] (Microsoft & Creative Labs)",
+		15 => "Audio plus Moving Video [*.AVI] (Microsoft)",
+		16 => "PC DOS/Windows Executable Files [*.COM][*.EXE]",
+		17 => "Compressed Binary File [*.ZIP] (PKWare Inc)",
+		18 => "Audio Interchange File Format AIFF (Apple Computer Inc)",
+		19 => "RIFF Wave (Microsoft Corporation)",
+		20 => "Freehand (Macromedia/Aldus)",
+		21 => "Hypertext Markup Language - HTML (The Internet Society)",
+		22 => "MPEG 2 Audio Layer 2 (Musicom), ISO/IEC",
+		23 => "MPEG 2 Audio Layer 3, ISO/IEC",
+		24 => "Portable Document File (*.PDF) Adobe",
+		25 => "News Industry Text Format (NITF)",
+		26 => "Tape Archive (*.TAR)",
+		27 => "Tidningarnas Telegrambyrå NITF version (TTNITF DTD)",
+		28 => "Ritzaus Bureau NITF version (RBNITF DTD)",
+		29 => "Corel Draw [*.CDR]"
+	);
+
+	/**
+	 * IPTC image type identifiers and descriptions
+	 *
+	 * This array contains the image type identifiers and descriptions defined in
+	 * the "IPTC-NAA Information Interchange Model Version No. 4.1" for dataset 2#130, octet 2.
+	 *
+	 * @since 0.90
+	 *
+	 * @var	array
+	 */
+	private static $mla_iptc_image_types = array(
+		"M" => "Monochrome",
+		"Y" => "Yellow Component",
+		"M" => "Magenta Component",
+		"C" => "Cyan Component",
+		"K" => "Black Component",
+		"R" => "Red Component",
+		"G" => "Green Component",
+		"B" => "Blue Component",
+		"T" => "Text Only",
+		"F" => "Full colour composite, frame sequential",
+		"L" => "Full colour composite, line sequential",
+		"P" => "Full colour composite, pixel sequential",
+		"S" => "Full colour composite, special interleaving"
+	);
+
+	/**
+	 * Parse one IPTC metadata field
+	 * 
+	 * Returns a string value, converting array data to a string as necessary.
+	 *
+	 * @since 1.41
+	 *
+	 * @param	string	field name - IPTC Identifier or friendly name/slug
+	 * @param	string	metadata array containing 'mla_iptc_metadata' array
+	 *
+	 * @return	mixed	string/array representation of metadata value or an empty string
+	 */
+	public static function mla_iptc_metadata_value( $iptc_key, $image_metadata ) {
+		// convert friendly name/slug to identifier
+		if ( array_key_exists( $iptc_key, self::$mla_iptc_keys ) ) {
+			$iptc_key = self::$mla_iptc_keys[ $iptc_key ];
+		}
+				
+		$text = '';
+		if ( array_key_exists( $iptc_key, $image_metadata['mla_iptc_metadata'] ) ) {
+			$text = $image_metadata['mla_iptc_metadata'][ $iptc_key ];
+			if ( is_array( $text ) ) {
+				foreach ($text as $key => $value )
+					$text[ $key ] = self::_bin_to_utf8( $value );
+			}
+			elseif ( is_string( $text ) )
+				$text = self::_bin_to_utf8( $text );
+		}
+		
+		return $text;
+	}
+		
+	/**
 	 * Parse one EXIF metadata field
 	 * 
 	 * Returns a string value, converting array data to a string as necessary.
@@ -1640,19 +2329,48 @@ class MLAData {
 	 *
 	 * @return	string	string representation of metadata value or an empty string
 	 */
-	public static function mla_exif_metadata_value( $key, $image_metadata ) {
+	public static function mla_exif_metadata_value( $exif_key, $image_metadata ) {
 		$text = '';
-		if ( array_key_exists( $key, $image_metadata['mla_exif_metadata'] ) ) {
-			$record = $image_metadata['mla_exif_metadata'][ $key ];
-			if ( is_array( $record ) ) {
-				$text = var_export( $record, true);
-			} // is_array
-			else
-				$text = $record;
-		} elseif ( 'ALL_EXIF' == $key ) {
-				$text = var_export( $image_metadata['mla_exif_metadata'], true);
-		} elseif ( 'ALL_IPTC' == $key ) {
-				$text = var_export( $image_metadata['mla_iptc_metadata'], true);
+		if ( array_key_exists( $exif_key, $image_metadata['mla_exif_metadata'] ) ) {
+			$text = $image_metadata['mla_exif_metadata'][ $exif_key ];
+			if ( is_array( $text ) ) {
+				foreach ($text as $key => $value ) {
+					if ( is_array( $value ) )
+						$text[ $key ] = self::_bin_to_utf8( var_export( $value, true ) );
+					else
+						$text[ $key ] = self::_bin_to_utf8( $value );
+				}
+			}
+			elseif ( is_string( $text ) )
+				$text = self::_bin_to_utf8( $text );
+		} elseif ( 'ALL_EXIF' == $exif_key ) {
+			$clean_data = array();
+			foreach ( $image_metadata['mla_exif_metadata'] as $key => $value ) {
+				if ( is_array( $value ) ) 
+					$clean_data[ $key ] = '(ARRAY)';
+				elseif ( is_string( $value ) )
+					$clean_data[ $key ] = self::_bin_to_utf8( substr( $value, 0, 256 ) );
+				else
+					$clean_data[ $key ] = $value;
+			}
+			
+			$text = var_export( $clean_data, true);
+		} elseif ( 'ALL_IPTC' == $exif_key ) {
+			$clean_data = array();
+			foreach ( $image_metadata['mla_iptc_metadata'] as $key => $value ) {
+				if ( is_array( $value ) ) {
+					foreach ($value as $text_key => $text )
+						$value[ $text_key ] = self::_bin_to_utf8( $text );
+						
+					$clean_data[ $key ] = 'ARRAY(' . implode( ',', $value ) . ')';
+				}
+				elseif ( is_string( $value ) )
+					$clean_data[ $key ] = self::_bin_to_utf8( substr( $value, 0, 256 ) );
+				else
+					$clean_data[ $key ] = self::_bin_to_utf8( $value );
+			}
+
+			$text = var_export( $clean_data, true);
 		}
 		
 		return $text;
@@ -1673,16 +2391,21 @@ class MLAData {
 	public static function mla_fetch_attachment_image_metadata( $post_id, $path = '' ) {
 		$results = array(
 			'mla_iptc_metadata' => array(),
-			'mla_exif_metadata' => array()
+			'mla_exif_metadata' => array(),
+			'mla_pdf_metadata' => array()
 			);
 
 		if ( 0 != $post_id )
 			$path = get_attached_file($post_id);
-			
+
 		if ( ! empty( $path ) ) {
-			$size = getimagesize( $path, $info );
-			foreach ( $info as $key => $value ) {
+/*
+			if ( 'pdf' == strtolower( pathinfo( $path, PATHINFO_EXTENSION ) ) ) {
+				$results['mla_pdf_metadata'] = self::_extract_pdf_metadata( $path );
+				return $results;
 			}
+ */
+			$size = getimagesize( $path, $info );
 			
 			if ( is_callable( 'iptcparse' ) ) {
 				if ( !empty( $info['APP13'] ) ) {
@@ -1719,7 +2442,7 @@ class MLAData {
 				}
 			} // is_array
 		}
-		
+
 		return $results;
 	}
 	

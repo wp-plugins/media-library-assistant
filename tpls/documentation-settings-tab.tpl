@@ -4,6 +4,30 @@
 <ul style="list-style-position:inside; list-style:disc; line-height: 18px">
 <li>
 <a href="#mla_gallery"><strong>MLA Gallery Shortcode</strong></a>
+<ul style="list-style-position:inside; list-style:disc; line-height: 15px; padding-left: 20px">
+<li><a href="#gallery_display_style">Gallery Display Style</a></li>
+<li><a href="#gallery_display_content">Gallery Display Content</a></li>
+<li><a href="#google_file_viewer_support">Google File Viewer Support</a></li>
+<li><a href="#order_orderby">Order, Orderby</a></li>
+<li><a href="#size">Size</a></li>
+<li><a href="#link">Link</a></li>
+<li><a href="#include_exclude">Include, Exclude</a></li>
+<li><a href="#post_id_ids_post_parent">Post ID, "ids", Post Parent</a></li>
+<li><a href="#author_author_name">Author, Author Name</a></li>
+<li><a href="#category_parameters">Category Parameters</a></li>
+<li><a href="#tag_parameters">Tag Parameters</a></li>
+<li><a href="#taxonomy_parameters_tax_operator">Taxonomy Parameters, "tax_operator"</a></li>
+<li><a href="#post_mime_type">Post MIME Type</a></li>
+<li><a href="#post_type_post_status">Post Type, Post Status</a></li>
+<li><a href="#pagination_parameters">Pagination Parameters</a></li>
+<li><a href="#time_parameters">Time Parameters</a></li>
+<li><a href="#custom_field_parameters">Custom Field Parameters</a></li>
+<li><a href="#search_keywords">Search Keywords</a></li>
+<li><a href="#debugging_output">Debugging Output</a></li>
+</ul>
+</li>
+<li>
+<a href="#mla_output"><strong>Support for Alternative Gallery Output</strong></a>
 </li>
 <li>
 <a href="#alt_shortcode"><strong>Support for Other Gallery-generating Shortcodes</strong></a>
@@ -75,6 +99,7 @@ The <code>[mla_gallery]</code> shortcode is used in a post, page or custom post 
 </ul>
 <p>
 All of the options/parameters documented for the <code>[gallery]</code> shortcode are supported by the <code>[mla_gallery]</code> shortcode; you can find them in the <a href="http://codex.wordpress.org/Gallery_Shortcode" title="WordPress Codex link" target="_blank">WordPress Codex</a>. Most of the parameters documented for the WP_Query class are also supported; see the <a href="http://codex.wordpress.org/Class_Reference/WP_Query" title="WordPress Codex link" target="_blank">Codex WP_Query class reference</a>. Because the <code>[mla_gallery]</code> shortcode is designed to work with Media Library items, there are some parameter differences and extensions; these are documented below.
+<a name="gallery_display_style"></a>
 </p>
 <h4>Gallery Display Style</h4>
 <p>
@@ -109,12 +134,17 @@ Three <code>[mla_gallery]</code> parameters provide control over the placement, 
 </table>
 <p>
 These parameters are only important if the gallery thumbnails are too large to fit within the width of the page on which they appear. For example, if you code <code>[mla_gallery size=full]</code>, the browser will automatically scale down large images to fit within the width attribute (in percent) of the ".gallery-item" style. The default 1.5% margin will ensure that the images do not overlap; you can increase it to add more space between the gallery items. You can also reduce the itemwidth parameter to increase the left and right space between the items.
+<a name="gallery_display_content"></a>
 </p>
 <h4>Gallery Display Content</h4>
 <p>
 Nine <code>[mla_gallery]</code> parameters provide an easy way to control the contents of gallery items without requiring the use of custom Markup templates.  
 </p>
 <table>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">mla_output</td>
+<td>completely replaces gallery output with links to the "previous" or "next" item. Complete documentation is in the <a href="#mla_output"><strong>Support for Alternative Gallery Output</strong></a> section below.</td>
+</tr>
 <tr>
 <td style="padding-right: 10px; vertical-align: top; font-weight:bold">mla_link_attributes</td>
 <td>adds one or more HTML attributes to the hyperlink for each gallery item; see below</td>
@@ -163,6 +193,7 @@ The "mla_link_attributes" and "mla_image_attributes" parameters accept any value
 </p>
 <p>
 The "mla_target" parameter accepts any value and adds an HTML "target" attribute to the hyperlink with that value. For example, if you code <code>mla_target="_blank"</code> the item will open in a new window or tab. You can also use "_self", "_parent", "_top" or the "<em>framename</em>" of a named frame.
+<a name="google_file_viewer_support"></a>
 </p>
 <h4>Google File Viewer Support</h4>
 <p>
@@ -187,7 +218,9 @@ Four <code>[mla_gallery]</code> parameters provide an easy way to generate thumb
 </tr>
 </table>
 <p>
-When this feature is active, gallery items for which WordPress can generate a thumbnail image are not altered. If WordPress generation fails, the gallery thumbnail is replaced by an "img" html tag whose "src" attribute contains a url reference to the Google File Viewer. The Google File Viewer arguments include the url of the source file, the page number and the width. Note that the source file must be Internet accessible; files behind firewalls and on local servers will not generate a thumbnail image.</p>
+When this feature is active, gallery items for which WordPress can generate a thumbnail image are not altered. If WordPress generation fails, the gallery thumbnail is replaced by an "img" html tag whose "src" attribute contains a url reference to the Google File Viewer. The Google File Viewer arguments include the url of the source file, the page number and the width. Note that the source file must be Internet accessible; files behind firewalls and on local servers will not generate a thumbnail image.
+<a name="order_orderby"></a>
+</p>
 <h4>Order, Orderby</h4>
 <p>
 The Orderby parameter specifies which database field(s) are used to sort the gallery. You can sort the gallery by one or more of these values (there is additional information on some of these values in the <a href="http://codex.wordpress.org/Class_Reference/WP_Query#Order_.26_Orderby_Parameters" title="WordPress Codex link" target="_blank">Codex WP_Query class reference</a>):
@@ -262,6 +295,7 @@ The Orderby parameter specifies which database field(s) are used to sort the gal
 You can sort on more than one value, e.g., <code>orderby="author, date DESC"</code> and you can specify ASC/DESC on a value by value basis. <strong>NOTE: multiple orderby values are separated by commas, not spaces.</strong> This is a change from WP_Query. </p>
 <p>
 The order parameter (default ASC) can give an ASC/DESC default for any value that doesn't have a specific choice. For example, <code>orderby="author, date DESC, mime_type" order=ASC</code> is the same as <code>orderby="author ASC, date DESC, mime_type ASC"</code>.
+<a name="size"></a>
 </p>
 <h4>Size</h4>
 <p>
@@ -269,6 +303,7 @@ The Size parameter specifies the image size to use for the thumbnail display. Va
 </p>
 <p>
 The <code>[mla_gallery]</code> shortcode supports an additional Size value, "icon", which shows a 60x60 (or 64x64) pixel thumbnail for image items and an appropriate icon for non-image items such as PDF or text files.
+<a name="link"></a>
 </p>
 <h4>Link</h4>
 <p>
@@ -276,10 +311,12 @@ The Link parameter specifies the target for the link from the gallery to the att
 </p>
 <p>
 For image attachments you can also specify the size of the image file you want to link to. Valid values include "thumbnail", "medium", "large" and any additional image size that was registered with add_image_size(). If the specified size is not available or if the attachment is not an image, the link will go directly to the attachment file.
+<a name="include_exclude"></a>
 </p>
 <h4>Include, Exclude</h4>
 <p>
 You can use <code>post_parent=all</code> to include or exclude attachments regardless of which post or page they are attached to. You can use <code>post_mime_type=all</code> to include or exclude attachments of all MIME types, not just images.
+<a name="post_id_ids_post_parent"></a>
 </p>
 <h4>Post ID, "ids", Post Parent</h4>
 <p>
@@ -296,14 +333,17 @@ Two other "post_parent" values let you restrict the gallery to attached or unatt
 </p>
 <p>
 For example, <code>[mla_gallery tag="artisan"]</code> will display all images having the specified tag value, regardless of which post (if any) they are attached to. If you use <code>[mla_gallery tag="artisan" post_parent="current"]</code> it will display images having the specified tag value only if they are attached to the current post.
+<a name="author_author_name"></a>
 </p>
 <h4>Author, Author Name</h4>
 <p>
 You can query by author's id or the "user_nicename" value (not the "display_name" value). Multiple author ID values are allowed, but only one author name value can be entered.
+<a name="category_parameters"></a>
 </p>
 <h4>Category Parameters</h4>
 <p>
 The Category parameters search in the WordPress core &quot;Categories&quot; taxonomy. Remember to use <code>post_parent=current</code> if you want to restrict your query to items attached to the current post.
+<a name="tag_parameters"></a>
 </p>
 <h4>Tag Parameters</h4>
 <p>
@@ -311,6 +351,7 @@ The Tag parameters search in the WordPress core &quot;Tags&quot; taxonomy. Remem
 </p>
 <p>
 Note that the "tag_id" parameter requires exactly one tag ID; multiple IDs are not allowed. You can use the "tag__in" parameter to query for multiple values.
+<a name="taxonomy_parameters_tax_operator"></a>
 </p>
 <h4>Taxonomy Parameters, "tax_operator"</h4>
 <p>
@@ -352,22 +393,27 @@ When embedding the shortcode in the body of a post, be very careful when coding 
 </p>
 <p>
 Remember to use <code>post_parent=current</code> if you want to restrict your query to items attached to the current post.
+<a name="post_mime_type"></a>
 </p>
 <h4>Post MIME Type</h4>
 <p>
 For compatibility with the WordPress <code>[gallery]</code> shortcode, this parameter defaults to <code>post_mime_type=image</code>. You can override the default to, for example, display PDF documents (<code>post_mime_type=application/pdf</code>) or all MIME types (<code>post_mime_type=all</code>). You can select several MIME types with a comma-separated list, e.g., <code>post_mime_type='audio,video'</code>. Wildcard specifications are also supported. For example, <code>post_mime_type='*/mpeg'</code> to select audio and video mpeg formats or <code>post_mime_type='application/*ms*'</code> to select all Microsoft application formats (Word, Excel, etc.).
+<a name="post_type_post_status"></a>
 </p>
 <h4>Post Type, Post Status</h4>
 <p>
 For compatibility with the WordPress <code>[gallery]</code> shortcode, these parameters default to <code>post_type=attachment</code>, <code>post_status=inherit</code>. You can override the defaults to, for example, display items in the trash (<code>post_status=trash</code>). I'm not sure why you'd want to override "post_type", but you are welcome to experiment and let me know what you find.
+<a name="pagination_parameters"></a>
 </p>
 <h4>Pagination Parameters</h4>
 <p>
 The <code>[mla_gallery]</code> shortcode supplies <code>nopaging=true</code> as a default parameter. If you are working with a template that supports pagination you can replace this with specific values for "numberposts", "posts_per_page", "posts_per_archive_page", "paged" and/or "offset" . You can also pass "paged=current" to suppress the "nopaging" default; "current" will be replaced by the appropriate value (get_query_var('paged')).
+<a name="time_parameters"></a>
 </p>
 <h4>Time Parameters</h4>
 <p>
 Support for time parameters is not included in the current version. I may add it later - let me know if you need it.
+<a name="custom_field_parameters"></a>
 </p>
 <h4>Custom Field Parameters</h4>
 <p>
@@ -378,14 +424,71 @@ When embedding the shortcode in the body of a post, be very careful when coding 
 </p>
 <p>
 Remember to use <code>post_parent=current</code> if you want to restrict your query to items attached to the current post.
+<a name="search_keywords"></a>
 </p>
 <h4>Search Keywords</h4>
 <p>
 The search parameter ("s=keyword") will perform a keyword search. A cursory inspection of the code in /wp-includes/query.php reveals that the search includes the "post_title" and "post_content" (Description) fields but not the "post_excerpt" (Caption) field. An SQL "LIKE" clause is composed and added to the search criteria. I haven't done much testing of this parameter.
+<a name="debugging_output"></a>
 </p>
 <h4>Debugging Output</h4>
 <p>
 The "mla_debug" parameter controls the display of information about the query parameters and SQL statements used to retrieve gallery items. If you code <code>mla_debug=true</code> you will see a lot of information added to the post or page containing the gallery. Of course, this parameter should <strong><em>ONLY</em></strong> be used in a development/debugging environment; it's quite ugly.
+</p>
+<a name="mla_output"></a>
+&nbsp;
+<p>
+<a href="#backtotop">Go to Top</a>
+</p>
+<h3>Support for Alternative Gallery Output</h3>
+<p>
+The <code>[mla_gallery]</code> shortcode can be used to provide "Previous" and "Next" links that support moving among the individual items in a gallery. 
+</p>
+<table>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">mla_output</td>
+<td>the type of output the shortcode will return. The default value, "gallery", returns the traditional gallery of image thumbnails, etc. The "next_link" value returns a link to the next gallery item, and "previous_link" returns a link to the previous gallery item. The optional ",wrap" qualifier determines what happens at each end of the gallery. If you omit the qualifier, an empty string is returned for the "previous_link" from the first gallery item, and for the "next_link" from the last item in the gallery. If you code the ",wrap" qualifier, "previous_link" from the first gallery item will be to the last gallery item and the "next_link" from the last item will be to the first gallery item.</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">id</td>
+<td>(optional) the ID of the "current" gallery item. If you omit this parameter, the default value is the ID of the current "post". The default value is only useful if you are enhancing the PHP code of the "image.php" template for the "Attachment Page" associated with a Media Library item.</td>
+</tr>
+</table>
+<p>
+The link returned is drawn from the attachment-specific "link" substitution parameter for the next or previous gallery item. This means you can use all of the <a href="#gallery_display_content">Gallery Display Content</a> parameters to control each element of the link. For example, you can code <code>mla_rollover_text='&amp;larr; Previous'</code> to replace the thumbnail image with a generic text link to the "previous_link" item. You can also add HTML arguments to the link to pass values along from one page to the next.
+</p>
+<p>
+For example, you can select images using the MLA Att. Tag taxonomy and have each gallery item link to a page (page_id=893 in this case) that displays a larger version of the single image:
+</p>
+<code>
+[mla_gallery attachment_tag="sample" mla_caption="{+title+}" mla_link_href="{+site_url+}?page_id=893&amp;current_id={+attachment_ID+}&amp;attachment_tag={+query:attachment_tag+}"]
+</code>
+<p>
+Note the use of <code>attachment_tag={+query:attachment_tag+}</code> in the href to pass the tag value from the gallery page to the single-image page. The single-image page would have three <code>[mla+gallery]</code> shortcodes; one to display the image and two for the "Previous Sample" and "Next Sample" links:
+</p>
+<code>
+[mla_gallery columns=1 ids="{+request:current_id+}" size=medium]
+<br />&nbsp;<br>
+&lt;div style="clear: both; float: left"&gt;<br />
+[mla_gallery mla_output="previous_link,wrap" mla_link_text='&larr; Previous Sample' attachment_tag="{+request:attachment_tag+}" id="{+request:current_id+}" mla_caption="{+title+}" mla_link_href="{+site_url+}?page_id=893&amp;current_id={+attachment_ID+}&amp;attachment_tag={+query:attachment_tag+}"]<br>
+&lt;/div&gt;<br>
+&lt;div style="float: right"&gt;<br>
+[mla_gallery mla_output="next_link,wrap" mla_link_text='Next Sample &rarr;' attachment_tag="{+request:attachment_tag+}" id="{+request:current_id+}" mla_caption="{+title+}" mla_link_href="{+site_url+}?page_id=893&amp;current_id={+attachment_ID+}&amp;attachment_tag={+query:attachment_tag+}"]<br>
+&lt;/div&gt;
+</code>
+<p>
+Note the following points:
+</p>
+<ol>
+<li>The "ids" parameter in the first <code>[mla_gallery]</code> takes the "current_id" value (for the single image to be displayed) from the HTML $_REQUEST array. 
+</li>
+<li>The "id" parameters in the second and third <code>[mla_gallery]</code> take the "current_id" value from the HTML $_REQUEST array. In these "galleries" the "current_id" is the item from which "previous" and "next" are calculated.
+</li>
+<li>The "attachment_tag" parameters in the second and third <code>[mla_gallery]</code> take the their value from the HTML $_REQUEST array as well. The Att. Tag value is used to reconstruct the original gallery for the previous/next calculation.
+</li>
+</ol>
+<p>
+This example shows the power of the substitution parameters and in particular the "query" and "request" prefixes that can be used to pass information into an <code>[mla_gallery]</code> and from one page to the next. All of this without modifying PHP templates or requiring other code modifications!
 </p>
 <a name="alt_shortcode"></a>
 &nbsp;
@@ -773,9 +876,13 @@ The <strong>",single" option</strong> defines how to handle fields with multiple
 The <strong>",export" option</strong> changes the display of array fields with multiple values. If this option is present, the PHP <code>var_export</code> function is used to return a string representation of all the elements in an array field. For example, if you code <code>[+meta:sizes.thumbnail,export+]</code> the result will be "array ('file' => '20120313-ASK_5605-150x150.jpg', 'width' => 150, 'height' => 150, 'mime-type' => 'image/jpeg'".
 </p>
 <p>
-There are six prefix values for field-level data. Prefix values must be coded as shown; all lowercase letters.
+There are seven prefix values for field-level data. Prefix values must be coded as shown; all lowercase letters.
 </p>
 <table>
+	<tr>
+		<td style="padding-right: 10px; vertical-align: top; font-weight:bold">request</td>
+		<td>The parameters defined in the <code>$_REQUEST</code> array; the "query strings" sent from the browser. The PHP $_REQUEST variable is a superglobal Array that contains the contents of both $_GET, $_POST, and $_COOKIE arrays. It can be used to collect data sent with both the GET and POST methods. For example, if the URL is <code>http://www.mysite.com/mypage?myarg=myvalue</code> you can access the query string as <code>[+request:myarg+]</code>, which has the value "myvalue".</td>
+	</tr>
 	<tr>
 		<td style="padding-right: 10px; vertical-align: top; font-weight:bold">query</td>
 		<td>The parameters defined in the <code>[mla_gallery]</code> shortcode. For example, if your shortcode is <code>[mla gallery attachment_tag=my-tag div-class=some_class]</code> you can access the parameters as <code>[+query:attachment_tag+]</code> and <code>[+query:div-class+]</code> respectively. Only the parameters actually coded in the shortcode are accessible; default values for parameters not actually coded are not available. You can define your own parameters, e.g., "div-class"; they will be accessible as field-level data but will otherwise be ignored.</td>
@@ -786,7 +893,7 @@ There are six prefix values for field-level data. Prefix values must be coded as
 	</tr>
 	<tr>
 		<td style="padding-right: 10px; vertical-align: top; font-weight:bold">terms</td>
-		<td>WordPress Category, tag or custom taxonomy terms. For this category, you code the name of the taxonomy as the field name. The term(s) associated with the attachment will be displayed in the <code>[mla_gallery]</code>. Note that you must use the name/slug string for taxonomy, not the "title" string. For example, use "attachment-category" or "attachment-tag", not "Att. Category" or "Attachment Category".</td>
+		<td>WordPress Category, tag or custom taxonomy terms. For this category, you code the name of the taxonomy as the field name. The term(s) associated with the attachment will be displayed in the <code>[mla_gallery]</code>. Note that you must use the name/slug string for taxonomy, not the "title" string. For example, use "attachment_category" or "attachment_tag", not "Att. Category" or "Attachment Category".</td>
 	</tr>
 	<tr>
 		<td style="padding-right: 10px; vertical-align: top; font-weight:bold">meta</td>
@@ -810,7 +917,9 @@ There are six prefix values for field-level data. Prefix values must be coded as
 		<br />&nbsp;<br />
 		MLA uses a standard PHP function, <a href="http://php.net/manual/en/function.exif-read-data.php" title="PHP Manual page for exif_read_data" target="_blank">exif_read_data</a>, to extract EXIF data from images. The function returns three arrays in addition to the raw EXIF data; COMPUTED, THUMBNAIL and COMMENT. You can access the array elements by prefacing the element you want with the array name. For example, the user comment text is available as "COMPUTED.UserComment" and "COMPUTED.UserCommentEncoding". You can also get "COMPUTED.Copyright" and its two parts (if present), "COMPUTED.Copyright.Photographer" and "COMPUTED.Copyright.Editor". The THUMBNAIL and COMMENT arrays work in a similar fashion.
 		<br />&nbsp;<br />
-		Two special exif "pseudo-values" are available; <strong>ALL_IPTC</strong> (<code>[+exif:ALL_IPTC+]</code>) and <strong>ALL_EXIF</strong> (<code>[+exif:ALL_EXIF+]</code>). These return a string representation of all IPTC or EXIF data respectively. You can use these pseudo-values to examine the metadata in an image, find field names and see what values are embedded in the image.</td>
+		Two special exif "pseudo-values" are available; <strong>ALL_IPTC</strong> (<code>[+exif:ALL_IPTC+]</code>) and <strong>ALL_EXIF</strong> (<code>[+exif:ALL_EXIF+]</code>). These return a string representation of all IPTC or EXIF data respectively. You can use these pseudo-values to examine the metadata in an image, find field names and see what values are embedded in the image.
+		<br />&nbsp;<br />
+		The ALL_EXIF value is altered in two ways. First, values of more than 256 characters are truncated to 256 characters. This prevents large fields such as image thumbnails from dominating the display. Second, array values are shown once, at their expanded level. For example the "COMPUTED" array is displayed as 'COMPUTED' => '(ARRAY)' and then 'COMPUTED.Width' => "2816", etc.</td>
 	</tr>
 </table>
 

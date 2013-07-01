@@ -397,12 +397,13 @@ class MLA_List_Table extends WP_List_Table {
 
 				$list = array();
 				foreach ( $terms as $term ) {
-					$list[ ] = sprintf( '<a href="%s">%s</a>', esc_url( add_query_arg( array(
+					$term_name = esc_html( sanitize_term_field( 'name', $term->name, $term->term_id, 'category', 'display' ) );
+					$list[ ] = sprintf( '<a href="%1$s" title="Filter by &#8220;%2$s&#8221;">%3$s</a>', esc_url( add_query_arg( array(
 						'page' => MLA::ADMIN_PAGE_SLUG,
 						'mla-tax' => $taxonomy,
 						'mla-term' => $term->slug,
 						'heading_suffix' => urlencode( $tax_object->label . ': ' . $term->name ) 
-					), 'upload.php' ) ), esc_html( sanitize_term_field( 'name', $term->name, $term->term_id, 'category', 'display' ) ) );
+					), 'upload.php' ) ), $term_name, $term_name );
 				} // foreach $term
 				
 				return join( ', ', $list );
@@ -425,12 +426,12 @@ class MLA_List_Table extends WP_List_Table {
 				if ( is_array( $value ) )
 					$list[ ] = 'array( ' . implode( ', ', $value ) . ' )';
 				else
-					$list[ ] = sprintf( '<a href="%s">%s</a>', esc_url( add_query_arg( array(
+					$list[ ] = sprintf( '<a href="%1$s" title="Filter by &#8220;%2$s&#8221;">%3$s</a>', esc_url( add_query_arg( array(
 						'page' => MLA::ADMIN_PAGE_SLUG,
 						'mla-metakey' => urlencode( MLA_List_Table::$default_columns[ $column_name ] ),
 						'mla-metavalue' => urlencode( $value ),
 						'heading_suffix' => urlencode( MLA_List_Table::$default_columns[ $column_name ] . ': ' . $value ) 
-					), 'upload.php' ) ), esc_html( $value ) );
+					), 'upload.php' ) ), esc_html( substr( $value, 0, 64 ) ), esc_html( $value ) );
 			}
 
 			if ( count( $list ) > 1 )
@@ -472,10 +473,15 @@ class MLA_List_Table extends WP_List_Table {
 	function column_icon( $item )
 	{
 		if ( 'checked' == MLAOptions::mla_get_option( MLAOptions::MLA_ENABLE_MLA_ICONS ) )
-			return wp_get_attachment_image( $item->ID, array( 64, 64 ), true );
+			$thumb = wp_get_attachment_image( $item->ID, array( 64, 64 ), true, array( 'class' => 'mla_media_thumbnail_64_64' ) );
 		else
-			return wp_get_attachment_image( $item->ID, array( 80, 60 ), true );
-	}
+			$thumb = wp_get_attachment_image( $item->ID, array( 80, 60 ), true, array( 'class' => 'mla_media_thumbnail_80_60' ) );
+
+		if ( $this->is_trash || ! current_user_can( 'edit_post', $item->ID ) )
+			return $thumb;
+		
+		return sprintf( '<a href="%1$s" title="Edit &#8220;%2$s&#8221;">%3$s</a>', get_edit_post_link( $item->ID, true ), esc_attr( $item->post_title ), $thumb ); 
+		}
 	
 	/**
 	 * Add rollover actions to exactly one of the following displayed columns:
@@ -622,7 +628,7 @@ class MLA_List_Table extends WP_List_Table {
 			else
 				$parent_title = '(no title: bad ID)';
 
-			$parent = sprintf( '<a href="%1$s">(parent:%2$s)</a>', esc_url( add_query_arg( array(
+			$parent = sprintf( '<a href="%1$s" title="Filter by Parent ID">(parent:%2$s)</a>', esc_url( add_query_arg( array(
 					'page' => MLA::ADMIN_PAGE_SLUG,
 					'parent' => $item->post_parent,
 					'heading_suffix' => urlencode( 'Parent: ' .  $parent_title ) 
@@ -712,7 +718,7 @@ class MLA_List_Table extends WP_List_Table {
 			else
 				$parent_title = '(no title: bad ID)';
 
-			return sprintf( '<a href="%s">%s</a>', esc_url( add_query_arg( array(
+			return sprintf( '<a href="%1$s" title="Filter by Parent ID">%2$s</a>', esc_url( add_query_arg( array(
 				'page' => MLA::ADMIN_PAGE_SLUG,
 				'parent' => $item->post_parent,
 				'heading_suffix' => urlencode( 'Parent: ' . $parent_title ) 
@@ -754,12 +760,13 @@ class MLA_List_Table extends WP_List_Table {
 			else
 				$parent = '';
 			
-			$value .= sprintf( '(%1$s %2$s%3$s), <a href="%4$s">%5$s</a>',
+			$value .= sprintf( '(%1$s %2$s%3$s), <a href="%4$s" title="Edit &#8220;%5$s&#8221;">%6$s</a>',
 				/*%1$s*/ esc_attr( $feature->post_type ),
 				/*%2$s*/ $feature_id,
 				/*%3$s*/ $parent,
 				/*%4$s*/ esc_url( add_query_arg( array('post' => $feature_id, 'action' => 'edit'), 'post.php' ) ),
-				/*%5$s*/ esc_attr( $feature->post_title ) ) . "<br>\r\n";
+				/*%5$s*/ esc_attr( $feature->post_title ),
+				/*%6$s*/ esc_attr( $feature->post_title ) ) . "<br>\r\n";
 		} // foreach $feature
 		
 		return $value;
@@ -788,12 +795,13 @@ class MLA_List_Table extends WP_List_Table {
 				else
 					$parent = '';
 				
-			$value .= sprintf( '(%1$s %2$s%3$s), <a href="%4$s">%5$s</a>',
+			$value .= sprintf( '(%1$s %2$s%3$s), <a href="%4$s" title="Edit &#8220;%5$s&#8221;">%6$s</a>',
 				/*%1$s*/ esc_attr( $insert->post_type ),
 				/*%2$s*/ $insert->ID,
 				/*%3$s*/ $parent,
 				/*%4$s*/ esc_url( add_query_arg( array('post' => $insert->ID, 'action' => 'edit'), 'post.php' ) ),
-				/*%5$s*/ esc_attr( $insert->post_title ) ) . "<br>\r\n";
+				/*%5$s*/ esc_attr( $insert->post_title ),
+				/*%6$s*/ esc_attr( $insert->post_title ) ) . "<br>\r\n";
 			} // foreach $insert
 		} // foreach $file
 		
@@ -820,12 +828,13 @@ class MLA_List_Table extends WP_List_Table {
 			else
 				$parent = '';
 			
-			$value .= sprintf( '(%1$s %2$s%3$s), <a href="%4$s">%5$s</a>',
+			$value .= sprintf( '(%1$s %2$s%3$s), <a href="%4$s" title="Edit &#8220;%5$s&#8221;">%6$s</a>',
 				/*%1$s*/ esc_attr( $gallery['post_type'] ),
 				/*%2$s*/ $ID,
 				/*%3$s*/ $parent,
 				/*%4$s*/ esc_url( add_query_arg( array('post' => $ID, 'action' => 'edit'), 'post.php' ) ),
-				/*%5$s*/ esc_attr( $gallery['post_title'] ) ) . "<br>\r\n";
+				/*%5$s*/ esc_attr( $gallery['post_title'] ),
+				/*%6$s*/ esc_attr( $gallery['post_title'] ) ) . "<br>\r\n";
 		} // foreach $gallery
 		
 		return $value;
@@ -851,12 +860,13 @@ class MLA_List_Table extends WP_List_Table {
 			else
 				$parent = '';
 			
-			$value .= sprintf( '(%1$s %2$s%3$s), <a href="%4$s">%5$s</a>',
+			$value .= sprintf( '(%1$s %2$s%3$s), <a href="%4$s" title="Edit &#8220;%5$s&#8221;">%6$s</a>',
 				/*%1$s*/ esc_attr( $gallery['post_type'] ),
 				/*%2$s*/ $ID,
 				/*%3$s*/ $parent,
 				/*%4$s*/ esc_url( add_query_arg( array('post' => $ID, 'action' => 'edit'), 'post.php' ) ),
-				/*%5$s*/ esc_attr( $gallery['post_title'] ) ) . "<br>\r\n";
+				/*%5$s*/ esc_attr( $gallery['post_title'] ),
+				/*%6$s*/ esc_attr( $gallery['post_title'] ) ) . "<br>\r\n";
 		} // foreach $gallery
 		
 		return $value;
@@ -872,12 +882,12 @@ class MLA_List_Table extends WP_List_Table {
 	 */
 	function column_alt_text( $item ) {
 		if ( isset( $item->mla_wp_attachment_image_alt ) )
-			return sprintf( '<a href="%s">%s</a>', esc_url( add_query_arg( array(
+			return sprintf( '<a href="%1$s" title="Filter by &#8220;%2$s&#8221;"">%3$s</a>', esc_url( add_query_arg( array(
 				'page' => MLA::ADMIN_PAGE_SLUG,
 				'mla-metakey' => '_wp_attachment_image_alt',
 				'mla-metavalue' => urlencode( $item->mla_wp_attachment_image_alt ),
 				'heading_suffix' => urlencode( 'ALT Text: ' . $item->mla_wp_attachment_image_alt ) 
-			), 'upload.php' ) ), esc_html( $item->mla_wp_attachment_image_alt ) );
+			), 'upload.php' ) ), esc_html( $item->mla_wp_attachment_image_alt ), esc_html( $item->mla_wp_attachment_image_alt ) );
 		else
 			return '';
 	}
@@ -915,11 +925,11 @@ class MLA_List_Table extends WP_List_Table {
 	 * @return	string	HTML markup to be placed inside the column
 	 */
 	function column_post_mime_type( $item ) {
-		return sprintf( '<a href="%s">%s</a>', esc_url( add_query_arg( array(
+		return sprintf( '<a href="%1$s" title="Filter by &#8220;%2$s&#8221;"">%2$s</a>', esc_url( add_query_arg( array(
 			'page' => MLA::ADMIN_PAGE_SLUG,
 			'post_mime_type' => urlencode( $item->post_mime_type ),
 			'heading_suffix' => urlencode( 'MIME Type: ' . $item->post_mime_type ) 
-		), 'upload.php' ) ), esc_html( $item->post_mime_type ) );
+		), 'upload.php' ) ), esc_html( $item->post_mime_type ), esc_html( $item->post_mime_type ) );
 	}
 	
 	/**
@@ -1004,7 +1014,7 @@ class MLA_List_Table extends WP_List_Table {
 		$user = get_user_by( 'id', $item->post_author );
 		
 		if ( isset( $user->data->display_name ) )
-			return sprintf( '<a href="%s">%s</a>', esc_url( add_query_arg( array(
+			return sprintf( '<a href="%s" title="Filter by Author ID">%s</a>', esc_url( add_query_arg( array(
 				 'page' => MLA::ADMIN_PAGE_SLUG,
 				'author' => $item->post_author,
 				'heading_suffix' => urlencode( 'Author: ' . $user->data->display_name ) 
@@ -1028,10 +1038,10 @@ class MLA_List_Table extends WP_List_Table {
 			$parent_date = '';
 		
 		if ( isset( $item->parent_title ) )
-			$parent_title = sprintf( '<a href="%s">%s</a>', esc_url( add_query_arg( array(
+			$parent_title = sprintf( '<a href="%1$s" title="Edit &#8220;%2$s&#8221;">%3$s</a>', esc_url( add_query_arg( array(
 				'post' => $item->post_parent,
 				'action' => 'edit'
-			), 'post.php' ) ), esc_attr( $item->parent_title ) );
+			), 'post.php' ) ), esc_attr( $item->parent_title ), esc_attr( $item->parent_title ) );
 		else
 			$parent_title = '(Unattached)';
 		

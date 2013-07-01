@@ -38,7 +38,7 @@ class MLA {
 	 *
 	 * @var	string
 	 */
-	const CURRENT_MLA_VERSION = '1.40';
+	const CURRENT_MLA_VERSION = '1.41';
 
 	/**
 	 * Slug for registering and enqueueing plugin style sheet
@@ -581,6 +581,19 @@ class MLA {
 	 * @return	void
 	 */
 	public static function mla_render_admin_page( ) {
+		/*
+		 * WordPress class-wp-list-table.php doesn't look in hidden fields to set
+		 * the month filter dropdown or sorting parameters
+		 */
+		if ( isset( $_REQUEST['m'] ) )
+			$_GET['m'] = $_REQUEST['m'];
+			
+		if ( isset( $_REQUEST['order'] ) )
+			$_GET['order'] = $_REQUEST['order'];
+		
+		if ( isset( $_REQUEST['orderby'] ) )
+			$_GET['orderby'] = $_REQUEST['orderby'];
+		
 		$bulk_action = self::_current_bulk_action();
 		
 		echo "<div class=\"wrap\">\r\n";
@@ -612,7 +625,7 @@ class MLA {
 		 * Process bulk actions that affect an array of items
 		 */
 		if ( $bulk_action && ( $bulk_action != 'none' ) ) {
-			echo "</h2>\r\n";
+//			echo "</h2>\r\n";
 			
 			if ( isset( $_REQUEST['cb_attachment'] ) ) {
 				foreach ( $_REQUEST['cb_attachment'] as $index => $post_id ) {
@@ -638,12 +651,23 @@ class MLA {
 								break;
 							}
 							
+							/*
+							 * Copy the edit form contents to $new_data and remove them from $_REQUEST
+							 */
 							$new_data = array() ;
-							if ( isset( $_REQUEST['post_parent'] ) && is_numeric( $_REQUEST['post_parent'] ) )
-								$new_data['post_parent'] = $_REQUEST['post_parent'];
+							if ( isset( $_REQUEST['post_parent'] ) ) {
+								if ( is_numeric( $_REQUEST['post_parent'] ) )
+									$new_data['post_parent'] = $_REQUEST['post_parent'];
+									
+								unset( $_REQUEST['post_parent'] );
+							}
 							
-							if ( isset( $_REQUEST['post_author'] ) && ( -1 != $_REQUEST['post_author'] ) )
-								$new_data['post_author'] = $_REQUEST['post_author'];
+							if ( isset( $_REQUEST['post_author'] ) ) {
+								if ( -1 != $_REQUEST['post_author'] )
+										$new_data['post_author'] = $_REQUEST['post_author'];
+										
+								unset( $_REQUEST['post_author'] );
+							}
 							
 							/*
 							 * Custom field support
@@ -651,10 +675,13 @@ class MLA {
 							$custom_fields = array();
 							foreach (MLAOptions::mla_custom_field_support( 'bulk_edit' ) as $slug => $label ) {
 								$field_name =  $slug;
-								if ( isset( $_REQUEST[ $field_name ] ) && ( ! empty( $_REQUEST[ $field_name ] ) ) ) {
-									$custom_fields[ $label ] = $_REQUEST[ $field_name ];
-								  }
-							}
+								if ( isset( $_REQUEST[ $field_name ] ) ) {
+									if ( ! empty( $_REQUEST[ $field_name ] ) )
+										$custom_fields[ $label ] = $_REQUEST[ $field_name ];
+											
+									unset( $_REQUEST[ $field_name ] );
+								}
+							} // foreach
 					
 							if ( ! empty( $custom_fields ) )
 								$new_data[ 'custom_updates' ] = $custom_fields;
@@ -677,10 +704,18 @@ class MLA {
 					
 					$page_content['message'] .= $item_content['message'] . '<br>';
 				} // foreach cb_attachment
+
+				unset( $_REQUEST['tax_input'] );
+				unset( $_REQUEST['tax_action'] );
+				unset( $_REQUEST['cb_attachment'] );
 			} // isset cb_attachment
 			else {
 				$page_content['message'] = 'Bulk Action ' . $bulk_action . ' - no items selected.';
 			}
+
+			unset( $_REQUEST['action'] );
+			unset( $_REQUEST['bulk_edit'] );
+			unset( $_REQUEST['action2'] );
 		} // $bulk_action
 		
 		/*
@@ -743,21 +778,10 @@ class MLA {
 			/*
 			 * Display Attachments list
 			 */
-			
-			$_SERVER['REQUEST_URI'] = remove_query_arg( array(
-				'mla_admin_action',
-				'mla_item_ID',
-				'_wpnonce',
-				'_wp_http_referer',
-				'action',
-				'action2',
-				'cb_attachment' 
-			), $_SERVER['REQUEST_URI'] );
-			
 			if ( !empty( $_REQUEST['heading_suffix'] ) ) {
 				echo ' - ' . esc_html( $_REQUEST['heading_suffix'] ) . "</h2>\r\n";
 			} elseif ( !empty( $_REQUEST['s'] ) && !empty( $_REQUEST['mla_search_fields'] ) ) {
-				echo ' - search results for "' . stripslashes( trim( $_REQUEST['s'] ) ) . "\"</h2>\r\n";
+				echo ' - search results for "' . esc_html( stripslashes( trim( $_REQUEST['s'] ) ) ) . "\"</h2>\r\n";
 			} else
 				echo "</h2>\r\n";
 			
@@ -796,7 +820,8 @@ class MLA {
 			$MLAListTable->views();
 			
 			//	 Forms are NOT created automatically, so you need to wrap the table in one to use features like bulk actions
-			echo '<form action="' . admin_url( 'upload.php' ) . '" method="get" id="mla-filter">' . "\r\n";
+//			echo '<form action="' . admin_url( 'upload.php' ) . '" method="get" id="mla-filter">' . "\r\n";
+			echo '<form action="' . admin_url( 'upload.php?page=mla-menu' ) . '" method="post" id="mla-filter">' . "\r\n";
 			/*
 			 * Compose the Search Media box
 			 */
@@ -878,7 +903,7 @@ class MLA {
 			echo "<div id=\"ajax-response\"></div>\r\n";
 			echo "<br class=\"clear\" />\r\n";
 			echo "</div><!-- class=wrap -->\r\n";
-		}
+		} // display attachments list
 	}
 	
 	/**
@@ -1361,7 +1386,7 @@ class MLA {
 			$mla_galleries = 'disabled';
 		
 		/*
-		 * WordPress doesn't look in hidden fields to set the month filter dropdown or pagination filter
+		 * WordPress doesn't look in hidden fields to set the month filter dropdown or sorting parameters
 		 */
 		if ( isset( $_REQUEST['m'] ) )
 			$url_args = '&m=' . $_REQUEST['m'];

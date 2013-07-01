@@ -4,7 +4,7 @@ Donate link: http://fairtradejudaica.org/make-a-difference/donate/
 Tags: attachment, attachments, documents, gallery, image, images, media, library, media library, media-tags, media tags, tags, media categories, categories, IPTC, EXIF, meta, metadata, photo, photos, photograph, photographs, photoblog, photo albums, lightroom, photoshop, MIME, mime-type, icon, upload, file extensions
 Requires at least: 3.3
 Tested up to: 3.5.1
-Stable tag: 1.40
+Stable tag: 1.41
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -118,6 +118,20 @@ All of the MLA source code has been annotated with "DocBlocks", a special type o
 9. The Media Manager popup modal window showing additional filters for date and taxonomy terms. Also shows the enhanced Search Media box.
 
 == Changelog ==
+
+= 1.41 =
+* New: For `[mla_gallery]`, the new `mla_output` parameter lets you get "previous_link" and "next_link" values to support moving through an `[mla_gallery]` one item at a time. Look for **Support for Alternative Gallery Output** in the Other Notes section or the Settings/Media Library Assistant Documentation tab for complete information.
+* New: For `[mla_gallery]`, field-level substitution parameters now include $_REQUEST arguments. You can pass any values you need from HTML form or hyperlink variables to the Gallery Display Content parameters and to your custom style and markup templates.
+* New: Hover text/tool tips, e.g., "Filter by...", "Edit..." added to most links on the Media/Assistant submenu table.
+* New: The ALL_EXIF and ALL_IPTC pseudo variables now limit each field value to 256 bytes or less. Array values are included once, at their most expanded level.
+* New: For `[mla_gallery]`, EXIF values containing arrays now use the ",single" and ",export" qualifiers.
+* Fix: Intermittent "full height" display of attachment thumbnails has been eliminated. Attachment thumbnail is now a link to the Edit Media screen.
+* Fix: EXIF and IPTC values containing invalid UTF8 characters are converted to valid UTF8 equivalents.
+* Fix: When editing `[gallery]` shortcodes in the Media Manager the proper gallery contents (image thumbnails) are now returned.
+* Fix: Better handling of Media/Assistant submenu table listing when returning from a Bulk Action, especially Bulk Edit. Display filters for date, category/tag and the search box are retained.
+* Fix: For `[mla_gallery]`, Gallery Content Display parameters are now processed when `mla_viewer=true`.
+* Fix: For `[mla_gallery]`, the default "alt" attribute (item caption) is processed when `mla_viewer=true`.
+* Fix: For `[mla_gallery]`, error messages are displayed for invalid "terms:" and "custom:" substitution parameters.
 
 = 1.40 =
 * New: **"base" selection** for the where-used database access tuning "Inserted in" option **can significantly improve performance** while retaining the most useful part of the where-used information. It's on the Settings/Media Library Assistant screen, General tab.
@@ -317,8 +331,8 @@ All of the MLA source code has been annotated with "DocBlocks", a special type o
 
 == Upgrade Notice ==
 
-= 1.40 =
-Better performance! New custom table views, Post MIME Type and Upload file/MIMEs control; 112 file type icons to choose from. Four new Gallery Display Content parameters. four other enhancements, twelve fixes.
+= 1.41 =
+New [mla_gallery] "previous link" and "next link" output for gallery navigation. New "request" substitution parameter to access $_REQUEST variables. Three other enhancements, seven fixes.
 
 == Other Notes ==
 
@@ -453,6 +467,41 @@ If you are working with a template that supports pagination you can use specific
 
 The `[mla_gallery]` shortcode supports the simple custom field parameters as well as the more powerful "meta_query" parameters made available as of WordPress 3.1.
 
+== Support for Alternative Gallery Output ==
+The [mla_gallery] shortcode can be used to provide "Previous" and "Next" links that support moving among the individual items in a gallery. Two parameters implement this feature:
+
+* `mla_output` - the type of output the shortcode will return. The default value, "gallery", returns the traditional gallery of image thumbnails, etc. The "next_link" value returns a link to the next gallery item, and "previous_link" returns a link to the previous gallery item.
+* `id` - (optional) the ID of the "current" gallery item. 
+
+The link returned is drawn from the attachment-specific "link" substitution parameter for the next or previous gallery item. This means you can use all of the **Gallery Display Content** parameters to control each element of the link. For example, you can code `mla_rollover_text='&larr; Previous'` to replace the thumbnail image with a generic text link to the "previous_link" item. You can also add HTML arguments to the link to pass values along from one page to the next. 
+
+For example, you can select images using the MLA Att. Tag taxonomy and have each gallery item link to a page (page_id=893 in this case) that displays a larger version of the single image: 
+
+`
+[mla_gallery attachment_tag="sample" mla_caption="{+title+}" mla_link_href="{+site_url+}?page_id=893&current_id={+attachment_ID+}&attachment_tag={+query:attachment_tag+}"]  
+`
+
+Note the use of `attachment_tag={+query:attachment_tag+}` in the href to pass the tag value from the gallery page to the single-image page. The single-image page would have three [mla+gallery] shortcodes; one to display the image and two for the "Previous Sample" and "Next Sample" links:
+
+`
+ [mla_gallery columns=1 ids="{+request:current_id+}" size=medium] 
+ 
+ <div style="clear: both; float: left">
+ [mla_gallery mla_output="previous_link,wrap" mla_link_text='← Previous Sample' attachment_tag="{+request:attachment_tag+}" id="{+request:current_id+}" mla_caption="{+title+}" mla_link_href="{+site_url+}?page_id=893&current_id={+attachment_ID+}&attachment_tag={+query:attachment_tag+}"]
+ </div>
+ <div style="float: right">
+ [mla_gallery mla_output="next_link,wrap" mla_link_text='Next Sample →' attachment_tag="{+request:attachment_tag+}" id="{+request:current_id+}" mla_caption="{+title+}" mla_link_href="{+site_url+}?page_id=893&current_id={+attachment_ID+}&attachment_tag={+query:attachment_tag+}"]
+ </div>  
+ `
+ 
+Note the following points: 
+
+1.The "ids" parameter in the first [mla_gallery] takes the "current_id" value (for the single image to be displayed) from the HTML $_REQUEST array. 
+2.The "id" parameters in the second and third [mla_gallery] take the "current_id" value from the HTML $_REQUEST array. In these "galleries" the "current_id" is the item from which "previous" and "next" are calculated. 
+3.The "attachment_tag" parameters in the second and third [mla_gallery] take the their value from the HTML $_REQUEST array as well. The Att. Tag value is used to reconstruct the original gallery for the previous/next calculation. 
+
+This example shows the power of the substitution parameters and in particular the "query" and "request" prefixes that can be used to pass information into an [mla_gallery] and from one page to the next. All of this without modifying PHP templates or requiring other code modifications! 
+
 == Support for Other Gallery-generating Shortcodes ==
 
 The [mla_gallery] shortcode can be used in combination with other gallery-generating shortcodes to give you the data selection power of [mla_gallery] and the formatting/display power of popular alternatives such as the WordPress.com Jetpack Carousel and Tiled Galleries modules. Any shortcode that accepts "ids=" or a similar parameter listing the attachment ID values for the gallery can be used. Two parameters implement this feature:
@@ -524,8 +573,9 @@ The <strong>",single" option</strong> defines how to handle fields with multiple
 
 The <strong>",export" option</strong> changed the display of array fields with multiple values. If this option is present, the PHP `var_export` function is used to return a string representation of all the elements in an array field.
 
-There are six prefix values for field-level data. Prefix values must be coded as shown; all lowercase letters.
+There are seven prefix values for field-level data. Prefix values must be coded as shown; all lowercase letters.
 
+* `request`: The parameters defined in the `$_REQUEST` array; the "query strings" sent from the browser. The PHP $_REQUEST variable is a superglobal Array that contains the contents of both $_GET, $_POST, and $_COOKIE arrays. It can be used to collect data sent with both the GET and POST methods. For example, if the URL is `http://www.mysite.com/mypage?myarg=myvalue` you can access the query string as `[+request:myarg+]`, which has the value "myvalue".
 * `query`: The parameters defined in the `[mla_gallery]` shortcode. For example, if your shortcode is `[mla gallery attachment_tag=my-tag div-class=some_class]` you can access the parameters as `[+query:attachment_tag+]` and `[+query:div-class+]` respectively. Only the parameters actually coded in the shortcode are accessible; default values for parameters not actually coded are not available. You can define your own parameters, e.g., `div-class`; they will be accessible as field-level data but will otherwise be ignored.
 * `custom`: WordPress custom fields, which you can define and populate on the Edit Media screen. The field name, or key, can contain spaces and some punctuation characters. You <strong>cannot use the plus sign ('+')</strong> in a field name you want to use with `[mla_gallery]`. Custom field names are case-sensitive; "client" and "Client" are not the same.
 * `terms`: WordPress Category, tag or custom taxonomy terms. For this category, you code the name of the taxonomy as the field name. The term(s) associated with the attachment will be displayed in the `[mla_gallery]`. Note that you must use the name/slug string for taxonomy, not the "title" string. For example, use "attachment-category" or "attachment-tag", not "Att. Category" or "Attachment Category".

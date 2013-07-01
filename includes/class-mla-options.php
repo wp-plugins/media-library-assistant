@@ -2281,7 +2281,6 @@ class MLAOptions {
 	 */
 	public static function mla_evaluate_iptc_exif_mapping( $post, $category, $settings = NULL ) {
 		$metadata = MLAData::mla_fetch_attachment_image_metadata( $post->ID );
-		$iptc_metadata = $metadata['mla_iptc_metadata'];
 		$updates = array();
 		$update_all = ( 'iptc_exif_mapping' == $category );
 		if ( NULL == $settings )
@@ -2289,7 +2288,11 @@ class MLAOptions {
 
 		if ( $update_all || ( 'iptc_exif_standard_mapping' == $category ) ) {
 			foreach( $settings['standard'] as $new_key => $new_value ) {
-				$iptc_value = ( isset( $iptc_metadata[ $new_value['iptc_value'] ] ) ) ? $iptc_metadata[ $new_value['iptc_value'] ] : '';
+				if ( 'none' == $new_value['iptc_value'] )
+					$iptc_value = '';
+				else
+					$iptc_value = MLAData::mla_iptc_metadata_value( $new_value['iptc_value'], $metadata );
+					
 				$exif_value = MLAData::mla_exif_metadata_value( $new_value['exif_value'], $metadata );
 				$keep_existing = (boolean) $new_value['keep_existing'];
 				
@@ -2343,7 +2346,11 @@ class MLAOptions {
 			$tax_actions =  array();
 			
 			foreach( $settings['taxonomy'] as $new_key => $new_value ) {
-				$iptc_value = ( isset( $iptc_metadata[ $new_value['iptc_value'] ] ) ) ? $iptc_metadata[ $new_value['iptc_value'] ] : '';
+				if ( 'none' == $new_value['iptc_value'] )
+					$iptc_value = '';
+				else
+					$iptc_value = MLAData::mla_iptc_metadata_value( $new_value['iptc_value'], $metadata );
+					
 				$exif_value = MLAData::mla_exif_metadata_value( $new_value['exif_value'], $metadata );
 				
 				$tax_action = ( $new_value['keep_existing'] ) ? 'add' : 'replace';
@@ -2395,7 +2402,11 @@ class MLAOptions {
 			$custom_updates = array();
 			
 			foreach( $settings['custom'] as $new_key => $new_value ) {
-				$iptc_value = ( isset( $iptc_metadata[ $new_value['iptc_value'] ] ) ) ? $iptc_metadata[ $new_value['iptc_value'] ] : '';
+				if ( 'none' == $new_value['iptc_value'] )
+					$iptc_value = '';
+				else
+					$iptc_value = MLAData::mla_iptc_metadata_value( $new_value['iptc_value'], $metadata );
+					
 				$exif_value = MLAData::mla_exif_metadata_value( $new_value['exif_value'], $metadata );
 
 				if ( $new_value['iptc_first'] )
@@ -2450,7 +2461,7 @@ class MLAOptions {
 		);
 		
 		$iptc_options = MLAData::mla_parse_template( $option_template, $option_values );					
-		foreach ( MLAShortcodes::$mla_iptc_keys as $iptc_name => $iptc_code ) {
+		foreach ( MLAData::$mla_iptc_keys as $iptc_name => $iptc_code ) {
 			$option_values = array (
 				'selected' => ( $iptc_code == $selection ) ? 'selected="selected"' : '',
 				'value' => $iptc_code,

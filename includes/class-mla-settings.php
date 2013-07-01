@@ -170,7 +170,7 @@ class MLASettings {
 			}
 
 			MLAOptions::mla_update_option( 'custom_field_mapping', $new_values );
-		} // version is less than 1.30
+		} // version is less than 1.40
 		
 		MLAOptions::mla_update_option( MLAOptions::MLA_VERSION_OPTION, MLA::CURRENT_MLA_VERSION );
 	}
@@ -2657,7 +2657,7 @@ class MLASettings {
 		$examine_count = 0;
 		$update_count = 0;
 		
-		$query = array( 'orderby' => 'none', 'post_parent' => 'all' );
+		$query = array( 'orderby' => 'none', 'post_parent' => 'all' ); //, 'post_mime_type' => 'image,application/*pdf*' );
 		$posts = MLAShortcodes::mla_get_shortcode_attachments( 0, $query );
 		
 		if ( is_string( $posts ) )
@@ -2707,7 +2707,7 @@ class MLASettings {
 		$examine_count = 0;
 		$update_count = 0;
 		
-		$query = array( 'orderby' => 'none', 'post_parent' => 'all' );
+		$query = array( 'orderby' => 'none', 'post_parent' => 'all' ); //, 'post_mime_type' => 'image,application/*pdf*' );
 		$posts = MLAShortcodes::mla_get_shortcode_attachments( 0, $query );
 		
 		if ( is_string( $posts ) )
@@ -2768,7 +2768,7 @@ class MLASettings {
 		$examine_count = 0;
 		$update_count = 0;
 		
-		$query = array( 'orderby' => 'none', 'post_parent' => 'all' );
+		$query = array( 'orderby' => 'none', 'post_parent' => 'all' ); //, 'post_mime_type' => 'image,application/*pdf*' );
 		$posts = MLAShortcodes::mla_get_shortcode_attachments( 0, $query );
 		
 		if ( is_string( $posts ) )
