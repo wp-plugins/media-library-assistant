@@ -30,7 +30,9 @@
 <li><a href="../errors.html"><i class="icon-remove-sign"></i> Errors 
                 <span class="label label-info">0</span></a></li>
 <li><a href="../markers.html"><i class="icon-map-marker"></i> Markers 
-                <ul></ul></a></li>
+                <ul><li>todo 
+                <span class="label label-info">1</span>
+</li></ul></a></li>
 <li><a href="../deprecated.html"><i class="icon-stop"></i> Deprecated elements 
                 <span class="label label-info">0</span></a></li>
 </ul>
@@ -66,6 +68,7 @@
 <li class="method public "><a href="#mla_iptc_metadata_value" title="mla_iptc_metadata_value :: Parse one IPTC metadata field"><span class="description">Parse one IPTC metadata field</span><pre>mla_iptc_metadata_value()</pre></a></li>
 <li class="method public "><a href="#mla_load_template" title="mla_load_template :: Load an HTML template from a file"><span class="description">Load an HTML template from a file</span><pre>mla_load_template()</pre></a></li>
 <li class="method public "><a href="#mla_parse_template" title="mla_parse_template :: Expand a template, replacing place holders with their values"><span class="description">Expand a template, replacing place holders with their values</span><pre>mla_parse_template()</pre></a></li>
+<li class="method public "><a href="#mla_pdf_metadata_value" title="mla_pdf_metadata_value :: Parse one PDF metadata field"><span class="description">Parse one PDF metadata field</span><pre>mla_pdf_metadata_value()</pre></a></li>
 <li class="method public "><a href="#mla_query_list_table_items" title="mla_query_list_table_items :: Retrieve attachment objects for list table display"><span class="description">Retrieve attachment objects for list table display</span><pre>mla_query_list_table_items()</pre></a></li>
 <li class="method public "><a href="#mla_query_media_modal_items" title="mla_query_media_modal_items :: Retrieve attachment objects for the WordPress Media Manager"><span class="description">Retrieve attachment objects for the WordPress Media Manager</span><pre>mla_query_media_modal_items()</pre></a></li>
 <li class="method public "><a href="#mla_query_posts_join_filter" title="mla_query_posts_join_filter :: Adds a JOIN clause, if required, to handle sorting/searching on custom fields or ALT Text"><span class="description">Adds a JOIN clause, if required, to handle sorting/searching on custom fields or ALT Text</span><pre>mla_query_posts_join_filter()</pre></a></li>
@@ -84,7 +87,10 @@ for a single attachment.</span><pre>mla_update_single_item()</pre></a></li>
 <li class="method private "><a href="#_execute_list_table_query" title="_execute_list_table_query :: Add filters, run query, remove filters"><span class="description">Add filters, run query, remove filters</span><pre>_execute_list_table_query()</pre></a></li>
 <li class="method private "><a href="#_extract_pdf_metadata" title="_extract_pdf_metadata :: Extract Metadata from a PDF file"><span class="description">Extract Metadata from a PDF file</span><pre>_extract_pdf_metadata()</pre></a></li>
 <li class="method private "><a href="#_hex_dump" title="_hex_dump :: Format printable version of binary data"><span class="description">Format printable version of binary data</span><pre>_hex_dump()</pre></a></li>
+<li class="method private "><a href="#_parse_pdf_UTF16BE" title="_parse_pdf_UTF16BE :: Parse a PDF Unicode (16-bit Big Endian) object"><span class="description">Parse a PDF Unicode (16-bit Big Endian) object</span><pre>_parse_pdf_UTF16BE()</pre></a></li>
+<li class="method private "><a href="#_parse_pdf_date" title="_parse_pdf_date :: Parse a PDF date string object"><span class="description">Parse a PDF date string object</span><pre>_parse_pdf_date()</pre></a></li>
 <li class="method private "><a href="#_parse_pdf_dictionary" title="_parse_pdf_dictionary :: Parse a PDF dictionary object"><span class="description">Parse a PDF dictionary object</span><pre>_parse_pdf_dictionary()</pre></a></li>
+<li class="method private "><a href="#_parse_pdf_string" title="_parse_pdf_string :: Parse a PDF string object"><span class="description">Parse a PDF string object</span><pre>_parse_pdf_string()</pre></a></li>
 <li class="method private "><a href="#_prepare_list_table_query" title="_prepare_list_table_query :: Sanitize and expand query arguments from request variables"><span class="description">Sanitize and expand query arguments from request variables</span><pre>_prepare_list_table_query()</pre></a></li>
 <li class="method private "><a href="#_remove_tags" title="_remove_tags :: Remove tags from a term ids list"><span class="description">Remove tags from a term ids list</span><pre>_remove_tags()</pre></a></li>
 <li class="method private "><a href="#_search_mla_galleries" title="_search_mla_galleries :: Search the $mla_galleries or $galleries array"><span class="description">Search the $mla_galleries or $galleries array</span><pre>_search_mla_galleries()</pre></a></li>
@@ -177,7 +183,7 @@ Templates separate HTML markup from PHP code for easier maintenance and localiza
 </div>
 <a name="mla_exif_metadata_value" id="mla_exif_metadata_value"></a><div class="element clickable method public mla_exif_metadata_value" data-toggle="collapse" data-target=".mla_exif_metadata_value .collapse">
 <h2>Parse one EXIF metadata field</h2>
-<pre>mla_exif_metadata_value(string $exif_key, string $image_metadata) : string</pre>
+<pre>mla_exif_metadata_value(string $exif_key, string $item_metadata) : string</pre>
 <div class="labels"></div>
 <div class="row collapse"><div class="detail-description">
 <p class="long_description"><p>Returns a string value, converting array data to a string as necessary.
@@ -191,9 +197,8 @@ Also handles the special pseudo-values 'ALL_EXIF' and 'ALL_IPTC'.</p></p>
 <h4>$exif_key</h4>
 <code>string</code><p>field name</p></div>
 <div class="subelement argument">
-<h4>$image_metadata</h4>
-<code>string</code><p>metadata array containing 'mla_exif_metadata' and 'mla_iptc_metadata' arrays</p>
-</div>
+<h4>$item_metadata</h4>
+<code>string</code><p>metadata array containing iptc, exif, and pdf metadata arrays</p></div>
 <h3>Returns</h3>
 <div class="subelement response">
 <code>string</code>string representation of metadata value or an empty string</div>
@@ -383,7 +388,7 @@ the posts and postmeta tables, and all references to the attachment.</p></p>
 </div>
 <a name="mla_iptc_metadata_value" id="mla_iptc_metadata_value"></a><div class="element clickable method public mla_iptc_metadata_value" data-toggle="collapse" data-target=".mla_iptc_metadata_value .collapse">
 <h2>Parse one IPTC metadata field</h2>
-<pre>mla_iptc_metadata_value(string $iptc_key, string $image_metadata) : mixed</pre>
+<pre>mla_iptc_metadata_value(string $iptc_key, string $item_metadata) : mixed</pre>
 <div class="labels"></div>
 <div class="row collapse"><div class="detail-description">
 <p class="long_description"><p>Returns a string value, converting array data to a string as necessary.</p></p>
@@ -397,9 +402,8 @@ the posts and postmeta tables, and all references to the attachment.</p></p>
 <code>string</code><p>field name - IPTC Identifier or friendly name/slug</p>
 </div>
 <div class="subelement argument">
-<h4>$image_metadata</h4>
-<code>string</code><p>metadata array containing 'mla_iptc_metadata' array</p>
-</div>
+<h4>$item_metadata</h4>
+<code>string</code><p>metadata array containing iptc, exif, and pdf metadata arrays</p></div>
 <h3>Returns</h3>
 <div class="subelement response">
 <code>mixed</code>string/array representation of metadata value or an empty string</div>
@@ -452,6 +456,29 @@ where "key" becomes the key part of the array.</p></p>
 <h3>Returns</h3>
 <div class="subelement response">
 <code>string</code>Placeholders corresponding to the keys of the hash will be replaced with their values</div>
+</div></div>
+</div>
+<a name="mla_pdf_metadata_value" id="mla_pdf_metadata_value"></a><div class="element clickable method public mla_pdf_metadata_value" data-toggle="collapse" data-target=".mla_pdf_metadata_value .collapse">
+<h2>Parse one PDF metadata field</h2>
+<pre>mla_pdf_metadata_value(string $pdf_key, string $item_metadata) : string</pre>
+<div class="labels"></div>
+<div class="row collapse"><div class="detail-description">
+<p class="long_description"><p>Returns a string value, converting array data to a string as necessary.
+Also handles the special pseudo-value 'ALL_PDF'.</p></p>
+<table class="table table-bordered"><tr>
+<th>since</th>
+<td>1.4x</td>
+</tr></table>
+<h3>Parameters</h3>
+<div class="subelement argument">
+<h4>$pdf_key</h4>
+<code>string</code><p>field name</p></div>
+<div class="subelement argument">
+<h4>$item_metadata</h4>
+<code>string</code><p>metadata array containing iptc, exif, and pdf metadata arrays</p></div>
+<h3>Returns</h3>
+<div class="subelement response">
+<code>string</code>string representation of metadata value or an empty string</div>
 </div></div>
 </div>
 <a name="mla_query_list_table_items" id="mla_query_list_table_items"></a><div class="element clickable method public mla_query_list_table_items" data-toggle="collapse" data-target=".mla_query_list_table_items .collapse">
@@ -787,24 +814,94 @@ for a single attachment.</h2>
 <code>string</code>Printable representation of $data</div>
 </div></div>
 </div>
-<a name="_parse_pdf_dictionary" id="_parse_pdf_dictionary"></a><div class="element clickable method private _parse_pdf_dictionary" data-toggle="collapse" data-target="._parse_pdf_dictionary .collapse">
-<h2>Parse a PDF dictionary object</h2>
-<pre>_parse_pdf_dictionary(string $string) : array</pre>
+<a name="_parse_pdf_UTF16BE" id="_parse_pdf_UTF16BE"></a><div class="element clickable method private _parse_pdf_UTF16BE" data-toggle="collapse" data-target="._parse_pdf_UTF16BE .collapse">
+<h2>Parse a PDF Unicode (16-bit Big Endian) object</h2>
+<pre>_parse_pdf_UTF16BE(string $source_string) : string</pre>
 <div class="labels"></div>
 <div class="row collapse"><div class="detail-description">
-<p class="long_description"><p>Returns an array of dictionary contents, classified by object type: boolean, numeric, string, hex (string), indirect (object), name, array, dictionary, stream, and null.</p></p>
+<p class="long_description"></p>
 <table class="table table-bordered"><tr>
 <th>since</th>
 <td>1.4x</td>
 </tr></table>
 <h3>Parameters</h3>
 <div class="subelement argument">
-<h4>$string</h4>
-<code>string</code><p>dictionary content, without enclosing << and >> delimiters</p>
+<h4>$source_string</h4>
+<code>string</code><p>PDF string of 16-bit characters</p>
 </div>
 <h3>Returns</h3>
 <div class="subelement response">
-<code>array</code>( key => array( 'type' => type, 'value' => value ) ) for each dictionary field</div>
+<code>string</code>UTF-8 encoded string</div>
+</div></div>
+</div>
+<a name="_parse_pdf_date" id="_parse_pdf_date"></a><div class="element clickable method private _parse_pdf_date" data-toggle="collapse" data-target="._parse_pdf_date .collapse">
+<h2>Parse a PDF date string object</h2>
+<pre>_parse_pdf_date(string $source_string) : string</pre>
+<div class="labels"></div>
+<div class="row collapse"><div class="detail-description">
+<p class="long_description"></p>
+<table class="table table-bordered"><tr>
+<th>since</th>
+<td>1.4x</td>
+</tr></table>
+<h3>Parameters</h3>
+<div class="subelement argument">
+<h4>$source_string</h4>
+<code>string</code><p>PDF date string of the form D:YYYYMMDDHHmmSSOHH'mm</p>
+</div>
+<h3>Returns</h3>
+<div class="subelement response">
+<code>string</code>formatted date string YYYY-MM-DD HH:mm:SS</div>
+</div></div>
+</div>
+<a name="_parse_pdf_dictionary" id="_parse_pdf_dictionary"></a><div class="element clickable method private _parse_pdf_dictionary" data-toggle="collapse" data-target="._parse_pdf_dictionary .collapse">
+<h2>Parse a PDF dictionary object</h2>
+<pre>_parse_pdf_dictionary(string $source_string, integer $offset) : array</pre>
+<div class="labels"></div>
+<div class="row collapse"><div class="detail-description">
+<p class="long_description"><p>Returns an array of dictionary contents, classified by object type: boolean, numeric, string, hex (string),
+indirect (object), name, array, dictionary, stream, and null.
+The array also has a '/length' element containing the number of bytes occupied by the
+dictionary in the source string, including the enclosing parentheses.</p></p>
+<table class="table table-bordered"><tr>
+<th>since</th>
+<td>1.4x</td>
+</tr></table>
+<h3>Parameters</h3>
+<div class="subelement argument">
+<h4>$source_string</h4>
+<code>string</code><p>data within which the string occurs</p></div>
+<div class="subelement argument">
+<h4>$offset</h4>
+<code>integer</code><p>offset within the source string of the opening '<<' characters.</p>
+</div>
+<h3>Returns</h3>
+<div class="subelement response">
+<code>array</code>( '/length' => length, key => array( 'type' => type, 'value' => value ) ) for each dictionary field</div>
+</div></div>
+</div>
+<a name="_parse_pdf_string" id="_parse_pdf_string"></a><div class="element clickable method private _parse_pdf_string" data-toggle="collapse" data-target="._parse_pdf_string .collapse">
+<h2>Parse a PDF string object</h2>
+<pre>_parse_pdf_string(string $source_string, integer $offset) : array</pre>
+<div class="labels"></div>
+<div class="row collapse"><div class="detail-description">
+<p class="long_description"><p>Returns an array with one dictionary entry. The array also has a '/length' element containing
+the number of bytes occupied by the string in the source string, including the enclosing parentheses.</p></p>
+<table class="table table-bordered"><tr>
+<th>since</th>
+<td>1.4x</td>
+</tr></table>
+<h3>Parameters</h3>
+<div class="subelement argument">
+<h4>$source_string</h4>
+<code>string</code><p>data within which the string occurs</p></div>
+<div class="subelement argument">
+<h4>$offset</h4>
+<code>integer</code><p>offset within the source string of the opening '(' character.</p>
+</div>
+<h3>Returns</h3>
+<div class="subelement response">
+<code>array</code>( key => array( 'type' => type, 'value' => value, '/length' => length ) ) for the string</div>
 </div></div>
 </div>
 <a name="_prepare_list_table_query" id="_prepare_list_table_query"></a><div class="element clickable method private _prepare_list_table_query" data-toggle="collapse" data-target="._prepare_list_table_query .collapse">
@@ -1072,7 +1169,7 @@ any further logic required to translate those values is contained in the filters
 <div class="row"><footer class="span12">
             Template is built using <a href="http://twitter.github.com/bootstrap/">Twitter Bootstrap 2</a> and icons provided by <a href="http://glyphicons.com/">Glyphicons</a>.<br>
             Documentation is powered by <a href="http://www.phpdoc.org/">phpDocumentor 2.0.0a8</a> and<br>
-            generated on 2013-06-30T13:10:24-07:00.<br></footer></div>
+            generated on 2013-07-31T21:05:23-07:00.<br></footer></div>
 </div>
 </body>
 </html>

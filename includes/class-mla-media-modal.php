@@ -374,7 +374,7 @@ class MLAModal {
 		$query = array_intersect_key( $query, array_flip( array(
 			'order', 'orderby', 'posts_per_page', 'paged', 'post_mime_type',
 			'post_parent', 'post__in', 'post__not_in', 'm', 'mla_filter_term',
-			'mla_search_value', 'mla_search_fields', 'mla_search_connector'
+			'mla_search_value', 's', 'mla_search_fields', 'mla_search_connector'
 		) ) );
 
 		if ( isset( $query['post_mime_type'] ) ) {
@@ -385,10 +385,13 @@ class MLAModal {
 			else {
 				$view = $query['post_mime_type'];
 				unset( $query['post_mime_type'] );
-				$query = array_merge( $query, MLAMime::mla_prepare_view_query( $view ) );
+				$query = array_merge( $query, MLAMime::mla_prepare_view_query( 'view', $view ) );
 			}
 		}
 		
+		/*
+		 * Process the enhanced search box OR fix up the default search box
+		 */
 		if ( isset( $query['mla_search_value'] ) ) {
 			if ( ! empty( $query['mla_search_value'] ) )
 				$query['s'] = $query['mla_search_value'];
@@ -396,6 +399,10 @@ class MLAModal {
 				unset( $query['s'] );
 				
 			unset( $query['mla_search_value'] );
+		}
+		elseif ( ! empty( $query['s'] ) ) {
+			$query['mla_search_fields'] = array( 'title', 'content' );
+			$query['mla_search_connector'] = 'AND';
 		}
 		
 		if ( isset( $query['posts_per_page'] ) ) {

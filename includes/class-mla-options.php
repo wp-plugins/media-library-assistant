@@ -355,7 +355,7 @@ class MLAOptions {
 	
 		'template_heading' =>
 			array('tab' => 'mla_gallery',
-				'name' => 'Default [mla_gallery] Templates',
+				'name' => 'Default [mla_gallery] Templates and Settings',
 				'type' => 'header'),
 		
 		'default_style' =>
@@ -376,6 +376,30 @@ class MLAOptions {
 				'texts' => array(),
 				'help' => 'Select the default markup template for your [mla_gallery] shortcodes.'),
 	
+		'mla_gallery_columns' =>
+			array('tab' => 'mla_gallery',
+				'name' => 'Default columns',
+				'type' => 'text',
+				'std' => '3',
+				'size' => 3,
+				'help' => 'Enter the number of [mla_gallery] columns; must be a positive integer.'),
+		
+		'mla_gallery_margin' =>
+			array('tab' => 'mla_gallery',
+				'name' => 'Default mla_margin',
+				'type' => 'text',
+				'std' => '1.5%',
+				'size' => 10,
+				'help' => 'Enter the CSS "margin" property value, in length (px, em, pt, etc.), percent (%), "auto" or "inherit".<br>&nbsp;&nbsp;Enter "none" to remove the property entirely.'),
+		
+		'mla_gallery_itemwidth' =>
+			array('tab' => 'mla_gallery',
+				'name' => 'Default mla_itemwidth',
+				'type' => 'text',
+				'std' => 'calculate',
+				'size' => 10,
+				'help' => 'Enter the CSS "width" property value, in length (px, em, pt, etc.), percent (%), "auto" or "inherit".<br>&nbsp;&nbsp;Enter "calculate" (the default) to calculate the value taking the "margin" value into account.<br>&nbsp;&nbsp;Enter "exact" to calculate the value without considering the "margin" value.<br>&nbsp;&nbsp;Enter "none" to remove the property entirely.'),
+		
 		/*
 		 * Managed by mla_get_style_templates and mla_put_style_templates
 		 */
@@ -1206,14 +1230,18 @@ class MLAOptions {
 	 * @param	array	_wp_attachment_metadata meta_value array, indexed by post_id
 	 * @param	integer	post->ID of attachment
 	 *
-	 * @return	array	absolute_path, base_file, path, file_name, extension, dimensions, width, height, hwstring_small, array of intermediate sizes
+	 * @return	array	absolute_path_raw, absolute_path, absolute_file_name_raw, absolute_file_name, absolute_file, base_file, path, file_name, extension, dimensions, width, height, hwstring_small, array of intermediate sizes
 	 */
 	private static function _evaluate_file_information( $upload_dir, &$wp_attached_files, &$wp_attachment_metadata, $post_id ) {
 		$results = array(
+			'absolute_path_raw' => '',
 			'absolute_path' => '',
+			'absolute_file_name_raw' => '',
+			'absolute_file_name' => '',
 			'base_file' => '',
 			'path' => '',
 			'file_name' => '',
+			'name_only' => '',
 			'extension' => '',
 			'width' => '',
 			'height' => '',
@@ -1238,28 +1266,24 @@ class MLAOptions {
 		}
 
 		if ( ! empty( $base_file ) ) {
+			$pathinfo = pathinfo( $base_file );
 			$results['base_file'] = $base_file;
-			$last_slash = strrpos( $base_file, '/' );
-			if ( false === $last_slash ) {
-				$results['absolute_path'] = $upload_dir;
-				$results['file_name'] = wptexturize( $base_file );
+			if ( '.' == $pathinfo['dirname'] ) {
+				$results['absolute_path_raw'] = $upload_dir;
+				$results['absolute_path'] = wptexturize( str_replace( '\\', '/', $upload_dir ) );
+				$results['path'] = '';
 			}
 			else {
-				$file_name = substr( $base_file, $last_slash + 1 );
-				$path = substr( $base_file, 0, $last_slash + 1 );
-				$results['absolute_path'] = $upload_dir . $path;
-				$results['path'] = wptexturize( $path );
-				$results['file_name'] = wptexturize( $file_name );
+				$results['absolute_path_raw'] = $upload_dir . $pathinfo['dirname'] . '/';
+				$results['absolute_path'] = wptexturize(  str_replace( '\\', '/', $results['absolute_path_raw'] ) );
+				$results['path'] = wptexturize(  $pathinfo['dirname'] . '/' );
 			}
 
-			$last_dot = strrpos( $base_file, '.' );
-			if ( false === $last_dot ) {
-				$results['extension'] = '';
-			}
-			else {
-				$results['extension'] = substr( $base_file, $last_dot + 1 );
-			}
-
+			$results['absolute_file_name_raw'] = $results['absolute_path_raw'] . $pathinfo['basename'];
+			$results['absolute_file_name'] = wptexturize(  str_replace( '\\', '/', $results['absolute_file_name_raw'] ) );
+			$results['file_name'] = wptexturize(  $pathinfo['basename'] );
+			$results['name_only'] = wptexturize(  $pathinfo['filename'] );
+			$results['extension'] = wptexturize(  $pathinfo['extension'] );
 		}
 
 		$results['sizes'] = $sizes;
@@ -1283,10 +1307,10 @@ class MLAOptions {
 		
 		if ( NULL == $post_info ) {
 			if ( 'custom_field_mapping' == $category ) {
-				$post_info = $wpdb->get_results( "SELECT ID, post_date, post_parent FROM {$wpdb->posts} WHERE post_type = 'attachment'", OBJECT_K );
+				$post_info = $wpdb->get_results( "SELECT ID, post_date, post_parent, post_mime_type FROM {$wpdb->posts} WHERE post_type = 'attachment'", OBJECT_K );
 			}
 			else {
-				$post_info = $wpdb->get_results( "SELECT ID, post_date, post_parent FROM {$wpdb->posts} WHERE ID = '{$post_id}'", OBJECT_K );
+				$post_info = $wpdb->get_results( "SELECT ID, post_date, post_parent, post_mime_type FROM {$wpdb->posts} WHERE ID = '{$post_id}'", OBJECT_K );
 			}
 		}
 			
@@ -1295,6 +1319,8 @@ class MLAOptions {
 				return isset( $post_info[ $post_id ]->post_date ) ? $post_info[ $post_id ]->post_date : '';
 			case 'post_parent':
 				return isset( $post_info[ $post_id ]->post_parent ) ? $post_info[ $post_id ]->post_parent : 0;
+			case 'post_mime_type':
+				return isset( $post_info[ $post_id ]->post_mime_type ) ? $post_info[ $post_id ]->post_mime_type : 0;
 			default:
 				return false;
 		}
@@ -1419,8 +1445,12 @@ class MLAOptions {
 				$attachment_metadata = isset( $wp_attachment_metadata[ $post_id ]->meta_value ) ? unserialize( $wp_attachment_metadata[ $post_id ]->meta_value ) : array();
 				$result = MLAData::mla_find_array_element( $data_value['meta_name'], $attachment_metadata, $data_value['option'], $data_value['keep_existing']  );
 				break;
+			case 'absolute_path':
+			case 'absolute_file_name':
+			case 'base_file':
 			case 'path':
 			case 'file_name':
+			case 'name_only':
 			case 'extension':
 			case 'width':
 			case 'height':
@@ -1439,12 +1469,15 @@ class MLAOptions {
 					$result = $file_info[ $data_source ];
 				break;
 			case 'file_size':
-				$filesize = @ filesize( $file_info['absolute_path'] . $file_info['file_name'] );
+				$filesize = @ filesize( $file_info['absolute_path_raw'] . $file_info['file_name'] );
 				if ( ! (false === $filesize ) )
 					$result = $filesize;
 				break;
 			case 'upload_date':
-					$result = self::_evaluate_post_information( $post_id, $category, 'post_date' );
+				$result = self::_evaluate_post_information( $post_id, $category, 'post_date' );
+				break;
+			case 'mime_type':
+				$result = self::_evaluate_post_information( $post_id, $category, 'post_mime_type' );
 				break;
 			case 'dimensions':
 				$result = $file_info['width'] . 'x' . $file_info['height'];
@@ -1475,7 +1508,7 @@ class MLAOptions {
 			case 'size_bytes':
 				$result = array();
 				foreach( $file_info['sizes'] as $key => $value ) {
-					$filesize = @ filesize( $file_info['absolute_path'] . $value['file'] );
+					$filesize = @ filesize( $file_info['absolute_path_raw'] . $value['file'] );
 					if ( false === $filesize )
 						$result[] = '?';
 					else {
@@ -1523,7 +1556,7 @@ class MLAOptions {
 				$result = $size_info['file'];
 				break;
 			case 'size_bytes[size]':
-				$result = @ filesize( $file_info['absolute_path'] . $size_info['file'] );
+				$result = @ filesize( $file_info['absolute_path_raw'] . $size_info['file'] );
 				if ( false === $result )
 					$result = '?';
 				break;
@@ -1783,11 +1816,16 @@ class MLAOptions {
 	 * @var	array
 	 */
 	private static $custom_field_data_sources = array (
+		'absolute_path',
+		'absolute_file_name',
+		'base_file',
 		'path',
 		'file_name',
+		'name_only',
 		'extension',
 		'file_size',
 		'upload_date',
+		'mime_type',
 		'dimensions',
 		'pixels',
 		'width',
@@ -1900,6 +1938,7 @@ class MLAOptions {
 		$error_list = '';
 		$message_list = '';
 		$settings_changed = false;
+		$custom_field_names = self::_get_custom_field_names();
 
 		foreach ( $new_values as $new_key => $new_value ) {
 			$any_setting_changed = false;
@@ -1912,6 +1951,11 @@ class MLAOptions {
 
 				if ( empty( $new_key ) )
 					continue;
+
+				if ( in_array( $new_key, $custom_field_names ) ) {
+					$error_list .= "<br>ERROR: new field {$new_key} already exists.\r\n";
+					continue;
+				}
 
 				$message_list .= "<br>Adding new field {$new_key}.\r\n";
 				$any_setting_changed = true;
@@ -2806,14 +2850,22 @@ class MLAOptions {
 	
 	/**
 	 * Generate a list of all (post) Custom Field names
+	 *
+	 * The list will include any Custom Field and IPTC/EXIF rules that
+	 * haven't been mapped to any attachments, yet.
  	 *
 	 * @since 1.00
 	 *
-	 * @return	array	Custom field names from the postmeta table
+	 * @return	array	Custom field names from the postmeta table and MLA rules
 	 */
 	private static function _get_custom_field_names( ) {
 		global $wpdb;
-		$limit = (int) apply_filters( 'postmeta_form_limit', 30 );
+		
+		$custom_field_mapping = array_keys( self::mla_get_option( 'custom_field_mapping' ) );
+		$iptc_exif_mapping = self::mla_get_option( 'iptc_exif_mapping' );
+		$iptc_exif_mapping = array_keys( $iptc_exif_mapping['custom'] );
+
+		$limit = (int) apply_filters( 'postmeta_form_limit', 50 );
 		$keys = $wpdb->get_col( "
 			SELECT meta_key
 			FROM $wpdb->postmeta
@@ -2821,8 +2873,18 @@ class MLAOptions {
 			HAVING meta_key NOT LIKE '\_%'
 			ORDER BY meta_key
 			LIMIT $limit" );
-		if ( $keys )
+			
+		if ( $keys ) {
+			foreach( $custom_field_mapping as $value )
+				if ( ! in_array( $value, $keys ) )
+					$keys[] = $value;
+				
+			foreach( $iptc_exif_mapping as $value )
+				if ( ! in_array( $value, $keys ) )
+					$keys[] = $value;
+				
 			natcasesort($keys);
+		}
 	
 		return $keys;
 	} // _get_custom_field_names

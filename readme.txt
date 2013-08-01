@@ -4,7 +4,7 @@ Donate link: http://fairtradejudaica.org/make-a-difference/donate/
 Tags: attachment, attachments, documents, gallery, image, images, media, library, media library, media-tags, media tags, tags, media categories, categories, IPTC, EXIF, meta, metadata, photo, photos, photograph, photographs, photoblog, photo albums, lightroom, photoshop, MIME, mime-type, icon, upload, file extensions
 Requires at least: 3.3
 Tested up to: 3.5.1
-Stable tag: 1.41
+Stable tag: 1.42
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -118,6 +118,24 @@ All of the MLA source code has been annotated with "DocBlocks", a special type o
 9. The Media Manager popup modal window showing additional filters for date and taxonomy terms. Also shows the enhanced Search Media box.
 
 == Changelog ==
+
+= 1.42 =
+* New: **Pagination support for `[mla_gallery]`**, using the "previous_page" and "next_page" values of the "mla_output" parameter. See the Settings/Media Library Assistant Documentation tab for complete information and examples.
+* New: For `[mla_gallery]`, a new parameter ("mla_link_class") lets you add class attribute values to the hyperlinks.
+* New: For `[mla_gallery]`, a new parameter ("mla_nolink_text") replaces the empty string returned for an empty `[mla_gallery]` or null pagination links.
+* New: For `[mla_gallery]`, the **"mla_margin" and "mla_itemwidth" parameters can be set to any value**, not just percent values. You can use "auto", dimension values like "10px" or remove the properties altogether. See the Settings/Media Library Assistant Documentation tab for complete information.
+* New: Default values for the `[mla_gallery]` "columns", "mla_margin" and "mla_itemwidth" parameters can now be specified on the Settings/Media Library Assistant submenu, MLA Gallery tab.
+* New: For `[mla_gallery]`, a new substitution parameter ("last_in_row") contains a class name for the last item in each full gallery row. You can use this class name to apply specific CSS styles to the last item in each full row.
+* New: For `[mla_gallery]`, a new parameter ("tax_include_children") gives more control for queries on hierarchial taxonomies, such as `attachment_category`.
+* New: On the Media/Assistant submenu a new rollover action, "View", has been added.
+* New: On the Media/Assistant submenu a new column, "File URL", has been added.
+* New: `absolute_path`, `absolute_file_name`, `base_file`, `name_only` and `mime_type` values added to the custom field data sources list.
+* Fix: For `[mla_gallery]`, the `paged=current` value will now take its value from the "page" query variable for Single Paginated Posts that contain the `<!--nextpage-->` quicktag in the post content.
+* Fix: On the Media/Assistant submenu, the view, search, filter and sort values are retained when moving among multiple pages.
+* Fix: On the Media/Assistant submenu, the view, search and filter values are retained when re-sorting by column values.
+* Fix: On the Media/Assistant submenu, the current view is correctly highlighted for MLA enhanced table views.
+* Fix: If you disable the Media Manager Enhanced Search Media box, the WordPress-native search box functions correctly.
+* Fix: On the Settings/Media Library Assistant submenu, Custom Fields and IPTC/EXIF tabs, the field drop-downlist in the "Add a new Mapping Rule" area now includes fields that have been defined but not yet mapped to any attachments.
 
 = 1.41 =
 * New: For `[mla_gallery]`, the new `mla_output` parameter lets you get "previous_link" and "next_link" values to support moving through an `[mla_gallery]` one item at a time. Look for **Support for Alternative Gallery Output** in the Other Notes section or the Settings/Media Library Assistant Documentation tab for complete information.
@@ -238,101 +256,48 @@ All of the MLA source code has been annotated with "DocBlocks", a special type o
 * Fix: For WordPress 3.5, Custom Field support for attachments enabled in admin_init action.
  
 = 0.90 =
-* New: Field-level IPTC and EXIF metadata support for `[mla_gallery]` display using custom markup templates.
-* New: Field-level custom field and taxonomy term support for `[mla_gallery]` display using custom markup templates.
-* New: Contextual help tabs added to WordPress 3.5+ Edit Media Screen, explaining MLA enhancements.
-* Updated for WordPress version 3.5!
+* `[mla_gallery]` support for custom fields, taxonomy terms and IPTC/EXIF metadata. Updated for WordPress 3.5!
 
 = 0.81 =
-* New: Improved default Style template, `[mla_gallery]` parameters "mla_itemwidth" and "mla_margin" added to allow control of gallery item spacing.
-* Fix: Quick edit support of WordPress standard Categories taxonomy fixed.
+* Improved default Style template, `[mla_gallery]` parameters "mla_itemwidth" and "mla_margin" for control of gallery item spacing. Quick edit support of WordPress standard Categories taxonomy has been fixed.
 
 = 0.80 =
-* New: MLA Gallery Style and Markup Templates, for control over CSS styles, HTML markup and data content of `[mla_gallery]` shortcode output.
-* New: The `[mla_gallery]` "mla_link_text", "mla_rollover_text" and "mla_caption", parameters allow easy customization of gallery display.
-* New: The `[mla_gallery]` "link" parameter now accepts size values, e.g., "medium", to generate a link to image sizes other than "full".
-* New: The `[mla_gallery]` "mla_debug" parameter provides debugging information for query parameters.
-* New: Quick Edit area now includes caption field.
-* New: Settings page now divided into three tabbed subpages for easier access to settings and documentation.
-* New: For WordPress 3.5, custom field support added to attachments and to the WordPress standard Edit Media Screen.
-* New: For WordPress version 3.5, the WordPress standard Edit Media screen now includes Last Modified date, Parent Info, Menu Order, Image Metadata and all "where-used" information.
-* New: For WordPress versions before 3.5, the MLA Edit Single Item screen now includes "Gallery in" and "MLA Gallery in"  information.
-* Fix: Bulk edit now supports "No Change" option for Author.
-* Fix: Bulk edit now supports changing Parent ID to "0" (unattached).
-* Fix: Where-used reporting corrected for sites without month- and year-based folders.
-* Fix: "No Categories" filtering fixed; used to return items with categories in some cases.
+* MLA Gallery Style and Markup Templates for control over CSS styles, HTML markup and data content of `[mla_gallery]` shortcode output. Eight other enhancements and four fixes.
 
 = 0.71 =
-* Fix: Removed (!) Warning displays for empty Gallery in and MLA Gallery in column entries.
+* Removed (!) Warning displays for empty Gallery in and MLA Gallery in column entries.
 
 = 0.70 =
-* New: "Gallery in" and "MLA Gallery in" columns show where the item appears in `[gallery]` and `[mla_gallery]` shortcode output.
-* New: Post titles in the where-used columns contain a link to the Edit Post/Page screen.
-* New: Title/Name column distinguishes between "BAD PARENT" (no where-used references to the item) and "INVALID PARENT" (does not exist).
-* Fix: `[mla_gallery]` queries are modified to avoid a conflict with the Role Scoper plugin.
-* Fix: Undefined taxonomies are now bypassed when defining table columns, avoiding (!) Notice displays after changing taxonomy support settings.
+* New "Gallery in" and "MLA Gallery in" where-used reporting to see where items are returned by the `[gallery]` and `[mla_gallery]` shortcodes. Two other enhancements and two fixes.
 
 = 0.60 =
-* New: Enhanced Search Media box. Search can be extended to the name/slug, ALT text and caption fields. The connector between search terms can be "and" or "or".
-* New: The ID/Parent and Parent ID columns now contain a link to a parent-specific search of the Media Library.
-* New: Menu Order added as sortable column, to Edit Single Item and to Quick Edit area.
-* New: The Author column now contains a link to an author-specific search of the Media Library.
-* New: The Attached to column now contains a link to the Edit Post/Page screen for the parent.
-* New: For WordPress version 3.5, the WordPress standard Edit Media screen replaces the MLA Edit Single Item screen.
-* Fix: HTML markup is no longer escaped in `[mla_gallery]` captions; caption processing now matches the WordPress `[gallery]` shortcode.
-* Fix: For WordPress version 3.5, duplicate "edit taxonomy" submenu entries will not appear.
+* Enhanced Search Media box. Extend search to the name/slug, ALT text and caption fields. Connect search terms with "and" or "or". Five other enhancements and two fixes.
 
 = 0.50 =
-* New: `[mla_gallery]` shortcode, a superset of the `[gallery]` shortcode that provides many enhancements. These include taxonomy support and all post_mime_type values (not just images). Media Library items need not be "attached" to the post.
-* New: `[mla_gallery]` shortcode documentation added to Settings page
-* New: Donate button and link added to Settings page
+* New `[mla_gallery]` shortcode, a superset of the `[gallery]` shortcode that provides many enhancements. These include taxonomy support and all post_mime_type values (not just images). Media Library items need not be "attached" to the post.
 
 = 0.41 =
-* Fix: SQL View (supporting ALT Text sorting) now created for automatic plugin upgrades
+* SQL View (supporting ALT Text sorting) now created for automatic plugin upgrades
 
 = 0.40 =
-* New: Bulk Edit area; update author or parent, add, remove or replace taxonomy terms for several attachments at once
-* New: ALT Text is now a sortable column, and shows attachments with no ALT Text value
-* New: Activate and deactivate hooks added to create and drop an SQL View supporting ALT Text sorting
-* New: Revisions are excluded from the where-used columns; a settings option lets you include them if you wish
-* Fix: Better validation/sanitization of data fields on input and display
-* Fix: Database query validation/sanitization with wpdb->prepare()
-* Fix: check_admin_referer added to settings page
-* Fix: Inline CSS styles for message DIV moved to style sheet
+* Bulk Edit area; add, remove or replace taxonomy terms for several attachments at once. Sort your media listing on ALT Text, exclude revisions from where-used reporting.
 
 = 0.30 =
-* New: Complete support for all taxonomies registered with WordPress, including the standard Categories and Tags, your custom taxonomies and the Assistant's pre-defined Att. Categories and Att. Tags. You can add taxonomy columns to the Assistant admin screen, filter the listing on any taxonomy, assign terms to attachments and list the attachments for a taxonomy term.
-* New: MIME Type and Last Modified Date added to columns listing
-* New: Last Modified Date added to single item edit screen
-* New: Default column and sort order added to Settings page
-* New: Plugin version number added to Settings page header
-* Fix: Text fields such as Title, Alternate Text and Caption containing single quotes are no longer truncated on the Edit single item screen
-* Fix: Sortable columns and sort order updated.
+* Support ALL taxonomies, including the standard Categories and Tags, your custom taxonomies and the Assistant's pre-defined Att. Categories and Att. Tags. Add taxonomy columns to the Assistant admin screen, filter on any taxonomy, assign terms and list the attachments for a term. 
 
 = 0.20 =
-* New: Quick Edit action for inline editing of attachment metadata
-* New: Post Author can be changed
-* New: Hyperlink to phpDocs documentation added to Settings page
-* New: Shortcode documentation added to settings page
-* New: Some book credits added to the "Other Notes" section
-* Change: Minified version of JavaScript files are loaded unless 'SCRIPT_DEBUG' is defined as true in wp-config.php
-* Change: Global functions moved into classes to minimize the chance of name conflicts
-* Change: All class, function and constant names are now checked for conflicts with other plugins and themes
-* Fix: Retain pagination values, e.g., page 3 of 5, when returning from row-level actions
-* Fix: Retain orderby and order values, e.g., descending sort on date, when returning from row-level actions
+* Quick Edit action for inline editing of attachment metadata
 
 = 0.11 =
-* Fix: Changed admin URL references from relative (/wp-admin/...) to absolute, using admin_url().
-* Fix: Changed wp_nonce_field() calls to suppress duplicate output of nonce field variables.
-* Fix: Changed the minimum WordPress version required to 3.3.
+* Fixed "404 Not Found" errors when updating single items.
 
 = 0.1 =
 * Initial release.
 
 == Upgrade Notice ==
 
-= 1.41 =
-New [mla_gallery] "previous link" and "next link" output for gallery navigation. New "request" substitution parameter to access $_REQUEST variables. Three other enhancements, seven fixes.
+= 1.42 =
+Get pagination support for [mla_gallery]! Improved CSS width (itemwidth) and margin handling. Eight other enhancements, six fixes.
 
 == Other Notes ==
 
@@ -340,7 +305,8 @@ In this section, scroll down to see:
 
 * Acknowledgements
 * MLA Gallery Shortcode Documentation
-* Support for &ldquo;Photonic Gallery for Flickr, Picasa, SmugMug, 500px and Instagram&rdquo;
+* Support for Alternative Gallery Output, e.g., Pagination
+* Support for Other Gallery-generating Shortcodes
 * MLA Gallery Style and Markup Template Documentation
 * Library Views/Post MIME Type Processing
 * File Extension/MIME Type Processing
@@ -387,15 +353,18 @@ Three parameters provide control over the placement, size and spacing of gallery
 
 <h4>Gallery Display Content</h4>
 
-Nine parameters provide an easy way to control the contents of gallery items without requiring the use of custom Markup templates.  
+Twelve parameters provide an easy way to control the contents of gallery items without requiring the use of custom Markup templates.  
 
+* mla_output (pagination support)
 * mla_link_attributes
+* mla_link_class
 * mla_link_href
 * mla_link_text
+* mla_nolink_text
 * mla_rollover_text
 * mla_image_attributes
 * mla_image_class
-* mla_ image_alt
+* mla_image_alt
 * mla_caption
 * mla_target
 
@@ -463,19 +432,32 @@ You can override the default to, for example, display PDF documents (`post_mime_
 
 If you are working with a template that supports pagination you can use specific values for "posts_per_page", "posts_per_archive_page", "paged" and/or "offset" .
 
+The "paged=current" parameter is useful for "paginated single posts" (i.e. posts that include the <code>&lt;!--nextpage--&gt;</code> Quicktag one or more times). Simply make two ore more copies of your <code>[mla_gallery]</code> shortcode separated by the Quicktag and include the "paged=current' in each copy.
+
+The more complex task of dividing a large <code>[mla_gallery]</code> into two or more pages is supported by MLA's **Support for Alternative Gallery Output, e.g., Pagination**; see the section below. 
+
 <h4>Custom Field Parameters</h4>
 
 The `[mla_gallery]` shortcode supports the simple custom field parameters as well as the more powerful "meta_query" parameters made available as of WordPress 3.1.
 
-== Support for Alternative Gallery Output ==
-The [mla_gallery] shortcode can be used to provide "Previous" and "Next" links that support moving among the individual items in a gallery. Two parameters implement this feature:
+== Support for Alternative Gallery Output, e.g., pagination ==
+The `[mla_gallery]` shortcode can be used to provide "Previous" and "Next" links that support moving among the individual items in a gallery or among gallery "pages". For example, if you have many items with a specific Att. Category or Att. Tag value you can build a single-image page with links to the previous/next item having that value. You can also build a page that shows a large gallery in groups, or "gallery pages", of ten items with links to the previous/next ten items or links to all of the gallery pages of items having that value.
 
-* `mla_output` - the type of output the shortcode will return. The default value, "gallery", returns the traditional gallery of image thumbnails, etc. The "next_link" value returns a link to the next gallery item, and "previous_link" returns a link to the previous gallery item.
-* `id` - (optional) the ID of the "current" gallery item. 
+<h4>The <code>mla_output</code> parameter</h4>
 
-The link returned is drawn from the attachment-specific "link" substitution parameter for the next or previous gallery item. This means you can use all of the **Gallery Display Content** parameters to control each element of the link. For example, you can code `mla_rollover_text='&larr; Previous'` to replace the thumbnail image with a generic text link to the "previous_link" item. You can also add HTML arguments to the link to pass values along from one page to the next. 
+The **"mla_output"** parameter determines the type of output the shortcode will return. Explanation and examples of each output type are given later in this section. You can choose from five values:
 
-For example, you can select images using the MLA Att. Tag taxonomy and have each gallery item link to a page (page_id=893 in this case) that displays a larger version of the single image: 
+* `gallery`: The default value; returns the traditional gallery of image thumbnails, captions, etc.
+* `next_link`: returns a link to the next gallery item. The optional ",wrap" qualifier determines what happens at the end of the gallery. If you omit the qualifier, an empty string is returned for the "next_link" from the last item in the gallery. If you code the ",wrap" qualifier, the "next_link" from the last item will be to the first gallery item.
+* `previous_link`: returns a link to the previous gallery item. The optional ",wrap" qualifier determines what happens at the beginning of the gallery. If you omit the qualifier, an empty string is returned for the "previous_link" from the first gallery item. If you code the ",wrap" qualifier, "previous_link" from the first gallery item will be to the last gallery item.
+* `next_page`: returns a link to the next "page" of gallery items. The optional ",wrap" or ",last" qualifiers determine what happens at the end of the gallery. If you omit the qualifier, an empty string is returned for the "next_page" if there are no more items in the gallery. If you code the ",wrap" qualifier, the "next_page" from the last page of items will be to the first page of gallery items. If you code the ",last" qualifier, the "next_page" link will return to/remain on the last page of gallery items.
+* `previous_page`: returns a link to the previous "page" of gallery items. The optional ",wrap" or ",first" qualifiers determine what happens at the beginning of the gallery. If you omit the qualifier, an empty string is returned for the "previous_link" from the first page of gallery items. If you code the ",wrap" qualifier, "previous_page" from the first page of gallery items will be to the last page of gallery items. If you code the ",first" qualifier, the "previous_link" link will return to/remain on the first page of gallery items.
+
+<h4>Next and previous gallery items; the `next_link` and `previous_link` output types</h4>
+
+WordPress provides functions that generate links to the "<em>next/previous image attached to the current post</em>." These are not useful when your Media Library items are not images or are not attached to a specific post or page.  If, for example, you use an `[mla_gallery]` shortcode to build a gallery of items with a specific Att. Tag value you can use the `next_link` and`previous_link` output types to move through single-item pages for the gallery.
+
+You can select images using the MLA Att. Tag taxonomy and have each gallery item link to a page (page_id=893 in this case) that displays a larger version of the single image: 
 
 `
 [mla_gallery attachment_tag="sample" mla_caption="{+title+}" mla_link_href="{+site_url+}?page_id=893&current_id={+attachment_ID+}&attachment_tag={+query:attachment_tag+}"]  
@@ -494,13 +476,19 @@ Note the use of `attachment_tag={+query:attachment_tag+}` in the href to pass th
  </div>  
  `
  
-Note the following points: 
+Consider the following points: 
 
 1.The "ids" parameter in the first [mla_gallery] takes the "current_id" value (for the single image to be displayed) from the HTML $_REQUEST array. 
 2.The "id" parameters in the second and third [mla_gallery] take the "current_id" value from the HTML $_REQUEST array. In these "galleries" the "current_id" is the item from which "previous" and "next" are calculated. 
 3.The "attachment_tag" parameters in the second and third [mla_gallery] take the their value from the HTML $_REQUEST array as well. The Att. Tag value is used to reconstruct the original gallery for the previous/next calculation. 
 
 This example shows the power of the substitution parameters and in particular the "query" and "request" prefixes that can be used to pass information into an [mla_gallery] and from one page to the next. All of this without modifying PHP templates or requiring other code modifications! 
+
+<h4>Next and previous gallery pages; the `next_page` and `previous_page` output types</h4>
+
+WordPress provides functions that generate links to the "<em>next/previous set of posts within the current query</em>." These are not useful because the "current query" is for posts/pages, <strong>not</strong> Media Library items. What's needed is a way to paginate an `[mla_gallery]` shortcode on a single post or page. If, for example, you use an `[mla_gallery]` shortcode to build a gallery of items with a specific Att. Tag value you can use the `next_page` and `previous_page` output types to move through the gallery in groups of, say, ten items per "gallery page".
+
+WordPress uses the "paged" parameter to indicate the current "<em>set of posts within the current query</em>." To avoid built-in WordPress logic that uses this parameter, MLA has its own "mla_paginate_current" parameter to indicate the current set of items within the gallery (the current gallery page). MLA will automatically manage this parameter for you, but you can also use it explicitly to handle special cases.
 
 == Support for Other Gallery-generating Shortcodes ==
 

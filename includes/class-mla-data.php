@@ -464,6 +464,7 @@ class MLAData {
 							$clean_request[ $key ] = $value;
 						else {
 							$clean_request[ $key ] = unserialize( stripslashes( $value ) );
+							unset( $clean_request[ $key ]['slug'] );
 						} // not array
 					}
 					break;
@@ -683,7 +684,7 @@ class MLAData {
 				trigger_error( '_execute_list_table_query $wp_filter = ' . var_export( $debug_array, true ), E_USER_WARNING );
 			}
 			else {
-				error_log( '_execute_list_table_query $wp_filter = ' . var_export( $debug_array, true ), 0 );
+				error_log( 'DEBUG: _execute_list_table_query $wp_filter = ' . var_export( $debug_array, true ), 0 );
 			}
 		} // debug
 
@@ -696,7 +697,7 @@ class MLAData {
 				trigger_error( '_execute_list_table_query WP_Query = ' . var_export( $debug_array, true ), E_USER_WARNING );
 			}
 			else {
-				error_log( '_execute_list_table_query WP_Query = ' . var_export( $debug_array, true ), 0 );
+				error_log( 'DEBUG: _execute_list_table_query WP_Query = ' . var_export( $debug_array, true ), 0 );
 			}
 		} // debug
 
@@ -751,7 +752,7 @@ class MLAData {
 						trigger_error( 'mla_query_posts_search_filter is_numeric = ' . var_export( $debug_array, true ), E_USER_WARNING );
 					}
 					else {
-						error_log( 'mla_query_posts_search_filter is_numeric = ' . var_export( $debug_array, true ), 0 );
+						error_log( 'DEBUG: mla_query_posts_search_filter is_numeric = ' . var_export( $debug_array, true ), 0 );
 					}
 				} // debug
 		
@@ -816,7 +817,7 @@ class MLAData {
 					trigger_error( 'mla_query_posts_search_filter not numeric = ' . var_export( $debug_array, true ), E_USER_WARNING );
 				}
 				else {
-					error_log( 'mla_query_posts_search_filter not numeric = ' . var_export( $debug_array, true ), 0 );
+					error_log( 'DEBUG: mla_query_posts_search_filter not numeric = ' . var_export( $debug_array, true ), 0 );
 				}
 			} // debug
 		} // isset 's'
@@ -1673,29 +1674,22 @@ class MLAData {
 	 */
 	private static function _build_pdf_indirect_objects( &$string ) {
 		$match_count = preg_match_all( '!(\d+)\h+(\d+)\h+obj\x0D|endobj\x0D|stream(\x0D\x0A|\x0A)|endstream!', $string, $matches, PREG_OFFSET_CAPTURE );
-//error_log( '_build_pdf_indirect_objects $match_count = ' . var_export( $match_count, true ), 0 );
-//error_log( '_build_pdf_indirect_objects $matches = ' . var_export( $matches, true ), 0 );
 
 		self::$pdf_indirect_objects = array();
 		$object_level = 0;
 		$is_stream = false;
 		for ( $index = 0; $index < $match_count; $index++ ) {
-		//error_log( '_build_pdf_indirect_objects match dump = ' . var_export( self::_hex_dump( $matches[0][ $index ][0], strlen( $matches[0][ $index ][0] ), 16 ), true ), 0 );
 			if ( $is_stream ) {
 				if ( 'endstream' == substr( $matches[0][ $index ][0], 0, 9 ) ) {
 					$is_stream = false;
-		//error_log( '_build_pdf_indirect_objects $pdf endstream = ' . "\r\n" . var_export( self::_hex_dump( substr( $pdf, $matches[0][ $index ][1] - 64) , 128, 32 ), true ) . "\r\n", 0 );
 				}
 			}
 			elseif ( 'endobj' == substr( $matches[0][ $index ][0], 0, 6 ) ) {
 				$object_level--;
-				$object_entry['length'] = $matches[0][ $index ][1] - $object_entry['start'];
+				$object_entry['/length'] = $matches[0][ $index ][1] - $object_entry['start'];
 				self::$pdf_indirect_objects[ ($object_entry['number'] * 1000) + $object_entry['generation'] ] = $object_entry;
 			}
 			elseif ( 'obj' == substr( $matches[0][ $index ][0], -4, 3 ) ) {
-		//error_log( '_build_pdf_indirect_objects pdf $matches[1] = ' . var_export( $matches[1][ $index ], true ), 0 );
-		//error_log( '_build_pdf_indirect_objects pdf $matches[2] = ' . var_export( $matches[2][ $index ], true ), 0 );
-		//error_log( '_build_pdf_indirect_objects pdf $matches[3] = ' . var_export( $matches[3][ $index ], true ), 0 );
 				$object_level++;
 				$object_entry = array( 
 					'number' => $matches[1][ $index ][0],
@@ -1705,103 +1699,253 @@ class MLAData {
 			}
 			elseif ( 'stream' == substr( $matches[0][ $index ][0], 0, 6 ) ) {
 				$is_stream = true;
-		//error_log( '_build_pdf_indirect_objects $pdf stream = ' . "\r\n" . var_export( self::_hex_dump( substr( $pdf, $matches[0][ $index ][1] - 64) , 128, 32 ), true ) . "\r\n", 0 );
 			}
 			else
-				error_log( 'bad value $index = ' . $index, 0 );
-			
-		//error_log( "in_stream[ {$is_stream} ] Level is {$level} Object Level is {$object_level} after index {$index} at offset " . var_export( $matches[0][ $index ][1], true ), 0 );
+				error_log( 'ERROR: _build_pdf_indirect_objects bad value $index = ' . $index, 0 );
+		} // for each match
+	}
+		
+	/**
+	 * Parse a PDF date string object
+	 * 
+	 * @since 1.4x
+	 *
+	 * @param	string	PDF date string of the form D:YYYYMMDDHHmmSSOHH'mm
+	 *
+	 * @return	string	formatted date string YYYY-MM-DD HH:mm:SS
+	 */
+	private static function _parse_pdf_date( &$source_string ) {
+		return sprintf( '%1$s-%2$s-%3$s %4$s:%5$s:%6$s',
+			substr( $source_string, 2, 2),
+			substr( $source_string, 4, 2),
+			substr( $source_string, 6, 2),
+			substr( $source_string, 8, 2),
+			substr( $source_string, 10, 2),
+			substr( $source_string, 12, 2) );
+	}
+		
+	/**
+	 * Parse a PDF Unicode (16-bit Big Endian) object
+	 * 
+	 * @since 1.4x
+	 *
+	 * @param	string	PDF string of 16-bit characters
+	 *
+	 * @return	string	UTF-8 encoded string
+	 */
+	private static function _parse_pdf_UTF16BE( &$source_string ) {
+		$output = '';
+		for ($index = 2; $index < strlen( $source_string ); ) {
+			$value = ( ord( $source_string[ $index++ ] ) << 8 ) + ord( $source_string[ $index++ ] );
+ 			if ( $value < 0x80 )
+				$output .= chr( $value );
+			elseif ( $value < 0x100 )
+				$output .= self::$utf8_chars[ $value - 0x80 ];
+			else {
+				$output .= '.'; // TODO encode the rest
+			}
 		}
-//error_log( '_build_pdf_indirect_objects self::$pdf_indirect_objects = ' . var_export( self::$pdf_indirect_objects, true ), 0 );
+
+		return $output;
+	}
+		
+	/**
+	 * Parse a PDF string object
+	 * 
+	 * Returns an array with one dictionary entry. The array also has a '/length' element containing
+	 * the number of bytes occupied by the string in the source string, including the enclosing parentheses. 
+	 *
+	 * @since 1.4x
+	 *
+	 * @param	string	data within which the string occurs
+	 * @param	integer	offset within the source string of the opening '(' character.
+	 *
+	 * @return	array	( key => array( 'type' => type, 'value' => value, '/length' => length ) ) for the string
+	 */
+	private static function _parse_pdf_string( &$source_string, $offset ) {
+		if ( '(' != $source_string[ $offset ] )
+			return array( 'type' => 'unknown', 'value' => '', '/length' => 0 );
+
+		/*
+		 * Brute force, here we come...
+		 */
+		$output = '';
+		$level = 0;
+		$in_string = true;
+		$index = $offset + 1;
+		while ( $in_string ) {
+			$byte = $source_string[ $index++ ];
+			if ( '\\' == $byte ) {
+				switch ( $source_string[ $index ] ) {
+					case chr( 0x0A ):
+						if ( chr( 0x0D ) == $source_string[ $index + 1 ] )
+							$index++;
+						break;
+					case chr( 0x0D ):
+						if ( chr( 0x0A ) == $source_string[ $index + 1 ] )
+							$index++;
+						break;
+					case 'n':
+						$output .= chr( 0x0A );
+						break;
+					case 'r':
+						$output .= chr( 0x0D );
+						break;
+					case 't':
+						$output .= chr( 0x09 );
+						break;
+					case 'b':
+						$output .= chr( 0x08 );
+						break;
+					case 'f':
+						$output .= chr( 0x0C );
+						break;
+					case '(':
+						$output .= '(';
+						break;
+					case ')':
+						$output .= ')';
+						break;
+					case '\\':
+						$output .= '\\';
+						break;
+					default: // should be a 1- to 3-digit octal value
+						for ($digit_count = 0; ++$digit_count < 4; )
+							if ( ! ctype_digit( $source_string[ $index + $digit_count ] ) )
+								break;
+
+						if ( $digit_count ) {
+							$output .= chr( octdec( substr( $source_string, $index, $digit_count ) ) );
+							$index += $digit_count - 1;
+						}
+						else // invalid! Back up and just discard the backslash
+							$index--;
+				} // switch
+				
+				$index++;
+			} // REVERSE SOLIDUS
+			else {
+				if ( '(' == $byte )
+					$level++;
+				elseif ( ')' == $byte ) {
+					if ( 0 == $level-- ) {
+						$in_string = false;
+						continue;
+					}
+				}
+					
+				$output .= $byte;
+			} // just another 8-bit value, but check for balanced parentheses
+		} // $in_string
+		
+		return array( 'type' => 'string', 'value' => $output, '/length' => $index - $offset );
 	}
 		
 	/**
 	 * Parse a PDF dictionary object
 	 * 
-	 * Returns an array of dictionary contents, classified by object type: boolean, numeric, string, hex (string), indirect (object), name, array, dictionary, stream, and null.
+	 * Returns an array of dictionary contents, classified by object type: boolean, numeric, string, hex (string),
+	 * indirect (object), name, array, dictionary, stream, and null.
+	 * The array also has a '/length' element containing the number of bytes occupied by the
+	 * dictionary in the source string, including the enclosing parentheses.
 	 * @since 1.4x
 	 *
-	 * @param	string	dictionary content, without enclosing << and >> delimiters
+	 * @param	string	data within which the string occurs
+	 * @param	integer	offset within the source string of the opening '<<' characters.
 	 *
-	 * @return	array	( key => array( 'type' => type, 'value' => value ) ) for each dictionary field
+	 * @return	array	( '/length' => length, key => array( 'type' => type, 'value' => value ) ) for each dictionary field
 	 */
-	private static function _parse_pdf_dictionary( $string ) {
-error_log( '_parse_pdf_dictionary $string dump = ' . var_export( self::_hex_dump( $string, strlen( $string ), 16 ), true ), 0 );
-//error_log( '_parse_pdf_dictionary $string = '. var_export( $string, true ), 0 );
-		$dictionary = array();
-		while ( 0 < strlen( $string) ) {
-// \x00-\x20 for whitespace
-// \(|\)|\<|\>|\[|\]|\{|\}|\/|\% for delimiters
-			$match_count = preg_match_all( '!/([^\x00-\x20|\(|\)|\<|\>|\[|\]|\{|\}|\/|\%]*)([\x00-\x20]*)!', $string, $matches, PREG_OFFSET_CAPTURE );
-//error_log( '_parse_pdf_dictionary trailer dictionary name $match_count = ' . var_export( $match_count, true ), 0 );
-//error_log( '_extract_pdf_metadata trailer dictionary name $matches[1] = ' . var_export( $matches[1], true ), 0 );
-//error_log( '_parse_pdf_dictionary trailer dictionary name $matches = ' . var_export( $matches, true ), 0 );
-
-			for ( $match_index = 0; $match_index < $match_count; $match_index++ ) {
-				$name = $matches[1][ $match_index ][0];
-//error_log( '_parse_pdf_dictionary name = ' . var_export( $name, true ), 0 );
-				$value_count = preg_match(
-					'!(\/?[^\/\x0D\x0A]*)!',
-					substr( $string, $matches[2][ $match_index ][1] + strlen( $matches[2][ $match_index ][0] ) ), $value_matches, PREG_OFFSET_CAPTURE );
-//error_log( '_parse_pdf_dictionary $value_count = ' . var_export( $value_count, true ), 0 );
-//error_log( '_parse_pdf_dictionary $value_matches = ' . var_export( $value_matches, true ), 0 );
-
-				if ( 1 == $value_count ) {
-					$value = $value_matches[0][0];
-					$dictionary[ $name ]['value'] = $value;
-					if ( ! isset( $value[0] ) ) {
-error_log( 'bad value $name = ' . var_export( $name, true ), 0 );
-error_log( 'bad value $value = ' . var_export( $value, true ), 0 );
-					}
-					if ( in_array( $value, array( 'true', 'false' ) ) )
-						$dictionary[ $name ]['type'] = 'boolean';
-					elseif ( is_numeric( $value ) )
-						$dictionary[ $name ]['type'] = 'numeric';
-					elseif ( '(' == $value[0] )
-						$dictionary[ $name ]['type'] = 'string';
-					elseif ( '<' == $value[0] ) {
-						if ( '<' == $value[1] )
-							$dictionary[ $name ]['type'] = 'dictionary';
-						else
-							$dictionary[ $name ]['type'] = 'hex';
-					}
-					elseif ( '/' == $value[0] ) {
-						$dictionary[ $name ]['type'] = 'name';
-						$match_index++; // Skip to the next key
-					}
-					elseif ( '[' == $value[0] )
-						$dictionary[ $name ]['type'] = 'array';
-					elseif ( 'null' == $value )
-						$dictionary[ $name ]['type'] = 'null';
-					elseif ( 'stream' == substr( $value, 0, 6 ) )
-						$dictionary[ $name ]['type'] = 'stream';
-					else {
-						$object_count = preg_match( '!(\d+)\h+(\d+)\h+R!', $value, $object_matches );
-						if ( 1 == $object_count ) {
-							$dictionary[ $name ]['type'] = 'indirect';
-							$dictionary[ $name ]['object'] = $object_matches[1];
-							$dictionary[ $name ]['generation'] = $object_matches[2];
-//error_log( '_parse_pdf_dictionary object_matches = ' . var_export( $object_matches, true ), 0 );
-						}
-						else {
-//error_log( '_parse_pdf_dictionary unknown dump = ' . var_export( self::_hex_dump( $value, strlen( $value ), 16 ), true ), 0 );
-//error_log( '_parse_pdf_dictionary unknown numeric = ' . var_export( is_numeric( $value ), true ), 0 );
-//error_log( '_parse_pdf_dictionary unknown length = ' . var_export( strlen( $value ), true ), 0 );
-//error_log( '_parse_pdf_dictionary unknown $value = ' . var_export( $value, true ), 0 );
-							$dictionary[ $name ]['type'] = 'unknown';
-						}
-					}
-				}
-				else {
-					$dictionary[ $matches[1][ $match_index ][0] ] = array( 'value' => '' );
-					$dictionary[ $matches[1][ $match_index ][0] ]['type'] = 'nomatch';
-				}
-			} // foreach match
-			
-			$string = '';
+	private static function _parse_pdf_dictionary( &$source_string, $offset ) {
+		if ( '<<' == substr( $source_string, $offset, 2 ) ) {
+			$offset += 2;
+			$delimiter_length = 4;
 		}
-		
-error_log( '_parse_pdf_dictionary $dictionary = '. var_export( $dictionary, true ), 0 );
+		else
+			$delimiter_length = 0;
+			
+		$dictionary = array();
+		// \x00-\x20 for whitespace
+		// \(|\)|\<|\>|\[|\]|\{|\}|\/|\% for delimiters
+		$match_count = preg_match_all( '!/([^\x00-\x20|\(|\)|\<|\>|\[|\]|\{|\}|\/|\%]*)([\x00-\x20]*)!', substr( $source_string, $offset ), $matches, PREG_OFFSET_CAPTURE );
+
+		$end_data = -1;
+		for ( $match_index = 0; $match_index < $match_count; $match_index++ ) {
+			$name = $matches[1][ $match_index ][0];
+			$value_start = $offset + $matches[2][ $match_index ][1] + strlen( $matches[2][ $match_index ][0] );
+			/*
+			 * Skip over false matches within a string or nested dictionary
+			 */
+			if ( $value_start < $end_data )
+				continue;
+			
+			$end_data = -1;
+			$value_count = preg_match(
+				'!(\/?[^\/\x0D\x0A]*)!',
+				substr( $source_string, $value_start ), $value_matches, PREG_OFFSET_CAPTURE );
+
+			if ( 1 == $value_count ) {
+				$value = $value_matches[0][0];
+				$length = strlen( $value );
+				$dictionary[ $name ]['value'] = $value;
+				if ( ! isset( $value[0] ) ) {
+					error_log( "ERROR: _parse_pdf_dictionary bad value [ {$name} ] dump = " . var_export( self::_hex_dump( $value, 32, 16 ), true ), 0 );
+					continue;
+				}
+				
+				if ( in_array( $value, array( 'true', 'false' ) ) )
+					$dictionary[ $name ]['type'] = 'boolean';
+				elseif ( is_numeric( $value ) )
+					$dictionary[ $name ]['type'] = 'numeric';
+				elseif ( '(' == $value[0] ) {
+					$dictionary[ $name ] = self::_parse_pdf_string( $source_string, $value_start );
+					$end_data = $value_start + $dictionary[ $name ]['/length'];
+					unset( $dictionary[ $name ]['/length'] );
+				}
+				elseif ( '<' == $value[0] ) {
+					if ( '<' == $value[1] ) {
+						$dictionary[ $name ]['value'] = self::_parse_pdf_dictionary( $source_string, $value_start );
+						$dictionary[ $name ]['type'] = 'dictionary';
+						$length = $dictionary[ $name ]['value']['/length'];
+						unset( $dictionary[ $name ]['value']['/length'] );
+						$end_data = $value_start + $length;
+					}
+					else
+						$dictionary[ $name ]['type'] = 'hex';
+				}
+				elseif ( '/' == $value[0] ) {
+					$dictionary[ $name ]['value'] = substr( $value, 1 );
+					$dictionary[ $name ]['type'] = 'name';
+					$match_index++; // Skip to the next key
+				}
+				elseif ( '[' == $value[0] ) {
+					$dictionary[ $name ]['type'] = 'array';
+					$array_length = strpos( $source_string, ']', $value_start ) - ($value_start + 1);
+					$dictionary[ $name ]['value'] = substr( $source_string, $value_start + 1, $array_length );
+					$end_data = 2 + $value_start + $array_length;
+				}
+				elseif ( 'null' == $value )
+					$dictionary[ $name ]['type'] = 'null';
+				elseif ( 'stream' == substr( $value, 0, 6 ) )
+					$dictionary[ $name ]['type'] = 'stream';
+				else {
+					$object_count = preg_match( '!(\d+)\h+(\d+)\h+R!', $value, $object_matches );
+					if ( 1 == $object_count ) {
+						$dictionary[ $name ]['type'] = 'indirect';
+						$dictionary[ $name ]['object'] = $object_matches[1];
+						$dictionary[ $name ]['generation'] = $object_matches[2];
+					}
+					else {
+						$dictionary[ $name ]['type'] = 'unknown';
+					}
+				}
+			}
+			else {
+				$dictionary[ $matches[1][ $match_index ][0] ] = array( 'value' => '' );
+				$dictionary[ $matches[1][ $match_index ][0] ]['type'] = 'nomatch';
+			}
+		} // foreach match
+
+		$dictionary['/length'] = $value_start + $length + $delimiter_length;		
 		return $dictionary;
 	}
 		
@@ -1815,7 +1959,7 @@ error_log( '_parse_pdf_dictionary $dictionary = '. var_export( $dictionary, true
 	 * @return	array	( key => value ) for each metadata field, in string format
 	 */
 	private static function _extract_pdf_metadata( $string ) {
-error_log( '_extract_pdf_metadata $string = '. var_export( $string, true ), 0 );
+//error_log( '_extract_pdf_metadata $string = '. var_export( $string, true ), 0 );
 		$metadata = array();
 		$pdf = file_get_contents( $string, true );
 		if ( $pdf == false ) {
@@ -1829,38 +1973,57 @@ error_log( '_extract_pdf_metadata $string = '. var_export( $string, true ), 0 );
 		
 		$header = substr( $pdf, 0, 8 );
 		if ( '%PDF-' == substr( $header, 0, 5 ) ) {
-			$metadata['Version'] = substr( $header, 1, 7 );
-			$metadata['VersionNumber'] = substr( $header, 5, 3 );
+			$metadata['PDF_Version'] = substr( $header, 1, 7 );
+			$metadata['PDF_VersionNumber'] = substr( $header, 5, 3 );
 		}
-
-//		$match_count = preg_match_all( '/[\r|\n]+<<(.*)>>[\r|\n]+/', $pdf, $matches, PREG_OFFSET_CAPTURE );
-//		$match_count = preg_match_all( '/[\r|\n]+startxref[\r|\n]+([0-9]+)[\r|\n]+\%\%EOF[\r|\n]*/', $pdf, $matches, PREG_OFFSET_CAPTURE );
 
 		$match_count = preg_match_all( '/[\r|\n]+trailer[\r|\n]+/', $pdf, $matches, PREG_OFFSET_CAPTURE );
 		if ( 0 < $match_count ) {
 			$tail = substr( $pdf, (integer) $matches[0][ $match_count - 1 ][1] );
-//			$match_count = preg_match_all( '/[\r|\n]+<<(.*)>>[\r|\n]+/', $pdf, $matches ); //, PREG_OFFSET_CAPTURE );
 			$match_count = preg_match_all( '/[\r|\n]+<<(.*)>>[\r|\n]+/', $tail, $matches ); //, PREG_OFFSET_CAPTURE );
-//error_log( '_extract_pdf_metadata trailer dictionary  $match_count = ' . var_export( $match_count, true ), 0 );
-//error_log( '_extract_pdf_metadata trailer dictionary $matches = ' . var_export( $matches, true ), 0 );
-			 if ( 0 < $match_count ) {
-//				 for ( $index = 0; $index < $match_count; $index++ )
-//					 $dictionary = self::_parse_pdf_dictionary( $matches[1][ $index ] );
-				 $dictionary = self::_parse_pdf_dictionary( $matches[1][ $match_count - 1 ] );
+
+			if ( 0 < $match_count ) {
+				$dictionary = self::_parse_pdf_dictionary( $matches[1][ $match_count - 1 ], 0 );
+//error_log( "_extract_pdf_metadata trailer dictionary {$match_count} = ". var_export( $dictionary, true ), 0 );
 				 
 				 if ( isset( $dictionary['Info'] ) ) {
-//error_log( '_extract_pdf_metadata trailer dictionary  Info = ' . var_export( $dictionary['Info'], true ), 0 );
 					 $info_ref = ($dictionary['Info']['object'] * 1000) + $dictionary['Info']['generation'];
-//error_log( '_extract_pdf_metadata trailer dictionary  $info_ref = ' . var_export( $info_ref, true ), 0 );
+
 					 if ( isset( self::$pdf_indirect_objects[ $info_ref ] ) ) {
-//error_log( '_extract_pdf_metadata trailer dictionary  start = ' . var_export( self::$pdf_indirect_objects[ $info_ref ], true ), 0 );
-//error_log( '_extract_pdf_metadata Object = ' . "\r\n" . var_export( self::_hex_dump( substr( $pdf, self::$pdf_indirect_objects[ $info_ref ]['start'], self::$pdf_indirect_objects[ $info_ref ]['length'] ), self::$pdf_indirect_objects[ $info_ref ]['length'], 32 ), true ) . "\r\n", 0 );
-						 $info_dictionary = self::_parse_pdf_dictionary( substr( $pdf, self::$pdf_indirect_objects[ $info_ref ]['start'], self::$pdf_indirect_objects[ $info_ref ]['length'] ) );
+						 $info_dictionary = self::_parse_pdf_dictionary( substr( $pdf, self::$pdf_indirect_objects[ $info_ref ]['start'], self::$pdf_indirect_objects[ $info_ref ]['/length'] ), 0 );
+						 unset( $info_dictionary['/length'] );
+
+						 foreach( $info_dictionary as $name => $value ) {
+							 if ( 'string' == $value['type'] ) {
+								 $prefix = substr( $value['value'], 0, 2 );
+								 if ( 'D:' == $prefix )
+								 	$metadata[ $name ] = self::_parse_pdf_date( $value['value'] );
+								elseif ( ( chr(0xFE) . chr(0xFF) ) == $prefix ) 
+								 	$metadata[ $name ] = self::_parse_pdf_UTF16BE( $value['value'] );
+								else
+									 $metadata[ $name ] = $value['value'];
+							 }
+							 else
+								 $metadata[ $name ] = $value['value'];
+						 } // each info entry
 					 } // found Info object
 				 } // found Info ref
+				 elseif ( isset( $dictionary['Root'] ) ) {
+//error_log( '_extract_pdf_metadata trailer dictionary  Root = ' . var_export( $dictionary['Root'], true ), 0 );
+					 $info_ref = ($dictionary['Root']['object'] * 1000) + $dictionary['Root']['generation'];
+//error_log( '_extract_pdf_metadata trailer dictionary  $info_ref = ' . var_export( $info_ref, true ), 0 );
+					 if ( isset( self::$pdf_indirect_objects[ $info_ref ] ) ) {
+//error_log( '_extract_pdf_metadata Root dictionary  ref = ' . var_export( self::$pdf_indirect_objects[ $info_ref ], true ), 0 );
+//error_log( '_extract_pdf_metadata Root object = ' . "\r\n" . var_export( self::_hex_dump( substr( $pdf, self::$pdf_indirect_objects[ $info_ref ]['start'], self::$pdf_indirect_objects[ $info_ref ]['/length'] ), self::$pdf_indirect_objects[ $info_ref ]['/length'], 32 ), true ) . "\r\n", 0 );
+						 $root_dictionary = self::_parse_pdf_dictionary( substr( $pdf, self::$pdf_indirect_objects[ $info_ref ]['start'], self::$pdf_indirect_objects[ $info_ref ]['/length'] ), 0 );
+						 unset( $root_dictionary['/length'] );
+//error_log( "_extract_pdf_metadata Root dictionary = ". var_export( $root_dictionary, true ), 0 );
+					 } // found Root object
+				 } // found Root ref
 			 } // found dictionary
 		} // found trailer
 		
+//error_log( "_extract_pdf_metadata metadata = ". var_export( $metadata, true ), 0 );
 		return $metadata;
 	}
 		
@@ -1903,8 +2066,9 @@ error_log( '_extract_pdf_metadata $string = '. var_export( $string, true ), 0 );
 		if ( seems_utf8( $string ) )
 			return $string;
 
-		if(function_exists('utf8_encode'))
+		if(function_exists('utf8_encode')) {
 			return utf8_encode( $string );
+		}
 
 		$output = '';
 		for ($index = 0; $index < strlen( $string ); $index++ ) {
@@ -2292,19 +2456,19 @@ error_log( '_extract_pdf_metadata $string = '. var_export( $string, true ), 0 );
 	 * @since 1.41
 	 *
 	 * @param	string	field name - IPTC Identifier or friendly name/slug
-	 * @param	string	metadata array containing 'mla_iptc_metadata' array
+	 * @param	string	metadata array containing iptc, exif, and pdf metadata arrays
 	 *
 	 * @return	mixed	string/array representation of metadata value or an empty string
 	 */
-	public static function mla_iptc_metadata_value( $iptc_key, $image_metadata ) {
+	public static function mla_iptc_metadata_value( $iptc_key, $item_metadata ) {
 		// convert friendly name/slug to identifier
 		if ( array_key_exists( $iptc_key, self::$mla_iptc_keys ) ) {
 			$iptc_key = self::$mla_iptc_keys[ $iptc_key ];
 		}
 				
 		$text = '';
-		if ( array_key_exists( $iptc_key, $image_metadata['mla_iptc_metadata'] ) ) {
-			$text = $image_metadata['mla_iptc_metadata'][ $iptc_key ];
+		if ( array_key_exists( $iptc_key, $item_metadata['mla_iptc_metadata'] ) ) {
+			$text = $item_metadata['mla_iptc_metadata'][ $iptc_key ];
 			if ( is_array( $text ) ) {
 				foreach ($text as $key => $value )
 					$text[ $key ] = self::_bin_to_utf8( $value );
@@ -2325,14 +2489,17 @@ error_log( '_extract_pdf_metadata $string = '. var_export( $string, true ), 0 );
 	 * @since 1.13
 	 *
 	 * @param	string	field name
-	 * @param	string	metadata array containing 'mla_exif_metadata' and 'mla_iptc_metadata' arrays
+	 * @param	string	metadata array containing iptc, exif, and pdf metadata arrays
 	 *
 	 * @return	string	string representation of metadata value or an empty string
 	 */
-	public static function mla_exif_metadata_value( $exif_key, $image_metadata ) {
+	public static function mla_exif_metadata_value( $exif_key, $item_metadata ) {
+		if ( 'pdf:' == substr( $exif_key, 0, 4 ) )
+			return self::mla_pdf_metadata_value( substr( $exif_key, 4 ), $item_metadata );
+			
 		$text = '';
-		if ( array_key_exists( $exif_key, $image_metadata['mla_exif_metadata'] ) ) {
-			$text = $image_metadata['mla_exif_metadata'][ $exif_key ];
+		if ( array_key_exists( $exif_key, $item_metadata['mla_exif_metadata'] ) ) {
+			$text = $item_metadata['mla_exif_metadata'][ $exif_key ];
 			if ( is_array( $text ) ) {
 				foreach ($text as $key => $value ) {
 					if ( is_array( $value ) )
@@ -2345,7 +2512,7 @@ error_log( '_extract_pdf_metadata $string = '. var_export( $string, true ), 0 );
 				$text = self::_bin_to_utf8( $text );
 		} elseif ( 'ALL_EXIF' == $exif_key ) {
 			$clean_data = array();
-			foreach ( $image_metadata['mla_exif_metadata'] as $key => $value ) {
+			foreach ( $item_metadata['mla_exif_metadata'] as $key => $value ) {
 				if ( is_array( $value ) ) 
 					$clean_data[ $key ] = '(ARRAY)';
 				elseif ( is_string( $value ) )
@@ -2357,7 +2524,7 @@ error_log( '_extract_pdf_metadata $string = '. var_export( $string, true ), 0 );
 			$text = var_export( $clean_data, true);
 		} elseif ( 'ALL_IPTC' == $exif_key ) {
 			$clean_data = array();
-			foreach ( $image_metadata['mla_iptc_metadata'] as $key => $value ) {
+			foreach ( $item_metadata['mla_iptc_metadata'] as $key => $value ) {
 				if ( is_array( $value ) ) {
 					foreach ($value as $text_key => $text )
 						$value[ $text_key ] = self::_bin_to_utf8( $text );
@@ -2372,6 +2539,50 @@ error_log( '_extract_pdf_metadata $string = '. var_export( $string, true ), 0 );
 
 			$text = var_export( $clean_data, true);
 		}
+		
+		return $text;
+	}
+		
+	/**
+	 * Parse one PDF metadata field
+	 * 
+	 * Returns a string value, converting array data to a string as necessary.
+	 * Also handles the special pseudo-value 'ALL_PDF'.
+	 *
+	 * @since 1.4x
+	 *
+	 * @param	string	field name
+	 * @param	string	metadata array containing iptc, exif, and pdf metadata arrays
+	 *
+	 * @return	string	string representation of metadata value or an empty string
+	 */
+	public static function mla_pdf_metadata_value( $pdf_key, $item_metadata ) {
+		$text = '';
+		if ( array_key_exists( $pdf_key, $item_metadata['mla_pdf_metadata'] ) ) {
+			$text = $item_metadata['mla_pdf_metadata'][ $pdf_key ];
+			if ( is_array( $text ) ) {
+				foreach ($text as $key => $value ) {
+					if ( is_array( $value ) )
+						$text[ $key ] = self::_bin_to_utf8( var_export( $value, true ) );
+					else
+						$text[ $key ] = self::_bin_to_utf8( $value );
+				}
+			}
+			elseif ( is_string( $text ) )
+				$text = self::_bin_to_utf8( $text );
+		} elseif ( 'ALL_PDF' == $pdf_key ) {
+			$clean_data = array();
+			foreach ( $item_metadata['mla_pdf_metadata'] as $key => $value ) {
+				if ( is_array( $value ) ) 
+					$clean_data[ $key ] = '(ARRAY)';
+				elseif ( is_string( $value ) )
+					$clean_data[ $key ] = self::_bin_to_utf8( substr( $value, 0, 256 ) );
+				else
+					$clean_data[ $key ] = $value;
+			}
+			
+			$text = var_export( $clean_data, true);
+		} // ALL_PDF
 		
 		return $text;
 	}
@@ -2399,12 +2610,11 @@ error_log( '_extract_pdf_metadata $string = '. var_export( $string, true ), 0 );
 			$path = get_attached_file($post_id);
 
 		if ( ! empty( $path ) ) {
-/*
 			if ( 'pdf' == strtolower( pathinfo( $path, PATHINFO_EXTENSION ) ) ) {
 				$results['mla_pdf_metadata'] = self::_extract_pdf_metadata( $path );
 				return $results;
 			}
- */
+
 			$size = getimagesize( $path, $info );
 			
 			if ( is_callable( 'iptcparse' ) ) {
@@ -2772,7 +2982,7 @@ error_log( '_extract_pdf_metadata $string = '. var_export( $string, true ), 0 );
 				 * Uncomment this for debugging.
 				 */
 				// $final_message .= '<br>' . $message;
-				// error_log( 'message = ' . var_export( $message, true ), 0 );
+				// error_log( 'DEBUG: message = ' . var_export( $message, true ), 0 );
 				
 				return array(
 					'message' => $final_message,
@@ -2851,12 +3061,15 @@ error_log( '_extract_pdf_metadata $string = '. var_export( $string, true ), 0 );
 		while ( $position < $limit ) {
 			$row_length = strlen( substr( $data, $position ) );
 			
+			if ( 0 == $row_length )
+				break;
+			
 			if ( $row_length > ( $limit - $position ) )
 				$row_length = $limit - $position;
 
 			if ( $row_length > $bytes_per_row )
 				$row_length = $bytes_per_row;
-			
+
 			$row_data = substr( $data, $position, $row_length );
 			
 			$print_string = '';

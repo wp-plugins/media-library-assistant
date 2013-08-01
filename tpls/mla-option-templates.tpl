@@ -567,9 +567,9 @@
 	}
 	#[+selector+] .gallery-item {
 		float: [+float+];
-		margin: [+margin+]%;
+		margin: [+margin+];
 		text-align: center;
-		width: [+itemwidth+]%;
+		width: [+itemwidth+];
 	}
 	#[+selector+] .gallery-item .gallery-icon img {
 		border: 2px solid #cfcfcf;
@@ -588,7 +588,7 @@
 <!-- row-open -->
 
 <!-- template="default-item-markup" -->
-<[+itemtag+] class='gallery-item'>
+<[+itemtag+] class='gallery-item [+last_in_row+]'>
 	<[+icontag+] class='gallery-icon'>
 		[+link+]
 	</[+icontag+]>

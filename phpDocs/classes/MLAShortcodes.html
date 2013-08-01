@@ -30,7 +30,9 @@
 <li><a href="../errors.html"><i class="icon-remove-sign"></i> Errors 
                 <span class="label label-info">0</span></a></li>
 <li><a href="../markers.html"><i class="icon-map-marker"></i> Markers 
-                <ul></ul></a></li>
+                <ul><li>todo 
+                <span class="label label-info">1</span>
+</li></ul></a></li>
 <li><a href="../deprecated.html"><i class="icon-stop"></i> Deprecated elements 
                 <span class="label label-info">0</span></a></li>
 </ul>
@@ -61,6 +63,7 @@
 <li class="method public "><a href="#mla_shortcode_query_posts_orderby_filter" title="mla_shortcode_query_posts_orderby_filter :: Filters the ORDERBY clause for shortcode queries"><span class="description">Filters the ORDERBY clause for shortcode queries</span><pre>mla_shortcode_query_posts_orderby_filter()</pre></a></li>
 <li class="method public "><a href="#mla_shortcode_query_posts_where_filter" title="mla_shortcode_query_posts_where_filter :: Filters the WHERE clause for shortcode queries"><span class="description">Filters the WHERE clause for shortcode queries</span><pre>mla_shortcode_query_posts_where_filter()</pre></a></li>
 <li class="nav-header private">» Private</li>
+<li class="method private "><a href="#_process_pagination_output_types" title="_process_pagination_output_types :: Handles pagnation output types 'previous_page', 'next_page', and 'paginate_links'"><span class="description">Handles pagnation output types 'previous_page', 'next_page', and 'paginate_links'</span><pre>_process_pagination_output_types()</pre></a></li>
 <li class="method private "><a href="#_process_shortcode_parameter" title="_process_shortcode_parameter :: Handles brace/bracket escaping and parses template for a shortcode parameter"><span class="description">Handles brace/bracket escaping and parses template for a shortcode parameter</span><pre>_process_shortcode_parameter()</pre></a></li>
 <li class="method private "><a href="#_sanitize_query_specification" title="_sanitize_query_specification :: Cleans up damage caused by the Visual Editor to the tax_query and meta_query specifications"><span class="description">Cleans up damage caused by the Visual Editor to the tax_query and meta_query specifications</span><pre>_sanitize_query_specification()</pre></a></li>
 <li class="method private "><a href="#_validate_sql_orderby" title="_validate_sql_orderby :: Translates query parameters to a valid SQL order by clause."><span class="description">Translates query parameters to a valid SQL order by clause.</span><pre>_validate_sql_orderby()</pre></a></li>
@@ -146,7 +149,7 @@ Enhancements include many additional selection parameters and full taxonomy supp
 </div>
 <a name="mla_get_shortcode_attachments" id="mla_get_shortcode_attachments"></a><div class="element clickable method public mla_get_shortcode_attachments" data-toggle="collapse" data-target=".mla_get_shortcode_attachments .collapse">
 <h2>Parses shortcode parameters and returns the gallery objects</h2>
-<pre>mla_get_shortcode_attachments(int $post_parent, array $attr) : array</pre>
+<pre>mla_get_shortcode_attachments(int $post_parent, array $attr, boolean $return_found_rows) : array</pre>
 <div class="labels"></div>
 <div class="row collapse"><div class="detail-description">
 <p class="long_description"></p>
@@ -161,6 +164,10 @@ Enhancements include many additional selection parameters and full taxonomy supp
 <div class="subelement argument">
 <h4>$attr</h4>
 <code>array</code><p>Attributes of the shortcode</p></div>
+<div class="subelement argument">
+<h4>$return_found_rows</h4>
+<code>boolean</code><p>true to calculate and return ['found_posts'] as an array element</p>
+</div>
 <h3>Returns</h3>
 <div class="subelement response">
 <code>array</code>List of attachments returned from WP_Query</div>
@@ -246,6 +253,42 @@ Defined as public because it's a filter.</p></p>
 <h3>Returns</h3>
 <div class="subelement response">
 <code>string</code>query clause after modification</div>
+</div></div>
+</div>
+<a name="_process_pagination_output_types" id="_process_pagination_output_types"></a><div class="element clickable method private _process_pagination_output_types" data-toggle="collapse" data-target="._process_pagination_output_types .collapse">
+<h2>Handles pagnation output types 'previous_page', 'next_page', and 'paginate_links'</h2>
+<pre>_process_pagination_output_types(array $output_parameters, string $markup_values, string $arguments, string $attr, integer $found_rows, string $output) : mixed</pre>
+<div class="labels"></div>
+<div class="row collapse"><div class="detail-description">
+<p class="long_description"></p>
+<table class="table table-bordered"><tr>
+<th>since</th>
+<td>1.42</td>
+</tr></table>
+<h3>Parameters</h3>
+<div class="subelement argument">
+<h4>$output_parameters</h4>
+<code>array</code><p>value(s) for mla_output_type parameter</p>
+</div>
+<div class="subelement argument">
+<h4>$markup_values</h4>
+<code>string</code><p>template substitution values, e.g., ('instance' => '1', ... )</p>
+</div>
+<div class="subelement argument">
+<h4>$arguments</h4>
+<code>string</code><p>merged default and passed shortcode parameter values</p></div>
+<div class="subelement argument">
+<h4>$attr</h4>
+<code>string</code><p>raw passed shortcode parameter values</p></div>
+<div class="subelement argument">
+<h4>$found_rows</h4>
+<code>integer</code><p>number of attachments in the gallery, without pagination</p></div>
+<div class="subelement argument">
+<h4>$output</h4>
+<code>string</code><p>output text so far, may include debug values</p></div>
+<h3>Returns</h3>
+<div class="subelement response">
+<code>mixed</code>false or string with HTML for pagination output types</div>
 </div></div>
 </div>
 <a name="_process_shortcode_parameter" id="_process_shortcode_parameter"></a><div class="element clickable method private _process_shortcode_parameter" data-toggle="collapse" data-target="._process_shortcode_parameter .collapse">
@@ -373,7 +416,7 @@ any further logic required to translate those values is contained in the filter.
 <div class="row"><footer class="span12">
             Template is built using <a href="http://twitter.github.com/bootstrap/">Twitter Bootstrap 2</a> and icons provided by <a href="http://glyphicons.com/">Glyphicons</a>.<br>
             Documentation is powered by <a href="http://www.phpdoc.org/">phpDocumentor 2.0.0a8</a> and<br>
-            generated on 2013-06-30T13:10:25-07:00.<br></footer></div>
+            generated on 2013-07-31T21:05:23-07:00.<br></footer></div>
 </div>
 </body>
 </html>

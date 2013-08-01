@@ -38,7 +38,7 @@ class MLA {
 	 *
 	 * @var	string
 	 */
-	const CURRENT_MLA_VERSION = '1.41';
+	const CURRENT_MLA_VERSION = '1.42';
 
 	/**
 	 * Slug for registering and enqueueing plugin style sheet
@@ -611,7 +611,8 @@ class MLA {
 		);
 		
 		/*
-		 * The category taxonomy is a special case because post_categories_meta_box() changes the input name
+		 * The category taxonomy (edit screens) is a special case because 
+		 * post_categories_meta_box() changes the input name
 		 */
 		if ( !isset( $_REQUEST['tax_input'] ) )
 			$_REQUEST['tax_input'] = array();
@@ -821,7 +822,8 @@ class MLA {
 			
 			//	 Forms are NOT created automatically, so you need to wrap the table in one to use features like bulk actions
 //			echo '<form action="' . admin_url( 'upload.php' ) . '" method="get" id="mla-filter">' . "\r\n";
-			echo '<form action="' . admin_url( 'upload.php?page=mla-menu' ) . '" method="post" id="mla-filter">' . "\r\n";
+			echo '<form action="' . admin_url( 'upload.php?page=' . self::ADMIN_PAGE_SLUG ) . '" method="post" id="mla-filter">' . "\r\n";
+//			echo '<form action="' . admin_url( 'upload.php?page=' . self::ADMIN_PAGE_SLUG ) . '" method="get" id="mla-filter">' . "\r\n";
 			/*
 			 * Compose the Search Media box
 			 */

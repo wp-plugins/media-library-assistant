@@ -27,7 +27,7 @@
 </ul>
 </li>
 <li>
-<a href="#mla_output"><strong>Support for Alternative Gallery Output</strong></a>
+<a href="#mla_output"><strong>Support for Alternative Gallery Output, e.g., Pagination</strong></a>
 </li>
 <li>
 <a href="#alt_shortcode"><strong>Support for Other Gallery-generating Shortcodes</strong></a>
@@ -121,40 +121,56 @@ Three <code>[mla_gallery]</code> parameters provide control over the placement, 
 <table>
 <tr>
 <td style="padding-right: 10px; vertical-align: top; font-weight:bold">mla_float</td>
-<td>specifies the float attribute of the ".gallery-item" style. Acceptable values are "left", "none", "right"; the default value is "right" if current locale is RTL, "left" on LTR (left-to-right inline flow, e.g., English).</td>
+<td>specifies the CSS float attribute of the ".gallery-item" style. Acceptable values are "left", "none", "right"; the default value is "right" if current locale is RTL, "left" on LTR (left-to-right inline flow, e.g., English).</td>
 </tr>
 <tr>
 <td style="padding-right: 10px; vertical-align: top; font-weight:bold">mla_margin</td>
-<td>specifies the margin attribute (in percent) of the ".gallery-item" style. The default value is "1.5" percent.</td>
+<td>specifies the CSS margin property of the ".gallery-item" style. The default value is "1.5%", a percent of the total gallery width. You can also specify any dimension value, e.g., "10px" or "2em", as well as the "auto" or "inherit" values. Finally, you can specify "none", which will remove the margin property from the styles template altogether.</td>
 </tr>
 <tr>
 <td style="padding-right: 10px; vertical-align: top; font-weight:bold">mla_itemwidth</td>
-<td>specifies the width attribute (in percent) of the ".gallery-item" style. The default value is calculated by subtracting twice the margin from 100%, then dividing by the number of gallery columns. For example, the default value is "32", or (100 - (2 * 1.5)) / 3.</td>
+<td>specifies the CSS width attribute of the ".gallery-item" style. You can specify a percent of the total gallery width, e.g., "33.3%". You can also specify any dimension value, e.g., "10px" or "2em", as well as the "auto" or "inherit" values. You can specify "none", which will remove the margin property from the styles template altogether.
+<br />&nbsp;<br />
+Two additional values, "calculate" (the default) and "exact",  calculate the width automatically, based on the "columns" and "mla_margin" values. For "calculate", the width is calculated by dividing 100% by the number of columns, then subtracting twice the margin. For example, the default value is (floor(1000/3)/10) - ( 2.0 * 1.5 ) = 30.3%. Adding in the left and right margins makes each column 33.3% and the total width will be 99.9%
+<br />&nbsp;<br />
+For the "exact" value, the calculation is the same but the margin is ignored, so the width value would be 33.3%.</td>
 </tr>
 </table>
 <p>
 These parameters are only important if the gallery thumbnails are too large to fit within the width of the page on which they appear. For example, if you code <code>[mla_gallery size=full]</code>, the browser will automatically scale down large images to fit within the width attribute (in percent) of the ".gallery-item" style. The default 1.5% margin will ensure that the images do not overlap; you can increase it to add more space between the gallery items. You can also reduce the itemwidth parameter to increase the left and right space between the items.
+</p>
+<p>
+The default margin and width calculations try to make the total width of each row as close to 100% as possible, but never exceed 100% due to rounding errors. If you have more advanced style and format needs, you can define custom style and/or markup templates. You can also code <code>mla_style=none</code> to suppress inline styles entirely and use a separate stylesheet to control the format of the gallery.
 <a name="gallery_display_content"></a>
 </p>
 <h4>Gallery Display Content</h4>
 <p>
-Nine <code>[mla_gallery]</code> parameters provide an easy way to control the contents of gallery items without requiring the use of custom Markup templates.  
+Twelve <code>[mla_gallery]</code> parameters provide an easy way to control the contents of gallery items without requiring the use of custom Markup templates.  
 </p>
 <table>
 <tr>
 <td style="padding-right: 10px; vertical-align: top; font-weight:bold">mla_output</td>
-<td>completely replaces gallery output with links to the "previous" or "next" item. Complete documentation is in the <a href="#mla_output"><strong>Support for Alternative Gallery Output</strong></a> section below.</td>
+<td>completely replaces gallery output with links to the "previous" or "next" item/page or pagination links. Complete documentation is in the <a href="#mla_output"><strong>Support for Alternative Gallery Output, e.g., Pagination</strong></a> section below.</td>
 </tr>
 <tr>
 <td style="padding-right: 10px; vertical-align: top; font-weight:bold">mla_link_attributes</td>
 <td>adds one or more HTML attributes to the hyperlink for each gallery item; see below</td>
 </tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">mla_link_class</td>
+<td><strong>adds</strong> one or more classes to any already defined for the hyperlink </td>
+</tr>
+<tr>
 <td style="padding-right: 10px; vertical-align: top; font-weight:bold">mla_link_href</td>
 <td>replaces the HTML "href" attribute in the hyperlink for each gallery item; see below</td>
 </tr>
 <tr>
 <td style="padding-right: 10px; vertical-align: top; font-weight:bold">mla_link_text</td>
 <td>replaces the thumbnail image or attachment title text displayed for each gallery item</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">mla_nolink_text</td>
+<td>replaces the empty string displayed when there are no gallery items or no pagination link </td>
 </tr>
 <tr>
 <td style="padding-right: 10px; vertical-align: top; font-weight:bold">mla_rollover_text</td>
@@ -183,7 +199,7 @@ Nine <code>[mla_gallery]</code> parameters provide an easy way to control the co
 <tr>
 </table>
 <p>
-The first eight parameters support the <a href="#mla_markup_parameters">Markup</a> and <a href="#mla_attachment_parameters">Attachment-specific</a> substitution arguments defined for Markup Templates. For example, if you code "<code>mla_rollover_text='{+date+} : {+description+}'</code>, the rollover text will contain the upload date, a colon, and the full description of each gallery item. Simply add "{+" before the substitution parameter name and add "+}" after the name. Note that the enclosing delimiters are different than those used in the templates, since the WordPress shortcode parser reserves square brackets ("[" and "]") for its own use.
+All but the "mla_target" parameter support the <a href="#mla_markup_parameters">Markup</a> and <a href="#mla_attachment_parameters">Attachment-specific</a> substitution arguments defined for Markup Templates. For example, if you code "<code>mla_rollover_text='{+date+} : {+description+}'</code>, the rollover text will contain the upload date, a colon, and the full description of each gallery item. Simply add "{+" before the substitution parameter name and add "+}" after the name. Note that the enclosing delimiters are different than those used in the templates, since the WordPress shortcode parser reserves square brackets ("[" and "]") for its own use.
 </p>
 <p>
 The "mla_link_href" parameter is a great way to change the destination your gallery item links to or add arguments to the link for later processing. For example, to make a gallery item link back to the page/post it is attached to, you can code: <code>mla_link_href='{+site_url+}/?page_id={+parent+}'</code>. You can also add arguments to the link, e.g., <code>mla_link_href='{+link_url+}&amp;amp;myarg=myvalue'</code>. Note the use of the HTML entity name "&amp;amp;" to put an ampersand in the value; the WordPress "visual" post editor will replace "&", "<" and ">" with "&amp;amp;", "&amp;lt;" and "&amp;gt;" whether you like it not. The <strong>only</strong> markup parameter modified by this parameter is "link". Other markup parameters such as "pagelink", "filelink" and "link_url" are not modified.
@@ -373,11 +389,27 @@ Note that you must use the name/slug strings for taxonomy and terms, not the "ti
 In this example, "attachment_tag" is the WordPress taxonomy name/slug for the taxonomy. If you're using "Att. Category", the slug would be "attachment_category".
 </p>
 <p>
-The default behavior of the simple taxonomy query will match any of the terms in the list. MLA enhances the simple taxonomy query form by providing an additional parameter, "tax_operator", which can be "IN", "NOT IN" or "AND". If you specify a "tax_operator", MLA will convert your query to the more powerful "tax_query" form, searching on the "slug" field and using the operator you specify. For example, a query for two terms in which <strong>both</strong> terms must match would be coded as:
+The default behavior of the simple taxonomy query will match any of the terms in the list. MLA enhances the simple taxonomy query form by providing two additional parameters:
+</p>
+<table>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">tax_operator</td>
+<td>SQL operator to test terms against; can be "OR", IN", "NOT IN" or "AND".</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">tax_include_children</td>
+<td>whether or not to include children for hierarchical taxonomies; can be "true" (the default) or "false". </td>
+</tr>
+</table>
+<p>
+If you specify either or both of these parameters, MLA will convert your query to the more powerful "tax_query" form, searching on the "slug" field and using the operator you specify. For example, a query for two terms in which <strong>both</strong> terms must match would be coded as:
 </p>
 <ul class="mla_settings">
-<li><code>[mla_gallery attachment_category='separate-category,another-category' tax_operator=AND]</code></li>
+<li><code>[mla_gallery attachment_category='separate-category,another-category' tax_operator=AND tax_include_children=false]</code></li>
 </ul>
+<p>
+Note that the default tax_include_children value is true, matching the default WordPress setting. If your tax_operator is "AND", you will almost certainly want to change this setting.
+</p>
 <p>
 More complex queries can be specified by using <a href="http://codex.wordpress.org/Class_Reference/WP_Query#Taxonomy_Parameters" title="WordPress Codex Documentation for tax_query" target="_blank">WP_Query's "tax_query"</a>, e.g.:
 </p>
@@ -407,7 +439,13 @@ For compatibility with the WordPress <code>[gallery]</code> shortcode, these par
 </p>
 <h4>Pagination Parameters</h4>
 <p>
-The <code>[mla_gallery]</code> shortcode supplies <code>nopaging=true</code> as a default parameter. If you are working with a template that supports pagination you can replace this with specific values for "numberposts", "posts_per_page", "posts_per_archive_page", "paged" and/or "offset" . You can also pass "paged=current" to suppress the "nopaging" default; "current" will be replaced by the appropriate value (get_query_var('paged')).
+The <code>[mla_gallery]</code> shortcode supplies <code>nopaging=true</code> as a default parameter. If you are working with a template that supports pagination you can replace this with specific values for "numberposts", "posts_per_page", "posts_per_archive_page", "paged" and/or "offset" . You can also pass "paged=current" to suppress the "nopaging" default; "current" will be replaced by the appropriate value (<code>get_query_var('paged')</code> or <code>get_query_var('page')</code>).
+</p>
+<p>
+The "paged=current" parameter is useful for "paginated single posts" (i.e. posts that include the <code>&lt;!--nextpage--&gt;</code> Quicktag one or more times). Simply make two ore more copies of your <code>[mla_gallery]</code> shortcode separated by the Quicktag and include the "paged=current' in each copy.
+</p>
+<p>
+The more complex task of dividing a large <code>[mla_gallery]</code> into two or more pages is supported by MLA's <a href="#mla_output">Support for Alternative Gallery Output, e.g., Pagination</a>; see the section below. 
 <a name="time_parameters"></a>
 </p>
 <h4>Time Parameters</h4>
@@ -440,25 +478,51 @@ The "mla_debug" parameter controls the display of information about the query pa
 <p>
 <a href="#backtotop">Go to Top</a>
 </p>
-<h3>Support for Alternative Gallery Output</h3>
+<h3>Support for Alternative Gallery Output, e.g., Pagination</h3>
 <p>
-The <code>[mla_gallery]</code> shortcode can be used to provide "Previous" and "Next" links that support moving among the individual items in a gallery. 
+The <code>[mla_gallery]</code> shortcode can be used to provide "Previous" and "Next" links that support moving among the individual items in a gallery or among gallery "pages". For example, if you have many items with a specific Att. Category or Att. Tag value you can build a single-image page with links to the previous/next item having that value. You can also build a page that shows a large gallery in groups, or "gallery pages", of ten items with links to the previous/next ten items or links to all of the gallery pages of items having that value.
+</p>
+<h4>The <code>mla_output</code> parameter</h4>
+<p>
+The <strong>"mla_output"</strong> parameter determines the type of output the shortcode will return. Explanation and examples of each output type are given later in this section. You can choose from five values:
 </p>
 <table>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">mla_output</td>
-<td>the type of output the shortcode will return. The default value, "gallery", returns the traditional gallery of image thumbnails, etc. The "next_link" value returns a link to the next gallery item, and "previous_link" returns a link to the previous gallery item. The optional ",wrap" qualifier determines what happens at each end of the gallery. If you omit the qualifier, an empty string is returned for the "previous_link" from the first gallery item, and for the "next_link" from the last item in the gallery. If you code the ",wrap" qualifier, "previous_link" from the first gallery item will be to the last gallery item and the "next_link" from the last item will be to the first gallery item.</td>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">gallery</td>
+<td>The default value; returns the traditional gallery of image thumbnails, captions, etc.</td>
 </tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">next_link</td>
+<td>returns a link to the next gallery item. The optional ",wrap" qualifier determines what happens at the end of the gallery. If you omit the qualifier, an empty string is returned for the "next_link" from the last item in the gallery. If you code the ",wrap" qualifier, the "next_link" from the last item will be to the first gallery item.</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">previous_link</td>
+<td>returns a link to the previous gallery item. The optional ",wrap" qualifier determines what happens at the beginning of the gallery. If you omit the qualifier, an empty string is returned for the "previous_link" from the first gallery item. If you code the ",wrap" qualifier, "previous_link" from the first gallery item will be to the last gallery item.</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">next_page</td>
+<td>returns a link to the next "page" of gallery items. The optional ",wrap" or ",last" qualifiers determine what happens at the end of the gallery. If you omit the qualifier, an empty string is returned for the "next_page" if there are no more items in the gallery. If you code the ",wrap" qualifier, the "next_page" from the last page of items will be to the first page of gallery items. If you code the ",last" qualifier, the "next_page" link will return to/remain on the last page of gallery items.</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">previous_page</td>
+<td>returns a link to the previous "page" of gallery items. The optional ",wrap" or ",first" qualifiers determine what happens at the beginning of the gallery. If you omit the qualifier, an empty string is returned for the "previous_link" from the first page of gallery items. If you code the ",wrap" qualifier, "previous_page" from the first page of gallery items will be to the last page of gallery items. If you code the ",first" qualifier, the "previous_link" link will return to/remain on the first page of gallery items.</td>
+</tr>
+</table>
+<h4>Next and previous gallery items; the <code>next_link</code> and <code>previous_link</code> output types</h4>
+<p>
+WordPress provides functions that generate links to the "<em>next/previous image attached to the current post</em>." These are not useful when your Media Library items are not images or are not attached to a specific post or page.  If, for example, you use an <code>[mla_gallery]</code> shortcode to build a gallery of items with a specific Att. Tag value you can use the <code>next_link</code> and <code>previous_link</code> output types to move through single-item pages for the gallery. You will need one more parameter to specify the "current item" in the gallery:
+</p>
+<table>
 <tr>
 <td style="padding-right: 10px; vertical-align: top; font-weight:bold">id</td>
 <td>(optional) the ID of the "current" gallery item. If you omit this parameter, the default value is the ID of the current "post". The default value is only useful if you are enhancing the PHP code of the "image.php" template for the "Attachment Page" associated with a Media Library item.</td>
 </tr>
 </table>
 <p>
-The link returned is drawn from the attachment-specific "link" substitution parameter for the next or previous gallery item. This means you can use all of the <a href="#gallery_display_content">Gallery Display Content</a> parameters to control each element of the link. For example, you can code <code>mla_rollover_text='&amp;larr; Previous'</code> to replace the thumbnail image with a generic text link to the "previous_link" item. You can also add HTML arguments to the link to pass values along from one page to the next.
+The next or previous link returned is drawn from the attachment-specific "link" substitution parameter for the next or previous gallery item. This means you can use all of the <a href="#gallery_display_content">Gallery Display Content</a> parameters to control each element of the link. For example, you can code <code>mla_rollover_text='&amp;larr; Previous'</code> to replace the thumbnail image with a generic text link to the "previous_link" item. You can also add HTML arguments to the link to pass values along from one page to the next.
 </p>
 <p>
-For example, you can select images using the MLA Att. Tag taxonomy and have each gallery item link to a page (page_id=893 in this case) that displays a larger version of the single image:
+Expanding the example, you can select images using the MLA Att. Tag taxonomy and have each gallery item link to a page (<em><strong>page_id=893</strong></em> in this case) that displays a larger version of the single image:
 </p>
 <code>
 [mla_gallery attachment_tag="sample" mla_caption="{+title+}" mla_link_href="{+site_url+}?page_id=893&amp;current_id={+attachment_ID+}&amp;attachment_tag={+query:attachment_tag+}"]
@@ -470,14 +534,14 @@ Note the use of <code>attachment_tag={+query:attachment_tag+}</code> in the href
 [mla_gallery columns=1 ids="{+request:current_id+}" size=medium]
 <br />&nbsp;<br>
 &lt;div style="clear: both; float: left"&gt;<br />
-[mla_gallery mla_output="previous_link,wrap" mla_link_text='&larr; Previous Sample' attachment_tag="{+request:attachment_tag+}" id="{+request:current_id+}" mla_caption="{+title+}" mla_link_href="{+site_url+}?page_id=893&amp;current_id={+attachment_ID+}&amp;attachment_tag={+query:attachment_tag+}"]<br>
+[mla_gallery mla_output="previous_link,wrap" mla_link_text='&amp;larr; Previous Sample' attachment_tag="{+request:attachment_tag+}" id="{+request:current_id+}" mla_caption="{+title+}" mla_link_href="{+site_url+}?page_id=893&amp;current_id={+attachment_ID+}&amp;attachment_tag={+query:attachment_tag+}"]<br>
 &lt;/div&gt;<br>
 &lt;div style="float: right"&gt;<br>
-[mla_gallery mla_output="next_link,wrap" mla_link_text='Next Sample &rarr;' attachment_tag="{+request:attachment_tag+}" id="{+request:current_id+}" mla_caption="{+title+}" mla_link_href="{+site_url+}?page_id=893&amp;current_id={+attachment_ID+}&amp;attachment_tag={+query:attachment_tag+}"]<br>
+[mla_gallery mla_output="next_link,wrap" mla_link_text='Next Sample &amp;rarr;' attachment_tag="{+request:attachment_tag+}" id="{+request:current_id+}" mla_caption="{+title+}" mla_link_href="{+site_url+}?page_id=893&amp;current_id={+attachment_ID+}&amp;attachment_tag={+query:attachment_tag+}"]<br>
 &lt;/div&gt;
 </code>
 <p>
-Note the following points:
+Consider the following points:
 </p>
 <ol>
 <li>The "ids" parameter in the first <code>[mla_gallery]</code> takes the "current_id" value (for the single image to be displayed) from the HTML $_REQUEST array. 
@@ -489,6 +553,156 @@ Note the following points:
 </ol>
 <p>
 This example shows the power of the substitution parameters and in particular the "query" and "request" prefixes that can be used to pass information into an <code>[mla_gallery]</code> and from one page to the next. All of this without modifying PHP templates or requiring other code modifications!
+</p>
+<h4>Next and previous gallery pages; the <code>next_page</code> and <code>previous_page</code> output types</h4>
+<p>
+WordPress provides functions that generate links to the "<em>next/previous set of posts within the current query</em>." These are not useful because the "current query" is for posts/pages, <strong>not</strong> Media Library items. What's needed is a way to paginate an <code>[mla_gallery]</code> shortcode on a single post or page. If, for example, you use an <code>[mla_gallery]</code> shortcode to build a gallery of items with a specific Att. Tag value you can use the <code>next_page</code> and <code>previous_page</code> output types to move through the gallery in groups of, say, ten items per "gallery page".
+</p>
+<p>
+WordPress uses the "paged" parameter to indicate the current "<em>set of posts within the current query</em>." To avoid built-in WordPress logic that uses this parameter, MLA has its own "mla_paginate_current" parameter to indicate the current set of items within the gallery (the current gallery page). MLA will automatically manage this parameter for you, but you can also use it explicitly to handle special cases.
+</p>
+<h4>Page selection parameters for <code>next_page</code> and <code>previous_page</code> output types</h4>
+<p>
+Use the following parameters to specify the size of each gallery page and the current gallery page:
+</p>
+<table>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">posts_per_page</td>
+<td>sets the number of gallery items on each gallery "page" </td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">numberposts</td>
+<td>synonym for "posts_per_page" </td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">mla_paginate_current</td>
+<td>the "current" gallery page; defaults to one (1) if not specified. MLA will usually manage this for you, adding it to the hyperlinks for the previous and next gallery pages. MLA will look for this parameter in the HTML $_REQUEST array if it is not coded in the gallery shortcode.</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">mla_paginate_total</td>
+<td>the highest page number you want to display; defaults to (total items / posts_per_page) if not specified, which is usually what you want. </td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">offset, paged</td>
+<td><strong>DO NOT USE THESE PARAMETERS; THEY WILL BREAK MLA PAGINATION</strong> </td>
+</tr>
+</table>
+<p>For most applications, "posts_per_page" is the only parameter you need to specify. Make sure this parameter is that same for your main gallery shortcode and for the pagination shortcodes that go with it.</p>
+<h4>Gallery Display Content parameters for <code>next_page</code> and <code>previous_page</code> output types</h4>
+<p>
+The next or previous link returned can use the following Gallery Display Content parameters to control each element of the link:
+</p>
+<table>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">mla_link_attributes</td>
+<td>adds one or more HTML attributes to the hyperlink </td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">mla_link_class</td>
+<td><strong>adds</strong> one or more classes to those already defined for the hyperlink </td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">mla_link_href</td>
+<td>replaces the HTML &quot;href&quot; attribute in the hyperlink </td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">mla_link_text</td>
+<td>replaces the link text </td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">mla_nolink_text</td>
+<td>replaces the empty string displayed when there is no link and link text, e.g., no previous or next page link </td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">mla_rollover_text</td>
+<td>replaces the HTML &quot;title&quot; attribute in the hyperlink. This is the text displayed when the mouse rolls or hovers over the link text </td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">mla_target</td>
+<td>adds an HTML &quot;target&quot; attribute to the hyperlink </td>
+</tr>
+</table>
+<h4>Markup Substitution Parameters for <code>next_page</code> and <code>previous_page</code> output types</h4>
+<p>You can use any of the <a href="#mla_markup_parameters"><strong>Substitution parameters for markup templates</strong></a> in your next/previous page links (since the links are at the "gallery page" level, the attachment-specific substitution parameters are not available). The following additional substitution parameters are available for the <code>next_page</code> and <code>previous_page</code> output types:
+</p>
+<table>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">current_page</td>
+<td>the number of the current page</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">new_page</td>
+<td>the number of the new (previous or next) page; zero for paginate_links</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">last_page</td>
+<td>the number of the last/highest/maximum page</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">posts_per_page</td>
+<td>the number of items on each gallery page</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">found_rows</td>
+<td>the number of items in the gallery</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">current_offset</td>
+<td>the number of items skipped before the current page</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">new_offset</td>
+<td>the number of items skipped before the new page</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">current_page_text</td>
+<td>'mla_paginate_current="[+current_page+]"'</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">new_page_text</td>
+<td>'mla_paginate_current="[+new_page+]"'</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">last_page_text</td>
+<td>'mla_paginate_total="[+last_page+]"'</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">posts_per_page_text</td>
+<td>'posts_per_page="[+posts_per_page+]"'</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">scheme</td>
+<td>the HTTP protocol used to access the page; usually "http://" but might be "https://"</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">http_host</td>
+<td>contents of the <em>Host:</em> header of the current request; usually a domain name such as "mysite.com" or an IP address</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">request_uri</td>
+<td>the URI given to access the page, e.g., "wordpress/2013/06/sample-post" or "wordpress/tag-gallery-page?attachment_tag=sample". MLA manages pagination by adding the "mla_paginate_current" query parameter to the URI value</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">new_url</td>
+<td>concatenation of scheme + http_host + request_uri</td>
+</tr>
+</table>
+<h4>An example of the <code>next_page</code> and <code>previous_page</code> output types</h4>
+<p>
+Expanding the "attachment tag gallery" example, you can select images using the MLA Att. Tag taxonomy and divide the  gallery into fixed-size pages. Following the main gallery shortcode are the previous/next page links:
+</p>
+<code>
+[mla_gallery attachment_tag="sample" mla_caption="{+title+}" posts_per_page=10]
+<br>&nbsp;<br>
+&lt;div style="clear: both; float: left"&gt;<br />
+[mla_gallery mla_output="previous_page,first" mla_link_text='&amp;larr; Previous Gallery Page' attachment_tag="sample" mla_rollover_text="Previous or first page for this tag"]<br>
+&lt;/div&gt;<br>
+&lt;div style="float: right"&gt;<br>
+[mla_gallery mla_output="next_page,last" mla_link_text='&amp;larr; Next Gallery Page' attachment_tag="sample" mla_rollover_text="Next or last page for this tag"]<br>
+&lt;/div&gt;
+</code>
+<p>
+This example is simpler that the earlier single-item paging example because the "current page" handling is done by MLA, and the "sample" tag value is hard-coded. You could also develop a generic "Att. Tag" gallery page and pass the tag value in the URI for that page (as in the single-item pagination example earlier in this section).
 </p>
 <a name="alt_shortcode"></a>
 &nbsp;
@@ -614,11 +828,11 @@ In a template, substitution parameters are surrounded by opening ('[+') and clos
 </tr>
 <tr>
 <td style="padding-right: 10px; vertical-align: top; font-weight:bold">itemwidth</td>
-<td>shortcode parameter, default = '97' if 'columns' is zero, or 97/columns, e.g., '32' if columns is '3'</td>
+<td>shortcode parameter, default is calculated by dividing 100% by the number of columns and subtracting twice the margin value, e.g., 30.3% for three columns and a margin value of 1.5%. Can also contain other dimensional values such as '10px' or CSS-specific values like 'auto' or 'inherit'.</td>
 </tr>
 <tr>
 <td style="padding-right: 10px; vertical-align: top; font-weight:bold">margin</td>
-<td>shortcode parameter, default = '1.5' (percent)</td>
+<td>shortcode parameter, default = '1.5%'. Can also contain other dimensional values such as '10px' or CSS-specific values like 'auto' or 'inherit'.</td>
 </tr>
 <tr>
 <td style="padding-right: 10px; vertical-align: top; font-weight:bold">float</td>
@@ -674,11 +888,11 @@ In a template, substitution parameters are surrounded by opening ('[+') and clos
 </tr>
 <tr>
 <td style="padding-right: 10px; vertical-align: top; font-weight:bold">itemwidth</td>
-<td>shortcode parameter, default = '97' if 'columns' is zero, or 97/columns, e.g., '32' if columns is '3'</td>
+<td>shortcode parameter, default is calculated by dividing 100% by the number of columns and subtracting twice the margin value, e.g., 30.3% for three columns and a margin value of 1.5%. Can also contain other dimensional values such as '10px' or CSS-specific values like 'auto' or 'inherit'.</td>
 </tr>
 <tr>
 <td style="padding-right: 10px; vertical-align: top; font-weight:bold">margin</td>
-<td>shortcode parameter, default = '1.5' (percent)</td>
+<td>shortcode parameter, default = '1.5%'. Can also contain other dimensional values such as '10px' or CSS-specific values like 'auto' or 'inherit'.</td>
 </tr>
 <tr>
 <td style="padding-right: 10px; vertical-align: top; font-weight:bold">float</td>
@@ -702,7 +916,7 @@ In a template, substitution parameters are surrounded by opening ('[+') and clos
 </tr>
 <tr>
 <td style="padding-right: 10px; vertical-align: top; font-weight:bold">base_dir</td>
-<td>full path to the upload directory, without trailing slash</td>
+<td>absolute (full) path to the upload directory, without trailing slash</td>
 </tr>
 </table>
 <a name="mla_attachment_parameters"></a>
@@ -715,6 +929,10 @@ In a template, substitution parameters are surrounded by opening ('[+') and clos
 <tr>
 <td style="padding-right: 10px; vertical-align: top; font-weight:bold">index</td>
 <td>starts at '1', incremented for each attachment in the gallery</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">last_in_row</td>
+<td>set to "last_in_row" for the last item in each full gallery row, and to an empty string for all other items in the row. If the gallery ends with a partial row, the last_in_row parameter is not set.</td>
 </tr>
 <tr>
 <td style="padding-right: 10px; vertical-align: top; font-weight:bold">caption</td>
@@ -1170,12 +1388,28 @@ If you just want to add a custom field to the Media/Assistant submenu, the quick
 <td>WordPress attachment metadata, from the <em>_wp_attachment_metadata</em> array. Enter the field you want in the text box below the dropdown list. More coding guidelines are given below this table.</td>
 </tr>
 <tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">absolute_path</td>
+<td>complete path portion of the attachment file, e.g., C:/site/wordpress/wp-content/uploads/2012/11/</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">absolute_file_name</td>
+<td>complete path and file name of the attachment file, e.g., C:/site/wordpress/wp-content/uploads/2012/11/filename.ext</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">base_file</td>
+<td>relative path (within uploads directory) and file name of the attachment file, e.g., 2012/11/image.jpg</td>
+</tr>
+<tr>
 <td style="padding-right: 10px; vertical-align: top; font-weight:bold">path</td>
 <td>path portion of the base_file value, e.g., 2012/11/</td>
 </tr>
 <tr>
 <td style="padding-right: 10px; vertical-align: top; font-weight:bold">file_name</td>
-<td>file name portion of the base_file value, e.g., image.jpg</td>
+<td>file name and extension portion of the base_file value, e.g., image.jpg</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">name_only</td>
+<td>file name portion of the base_file value, e.g., image</td>
 </tr>
 <tr>
 <td style="padding-right: 10px; vertical-align: top; font-weight:bold">extension</td>

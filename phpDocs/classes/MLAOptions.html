@@ -30,7 +30,9 @@
 <li><a href="../errors.html"><i class="icon-remove-sign"></i> Errors 
                 <span class="label label-info">0</span></a></li>
 <li><a href="../markers.html"><i class="icon-map-marker"></i> Markers 
-                <ul></ul></a></li>
+                <ul><li>todo 
+                <span class="label label-info">1</span>
+</li></ul></a></li>
 <li><a href="../deprecated.html"><i class="icon-stop"></i> Deprecated elements 
                 <span class="label label-info">0</span></a></li>
 </ul>
@@ -782,7 +784,7 @@ settings are being updated or reset.</h2>
 </div>
 <h3>Returns</h3>
 <div class="subelement response">
-<code>array</code>absolute_path, base_file, path, file_name, extension, dimensions, width, height, hwstring_small, array of intermediate sizes</div>
+<code>array</code>absolute_path_raw, absolute_path, absolute_file_name_raw, absolute_file_name, absolute_file, base_file, path, file_name, extension, dimensions, width, height, hwstring_small, array of intermediate sizes</div>
 </div></div>
 </div>
 <a name="_evaluate_post_information" id="_evaluate_post_information"></a><div class="element clickable method private _evaluate_post_information" data-toggle="collapse" data-target="._evaluate_post_information .collapse">
@@ -818,14 +820,15 @@ settings are being updated or reset.</h2>
 <pre>_get_custom_field_names() : array</pre>
 <div class="labels"></div>
 <div class="row collapse"><div class="detail-description">
-<p class="long_description"></p>
+<p class="long_description"><p>The list will include any Custom Field and IPTC/EXIF rules that
+haven't been mapped to any attachments, yet.</p></p>
 <table class="table table-bordered"><tr>
 <th>since</th>
 <td>1.00</td>
 </tr></table>
 <h3>Returns</h3>
 <div class="subelement response">
-<code>array</code>Custom field names from the postmeta table</div>
+<code>array</code>Custom field names from the postmeta table and MLA rules</div>
 </div></div>
 </div>
 <a name="_load_option_templates" id="_load_option_templates"></a><div class="element clickable method private _load_option_templates" data-toggle="collapse" data-target="._load_option_templates .collapse">
@@ -1140,7 +1143,7 @@ reset => reset function for 'custom' options; returns nothing. Usage:
 <div class="row"><footer class="span12">
             Template is built using <a href="http://twitter.github.com/bootstrap/">Twitter Bootstrap 2</a> and icons provided by <a href="http://glyphicons.com/">Glyphicons</a>.<br>
             Documentation is powered by <a href="http://www.phpdoc.org/">phpDocumentor 2.0.0a8</a> and<br>
-            generated on 2013-06-30T13:10:25-07:00.<br></footer></div>
+            generated on 2013-07-31T21:05:23-07:00.<br></footer></div>
 </div>
 </body>
 </html>

@@ -66,9 +66,9 @@ class MLAMime {
 	 */
 	public static function mla_sanitize_mime_type_filter( $sanitized_mime_type, $raw_mime_type ) {
 		global $wp_filter;
-//		error_log( 'mla_sanitize_mime_type_filter $sanitized_mime_type = ' . var_export( $sanitized_mime_type, true ), 0 );
-//		error_log( 'mla_sanitize_mime_type_filter $raw_mime_type = ' . var_export( $raw_mime_type, true ), 0 );
-//		error_log( ' $wp_filter[sanitize_mime_type] = ' . var_export( $wp_filter['sanitize_mime_type'], true ), 0 );
+//		error_log( 'DEBUG: mla_sanitize_mime_type_filter $sanitized_mime_type = ' . var_export( $sanitized_mime_type, true ), 0 );
+//		error_log( 'DEBUG: mla_sanitize_mime_type_filter $raw_mime_type = ' . var_export( $raw_mime_type, true ), 0 );
+//		error_log( 'DEBUG: $wp_filter[sanitize_mime_type] = ' . var_export( $wp_filter['sanitize_mime_type'], true ), 0 );
 		return $sanitized_mime_type;
 	} // mla_sanitize_mime_type_filter
 
@@ -168,11 +168,11 @@ class MLAMime {
 	 */
 	public static function mla_wp_check_filetype_and_ext_filter( $validate, $file, $filename, $mimes ) {
 		global $wp_filter;
-//		error_log( 'mla_wp_check_filetype_and_ext_filter $validate = ' . var_export( $validate, true ), 0 );
-//		error_log( 'mla_wp_check_filetype_and_ext_filter $file = ' . var_export( $file, true ), 0 );
-//		error_log( 'mla_wp_check_filetype_and_ext_filter $filename = ' . var_export( $filename, true ), 0 );
-//		error_log( 'mla_wp_check_filetype_and_ext_filter $mimes = ' . var_export( $mimes, true ), 0 );
-//		error_log( ' $wp_filter[wp_check_filetype_and_ext] = ' . var_export( $wp_filter['wp_check_filetype_and_ext'], true ), 0 );
+//		error_log( 'DEBUG: mla_wp_check_filetype_and_ext_filter $validate = ' . var_export( $validate, true ), 0 );
+//		error_log( 'DEBUG: mla_wp_check_filetype_and_ext_filter $file = ' . var_export( $file, true ), 0 );
+//		error_log( 'DEBUG: mla_wp_check_filetype_and_ext_filter $filename = ' . var_export( $filename, true ), 0 );
+//		error_log( 'DEBUG: mla_wp_check_filetype_and_ext_filter $mimes = ' . var_export( $mimes, true ), 0 );
+//		error_log( 'DEBUG: $wp_filter[wp_check_filetype_and_ext] = ' . var_export( $wp_filter['wp_check_filetype_and_ext'], true ), 0 );
 		return $validate;
 	} // mla_wp_check_filetype_and_ext_filter
 
@@ -768,17 +768,18 @@ class MLAMime {
 	 *
 	 * @since 1.40
 	 *
+	 * @param	string	View slug, unique identifier
 	 * @param	string	A specification, e.g., "custom:Field,null" or "audio,application/vnd.*ms*"
 	 *
 	 * @return	array	post_mime_type specification or custom field query
 	 */
-	public static function mla_prepare_view_query( $specification ) {
-		$query = array ();
+	public static function mla_prepare_view_query( $slug, $specification ) {
+		$query = array ( );
 		$specification = self::mla_parse_view_specification( $specification );
 		if ( 'mime' == $specification['prefix'] )
 			$query['post_mime_type'] = $specification['value'];
 		else {
-			$meta_query = array( 'relation' => 'OR', 'patterns' => array () );
+			$meta_query = array( 'slug' => $slug , 'relation' => 'OR', 'patterns' => array () );
 			switch( $specification['option'] ) {
 				case 'match':
 					$patterns = array_map( 'trim', explode( ',', $specification['value'] ) );

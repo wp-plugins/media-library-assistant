@@ -224,16 +224,16 @@ class MLASettings {
 		global $plugin_page;
 		global $_registered_pages;
 	
-		error_log( 'mla_admin_page_access_denied_action $_SERVER[REQUEST_URI] = ' .  var_export( $_SERVER['REQUEST_URI'], true), 0 );
-		error_log( 'mla_admin_page_access_denied_action $_REQUEST = ' .  var_export( $_REQUEST, true), 0 );
-		error_log( 'mla_admin_page_access_denied_action $pagenow = ' .  var_export( $pagenow, true), 0 );
-		error_log( 'mla_admin_page_access_denied_action $parent = ' .  var_export( get_admin_page_parent(), true), 0 );
-		error_log( 'mla_admin_page_access_denied_action $menu = ' .  var_export( $menu, true), 0 );
-		error_log( 'mla_admin_page_access_denied_action $submenu = ' .  var_export( $submenu, true), 0 );
-		error_log( 'mla_admin_page_access_denied_action $_wp_menu_nopriv = ' .  var_export( $_wp_menu_nopriv, true), 0 );
-		error_log( 'mla_admin_page_access_denied_action $_wp_submenu_nopriv = ' .  var_export( $_wp_submenu_nopriv, true), 0 );
-		error_log( 'mla_admin_page_access_denied_action $plugin_page = ' .  var_export( $plugin_page, true), 0 );
-		error_log( 'mla_admin_page_access_denied_action $_registered_pages = ' .  var_export( $_registered_pages, true), 0 );
+		error_log( 'DEBUG: mla_admin_page_access_denied_action $_SERVER[REQUEST_URI] = ' .  var_export( $_SERVER['REQUEST_URI'], true), 0 );
+		error_log( 'DEBUG: mla_admin_page_access_denied_action $_REQUEST = ' .  var_export( $_REQUEST, true), 0 );
+		error_log( 'DEBUG: mla_admin_page_access_denied_action $pagenow = ' .  var_export( $pagenow, true), 0 );
+		error_log( 'DEBUG: mla_admin_page_access_denied_action $parent = ' .  var_export( get_admin_page_parent(), true), 0 );
+		error_log( 'DEBUG: mla_admin_page_access_denied_action $menu = ' .  var_export( $menu, true), 0 );
+		error_log( 'DEBUG: mla_admin_page_access_denied_action $submenu = ' .  var_export( $submenu, true), 0 );
+		error_log( 'DEBUG: mla_admin_page_access_denied_action $_wp_menu_nopriv = ' .  var_export( $_wp_menu_nopriv, true), 0 );
+		error_log( 'DEBUG: mla_admin_page_access_denied_action $_wp_submenu_nopriv = ' .  var_export( $_wp_submenu_nopriv, true), 0 );
+		error_log( 'DEBUG: mla_admin_page_access_denied_action $plugin_page = ' .  var_export( $plugin_page, true), 0 );
+		error_log( 'DEBUG: mla_admin_page_access_denied_action $_registered_pages = ' .  var_export( $_registered_pages, true), 0 );
 	}
 	 */
 	
@@ -2242,13 +2242,25 @@ class MLASettings {
 		 * Start with any page-level options
 		 */
 		foreach ( MLAOptions::$mla_option_definitions as $key => $value ) {
-			if ( 'mla_gallery' == $value['tab'] && ( 'select' == $value['type'] ) ) {
-				$old_value = MLAOptions::mla_get_option( $key );
-				if ( $old_value != $_REQUEST[ MLA_OPTION_PREFIX . $key ] ) {
-					$settings_changed = true;
-					$message_list .= self::_update_option_row( $key, $value );
+			if ( 'mla_gallery' == $value['tab'] ) {
+				if (  'select' == $value['type'] ) {
+					$old_value = MLAOptions::mla_get_option( $key );
+					if ( $old_value != $_REQUEST[ MLA_OPTION_PREFIX . $key ] ) {
+						$settings_changed = true;
+						$message_list .= self::_update_option_row( $key, $value );
+					}
 				}
-			}
+				elseif ( 'text' == $value['type'] ) {
+					if ( '' == $_REQUEST[ MLA_OPTION_PREFIX . $key ] )
+						$_REQUEST[ MLA_OPTION_PREFIX . $key ] = $value['std'];
+						
+					$old_value = MLAOptions::mla_get_option( $key );
+					if ( $old_value != $_REQUEST[ MLA_OPTION_PREFIX . $key ] ) {
+						$settings_changed = true;
+						$message_list .= self::_update_option_row( $key, $value );
+					}
+				} // text
+			} // mla_gallery
 		} // foreach mla_options
 		
 		/*
@@ -2768,7 +2780,7 @@ class MLASettings {
 		$examine_count = 0;
 		$update_count = 0;
 		
-		$query = array( 'orderby' => 'none', 'post_parent' => 'all' ); //, 'post_mime_type' => 'image,application/*pdf*' );
+		$query = array( 'orderby' => 'none', 'post_parent' => 'all', 'post_mime_type' => 'image,application/*pdf*' );
 		$posts = MLAShortcodes::mla_get_shortcode_attachments( 0, $query );
 		
 		if ( is_string( $posts ) )
