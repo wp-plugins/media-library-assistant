@@ -1121,7 +1121,6 @@ class MLAData {
 		$attached_file = NULL;
 		$results = array();
 		$post_meta = get_metadata( 'post', $post_id );
-
 		if ( is_array( $post_meta ) ) {
 			foreach ( $post_meta as $post_meta_key => $post_meta_value ) {
 				if ( empty( $post_meta_key ) )
@@ -1146,8 +1145,9 @@ class MLAData {
 						$key = 'mla_item_' . $post_meta_key;
 				}
 				
+//				if ( is_array( $post_meta_value ) && count( $post_meta_value ) == 1 &&  isset( $post_meta_value[0] ) )
 				if ( is_array( $post_meta_value ) && count( $post_meta_value ) == 1 )
-					$value = $post_meta_value[0];
+					$value = array_shift( $post_meta_value );
 				else
 					$value = $post_meta_value;
 				
@@ -1673,12 +1673,20 @@ class MLAData {
 	 * @return	void
 	 */
 	private static function _build_pdf_indirect_objects( &$string ) {
-		$match_count = preg_match_all( '!(\d+)\h+(\d+)\h+obj\x0D|endobj\x0D|stream(\x0D\x0A|\x0A)|endstream!', $string, $matches, PREG_OFFSET_CAPTURE );
+		if ( ! is_null( self::$pdf_indirect_objects ) )
+			return;
+			
+		$match_count = preg_match_all( '!(\d+)\\h+(\d+)\\h+obj|endobj|stream(\x0D\x0A|\x0A)|endstream!', $string, $matches, PREG_OFFSET_CAPTURE );
+error_log( '_build_pdf_indirect_objects $match_count = ' . var_export( $match_count, true), 0 );
+//error_log( '_build_pdf_indirect_objects $matches = ' . var_export( $matches, true), 0 );
+//if( 100 < $match_count ) $match_count = 100;
 
 		self::$pdf_indirect_objects = array();
 		$object_level = 0;
 		$is_stream = false;
 		for ( $index = 0; $index < $match_count; $index++ ) {
+//error_log( "_build_pdf_indirect_objects \$matches[0][ {$index} ][0] = " . var_export( $matches[0][ $index ][0], true), 0 );
+//error_log( "_build_pdf_indirect_objects \$matches[0][ {$index} ][1] = " . var_export( $matches[0][ $index ][1], true), 0 );
 			if ( $is_stream ) {
 				if ( 'endstream' == substr( $matches[0][ $index ][0], 0, 9 ) ) {
 					$is_stream = false;
@@ -1689,7 +1697,7 @@ class MLAData {
 				$object_entry['/length'] = $matches[0][ $index ][1] - $object_entry['start'];
 				self::$pdf_indirect_objects[ ($object_entry['number'] * 1000) + $object_entry['generation'] ] = $object_entry;
 			}
-			elseif ( 'obj' == substr( $matches[0][ $index ][0], -4, 3 ) ) {
+			elseif ( 'obj' == substr( $matches[0][ $index ][0], -3 ) ) {
 				$object_level++;
 				$object_entry = array( 
 					'number' => $matches[1][ $index ][0],
@@ -1703,10 +1711,77 @@ class MLAData {
 			else
 				error_log( 'ERROR: _build_pdf_indirect_objects bad value $index = ' . $index, 0 );
 		} // for each match
+//error_log( '_build_pdf_indirect_objects self::$pdf_indirect_objects = ' . var_export( self::$pdf_indirect_objects, true), 0 );
 	}
 		
 	/**
-	 * Parse a PDF date string object
+	 * Find the offset, length and contents of an indirect object containing a dictionary
+	 * 
+	 * @since 1.4x
+	 *
+	 * @param	string	The entire PDF document, passsed by reference
+	 * @param	integer	The object number
+	 * @param	integer	The object generation number; default zero (0)
+	 *
+	 * @return	mixed	NULL on failure else array( 'start' => offset in the file, 'length' => object length, 'content' => dictionary contents )
+	 */
+	private static function _find_pdf_indirect_dictionary( &$string, $object, $generation = 0 ) {
+//error_log( '_find_pdf_indirect_dictionary $object = ' . var_export( $object, true), 0 );
+		/*
+		 * Match the object header
+		 */
+//		$pattern = sprintf( '![\\x00-\\x20]+%1$d\\h+%2$d\\h+obj[\\x00-\\x20]+(<<)!', $object, $generation );
+		$pattern = sprintf( '![\\x00-\\x20]+%1$d\\h+%2$d\\h+obj[\\x00-\\x20]*(<<)!', $object, $generation );
+		$match_count = preg_match( $pattern, $string, $matches, PREG_OFFSET_CAPTURE );
+//error_log( '_find_pdf_indirect_dictionary header $match_count = ' . var_export( $match_count, true), 0 );
+//error_log( '_find_pdf_indirect_dictionary header $matches = ' . var_export( $matches, true), 0 );
+
+		if ($match_count) {
+			$start = $matches[1][1];
+			/*
+			 * Match the object trailer
+			 */
+			$pattern = '!>>[\\x00-\\x20]+endobj!';
+			$match_count = preg_match( $pattern, $string, $matches, PREG_OFFSET_CAPTURE, $start );
+//error_log( '_find_pdf_indirect_dictionary trailer $match_count = ' . var_export( $match_count, true), 0 );
+//error_log( '_find_pdf_indirect_dictionary trailer $matches = ' . var_export( $matches, true), 0 );
+			 
+			if ($match_count) {
+				$results = array( 'start' => $start, 'length' => ($matches[0][1] + 2) - $start );
+//error_log( '_find_pdf_indirect_dictionary $results = ' . var_export( $results, true), 0 );
+				$results['content'] = substr( $string, $results['start'], $results['length'] );
+//error_log( '_find_pdf_indirect_dictionary content = ' . "\r\n" . var_export( self::_hex_dump( $results['content'], $results['length'], 32 ), true), 0 );
+				return $results;
+			} // found trailer
+		} // found header
+
+		return NULL; 
+	}
+		
+	/**
+	 * Parse a ISO 8601 Timestamp
+	 * 
+	 * @since 1.4x
+	 *
+	 * @param	string	ISO string of the form YYYY-MM-DDTHH:MM:SS-HH:MM (inc time zone)
+	 *
+	 * @return	string	formatted date string YYYY-MM-DD HH:mm:SS
+	 */
+	private static function _parse_iso8601_date( $source_string ) {
+		if ( 1 == preg_match( '/^\\d\\d\\d\\d-\\d\\d-\\d\\dT\\d\\d:\\d\\d:\\d\\d-\\d\\d:\\d\\d/', $source_string ) )
+			return sprintf( '%1$s-%2$s-%3$s %4$s:%5$s:%6$s',
+				substr( $source_string, 0, 4),
+				substr( $source_string, 5, 2),
+				substr( $source_string, 8, 2),
+				substr( $source_string, 11, 2),
+				substr( $source_string, 14, 2),
+				substr( $source_string, 17, 2) );
+		else
+			return $source_string;
+	}
+		
+	/**
+	 * Parse a PDF date string
 	 * 
 	 * @since 1.4x
 	 *
@@ -1714,14 +1789,17 @@ class MLAData {
 	 *
 	 * @return	string	formatted date string YYYY-MM-DD HH:mm:SS
 	 */
-	private static function _parse_pdf_date( &$source_string ) {
-		return sprintf( '%1$s-%2$s-%3$s %4$s:%5$s:%6$s',
-			substr( $source_string, 2, 2),
-			substr( $source_string, 4, 2),
-			substr( $source_string, 6, 2),
-			substr( $source_string, 8, 2),
-			substr( $source_string, 10, 2),
-			substr( $source_string, 12, 2) );
+	private static function _parse_pdf_date( $source_string ) {
+		if ( 'D:' == substr( $source_string, 0, 2) && ctype_digit( substr( $source_string, 2, 12 ) ) ) 
+			return sprintf( '%1$s-%2$s-%3$s %4$s:%5$s:%6$s',
+				substr( $source_string, 2, 4),
+				substr( $source_string, 6, 2),
+				substr( $source_string, 8, 2),
+				substr( $source_string, 10, 2),
+				substr( $source_string, 12, 2),
+				substr( $source_string, 14, 2) );
+		else
+			return $source_string;
 	}
 		
 	/**
@@ -1847,26 +1925,29 @@ class MLAData {
 	 * Returns an array of dictionary contents, classified by object type: boolean, numeric, string, hex (string),
 	 * indirect (object), name, array, dictionary, stream, and null.
 	 * The array also has a '/length' element containing the number of bytes occupied by the
-	 * dictionary in the source string, including the enclosing parentheses.
+	 * dictionary in the source string, excluding the enclosing delimiters, if passed in.
 	 * @since 1.4x
 	 *
 	 * @param	string	data within which the string occurs
-	 * @param	integer	offset within the source string of the opening '<<' characters.
+	 * @param	integer	offset within the source string of the opening '<<' characters or the first content character.
 	 *
 	 * @return	array	( '/length' => length, key => array( 'type' => type, 'value' => value ) ) for each dictionary field
 	 */
 	private static function _parse_pdf_dictionary( &$source_string, $offset ) {
+//error_log( '_parse_pdf_dictionary $source_string = '. var_export( $source_string, true ), 0 );
 		if ( '<<' == substr( $source_string, $offset, 2 ) ) {
 			$offset += 2;
 			$delimiter_length = 4;
 		}
 		else
 			$delimiter_length = 0;
+
 			
 		$dictionary = array();
 		// \x00-\x20 for whitespace
 		// \(|\)|\<|\>|\[|\]|\{|\}|\/|\% for delimiters
 		$match_count = preg_match_all( '!/([^\x00-\x20|\(|\)|\<|\>|\[|\]|\{|\}|\/|\%]*)([\x00-\x20]*)!', substr( $source_string, $offset ), $matches, PREG_OFFSET_CAPTURE );
+//error_log( '_parse_pdf_dictionary $matches = '. var_export( $matches, true ), 0 );
 
 		$end_data = -1;
 		for ( $match_index = 0; $match_index < $match_count; $match_index++ ) {
@@ -1945,8 +2026,197 @@ class MLAData {
 			}
 		} // foreach match
 
-		$dictionary['/length'] = $value_start + $length + $delimiter_length;		
+		$dictionary['/length'] = $value_start + $length - $delimiter_length;
+//$tail = substr( $source_string, $offset );
+//error_log( '_parse_pdf_dictionary content = ' . "\r\n" . var_export( self::_hex_dump( $tail, $dictionary['/length'], 32 ), true), 0 );
 		return $dictionary;
+	}
+		
+	/**
+	 * Parse an XMP object
+	 * 
+	 * Returns an array of dictionary contents, classified by object type: boolean, numeric, string, hex (string),
+	 * indirect (object), name, array, dictionary, stream, and null.
+	 * The array also has a '/length' element containing the number of bytes occupied by the
+	 * dictionary in the source string, excluding the enclosing delimiters, if passed in.
+	 * @since 1.4x
+	 *
+	 * @param	string	data within which the string occurs
+	 * @param	integer	offset within the source string of the opening '<<' characters or the first content character.
+	 *
+	 * @return	array	( '/length' => length, key => array( 'type' => type, 'value' => value ) ) for each dictionary field
+	 */
+	private static function _parse_xmp_metadata( &$source_string, $offset ) {
+		$start_tag = strpos( $source_string, '<x:xmpmeta', $offset );
+		if ( false === $start_tag )
+			return NULL;
+			
+		$end_tag = strpos( $source_string, '</x:xmpmeta>', $offset + $start_tag );
+		if ( false === $start_tag )
+			return NULL;
+
+//error_log( '_parse_xmp_metadata XMP = ' . var_export( "<?xml version='1.0'? >\n" . substr($source_string, $start_tag, ( $end_tag + 12 ) - $start_tag ), true ), 0 );
+		$xmp_string = "<?xml version='1.0'?>\n" . substr($source_string, $start_tag, ( $end_tag + 12 ) - $start_tag );
+		$xmp_values = array();
+		$xml_parser = xml_parser_create('UTF-8');
+		if ( xml_parser_set_option( $xml_parser, XML_OPTION_SKIP_WHITE, 0 ) && xml_parser_set_option( $xml_parser, XML_OPTION_CASE_FOLDING, 0 ) ) {
+			if (xml_parse_into_struct( $xml_parser, $xmp_string, $xmp_values ) == 0)
+				error_log( 'ERROR: _parse_xmp_metadata xml_parse_into_struct failed.' );
+		}
+		else
+			error_log( 'ERROR: _parse_xmp_metadata set option failed.' );
+
+		xml_parser_free($xml_parser);
+//error_log( '_parse_xmp_metadata $xmp_string = ' . var_export( $xmp_string, true ), 0 );
+//error_log( '_parse_xmp_metadata $xml_parser xmp_values = ' . var_export( $xmp_values, true ), 0 );
+
+		if ( empty( $xmp_values ) )
+			return NULL;
+		
+		$results = array();
+		$xmlns = array();
+		$array_name = '';
+		$array_index = -1;
+		foreach ( $xmp_values as $value ) {
+			$language = 'x-default';
+			if ( isset( $value['attributes'] ) ) {
+				foreach( $value['attributes'] as $att_tag => $att_value ) {
+					if ( 'xmlns:' == substr( $att_tag, 0, 6 ) )
+						$xmlns[ substr( $att_tag, 6 ) ] = $att_value;
+					elseif ( 'x:xmptk' == $att_tag )
+						$results['xmptk'] = $att_value;
+					elseif ( 'xml:lang' == $att_tag )
+						$language = $att_value;
+				}
+			} // attributes
+			
+			switch ( $value['tag'] ) {
+				case 'x:xmpmeta':
+				case 'rdf:RDF':
+				case 'rdf:Description':
+				case 'rdf:ID':
+				case 'rdf:nodeID':
+					break;
+				case 'rdf:li':
+					if ( $value['type'] == 'complete' ) {
+						if ( 'x-default' != $language )
+							break;
+							
+						if ( ! empty ( $array_name ) ) {
+							if ( isset( $value['value'] ) )
+								$results[ $array_name ][ $array_index++ ] = $value['value'];
+							else
+								$results[ $array_name ][ $array_index++ ] = '';
+						}
+					} // complete
+					
+					break;
+				case 'rdf:Seq':
+				case 'rdf:Bag':
+				case 'rdf:Alt':
+					switch ( $value['type'] ) {
+						case 'open':
+							$array_index = 0;
+							break;
+						case 'close':
+							$array_index = -1;
+					}
+					
+					break;
+				default:
+					switch ( $value['type'] ) {
+						case 'open':
+							$array_name = $value['tag'];
+							break;
+						case 'close':
+							$array_name = '';
+							break;
+						case 'complete':
+							if ( isset( $value['attributes'] ) )
+								$results[ $value['tag'] ] = $value['attributes'];
+							elseif ( isset( $value['value'] ) )
+								$results[ $value['tag'] ] = $value['value'];
+							else
+								$results[ $value['tag'] ] = '';
+					} // type
+			} // switch tag
+		} // foreach value
+
+		/*
+		 * Parse "namespace:name" names into arrays of simple names
+		 */
+		$namespace_arrays = array();
+		foreach ( $results as $key => $value ) {
+			if ( is_string( $value ) )
+				$value = self::_parse_iso8601_date( self::_parse_pdf_date( $value ) );
+				
+			if ( false !== ($colon = strpos( $key, ':' ) ) ) {
+				$array_name = substr( $key, 0, $colon );
+				$array_index = substr( $key, $colon + 1 );
+				$namespace_arrays[ $array_name ][ $array_index ] = $value;
+
+				if ( ! isset( $results[ $array_index ] ) ) {
+					if ( is_array( $value ) && 1 == count( $value ) && isset( $value[0] ) ) 
+						$results[ $array_index ] = $value[0];
+					else
+						$results[ $array_index ] = $value;
+				}
+
+				unset( $results[ $key ] );
+			}
+		}
+		
+		/*
+		 * Try to populate all the PDF-standard keys (except Trapped)
+		 * Title - The document's title
+		 * Author - The name of the person who created the document
+		 * Subject - The subject of the document
+		 * Keywords - Keywords associated with the document
+		 * Creator - the name of the conforming product that created the original document
+		 * Producer - the name of the conforming product that converted it to PDF
+		 * CreationDate - The date and time the document was created
+		 * ModDate - The date and time the document was most recently modified
+		 */
+		if ( ! isset( $results['Title'] ) ) {
+			if ( isset( $namespace_arrays['dc']['title'] ) ) // HANDLE ARRAY
+				$results['Title'] = implode( ',', $namespace_arrays['dc']['title'] );
+		}
+		
+		if ( ! isset( $results['Author'] ) ) {
+			if ( isset( $namespace_arrays['dc']['creator'] ) ) // HANDLE ARRAY
+				$results['Author'] = implode( ',', $namespace_arrays['dc']['creator'] );
+		}
+		
+		if ( ! isset( $results['Subject'] ) ) {
+		}
+		
+		if ( ! isset( $results['Keywords'] ) ) {
+		}
+		
+		if ( ! isset( $results['Creator'] ) ) {
+			if ( isset( $namespace_arrays['xmp']['CreatorTool'] ) )
+				$results['Creator'] = $namespace_arrays['xmp']['CreatorTool'];
+		}
+		
+		if ( ! isset( $value['Producer'] ) ) {
+		}
+		
+		if ( ! isset( $results['CreationDate'] ) ) {
+			if ( isset( $namespace_arrays['xmp']['CreateDate'] ) )
+				$results['CreationDate'] = $namespace_arrays['xmp']['CreateDate'];
+		}
+		
+		if ( ! isset( $results['ModDate'] ) ) {
+			if ( isset( $namespace_arrays['xmp']['ModifyDate'] ) )
+				$results['ModDate'] = $namespace_arrays['xmp']['ModifyDate'];
+		}
+		
+		if ( ! empty( $xmlns ) )
+			$results['xmlns'] = $xmlns;
+
+		$results = array_merge( $results, $namespace_arrays );
+error_log( '_parse_xmp_metadata $results = ' . var_export( $results, true ), 0 );
+		return $results;
 	}
 		
 	/**
@@ -1958,18 +2228,20 @@ class MLAData {
 	 *
 	 * @return	array	( key => value ) for each metadata field, in string format
 	 */
-	private static function _extract_pdf_metadata( $string ) {
-//error_log( '_extract_pdf_metadata $string = '. var_export( $string, true ), 0 );
+	private static function _extract_pdf_metadata( $file_name ) {
+$microtime_start = microtime( true );
 		$metadata = array();
-		$pdf = file_get_contents( $string, true );
+		self::$pdf_indirect_objects = NULL;
+
+		$pdf = file_get_contents( $file_name, true );
 		if ( $pdf == false ) {
 			error_log( 'ERROR: PDF file not found ' . var_export( $path, true ), 0 );
 			return $metadata;
 		}
-		
-//error_log( '_extract_pdf_metadata $pdf start = ' . "\r\n" . var_export( self::_hex_dump( $pdf, 2048, 32 ), true ) . "\r\n", 0 );
 
-		self::_build_pdf_indirect_objects( $pdf );
+//self::_parse_xmp_metadata( $pdf, 0);
+//self::_build_pdf_indirect_objects( $pdf );
+//error_log( '_extract_pdf_metadata start = ' . "\r\n" . var_export( self::_hex_dump( substr( $pdf, 0, strlen( $pdf ) ), strlen( $pdf ), 32 ), true ) . "\r\n", 0 );
 		
 		$header = substr( $pdf, 0, 8 );
 		if ( '%PDF-' == substr( $header, 0, 5 ) ) {
@@ -1978,51 +2250,94 @@ class MLAData {
 		}
 
 		$match_count = preg_match_all( '/[\r|\n]+trailer[\r|\n]+/', $pdf, $matches, PREG_OFFSET_CAPTURE );
-		if ( 0 < $match_count ) {
-			$tail = substr( $pdf, (integer) $matches[0][ $match_count - 1 ][1] );
-			$match_count = preg_match_all( '/[\r|\n]+<<(.*)>>[\r|\n]+/', $tail, $matches ); //, PREG_OFFSET_CAPTURE );
+//error_log( '_extract_pdf_metadata trailer $match_count = ' . var_export( $match_count, true ), 0 );
+//error_log( '_extract_pdf_metadata trailer $matches = ' . "\r\n" . var_export( $matches, true ) . "\r\n", 0 );
+		if ( 0 == $match_count )
+			$matches = array( 0 => array() );
+		
+		foreach( $matches[0] as $match_index => $match ) {	
+$tail = substr( $pdf, (integer) $match[1] );
+//error_log( "_extract_pdf_metadata tail[{$match_index}] start = " . "\r\n" . var_export( self::_hex_dump( $tail, 512, 32 ), true ) . "\r\n", 0 );
+$xref_count = preg_match_all( '/[\r|\n]+startxref[\r|\n]+(.*)[\r|\n]+/', $tail, $xref_matches ); //, PREG_OFFSET_CAPTURE );
+//error_log( '_extract_pdf_metadata $xref_count = '. var_export( $xref_count, true ), 0 );
+//error_log( '_extract_pdf_metadata $xref_matches = '. var_export( $xref_matches, true ), 0 );
+//error_log( '_extract_pdf_metadata xref start = ' . "\r\n" . var_export( self::_hex_dump( substr( $pdf, $xref_matches[1][0] ), 512, 32 ), true ) . "\r\n", 0 );
+
+//			$match_count = preg_match_all( '/[\r|\n]+<<(.*)>>[\r|\n]+/', $tail, $matches ); //, PREG_OFFSET_CAPTURE );
+			$match_count = preg_match( '/[\r|\n]+<<(.*)>>[\r|\n]+/', $pdf, $matches, 0, $match[1] ); //, PREG_OFFSET_CAPTURE );
+//error_log( "_extract_pdf_metadata trailer dictionary[{$match_index}] \$match_count = " . var_export( $match_count, true ), 0 );
+//error_log( "_extract_pdf_metadata trailer dictionary[{$match_index}] \$matches = \r\n" . var_export( $matches, true ) . "\r\n", 0 );
 
 			if ( 0 < $match_count ) {
-				$dictionary = self::_parse_pdf_dictionary( $matches[1][ $match_count - 1 ], 0 );
-//error_log( "_extract_pdf_metadata trailer dictionary {$match_count} = ". var_export( $dictionary, true ), 0 );
+//				$dictionary = self::_parse_pdf_dictionary( $matches[1][ $match_count - 1 ], 0 );
+				$dictionary = self::_parse_pdf_dictionary( $matches[0], 0 );
+error_log( "_extract_pdf_metadata trailer dictionary [{$match_index}] = ". var_export( $dictionary, true ), 0 );
 				 
-				 if ( isset( $dictionary['Info'] ) ) {
-					 $info_ref = ($dictionary['Info']['object'] * 1000) + $dictionary['Info']['generation'];
+//if ( isset( $dictionary['Prev'] ) ) error_log( '_extract_pdf_metadata Prev = ' . var_export( $dictionary['Prev']['value'], true ), 0 );
+//if ( isset( $dictionary['Prev'] ) ) error_log( '_extract_pdf_metadata Prev start = ' . "\r\n" . var_export( self::_hex_dump( substr( $pdf, $dictionary['Prev']['value'] ), 2048, 32 ), true ) . "\r\n", 0 );
+//if ( isset( $dictionary['XRefStm'] ) ) error_log( '_extract_pdf_metadata XRefStm = ' . var_export( $dictionary['XRefStm']['value'], true ), 0 );
+//if ( isset( $dictionary['XRefStm'] ) ) error_log( '_extract_pdf_metadata XRefStm start = ' . "\r\n" . var_export( self::_hex_dump( substr( $pdf, $dictionary['XRefStm']['value'] ), 2048, 32 ), true ) . "\r\n", 0 );
 
-					 if ( isset( self::$pdf_indirect_objects[ $info_ref ] ) ) {
-						 $info_dictionary = self::_parse_pdf_dictionary( substr( $pdf, self::$pdf_indirect_objects[ $info_ref ]['start'], self::$pdf_indirect_objects[ $info_ref ]['/length'] ), 0 );
-						 unset( $info_dictionary['/length'] );
+				if ( isset( $dictionary['Info'] ) ) {
+					$info_dictionary = NULL;
 
-						 foreach( $info_dictionary as $name => $value ) {
-							 if ( 'string' == $value['type'] ) {
-								 $prefix = substr( $value['value'], 0, 2 );
-								 if ( 'D:' == $prefix )
-								 	$metadata[ $name ] = self::_parse_pdf_date( $value['value'] );
+					$info = self::_find_pdf_indirect_dictionary( $pdf, $dictionary['Info']['object'], $dictionary['Info']['generation'] );
+					if ( $info )
+						$info_dictionary = self::_parse_pdf_dictionary( $info['content'], 0 );
+					else {
+						$info_ref = ($dictionary['Info']['object'] * 1000) + $dictionary['Info']['generation'];
+error_log( '_extract_pdf_metadata $info_ref = '. var_export( $info_ref, true ), 0 );
+						self::_build_pdf_indirect_objects( $pdf );
+						if ( isset( self::$pdf_indirect_objects[ $info_ref ] ) )
+							$info_dictionary = self::_parse_pdf_dictionary( substr( $pdf, self::$pdf_indirect_objects[ $info_ref ]['start'], self::$pdf_indirect_objects[ $info_ref ]['/length'] ), 0 );
+					}
+								
+					if ( $info_dictionary ) {
+//error_log( '_extract_pdf_metadata $info_dictionary length = '. var_export( $info_dictionary['/length'], true ), 0 );
+						unset( $info_dictionary['/length'] );
+//error_log( '_extract_pdf_metadata $info_dictionary = '. var_export( $info_dictionary, true ), 0 );
+
+						foreach( $info_dictionary as $name => $value ) {
+							if ( 'string' == $value['type'] ) {
+								$prefix = substr( $value['value'], 0, 2 );
+								if ( 'D:' == $prefix )
+									$metadata[ $name ] = self::_parse_pdf_date( $value['value'] );
 								elseif ( ( chr(0xFE) . chr(0xFF) ) == $prefix ) 
-								 	$metadata[ $name ] = self::_parse_pdf_UTF16BE( $value['value'] );
+									$metadata[ $name ] = self::_parse_pdf_UTF16BE( $value['value'] );
 								else
-									 $metadata[ $name ] = $value['value'];
+									$metadata[ $name ] = $value['value'];
 							 }
 							 else
-								 $metadata[ $name ] = $value['value'];
-						 } // each info entry
-					 } // found Info object
-				 } // found Info ref
-				 elseif ( isset( $dictionary['Root'] ) ) {
-//error_log( '_extract_pdf_metadata trailer dictionary  Root = ' . var_export( $dictionary['Root'], true ), 0 );
-					 $info_ref = ($dictionary['Root']['object'] * 1000) + $dictionary['Root']['generation'];
-//error_log( '_extract_pdf_metadata trailer dictionary  $info_ref = ' . var_export( $info_ref, true ), 0 );
-					 if ( isset( self::$pdf_indirect_objects[ $info_ref ] ) ) {
-//error_log( '_extract_pdf_metadata Root dictionary  ref = ' . var_export( self::$pdf_indirect_objects[ $info_ref ], true ), 0 );
-//error_log( '_extract_pdf_metadata Root object = ' . "\r\n" . var_export( self::_hex_dump( substr( $pdf, self::$pdf_indirect_objects[ $info_ref ]['start'], self::$pdf_indirect_objects[ $info_ref ]['/length'] ), self::$pdf_indirect_objects[ $info_ref ]['/length'], 32 ), true ) . "\r\n", 0 );
-						 $root_dictionary = self::_parse_pdf_dictionary( substr( $pdf, self::$pdf_indirect_objects[ $info_ref ]['start'], self::$pdf_indirect_objects[ $info_ref ]['/length'] ), 0 );
-						 unset( $root_dictionary['/length'] );
-//error_log( "_extract_pdf_metadata Root dictionary = ". var_export( $root_dictionary, true ), 0 );
-					 } // found Root object
+								$metadata[ $name ] = $value['value'];
+						} // each info entry
+					} // found Info object
+				} // found Info ref
+				elseif ( isset( $dictionary['Root'] ) ) {
+					$root_dictionary = NULL;
+
+					$root = self::_find_pdf_indirect_dictionary( $pdf, $dictionary['Root']['object'], $dictionary['Root']['generation'] );
+					if ( $root )
+						$root_dictionary = self::_parse_pdf_dictionary( $root['content'], 0 );
+					else {
+							$root_ref = ($dictionary['Root']['object'] * 1000) + $dictionary['Root']['generation'];
+error_log( '_extract_pdf_metadata $root_ref = '. var_export( $root_ref, true ), 0 );
+							self::_build_pdf_indirect_objects( $pdf );
+							if ( isset( self::$pdf_indirect_objects[ $root_ref ] ) )
+								$root_dictionary = self::_parse_pdf_dictionary( substr( $pdf, self::$pdf_indirect_objects[ $root_ref ]['start'], self::$pdf_indirect_objects[ $root_ref ]['/length'] ), 0 );
+					 }
+								
+error_log( '_extract_pdf_metadata trailer dictionary  Root = ' . var_export( $dictionary['Root'], true ), 0 );
+error_log( "_extract_pdf_metadata Root dictionary = ". var_export( $root_dictionary, true ), 0 );
 				 } // found Root ref
 			 } // found dictionary
-		} // found trailer
+		} // foreach trailer
 		
+		$xmp = self::_parse_xmp_metadata( $pdf, 0);
+		if ( is_array( $xmp ) )
+			$metadata = array_merge( $metadata, $xmp );
+			
+$microtime_stop = microtime( true );
+error_log( "_extract_pdf_metadata ({$file_name}) " . ($microtime_stop - $microtime_start), 0 );
 //error_log( "_extract_pdf_metadata metadata = ". var_export( $metadata, true ), 0 );
 		return $metadata;
 	}

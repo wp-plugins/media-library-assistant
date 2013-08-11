@@ -63,6 +63,7 @@
 <li class="method public "><a href="#mla_shortcode_query_posts_orderby_filter" title="mla_shortcode_query_posts_orderby_filter :: Filters the ORDERBY clause for shortcode queries"><span class="description">Filters the ORDERBY clause for shortcode queries</span><pre>mla_shortcode_query_posts_orderby_filter()</pre></a></li>
 <li class="method public "><a href="#mla_shortcode_query_posts_where_filter" title="mla_shortcode_query_posts_where_filter :: Filters the WHERE clause for shortcode queries"><span class="description">Filters the WHERE clause for shortcode queries</span><pre>mla_shortcode_query_posts_where_filter()</pre></a></li>
 <li class="nav-header private">» Private</li>
+<li class="method private "><a href="#_paginate_links" title="_paginate_links :: Handles pagnation output types 'previous_page', 'next_page', and 'paginate_links'"><span class="description">Handles pagnation output types 'previous_page', 'next_page', and 'paginate_links'</span><pre>_paginate_links()</pre></a></li>
 <li class="method private "><a href="#_process_pagination_output_types" title="_process_pagination_output_types :: Handles pagnation output types 'previous_page', 'next_page', and 'paginate_links'"><span class="description">Handles pagnation output types 'previous_page', 'next_page', and 'paginate_links'</span><pre>_process_pagination_output_types()</pre></a></li>
 <li class="method private "><a href="#_process_shortcode_parameter" title="_process_shortcode_parameter :: Handles brace/bracket escaping and parses template for a shortcode parameter"><span class="description">Handles brace/bracket escaping and parses template for a shortcode parameter</span><pre>_process_shortcode_parameter()</pre></a></li>
 <li class="method private "><a href="#_sanitize_query_specification" title="_sanitize_query_specification :: Cleans up damage caused by the Visual Editor to the tax_query and meta_query specifications"><span class="description">Cleans up damage caused by the Visual Editor to the tax_query and meta_query specifications</span><pre>_sanitize_query_specification()</pre></a></li>
@@ -255,6 +256,39 @@ Defined as public because it's a filter.</p></p>
 <code>string</code>query clause after modification</div>
 </div></div>
 </div>
+<a name="_paginate_links" id="_paginate_links"></a><div class="element clickable method private _paginate_links" data-toggle="collapse" data-target="._paginate_links .collapse">
+<h2>Handles pagnation output types 'previous_page', 'next_page', and 'paginate_links'</h2>
+<pre>_paginate_links(array $output_parameters, string $markup_values, string $arguments, integer $found_rows, string $output) : mixed</pre>
+<div class="labels"></div>
+<div class="row collapse"><div class="detail-description">
+<p class="long_description"></p>
+<table class="table table-bordered"><tr>
+<th>since</th>
+<td>1.42</td>
+</tr></table>
+<h3>Parameters</h3>
+<div class="subelement argument">
+<h4>$output_parameters</h4>
+<code>array</code><p>value(s) for mla_output_type parameter</p>
+</div>
+<div class="subelement argument">
+<h4>$markup_values</h4>
+<code>string</code><p>template substitution values, e.g., ('instance' => '1', ... )</p>
+</div>
+<div class="subelement argument">
+<h4>$arguments</h4>
+<code>string</code><p>merged default and passed shortcode parameter values</p></div>
+<div class="subelement argument">
+<h4>$found_rows</h4>
+<code>integer</code><p>number of attachments in the gallery, without pagination</p></div>
+<div class="subelement argument">
+<h4>$output</h4>
+<code>string</code><p>output text so far, may include debug values</p></div>
+<h3>Returns</h3>
+<div class="subelement response">
+<code>mixed</code>false or string with HTML for pagination output types</div>
+</div></div>
+</div>
 <a name="_process_pagination_output_types" id="_process_pagination_output_types"></a><div class="element clickable method private _process_pagination_output_types" data-toggle="collapse" data-target="._process_pagination_output_types .collapse">
 <h2>Handles pagnation output types 'previous_page', 'next_page', and 'paginate_links'</h2>
 <pre>_process_pagination_output_types(array $output_parameters, string $markup_values, string $arguments, string $attr, integer $found_rows, string $output) : mixed</pre>
@@ -416,7 +450,7 @@ any further logic required to translate those values is contained in the filter.
 <div class="row"><footer class="span12">
             Template is built using <a href="http://twitter.github.com/bootstrap/">Twitter Bootstrap 2</a> and icons provided by <a href="http://glyphicons.com/">Glyphicons</a>.<br>
             Documentation is powered by <a href="http://www.phpdoc.org/">phpDocumentor 2.0.0a8</a> and<br>
-            generated on 2013-07-31T21:05:23-07:00.<br></footer></div>
+            generated on 2013-08-10T19:24:37-07:00.<br></footer></div>
 </div>
 </body>
 </html>

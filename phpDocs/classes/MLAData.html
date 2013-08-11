@@ -86,11 +86,14 @@ for a single attachment.</span><pre>mla_update_single_item()</pre></a></li>
 <li class="method private "><a href="#_build_pdf_indirect_objects" title="_build_pdf_indirect_objects :: Build an array of indirect object definitions"><span class="description">Build an array of indirect object definitions</span><pre>_build_pdf_indirect_objects()</pre></a></li>
 <li class="method private "><a href="#_execute_list_table_query" title="_execute_list_table_query :: Add filters, run query, remove filters"><span class="description">Add filters, run query, remove filters</span><pre>_execute_list_table_query()</pre></a></li>
 <li class="method private "><a href="#_extract_pdf_metadata" title="_extract_pdf_metadata :: Extract Metadata from a PDF file"><span class="description">Extract Metadata from a PDF file</span><pre>_extract_pdf_metadata()</pre></a></li>
+<li class="method private "><a href="#_find_pdf_indirect_dictionary" title="_find_pdf_indirect_dictionary :: Find the offset, length and contents of an indirect object containing a dictionary"><span class="description">Find the offset, length and contents of an indirect object containing a dictionary</span><pre>_find_pdf_indirect_dictionary()</pre></a></li>
 <li class="method private "><a href="#_hex_dump" title="_hex_dump :: Format printable version of binary data"><span class="description">Format printable version of binary data</span><pre>_hex_dump()</pre></a></li>
+<li class="method private "><a href="#_parse_iso8601_date" title="_parse_iso8601_date :: Parse a ISO 8601 Timestamp"><span class="description">Parse a ISO 8601 Timestamp</span><pre>_parse_iso8601_date()</pre></a></li>
 <li class="method private "><a href="#_parse_pdf_UTF16BE" title="_parse_pdf_UTF16BE :: Parse a PDF Unicode (16-bit Big Endian) object"><span class="description">Parse a PDF Unicode (16-bit Big Endian) object</span><pre>_parse_pdf_UTF16BE()</pre></a></li>
-<li class="method private "><a href="#_parse_pdf_date" title="_parse_pdf_date :: Parse a PDF date string object"><span class="description">Parse a PDF date string object</span><pre>_parse_pdf_date()</pre></a></li>
+<li class="method private "><a href="#_parse_pdf_date" title="_parse_pdf_date :: Parse a PDF date string"><span class="description">Parse a PDF date string</span><pre>_parse_pdf_date()</pre></a></li>
 <li class="method private "><a href="#_parse_pdf_dictionary" title="_parse_pdf_dictionary :: Parse a PDF dictionary object"><span class="description">Parse a PDF dictionary object</span><pre>_parse_pdf_dictionary()</pre></a></li>
 <li class="method private "><a href="#_parse_pdf_string" title="_parse_pdf_string :: Parse a PDF string object"><span class="description">Parse a PDF string object</span><pre>_parse_pdf_string()</pre></a></li>
+<li class="method private "><a href="#_parse_xmp_metadata" title="_parse_xmp_metadata :: Parse an XMP object"><span class="description">Parse an XMP object</span><pre>_parse_xmp_metadata()</pre></a></li>
 <li class="method private "><a href="#_prepare_list_table_query" title="_prepare_list_table_query :: Sanitize and expand query arguments from request variables"><span class="description">Sanitize and expand query arguments from request variables</span><pre>_prepare_list_table_query()</pre></a></li>
 <li class="method private "><a href="#_remove_tags" title="_remove_tags :: Remove tags from a term ids list"><span class="description">Remove tags from a term ids list</span><pre>_remove_tags()</pre></a></li>
 <li class="method private "><a href="#_search_mla_galleries" title="_search_mla_galleries :: Search the $mla_galleries or $galleries array"><span class="description">Search the $mla_galleries or $galleries array</span><pre>_search_mla_galleries()</pre></a></li>
@@ -771,7 +774,26 @@ for a single attachment.</h2>
 </div>
 <a name="_extract_pdf_metadata" id="_extract_pdf_metadata"></a><div class="element clickable method private _extract_pdf_metadata" data-toggle="collapse" data-target="._extract_pdf_metadata .collapse">
 <h2>Extract Metadata from a PDF file</h2>
-<pre>_extract_pdf_metadata(string $string) : array</pre>
+<pre>_extract_pdf_metadata(string $file_name) : array</pre>
+<div class="labels"></div>
+<div class="row collapse"><div class="detail-description">
+<p class="long_description"></p>
+<table class="table table-bordered"><tr>
+<th>since</th>
+<td>1.4x</td>
+</tr></table>
+<h3>Parameters</h3>
+<div class="subelement argument">
+<h4>$file_name</h4>
+<code>string</code><p>full path to the desired file</p></div>
+<h3>Returns</h3>
+<div class="subelement response">
+<code>array</code>( key => value ) for each metadata field, in string format</div>
+</div></div>
+</div>
+<a name="_find_pdf_indirect_dictionary" id="_find_pdf_indirect_dictionary"></a><div class="element clickable method private _find_pdf_indirect_dictionary" data-toggle="collapse" data-target="._find_pdf_indirect_dictionary .collapse">
+<h2>Find the offset, length and contents of an indirect object containing a dictionary</h2>
+<pre>_find_pdf_indirect_dictionary(string $string, integer $object, integer $generation) : mixed</pre>
 <div class="labels"></div>
 <div class="row collapse"><div class="detail-description">
 <p class="long_description"></p>
@@ -782,10 +804,17 @@ for a single attachment.</h2>
 <h3>Parameters</h3>
 <div class="subelement argument">
 <h4>$string</h4>
-<code>string</code><p>full path to the desired file</p></div>
+<code>string</code><p>The entire PDF document, passsed by reference</p></div>
+<div class="subelement argument">
+<h4>$object</h4>
+<code>integer</code><p>The object number</p></div>
+<div class="subelement argument">
+<h4>$generation</h4>
+<code>integer</code><p>The object generation number; default zero (0)</p>
+</div>
 <h3>Returns</h3>
 <div class="subelement response">
-<code>array</code>( key => value ) for each metadata field, in string format</div>
+<code>mixed</code>NULL on failure else array( 'start' => offset in the file, 'length' => object length, 'content' => dictionary contents )</div>
 </div></div>
 </div>
 <a name="_hex_dump" id="_hex_dump"></a><div class="element clickable method private _hex_dump" data-toggle="collapse" data-target="._hex_dump .collapse">
@@ -814,6 +843,26 @@ for a single attachment.</h2>
 <code>string</code>Printable representation of $data</div>
 </div></div>
 </div>
+<a name="_parse_iso8601_date" id="_parse_iso8601_date"></a><div class="element clickable method private _parse_iso8601_date" data-toggle="collapse" data-target="._parse_iso8601_date .collapse">
+<h2>Parse a ISO 8601 Timestamp</h2>
+<pre>_parse_iso8601_date(string $source_string) : string</pre>
+<div class="labels"></div>
+<div class="row collapse"><div class="detail-description">
+<p class="long_description"></p>
+<table class="table table-bordered"><tr>
+<th>since</th>
+<td>1.4x</td>
+</tr></table>
+<h3>Parameters</h3>
+<div class="subelement argument">
+<h4>$source_string</h4>
+<code>string</code><p>ISO string of the form YYYY-MM-DDTHH:MM:SS-HH:MM (inc time zone)</p>
+</div>
+<h3>Returns</h3>
+<div class="subelement response">
+<code>string</code>formatted date string YYYY-MM-DD HH:mm:SS</div>
+</div></div>
+</div>
 <a name="_parse_pdf_UTF16BE" id="_parse_pdf_UTF16BE"></a><div class="element clickable method private _parse_pdf_UTF16BE" data-toggle="collapse" data-target="._parse_pdf_UTF16BE .collapse">
 <h2>Parse a PDF Unicode (16-bit Big Endian) object</h2>
 <pre>_parse_pdf_UTF16BE(string $source_string) : string</pre>
@@ -835,7 +884,7 @@ for a single attachment.</h2>
 </div></div>
 </div>
 <a name="_parse_pdf_date" id="_parse_pdf_date"></a><div class="element clickable method private _parse_pdf_date" data-toggle="collapse" data-target="._parse_pdf_date .collapse">
-<h2>Parse a PDF date string object</h2>
+<h2>Parse a PDF date string</h2>
 <pre>_parse_pdf_date(string $source_string) : string</pre>
 <div class="labels"></div>
 <div class="row collapse"><div class="detail-description">
@@ -862,7 +911,7 @@ for a single attachment.</h2>
 <p class="long_description"><p>Returns an array of dictionary contents, classified by object type: boolean, numeric, string, hex (string),
 indirect (object), name, array, dictionary, stream, and null.
 The array also has a '/length' element containing the number of bytes occupied by the
-dictionary in the source string, including the enclosing parentheses.</p></p>
+dictionary in the source string, excluding the enclosing delimiters, if passed in.</p></p>
 <table class="table table-bordered"><tr>
 <th>since</th>
 <td>1.4x</td>
@@ -873,7 +922,7 @@ dictionary in the source string, including the enclosing parentheses.</p></p>
 <code>string</code><p>data within which the string occurs</p></div>
 <div class="subelement argument">
 <h4>$offset</h4>
-<code>integer</code><p>offset within the source string of the opening '<<' characters.</p>
+<code>integer</code><p>offset within the source string of the opening '<<' characters or the first content character.</p>
 </div>
 <h3>Returns</h3>
 <div class="subelement response">
@@ -902,6 +951,32 @@ the number of bytes occupied by the string in the source string, including the e
 <h3>Returns</h3>
 <div class="subelement response">
 <code>array</code>( key => array( 'type' => type, 'value' => value, '/length' => length ) ) for the string</div>
+</div></div>
+</div>
+<a name="_parse_xmp_metadata" id="_parse_xmp_metadata"></a><div class="element clickable method private _parse_xmp_metadata" data-toggle="collapse" data-target="._parse_xmp_metadata .collapse">
+<h2>Parse an XMP object</h2>
+<pre>_parse_xmp_metadata(string $source_string, integer $offset) : array</pre>
+<div class="labels"></div>
+<div class="row collapse"><div class="detail-description">
+<p class="long_description"><p>Returns an array of dictionary contents, classified by object type: boolean, numeric, string, hex (string),
+indirect (object), name, array, dictionary, stream, and null.
+The array also has a '/length' element containing the number of bytes occupied by the
+dictionary in the source string, excluding the enclosing delimiters, if passed in.</p></p>
+<table class="table table-bordered"><tr>
+<th>since</th>
+<td>1.4x</td>
+</tr></table>
+<h3>Parameters</h3>
+<div class="subelement argument">
+<h4>$source_string</h4>
+<code>string</code><p>data within which the string occurs</p></div>
+<div class="subelement argument">
+<h4>$offset</h4>
+<code>integer</code><p>offset within the source string of the opening '<<' characters or the first content character.</p>
+</div>
+<h3>Returns</h3>
+<div class="subelement response">
+<code>array</code>( '/length' => length, key => array( 'type' => type, 'value' => value ) ) for each dictionary field</div>
 </div></div>
 </div>
 <a name="_prepare_list_table_query" id="_prepare_list_table_query"></a><div class="element clickable method private _prepare_list_table_query" data-toggle="collapse" data-target="._prepare_list_table_query .collapse">
@@ -1169,7 +1244,7 @@ any further logic required to translate those values is contained in the filters
 <div class="row"><footer class="span12">
             Template is built using <a href="http://twitter.github.com/bootstrap/">Twitter Bootstrap 2</a> and icons provided by <a href="http://glyphicons.com/">Glyphicons</a>.<br>
             Documentation is powered by <a href="http://www.phpdoc.org/">phpDocumentor 2.0.0a8</a> and<br>
-            generated on 2013-07-31T21:05:23-07:00.<br></footer></div>
+            generated on 2013-08-10T19:24:36-07:00.<br></footer></div>
 </div>
 </body>
 </html>

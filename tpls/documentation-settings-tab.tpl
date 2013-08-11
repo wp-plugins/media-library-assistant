@@ -480,11 +480,11 @@ The "mla_debug" parameter controls the display of information about the query pa
 </p>
 <h3>Support for Alternative Gallery Output, e.g., Pagination</h3>
 <p>
-The <code>[mla_gallery]</code> shortcode can be used to provide "Previous" and "Next" links that support moving among the individual items in a gallery or among gallery "pages". For example, if you have many items with a specific Att. Category or Att. Tag value you can build a single-image page with links to the previous/next item having that value. You can also build a page that shows a large gallery in groups, or "gallery pages", of ten items with links to the previous/next ten items or links to all of the gallery pages of items having that value.
+The <code>[mla_gallery]</code> shortcode can be used to provide "Previous" and "Next" links that support moving among the individual items in a gallery or among gallery "pages". For example, if you have many items with a specific Att. Category or Att. Tag value you can build a single-image page with links to the previous/next item having that value. You can also build a page that shows a large gallery in groups, or "gallery pages", of ten items with links to the previous/next ten items or links to all of the gallery pages of items having that value. Finally, you can get a set of links to all pages in the gallery or links around the current page ( e.g.: &larr; Prev 1 … 3 4 5 6 7 … 9 Next &rarr; ).
 </p>
 <h4>The <code>mla_output</code> parameter</h4>
 <p>
-The <strong>"mla_output"</strong> parameter determines the type of output the shortcode will return. Explanation and examples of each output type are given later in this section. You can choose from five values:
+The <strong>"mla_output"</strong> parameter determines the type of output the shortcode will return. Explanation and examples of each output type are given later in this section. You can choose from six values:
 </p>
 <table>
 <tr>
@@ -493,19 +493,23 @@ The <strong>"mla_output"</strong> parameter determines the type of output the sh
 </tr>
 <tr>
 <td style="padding-right: 10px; vertical-align: top; font-weight:bold">next_link</td>
-<td>returns a link to the next gallery item. The optional ",wrap" qualifier determines what happens at the end of the gallery. If you omit the qualifier, an empty string is returned for the "next_link" from the last item in the gallery. If you code the ",wrap" qualifier, the "next_link" from the last item will be to the first gallery item.</td>
+<td>returns a link to the next gallery item. The optional "<strong>,wrap</strong>" qualifier determines what happens at the end of the gallery. If you omit the qualifier, an empty string is returned for the "next_link" from the last item in the gallery. If you code the ",wrap" qualifier, the "next_link" from the last item will be to the first gallery item.</td>
 </tr>
 <tr>
 <td style="padding-right: 10px; vertical-align: top; font-weight:bold">previous_link</td>
-<td>returns a link to the previous gallery item. The optional ",wrap" qualifier determines what happens at the beginning of the gallery. If you omit the qualifier, an empty string is returned for the "previous_link" from the first gallery item. If you code the ",wrap" qualifier, "previous_link" from the first gallery item will be to the last gallery item.</td>
+<td>returns a link to the previous gallery item. The optional "<strong>,wrap</strong>" qualifier determines what happens at the beginning of the gallery. If you omit the qualifier, an empty string is returned for the "previous_link" from the first gallery item. If you code the ",wrap" qualifier, "previous_link" from the first gallery item will be to the last gallery item.</td>
 </tr>
 <tr>
 <td style="padding-right: 10px; vertical-align: top; font-weight:bold">next_page</td>
-<td>returns a link to the next "page" of gallery items. The optional ",wrap" or ",last" qualifiers determine what happens at the end of the gallery. If you omit the qualifier, an empty string is returned for the "next_page" if there are no more items in the gallery. If you code the ",wrap" qualifier, the "next_page" from the last page of items will be to the first page of gallery items. If you code the ",last" qualifier, the "next_page" link will return to/remain on the last page of gallery items.</td>
+<td>returns a link to the next "page" of gallery items. The optional "<strong>,wrap</strong>" or "<strong>,last</strong>" qualifiers determine what happens at the end of the gallery. If you omit the qualifier, an empty string is returned for the "next_page" if there are no more items in the gallery. If you code the ",wrap" qualifier, the "next_page" from the last page of items will be to the first page of gallery items. If you code the ",last" qualifier, the "next_page" link will return to/remain on the last page of gallery items.</td>
 </tr>
 <tr>
 <td style="padding-right: 10px; vertical-align: top; font-weight:bold">previous_page</td>
-<td>returns a link to the previous "page" of gallery items. The optional ",wrap" or ",first" qualifiers determine what happens at the beginning of the gallery. If you omit the qualifier, an empty string is returned for the "previous_link" from the first page of gallery items. If you code the ",wrap" qualifier, "previous_page" from the first page of gallery items will be to the last page of gallery items. If you code the ",first" qualifier, the "previous_link" link will return to/remain on the first page of gallery items.</td>
+<td>returns a link to the previous "page" of gallery items. The optional "<strong>,wrap</strong>" or "<strong>,first</strong>" qualifiers determine what happens at the beginning of the gallery. If you omit the qualifier, an empty string is returned for the "previous_link" from the first page of gallery items. If you code the ",wrap" qualifier, "previous_page" from the first page of gallery items will be to the last page of gallery items. If you code the ",first" qualifier, the "previous_link" link will return to/remain on the first page of gallery items.</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">paginate_links</td>
+<td>returns a link to gallery items at the start and end of the list and to pages around the current "gallery page" ( e.g.: &larr; Prev 1 … 3 4 5 6 7 … 9 Next &rarr; ). The optional "<strong>,show_all</strong>" qualifier will show all of the gallery pages instead of a short list around the current page. The optional "<strong>,prev_next</strong>" qualifier will include the "&larr; Prev" and "Next &rarr;" portions of the link list.</td>
 </tr>
 </table>
 <h4>Next and previous gallery items; the <code>next_link</code> and <code>previous_link</code> output types</h4>
@@ -610,6 +614,14 @@ The next or previous link returned can use the following Gallery Display Content
 <td>replaces the link text </td>
 </tr>
 <tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">mla_prev_text</td>
+<td>the "previous page" text (default "&larr; Previous"); an alternative to "mla_link_text" for <code>mla_output=previous_page</code></td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">mla_next_text</td>
+<td>the "next page" text (default "Next &rarr;") an alternative to "mla_link_text" for <code>mla_output=next_page</code></td>
+</tr>
+<tr>
 <td style="padding-right: 10px; vertical-align: top; font-weight:bold">mla_nolink_text</td>
 <td>replaces the empty string displayed when there is no link and link text, e.g., no previous or next page link </td>
 </tr>
@@ -692,17 +704,61 @@ The next or previous link returned can use the following Gallery Display Content
 Expanding the "attachment tag gallery" example, you can select images using the MLA Att. Tag taxonomy and divide the  gallery into fixed-size pages. Following the main gallery shortcode are the previous/next page links:
 </p>
 <code>
-[mla_gallery attachment_tag="sample" mla_caption="{+title+}" posts_per_page=10]
+[mla_gallery attachment_tag="sample" posts_per_page=10 mla_caption="{+title+}"]
 <br>&nbsp;<br>
 &lt;div style="clear: both; float: left"&gt;<br />
-[mla_gallery mla_output="previous_page,first" mla_link_text='&amp;larr; Previous Gallery Page' attachment_tag="sample" mla_rollover_text="Previous or first page for this tag"]<br>
+[mla_gallery attachment_tag="sample" posts_per_page=10 mla_output="previous_page,first" mla_link_text='&amp;larr; Previous Gallery Page' mla_rollover_text="Previous or first page for this tag"]<br>
 &lt;/div&gt;<br>
 &lt;div style="float: right"&gt;<br>
-[mla_gallery mla_output="next_page,last" mla_link_text='&amp;larr; Next Gallery Page' attachment_tag="sample" mla_rollover_text="Next or last page for this tag"]<br>
+[mla_gallery attachment_tag="sample" posts_per_page=10 mla_output="next_page,last" mla_link_text='&amp;larr; Next Gallery Page' mla_rollover_text="Next or last page for this tag"]<br>
 &lt;/div&gt;
 </code>
 <p>
 This example is simpler that the earlier single-item paging example because the "current page" handling is done by MLA, and the "sample" tag value is hard-coded. You could also develop a generic "Att. Tag" gallery page and pass the tag value in the URI for that page (as in the single-item pagination example earlier in this section).
+</p>
+<h4>Generalized paginated link list; the <code>paginate_links</code> output type</h4>
+<p>
+WordPress provides a function that "<em>can be used to create paginated link list for any area</em>." The "paginate_links" output type is modeled on this function and lets you generate a list of links for moving among "gallery pages".
+</p>
+<p>
+The <strong>Page Selection Parameters</strong>, <strong>Gallery Display Content Parameters</strong> and <strong>Markup Substitution Parameters</strong> defined above also apply to the "paginate_links" output type. There are five additional parameters unique to this output type.
+</p>
+<h4>Specific parameters for the <code>paginate_links</code> output type</h4>
+<table>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">mla_end_size</td>
+<td>How many numbers (default 1) appear on either the start and the end list edges</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">mla_mid_size</td>
+<td>How many numbers (default 2) appear to either side of current page, but not including current page</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">mla_prev_text</td>
+<td>the "previous page" text (default "&larr; Previous") , which appears when the ",prev_next" qualifier is added to the output_type</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">mla_next_text</td>
+<td>the "next page" text (default "Next &rarr;") , which appears when the ",prev_next" qualifier is added to the output_type</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">mla_paginate_type</td>
+<td>the format of the return value. "<strong>plain</strong>" (the default) returns a string with links separated by the newline character. "<strong>list</strong>" returns an unordered (ul) HTML list.</td>
+</tr>
+</table>
+<p>If you code the "<strong>,show_all</strong>" qualifier, most of the above parameters have no effect; the "mla_paginate_type" parameter is the exception.
+</p>
+<h4>An example of the <code>paginate_links</code> output type</h4>
+<p>
+Expanding the "attachment tag gallery" example, you can select images using the MLA Att. Tag taxonomy and divide the  gallery into fixed-size pages. Following the main gallery shortcode is the list of page links:
+</p>
+<code>
+[mla_gallery attachment_tag="sample" posts_per_page=10 mla_caption="{+title+}"]
+<br>&nbsp;<br>
+[mla_gallery attachment_tag="sample" posts_per_page=10 mla_output="paginate_links,prev_next" mla_nolink_text='No Gallery Pages']<br>
+</code>
+<p>
+This example is even simpler that the two earlier examples because there's just one additional <code>[mla_gallery]</code> shortcode for pagination links.
 </p>
 <a name="alt_shortcode"></a>
 &nbsp;

@@ -3,8 +3,8 @@ Contributors: dglingren
 Donate link: http://fairtradejudaica.org/make-a-difference/donate/
 Tags: attachment, attachments, documents, gallery, image, images, media, library, media library, media-tags, media tags, tags, media categories, categories, IPTC, EXIF, meta, metadata, photo, photos, photograph, photographs, photoblog, photo albums, lightroom, photoshop, MIME, mime-type, icon, upload, file extensions
 Requires at least: 3.3
-Tested up to: 3.5.1
-Stable tag: 1.42
+Tested up to: 3.6
+Stable tag: 1.43
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -118,6 +118,15 @@ All of the MLA source code has been annotated with "DocBlocks", a special type o
 9. The Media Manager popup modal window showing additional filters for date and taxonomy terms. Also shows the enhanced Search Media box.
 
 == Changelog ==
+
+= 1.43 =
+* New: For `[mla_gallery]`, a new `mla_output=paginate_links` parameter creates a paginated link list for galleries with multiple "gallery pages" ( e.g.: < Prev 1 … 3 4 5 6 7 … 9 Next > ). See the Settings/Media Library Assistant Documentation tab for complete information and examples.
+* New: For `[mla_gallery]`, `mla_prev_text` and `mla_next_text` can be used in place of `mla_link_text` with the `previous_link` and `next_link` output types.
+* Fix: When resetting Settings/Media Library Assistant General tab options, a Fatal PHP error no longer occurs.
+* Fix: PHP Warning message removed for `[mla_gallery]` shortcodes with no parameters at all.
+* Fix: For WordPress version 3.6, the Media Manager taxonomy dropdown box is indented with dashes; it no longer shows plaintext version of HTML non-breaking spaces.
+* Fix: For `[mla_gallery]`, "Next" and "Previous" text default values now use acute quotes, not arrows, conforming to the WordPress values.
+* Fix: Example for the `previous_page`/`next_page` output types has been corrected, showing `posts_per_page` in all three shortcodes.
 
 = 1.42 =
 * New: **Pagination support for `[mla_gallery]`**, using the "previous_page" and "next_page" values of the "mla_output" parameter. See the Settings/Media Library Assistant Documentation tab for complete information and examples.
@@ -296,8 +305,8 @@ All of the MLA source code has been annotated with "DocBlocks", a special type o
 
 == Upgrade Notice ==
 
-= 1.42 =
-Get pagination support for [mla_gallery]! Improved CSS width (itemwidth) and margin handling. Eight other enhancements, six fixes.
+= 1.43 =
+Generalized pagination support with "mla_output=paginate_links". One other enhancement, five fixes.
 
 == Other Notes ==
 
@@ -445,13 +454,14 @@ The `[mla_gallery]` shortcode can be used to provide "Previous" and "Next" links
 
 <h4>The <code>mla_output</code> parameter</h4>
 
-The **"mla_output"** parameter determines the type of output the shortcode will return. Explanation and examples of each output type are given later in this section. You can choose from five values:
+The **"mla_output"** parameter determines the type of output the shortcode will return. Explanation and examples of each output type are given later in this section. You can choose from six values:
 
 * `gallery`: The default value; returns the traditional gallery of image thumbnails, captions, etc.
-* `next_link`: returns a link to the next gallery item. The optional ",wrap" qualifier determines what happens at the end of the gallery. If you omit the qualifier, an empty string is returned for the "next_link" from the last item in the gallery. If you code the ",wrap" qualifier, the "next_link" from the last item will be to the first gallery item.
-* `previous_link`: returns a link to the previous gallery item. The optional ",wrap" qualifier determines what happens at the beginning of the gallery. If you omit the qualifier, an empty string is returned for the "previous_link" from the first gallery item. If you code the ",wrap" qualifier, "previous_link" from the first gallery item will be to the last gallery item.
-* `next_page`: returns a link to the next "page" of gallery items. The optional ",wrap" or ",last" qualifiers determine what happens at the end of the gallery. If you omit the qualifier, an empty string is returned for the "next_page" if there are no more items in the gallery. If you code the ",wrap" qualifier, the "next_page" from the last page of items will be to the first page of gallery items. If you code the ",last" qualifier, the "next_page" link will return to/remain on the last page of gallery items.
-* `previous_page`: returns a link to the previous "page" of gallery items. The optional ",wrap" or ",first" qualifiers determine what happens at the beginning of the gallery. If you omit the qualifier, an empty string is returned for the "previous_link" from the first page of gallery items. If you code the ",wrap" qualifier, "previous_page" from the first page of gallery items will be to the last page of gallery items. If you code the ",first" qualifier, the "previous_link" link will return to/remain on the first page of gallery items.
+* `next_link`: returns a link to the next gallery item. The optional "<strong>,wrap</strong>" qualifier determines what happens at the end of the gallery. If you omit the qualifier, an empty string is returned for the "next_link" from the last item in the gallery. If you code the ",wrap" qualifier, the "next_link" from the last item will be to the first gallery item.
+* `previous_link`: returns a link to the previous gallery item. The optional "<strong>,wrap</strong>" qualifier determines what happens at the beginning of the gallery. If you omit the qualifier, an empty string is returned for the "previous_link" from the first gallery item. If you code the ",wrap" qualifier, "previous_link" from the first gallery item will be to the last gallery item.
+* `next_page`: returns a link to the next "page" of gallery items. The optional "<strong>,wrap</strong>" or "<strong>,last</strong>" qualifiers determine what happens at the end of the gallery. If you omit the qualifier, an empty string is returned for the "next_page" if there are no more items in the gallery. If you code the ",wrap" qualifier, the "next_page" from the last page of items will be to the first page of gallery items. If you code the ",last" qualifier, the "next_page" link will return to/remain on the last page of gallery items.
+* `previous_page`: returns a link to the previous "page" of gallery items. The optional "<strong>,wrap</strong>" or "<strong>,first</strong>" qualifiers determine what happens at the beginning of the gallery. If you omit the qualifier, an empty string is returned for the "previous_link" from the first page of gallery items. If you code the ",wrap" qualifier, "previous_page" from the first page of gallery items will be to the last page of gallery items. If you code the ",first" qualifier, the "previous_link" link will return to/remain on the first page of gallery items.
+* `paginate_links`: returns a link to gallery items at the start and end of the list and to pages around the current "gallery page" ( e.g.: &larr; Prev 1 … 3 4 5 6 7 … 9 Next &rarr; ). The optional "<strong>,show_all</strong>" qualifier will show all of the gallery pages instead of a short list around the current page. The optional "<strong>,prev_next</strong>" qualifier will include the "&larr; Prev" and "Next &rarr;" portions of the link list.
 
 <h4>Next and previous gallery items; the `next_link` and `previous_link` output types</h4>
 
@@ -489,6 +499,20 @@ This example shows the power of the substitution parameters and in particular th
 WordPress provides functions that generate links to the "<em>next/previous set of posts within the current query</em>." These are not useful because the "current query" is for posts/pages, <strong>not</strong> Media Library items. What's needed is a way to paginate an `[mla_gallery]` shortcode on a single post or page. If, for example, you use an `[mla_gallery]` shortcode to build a gallery of items with a specific Att. Tag value you can use the `next_page` and `previous_page` output types to move through the gallery in groups of, say, ten items per "gallery page".
 
 WordPress uses the "paged" parameter to indicate the current "<em>set of posts within the current query</em>." To avoid built-in WordPress logic that uses this parameter, MLA has its own "mla_paginate_current" parameter to indicate the current set of items within the gallery (the current gallery page). MLA will automatically manage this parameter for you, but you can also use it explicitly to handle special cases.
+
+<h4>Generalized paginated link list; the <code>paginate_links</code> output type</h4>
+
+WordPress provides a function that "<em>can be used to create paginated link list for any area</em>." The "paginate_links" output type is modeled on this function and lets you generate a list of links for moving among "gallery pages".
+
+There are five additional parameters unique to this output type:
+
+* mla_end_size
+* mla_mid_size
+* mla_prev_text
+* mla_next_text
+* mla_paginate_type
+
+If you code the "<strong>,show_all</strong>" qualifier, most of the above parameters have no effect; the "mla_paginate_type" parameter is the exception.
 
 == Support for Other Gallery-generating Shortcodes ==
 

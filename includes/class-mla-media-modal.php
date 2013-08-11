@@ -135,7 +135,12 @@ class MLAModal {
 		foreach ( $matches[11] as $index => $text ) {
 			$class_array[ $index ] = $matches[3][ $index ];
 			$value_array[ $index ] = ( ! '' == $matches[6][ $index ] )? $matches[7][ $index ] : $matches[9][ $index ];
-			$text_array[ $index ] = $text;
+
+			if ( version_compare( get_bloginfo( 'version' ), '3.6', '>=' ) )
+				$text_array[ $index ] = str_replace( '&nbsp;', '-', $text);
+			else
+				$text_array[ $index ] = $text;
+				
 		} // foreach
 				
 		return array( 'class' => $class_array, 'value' => $value_array, 'text' => $text_array );

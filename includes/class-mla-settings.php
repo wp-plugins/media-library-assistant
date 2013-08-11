@@ -2670,6 +2670,8 @@ class MLASettings {
 		$update_count = 0;
 		
 		$query = array( 'orderby' => 'none', 'post_parent' => 'all' ); //, 'post_mime_type' => 'image,application/*pdf*' );
+//		$query = array( 'orderby' => 'none', 'post_parent' => 'all', 'post_mime_type' => 'image,application/*pdf*' );
+//		$query = array( 'orderby' => 'none', 'post_parent' => 'all', 'post_mime_type' => 'application/*pdf*' );
 		$posts = MLAShortcodes::mla_get_shortcode_attachments( 0, $query );
 		
 		if ( is_string( $posts ) )
@@ -2935,22 +2937,24 @@ class MLASettings {
 		$message_list = '';
 		
 		foreach ( MLAOptions::$mla_option_definitions as $key => $value ) {
-			if ( 'custom' == $value['type'] ) {
-				$message = MLAOptions::$value['reset']( 'reset', $key, $value, $_REQUEST );
+			if ( 'general' == $value['tab'] ) {
+				if ( 'custom' == $value['type'] ) {
+					$message = MLAOptions::$value['reset']( 'reset', $key, $value, $_REQUEST );
+				}
+				elseif ( ('header' == $value['type']) || ('hidden' == $value['type']) ) {
+					$message = '';
+				}
+				else {
+					MLAOptions::mla_delete_option( $key );
+					$message = '<br>delete_option(' . $key . ')';
+				}
+				
+				$message_list .= $message;
 			}
-			elseif ( ('header' == $value['type']) || ('hidden' == $value['type']) ) {
-				$message = '';
-			}
-			else {
-				MLAOptions::mla_delete_option( $key );
-				$message = '<br>delete_option(' . $key . ')';
-			}
-			
-			$message_list .= $message;
 		}
 		
 		$page_content = array(
-			'message' => 'Settings reset to default values.',
+			'message' => 'General tab settings reset to default values.',
 			'body' => '' 
 		);
 

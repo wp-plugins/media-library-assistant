@@ -155,7 +155,7 @@ class MLAShortcodes {
 	 *
 	 * @return string HTML content to display gallery.
 	 */
-	public static function mla_gallery_shortcode($attr) {
+	public static function mla_gallery_shortcode( $attr ) {
 		global $post;
 
 		/*
@@ -164,6 +164,14 @@ class MLAShortcodes {
 		if ( ! is_object( $post ) )
 			$post = (object) array( 'ID' => 0 );
 		
+		/*
+		 * Make sure $attr is an array, even if it's empty
+		 */
+		if ( empty( $attr ) )
+			$attr = array();
+		elseif ( is_string( $attr ) )
+			$attr = shortcode_parse_atts( $attr );
+
 		/*
 		 * Special handling of the mla_paginate_current parameter to make
 		 * "MLA pagination" easier. Look for this parameter in $_REQUEST
@@ -199,7 +207,13 @@ class MLAShortcodes {
 			'mla_viewer_page' => '1',
 			'mla_viewer_width' => '150',
 			'mla_alt_shortcode' => NULL,
-			'mla_alt_ids_name' => 'ids'
+			'mla_alt_ids_name' => 'ids',
+			// paginate_links arguments
+			'mla_end_size'=> 1,
+			'mla_mid_size' => 2,
+			'mla_prev_text' => '&laquo; Previous',
+			'mla_next_text' => 'Next &raquo;',
+			'mla_paginate_type' => 'plain'
 		);
 		
 		$default_arguments = array_merge( array(
@@ -224,7 +238,7 @@ class MLAShortcodes {
 			'pause' => NULL),
 			$mla_arguments
 		);
-		
+			
 		/*
 		 * Look for 'request' substitution parameters,
 		 * which can be added to any input parameter
@@ -1137,6 +1151,134 @@ class MLAShortcodes {
 	 * @param array	value(s) for mla_output_type parameter
 	 * @param string template substitution values, e.g., ('instance' => '1', ...  )
 	 * @param string merged default and passed shortcode parameter values
+	 * @param integer number of attachments in the gallery, without pagination
+	 * @param string output text so far, may include debug values
+	 *
+	 * @return mixed	false or string with HTML for pagination output types
+	 */
+	private static function _paginate_links( $output_parameters, $markup_values, $arguments, $found_rows, $output = '' ) {
+		if ( 2 > $markup_values['last_page'] )
+			return '';
+			
+		$show_all = $prev_next = false;
+		
+		if ( isset ( $output_parameters[1] ) )
+				switch ( $output_parameters[1] ) {
+				case 'show_all':
+					$show_all = true;
+					break;
+				case 'prev_next':
+					$prev_next = true;
+			}
+
+		$current_page = $markup_values['current_page'];
+		$last_page = $markup_values['last_page'];
+		$end_size = absint( $arguments['mla_end_size'] );
+		$mid_size = absint( $arguments['mla_mid_size'] );
+		$posts_per_page = $markup_values['posts_per_page'];
+		
+		$new_target = ( ! empty( $arguments['mla_target'] ) ) ? 'target="' . $arguments['mla_target'] . '" ' : '';
+		
+		/*
+		 * these will add to the default classes
+		 */
+		$new_class = ( ! empty( $arguments['mla_link_class'] ) ) ? ' ' . esc_attr( self::_process_shortcode_parameter( $arguments['mla_link_class'], $markup_values ) ) : '';
+
+		$new_attributes = ( ! empty( $arguments['mla_link_attributes'] ) ) ? esc_attr( self::_process_shortcode_parameter( $arguments['mla_link_attributes'], $markup_values ) ) . ' ' : '';
+
+		$new_base =  ( ! empty( $arguments['mla_link_href'] ) ) ? esc_attr( self::_process_shortcode_parameter( $arguments['mla_link_href'], $markup_values ) ) : $markup_values['new_url'];
+
+		/*
+		 * Build the array of page links
+		 */
+		$page_links = array();
+		$dots = false;
+		
+		if ( $prev_next && $current_page && 1 < $current_page ) {
+			$markup_values['new_page'] = $current_page - 1;
+			$new_title = ( ! empty( $arguments['mla_rollover_text'] ) ) ? 'title="' . esc_attr( self::_process_shortcode_parameter( $arguments['mla_rollover_text'], $markup_values ) ) . '" ' : '';
+			$new_url = add_query_arg( array( 'mla_paginate_current' => $current_page - 1 ), $new_base );
+			$prev_text = ( ! empty( $arguments['mla_prev_text'] ) ) ? esc_attr( self::_process_shortcode_parameter( $arguments['mla_prev_text'], $markup_values ) ) : '&laquo; Previous';
+			$page_links[] = sprintf( '<a %1$sclass="prev page-numbers%2$s" %3$s%4$shref="%5$s">%6$s</a>',
+				/* %1$s */ $new_target,
+				/* %2$s */ $new_class,
+				/* %3$s */ $new_attributes,
+				/* %4$s */ $new_title,
+				/* %5$s */ $new_url,
+				/* %6$s */ $prev_text );
+		}
+		
+		for ( $new_page = 1; $new_page <= $last_page; $new_page++ ) {
+			$new_page_display = number_format_i18n( $new_page );
+			$markup_values['new_page'] = $new_page;
+			$new_title = ( ! empty( $arguments['mla_rollover_text'] ) ) ? 'title="' . esc_attr( self::_process_shortcode_parameter( $arguments['mla_rollover_text'], $markup_values ) ) . '" ' : '';
+			
+			if ( $new_page == $current_page ) {
+				// build current page span
+				$page_links[] = sprintf( '<span class="page-numbers current%1$s">%2$s</span>',
+					/* %1$s */ $new_class,
+					/* %2$s */ $new_page_display );
+				$dots = true;
+			}
+			else {
+				if ( $show_all || ( $new_page <= $end_size || ( $current_page && $new_page >= $current_page - $mid_size && $new_page <= $current_page + $mid_size ) || $new_page > $last_page - $end_size ) ) {
+					// build link
+					$new_url = add_query_arg( array( 'mla_paginate_current' => $new_page ), $new_base );
+					$page_links[] = sprintf( '<a %1$sclass="page-numbers%2$s" %3$s%4$shref="%5$s">%6$s</a>',
+						/* %1$s */ $new_target,
+						/* %2$s */ $new_class,
+						/* %3$s */ $new_attributes,
+						/* %4$s */ $new_title,
+						/* %5$s */ $new_url,
+						/* %6$s */ $new_page_display );
+					$dots = true;
+				}
+				elseif ( $dots && ! $show_all ) {
+					// build link
+					$page_links[] = sprintf( '<span class="page-numbers dots%1$s">&hellip;</span>',
+						/* %1$s */ $new_class );
+					$dots = false;
+				}
+			} // ! current
+		} // for $new_page
+		
+		if ( $prev_next && $current_page && ( $current_page < $last_page || -1 == $last_page ) ) {
+			// build next link
+			$markup_values['new_page'] = $current_page + 1;
+			$new_title = ( ! empty( $arguments['mla_rollover_text'] ) ) ? 'title="' . esc_attr( self::_process_shortcode_parameter( $arguments['mla_rollover_text'], $markup_values ) ) . '" ' : '';
+			$new_url = add_query_arg( array( 'mla_paginate_current' => $current_page + 1 ), $new_base );
+			$next_text = ( ! empty( $arguments['mla_next_text'] ) ) ? esc_attr( self::_process_shortcode_parameter( $arguments['mla_next_text'], $markup_values ) ) : 'Next &raquo;';
+			$page_links[] = sprintf( '<a %1$sclass="next page-numbers%2$s" %3$s%4$shref="%5$s">%6$s</a>',
+				/* %1$s */ $new_target,
+				/* %2$s */ $new_class,
+				/* %3$s */ $new_attributes,
+				/* %4$s */ $new_title,
+				/* %5$s */ $new_url,
+				/* %6$s */ $next_text );
+		}
+
+		switch ( strtolower( trim( $arguments['mla_paginate_type'] ) ) ) {
+			case 'list':
+				$results = "<ul class='page-numbers'>\n\t<li>";
+				$results .= join("</li>\n\t<li>", $page_links);
+				$results .= "</li>\n</ul>\n";
+				break;
+			default:
+				$results = join("\n", $page_links);
+		} // mla_paginate_type
+error_log( '_paginate_links $results = ' . var_export( $results, true ), 0 );
+	
+		return $output . $results;
+	}
+	
+	/**
+	 * Handles pagnation output types 'previous_page', 'next_page', and 'paginate_links'
+	 *
+	 * @since 1.42
+	 *
+	 * @param array	value(s) for mla_output_type parameter
+	 * @param string template substitution values, e.g., ('instance' => '1', ...  )
+	 * @param string merged default and passed shortcode parameter values
 	 * @param string raw passed shortcode parameter values
 	 * @param integer number of attachments in the gallery, without pagination
 	 * @param string output text so far, may include debug values
@@ -1183,8 +1325,6 @@ class MLAShortcodes {
 
 		switch ( $output_parameters[0] ) {
 			case 'previous_page':
-				$new_text = '&larr; Previous';
-
 				if ( 1 < $paged )
 					$new_page = $paged - 1;
 				else {
@@ -1202,8 +1342,6 @@ class MLAShortcodes {
 				
 				break;
 			case 'next_page':
-				$new_text = 'Next &rarr;';
-				
 				if ( $paged < $max_page )
 					$new_page = $paged + 1;
 				else {
@@ -1221,7 +1359,8 @@ class MLAShortcodes {
 					
 				break;
 			case 'paginate_links':
-				return $output . 'Found Paginate Links';
+				$new_page = 0;
+				$new_text = '';
 		}
 		
 		$markup_values['current_page'] = $paged;
@@ -1257,9 +1396,12 @@ class MLAShortcodes {
 		/*
 		 * Build the new link, applying Gallery Display Content parameters
 		 */
+		if ( 'paginate_links' == $output_parameters[0] )
+			return self::_paginate_links( $output_parameters, $markup_values, $arguments, $found_rows, $output );
+			
 		if ( 0 == $new_page ) {
 			if ( ! empty( $arguments['mla_nolink_text'] ) )
-				return self::_process_shortcode_parameter( $arguments['mla_nolink_text'], $markup_values ) . '</a>';
+				return self::_process_shortcode_parameter( $arguments['mla_nolink_text'], $markup_values );
 			else
 				return '';
 		}
@@ -1285,8 +1427,22 @@ class MLAShortcodes {
 		
 		if ( ! empty( $arguments['mla_link_text'] ) )
 			$new_link .= self::_process_shortcode_parameter( $arguments['mla_link_text'], $markup_values ) . '</a>';
-		else
+		else {
+			if ( 'previous_page' == $output_parameters[0] ) {
+				if ( isset( $arguments['mla_prev_text'] ) )
+					$new_text = esc_attr( self::_process_shortcode_parameter( $arguments['mla_prev_text'], $markup_values ) );
+				else
+					$new_text = '&laquo; Previous';
+			}
+			else {
+				if ( isset( $arguments['mla_next_text'] ) )
+					$new_text = esc_attr( self::_process_shortcode_parameter( $arguments['mla_next_text'], $markup_values ) );
+				else
+					$new_text = 'Next &raquo;';
+			}
+		
 			$new_link .= $new_text . '</a>';
+		}
 		
 		return $new_link;
 	}
