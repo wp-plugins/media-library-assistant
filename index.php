@@ -6,7 +6,7 @@
  * will the rest of the plugin be loaded and run.
  *
  * @package Media Library Assistant
- * @version 1.43
+ * @version 1.50
  */
 
 /*
@@ -14,8 +14,23 @@ Plugin Name: Media Library Assistant
 Plugin URI: http://fairtradejudaica.org/media-library-assistant-a-wordpress-plugin/
 Description: Enhances the Media Library; powerful[mla_gallery], taxonomy support, IPTC/EXIF processing, bulk & quick edit actions and where-used reporting.
 Author: David Lingren
-Version: 1.43
+Version: 1.50
 Author URI: http://fairtradejudaica.org/our-story/staff/
+
+Copyright 2011-2013 David Lingren
+
+	This program is free software; you can redistribute it and/or modify
+	it under the terms of the GNU General Public License as published by
+	the Free Software Foundation; either version 2 of the License, or
+	(at your option) any later version.
+
+	This program is distributed in the hope that it will be useful,
+	but WITHOUT ANY WARRANTY; without even the implied warranty of
+	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+	GNU General Public License for more details.
+
+	You can get a copy of the GNU General Public License by writing to the
+	Free Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110, USA
 */
 
 /**
@@ -30,7 +45,7 @@ if ( defined( 'MLA_PLUGIN_PATH' ) ) {
 }
 else {
 	/**
-	 * Provides path information to the plugin root in file system format.
+	 * Provides path information to the plugin root in file system format, including the trailing slash.
 	 */
 	define( 'MLA_PLUGIN_PATH', plugin_dir_path( __FILE__ ) );
 }
@@ -43,6 +58,16 @@ else {
 	 * Provides path information to the plugin root in URL format.
 	 */
 	define( 'MLA_PLUGIN_URL', plugin_dir_url( __FILE__ ) );
+}
+
+if ( ! defined( 'MLA_BACKUP_DIR' ) ) {
+	/**
+	 * Provides the absolute path to the MLA backup directory, including the trailing slash.
+	 * This constant can be overriden by defining it in the wp_config.php file.
+	 */
+	$content_dir = ( defined('WP_CONTENT_DIR') ) ? WP_CONTENT_DIR : ABSPATH . 'wp-content';
+	define( 'MLA_BACKUP_DIR', $content_dir . '/mla-backup/' );
+	unset( $content_dir );
 }
 
 /**

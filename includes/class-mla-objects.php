@@ -88,7 +88,7 @@ class MLAObjects {
 				)
 			);
 		}
-	
+		
 		$taxonomies = get_taxonomies( array ( 'show_ui' => true ), 'names' );
 		foreach ( $taxonomies as $tax_name ) {
 			if ( MLAOptions::mla_taxonomy_support( $tax_name ) ) {

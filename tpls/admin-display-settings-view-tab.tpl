@@ -85,7 +85,7 @@
 
 <!-- template="before-table" -->
 <h3>Library Views/Post MIME Type Processing</h3>
-<p>On this tab you can manage the list of "Post MIME Types", which are used by WordPress to define the views for the <em><strong>Media/Library</strong></em> screen and the <em><strong>Media Manager/Add Media</strong></em> "media items" drop down list. MLA's <em><strong>Media/Assistant</strong></em> screen uses an enhanced version of the list, <em>Table Views</em>, to support views with multiple MIME Types (e.g., "audio,video") and wildcard specifications (e.g. "*/*ms*"). You can find more information in the <a href="/wp-admin/options-general.php?page=mla-settings-menu-documentation&amp;mla_tab=documentation#mla_views">Documentation tab</a> or by clicking the <strong>"Help"</strong> tab in the upper-right corner of this screen.</p>
+<p>On this tab you can manage the list of "Post MIME Types", which are used by WordPress to define the views for the <em><strong>Media/Library</strong></em> screen and the <em><strong>Media Manager/Add Media</strong></em> "media items" drop down list. MLA's <em><strong>Media/Assistant</strong></em> screen uses an enhanced version of the list, <em>Table Views</em>, to support views with multiple MIME Types (e.g., "audio,video") and wildcard specifications (e.g. "*/*ms*"). You can find more information in the <a href="[+settingsURL+]?page=mla-settings-menu-documentation&amp;mla_tab=documentation#mla_views">Documentation tab</a> or by clicking the <strong>"Help"</strong> tab in the upper-right corner of this screen.</p>
 <div id="ajax-response"></div>
 <form action="[+form_url+]" method="get" id="mla-search-views-form">
 	<input type="hidden" name="page" value="mla-settings-menu-view" />

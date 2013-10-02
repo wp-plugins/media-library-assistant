@@ -22,6 +22,11 @@ class MLAOptions {
 	const MLA_VERSION_OPTION = 'current_version';
 	
 	/**
+	 * Provides a unique name for the exclude revisions option
+	 */
+	const MLA_EXCLUDE_REVISIONS = 'exclude_revisions';
+
+	/**
 	 * Provides a unique name for a database tuning option
 	 */
 	const MLA_FEATURED_IN_TUNING = 'featured_in_tuning';
@@ -40,6 +45,61 @@ class MLAOptions {
 	 * Provides a unique name for a database tuning option
 	 */
 	const MLA_MLA_GALLERY_IN_TUNING = 'mla_gallery_in_tuning';
+	
+	/**
+	 * Provides a unique name for the taxonomy support option
+	 */
+	const MLA_TAXONOMY_SUPPORT = 'taxonomy_support';
+	
+	/**
+	 * Provides a unique name for the admin screen page title option
+	 */
+	const MLA_SCREEN_PAGE_TITLE = 'admin_screen_page_title';
+	
+	/**
+	 * Provides a unique name for the admin screen menu title option
+	 */
+	const MLA_SCREEN_MENU_TITLE = 'admin_screen_menu_title';
+	
+	/**
+	 * Provides a unique name for the admin screen menu order option
+	 */
+	const MLA_SCREEN_ORDER = 'admin_screen_menu_order';
+	
+	/**
+	 * Provides a unique name for the admin screen remove Media/Library option
+	 */
+	const MLA_SCREEN_DISPLAY_LIBRARY = 'admin_screen_display_default';
+	
+	/**
+	 * Provides a unique name for the default orderby option
+	 */
+	const MLA_DEFAULT_ORDERBY = 'default_orderby';
+	
+	/**
+	 * Provides a unique name for the default order option
+	 */
+	const MLA_DEFAULT_ORDER = 'default_order';
+	
+	/**
+	 * Provides a unique name for the default table views width option
+	 */
+	const MLA_TABLE_VIEWS_WIDTH = 'table_views_width';
+	
+	/**
+	 * Provides a unique name for the taxonomy filter maximum depth option
+	 */
+	const MLA_TAXONOMY_FILTER_DEPTH = 'taxonomy_filter_depth';
+	
+	/**
+	 * Provides a unique name for the taxonomy filter maximum depth option
+	 */
+	const MLA_TAXONOMY_FILTER_INCLUDE_CHILDREN = 'taxonomy_filter_include_children';
+	
+	/**
+	 * Provides a "size" attribute value for the EXIF/Template Value field
+	 */
+	const MLA_EXIF_SIZE = 30;
 	
 	/**
 	 * Provides a unique name for the Custom Field "new rule" key
@@ -197,19 +257,19 @@ class MLAOptions {
 				'std' => 'checked',
 				'help' => 'Check this option to add support for Attachment Tags.'),
 	
-		'where_used_heading' =>
+		'where_used_header' =>
 			array('tab' => 'general',
 				'name' => 'Where-used Reporting',
 				'type' => 'header'),
 		
-		'exclude_revisions' =>
+		self::MLA_EXCLUDE_REVISIONS =>
 			array('tab' => 'general',
 				'name' => 'Exclude Revisions',
 				'type' => 'checkbox',
 				'std' => 'checked',
 				'help' => 'Check this option to exclude revisions from where-used reporting.'),
 	
-		'where_used_subheading' =>
+		'where_used_subheader' =>
 			array('tab' => 'general',
 				'name' => 'Where-used database access tuning',
 				'type' => 'subheader'),
@@ -250,12 +310,12 @@ class MLAOptions {
 				'texts' => array('Dynamic', 'Refresh', 'Cached', 'Disabled'),
 				'help' => 'Search database posts and pages for [mla_gallery] shortcode results.<br>&nbsp;&nbsp;Dynamic = once every page load, Cached = once every login, Disabled = never.<br>&nbsp;&nbsp;Refresh = update references, then set to Cached.'),
 	
-		'taxonomy_heading' =>
+		'taxonomy_header' =>
 			array('tab' => 'general',
 				'name' => 'Taxonomy Support',
 				'type' => 'header'),
 		
-		'taxonomy_support' =>
+		self::MLA_TAXONOMY_SUPPORT =>
 			array('tab' => 'general',
 				'help' => 'Check the "Support" box to add the taxonomy to the Assistant and the Edit Media screen.<br>Check the "Inline Edit" box to display the taxonomy in the Quick Edit and Bulk Edit areas.<br>Use the "List Filter" option to select the taxonomy on which to filter the Assistant table listing.',
 				'std' =>  array (
@@ -282,12 +342,53 @@ class MLAOptions {
 				'std' => 'checked',
 				'help' => 'Check this option to replace the Posts column with the Attachments Column.'),
 		
-		'orderby_heading' =>
+		'media_assistant_header' =>
 			array('tab' => 'general',
-				'name' => 'Media/Assistant Table Defaults',
+				'name' => 'Media/Assistant Screen Options',
 				'type' => 'header'),
 		
-		'default_orderby' =>
+		'admin_sidebar_subheader' =>
+			array('tab' => 'general',
+				'name' => 'Admin Menu Options',
+				'type' => 'subheader'),
+		
+		self::MLA_SCREEN_PAGE_TITLE =>
+			array('tab' => 'general',
+				'name' => 'Page Title',
+				'type' => 'text',
+				'std' => 'Media Library Assistant',
+				'size' => 40,
+				'help' => 'Enter the title for the Media/Assistant submenu page'),
+		
+		self::MLA_SCREEN_MENU_TITLE =>
+			array('tab' => 'general',
+				'name' => 'Menu Title',
+				'type' => 'text',
+				'std' => 'Assistant',
+				'size' => 20,
+				'help' => 'Enter the title for the Media/Assistant submenu entry'),
+		
+		self::MLA_SCREEN_ORDER =>
+			array('tab' => 'general',
+				'name' => 'Submenu Order',
+				'type' => 'text',
+				'std' => '0',
+				'size' => 2,
+				'help' => 'Enter the position of the Media/Assistant submenu entry.<br>&nbsp;&nbsp;0 = natural order (at bottom),&nbsp;&nbsp;&nbsp;&nbsp;1 - 4 = at top<br>&nbsp;&nbsp;6-9 = after "Library",&nbsp;&nbsp;&nbsp;&nbsp;11-16 = after "Add New"'),
+		
+		self::MLA_SCREEN_DISPLAY_LIBRARY =>
+			array('tab' => 'general',
+				'name' => 'Display Media/Library',
+				'type' => 'checkbox',
+				'std' => 'checked',
+				'help' => 'Check/uncheck this option to display/remove the WordPress Media/Library submenu entry.'),
+	
+		'table_defaults_subheader' =>
+			array('tab' => 'general',
+				'name' => 'Table Defaults',
+				'type' => 'subheader'),
+		
+		self::MLA_DEFAULT_ORDERBY =>
 			array('tab' => 'general',
 				'name' => 'Order By',
 				'type' => 'select',
@@ -296,7 +397,7 @@ class MLAOptions {
 				'texts' => array('None', 'Title/Name'),
 				'help' => 'Select the column for the sort order of the Assistant table listing.'),
 	
-		'default_order' =>
+		self::MLA_DEFAULT_ORDER =>
 			array('tab' => 'general',
 				'name' => 'Order',
 				'type' => 'radio',
@@ -305,7 +406,7 @@ class MLAOptions {
 				'texts' => array('Ascending', 'Descending'),
 				'help' => 'Choose the sort order.'),
 
-		'table_views_width' =>
+		self::MLA_TABLE_VIEWS_WIDTH =>
 			array('tab' => 'general',
 				'name' => 'Views Width',
 				'type' => 'text',
@@ -313,7 +414,27 @@ class MLAOptions {
 				'size' => 10,
 				'help' => 'Enter the width for the views list, in pixels (px) or percent (%)'),
 		
-		'media_modal_heading' =>
+		'taxonomy_filter_subheader' =>
+			array('tab' => 'general',
+				'name' => 'Taxonomy Filter parameters',
+				'type' => 'subheader'),
+		
+		self::MLA_TAXONOMY_FILTER_DEPTH =>
+			array('tab' => 'general',
+				'name' => 'Maximum Depth',
+				'type' => 'text',
+				'std' => '3',
+				'size' => 2,
+				'help' => 'Enter the number of levels displayed for hierarchial taxonomies; enter zero for no limit.'),
+		
+		self::MLA_TAXONOMY_FILTER_INCLUDE_CHILDREN =>
+			array('tab' => 'general',
+				'name' => 'Include Children',
+				'type' => 'checkbox',
+				'std' => 'checked',
+				'help' => 'Check/uncheck this option to include/exclude children for hierarchical taxonomies.'),
+	
+		'media_modal_header' =>
 			array('tab' => 'general',
 				'name' => 'Media Manager Enhancements',
 				'type' => 'header'),
@@ -353,7 +474,7 @@ class MLAOptions {
 				'std' => 'checked',
 				'help' => 'Check this option to enable search box enhancements.'),
 	
-		'template_heading' =>
+		'template_header' =>
 			array('tab' => 'mla_gallery',
 				'name' => 'Default [mla_gallery] Templates and Settings',
 				'type' => 'header'),
@@ -943,7 +1064,7 @@ class MLAOptions {
 	 *			string if $tax_name is '' and $support_type is 'filter', returns the taxonomy to filter by
 	 */
 	public static function mla_taxonomy_support($tax_name, $support_type = 'support') {
-		$tax_options =  MLAOptions::mla_get_option( 'taxonomy_support' );
+		$tax_options =  MLAOptions::mla_get_option( self::MLA_TAXONOMY_SUPPORT );
 		
 		switch ( $support_type ) {
 			case 'support': 
@@ -1169,7 +1290,7 @@ class MLAOptions {
 	public static function mla_custom_field_option_value( $slug ) {
 		$option_values = self::mla_get_option( 'custom_field_mapping' );
 
-		foreach( $option_values as $key => $value ) {
+		foreach ( $option_values as $key => $value ) {
 			if ( $slug == 'c_' . sanitize_title( $key ) )
 				return $value;
 		}
@@ -1190,7 +1311,7 @@ class MLAOptions {
 		$option_values = self::mla_get_option( 'custom_field_mapping' );
 		$results = array();
 
-		foreach( $option_values as $key => $value ) {
+		foreach ( $option_values as $key => $value ) {
 			$slug = 'c_' . sanitize_title( $key );
 
 			switch( $support_type ) {
@@ -1260,7 +1381,7 @@ class MLAOptions {
 			$results['hwstring_small'] = isset( $attachment_metadata['hwstring_small'] ) ? $attachment_metadata['hwstring_small'] : '';
 
 			if ( isset( $attachment_metadata['image_meta'] ) ) {
-				foreach( $attachment_metadata['image_meta'] as $key => $value )
+				foreach ( $attachment_metadata['image_meta'] as $key => $value )
 					$results[ $key ] = $value;
 			}
 		}
@@ -1443,7 +1564,35 @@ class MLAOptions {
 		switch( $data_source ) {
 			case 'meta':
 				$attachment_metadata = isset( $wp_attachment_metadata[ $post_id ]->meta_value ) ? unserialize( $wp_attachment_metadata[ $post_id ]->meta_value ) : array();
-				$result = MLAData::mla_find_array_element( $data_value['meta_name'], $attachment_metadata, $data_value['option'], $data_value['keep_existing']  );
+				$result = MLAData::mla_find_array_element( $data_value['meta_name'], $attachment_metadata, $data_value['option'], $data_value['keep_existing'] );
+				break;
+			case 'template':
+				if ( in_array( $data_value['option'], array ( 'export', 'array', 'multi' ) ) )
+					$default_option = 'array';
+				else
+					$default_option = 'text';
+					
+				$item_values = array();
+				$placeholders = MLAData::mla_get_template_placeholders( $data_value['meta_name'], $default_option );
+				foreach ( $placeholders as $key => $placeholder ) {
+					if ( empty( $placeholder['prefix'] ) ) {
+						$field_value = $data_value;
+						$field_value['data_source'] = $placeholder['value'];
+						$field_value['option'] = $placeholder['option'];
+						$item_values[ $key ] = self::_evaluate_data_source( $post_id, $category, $field_value, $attachment_metadata );
+					} // Data Source
+				} // foreach placeholder
+
+				$template = '[+template:' . $data_value['meta_name'] . '+]';
+				$item_values = MLAData::mla_expand_field_level_parameters( $template, NULL, $item_values, $post_id, $data_value['keep_existing'], $default_option );
+
+				if ( 'array' ==  $default_option ) {
+					$result = MLAData::mla_parse_array_template( $template, $item_values );
+					$result = self::_evaluate_array_result( $result, $data_value['option'], $data_value['keep_existing'] );
+				}
+				else
+					$result = MLAData::mla_parse_template( $template, $item_values );
+					
 				break;
 			case 'absolute_path':
 			case 'absolute_file_name':
@@ -1493,21 +1642,21 @@ class MLAOptions {
 				break;
 			case 'size_keys':
 				$result = array();
-				foreach( $file_info['sizes'] as $key => $value )
+				foreach ( $file_info['sizes'] as $key => $value )
 					$result[] = $key;
 
 				$result = self::_evaluate_array_result( $result, $data_value['option'], $data_value['keep_existing'] );
 				break;
 			case 'size_names':
 				$result = array();
-				foreach( $file_info['sizes'] as $key => $value )
+				foreach ( $file_info['sizes'] as $key => $value )
 					$result[] = $value['file'];
 
 				$result = self::_evaluate_array_result( $result, $data_value['option'], $data_value['keep_existing'] );
 				break;
 			case 'size_bytes':
 				$result = array();
-				foreach( $file_info['sizes'] as $key => $value ) {
+				foreach ( $file_info['sizes'] as $key => $value ) {
 					$filesize = @ filesize( $file_info['absolute_path_raw'] . $value['file'] );
 					if ( false === $filesize )
 						$result[] = '?';
@@ -1528,7 +1677,7 @@ class MLAOptions {
 				break;
 			case 'size_pixels':
 				$result = array();
-				foreach( $file_info['sizes'] as $key => $value ) {
+				foreach ( $file_info['sizes'] as $key => $value ) {
 					$pixels = absint( (int) $value['width'] * (int) $value['height'] );
 
 					switch( $data_value['format'] ) {
@@ -1546,7 +1695,7 @@ class MLAOptions {
 				break;
 			case 'size_dimensions':
 				$result = array();
-				foreach( $file_info['sizes'] as $key => $value ) {
+				foreach ( $file_info['sizes'] as $key => $value ) {
 					$result[] = $value['width'] . 'x' . $value['height'];
 				}
 
@@ -1719,7 +1868,7 @@ class MLAOptions {
 		$updates = array();
 		$custom_updates = array();
 		
-		foreach( $settings as $new_key => $new_value ) {
+		foreach ( $settings as $new_key => $new_value ) {
 			if ( 'none' == $new_value['data_source'] )
 				continue;
 
@@ -1893,12 +2042,19 @@ class MLAOptions {
 		);
 		$custom_field_options .= MLAData::mla_parse_template( $option_template, $option_values );
 		
+		$option_values = array (
+			'selected' => ( 'template' == $selection ) ? 'selected="selected"' : '',
+			'value' => 'template',
+			'text' => ' -- Template (see below) -- '
+		);
+		$custom_field_options .= MLAData::mla_parse_template( $option_template, $option_values );
+		
 		$intermediate_sizes = get_intermediate_image_sizes();
 		foreach ( self::$custom_field_data_sources as $value ) {
 			$size_pos = strpos( $value, '[size]' );
 			if ( $size_pos ) {
 				$root_value = substr( $value, 0, $size_pos );
-				foreach( $intermediate_sizes as $size_name ) {
+				foreach ( $intermediate_sizes as $size_name ) {
 					$value = $root_value . '[' . $size_name . ']';
 					$option_values = array (
 						'selected' => ( $value == $selection ) ? 'selected="selected"' : '',
@@ -2007,7 +2163,8 @@ class MLAOptions {
 			if ( $old_values['data_source'] != $new_value['data_source'] ) {
 				$any_setting_changed = true;
 				
-				if ( 'meta' == $old_values['data_source'] ) {
+//				if ( 'meta' == $old_values['data_source'] ) {
+				if ( in_array( $old_values['data_source'], array( 'meta', 'template' ) ) ) {
 					$new_value['meta_name'] = '';
 				}
 
@@ -2331,13 +2488,26 @@ class MLAOptions {
 			$settings = self::mla_get_option( 'iptc_exif_mapping' );
 
 		if ( $update_all || ( 'iptc_exif_standard_mapping' == $category ) ) {
-			foreach( $settings['standard'] as $new_key => $new_value ) {
+			foreach ( $settings['standard'] as $new_key => $new_value ) {
 				if ( 'none' == $new_value['iptc_value'] )
 					$iptc_value = '';
 				else
 					$iptc_value = MLAData::mla_iptc_metadata_value( $new_value['iptc_value'], $metadata );
 					
-				$exif_value = MLAData::mla_exif_metadata_value( $new_value['exif_value'], $metadata );
+				if ( 'template:' == substr( $new_value['exif_value'], 0, 9 ) ) {
+					$data_value = array(
+						'name' => $new_key,
+						'data_source' => 'template',
+						'meta_name' => substr( $new_value['exif_value'], 9 ),
+						'keep_existing' => $new_value['keep_existing'],
+						'format' => 'native',
+						'option' => 'text' );
+						
+					$exif_value =  self::_evaluate_data_source( $post->ID, 'single_attachment_mapping', $data_value, $metadata );
+				}
+				else
+					$exif_value = MLAData::mla_exif_metadata_value( $new_value['exif_value'], $metadata );
+					
 				$keep_existing = (boolean) $new_value['keep_existing'];
 				
 				if ( $new_value['iptc_first'] )
@@ -2389,13 +2559,25 @@ class MLAOptions {
 			$tax_inputs = array();
 			$tax_actions =  array();
 			
-			foreach( $settings['taxonomy'] as $new_key => $new_value ) {
+			foreach ( $settings['taxonomy'] as $new_key => $new_value ) {
 				if ( 'none' == $new_value['iptc_value'] )
 					$iptc_value = '';
 				else
 					$iptc_value = MLAData::mla_iptc_metadata_value( $new_value['iptc_value'], $metadata );
 					
-				$exif_value = MLAData::mla_exif_metadata_value( $new_value['exif_value'], $metadata );
+				if ( 'template:' == substr( $new_value['exif_value'], 0, 9 ) ) {
+					$data_value = array(
+						'name' => $new_key,
+						'data_source' => 'template',
+						'meta_name' => substr( $new_value['exif_value'], 9 ),
+						'keep_existing' => $new_value['keep_existing'],
+						'format' => 'native',
+						'option' => 'array' );
+						
+					$exif_value =  self::_evaluate_data_source( $post->ID, 'single_attachment_mapping', $data_value, $metadata );
+				}
+				else
+					$exif_value = MLAData::mla_exif_metadata_value( $new_value['exif_value'], $metadata );
 				
 				$tax_action = ( $new_value['keep_existing'] ) ? 'add' : 'replace';
 				$tax_parent = ( isset( $new_value['parent'] ) && (0 != (integer) $new_value['parent'] ) ) ? (integer) $new_value['parent'] : 0;
@@ -2417,7 +2599,7 @@ class MLAOptions {
 							$new_text = array( $new_text );
 						
 						$new_terms = array();
-						foreach( $new_text as $new_term ) {
+						foreach ( $new_text as $new_term ) {
 							$term_object = term_exists( $new_term, $new_key );
 							if ($term_object !== 0 && $term_object !== null)
 								$new_terms[] = $term_object['term_id'];
@@ -2445,14 +2627,26 @@ class MLAOptions {
 		if ( $update_all || ( 'iptc_exif_custom_mapping' == $category ) ) {
 			$custom_updates = array();
 			
-			foreach( $settings['custom'] as $new_key => $new_value ) {
+			foreach ( $settings['custom'] as $new_key => $new_value ) {
 				if ( 'none' == $new_value['iptc_value'] )
 					$iptc_value = '';
 				else
 					$iptc_value = MLAData::mla_iptc_metadata_value( $new_value['iptc_value'], $metadata );
 					
-				$exif_value = MLAData::mla_exif_metadata_value( $new_value['exif_value'], $metadata );
-
+				if ( 'template:' == substr( $new_value['exif_value'], 0, 9 ) ) {
+					$data_value = array(
+						'name' => $new_key,
+						'data_source' => 'template',
+						'meta_name' => substr( $new_value['exif_value'], 9 ),
+						'keep_existing' => $new_value['keep_existing'],
+						'format' => 'native',
+						'option' => 'text' );
+						
+					$exif_value =  self::_evaluate_data_source( $post->ID, 'single_attachment_mapping', $data_value, $metadata );
+				}
+				else
+					$exif_value = MLAData::mla_exif_metadata_value( $new_value['exif_value'], $metadata );
+					
 				if ( $new_value['iptc_first'] )
 					if ( ! empty( $iptc_value ) )
 						$new_text = $iptc_value;
@@ -2875,11 +3069,11 @@ class MLAOptions {
 			LIMIT $limit" );
 			
 		if ( $keys ) {
-			foreach( $custom_field_mapping as $value )
+			foreach ( $custom_field_mapping as $value )
 				if ( ! in_array( $value, $keys ) )
 					$keys[] = $value;
 				
-			foreach( $iptc_exif_mapping as $value )
+			foreach ( $iptc_exif_mapping as $value )
 				if ( ! in_array( $value, $keys ) )
 					$keys[] = $value;
 				
@@ -2918,7 +3112,7 @@ class MLAOptions {
 								'key' => $row_name,
 								'name' => $row_value['name'],
 								'iptc_field_options' => self::_compose_iptc_option_list( $row_value['iptc_value'] ),
-								'exif_size' => 20,
+								'exif_size' => self::MLA_EXIF_SIZE,
 								'exif_text' => $row_value['exif_value'],
 								'iptc_selected' => '',
 								'exif_selected' => '',
@@ -2957,7 +3151,7 @@ class MLAOptions {
 								'name' => esc_html( $row_value->labels->name ),
 								'hierarchical' => (string) $row_value->hierarchical,
 								'iptc_field_options' => '',
-								'exif_size' => 20,
+								'exif_size' => self::MLA_EXIF_SIZE,
 								'exif_text' => '',
 								'iptc_selected' => '',
 								'exif_selected' => '',
@@ -3036,7 +3230,7 @@ class MLAOptions {
 								'key' => $row_name,
 								'name' => $row_name,
 								'iptc_field_options' => '',
-								'exif_size' => 20,
+								'exif_size' => self::MLA_EXIF_SIZE,
 								'exif_text' => '',
 								'iptc_selected' => '',
 								'exif_selected' => '',
@@ -3069,7 +3263,7 @@ class MLAOptions {
 							'key' => self::MLA_NEW_CUSTOM_RULE,
 							'field_name_options' => self::_compose_custom_field_option_list( 'none', $current_values['custom'] ),
 							'iptc_field_options' => self::_compose_iptc_option_list( 'none' ),
-							'exif_size' => 20,
+							'exif_size' => self::MLA_EXIF_SIZE,
 							'exif_text' => '',
 							'iptc_selected' => 'selected="selected"',
 							'exif_selected' => '',
@@ -3087,7 +3281,7 @@ class MLAOptions {
 							'key' => self::MLA_NEW_CUSTOM_FIELD,
 							'field_name_size' => '24',
 							'iptc_field_options' => self::_compose_iptc_option_list( 'none' ),
-							'exif_size' => 20,
+							'exif_size' => self::MLA_EXIF_SIZE,
 							'exif_text' => '',
 							'iptc_selected' => 'selected="selected"',
 							'exif_selected' => '',

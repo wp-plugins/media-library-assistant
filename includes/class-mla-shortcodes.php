@@ -43,7 +43,7 @@ class MLAShortcodes {
 		/*
 		 * Process the where-used settings option
 		 */
-		if ('checked' == MLAOptions::mla_get_option( 'exclude_revisions' ) )
+		if ('checked' == MLAOptions::mla_get_option( MLAOptions::MLA_EXCLUDE_REVISIONS ) )
 			$exclude_revisions = "(post_type <> 'revision') AND ";
 		else
 			$exclude_revisions = '';
@@ -244,18 +244,16 @@ class MLAShortcodes {
 		 * which can be added to any input parameter
 		 */
 		foreach ( $attr as $attr_key => $attr_value ) {
+			/*
+			 * attachment-specific Gallery Display Content parameters must be evaluated
+			 * later, when all of the information is available.
+			 */
+			if ( in_array( $attr_key, array( 'mla_link_attributes', 'mla_link_class', 'mla_link_href', 'mla_link_text', 'mla_nolink_text', 'mla_rollover_text', 'mla_image_class', 'mla_image_alt', 'mla_image_attributes', 'mla_caption' ) ) )
+				continue;
+				
 			$attr_value = str_replace( '{+', '[+', str_replace( '+}', '+]', $attr_value ) );
-			$replacement_values = array();
-			$placeholders = MLAData::mla_get_template_placeholders( $attr_value );
-			foreach ($placeholders as $key => $value ) {
-				if ( 'request' == $value['prefix'] ) {
-					if ( isset( $_REQUEST[ $value['value'] ] ) )
-						$replacement_values[ $key ] = $_REQUEST[ $value['value'] ];
-					else
-						$replacement_values[ $key ] = '';
-				}
-			} // $placeholders
-			
+			$replacement_values = MLAData::mla_expand_field_level_parameters( $attr_value );
+
 			if ( ! empty( $replacement_values ) )
 				$attr[ $attr_key ] = MLAData::mla_parse_template( $attr_value, $replacement_values );
 		}
@@ -457,22 +455,8 @@ class MLAShortcodes {
 				/*
 				 * Look for 'query' and 'request' substitution parameters
 				 */
-				$placeholders = MLAData::mla_get_template_placeholders( $style_template );
-				foreach ($placeholders as $key => $value ) {
-					if ( 'query' == $value['prefix'] ) {
-						if ( isset( $attr[ $value['value'] ] ) )
-							$style_values[ $key ] = $attr[ $value['value'] ];
-						else
-							$style_values[ $key ] = '';
-					}
-					elseif ( 'request' == $value['prefix'] ) {
-						if ( isset( $_REQUEST[ $value['value'] ] ) )
-							$style_values[ $key ] = $_REQUEST[ $value['value'] ];
-						else
-							$style_values[ $key ] = '';
-					}
-				} // $placeholders
-				 
+				$style_values = MLAData::mla_expand_field_level_parameters( $style_template, $attr, $style_values );
+
 				/*
 				 * Clean up the template to resolve width or margin == 'none'
 				 */
@@ -502,28 +486,11 @@ class MLAShortcodes {
 		$markup_values['base_url'] = $upload_dir['baseurl'];
 		$markup_values['base_dir'] = $upload_dir['basedir'];
 
-		/*
-		 * Variable 'query' and 'request' placeholders can be anywhere in the markup template
-		 */
-		$query_placeholders = array();
-		$request_placeholders = array();
-
-		/*
-		 * Variable item-level placeholders
-		 */
-		$meta_placeholders = array();
-		$terms_placeholders = array();
-		$custom_placeholders = array();
-		$iptc_placeholders = array();
-		$exif_placeholders = array();
-		$pdf_placeholders = array();
-
 		$open_template = MLAOptions::mla_fetch_gallery_template( $markup_values['mla_markup'] . '-open', 'markup' );
 		if ( false === $open_template ) {
 			$markup_values['mla_markup'] = 'default';
 			$open_template = MLAOptions::mla_fetch_gallery_template( 'default-open', 'markup' );
 		}
-			
 		if ( empty( $open_template ) )
 			$open_template = '';
 
@@ -544,58 +511,11 @@ class MLAShortcodes {
 			$close_template = '';
 
 		/*
-		 * Look for variable query and item-level placeholders
+		 * Look for gallery-level markup substitution parameters
 		 */
-		$new_text = str_replace( '{+', '[+', str_replace( '+}', '+]', $arguments['mla_link_attributes'] . $arguments['mla_link_class'] . $arguments['mla_link_href'] . $arguments['mla_link_text'] . $arguments['mla_nolink_text'] . $arguments['mla_rollover_text'] . $arguments['mla_image_class'] . $arguments['mla_image_alt'] . $arguments['mla_image_attributes'] . $arguments['mla_caption'] ) );
-
-		$placeholders = MLAData::mla_get_template_placeholders( $new_text . $open_template . $row_open_template . $item_template . $row_close_template . $close_template );
-		foreach ($placeholders as $key => $value ) {
-			switch ( $value['prefix'] ) {
-				case 'meta':
-					$meta_placeholders[ $key ] = $value;
-					break;
-				case 'query':
-					$query_placeholders[ $key ] = $value;
-					break;
-				case 'request':
-					$request_placeholders[ $key ] = $value;
-					break;
-				case 'terms':
-					$terms_placeholders[ $key ] = $value;
-					break;
-				case 'custom':
-					$custom_placeholders[ $key ] = $value;
-					break;
-				case 'iptc':
-					$iptc_placeholders[ $key ] = $value;
-					break;
-				case 'exif':
-					$exif_placeholders[ $key ] = $value;
-					break;
-				case 'pdf':
-					$pdf_placeholders[ $key ] = $value;
-					break;
-				default:
-					// ignore anything else
-			} // switch
-		} // $placeholders
-				
-		/*
-		 * Add 'query' and 'request' placeholders
-		 */
-		foreach ( $query_placeholders as $key => $value ) {
-			if ( isset( $attr[ $value['value'] ] ) )
-				$markup_values[ $key ] = $attr[ $value['value'] ];
-			else
-				$markup_values[ $key ] = '';
-		} // $query_placeholders
-
-		foreach ( $request_placeholders as $key => $value ) {
-			if ( isset( $_REQUEST[ $value['value'] ] ) )
-				$markup_values[ $key ] = $_REQUEST[ $value['value'] ];
-			else
-				$markup_values[ $key ] = '';
-		} // $request_placeholders
+		$new_text = $open_template . $row_open_template . $row_close_template . $close_template;
+		
+		$markup_values = MLAData::mla_expand_field_level_parameters( $new_text, $attr, $markup_values );
 
 		if ( self::$mla_debug ) {
 			$output = self::$mla_debug_messages;
@@ -662,65 +582,67 @@ class MLAShortcodes {
 		
 		$column_index = 0;
 		foreach ( $attachments as $id => $attachment ) {
+			$item_values = $markup_values;
+			
 			/*
 			 * fill in item-specific elements
 			 */
-			$markup_values['index'] = (string) 1 + $column_index;
+			$item_values['index'] = (string) 1 + $column_index;
 
-			$markup_values['excerpt'] = wptexturize( $attachment->post_excerpt );
-			$markup_values['attachment_ID'] = $attachment->ID;
-			$markup_values['mime_type'] = $attachment->post_mime_type;
-			$markup_values['menu_order'] = $attachment->menu_order;
-			$markup_values['date'] = $attachment->post_date;
-			$markup_values['modified'] = $attachment->post_modified;
-			$markup_values['parent'] = $attachment->post_parent;
-			$markup_values['parent_title'] = '(unattached)';
-			$markup_values['parent_type'] = '';
-			$markup_values['parent_date'] = '';
-			$markup_values['title'] = wptexturize( $attachment->post_title );
-			$markup_values['slug'] = wptexturize( $attachment->post_name );
-			$markup_values['width'] = '';
-			$markup_values['height'] = '';
-			$markup_values['image_meta'] = '';
-			$markup_values['image_alt'] = '';
-			$markup_values['base_file'] = '';
-			$markup_values['path'] = '';
-			$markup_values['file'] = '';
-			$markup_values['description'] = wptexturize( $attachment->post_content );
-			$markup_values['file_url'] = wptexturize( $attachment->guid );
-			$markup_values['author_id'] = $attachment->post_author;
+			$item_values['excerpt'] = wptexturize( $attachment->post_excerpt );
+			$item_values['attachment_ID'] = $attachment->ID;
+			$item_values['mime_type'] = $attachment->post_mime_type;
+			$item_values['menu_order'] = $attachment->menu_order;
+			$item_values['date'] = $attachment->post_date;
+			$item_values['modified'] = $attachment->post_modified;
+			$item_values['parent'] = $attachment->post_parent;
+			$item_values['parent_title'] = '(unattached)';
+			$item_values['parent_type'] = '';
+			$item_values['parent_date'] = '';
+			$item_values['title'] = wptexturize( $attachment->post_title );
+			$item_values['slug'] = wptexturize( $attachment->post_name );
+			$item_values['width'] = '';
+			$item_values['height'] = '';
+			$item_values['image_meta'] = '';
+			$item_values['image_alt'] = '';
+			$item_values['base_file'] = '';
+			$item_values['path'] = '';
+			$item_values['file'] = '';
+			$item_values['description'] = wptexturize( $attachment->post_content );
+			$item_values['file_url'] = wptexturize( $attachment->guid );
+			$item_values['author_id'] = $attachment->post_author;
 		
 			$user = get_user_by( 'id', $attachment->post_author );
 			if ( isset( $user->data->display_name ) )
-				$markup_values['author'] = wptexturize( $user->data->display_name );
+				$item_values['author'] = wptexturize( $user->data->display_name );
 			else
-				$markup_values['author'] = 'unknown';
+				$item_values['author'] = 'unknown';
 
 			$post_meta = MLAData::mla_fetch_attachment_metadata( $attachment->ID );
 			$base_file = $post_meta['mla_wp_attached_file'];
 			$sizes = isset( $post_meta['mla_wp_attachment_metadata']['sizes'] ) ? $post_meta['mla_wp_attachment_metadata']['sizes'] : array();
 
 			if ( !empty( $post_meta['mla_wp_attachment_metadata']['width'] ) )
-				$markup_values['width'] = $post_meta['mla_wp_attachment_metadata']['width'];
+				$item_values['width'] = $post_meta['mla_wp_attachment_metadata']['width'];
 			if ( !empty( $post_meta['mla_wp_attachment_metadata']['height'] ) )
-				$markup_values['height'] = $post_meta['mla_wp_attachment_metadata']['height'];
+				$item_values['height'] = $post_meta['mla_wp_attachment_metadata']['height'];
 			if ( !empty( $post_meta['mla_wp_attachment_metadata']['image_meta'] ) )
-				$markup_values['image_meta'] = wptexturize( var_export( $post_meta['mla_wp_attachment_metadata']['image_meta'], true ) );
+				$item_values['image_meta'] = wptexturize( var_export( $post_meta['mla_wp_attachment_metadata']['image_meta'], true ) );
 			if ( !empty( $post_meta['mla_wp_attachment_image_alt'] ) )
-				$markup_values['image_alt'] = wptexturize( $post_meta['mla_wp_attachment_image_alt'] );
+				$item_values['image_alt'] = wptexturize( $post_meta['mla_wp_attachment_image_alt'] );
 
 			if ( ! empty( $base_file ) ) {
 				$last_slash = strrpos( $base_file, '/' );
 				if ( false === $last_slash ) {
 					$file_name = $base_file;
-					$markup_values['base_file'] = wptexturize( $base_file );
-					$markup_values['file'] = wptexturize( $base_file );
+					$item_values['base_file'] = wptexturize( $base_file );
+					$item_values['file'] = wptexturize( $base_file );
 				}
 				else {
 					$file_name = substr( $base_file, $last_slash + 1 );
-					$markup_values['base_file'] = wptexturize( $base_file );
-					$markup_values['path'] = wptexturize( substr( $base_file, 0, $last_slash + 1 ) );
-					$markup_values['file'] = wptexturize( $file_name );
+					$item_values['base_file'] = wptexturize( $base_file );
+					$item_values['path'] = wptexturize( substr( $base_file, 0, $last_slash + 1 ) );
+					$item_values['file'] = wptexturize( $file_name );
 				}
 			}
 			else
@@ -728,162 +650,36 @@ class MLAShortcodes {
 
 			$parent_info = MLAData::mla_fetch_attachment_parent_data( $attachment->post_parent );
 			if ( isset( $parent_info['parent_title'] ) )
-				$markup_values['parent_title'] = wptexturize( $parent_info['parent_title'] );
+				$item_values['parent_title'] = wptexturize( $parent_info['parent_title'] );
 				
 			if ( isset( $parent_info['parent_date'] ) )
-				$markup_values['parent_date'] = wptexturize( $parent_info['parent_date'] );
+				$item_values['parent_date'] = wptexturize( $parent_info['parent_date'] );
 				
 			if ( isset( $parent_info['parent_type'] ) )
-				$markup_values['parent_type'] = wptexturize( $parent_info['parent_type'] );
+				$item_values['parent_type'] = wptexturize( $parent_info['parent_type'] );
 				
 			/*
-			 * Add variable placeholders
+			 * Add attachment-specific field-level substitution parameters
 			 */
-			$item_metadata = get_metadata( 'post', $attachment->ID, '_wp_attachment_metadata', true );
-			foreach ( $meta_placeholders as $key => $value ) {
-				$markup_values[ $key ] = MLAData::mla_find_array_element( $value['value'], $item_metadata, $value['option'] );
-			} // $meta_placeholders */
-			
-			foreach ( $terms_placeholders as $key => $value ) {
-				$terms = wp_get_object_terms( $attachment->ID, $value['value'] );
-			
-				$text = '';
-				if ( is_wp_error( $terms ) ) {
-					$text = implode( ',', $terms->get_error_messages() );
-				}
-				elseif ( ! empty( $terms ) ) {
-					if ( 'single' == $value['option'] || 1 == count( $terms ) )
-						$text = sanitize_term_field( 'name', $terms[0]->name, $terms[0]->term_id, $value, 'display' );
-					elseif ( 'export' == $value['option'] )
-						$text = sanitize_text_field( var_export( $terms, true ) );
-					else
-						foreach ( $terms as $term ) {
-							$term_name = sanitize_term_field( 'name', $term->name, $term->term_id, $value, 'display' );
-							$text .= strlen( $text ) ? ', ' . $term_name : $term_name;
-						}
-				}
-				
-				$markup_values[ $key ] = $text;
-			} // $terms_placeholders
-			
-			foreach ( $custom_placeholders as $key => $value ) {
-				$record = get_metadata( 'post', $attachment->ID, $value['value'], 'single' == $value['option'] );
+			$new_text = $item_template . str_replace( '{+', '[+', str_replace( '+}', '+]', $arguments['mla_link_attributes'] . $arguments['mla_link_class'] . $arguments['mla_link_href'] . $arguments['mla_link_text'] . $arguments['mla_nolink_text'] . $arguments['mla_rollover_text'] . $arguments['mla_image_class'] . $arguments['mla_image_alt'] . $arguments['mla_image_attributes'] . $arguments['mla_caption'] ) );
+		
+			$item_values = MLAData::mla_expand_field_level_parameters( $new_text, $attr, $item_values, $attachment->ID );
 
-				$text = '';
-				if ( is_wp_error( $record ) )
-					$text = implode( ',', $terms->get_error_messages() );
-				elseif ( ! empty( $record ) ) {
-					if ( is_scalar( $record ) )
-						$text = sanitize_text_field( (string) $record );
-					elseif ( is_array( $record ) ) {
-						if ( 'export' == $value['option'] )
-							$text = sanitize_text_field( var_export( $haystack, true ) );
-						else {
-							$text = '';
-							foreach ( $record as $term ) {
-								$term_name = sanitize_text_field( $term );
-								$text .= strlen( $text ) ? ', ' . $term_name : $term_name;
-							}
-						}
-					} // is_array
-				} // ! empty
-				
-				$markup_values[ $key ] = $text;
-			} // $custom_placeholders
-			
-			if ( !empty( $iptc_placeholders ) || !empty( $exif_placeholders ) || !empty( $pdf_placeholders ) ) {
-				$item_metadata = MLAData::mla_fetch_attachment_image_metadata( $attachment->ID );
-			}
-			
-			foreach ( $iptc_placeholders as $key => $value ) {
-				$text = '';
-				$record = MLAData::mla_iptc_metadata_value( $value['value'], $item_metadata );
-				if ( is_array( $record ) ) {
-					if ( 'single' == $value['option'] )
-						$text = sanitize_text_field( array_shift( $record ) );
-					elseif ( 'export' == $value['option'] )
-						$text = sanitize_text_field( var_export( $record, true ) );
-					else
-						foreach ( $record as $term ) {
-							$term_name = sanitize_text_field( $term );
-							$text .= strlen( $text ) ? ', ' . $term_name : $term_name;
-						}
-				} // is_array
-				else
-					$text = $record;
-					
-				$markup_values[ $key ] = $text;
-			} // $iptc_placeholders
-			
-			foreach ( $exif_placeholders as $key => $value ) {
-				$text = '';
-				$record = MLAData::mla_exif_metadata_value( $value['value'], $item_metadata );
-				if ( is_array( $record ) ) {
-					if ( 'single' == $value['option'] )
-						$text = sanitize_text_field( array_shift( $record ) );
-					elseif ( 'export' == $value['option'] )
-						$text = sanitize_text_field( var_export( $record, true ) );
-					else
-						foreach ( $record as $term ) {
-							$term_name = sanitize_text_field( $term );
-							$text .= strlen( $text ) ? ', ' . $term_name : $term_name;
-						}
-				} // is_array
-				else
-					$text = $record;
-					
-				$markup_values[ $key ] = $text;
-			} // $exif_placeholders
-			
-			foreach ( $pdf_placeholders as $key => $value ) {
-				$text = '';
-				$record = MLAData::mla_pdf_metadata_value( $value['value'], $item_metadata );
-				if ( is_array( $record ) ) {
-					if ( 'single' == $value['option'] )
-						$text = sanitize_text_field( array_shift( $record ) );
-					elseif ( 'export' == $value['option'] )
-						$text = sanitize_text_field( var_export( $record, true ) );
-					else
-						foreach ( $record as $term ) {
-							$term_name = sanitize_text_field( $term );
-							$text .= strlen( $text ) ? ', ' . $term_name : $term_name;
-						}
-				} // is_array
-				else
-					$text = $record;
-					
-				$markup_values[ $key ] = $text;
-			} // $pdf_placeholders
-			
-			unset(
-				$markup_values['caption'],
-				$markup_values['pagelink'],
-				$markup_values['filelink'],
-				$markup_values['link'],
-				$markup_values['pagelink_url'],
-				$markup_values['filelink_url'],
-				$markup_values['link_url'],
-				$markup_values['thumbnail_content'],
-				$markup_values['thumbnail_width'],
-				$markup_values['thumbnail_height'],
-				$markup_values['thumbnail_url']
-			);
-			
-			if ( $markup_values['captiontag'] ) {
-				$markup_values['caption'] = wptexturize( $attachment->post_excerpt );
+			if ( $item_values['captiontag'] ) {
+				$item_values['caption'] = wptexturize( $attachment->post_excerpt );
 				if ( ! empty( $arguments['mla_caption'] ) )
-					$markup_values['caption'] = wptexturize( self::_process_shortcode_parameter( $arguments['mla_caption'], $markup_values ) );
+					$item_values['caption'] = wptexturize( self::_process_shortcode_parameter( $arguments['mla_caption'], $item_values ) );
 			}
 			else
-				$markup_values['caption'] = '';
+				$item_values['caption'] = '';
 			
 			if ( ! empty( $arguments['mla_link_text'] ) )
-				$link_text = self::_process_shortcode_parameter( $arguments['mla_link_text'], $markup_values );
+				$link_text = self::_process_shortcode_parameter( $arguments['mla_link_text'], $item_values );
 			else
 				$link_text = false;
 
-			$markup_values['pagelink'] = wp_get_attachment_link($attachment->ID, $size, true, $show_icon, $link_text);
-			$markup_values['filelink'] = wp_get_attachment_link($attachment->ID, $size, false, $show_icon, $link_text);
+			$item_values['pagelink'] = wp_get_attachment_link($attachment->ID, $size, true, $show_icon, $link_text);
+			$item_values['filelink'] = wp_get_attachment_link($attachment->ID, $size, false, $show_icon, $link_text);
 
 			/*
 			 * Apply the Gallery Display Content parameters.
@@ -896,29 +692,29 @@ class MLAShortcodes {
 				$link_attributes = '';
 				
 			if ( ! empty( $arguments['mla_link_attributes'] ) )
-				$link_attributes .= self::_process_shortcode_parameter( $arguments['mla_link_attributes'], $markup_values ) . ' ';
+				$link_attributes .= self::_process_shortcode_parameter( $arguments['mla_link_attributes'], $item_values ) . ' ';
 
 			if ( ! empty( $arguments['mla_link_class'] ) )
-				$link_attributes .= 'class="' . self::_process_shortcode_parameter( $arguments['mla_link_class'], $markup_values ) . '" ';
+				$link_attributes .= 'class="' . self::_process_shortcode_parameter( $arguments['mla_link_class'], $item_values ) . '" ';
 
 			if ( ! empty( $link_attributes ) ) {
-				$markup_values['pagelink'] = str_replace( '<a href=', '<a ' . $link_attributes . 'href=', $markup_values['pagelink'] );
-				$markup_values['filelink'] = str_replace( '<a href=', '<a ' . $link_attributes . 'href=', $markup_values['filelink'] );
+				$item_values['pagelink'] = str_replace( '<a href=', '<a ' . $link_attributes . 'href=', $item_values['pagelink'] );
+				$item_values['filelink'] = str_replace( '<a href=', '<a ' . $link_attributes . 'href=', $item_values['filelink'] );
 			}
 			
 			if ( ! empty( $arguments['mla_rollover_text'] ) ) {
-				$rollover_text = esc_attr( self::_process_shortcode_parameter( $arguments['mla_rollover_text'], $markup_values ) );
+				$rollover_text = esc_attr( self::_process_shortcode_parameter( $arguments['mla_rollover_text'], $item_values ) );
 				
 				/*
 				 * Replace single- and double-quote delimited values
 				 */
-				$markup_values['pagelink'] = preg_replace('# title=\'([^\']*)\'#', " title='{$rollover_text}'", $markup_values['pagelink'] );
-				$markup_values['pagelink'] = preg_replace('# title=\"([^\"]*)\"#', " title=\"{$rollover_text}\"", $markup_values['pagelink'] );
-				$markup_values['filelink'] = preg_replace('# title=\'([^\']*)\'#', " title='{$rollover_text}'", $markup_values['filelink'] );
-				$markup_values['filelink'] = preg_replace('# title=\"([^\"]*)\"#', " title=\"{$rollover_text}\"", $markup_values['filelink'] );
+				$item_values['pagelink'] = preg_replace('# title=\'([^\']*)\'#', " title='{$rollover_text}'", $item_values['pagelink'] );
+				$item_values['pagelink'] = preg_replace('# title=\"([^\"]*)\"#', " title=\"{$rollover_text}\"", $item_values['pagelink'] );
+				$item_values['filelink'] = preg_replace('# title=\'([^\']*)\'#', " title='{$rollover_text}'", $item_values['filelink'] );
+				$item_values['filelink'] = preg_replace('# title=\"([^\"]*)\"#', " title=\"{$rollover_text}\"", $item_values['filelink'] );
 			}
 			else
-				$rollover_text = $markup_values['title'];
+				$rollover_text = $item_values['title'];
 
 			/*
 			 * Process the <img> tag, if present
@@ -926,125 +722,125 @@ class MLAShortcodes {
 			 * are used in the Google Viewer code below
 			 */
 			if ( ! empty( $arguments['mla_image_attributes'] ) )
-				$image_attributes = self::_process_shortcode_parameter( $arguments['mla_image_attributes'], $markup_values ) . ' ';
+				$image_attributes = self::_process_shortcode_parameter( $arguments['mla_image_attributes'], $item_values ) . ' ';
 			else
 				$image_attributes = '';
 				
 			if ( ! empty( $arguments['mla_image_class'] ) )
-				$image_class = esc_attr( self::_process_shortcode_parameter( $arguments['mla_image_class'], $markup_values ) );
+				$image_class = esc_attr( self::_process_shortcode_parameter( $arguments['mla_image_class'], $item_values ) );
 			else
 				$image_class = '';
 
 				if ( ! empty( $arguments['mla_image_alt'] ) )
-					$image_alt = esc_attr( self::_process_shortcode_parameter( $arguments['mla_image_alt'], $markup_values ) );
+					$image_alt = esc_attr( self::_process_shortcode_parameter( $arguments['mla_image_alt'], $item_values ) );
 				else
 					$image_alt = '';
 
-			if ( false !== strpos( $markup_values['pagelink'], '<img ' ) ) {
+			if ( false !== strpos( $item_values['pagelink'], '<img ' ) ) {
 				if ( ! empty( $image_attributes ) ) {
-					$markup_values['pagelink'] = str_replace( '<img ', '<img ' . $image_attributes, $markup_values['pagelink'] );
-					$markup_values['filelink'] = str_replace( '<img ', '<img ' . $image_attributes, $markup_values['filelink'] );
+					$item_values['pagelink'] = str_replace( '<img ', '<img ' . $image_attributes, $item_values['pagelink'] );
+					$item_values['filelink'] = str_replace( '<img ', '<img ' . $image_attributes, $item_values['filelink'] );
 				}
 				
 				/*
 				 * Extract existing class values and add to them
 				 */
 				if ( ! empty( $image_class ) ) {
-					$match_count = preg_match_all( '# class=\"([^\"]+)\" #', $markup_values['pagelink'], $matches, PREG_OFFSET_CAPTURE );
+					$match_count = preg_match_all( '# class=\"([^\"]+)\" #', $item_values['pagelink'], $matches, PREG_OFFSET_CAPTURE );
 					if ( ! ( ( $match_count == false ) || ( $match_count == 0 ) ) ) {
 						$class = $matches[1][0][0] . ' ' . $image_class;
 					}
 					else
 						$class = $image_class;
 					
-					$markup_values['pagelink'] = preg_replace('# class=\"([^\"]*)\"#', " class=\"{$class}\"", $markup_values['pagelink'] );
-					$markup_values['filelink'] = preg_replace('# class=\"([^\"]*)\"#', " class=\"{$class}\"", $markup_values['filelink'] );
+					$item_values['pagelink'] = preg_replace('# class=\"([^\"]*)\"#', " class=\"{$class}\"", $item_values['pagelink'] );
+					$item_values['filelink'] = preg_replace('# class=\"([^\"]*)\"#', " class=\"{$class}\"", $item_values['filelink'] );
 				}
 				
 				if ( ! empty( $image_alt ) ) {
-					$markup_values['pagelink'] = preg_replace('# alt=\"([^\"]*)\"#', " alt=\"{$image_alt}\"", $markup_values['pagelink'] );
-					$markup_values['filelink'] = preg_replace('# alt=\"([^\"]*)\"#', " alt=\"{$image_alt}\"", $markup_values['filelink'] );
+					$item_values['pagelink'] = preg_replace('# alt=\"([^\"]*)\"#', " alt=\"{$image_alt}\"", $item_values['pagelink'] );
+					$item_values['filelink'] = preg_replace('# alt=\"([^\"]*)\"#', " alt=\"{$image_alt}\"", $item_values['filelink'] );
 				}
 			} // process <img> tag
 			
 			switch ( $arguments['link'] ) {
 				case 'permalink':
 				case 'post':
-					$markup_values['link'] = $markup_values['pagelink'];
+					$item_values['link'] = $item_values['pagelink'];
 					break;
 				case 'file':
 				case 'full':
-					$markup_values['link'] = $markup_values['filelink'];
+					$item_values['link'] = $item_values['filelink'];
 					break;
 				default:
-					$markup_values['link'] = $markup_values['filelink'];
+					$item_values['link'] = $item_values['filelink'];
 
 					/*
 					 * Check for link to specific (registered) file size
 					 */
 					if ( array_key_exists( $arguments['link'], $sizes ) ) {
 						$target_file = $sizes[ $arguments['link'] ]['file'];
-						$markup_values['link'] = str_replace( $file_name, $target_file, $markup_values['filelink'] );
+						$item_values['link'] = str_replace( $file_name, $target_file, $item_values['filelink'] );
 					}
 			} // switch 'link'
 			
 			/*
 			 * Extract target and thumbnail fields
 			 */
-			$match_count = preg_match_all( '#href=\'([^\']+)\'#', $markup_values['pagelink'], $matches, PREG_OFFSET_CAPTURE );
+			$match_count = preg_match_all( '#href=\'([^\']+)\'#', $item_values['pagelink'], $matches, PREG_OFFSET_CAPTURE );
  			if ( ! ( ( $match_count == false ) || ( $match_count == 0 ) ) ) {
-				$markup_values['pagelink_url'] = $matches[1][0][0];
+				$item_values['pagelink_url'] = $matches[1][0][0];
 			}
 			else
-				$markup_values['pagelink_url'] = '';
+				$item_values['pagelink_url'] = '';
 
-			$match_count = preg_match_all( '#href=\'([^\']+)\'#', $markup_values['filelink'], $matches, PREG_OFFSET_CAPTURE );
+			$match_count = preg_match_all( '#href=\'([^\']+)\'#', $item_values['filelink'], $matches, PREG_OFFSET_CAPTURE );
 			if ( ! ( ( $match_count == false ) || ( $match_count == 0 ) ) ) {
-				$markup_values['filelink_url'] = $matches[1][0][0];
+				$item_values['filelink_url'] = $matches[1][0][0];
 			}
 			else
-				$markup_values['filelink_url'] = '';
+				$item_values['filelink_url'] = '';
 
-			$match_count = preg_match_all( '#href=\'([^\']+)\'#', $markup_values['link'], $matches, PREG_OFFSET_CAPTURE );
+			$match_count = preg_match_all( '#href=\'([^\']+)\'#', $item_values['link'], $matches, PREG_OFFSET_CAPTURE );
 			if ( ! ( ( $match_count == false ) || ( $match_count == 0 ) ) ) {
-				$markup_values['link_url'] = $matches[1][0][0];
+				$item_values['link_url'] = $matches[1][0][0];
 			}
 			else
-				$markup_values['link_url'] = '';
+				$item_values['link_url'] = '';
 
 			/*
 			 * Override the link value; leave filelink and pagelink unchanged
 			 * Note that $link_href is used in the Google Viewer code below
 			 */
 			if ( ! empty( $arguments['mla_link_href'] ) ) {
-				$link_href = self::_process_shortcode_parameter( $arguments['mla_link_href'], $markup_values );
+				$link_href = self::_process_shortcode_parameter( $arguments['mla_link_href'], $item_values );
 
 				/*
 				 * Replace single- and double-quote delimited values
 				 */
-				$markup_values['link'] = preg_replace('# href=\'([^\']*)\'#', " href='{$link_href}'", $markup_values['link'] );
-				$markup_values['link'] = preg_replace('# href=\"([^\"]*)\"#', " href=\"{$link_href}\"", $markup_values['link'] );
+				$item_values['link'] = preg_replace('# href=\'([^\']*)\'#', " href='{$link_href}'", $item_values['link'] );
+				$item_values['link'] = preg_replace('# href=\"([^\"]*)\"#', " href=\"{$link_href}\"", $item_values['link'] );
 			}
 			else
 				$link_href = '';
 			
-			$match_count = preg_match_all( '#\<a [^\>]+\>(.*)\</a\>#', $markup_values['link'], $matches, PREG_OFFSET_CAPTURE );
+			$match_count = preg_match_all( '#\<a [^\>]+\>(.*)\</a\>#', $item_values['link'], $matches, PREG_OFFSET_CAPTURE );
 			if ( ! ( ( $match_count == false ) || ( $match_count == 0 ) ) ) {
-				$markup_values['thumbnail_content'] = $matches[1][0][0];
+				$item_values['thumbnail_content'] = $matches[1][0][0];
 			}
 			else
-				$markup_values['thumbnail_content'] = '';
+				$item_values['thumbnail_content'] = '';
 
-			$match_count = preg_match_all( '# width=\"([^\"]+)\" height=\"([^\"]+)\" src=\"([^\"]+)\" #', $markup_values['link'], $matches, PREG_OFFSET_CAPTURE );
+			$match_count = preg_match_all( '# width=\"([^\"]+)\" height=\"([^\"]+)\" src=\"([^\"]+)\" #', $item_values['link'], $matches, PREG_OFFSET_CAPTURE );
 			if ( ! ( ( $match_count == false ) || ( $match_count == 0 ) ) ) {
-				$markup_values['thumbnail_width'] = $matches[1][0][0];
-				$markup_values['thumbnail_height'] = $matches[2][0][0];
-				$markup_values['thumbnail_url'] = $matches[3][0][0];
+				$item_values['thumbnail_width'] = $matches[1][0][0];
+				$item_values['thumbnail_height'] = $matches[2][0][0];
+				$item_values['thumbnail_url'] = $matches[3][0][0];
 			}
 			else {
-				$markup_values['thumbnail_width'] = '';
-				$markup_values['thumbnail_height'] = '';
-				$markup_values['thumbnail_url'] = '';
+				$item_values['thumbnail_width'] = '';
+				$item_values['thumbnail_height'] = '';
+				$item_values['thumbnail_url'] = '';
 			}
 
 			/*
@@ -1052,10 +848,10 @@ class MLAShortcodes {
 			 * $link_attributes (includes target), $rollover_text, $link_href (link only),
 			 * $image_attributes, $image_class, $image_alt
 			 */
-			if ( $arguments['mla_viewer'] && empty( $markup_values['thumbnail_url'] ) ) {
-				$last_dot = strrpos( $markup_values['file'], '.' );
+			if ( $arguments['mla_viewer'] && empty( $item_values['thumbnail_url'] ) ) {
+				$last_dot = strrpos( $item_values['file'], '.' );
 				if ( !( false === $last_dot) ) {
-					$extension = substr( $markup_values['file'], $last_dot + 1 );
+					$extension = substr( $item_values['file'], $last_dot + 1 );
 					if ( in_array( $extension, $arguments['mla_viewer_extensions'] ) ) {
 						/*
 						 * <img> tag (thumbnail_text)
@@ -1065,23 +861,23 @@ class MLAShortcodes {
 							
 						if ( ! empty( $image_alt ) )
 							$image_alt = ' alt="' . $image_alt . '"';
-						elseif ( ! empty( $markup_values['caption'] ) )
-							$image_alt = ' alt="' . $markup_values['caption'] . '"';
+						elseif ( ! empty( $item_values['caption'] ) )
+							$image_alt = ' alt="' . $item_values['caption'] . '"';
 
-						$markup_values['thumbnail_content'] = sprintf( '<img %1$ssrc="http://docs.google.com/viewer?url=%2$s&a=bi&pagenumber=%3$d&w=%4$d"%5$s%6$s>', $image_attributes, $markup_values['filelink_url'], $arguments['mla_viewer_page'], $arguments['mla_viewer_width'], $image_class, $image_alt );
+						$item_values['thumbnail_content'] = sprintf( '<img %1$ssrc="http://docs.google.com/viewer?url=%2$s&a=bi&pagenumber=%3$d&w=%4$d"%5$s%6$s>', $image_attributes, $item_values['filelink_url'], $arguments['mla_viewer_page'], $arguments['mla_viewer_width'], $image_class, $image_alt );
 						
 						/*
 						 * Filelink, pagelink and link
 						 */
-						$markup_values['pagelink'] = sprintf( '<a %1$shref="%2$s" title="%3$s">%4$s</a>', $link_attributes, $markup_values['pagelink_url'], $rollover_text, $markup_values['thumbnail_content'] );
-						$markup_values['filelink'] = sprintf( '<a %1$shref="%2$s" title="%3$s">%4$s</a>', $link_attributes, $markup_values['filelink_url'], $rollover_text, $markup_values['thumbnail_content'] );
+						$item_values['pagelink'] = sprintf( '<a %1$shref="%2$s" title="%3$s">%4$s</a>', $link_attributes, $item_values['pagelink_url'], $rollover_text, $item_values['thumbnail_content'] );
+						$item_values['filelink'] = sprintf( '<a %1$shref="%2$s" title="%3$s">%4$s</a>', $link_attributes, $item_values['filelink_url'], $rollover_text, $item_values['thumbnail_content'] );
 
 						if ( ! empty( $link_href ) )
-							$markup_values['link'] = sprintf( '<a %1$shref="%2$s" title="%3$s">%4$s</a>', $link_attributes, $link_href, $rollover_text, $markup_values['thumbnail_content'] );
+							$item_values['link'] = sprintf( '<a %1$shref="%2$s" title="%3$s">%4$s</a>', $link_attributes, $link_href, $rollover_text, $item_values['thumbnail_content'] );
 						elseif ( 'permalink' == $arguments['link'] )
-							$markup_values['link'] = $markup_values['pagelink'];
+							$item_values['link'] = $item_values['pagelink'];
 						else
-							$markup_values['link'] = $markup_values['filelink'];
+							$item_values['link'] = $item_values['filelink'];
 					} // viewer extension
 				} // has extension
 			} // mla_viewer
@@ -1097,12 +893,12 @@ class MLAShortcodes {
 				 * item markup
 				 */
 				$column_index++;
-				if ( $markup_values['columns'] > 0 && $column_index % $markup_values['columns'] == 0 )
-					$markup_values['last_in_row'] = 'last_in_row';
+				if ( $item_values['columns'] > 0 && $column_index % $item_values['columns'] == 0 )
+					$item_values['last_in_row'] = 'last_in_row';
 				else
-					$markup_values['last_in_row'] = '';
+					$item_values['last_in_row'] = '';
 
-				$output .= MLAData::mla_parse_template( $item_template, $markup_values );
+				$output .= MLAData::mla_parse_template( $item_template, $item_values );
 	
 				/*
 				 * End of row markup
@@ -1111,8 +907,8 @@ class MLAShortcodes {
 					$output .= MLAData::mla_parse_template( $row_close_template, $markup_values );
 			} // is_gallery
 			elseif ( ( $is_previous || $is_next ) )
-				return $markup_values['link'];
-		}
+				return $item_values['link'];
+		} // foreach attachment
 	
 		if ($is_gallery ) {
 			/*
@@ -1266,7 +1062,6 @@ class MLAShortcodes {
 			default:
 				$results = join("\n", $page_links);
 		} // mla_paginate_type
-error_log( '_paginate_links $results = ' . var_export( $results, true ), 0 );
 	
 		return $output . $results;
 	}
@@ -1513,7 +1308,7 @@ error_log( '_paginate_links $results = ' . var_export( $results, true ), 0 );
 			}
 		
 			$obmatches = preg_split('/\s*,\s*/', trim($query_parameters['orderby']));
-			foreach( $obmatches as $index => $value ) {
+			foreach ( $obmatches as $index => $value ) {
 				$count = preg_match('/([a-z0-9_]+)(\s+(ASC|DESC))?/i', $value, $matches);
 
 				if ( $count && ( $value == $matches[0] ) && in_array( $matches[1], $allowed_keys ) ) {

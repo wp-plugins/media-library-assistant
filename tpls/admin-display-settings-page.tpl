@@ -52,6 +52,10 @@
 [+options+]
             </select><div style="font-size:8pt;padding-bottom:10px;">&nbsp;&nbsp;[+help+]</div>
         </td></tr>
+<!-- template="select-only" -->
+            <select name="[+key+]" id="[+key+]">
+[+options+]
+            </select>
 <!-- template="select-option" -->
                 <option [+selected+] value="[+value+]">[+text+]</option>
 <!-- template="text" -->
@@ -99,7 +103,9 @@
 [+options_list+]
 	</table>
     <p class="submit" style="padding-bottom: 0;">
-        <input name="mla-general-options-save" type="submit" class="button-primary" value="Save Changes" />
+        <input name="mla-general-options-save" type="submit" class="button-primary" value="Save Changes" />&nbsp;&nbsp;
+        <input name="mla-general-options-export" type="submit" class="button-primary" value="Export ALL Settings" />
+        [+import_settings+]
         <input name="mla-general-options-reset" type="submit" class="button-primary" value="Delete General options and restore default settings"  style="float:right;"/>
     </p>
 [+_wpnonce+]
@@ -220,7 +226,7 @@ If you click any of the "Map All Attachments" buttons, the rule currently displa
 If you just want to add a custom field to the Media/Assistant submenu, the quick edit area and/or the bulk edit area you can bypass the mapping logic by leaving the Data Source value as "-- None (select a value) --".
 </p>
 <p>
-You can find more information about all of these topics on the <a href="http:/wp-admin/options-general.php?page=mla-settings-menu-documentation&amp;mla_tab=documentation#mla_custom_field_mapping" title="Custom Field Processing Options documentation">Documentation tab</a>.
+You can find more information about all of these topics on the <a href="[+settingsURL+]?page=mla-settings-menu-documentation&amp;mla_tab=documentation#mla_custom_field_mapping" title="Custom Field Processing Options documentation">Documentation tab</a>.
 </p>
 <p>
 <strong>NOTE:</strong> Check the box in the "MLA Column" column to make the field a sortable, searchable column in the Media/Assistant submenu table. The "file_size", "pixels", "width" and "height" data sources will sort more sensibly if you use the "Commas" format. Check the "Quick Edit" or "Bulk Edit" box to add the field to the quick edit or bulk edit areas of the Media/Assistant submenu.
@@ -252,7 +258,7 @@ You can find more information about all of these topics on the <a href="http:/wp
 If you just want to add a custom field to the Media/Assistant submenu, the quick edit area and/or the bulk edit area go to the "Custom Fields" tab and follow the instructions there.
 </p>
 <p>
-You can find more information about all of these topics on the <a href="http:/wp-admin/options-general.php?page=mla-settings-menu-documentation&amp;mla_tab=documentation#mla_iptc_exif_mapping" title="IPTC &amp; EXIF Processing Options documentation">Documentation tab</a>.
+You can find more information about all of these topics on the <a href="[+settingsURL+]?page=mla-settings-menu-documentation&amp;mla_tab=documentation#mla_iptc_exif_mapping" title="IPTC &amp; EXIF Processing Options documentation">Documentation tab</a>.
 </p>
 <form action="[+form_url+]" method="post" class="mla-display-settings-page" id="mla-display-settings-iptc-exif-tab">
 &nbsp;<br />

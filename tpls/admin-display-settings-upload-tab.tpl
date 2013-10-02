@@ -99,7 +99,7 @@
 
 <!-- template="before-table" -->
 <h3>File Extension and MIME Type Processing</h3>
-<p>On this tab you can manage the list of file extension/MIME Type associations, which are used by WordPress to decide what kind of files can be uploaded to the Media Library and to fill in the <strong><em>post_mime_type</em></strong> value. To upload a file, the file extension must be in this list and be active. You can find more information in the <a href="/wp-admin/options-general.php?page=mla-settings-menu-documentation&amp;mla_tab=documentation#mla_uploads">Documentation tab</a> or by clicking the <strong>"Help"</strong> tab in the upper-right corner of this screen.</p>
+<p>On this tab you can manage the list of file extension/MIME Type associations, which are used by WordPress to decide what kind of files can be uploaded to the Media Library and to fill in the <strong><em>post_mime_type</em></strong> value. To upload a file, the file extension must be in this list and be active. You can find more information in the <a href="[+settingsURL+]?page=mla-settings-menu-documentation&amp;mla_tab=documentation#mla_uploads">Documentation tab</a> or by clicking the <strong>"Help"</strong> tab in the upper-right corner of this screen.</p>
 <div id="ajax-response"></div>
 <form action="[+form_url+]" method="get" id="mla-search-uploads-form">
 	<input type="hidden" name="page" value="mla-settings-menu-upload" />

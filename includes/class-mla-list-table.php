@@ -241,7 +241,7 @@ class MLA_List_Table extends WP_List_Table {
 				'exclude' => '',
 				// 'exclude_tree => '', 
 				'echo' => true,
-				'depth' => 3,
+				'depth' => MLAOptions::mla_get_option( MLAOptions::MLA_TAXONOMY_FILTER_DEPTH ),
 				'tab_index' => 0,
 				'name' => 'mla_filter_term',
 				'id' => 'name',
@@ -401,12 +401,12 @@ class MLA_List_Table extends WP_List_Table {
 				$list = array();
 				foreach ( $terms as $term ) {
 					$term_name = esc_html( sanitize_term_field( 'name', $term->name, $term->term_id, 'category', 'display' ) );
-					$list[ ] = sprintf( '<a href="%1$s" title="Filter by &#8220;%2$s&#8221;">%3$s</a>', esc_url( add_query_arg( array(
+					$list[ ] = sprintf( '<a href="%1$s" title="Filter by &#8220;%2$s&#8221;">%3$s</a>', esc_url( add_query_arg( array_merge( self::mla_submenu_arguments( false ), array(
 						'page' => MLA::ADMIN_PAGE_SLUG,
 						'mla-tax' => $taxonomy,
 						'mla-term' => $term->slug,
 						'heading_suffix' => urlencode( $tax_object->label . ': ' . $term->name ) 
-					), 'upload.php' ) ), $term_name, $term_name );
+					) ), 'upload.php' ) ), $term_name, $term_name );
 				} // foreach $term
 				
 				return join( ', ', $list );
@@ -421,7 +421,7 @@ class MLA_List_Table extends WP_List_Table {
 				return '';
 			
 			$list = array();
-			foreach( $values as $index => $value ) {
+			foreach ( $values as $index => $value ) {
 				/*
 				 * For display purposes, convert array values.
 				 * They are not links because no search will match them.
@@ -429,12 +429,12 @@ class MLA_List_Table extends WP_List_Table {
 				if ( is_array( $value ) )
 					$list[ ] = 'array( ' . implode( ', ', $value ) . ' )';
 				else
-					$list[ ] = sprintf( '<a href="%1$s" title="Filter by &#8220;%2$s&#8221;">%3$s</a>', esc_url( add_query_arg( array(
+					$list[ ] = sprintf( '<a href="%1$s" title="Filter by &#8220;%2$s&#8221;">%3$s</a>', esc_url( add_query_arg( array_merge( self::mla_submenu_arguments( false ), array(
 						'page' => MLA::ADMIN_PAGE_SLUG,
 						'mla-metakey' => urlencode( MLA_List_Table::$default_columns[ $column_name ] ),
 						'mla-metavalue' => urlencode( $value ),
 						'heading_suffix' => urlencode( MLA_List_Table::$default_columns[ $column_name ] . ': ' . $value ) 
-					), 'upload.php' ) ), esc_html( substr( $value, 0, 64 ) ), esc_html( $value ) );
+					) ), 'upload.php' ) ), esc_html( substr( $value, 0, 64 ) ), esc_html( $value ) );
 			}
 
 			if ( count( $list ) > 1 )
@@ -505,7 +505,7 @@ class MLA_List_Table extends WP_List_Table {
 			 * Build rollover actions
 			 */
 			$view_args = array_merge( array( 'page' => MLA::ADMIN_PAGE_SLUG, 'mla_item_ID' => $item->ID ),
-				self::_mla_submenu_arguments() );
+				self::mla_submenu_arguments() );
 
 			if ( isset( $_REQUEST['paged'] ) )
 				$view_args['paged'] = $_REQUEST['paged'];
@@ -611,11 +611,11 @@ class MLA_List_Table extends WP_List_Table {
 			else
 				$parent_title = '(no title: bad ID)';
 
-			$parent = sprintf( '<a href="%1$s" title="Filter by Parent ID">(parent:%2$s)</a>', esc_url( add_query_arg( array(
+			$parent = sprintf( '<a href="%1$s" title="Filter by Parent ID">(parent:%2$s)</a>', esc_url( add_query_arg( array_merge( self::mla_submenu_arguments( false ), array(
 					'page' => MLA::ADMIN_PAGE_SLUG,
 					'parent' => $item->post_parent,
 					'heading_suffix' => urlencode( 'Parent: ' .  $parent_title ) 
-				), 'upload.php' ) ), (string) $item->post_parent );
+				) ), 'upload.php' ) ), (string) $item->post_parent );
 		} // $item->post_parent
 		else
 			$parent = 'parent:0';
@@ -701,11 +701,11 @@ class MLA_List_Table extends WP_List_Table {
 			else
 				$parent_title = '(no title: bad ID)';
 
-			return sprintf( '<a href="%1$s" title="Filter by Parent ID">%2$s</a>', esc_url( add_query_arg( array(
+			return sprintf( '<a href="%1$s" title="Filter by Parent ID">%2$s</a>', esc_url( add_query_arg( array_merge( self::mla_submenu_arguments( false ), array(
 				'page' => MLA::ADMIN_PAGE_SLUG,
 				'parent' => $item->post_parent,
 				'heading_suffix' => urlencode( 'Parent: ' . $parent_title ) 
-			), 'upload.php' ) ), (string) $item->post_parent );
+			) ), 'upload.php' ) ), (string) $item->post_parent );
 		}
 		else
 			return (string) $item->post_parent;
@@ -865,12 +865,12 @@ class MLA_List_Table extends WP_List_Table {
 	 */
 	function column_alt_text( $item ) {
 		if ( isset( $item->mla_wp_attachment_image_alt ) )
-			return sprintf( '<a href="%1$s" title="Filter by &#8220;%2$s&#8221;">%3$s</a>', esc_url( add_query_arg( array(
+			return sprintf( '<a href="%1$s" title="Filter by &#8220;%2$s&#8221;">%3$s</a>', esc_url( add_query_arg( array_merge( self::mla_submenu_arguments( false ), array(
 				'page' => MLA::ADMIN_PAGE_SLUG,
 				'mla-metakey' => '_wp_attachment_image_alt',
 				'mla-metavalue' => urlencode( $item->mla_wp_attachment_image_alt ),
 				'heading_suffix' => urlencode( 'ALT Text: ' . $item->mla_wp_attachment_image_alt ) 
-			), 'upload.php' ) ), esc_html( $item->mla_wp_attachment_image_alt ), esc_html( $item->mla_wp_attachment_image_alt ) );
+			) ), 'upload.php' ) ), esc_html( $item->mla_wp_attachment_image_alt ), esc_html( $item->mla_wp_attachment_image_alt ) );
 		else
 			return '';
 	}
@@ -908,11 +908,11 @@ class MLA_List_Table extends WP_List_Table {
 	 * @return	string	HTML markup to be placed inside the column
 	 */
 	function column_post_mime_type( $item ) {
-		return sprintf( '<a href="%1$s" title="Filter by &#8220;%2$s&#8221;"">%2$s</a>', esc_url( add_query_arg( array(
+		return sprintf( '<a href="%1$s" title="Filter by &#8220;%2$s&#8221;"">%2$s</a>', esc_url( add_query_arg( array_merge( self::mla_submenu_arguments( false ), array(
 			'page' => MLA::ADMIN_PAGE_SLUG,
 			'post_mime_type' => urlencode( $item->post_mime_type ),
 			'heading_suffix' => urlencode( 'MIME Type: ' . $item->post_mime_type ) 
-		), 'upload.php' ) ), esc_html( $item->post_mime_type ), esc_html( $item->post_mime_type ) );
+		) ), 'upload.php' ) ), esc_html( $item->post_mime_type ), esc_html( $item->post_mime_type ) );
 	}
 	
 	/**
@@ -1011,11 +1011,11 @@ class MLA_List_Table extends WP_List_Table {
 		$user = get_user_by( 'id', $item->post_author );
 		
 		if ( isset( $user->data->display_name ) )
-			return sprintf( '<a href="%s" title="Filter by Author ID">%s</a>', esc_url( add_query_arg( array(
+			return sprintf( '<a href="%s" title="Filter by Author ID">%s</a>', esc_url( add_query_arg( array_merge( self::mla_submenu_arguments( false ), array(
 				 'page' => MLA::ADMIN_PAGE_SLUG,
 				'author' => $item->post_author,
 				'heading_suffix' => urlencode( 'Author: ' . $user->data->display_name ) 
-			), 'upload.php' ) ), esc_html( $user->data->display_name ) );
+			) ), 'upload.php' ) ), esc_html( $user->data->display_name ) );
 		else
 			return 'unknown';
 	}
@@ -1055,15 +1055,19 @@ class MLA_List_Table extends WP_List_Table {
 	 *
 	 * @since 1.42
 	 *
+	 * @param	boolean	Optional: Include the "click filter" values in the results
+	 *
 	 * @return	array	non-empty view, search, filter and sort arguments
 	 */
-	private static function _mla_submenu_arguments( ) {
-		static $submenu_arguments = NULL;
+	public static function mla_submenu_arguments( $include_filters = true ) {
+		static $submenu_arguments = NULL, $has_filters = NULL;
 		
-		if ( is_array( $submenu_arguments ) )
+		if ( is_array( $submenu_arguments ) && ( $has_filters == $include_filters ) )
 			return $submenu_arguments;
-		else
+		else {
 			$submenu_arguments = array();
+			$has_filters = $include_filters;
+		}
 			
 		/*
 		 * View arguments
@@ -1110,26 +1114,28 @@ class MLA_List_Table extends WP_List_Table {
 		/*
 		 * Filter arguments (from interior table cells)
 		 */
-		if ( isset( $_REQUEST['heading_suffix'] ) )
-			$submenu_arguments['heading_suffix'] = $_REQUEST['heading_suffix'];
-		
-		if ( isset( $_REQUEST['parent'] ) )
-			$submenu_arguments['parent'] = $_REQUEST['parent'];
-		
-		if ( isset( $_REQUEST['author'] ) )
-			$submenu_arguments['author'] = $_REQUEST['author'];
-		
-		if ( isset( $_REQUEST['mla-tax'] ) )
-			$submenu_arguments['mla-tax'] = $_REQUEST['mla-tax'];
-		
-		if ( isset( $_REQUEST['mla-term'] ) )
-			$submenu_arguments['mla-term'] = $_REQUEST['mla-term'];
-		
-		if ( isset( $_REQUEST['meta-key'] ) )
-			$submenu_arguments['meta-key'] = $_REQUEST['meta-key'];
-		
-		if ( isset( $_REQUEST['meta-value'] ) )
-			$submenu_arguments['meta-value'] = $_REQUEST['meta-value'];
+		if ( $include_filters ) {
+			if ( isset( $_REQUEST['heading_suffix'] ) )
+				$submenu_arguments['heading_suffix'] = $_REQUEST['heading_suffix'];
+			
+			if ( isset( $_REQUEST['parent'] ) )
+				$submenu_arguments['parent'] = $_REQUEST['parent'];
+			
+			if ( isset( $_REQUEST['author'] ) )
+				$submenu_arguments['author'] = $_REQUEST['author'];
+			
+			if ( isset( $_REQUEST['mla-tax'] ) )
+				$submenu_arguments['mla-tax'] = $_REQUEST['mla-tax'];
+			
+			if ( isset( $_REQUEST['mla-term'] ) )
+				$submenu_arguments['mla-term'] = $_REQUEST['mla-term'];
+			
+			if ( isset( $_REQUEST['mla-metakey'] ) )
+				$submenu_arguments['mla-metakey'] = $_REQUEST['mla-metakey'];
+			
+			if ( isset( $_REQUEST['mla-metavalue'] ) )
+				$submenu_arguments['mla-metavalue'] = $_REQUEST['mla-metavalue'];
+		}
 		
 		return $submenu_arguments;
 	}
@@ -1144,7 +1150,7 @@ class MLA_List_Table extends WP_List_Table {
 	 */
 	function pagination( $which ) {
 		$save_uri = $_SERVER['REQUEST_URI'];
-		$_SERVER['REQUEST_URI'] = add_query_arg( self::_mla_submenu_arguments(), $save_uri );
+		$_SERVER['REQUEST_URI'] = add_query_arg( self::mla_submenu_arguments(), $save_uri );
 		parent::pagination( $which );
 		$_SERVER['REQUEST_URI'] = $save_uri;
 	}
@@ -1216,7 +1222,7 @@ class MLA_List_Table extends WP_List_Table {
 	 */
 	function print_column_headers( $with_id = true ) {
 		$save_uri = $_SERVER['REQUEST_URI'];
-		$_SERVER['REQUEST_URI'] = add_query_arg( self::_mla_submenu_arguments(), $save_uri );
+		$_SERVER['REQUEST_URI'] = add_query_arg( self::mla_submenu_arguments(), $save_uri );
 		parent::print_column_headers( $with_id );
 		$_SERVER['REQUEST_URI'] = $save_uri;
 	}
@@ -1244,7 +1250,7 @@ class MLA_List_Table extends WP_List_Table {
 				$query_types = array ();
 				
 			$mla_types = array ();
-			foreach( $query_types as $value )
+			foreach ( $query_types as $value )
 				$mla_types[ $value->slug ] = $value;
 
 			$posts_per_type = (array) wp_count_attachments();
@@ -1433,9 +1439,13 @@ class MLA_List_Table extends WP_List_Table {
 				 'id' => 'post-query-submit' 
 			) );
 		}
+	
+		if ( self::mla_submenu_arguments( true ) != self::mla_submenu_arguments( false ) ) {
+			submit_button( __( 'Clear Filter-by' ), 'button apply', 'clear_filter_by', false );
+		}
 		
 		if ( $this->is_trash && current_user_can( 'edit_others_posts' ) ) {
-			submit_button( __( 'Empty Trash' ), 'button-secondary apply', 'delete_all', false );
+			submit_button( __( 'Empty Trash' ), 'button apply', 'delete_all', false );
 		}
 		
 		echo ( '</div>' );

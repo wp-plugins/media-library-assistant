@@ -98,7 +98,7 @@ class MLASettings {
 			$category_option = MLAOptions::mla_get_option( 'attachment_category' );
 			$tag_option = MLAOptions::mla_get_option( 'attachment_tag' );
 			if ( ! ( ( 'checked' == $category_option ) && ( 'checked' == $tag_option ) ) ) {
-				$tax_option = MLAOptions::mla_get_option( 'taxonomy_support' );
+				$tax_option = MLAOptions::mla_get_option( MLAOptions::MLA_TAXONOMY_SUPPORT );
 				if ( 'checked' != $category_option ) {
 					if ( isset( $tax_option['tax_support']['attachment_category'] ) )
 						unset( $tax_option['tax_support']['attachment_category'] );
@@ -122,7 +122,7 @@ class MLASettings {
 			 */
 			$new_values = array();
 			
-			foreach( MLAOptions::mla_get_option( 'custom_field_mapping' ) as $key => $value ) {
+			foreach ( MLAOptions::mla_get_option( 'custom_field_mapping' ) as $key => $value ) {
 				$value['quick_edit'] = ( isset( $value['quick_edit'] ) && $value['quick_edit'] ) ? true : false;
 				$value['bulk_edit'] = ( isset( $value['bulk_edit'] ) && $value['bulk_edit'] ) ? true : false;
 				$new_values[ $key ] = $value;
@@ -137,7 +137,7 @@ class MLASettings {
 			 */
 			$new_values = array();
 			
-			foreach( MLAOptions::mla_get_option( 'custom_field_mapping' ) as $key => $value ) {
+			foreach ( MLAOptions::mla_get_option( 'custom_field_mapping' ) as $key => $value ) {
 				$value['meta_name'] = isset( $value['meta_name'] ) ? $value['meta_name'] : '';
 				$value['meta_single'] = ( isset( $value['meta_single'] ) && $value['meta_single'] ) ? true : false;
 				$value['meta_export'] = ( isset( $value['meta_export'] ) && $value['meta_export'] ) ? true : false;
@@ -153,7 +153,7 @@ class MLASettings {
 			 */
 			$new_values = array();
 			
-			foreach( MLAOptions::mla_get_option( 'custom_field_mapping' ) as $key => $value ) {
+			foreach ( MLAOptions::mla_get_option( 'custom_field_mapping' ) as $key => $value ) {
 				$value['no_null'] = ( isset( $value['no_null'] ) && $value['no_null'] ) ? true : false;
 				
 				if ( isset( $value['meta_single'] ) && $value['meta_single'] )
@@ -235,7 +235,7 @@ class MLASettings {
 		error_log( 'DEBUG: mla_admin_page_access_denied_action $plugin_page = ' .  var_export( $plugin_page, true), 0 );
 		error_log( 'DEBUG: mla_admin_page_access_denied_action $_registered_pages = ' .  var_export( $_registered_pages, true), 0 );
 	}
-	 */
+	// */
 	
 	/**
 	 * Load the plugin's Ajax handler
@@ -319,7 +319,11 @@ class MLASettings {
 		 * Use the URL suffix, if present. If the URL doesn't have a tab suffix, use '-general'.
 		 * This hack is required to pass the WordPress "referer" validation.
 		 */
-		$tab = isset( $_REQUEST['page'] ) ? substr( $_REQUEST['page'], 1 + strrpos( $_REQUEST['page'], '-' ) ) : 'general';
+		 if ( isset( $_REQUEST['page'] ) && is_string( $_REQUEST['page'] ) && ( 'mla-settings-menu-' == substr( $_REQUEST['page'], 0, 18 ) ) )
+			$tab = substr( $_REQUEST['page'], 18 );
+		else
+			$tab = 'general';
+			
 		$tab = isset ( self::$mla_tablist[ $tab ] ) ? '-' . $tab : '-general';
 		self::$current_page_hook = add_submenu_page( 'options-general.php', 'Media Library Assistant Settings', 'Media Library Assistant', 'manage_options', self::MLA_SETTINGS_SLUG . $tab, 'MLASettings::mla_render_settings_page' );
 		add_action( 'load-' . self::$current_page_hook, 'MLASettings::mla_add_menu_options_action' );
@@ -411,7 +415,9 @@ class MLASettings {
 		}
 		
 		if ( !empty( $template_array['sidebar'] ) ) {
-			$screen->set_help_sidebar( $template_array['sidebar'] );
+			$page_values = array( 'settingsURL' => admin_url('options-general.php') );
+			$content = MLAData::mla_parse_template( $template_array['sidebar'], $page_values );
+			$screen->set_help_sidebar( $content );
 			unset( $template_array['sidebar'] );
 		}
 		
@@ -424,6 +430,8 @@ class MLASettings {
 			$match_count = preg_match( '#\<!-- title="(.+)" order="(.+)" --\>#', $content, $matches, PREG_OFFSET_CAPTURE );
 			
 			if ( $match_count > 0 ) {
+				$page_values = array( 'settingsURL' => admin_url('options-general.php') );
+				$content = MLAData::mla_parse_template( $content, $page_values );
 				$tab_array[ $matches[ 2 ][ 0 ] ] = array(
 					 'id' => $id,
 					'title' => $matches[ 1 ][ 0 ],
@@ -862,6 +870,12 @@ class MLASettings {
 		if ( !empty( $_REQUEST['mla-general-options-save'] ) ) {
 			check_admin_referer( MLA::MLA_ADMIN_NONCE, '_wpnonce' );
 			$page_content = self::_save_general_settings( );
+		} elseif ( !empty( $_REQUEST['mla-general-options-export'] ) ) {
+			check_admin_referer( MLA::MLA_ADMIN_NONCE, '_wpnonce' );
+			$page_content = self::_export_settings( );
+		} elseif ( !empty( $_REQUEST['mla-general-options-import'] ) ) {
+			check_admin_referer( MLA::MLA_ADMIN_NONCE, '_wpnonce' );
+			$page_content = self::_import_settings( );
 		} elseif ( !empty( $_REQUEST['mla-general-options-reset'] ) ) {
 			check_admin_referer( MLA::MLA_ADMIN_NONCE, '_wpnonce' );
 			$page_content = self::_reset_general_settings( );
@@ -898,7 +912,7 @@ class MLASettings {
 		$shortcodes = array( 
 			// array("name" => "shortcode", "description" => "This shortcode...")
 			array( 'name' => 'mla_attachment_list', 'description' => 'renders a complete list of all attachments and references to them.' ),
-			array( 'name' => 'mla_gallery', 'description' => 'enhanced version of the WordPress [gallery] shortcode. For complete documentation <a href="?page=' . self::MLA_SETTINGS_SLUG . '-documentation&amp;mla_tab=documentation">click here</a>.' )
+			array( 'name' => 'mla_gallery', 'description' => 'enhanced version of the WordPress [gallery] shortcode. For complete documentation <a href="' . admin_url( 'options-general.php?page=' . self::MLA_SETTINGS_SLUG . '-documentation&amp;mla_tab=documentation' ) . '">click here</a>.' )
 		);
 		
 		$shortcode_list = '';
@@ -917,8 +931,8 @@ class MLASettings {
 		 */
 		$default_orderby = MLA_List_Table::mla_get_sortable_columns( );
 		foreach ($default_orderby as $key => $value ) {
-			MLAOptions::$mla_option_definitions['default_orderby']['options'][] = $value[0];
-			MLAOptions::$mla_option_definitions['default_orderby']['texts'][] = $value[1];
+			MLAOptions::$mla_option_definitions[MLAOptions::MLA_DEFAULT_ORDERBY]['options'][] = $value[0];
+			MLAOptions::$mla_option_definitions[MLAOptions::MLA_DEFAULT_ORDERBY]['texts'][] = $value[1];
 		}
 		
 		$options_list = '';
@@ -928,6 +942,7 @@ class MLASettings {
 		}
 		
 		$page_values['options_list'] = $options_list;
+		$page_values['import_settings'] = self::_compose_import_settings();
 		$page_content['body'] = MLAData::mla_parse_template( self::$page_template_array['general-tab'], $page_values );
 		return $page_content;
 	}
@@ -971,6 +986,7 @@ class MLASettings {
 	 */
 	private static function _compose_edit_view_tab( $view, $template ) {
 		$page_values = array(
+			'settingsURL' => admin_url('options-general.php'),
 			'action' => MLA::MLA_ADMIN_SINGLE_EDIT_UPDATE,
 			'form_url' => admin_url( 'options-general.php' ) . '?page=mla-settings-menu-view&mla_tab=view',
 			'_wpnonce' => wp_nonce_field( MLA::MLA_ADMIN_NONCE, '_wpnonce', true, false ),
@@ -1004,7 +1020,7 @@ class MLASettings {
 	private static function _compose_view_tab( ) {
 		$page_template_array = MLAData::mla_load_template( MLA_PLUGIN_PATH . 'tpls/admin-display-settings-view-tab.tpl' );
 		if ( ! array( $page_template_array ) ) {
-			error_log( "ERROR: MLASettings::_compose_view_tab \$page_template_array = " . var_export( $page_template_array, true ), 0 );
+			error_log( 'ERROR: MLASettings::_compose_view_tab $page_template_array = ' . var_export( $page_template_array, true ), 0 );
 			return '';
 		}
 		
@@ -1148,6 +1164,7 @@ class MLASettings {
 			}
 			
 			$page_values = array(
+				'settingsURL' => admin_url('options-general.php'),
 				'options_list' => $options_list,
 				'_wpnonce' => wp_nonce_field( MLA::MLA_ADMIN_NONCE, '_wpnonce', true, false ),
 				'form_url' => admin_url( 'options-general.php' ) . '?page=mla-settings-menu-view&mla_tab=view',
@@ -1190,6 +1207,7 @@ class MLASettings {
 		}
 		
 		$page_values = array(
+			'settingsURL' => admin_url('options-general.php'),
 			'options_list' => $options_list,
 			'colspan' => count( $MLAListViewTable->get_columns() ),
 			'_wpnonce' => wp_nonce_field( MLA::MLA_ADMIN_NONCE, '_wpnonce', true, false ),
@@ -1268,6 +1286,7 @@ class MLASettings {
 	 */
 	private static function _compose_edit_upload_tab( $item, &$templates ) {
 		$page_values = array(
+			'settingsURL' => admin_url('options-general.php'),
 			'action' => MLA::MLA_ADMIN_SINGLE_EDIT_UPDATE,
 			'form_url' => admin_url( 'options-general.php' ) . '?page=mla-settings-menu-upload&mla_tab=upload',
 			'_wpnonce' => wp_nonce_field( MLA::MLA_ADMIN_NONCE, '_wpnonce', true, false ),
@@ -1389,7 +1408,7 @@ class MLASettings {
 	private static function _compose_upload_tab( ) {
 		$page_template_array = MLAData::mla_load_template( MLA_PLUGIN_PATH . 'tpls/admin-display-settings-upload-tab.tpl' );
 		if ( ! array( $page_template_array ) ) {
-			error_log( "ERROR: MLASettings::_compose_upload_tab \$page_template_array = " . var_export( $page_template_array, true ), 0 );
+			error_log( 'ERROR: MLASettings::_compose_upload_tab $page_template_array = ' . var_export( $page_template_array, true ), 0 );
 			return '';
 		}
 		
@@ -1562,6 +1581,7 @@ class MLASettings {
 			}
 			
 			$page_values = array(
+				'settingsURL' => admin_url('options-general.php'),
 				'options_list' => $options_list,
 				'_wpnonce' => wp_nonce_field( MLA::MLA_ADMIN_NONCE, '_wpnonce', true, false ),
 				'form_url' => admin_url( 'options-general.php' ) . '?page=mla-settings-menu-upload&mla_tab=upload',
@@ -1602,6 +1622,7 @@ class MLASettings {
 		}
 		
 		$page_values = array(
+			'settingsURL' => admin_url('options-general.php'),
 			'options_list' => $options_list,
 			'colspan' => count( $MLAListUploadTable->get_columns() ),
 			'_wpnonce' => wp_nonce_field( MLA::MLA_ADMIN_NONCE, '_wpnonce', true, false ),
@@ -1659,6 +1680,7 @@ class MLASettings {
 		}
 		
 		$page_values = array(
+			'settingsURL' => admin_url('options-general.php'),
 			'options_list' => '',
 			'style_options_list' => '',
 			'markup_options_list' => '',
@@ -1969,7 +1991,7 @@ class MLASettings {
 				/*
 				 * Check for single-rule action buttons
 				 */
-				foreach( $_REQUEST['custom_field_mapping'] as $key => $value ) {
+				foreach ( $_REQUEST['custom_field_mapping'] as $key => $value ) {
 					if ( isset( $value['action'] ) ) {
 						$settings = array( $key => $value );
 						foreach ( $value['action'] as $action => $label ) {
@@ -2013,6 +2035,7 @@ class MLASettings {
 		}
 		
 		$page_values = array(
+			'settingsURL' => admin_url('options-general.php'),
 			'options_list' => '',
 			'custom_options_list' => '',
 			'form_url' => admin_url( 'options-general.php' ) . '?page=mla-settings-menu-custom_field&mla_tab=custom_field',
@@ -2077,7 +2100,7 @@ class MLASettings {
 				/*
 				 * Check for single-rule action buttons
 				 */
-				foreach( $_REQUEST['iptc_exif_mapping']['custom'] as $key => $value ) {
+				foreach ( $_REQUEST['iptc_exif_mapping']['custom'] as $key => $value ) {
 					if ( isset( $value['action'] ) ) {
 						$settings = array( 'custom' => array( $key => $value ) );
 						foreach ( $value['action'] as $action => $label ) {
@@ -2115,6 +2138,7 @@ class MLASettings {
 		}
 		
 		$page_values = array(
+			'settingsURL' => admin_url('options-general.php'),
 			'options_list' => '',
 			'standard_options_list' => '',
 			'taxonomy_options_list' => '',
@@ -2187,6 +2211,7 @@ class MLASettings {
 		self::$page_template_array = MLAData::mla_load_template( MLA_PLUGIN_PATH . 'tpls/admin-display-settings-page.tpl' );
 		$current_tab = isset( $_REQUEST['mla_tab'] ) ? $_REQUEST['mla_tab']: 'general';
 		$page_values = array(
+			'settingsURL' => admin_url('options-general.php'),
 			'version' => 'v' . MLA::CURRENT_MLA_VERSION,
 			'donateURL' => MLA_PLUGIN_URL . 'images/DonateButton.jpg',
 			'messages' => '',
@@ -2564,7 +2589,7 @@ class MLASettings {
 		$update_count = 0;
 		$post_ids = $wpdb->get_col( "SELECT ID FROM {$wpdb->posts} WHERE `post_type` = 'attachment'" );
 
-		foreach( $post_ids as $key => $post_id ) {
+		foreach ( $post_ids as $key => $post_id ) {
 			$updates = MLAOptions::mla_evaluate_custom_field_mapping( (integer) $post_id, 'custom_field_mapping', $settings );
 
 			$examine_count += 1;
@@ -2669,9 +2694,9 @@ class MLASettings {
 		$examine_count = 0;
 		$update_count = 0;
 		
-		$query = array( 'orderby' => 'none', 'post_parent' => 'all' ); //, 'post_mime_type' => 'image,application/*pdf*' );
-//		$query = array( 'orderby' => 'none', 'post_parent' => 'all', 'post_mime_type' => 'image,application/*pdf*' );
+//		$query = array( 'orderby' => 'none', 'post_parent' => 'all' ); // , 'post_mime_type' => 'image' );
 //		$query = array( 'orderby' => 'none', 'post_parent' => 'all', 'post_mime_type' => 'application/*pdf*' );
+		$query = array( 'orderby' => 'none', 'post_parent' => 'all', 'post_mime_type' => 'image,application/*pdf*' );
 		$posts = MLAShortcodes::mla_get_shortcode_attachments( 0, $query );
 		
 		if ( is_string( $posts ) )
@@ -2680,7 +2705,7 @@ class MLASettings {
 				'body' => '' 
 			);
 
-		foreach( $posts as $key => $post ) {
+		foreach ( $posts as $key => $post ) {
 			$updates = MLAOptions::mla_evaluate_iptc_exif_mapping( $post, 'iptc_exif_standard_mapping', $_REQUEST['iptc_exif_mapping'] );
 
 			$examine_count += 1;
@@ -2721,7 +2746,9 @@ class MLASettings {
 		$examine_count = 0;
 		$update_count = 0;
 		
-		$query = array( 'orderby' => 'none', 'post_parent' => 'all' ); //, 'post_mime_type' => 'image,application/*pdf*' );
+//		$query = array( 'orderby' => 'none', 'post_parent' => 'all' ); // , 'post_mime_type' => 'image' );
+//		$query = array( 'orderby' => 'none', 'post_parent' => 'all', 'post_mime_type' => 'application/*pdf*' );
+		$query = array( 'orderby' => 'none', 'post_parent' => 'all', 'post_mime_type' => 'image,application/*pdf*' );
 		$posts = MLAShortcodes::mla_get_shortcode_attachments( 0, $query );
 		
 		if ( is_string( $posts ) )
@@ -2730,7 +2757,7 @@ class MLASettings {
 				'body' => '' 
 			);
 
-		foreach( $posts as $key => $post ) {
+		foreach ( $posts as $key => $post ) {
 			$updates = MLAOptions::mla_evaluate_iptc_exif_mapping( $post, 'iptc_exif_taxonomy_mapping', $_REQUEST['iptc_exif_mapping'] );
 
 			$examine_count += 1;
@@ -2782,6 +2809,8 @@ class MLASettings {
 		$examine_count = 0;
 		$update_count = 0;
 		
+//		$query = array( 'orderby' => 'none', 'post_parent' => 'all' ); // , 'post_mime_type' => 'image' );
+//		$query = array( 'orderby' => 'none', 'post_parent' => 'all', 'post_mime_type' => 'application/*pdf*' );
 		$query = array( 'orderby' => 'none', 'post_parent' => 'all', 'post_mime_type' => 'image,application/*pdf*' );
 		$posts = MLAShortcodes::mla_get_shortcode_attachments( 0, $query );
 		
@@ -2791,7 +2820,7 @@ class MLASettings {
 				'body' => '' 
 			);
 
-		foreach( $posts as $key => $post ) {
+		foreach ( $posts as $key => $post ) {
 			$updates = MLAOptions::mla_evaluate_iptc_exif_mapping( $post, 'iptc_exif_custom_mapping', $settings );
 
 			$examine_count += 1;
@@ -2938,7 +2967,7 @@ class MLASettings {
 		
 		foreach ( MLAOptions::$mla_option_definitions as $key => $value ) {
 			if ( 'general' == $value['tab'] ) {
-				if ( 'custom' == $value['type'] ) {
+				if ( 'custom' == $value['type'] && isset( $value['reset'] ) ) {
 					$message = MLAOptions::$value['reset']( 'reset', $key, $value, $_REQUEST );
 				}
 				elseif ( ('header' == $value['type']) || ('hidden' == $value['type']) ) {
@@ -2965,5 +2994,202 @@ class MLASettings {
 		
 		return $page_content;
 	} // _reset_general_settings
+	
+	/**
+	 * Compose HTML markup for the import settings if any settings files exist
+ 	 *
+	 * @since 1.50
+	 *
+	 * @return	string	HTML markup for the Import All Settings button and dropdown list, if any
+	 */
+	private static function _compose_import_settings( ) {
+		if ( ! file_exists( MLA_BACKUP_DIR ) )
+			return '';
+		
+		$prefix = ( ( defined( MLA_OPTION_PREFIX ) ) ? MLA_OPTION_PREFIX : 'mla_' ) . '_options_';
+		$prefix_length = strlen( $prefix );
+		$backup_files = array();	
+		$files = scandir( MLA_BACKUP_DIR, 1 ); // sort descending
+		foreach ( $files as $file ) {
+			if ( 0 === strpos( $file, $prefix ) ) {
+				$tail = substr( $file, $prefix_length, strlen( $file ) - ( $prefix_length + 4 ) );
+				$text = sprintf( '%1$s/%2$s/%3$s %4$s', substr( $tail, 0, 4 ), substr( $tail, 4, 2 ), substr( $tail, 6, 2 ), substr( $tail, 9 ) );
+				$backup_files [ $text ] = $file;
+			}
+		}
+		
+		if ( empty( $backup_files ) )
+			return '';
+
+		$option_values = array(
+			'value' => 'none',
+			'text' => '-- select settings --',
+			'selected' => 'selected="selected"'
+		);
+		
+		$select_options = MLAData::mla_parse_template( self::$page_template_array['select-option'], $option_values );
+		foreach ( $backup_files as $text => $file ) {
+			$option_values = array(
+				'value' => esc_attr( $file ),
+				'text' => esc_html( $text ),
+				'selected' => ''
+			);
+			
+			$select_options .= MLAData::mla_parse_template( self::$page_template_array['select-option'], $option_values );
+		}
+		
+		$option_values = array(
+			'key' => 'mla-import-settings-file',
+			'options' => $select_options
+		);
+		
+		return '<input name="mla-general-options-import" type="submit" class="button-primary" value="Import ALL Settings" />' . MLAData::mla_parse_template( self::$page_template_array['select-only'], $option_values );
+	} // _compose_import_settings
+	
+	/**
+	 * Serialize option settings and write them to a file
+ 	 *
+	 * Options with a default value, i.e., not stored in the database are NOT written to the file.
+	 *
+	 * @since 1.50
+	 *
+	 * @return	array	Message(s) reflecting the results of the operation
+	 */
+	private static function _export_settings( ) {
+		$message_list = '';
+		$settings = array();
+
+		/*
+		 * Accumulate the settings into an array, then serialize it for writing to the file.
+		 */
+		$stored_count = 0;
+		foreach ( MLAOptions::$mla_option_definitions as $key => $value ) {
+			$stored_value = MLAOptions::mla_get_option( $key, false, true );
+			if ( false !== $stored_value ) {
+				$settings[ $key ] = $stored_value;
+				$stored_count++;
+				$message = "<br>{$key} exported";
+			}
+			else
+				$message = "<br>{$key} skipped";
+				
+			$message_list .= $message;
+		}
+		
+		$settings = serialize( $settings );
+		$page_content = array( 'message' => 'ALL settings exported.', 'body' => '' );
+		
+		/*
+		 * Make sure the directory exists and is writable, then create the file
+		 */
+		$prefix = ( defined( MLA_OPTION_PREFIX ) ) ? MLA_OPTION_PREFIX : 'mla_';
+		$date = date("Ymd_B");
+		$filename = MLA_BACKUP_DIR . "{$prefix}_options_{$date}.txt";
+		
+		if ( ! file_exists( MLA_BACKUP_DIR ) && ! @mkdir( MLA_BACKUP_DIR ) ) {
+			$page_content['message'] = 'ERROR: The settings directory ( ' . MLA_BACKUP_DIR . ' ) cannot be created.';
+			return $page_content;
+		}
+		elseif ( ! is_writable( MLA_BACKUP_DIR ) && ! @chmod( MLA_BACKUP_DIR , '0777') ) {
+			$page_content['message'] = 'ERROR: The settings directory ( ' . MLA_BACKUP_DIR . ' ) is not writable.';
+			return $page_content;
+		}
+		
+		if ( ! file_exists( MLA_BACKUP_DIR . 'index.php') )
+			@ touch( MLA_BACKUP_DIR . 'index.php');
+
+		$file_pointer = @fopen( $filename, 'w' );
+		if( ! $file_pointer ) {
+			$page_content['message'] = "ERROR: The settings file ( {$filename} ) could not be opened.";
+			return $page_content;
+			}
+			
+		if(false === @fwrite($file_pointer, $settings)) {
+			$error_info = error_get_last();
+			error_log( 'ERROR: _export_settings $error_info = ' . var_export( $error_info, true ), 0 );	
+
+			if ( false !== ( $tail = strpos( $error_info['message'], '</a>]: ' ) ) )
+				$php_errormsg = ':<br>' . substr( $error_info['message'], $tail + 7 );
+			else
+				$php_errormsg = '.';
+				
+			$page_content['message'] = "ERROR: writing the settings file ( {$filename} ){$php_errormsg}";
+		}
+
+		fclose($file_pointer);
+
+		$page_content['message'] = "Settings exported; {$stored_count} settings recorded.";
+	
+		/*
+		 * Uncomment this for debugging.
+		 */
+		//$page_content['message'] .= $message_list;
+
+		return $page_content;
+	} // _export_settings
+	
+	/**
+	 * Read a serialized file of option settings and write them to the database
+ 	 *
+	 * @since 1.50
+	 *
+	 * @return	array	Message(s) reflecting the results of the operation
+	 */
+	private static function _import_settings( ) {
+		$page_content = array( 'message' => 'No settings imported.', 'body' => '' );
+		$message_list = '';
+
+		if ( isset( $_REQUEST['mla-import-settings-file'] ) ) {
+			$filename = $_REQUEST['mla-import-settings-file'];
+			
+			if ( 'none' != $filename )
+				$filename = MLA_BACKUP_DIR . $filename;
+			else {
+				$page_content['message'] = 'Please select an import settings file from the dropdown list.';
+				return $page_content;
+			}
+		}
+		else {
+			$page_content['message'] = "ERROR: The import settings dropdown selection is missing.";
+			return $page_content;
+		}
+		
+		$settings = @file_get_contents( $filename, false );
+		if( false === $settings ) {
+			$error_info = error_get_last();
+			error_log( 'ERROR: _import_settings $error_info = ' . var_export( $error_info, true ), 0 );	
+
+			if ( false !== ( $tail = strpos( $error_info['message'], '</a>]: ' ) ) )
+				$php_errormsg = ':<br>' . substr( $error_info['message'], $tail + 7 );
+			else
+				$php_errormsg = '.';
+				
+			$page_content['message'] = "ERROR: reading the settings file ( {$filename} ){$php_errormsg}";
+			return $page_content;
+		}
+
+		$settings = unserialize( $settings );
+		$updated_count = 0;
+		$unchanged_count = 0;
+		foreach ( $settings as $key => $value ) {
+			if ( MLAOptions::mla_update_option( $key, $value ) ) {
+				$updated_count++;
+				$message_list .= "<br>{$key} updated";
+			}
+			else {
+				$unchanged_count++;
+				$message_list .= "<br>{$key} unchanged";
+			}
+		}
+		
+		$page_content['message'] = "Settings imported; {$updated_count} updated, {$unchanged_count} unchanged.";
+	
+		/*
+		 * Uncomment this for debugging.
+		 */
+		//$page_content['message'] .= $message_list;
+		
+		return $page_content;
+	} // _import_settings
 } // class MLASettings
 ?>

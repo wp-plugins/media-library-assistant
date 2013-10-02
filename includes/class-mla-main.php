@@ -38,7 +38,7 @@ class MLA {
 	 *
 	 * @var	string
 	 */
-	const CURRENT_MLA_VERSION = '1.43';
+	const CURRENT_MLA_VERSION = '1.50';
 
 	/**
 	 * Slug for registering and enqueueing plugin style sheet
@@ -308,7 +308,12 @@ class MLA {
 	 * @return	void
 	 */
 	public static function mla_admin_menu_action( ) {
-		$hook = add_submenu_page( 'upload.php', 'Media Library Assistant', 'Assistant', 'upload_files', self::ADMIN_PAGE_SLUG, 'MLA::mla_render_admin_page' );
+		if ( 'checked' != MLAOptions::mla_get_option( MLAOptions::MLA_SCREEN_DISPLAY_LIBRARY ) )
+			remove_submenu_page( 'upload.php', 'upload.php' );
+		
+		$page_title = MLAOptions::mla_get_option( MLAOptions::MLA_SCREEN_PAGE_TITLE );
+		$menu_title = MLAOptions::mla_get_option( MLAOptions::MLA_SCREEN_MENU_TITLE );
+		$hook = add_submenu_page( 'upload.php', $page_title, $menu_title, 'upload_files', self::ADMIN_PAGE_SLUG, 'MLA::mla_render_admin_page' );
 		add_action( 'load-' . $hook, 'MLA::mla_add_menu_options' );
 		add_action( 'load-' . $hook, 'MLA::mla_add_help_tab' );
 		self::$page_hooks[ $hook ] = $hook;
@@ -337,6 +342,18 @@ class MLA {
 			add_action( 'admin_head-edit-tags.php', 'MLA::mla_add_help_tab' );
 		}
 		
+		if ( $menu_position = (integer) MLAOptions::mla_get_option( MLAOptions::MLA_SCREEN_ORDER ) ) {
+			global $submenu_file, $submenu;
+			foreach ( $submenu['upload.php'] as $menu_order => $menu_item ) {
+				if ( self::ADMIN_PAGE_SLUG == $menu_item[2] ) {
+					$submenu['upload.php'][$menu_position] = $menu_item;
+					unset( $submenu['upload.php'][$menu_order] );
+					ksort( $submenu['upload.php'] );
+					break;
+				}
+			}
+		}
+
 		add_filter( 'parent_file', 'MLA::mla_parent_file_filter', 10, 1 );
 	}
 	
@@ -541,6 +558,16 @@ class MLA {
 		global $submenu_file, $submenu;
 		
 		/*
+		 * Make sure the "Assistant" submenu line is bolded if it's the default
+		 */
+		if ( 'upload.php' == $parent_file && NULL == $submenu_file ) {
+			reset( $submenu['upload.php'] );
+			$current = current( $submenu['upload.php'] );
+			if ( self::ADMIN_PAGE_SLUG == $current[2] )
+				$submenu_file = self::ADMIN_PAGE_SLUG;
+		}
+			
+		/*
 		 * Make sure the "Assistant" submenu line is bolded when we go to the Edit Media page
 		 */
 		if ( isset( $_REQUEST['mla_source'] ) )
@@ -595,10 +622,11 @@ class MLA {
 			$_GET['orderby'] = $_REQUEST['orderby'];
 		
 		$bulk_action = self::_current_bulk_action();
-		
+
+		$page_title = MLAOptions::mla_get_option( MLAOptions::MLA_SCREEN_PAGE_TITLE );
 		echo "<div class=\"wrap\">\r\n";
 		echo "<div id=\"icon-upload\" class=\"icon32\"><br/></div>\r\n";
-		echo "<h2>Media Library Assistant"; // trailing </h2> is action-specific
+		echo "<h2>{$page_title}"; // trailing </h2> is action-specific
 		
 		if ( !current_user_can( 'upload_files' ) ) {
 			echo " - Error</h2>\r\n";
@@ -626,13 +654,10 @@ class MLA {
 		 * Process bulk actions that affect an array of items
 		 */
 		if ( $bulk_action && ( $bulk_action != 'none' ) ) {
-//			echo "</h2>\r\n";
 			
 			if ( isset( $_REQUEST['cb_attachment'] ) ) {
 				foreach ( $_REQUEST['cb_attachment'] as $index => $post_id ) {
 					switch ( $bulk_action ) {
-						//case 'attach':
-						//case 'catagorize':
 						case 'delete':
 							$item_content = self::_delete_single_item( $post_id );
 							break;
@@ -653,21 +678,17 @@ class MLA {
 							}
 							
 							/*
-							 * Copy the edit form contents to $new_data and remove them from $_REQUEST
+							 * Copy the edit form contents to $new_data
 							 */
 							$new_data = array() ;
 							if ( isset( $_REQUEST['post_parent'] ) ) {
 								if ( is_numeric( $_REQUEST['post_parent'] ) )
 									$new_data['post_parent'] = $_REQUEST['post_parent'];
-									
-								unset( $_REQUEST['post_parent'] );
 							}
 							
 							if ( isset( $_REQUEST['post_author'] ) ) {
 								if ( -1 != $_REQUEST['post_author'] )
 										$new_data['post_author'] = $_REQUEST['post_author'];
-										
-								unset( $_REQUEST['post_author'] );
 							}
 							
 							/*
@@ -675,12 +696,9 @@ class MLA {
 							 */
 							$custom_fields = array();
 							foreach (MLAOptions::mla_custom_field_support( 'bulk_edit' ) as $slug => $label ) {
-								$field_name =  $slug;
-								if ( isset( $_REQUEST[ $field_name ] ) ) {
-									if ( ! empty( $_REQUEST[ $field_name ] ) )
-										$custom_fields[ $label ] = $_REQUEST[ $field_name ];
-											
-									unset( $_REQUEST[ $field_name ] );
+								if ( isset( $_REQUEST[ $slug ] ) ) {
+									if ( ! empty( $_REQUEST[ $slug ] ) )
+										$custom_fields[ $label ] = $_REQUEST[ $slug ];
 								}
 							} // foreach
 					
@@ -706,8 +724,14 @@ class MLA {
 					$page_content['message'] .= $item_content['message'] . '<br>';
 				} // foreach cb_attachment
 
+				unset( $_REQUEST['post_parent'] );
+				unset( $_REQUEST['post_author'] );
 				unset( $_REQUEST['tax_input'] );
 				unset( $_REQUEST['tax_action'] );
+
+				foreach (MLAOptions::mla_custom_field_support( 'bulk_edit' ) as $slug => $label )
+					unset( $_REQUEST[ $slug ] );
+
 				unset( $_REQUEST['cb_attachment'] );
 			} // isset cb_attachment
 			else {
@@ -718,6 +742,36 @@ class MLA {
 			unset( $_REQUEST['bulk_edit'] );
 			unset( $_REQUEST['action2'] );
 		} // $bulk_action
+		
+		if ( isset( $_REQUEST['clear_filter_by'] ) ) {
+			unset( $_REQUEST['heading_suffix'] );
+			unset( $_REQUEST['parent'] );
+			unset( $_REQUEST['author'] );
+			unset( $_REQUEST['mla-tax'] );
+			unset( $_REQUEST['mla-term'] );
+			unset( $_REQUEST['mla-metakey'] );
+			unset( $_REQUEST['mla-metavalue'] );
+		}
+		
+		if ( isset( $_REQUEST['delete_all'] ) ) {
+			global $wpdb;
+			
+			$ids = $wpdb->get_col( $wpdb->prepare( "SELECT ID FROM $wpdb->posts WHERE post_type=%s AND post_status = %s", 'attachment', 'trash' ) );
+			$delete_count = 0;
+			foreach ( $ids as $post_id ) {
+				$item_content = self::_delete_single_item( $post_id );
+				
+				if ( false !== strpos( $item_content['message'], 'ERROR:' ) )
+					$page_content['message'] .= $item_content['message'] . '<br>';
+				else
+					$delete_count++;
+			}
+
+			if ( $delete_count )			
+				$page_content['message'] .= sprintf( _nx( '%s item deleted.', '%s items deleted.', $delete_count, 'deleted items' ), number_format_i18n( $delete_count ) );
+			else
+				$page_content['message'] .= 'No items deleted.';
+		}
 		
 		/*
 		 * Process row-level actions that affect a single item
@@ -800,7 +854,7 @@ class MLA {
 			/*
 			 * Optional - limit width of the views list
 			 */
-			$view_width = MLAOptions::mla_get_option( 'table_views_width' );
+			$view_width = MLAOptions::mla_get_option( MLAOptions::MLA_TABLE_VIEWS_WIDTH );
 			if ( !empty( $view_width ) ) {
 				if ( is_numeric( $view_width ) )
 					$view_width .= 'px';
@@ -881,18 +935,25 @@ class MLA {
 			 */
 			echo sprintf( '<input type="hidden" name="page" value="%1$s" />', $_REQUEST['page'] ) . "\r\n";
 			
-			if ( isset( $_REQUEST['detached'] ) ) // Unattached items
-				echo sprintf( '<input type="hidden" name="detached" value="%1$s" />', $_REQUEST['detached'] ) . "\r\n";
-			
-			if ( isset( $_REQUEST['status'] ) ) // Trash items
-				echo sprintf( '<input type="hidden" name="status" value="%1$s" />', $_REQUEST['status'] ) . "\r\n";
-			
-			if ( isset( $_REQUEST['post_mime_type'] ) ) // e.g., Images
-				echo sprintf( '<input type="hidden" name="post_mime_type" value="%1$s" />', $_REQUEST['post_mime_type'] ) . "\r\n";
-			
-			if ( isset( $_REQUEST['m'] ) ) // filter by date
-				echo sprintf( '<input type="hidden" name="m" value="%1$s" />', $_REQUEST['m'] ) . "\r\n";
-			
+			$view_arguments = MLA_List_Table::mla_submenu_arguments();
+			foreach ( $view_arguments as $key => $value ) {
+				if ( 'meta_query' == $key )
+					$value = stripslashes( $_REQUEST['meta_query'] );
+
+				/*
+				 * Search box elements are already set up in the above "search-box"
+				 */
+				if ( in_array( $key, array( 's', 'mla_search_connector', 'mla_search_fields' ) ) )
+					continue;
+					
+				if ( is_array( $value ) ) {
+					foreach ( $value as $element_key => $element_value )
+						echo sprintf( '<input type="hidden" name="%1$s[%2$s]" value="%3$s" />', $key, $element_key, esc_attr( $element_value ) ) . "\r\n";
+				}
+				else
+					echo sprintf( '<input type="hidden" name="%1$s" value="%2$s" />', $key, esc_attr( $value ) ) . "\r\n";
+			}
+
 			//	 Now we can render the completed list table
 			$MLAListTable->display();
 			echo "</form><!-- id=mla-filter -->\r\n";
@@ -937,10 +998,9 @@ class MLA {
 		 */
 		$custom_fields = array();
 		foreach (MLAOptions::mla_custom_field_support( 'quick_edit' ) as $slug => $label ) {
-			$field_name =  $slug;
-			if ( isset( $_REQUEST[ $field_name ] ) ) {
-				$custom_fields[ $label ] = $_REQUEST[ $field_name ];
-				unset ( $_REQUEST[ $field_name ] );
+			if ( isset( $_REQUEST[ $slug ] ) ) {
+				$custom_fields[ $label ] = $_REQUEST[ $slug ];
+				unset ( $_REQUEST[ $slug ] );
 			  }
 		}
 

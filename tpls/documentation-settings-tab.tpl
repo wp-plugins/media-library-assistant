@@ -45,13 +45,18 @@
 <a href="#mla_markup_parameters"><strong>Substitution parameters for markup templates</strong></a>
 </li>
 <li>
-<a href="#mla_attachment_parameters"><strong>Attachment-specific substitution parameters for markup templates</strong></a>
+<a href="#mla_attachment_parameters"><strong>Attachment-specific substitution parameters for the markup template Item part</strong></a>
 </li>
 <li>
 <a href="#mla_variable_parameters"><strong>Field-level markup substitution parameters</strong></a>
 </li>
 <li>
-<a href="#mla_table_example"><strong>A table-based template example</strong></a>
+<a href="#pdf_metadata"><strong>Metadata in PDF documents</strong></a>
+</li>
+<li>
+<a href="#mla_template_parameters"><strong>Content Templates</strong></a>
+<li>
+<a href="#mla_table_example"><strong>A table-based Style and Markup template example</strong></a>
 </li>
 <li>
 <a href="#mla_views"><strong>Library Views/Post MIME Type Processing</strong></a>
@@ -70,6 +75,9 @@
 </li>
 <li>
 <a href="#mla_iptc_exif_mapping"><strong>IPTC &amp; EXIF Processing Options</strong></a>
+</li>
+<li>
+<a href="#mla_gps_values"><strong>Enhanced GPS values</strong></a>
 </li>
 <li>
 <a href="#mla_iptc_identifiers"><strong>IPTC identifiers and friendly names</strong></a>
@@ -94,6 +102,7 @@ The <code>[mla_gallery]</code> shortcode is used in a post, page or custom post 
 <li>Support for all post_mime_type values, not just images.</li>
 <li>Media Library items need not be "attached" to the post. You can build a gallery with any combination of items in the Library using taxonomy terms, custom fields and more.</li>
 <li>Control over the styles, markup and content of each gallery using the Style and Markup Templates documented below.</li>
+<li>Access to a wide range of content using the Attachment-specific and Field-level Substitution parameters documented below. A powerful Content Template facility lets you assemble content from multiple sources and vary the results depending on which data elements contain non-empty values for a given gallery item.</li>
 <li>You can combine <code>[mla_gallery]</code> data selection with other popular gallery-generating plugins to get the best of both.
 </li>
 </ul>
@@ -199,7 +208,7 @@ Twelve <code>[mla_gallery]</code> parameters provide an easy way to control the 
 <tr>
 </table>
 <p>
-All but the "mla_target" parameter support the <a href="#mla_markup_parameters">Markup</a> and <a href="#mla_attachment_parameters">Attachment-specific</a> substitution arguments defined for Markup Templates. For example, if you code "<code>mla_rollover_text='{+date+} : {+description+}'</code>, the rollover text will contain the upload date, a colon, and the full description of each gallery item. Simply add "{+" before the substitution parameter name and add "+}" after the name. Note that the enclosing delimiters are different than those used in the templates, since the WordPress shortcode parser reserves square brackets ("[" and "]") for its own use.
+All but the "mla_target" parameter support the <a href="#mla_markup_parameters">Markup</a>, <a href="#mla_attachment_parameters">Attachment-specific</a>, <a href="#mla_variable_parameters">Field-level</a> and <a href="#mla_template_parameters">Content Template</a> substitution arguments defined for Markup Templates. For example, if you code "<code>mla_rollover_text='{+date+} : {+description+}'</code>, the rollover text will contain the upload date, a colon, and the full description of each gallery item. Simply add "{+" before the substitution parameter name and add "+}" after the name. Note that the enclosing delimiters are different than those used in the templates, since the WordPress shortcode parser reserves square brackets ("[" and "]") for its own use.
 </p>
 <p>
 The "mla_link_href" parameter is a great way to change the destination your gallery item links to or add arguments to the link for later processing. For example, to make a gallery item link back to the page/post it is attached to, you can code: <code>mla_link_href='{+site_url+}/?page_id={+parent+}'</code>. You can also add arguments to the link, e.g., <code>mla_link_href='{+link_url+}&amp;amp;myarg=myvalue'</code>. Note the use of the HTML entity name "&amp;amp;" to put an ampersand in the value; the WordPress "visual" post editor will replace "&", "<" and ">" with "&amp;amp;", "&amp;lt;" and "&amp;gt;" whether you like it not. The <strong>only</strong> markup parameter modified by this parameter is "link". Other markup parameters such as "pagelink", "filelink" and "link_url" are not modified.
@@ -371,10 +380,10 @@ Note that the "tag_id" parameter requires exactly one tag ID; multiple IDs are n
 </p>
 <h4>Taxonomy Parameters, "tax_operator"</h4>
 <p>
-The <code>[mla_gallery]</code> shortcode supports the simple "{tax} (string)" values (deprecated as of WordPress version 3.1) as well as the more powerful "<a href="http://codex.wordpress.org/Class_Reference/WP_Query#Taxonomy_Parameters" title="WordPress Codex Documentation for tax_query" target="_blank">tax_query</a>" value. 
+The <code>[mla_gallery]</code> shortcode supports the simple "{tax} (string)" values (deprecated as of WordPress version 3.1) as well as the more powerful "<a href="http://codex.wordpress.org/Class_Reference/WP_Query#Taxonomy_Parameters" title="WordPress Codex Documentation for tax_query" target="_blank">tax_query</a>" value. Use these queries for your custom taxonomies (and for the MLA attachment_category and attachment_tag taxonomies); use the above Category and Tag parameters for the WordPress-provided taxonomies.
 </p>
 <p>
-For simple queries, enter the taxonomy name and the term(s) that must be matched, e.g.:
+For simple queries, enter the custom taxonomy name and the term(s) that must be matched, e.g.:
 </p>
 <ul class="mla_settings">
 <li><code>[mla_gallery attachment_category='separate-category,another-category']</code></li>
@@ -980,7 +989,10 @@ In a template, substitution parameters are surrounded by opening ('[+') and clos
 <p>
 <a href="#backtotop">Go to Top</a>
 </p>
-<h4>Attachment-specific substitution parameters for markup templates</h4>
+<h4>Attachment-specific substitution parameters for the markup template Item part</h4>
+<p>
+These substitution parameters are only available in the "Item" part of the markup template, since they require an attachment for their data source.
+</p>
 <table>
 <tr>
 <td style="padding-right: 10px; vertical-align: top; font-weight:bold">index</td>
@@ -1134,13 +1146,14 @@ In a template, substitution parameters are surrounded by opening ('[+') and clos
 </p>
 <h3>Field-level Markup Substitution Parameters</h3>
 <p>
-Field-level substitution parameters let you access query arguments, custom fields, taxonomy terms, IPTC metadata and EXIF metadata for display in an MLA gallery. For these parameters, the value you code within the surrounding the ('[+') and ('+]') delimiters has three parts; the prefix, the field name and, if desired, a formatting option.
+Field-level substitution parameters let you access query arguments, custom fields, taxonomy terms and attachment metadata for display in an MLA gallery. For these parameters, the value you code within the surrounding the ('[+') and ('+]') delimiters has three parts; the prefix, the field name (or template content) and, if desired, a formatting option.
 </p>
 <p>
 The <strong>prefix</strong> defines which type of field-level data you are accessing. It must immediately follow the opening ('[+') delimiter and end with a colon (':'). There can be no spaces in this part of the parameter.
 </p>
 <p>
-The <strong>field name</strong> defines which field-level data element you are accessing. It must immediately follow the colon (':'). There can be no spaces between the colon and the field name. Spaces are allowed within the field name to accommodate custom field names that contain them. <strong>Compound names</strong> are used to access elements within arrays, e.g., &quot;<strong>sizes.thumbnail.file</strong>&quot; is used to specify the file name for the thumbnail version of an image.</p>
+The <strong>field name</strong> defines which field-level data element you are accessing. It must immediately follow the colon (':'). There can be no spaces between the colon and the field name. Spaces are allowed within the field name to accommodate custom field names that contain them. <strong>Compound names</strong> are used to access elements within arrays, e.g., &quot;<strong>sizes.thumbnail.file</strong>&quot; is used to specify the file name for the thumbnail version of an image. For the "template" prefix, the field name is replaced by the template content; see the <a href="#mla_template_parameters">Content Templates</a> section for details.
+</p>
 <p>
 If no formatting option is present, fields with multiple values are formatted as a comma-delimited text list. The formatting option, if present, immediately follows the field name using a comma (,) separator and ends with the closing delimiter ('+]'). There can be no spaces in this part of the parameter.</p>
 <p>
@@ -1150,7 +1163,7 @@ The <strong>",single" option</strong> defines how to handle fields with multiple
 The <strong>",export" option</strong> changes the display of array fields with multiple values. If this option is present, the PHP <code>var_export</code> function is used to return a string representation of all the elements in an array field. For example, if you code <code>[+meta:sizes.thumbnail,export+]</code> the result will be "array ('file' => '20120313-ASK_5605-150x150.jpg', 'width' => 150, 'height' => 150, 'mime-type' => 'image/jpeg'".
 </p>
 <p>
-There are seven prefix values for field-level data. Prefix values must be coded as shown; all lowercase letters.
+There are nine prefix values for field-level data. Prefix values must be coded as shown; all lowercase letters.
 </p>
 <table>
 	<tr>
@@ -1174,11 +1187,18 @@ There are seven prefix values for field-level data. Prefix values must be coded 
 		<td>WordPress attachment metadata, if any, embedded in the image/audio/video file. For this category, you can code any of the field names embedded in the _wp_attachment_metadata array. The "Attachment Metadata" display in the Media/Edit Media screen will show you the names and values of these fields. Note that the fields available differ among image, audio and video attachments.</td>
 	</tr>
 	<tr>
+		<td style="padding-right: 10px; vertical-align: top; font-weight:bold">pdf</td>
+		<td>
+		The Document Information Dictionary (D.I.D.)and XMP metadata, if any, embedded in a PDF file. For this category, you can code any of the nine D.I.D. entries (Title, Author, Subject, Keywords, Creator, Producer, CreationDate, ModDate, Trapped). For many documents there is also a rich collection of additional metadata stored in XMP Metadata Streams; see the <a href="#pdf_metadata">Metadata in PDF documents</a> section below for details on accessing PDF metadata.<br />
+		&nbsp;<br />
+		You can find more PDF information at the <a href="http://www.adobe.com/devnet/pdf.html" title="Adobe PDF Technology Center" target="_blank">Adobe PDF Technology Center</a>.<br />&nbsp;</td>
+	</tr>
+	<tr>
 		<td style="padding-right: 10px; vertical-align: top; font-weight:bold">iptc</td>
 		<td>
-		The IPTC (International Press Telecommunications Council) metadata, if any, embedded in the image file. For this category, you can code any of the IPTC DataSet tag and field identifiers, e.g., "2#025" for the Keywords field. You can also use the "friendly name" MLA defines for most of the IPTC fields; see the <a href="#mla_iptc_identifiers">table of identifiers and friendly names</a> below. <br />
+		The IPTC (International Press Telecommunications Council) metadata, if any, embedded in the image file. For this category, you can code any of the IPTC DataSet tag and field identifiers, e.g., "2#025" for the Keywords field. You can also use the "friendly name" MLA defines for most of the IPTC fields; see the <a href="#mla_iptc_identifiers">table of identifiers and friendly names</a> below.<br />
 		&nbsp;<br />
-		You can find more information in the <a href="http://www.iptc.org/std/IIM/4.1/specification/IIMV4.1.pdf" title="IPTC-NAA Information Interchange Model Version No. 4.1 specification" target="_blank">IPTC-NAA Information Interchange Model Version No. 4.1 specification</a>.</td>
+		You can find more IPTC information in the <a href="http://www.iptc.org/std/IIM/4.1/specification/IIMV4.1.pdf" title="IPTC-NAA Information Interchange Model Version No. 4.1 specification (PDF)" target="_blank">IPTC-NAA Information Interchange Model Version No. 4.1 specification (PDF document)</a>.<br />&nbsp;</td>
 	</tr>
 	<tr>
 		<td style="padding-right: 10px; vertical-align: top; font-weight:bold">exif</td>
@@ -1187,7 +1207,7 @@ There are seven prefix values for field-level data. Prefix values must be coded 
 		Though the specification is not currently maintained by any industry or standards organization, almost all camera manufacturers use it. It is also supported by many image editing programs such as Adobe PhotoShop.
 		For this category, you can code any of the field names embedded in the image by the camera or editing software. There is no official list of standard field names, so you just have to know the names your camera and software use; field names are case-sensitive.
 		<br />&nbsp;<br />
-		You can find more information in the <a href="http://en.wikipedia.org/wiki/Exchangeable_image_file_format" title="IPTC-NAA Information Interchange Model Version No. 4.1 specification" target="_blank">Exchangeable image file format</a> article on Wikipedia. You can find External Links to EXIF standards and tag listings at the end of the Wikipedia article.
+		You can find more information in the <a href="http://en.wikipedia.org/wiki/Exchangeable_image_file_format" title="Exchangeable image file format Wikipedia article" target="_blank">Exchangeable image file format</a> article on Wikipedia. You can find External Links to EXIF standards and tag listings at the end of the Wikipedia article.
 		<br />&nbsp;<br />
 		MLA uses a standard PHP function, <a href="http://php.net/manual/en/function.exif-read-data.php" title="PHP Manual page for exif_read_data" target="_blank">exif_read_data</a>, to extract EXIF data from images. The function returns three arrays in addition to the raw EXIF data; COMPUTED, THUMBNAIL and COMMENT. You can access the array elements by prefacing the element you want with the array name. For example, the user comment text is available as "COMPUTED.UserComment" and "COMPUTED.UserCommentEncoding". You can also get "COMPUTED.Copyright" and its two parts (if present), "COMPUTED.Copyright.Photographer" and "COMPUTED.Copyright.Editor". The THUMBNAIL and COMMENT arrays work in a similar fashion.
 		<br />&nbsp;<br />
@@ -1195,14 +1215,142 @@ There are seven prefix values for field-level data. Prefix values must be coded 
 		<br />&nbsp;<br />
 		The ALL_EXIF value is altered in two ways. First, values of more than 256 characters are truncated to 256 characters. This prevents large fields such as image thumbnails from dominating the display. Second, array values are shown once, at their expanded level. For example the "COMPUTED" array is displayed as 'COMPUTED' => '(ARRAY)' and then 'COMPUTED.Width' => "2816", etc.</td>
 	</tr>
+	<tr>
+		<td style="padding-right: 10px; vertical-align: top; font-weight:bold">template</td>
+		<td>A Content Template, which lets you compose a value from multiple substitution parameters and test for empty values, choosing among two or more alternatives or suppressing output entirely. See the <a href="#mla_template_parameters">Content Templates</a> section for details.</td> Note that the formatting option is not supported for templates.
+	</tr>
 </table>
-
+<a name="pdf_metadata"></a>
+&nbsp;<br />
+<h4>Metadata in PDF documents</h4>
+<p>
+Metadata in PDF documents comes from two sources. Early versions of the PDF specification defined a Document Information Dictionary (D.I.D.) containing up to nine (optional) fields:
+</p>
+<table>
+	<tr>
+		<td style="padding-right: 10px; vertical-align: top; font-weight:bold">Title</td>
+		<td>The document's title</td>
+	</tr>
+	<tr>
+		<td style="padding-right: 10px; vertical-align: top; font-weight:bold">Author</td>
+		<td>The name of the person who created the document</td>
+	</tr>
+	<tr>
+		<td style="padding-right: 10px; vertical-align: top; font-weight:bold">Subject</td>
+		<td>The subject of the document</td>
+	</tr>
+	<tr>
+		<td style="padding-right: 10px; vertical-align: top; font-weight:bold">Keywords</td>
+		<td>Keywords associated with the document</td>
+	</tr>
+	<tr>
+		<td style="padding-right: 10px; vertical-align: top; font-weight:bold">Creator</td>
+		<td>If the document was converted to PDF from another format, the name of the application (for example, Adobe FrameMaker&reg;) that created the original document from which it was converted</td>
+	</tr>
+	<tr>
+		<td style="padding-right: 10px; vertical-align: top; font-weight:bold">Producer</td>
+		<td>If the document was converted to PDF from another format, the name of the application (for example, Acrobat Distiller) that converted it to PDF</td>
+	</tr>
+	<tr>
+		<td style="padding-right: 10px; vertical-align: top; font-weight:bold">CreationDate</td>
+		<td>The date and time the document was created, in human-readable form</td>
+	</tr>
+	<tr>
+		<td style="padding-right: 10px; vertical-align: top; font-weight:bold">ModDate</td>
+		<td>The date and time the document was most recently modified, in human-readable form</td>
+	</tr>
+	<tr>
+		<td style="padding-right: 10px; vertical-align: top; font-weight:bold">Trapped</td>
+		<td>A keyword (True, False, Unknown) indicating whether the document has been modified to include trapping information</td>
+	</tr>
+</table>
+<p>
+More recent versions of the specification add a second source of metadata, Metadata Streams, holding data defined by the <a href="https://www.adobe.com/products/xmp/" title="Adobe XMP site" target="_blank">Extensible Metadata Platform (XMP)</a> framework. XMP metadata varies from document to document but is often extensive. MLA provides access to this data in three ways:
+<ol>
+<li>
+If a D.I.D. field is not stored in the document, MLA will copy appropriate values from the XMP data into the empty field to populate it as often as possible. For example, the "creator" value(s) in the "dc" namespace ("dc.creator") might be copied to an empty "Author" field, or the "dc.subject" value(s) might be copied to an empty Keywords field.
+</li>
+<li>
+Additional values in the "xmp", "xmpMM", "xmpRights", "xap", "xapMM", "dc", "pdf" and "pdfx" namespaces are copied up to the root level for easier access. For example, the "pdfx.SourceModified" value can be accessed as "SourceModified", without the "pdfx." portion of the compound name.
+</li>
+<li>
+Other namespaces in the document are copied to arrays at the root level. For example, some documents contain information in the "photoshop" namespace, such as "photoshop.CaptionWriter" and "photoshop.AuthorsPosition". The native values of some fields, e.g., "dc.creator", can be an array.
+</li>
+</ol>
+</p>
+<p>
+MLA adds five fields of its own to the metadata information:
+</p>
+<table>
+	<tr>
+		<td style="padding-right: 10px; vertical-align: top; font-weight:bold">PDF_Version</td>
+		<td>the version of the PDF specification to which the file conforms. For a file conforming to PDF 1.7, this would be PDF−1.7</td>
+	</tr>
+	<tr>
+		<td style="padding-right: 10px; vertical-align: top; font-weight:bold">PDF_Version</td>
+		<td>the numeric portion of the PDF_Version. For a file conforming to PDF 1.7, this would be 1.7</td>
+	</tr>
+	<tr>
+		<td style="padding-right: 10px; vertical-align: top; font-weight:bold">xmptk</td>
+		<td>the XMP software used to create the metadata</td>
+	</tr>
+	<tr>
+		<td style="padding-right: 10px; vertical-align: top; font-weight:bold">xmlns</td>
+		<td>an array of the namespaces found in the document, such as <code>'dc' => 'http://purl.org/dc/elements/1.1/'</code></td>
+	</tr>
+	<tr>
+		<td style="padding-right: 10px; vertical-align: top; font-weight:bold">ALL_PDF</td>
+		<td>a special "pseudo value" that returns a string representation of all the metadata. You can use this pseudo-value to examine the metadata in a document, find field names and see what values are present.</td>
+	</tr>
+</table>
+<a name="mla_template_parameters"></a>
+&nbsp;
+<p>
+<a href="#backtotop">Go to Top</a>
+</p>
+<h3>Content Templates</h3>
+<p>
+Content Templates (templates) are one of the Field-level Markup Substitution Parameters, indicated by a prefix value ( <code>[+template: ... +]</code> ). Within a template you can have any combination of four elements:
+</p>
+<table>
+	<tr>
+		<td style="padding-right: 10px; vertical-align: top; font-weight:bold">String</td>
+		<td>text and/or field-level substitution parameters, e.g., <code>[+template: Base File - [+base_file+] +]</code></td>
+	</tr>
+	<tr>
+		<td style="padding-right: 10px; vertical-align: top; font-weight:bold">Conditional</td>
+		<td>text and/or field-level substitution parameters that will be tested for missing values. Any field-level substitution parameter that is not valid, is empty or contains only whitespace will cause the entire conditional to be eliminated. Conditional elements are enclosed in parentheses. For example, <code>[+template: (ITPC Title: [+iptc:object-name+] ) +]</code>. If the IPTC field is missing or blank both it and the preceding "ITPC Title: " literal are eliminated.</td>
+	</tr>
+	<tr>
+		<td style="padding-right: 10px; vertical-align: top; font-weight:bold">Choice</td>
+		<td>two or more alternatives from which the first valid, non-empty value will be taken. Choice elements are separated by vertical bars ("|"), e.g., <code>[+template: Summary: ([+caption+]|[+description+]|[+title+]) +]</code></td>
+	</tr>
+	<tr>
+		<td style="padding-right: 10px; vertical-align: top; font-weight:bold">Template</td>
+		<td>another template. There is no particular advantage to nesting templates, but it works.</td>
+	</tr>
+</table>
+<p>
+The conditional and choice elements are the key to templates' power, particularly with custom fields and metadata such as ITPC and EXIF. With the conditional element you can combine literal text with a substitution value and eliminate the text if the value is missing. With the choice element you can specify multiple sources for a value and decide the order in which they are tested. In the choice example above the text "Description: " will always be used, followed by the attachment's caption (if present) or the description value or the literal "none" if both of the other values are missing. In other words, each alternative of the choice element is evaluated as a conditional element; no need for more parentheses.
+</p>
+<p>
+Conditional, choice and template elements can be nested as needed. For example, a conditional element can have a choice element within it or a choice alternative could include a conditional. Here's an example:
+<p> 
+<code>[+template: Terms: (([+terms:category+], [+terms:post_tag+])|[+ terms: category +]|[+terms:post_tag +]|none)+]</code>
+</p>
+<p>
+This template has a String, "Terms: " and a Conditional, "(([+terms: … none)". This Conditional separates the "Terms: " literal from the first alternative in the Choice. Within the Conditional is a Choice having four alternatives. The first alternative is a Conditional, which will be empty unless both categories and tags are present.  The second and third alternatives handle the cases where one of the two taxonomies has terms, and the final alternative is used when neither categories nor tags are present.
+</p>
+<h4>Special characters inside templates</h4>
+<p>
+The conditional and choice elements require delimiters, "(", ")" and "|". If you want to put any of these three characters in your template, preface them with two backslash characters, e.g., "\\(". If you need a backslash in your template, code it as four backslash characters, i.e., "\\\\". The doubling of backslash characters is required because of the way WordPress processes shortcode parameters.
+</p>
 <a name="mla_table_example"></a>
 &nbsp;
 <p>
 <a href="#backtotop">Go to Top</a>
 </p>
-<h3>A Table-based Template Example</h3>
+<h3>A Table-based Style and Markup Template Example</h3>
 <p>
 Here's a small example that shows a gallery using <code>&lt;table&gt;</code> markup.
 The Item markup section shows how to use the "terms", "custom", "iptc" and "exif" substitution parameters.
@@ -1426,6 +1574,9 @@ The parent/reference information (parent_type, parent_name, parent_issues, refer
 Several of the data elements are sourced from the WordPress "image_meta" array. The credit, caption, copyright and title elements are taken from the IPTC/EXIF metadata (if any), but they go through a number of filtering rules that are not easy to replicate with the MLA IPTC/EXIF processing rules. You may find these "image_meta" elements more useful than the raw IPTC/EXIF metadata.
 </p>
 <p>
+You can also use a <a href="#mla_template_parameters">Content Template</a> to compose custom field values from multiple sources, test for non-empty content and choose from alternative sources.
+</p>
+<p>
 If you just want to add a custom field to the Media/Assistant submenu, the quick edit area and/or the bulk edit area you can bypass the mapping logic by leaving the Data Source value as "-- None (select a value) --".
 </p>
 <a name="mla_custom_field_parameters"></a>
@@ -1441,7 +1592,11 @@ If you just want to add a custom field to the Media/Assistant submenu, the quick
 </tr>
 <tr>
 <td style="padding-right: 10px; vertical-align: top; font-weight:bold">-- Metadata (see below) --</td>
-<td>WordPress attachment metadata, from the <em>_wp_attachment_metadata</em> array. Enter the field you want in the text box below the dropdown list. More coding guidelines are given below this table.</td>
+<td>WordPress attachment metadata, from the <em>_wp_attachment_metadata</em> array. Enter the field you want in the text box below the dropdown list. More coding guidelines are given below this table in the "Custom field mapping for metadata fields" section.</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">-- Template (see below) --</td>
+<td>A Content Template; enter the template text (without the "template:" prefix) in the text box below the dropdown list. More coding guidelines are given below this table in the "Custom field mapping for Content Templates" section.</td>
 </tr>
 <tr>
 <td style="padding-right: 10px; vertical-align: top; font-weight:bold">absolute_path</td>
@@ -1632,10 +1787,10 @@ If you just want to add a custom field to the Media/Assistant submenu, the quick
 </table>
 <h4>Existing Text dropdown</h4>
 <p>
-If the custom field already has values for one or more items, you can use "Keep" to retain them or "Replace" to delete them. For format options other than "Multiple", "Keep" means that an item with a non-blank value in the field will be unchanged, and new values will be stored only in those items that do not have an existing value. For the "Multiple" option, the existing value(s) will be retained and any new values will be added as separate instances. 
+If the custom field already has values for one or more items, you can use "Keep" to retain them or "Replace" to delete them. For options other than "Multi", "Keep" means that an item with a non-blank value in the field will be unchanged, and new values will be stored only in those items that do not have an existing value. For the "Multi" option, the existing value(s) will be retained and any new values will be added as separate instances. 
 </p>
 <p>
-You can combine "Keep" and "Multiple" in useful ways. For example, to create a "Used in" custom field, you could first define a rule to map the "Featured in" data source with the "Replace", "Multiple" and "Delete NULL values" parameters. Then, map the same field using the "Inserted in" data source with the "Keep" and "Multiple" parameters. That will add the Inserted in values to the Featured in values giving you a single column with both results.
+You can combine "Keep" and "Multi" in useful ways. For example, you might enter some values manually or source them from another plugin or application. Then, map the same field using an MLA data source with the "Keep" and "Multi" parameters. That will add the MLA values to the values you already entered, giving you a single column with both results.
 </p>
 <h4>Format dropdown</h4>
 <p>
@@ -1674,12 +1829,12 @@ Commas
 Four data sources, "file_size", "pixels", "width" and "height", are <strong>always</strong> padded on the left with spaces, even if you use the "Native" format.
 <h4>Option dropdown</h4>
 <p>
-Several data sources can return more than one value. For example, the "Inserted in" source can return a list of posts/pages that contain references to Media Library items. The format option dropdown can further refine your specification where multiple values exist. There are four options:
+Several data sources can return more than one value. For example, the "Inserted in" source can return a list of posts/pages that contain references to Media Library items. The format option dropdown can further refine your specification where multiple values exist. There are five options:
 </p>
 <table>
 <tr>
 <td style="padding-right: 10px; vertical-align: top; font-weight:bold">Text</td>
-<td>stores a list of the data source values, separated by commas</td>
+<td>(the default) stores a list of the data source values, separated by commas</td>
 </tr>
 <tr>
 <td style="padding-right: 10px; vertical-align: top; font-weight:bold">Single</td>
@@ -1690,23 +1845,42 @@ Several data sources can return more than one value. For example, the "Inserted 
 <td>for single values, same as Text. For multiple values, stores all the field names and values (including nested arrays). For example, the below audio data would be returned in Export format as "array ('dataformat' => 'mp4', 'codec' => 'ISO/IEC 14496-3 AAC', 'sample_rate' => 48000, 'channels' => 2, 'bits_per_sample' => 16, 'lossless' => false, 'channelmode' => 'stereo')".</td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">Multiple</td>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">Array</td>
+<td>stores an array of values in a single instance (database row) of the custom field.</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">Multi</td>
 <td>stores each unique value in a separate instance (database row) of the custom field. This is the most flexible format, as explained below.</td>
 </tr>
 </table>
 <p>
-The "Multiple" option takes advantage of WordPress' ability to store multiple values for a given custom field name (key) as distinct instances (database rows). For example, consider an image that has been inserted in two different posts, "First Post" and "Second Post". The "Text" option would store both titles in a single custom field instance; "First Post,Second Post". The "Multiple" option would store two instances, "First Post" and "Second Post". If the custom field is added to the Media/Assistant submenu table as a column, you could click on either of the two values to filter the table listing by value. That would show you all the items inserted in First Post or all the items inserted in Second Post.
+The "Multi" option takes advantage of WordPress' ability to store multiple values for a given custom field name (key) as distinct instances (database rows). For example, consider an image that has been inserted in two different posts, "First Post" and "Second Post". The "Text" option would store both titles in a single custom field instance; "First Post,Second Post". The "Multi" option would store two instances, "First Post" and "Second Post". If the custom field is added to the Media/Assistant submenu table as a column, you could click on either of the two values to filter the table listing by value. That would show you all the items inserted in First Post or all the items inserted in Second Post.
 </p>
 <h4>Delete NULL values Checkbox</h4>
 <p>
 The "Delete NULL values" checkbox lets you control what happens if the data source you've selected does not have a value for every attachment. If the checkbox is cleared (not checked), a single space character will be stored for each attachment if the data source value is empty. If the checkbox is set (checked), there will be no entry/row at all in the metadata table for empty data source values and the custom field will not appear in the Edit Media screen for those attachments. This saves space but might confuse other applications that expect a value to be present for all attachments.
 </p>
 <p>
-If you use the "Multiple" format option you will almost certainly want to use the "Delete NULL values" option as well.
+If you use the "Multi" option you will almost certainly want to use the "Delete NULL values" option as well.
 </p>
 <h4>Custom field mapping for metadata fields</h4>
 <p>
 If you select "<strong>-- Metadata (see below) --</strong>" as the data source you must specify the name of the field you want in the text box below the data source dropdown box. Any of the fields in the <em>_wp_attachment_metadata</em> array may be named, including the new audio/video fields available with WordPress 3.6 and later. For example, "length_formatted" will return the length of a video attachment. You can specify fields within an array with a compound name, e.g., "audio.sample_rate" to get the sampling rate field from the "audio" array of a video attachment. If you simply specify "audio", you will get the values of every array element, e.g., "mp4,ISO/IEC 14496 AAC,48000,2,16,false,stereo". 
+</p>
+<h4>Custom field mapping with Content Templates</h4>
+<p>
+If you select "<strong>-- Template (see below) --</strong>" as the data source you must enter your template in the text box below the data source dropdown box. Do not code the "template:" prefix, just enter the template text.
+</p>
+<p>
+Within a template, all of the data sources listed above are available. For example, you can code <code>[+pixels+]</code> or <code>[+size_keys,single+]</code>.
+</p>
+<p>
+You can use a template to compose a custom field from multiple data sources, e.g., "<code>Taken with [+meta:camera+] at [+dimensions+] using ISO [+exif:ISOSpeedRatings,single+] and [+exif:ExposureTime+] exposure time</code>".
+<p>
+</p>
+You can use a template to compose a custom field from alternative data sources, depending on which fields are populated for a given attachment. For example, "<code>[+pdf:Keywords+]|[+iptc:2#025+]|none</code>" will use the PDF Keywords field, if populated, then the IPTC keywords field, if populated, or the literal "none" if neither field contains a value. With this template you can get keywords from both PDF documents and images in a single field.
+<p>
+Using a template with the Option Dropdown "Text" or "Single" values will yield a text result. For example, multiple IPTC keywords would be converted into a comma-delimited list as a string. If you combine a template with the "Export", "Array" or "Multi" values the template will deliver an array result if the fields inside the template have multiple values. For example, with "Multi" you can code "<code>[+iptc:2#020<strong>,array</strong>+][+iptc:2#025<strong>,array</strong>+]</code>" to store each of the IPTC supplemental-category <em><strong>and</strong></em> keywords values (there is no "|" in the template) in a separate custom field value. Note the use of the <strong>,array</strong> formatting option in each field; this is required to get an array result for the field.
 </p>
 <a name="mla_iptc_exif_mapping"></a>
 &nbsp;
@@ -1736,13 +1910,17 @@ The three mapping tables on the IPTC/EXIF tab have the following columns:
 <dt>IPTC Value</dt>
 <dd>The IPTC (International Press Telecommunications Council) metadata, if any, embedded in the image file. For this category, you can select any of the IPTC DataSet tag and field identifiers, e.g., "2#025" for the Keywords field. The dropdown list has the identifier and the "friendly name" MLA defines for most of the IPTC fields; see the table of identifiers and friendly names in the table below. You can find more information in the <a href="http://www.iptc.org/std/IIM/4.1/specification/IIMV4.1.pdf" title="IPTC-NAA Information Interchange Model Version No. 4.1 specification" target="_blank">IPTC-NAA Information Interchange Model Version No. 4.1 specification</a>.
 </dd>
-<dt>EXIF Value</dt>
+<dt>EXIF/Template Value</dt>
 <dd>The EXIF (EXchangeable Image File) metadata, if any, embedded in a JPEG DCT or TIFF Rev 6.0 image file. 
  Though the specification is not currently maintained by any industry or standards organization, almost all camera manufacturers use it. For this category, you can code any of the field names embedded in the image by the camera or editing software. There is no official list of standard field names, so you just have to know the names your camera and software use; field names are case-sensitive. You can find more information in the <a href="http://en.wikipedia.org/wiki/Exchangeable_image_file_format" title="Exchangeable image file format Wikipedia article" target="_blank">Exchangeable image file format</a> article on Wikipedia. You can find External Links to EXIF standards and tag listings at the end of the Wikipedia article.
-		<br />&nbsp;<br />
-		MLA uses a standard PHP function, <a href="http://php.net/manual/en/function.exif-read-data.php" title="PHP Manual page for exif_read_data" target="_blank">exif_read_data</a>, to extract EXIF data from images. The function returns three arrays in addition to the raw EXIF data; COMPUTED, THUMBNAIL and COMMENT. You can access the array elements by prefacing the element you want with the array name. For example, the user comment text is available as "COMPUTED.UserComment" and "COMPUTED.UserCommentEncoding". You can also get "COMPUTED.Copyright" and its two parts (if present), "COMPUTED.Copyright.Photographer" and "COMPUTED.Copyright.Editor". The THUMBNAIL and COMMENT arrays work in a similar fashion.
-		<br />&nbsp;<br />
-		Two special exif "pseudo-values" are available; <strong>ALL_IPTC</strong> and <strong>ALL_EXIF</strong>. These return a string representation (in &quot;export&quot; format) of all IPTC or EXIF data respectively. You can use these pseudo-values to examine the metadata in an image, find field names and see what values are embedded in the image.
+<br />&nbsp;<br />
+MLA uses a standard PHP function, <a href="http://php.net/manual/en/function.exif-read-data.php" title="PHP Manual page for exif_read_data" target="_blank">exif_read_data</a>, to extract EXIF data from images. The function returns three arrays in addition to the raw EXIF data; COMPUTED, THUMBNAIL and COMMENT. You can access the array elements by prefacing the element you want with the array name. For example, the user comment text is available as "COMPUTED.UserComment" and "COMPUTED.UserCommentEncoding". You can also get "COMPUTED.Copyright" and its two parts (if present), "COMPUTED.Copyright.Photographer" and "COMPUTED.Copyright.Editor". The THUMBNAIL and COMMENT arrays work in a similar fashion.
+<br />&nbsp;<br />
+MLA provides enhanced access to GPS values within the EXIF metadata; more details are given in the <a href="#mla_gps_values">Enhanced GPS values</a> section below.
+<br />&nbsp;<br />
+Two special exif "pseudo-values" are available; <strong>ALL_IPTC</strong> and <strong>ALL_EXIF</strong>. These return a string representation (in &quot;export&quot; format) of all IPTC or EXIF data respectively. You can use these pseudo-values to examine the metadata in an image, find field names and see what values are embedded in the image.
+<br />&nbsp;<br />
+You can also enter a Content Template here by coding the "template:" prefix at the beginning of the value. Do <strong>not</strong> add the "[+" and "+]" delimeters; the prefix is all you need. More information about using templates here is given below.
 </dd>
 <dt>Priority</dt>
 <dd>If both the IPTC Value and the EXIF Value are non-blank for a particular image, you can select which of the values will be used for the mapping.
@@ -1754,6 +1932,25 @@ The three mapping tables on the IPTC/EXIF tab have the following columns:
 <dd>For hierarchical taxonomies such as Categories you can select one of the existing terms in the taxonomy as the parent term for any terms you are mapping from metadata values. For example, you could define "IPTC Keywords" as a parent and then assign all of the 2#025 values under that parent term.
 </dd>
 </dl>
+<h4>EXIF/Template mapping with Content Templates</h4>
+<p>
+If you code the "template:" prefix at the beginning of the EXIF/Template value you have all the power of Content Templates at your disposal. Do <strong>not</strong> add the "[+" and "+]" delimeters; the prefix is all you need.
+</p>
+<p>
+Within a template, all of the <a href="#mla_custom_field_parameters">Data sources for custom field mapping</a> are available. For example, you can code <code>[+pixels+]</code> or <code>[+size_keys,single+]</code>.
+</p>
+<p>
+You can use a template to compose a value from multiple data sources, e.g., "<code>Taken with [+meta:camera+] at [+dimensions+] using ISO [+exif:ISOSpeedRatings,single+] and [+exif:ExposureTime+] exposure time</code>".
+<p>
+</p>
+You can use a template to compose a value from alternative data sources, depending on which fields are populated for a given attachment. For example, "<code>[+iptc:2#020+]|[+iptc:2#025+]|none</code>" will use the IPTC supplemental-category field, if populated, then the IPTC keywords field, if populated, or the literal "none" if neither IPTC field contains a value.
+</p>
+<p>
+Using a template in the "Standard field mapping" or "Custom field mapping" tables will yield a text result. For example, multiple IPTC keywords would be converted into a comma-delimited list as a string. In the "Taxonomy term mapping" table the template will deliver an array result if the fields inside the template have multiple values. For example, you can code "<code>[+iptc:2#020+][+iptc:2#025+]</code>" to store each of the IPTC supplemental-category <em><strong>and</strong></em> keywords values (there is no "|" in the template) as a separate taxonomy term.
+</p>
+<p>
+Note that the <strong>,array</strong> formatting option is <strong>not</strong> required to get an array result for the field in a Taxonomy term mapping template; it is assumed. If you want a <strong>text</strong>, <strong>single</strong> or <strong>export</strong> result you can add one of those formatting options to your field specification.
+</p>
 <h4>Map All Attachments Now</h4>
 <p>
 To the right of each table heading is a "Map All Attachments Now" button. When you click one of these buttons, the mapping rules in that table are applied to <strong><em>ALL of the images in the Media Library</em></strong>. This is a great way to bring your media items up to date, but it is <strong><em>NOT REVERSIBLE</em></strong>, so think carefully before you click!
@@ -1791,8 +1988,188 @@ The priority order for mapping the post_content value from non-blank IPTC/EXIF m
 <ol style="line-height: 1.25em;  margin-left: 20px ">
 <li>EXIF "ImageDescription" (if different from post_title)</li>
 <li>IPTC 2#120 "caption-or-abstract" (if different from post_title)</li>
+<a name="mla_gps_values"></a>
 </ol>
 </p>
+<h4>Enhanced GPS values</h4>
+<p>
+There are three basic forms of writing geographic coordinates; they are explained in a Wikipedia article, <a href="http://en.wikipedia.org/wiki/Geographic_coordinate_conversion" title="Wikipedia on Geographic coordinate conversion" target="_blank">Geographic coordinate conversion</a>. The <a href="http://www.cipa.jp/english/hyoujunka/kikaku/pdf/DC-008-2010_E.pdf" title="EXIF Version 2.3 specification" target="_blank">Exif Standard version 2.3</a> (PDF) document explains the structure and defines the rules for 32 GPS elements.
+</p>
+<p>
+The native format of this data is somewhat complicated, so MLA converts the most common elements into a variety of convenient formats. You can use the enhanced values as-is or use them in a Content Template to compose the format(s) you need. You can access the native values with the names defined in the EXIF specification, e.g., "GPSLatitude". The enhanced values are provided in th "GPS" array and accessed with compound names, e.g., "GPS.Latitude". The MLA enhanced values are:</p>
+<table>
+<tr style="font-weight: bold"><td>Field</td><td>Example</td><td>Content</td></tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">Version</td>
+<td style="padding-right: 10px; vertical-align: top">2.2.0.0</td>
+<td style="padding-right: 10px; vertical-align: top">The version of the GPS Information specification</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">LatitudeRef</td>
+<td style="padding-right: 10px; vertical-align: top">N or S</td>
+<td style="padding-right: 10px; vertical-align: top">Indicates whether the latitude is north or south latitude</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">LatitudeRefS</td>
+<td style="padding-right: 10px; vertical-align: top">empty or "-"</td>
+<td style="padding-right: 10px; vertical-align: top">Blank for north, "-" for south</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">Latitude</td>
+<td style="padding-right: 10px; vertical-align: top">44d 7' 34.0167" N</td>
+<td style="padding-right: 10px; vertical-align: top">Latitude expressed as degrees, minutes and seconds</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">LatitudeD</td>
+<td style="padding-right: 10px; vertical-align: top">44</td>
+<td style="padding-right: 10px; vertical-align: top">Degree portion of Latitude</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">LatitudeM</td>
+<td style="padding-right: 10px; vertical-align: top">7</td>
+<td style="padding-right: 10px; vertical-align: top">Minute portion of Latitude</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">LatitudeS</td>
+<td style="padding-right: 10px; vertical-align: top">34.0167</td>
+<td style="padding-right: 10px; vertical-align: top">Second portion of Latitude</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">LatitudeDM</td>
+<td style="padding-right: 10px; vertical-align: top">44 7.5669N</td>
+<td style="padding-right: 10px; vertical-align: top">Latitude expressed as degrees and decimal minutes (MinDec)</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">LatitudeDD</td>
+<td style="padding-right: 10px; vertical-align: top">44.126116N</td>
+<td style="padding-right: 10px; vertical-align: top">Latitude expressed as decimal degrees</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">LatitudeMinDec</td>
+<td style="padding-right: 10px; vertical-align: top">7.5669</td>
+<td style="padding-right: 10px; vertical-align: top">Decimal Minutes portion of Latitude</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">LatitudeDegDec</td>
+<td style="padding-right: 10px; vertical-align: top">.126116</td>
+<td style="padding-right: 10px; vertical-align: top">Decimal Degrees portion of Latitude</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">LongitudeRef</td>
+<td style="padding-right: 10px; vertical-align: top">E or W</td>
+<td style="padding-right: 10px; vertical-align: top">Indicates whether the Longitude is east or west longitude</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">LongitudeRefS</td>
+<td style="padding-right: 10px; vertical-align: top">empty or "-"</td>
+<td style="padding-right: 10px; vertical-align: top">Blank for east, "-" for west</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">Longitude</td>
+<td style="padding-right: 10px; vertical-align: top">145d 5' 9.2055" E</td>
+<td style="padding-right: 10px; vertical-align: top">Longitude expressed as degrees, minutes and seconds</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">LongitudeD</td>
+<td style="padding-right: 10px; vertical-align: top">145</td>
+<td style="padding-right: 10px; vertical-align: top">Degree portion of Longitude</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">LongitudeM</td>
+<td style="padding-right: 10px; vertical-align: top">5</td>
+<td style="padding-right: 10px; vertical-align: top">Minute portion of Longitude</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">LongitudeS</td>
+<td style="padding-right: 10px; vertical-align: top">9.2055</td>
+<td style="padding-right: 10px; vertical-align: top">Second portion of Longitude</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">LongitudeDM</td>
+<td style="padding-right: 10px; vertical-align: top">145 5.1534E</td>
+<td style="padding-right: 10px; vertical-align: top">Longitude expressed as degrees and decimal minutes (MinDec)</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">LongitudeDD</td>
+<td style="padding-right: 10px; vertical-align: top">145.085890E</td>
+<td style="padding-right: 10px; vertical-align: top">Longitude expressed as decimal degrees</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">LongitudeMinDec</td>
+<td style="padding-right: 10px; vertical-align: top">5.1534</td>
+<td style="padding-right: 10px; vertical-align: top">Decimal Minutes portion of Longitude</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">LongitudeDegDec</td>
+<td style="padding-right: 10px; vertical-align: top">.085890</td>
+<td style="padding-right: 10px; vertical-align: top">Decimal Degrees portion of Longitude</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">AltitudeRef</td>
+<td style="padding-right: 10px; vertical-align: top">0 or 1</td>
+<td style="padding-right: 10px; vertical-align: top">0 = above sea level, 1 = below sea level</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">AltitudeRefS</td>
+<td style="padding-right: 10px; vertical-align: top">blank or "-"</td>
+<td style="padding-right: 10px; vertical-align: top">Blank above sea level, "-" below sea level</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">Altitude</td>
+<td style="padding-right: 10px; vertical-align: top">247.0825</td>
+<td style="padding-right: 10px; vertical-align: top">Altitude in meters</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">AltitudeFeet</td>
+<td style="padding-right: 10px; vertical-align: top">810.64</td>
+<td style="padding-right: 10px; vertical-align: top">Altitude in feet</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">TimeStamp</td>
+<td style="padding-right: 10px; vertical-align: top">01:00:34</td>
+<td style="padding-right: 10px; vertical-align: top">The time as UTC (Coordinated Universal Time)</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">TimeStampH</td>
+<td style="padding-right: 10px; vertical-align: top">01</td>
+<td style="padding-right: 10px; vertical-align: top">The hours portion of TimeStamp</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">TimeStampM</td>
+<td style="padding-right: 10px; vertical-align: top">00</td>
+<td style="padding-right: 10px; vertical-align: top">The minutes portion of TimeStamp</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">TimeStampS</td>
+<td style="padding-right: 10px; vertical-align: top">34</td>
+<td style="padding-right: 10px; vertical-align: top">The seconds portion of TimeStamp</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">DateStamp</td>
+<td style="padding-right: 10px; vertical-align: top">2013:08:09</td>
+<td style="padding-right: 10px; vertical-align: top">The date as UTC (Coordinated Universal Time)</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">DateStampY</td>
+<td style="padding-right: 10px; vertical-align: top">2013</td>
+<td style="padding-right: 10px; vertical-align: top">The year portion of DateStamp</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">DateStampM</td>
+<td style="padding-right: 10px; vertical-align: top">08</td>
+<td style="padding-right: 10px; vertical-align: top">The month portion of DateStamp</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">DateStampD</td>
+<td style="padding-right: 10px; vertical-align: top">09</td>
+<td style="padding-right: 10px; vertical-align: top">The day portion of DateStamp</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">MapDatum</td>
+<td style="padding-right: 10px; vertical-align: top">WGS-84</td>
+<td style="padding-right: 10px; vertical-align: top">The geodetic survey data used by the GPS receiver</td>
+</tr>
+</table>
 <a name="mla_iptc_identifiers"></a>
 &nbsp;
 <p>

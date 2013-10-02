@@ -98,6 +98,7 @@ and the value is db column to sort by.</span><pre>get_sortable_columns()</pre></
 <li class="method public "><a href="#mla_get_taxonomy_filter_dropdown" title="mla_get_taxonomy_filter_dropdown :: Get dropdown box of terms to filter by, if available"><span class="description">Get dropdown box of terms to filter by, if available</span><pre>mla_get_taxonomy_filter_dropdown()</pre></a></li>
 <li class="method public "><a href="#mla_manage_columns_filter" title="mla_manage_columns_filter :: Handler for filter 'manage_media_page_mla-menu_columns'"><span class="description">Handler for filter 'manage_media_page_mla-menu_columns'</span><pre>mla_manage_columns_filter()</pre></a></li>
 <li class="method public "><a href="#mla_manage_hidden_columns_filter" title="mla_manage_hidden_columns_filter :: Handler for filter 'get_user_option_managemedia_page_mla-menucolumnshidden'"><span class="description">Handler for filter 'get_user_option_managemedia_page_mla-menucolumnshidden'</span><pre>mla_manage_hidden_columns_filter()</pre></a></li>
+<li class="method public "><a href="#mla_submenu_arguments" title="mla_submenu_arguments :: Process $_REQUEST, building $submenu_arguments"><span class="description">Process $_REQUEST, building $submenu_arguments</span><pre>mla_submenu_arguments()</pre></a></li>
 <li class="method public "><a href="#pagination" title="pagination :: Display the pagination, adding view, search and filter arguments"><span class="description">Display the pagination, adding view, search and filter arguments</span><pre>pagination()</pre></a></li>
 <li class="method public "><a href="#prepare_items" title="prepare_items :: Prepares the list of items for displaying"><span class="description">Prepares the list of items for displaying</span><pre>prepare_items()</pre></a></li>
 <li class="method public "><a href="#print_column_headers" title="print_column_headers :: Print column headers, adding view, search and filter arguments"><span class="description">Print column headers, adding view, search and filter arguments</span><pre>print_column_headers()</pre></a></li>
@@ -109,7 +110,6 @@ and the value is db column to sort by.</span><pre>get_sortable_columns()</pre></
 'ID_parent', 'title_name', 'post_title', 'post_name'"><span class="description">Add rollover actions to exactly one of the following displayed columns:
 'ID_parent', 'title_name', 'post_title', 'post_name'</span><pre>_build_rollover_actions()</pre></a></li>
 <li class="method private "><a href="#_default_hidden_columns" title="_default_hidden_columns :: Access the default list of hidden columns"><span class="description">Access the default list of hidden columns</span><pre>_default_hidden_columns()</pre></a></li>
-<li class="method private "><a href="#_mla_submenu_arguments" title="_mla_submenu_arguments :: Process $_REQUEST, building $submenu_arguments"><span class="description">Process $_REQUEST, building $submenu_arguments</span><pre>_mla_submenu_arguments()</pre></a></li>
 <li class="nav-header">
 <i class="icon-custom icon-property"></i> Properties</li>
 <li class="nav-header private">» Private</li>
@@ -840,6 +840,26 @@ is not created in time for the call from screen.php.</p></p>
 <code>array</code>updated list of hidden columns</div>
 </div></div>
 </div>
+<a name="mla_submenu_arguments" id="mla_submenu_arguments"></a><div class="element clickable method public mla_submenu_arguments" data-toggle="collapse" data-target=".mla_submenu_arguments .collapse">
+<h2>Process $_REQUEST, building $submenu_arguments</h2>
+<pre>mla_submenu_arguments(boolean $include_filters) : array</pre>
+<div class="labels"></div>
+<div class="row collapse"><div class="detail-description">
+<p class="long_description"></p>
+<table class="table table-bordered"><tr>
+<th>since</th>
+<td>1.42</td>
+</tr></table>
+<h3>Parameters</h3>
+<div class="subelement argument">
+<h4>$include_filters</h4>
+<code>boolean</code><p>Optional: Include the "click filter" values in the results</p>
+</div>
+<h3>Returns</h3>
+<div class="subelement response">
+<code>array</code>non-empty view, search, filter and sort arguments</div>
+</div></div>
+</div>
 <a name="pagination" id="pagination"></a><div class="element clickable method public pagination" data-toggle="collapse" data-target=".pagination .collapse">
 <h2>Display the pagination, adding view, search and filter arguments</h2>
 <pre>pagination(string $which) : void</pre>
@@ -983,21 +1003,6 @@ but uses the output of wp_count_attachments() as input.</p></p>
 <code>array</code>default list of hidden columns</div>
 </div></div>
 </div>
-<a name="_mla_submenu_arguments" id="_mla_submenu_arguments"></a><div class="element clickable method private _mla_submenu_arguments" data-toggle="collapse" data-target="._mla_submenu_arguments .collapse">
-<h2>Process $_REQUEST, building $submenu_arguments</h2>
-<pre>_mla_submenu_arguments() : array</pre>
-<div class="labels"></div>
-<div class="row collapse"><div class="detail-description">
-<p class="long_description"></p>
-<table class="table table-bordered"><tr>
-<th>since</th>
-<td>1.42</td>
-</tr></table>
-<h3>Returns</h3>
-<div class="subelement response">
-<code>array</code>non-empty view, search, filter and sort arguments</div>
-</div></div>
-</div>
 <h3>
 <i class="icon-custom icon-property"></i> Properties</h3>
 <a name="%24currently_hidden" id="$currently_hidden"> </a><div class="element clickable property private $currently_hidden" data-toggle="collapse" data-target=".$currently_hidden .collapse">
@@ -1092,7 +1097,7 @@ Custom field columns are added to this array by mla_admin_init_action.</p></p>
 <div class="row"><footer class="span12">
             Template is built using <a href="http://twitter.github.com/bootstrap/">Twitter Bootstrap 2</a> and icons provided by <a href="http://glyphicons.com/">Glyphicons</a>.<br>
             Documentation is powered by <a href="http://www.phpdoc.org/">phpDocumentor 2.0.0a8</a> and<br>
-            generated on 2013-08-10T19:24:36-07:00.<br></footer></div>
+            generated on 2013-09-27T14:55:49-07:00.<br></footer></div>
 </div>
 </body>
 </html>

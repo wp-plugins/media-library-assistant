@@ -135,7 +135,7 @@ class MLAMime {
 		self::$mla_icon_type_associations = array();
 		$icon_type = '.bad.value.'; // prime the pump
 		$extensions = array ( 'xxx' );
-		foreach( $pairs as $this_extension => $this_type ) {
+		foreach ( $pairs as $this_extension => $this_type ) {
 			if ( $this_type != $icon_type ) {
 				self::$mla_icon_type_associations[ $icon_type ] = $extensions;
 				$extensions = array( $this_extension );
@@ -214,7 +214,7 @@ class MLAMime {
 		$items = array();
 		$extensions = '.bad.value.'; // prime the pump
 		$mime_type = '';
-		foreach( $pairs as $this_extension => $this_type ) {
+		foreach ( $pairs as $this_extension => $this_type ) {
 			if ( $this_type != $mime_type ) {
 				$items[ $extensions ] = $mime_type;
 				$extensions = $this_extension;
@@ -273,7 +273,7 @@ class MLAMime {
 		$items = array();
 		$extensions = '.bad.value.'; // prime the pump
 		$mime_type = '';
-		foreach( $pairs as $this_extension => $this_type ) {
+		foreach ( $pairs as $this_extension => $this_type ) {
 			if ( $this_type != $mime_type ) {
 				$items[ $extensions ] = $mime_type;
 				$extensions = $this_extension;
@@ -730,7 +730,7 @@ class MLAMime {
 		/*
 		 * Load and number the entries
 		 */
-		foreach( $mla_types as $slug => $value ) {
+		foreach ( $mla_types as $slug => $value ) {
 			self::$mla_post_mime_templates[ $slug ] = $value;
 			self::$mla_post_mime_templates[ $slug ]['post_ID'] = ++self::$mla_post_mime_highest_ID;
 			}
@@ -815,7 +815,7 @@ class MLAMime {
 	}
 
 	/**
-	 * Analyze a Library View/Post MIME Type specification, returning an array of the place holders it contains
+	 * Analyze a Library View/Post MIME Type specification, returning an array of the placeholders it contains
 	 *
 	 * @since 1.40
 	 *
@@ -1625,7 +1625,7 @@ class MLAMime {
 			$first_time_called = true;
 			$mla_upload_mimes = array ( 'custom' => array(), 'disabled' => array(), 'description' => array(), 'icon_type' => array() );
 			self::$disable_mla_filtering = true;
-			foreach( get_allowed_mime_types() as $key => $value )
+			foreach ( get_allowed_mime_types() as $key => $value )
 				if ( ! isset( $core_types[ $key ]) )
 					$custom_types[ $key ] = $value;
 			self::$disable_mla_filtering = false;
@@ -1659,7 +1659,7 @@ class MLAMime {
 		$template_array = MLAData::mla_load_template( MLA_PLUGIN_PATH . 'tpls/mla-default-mime-types.tpl' );
 		if ( isset( $template_array['mla-mime-types'] ) ) {
 			$mla_mime_types = preg_split('/[\r\n]+/', $template_array['mla-mime-types'] );
-			foreach( $mla_mime_types as $mla_type ) {
+			foreach ( $mla_mime_types as $mla_type ) {
 				$array = explode(',', $mla_type );
 				$key = strtolower( $array[0] );
 				self::$mla_upload_mime_templates[ $key ] = array(
@@ -2354,7 +2354,7 @@ class MLAMime {
 			$mla_mime_types = preg_split('/[\r\n]+/', $template_array['mla-optional-mime-types'] );
 
 			$ID = 0;
-			foreach( $mla_mime_types as $mla_type ) {
+			foreach ( $mla_mime_types as $mla_type ) {
 				$array = explode(',', $mla_type );
 				$slug = $array[0];
 				if ( $matched_type = self::mla_get_upload_mime( $slug ) ) {

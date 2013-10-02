@@ -291,7 +291,7 @@
 			IPTC Value
 			</th>
 		    <th scope="col" style="text-align:center">
-			EXIF Value
+			EXIF/Template Value
 			</th>
 		    <th scope="col" style="text-align:left">
 			Priority
@@ -321,7 +321,7 @@
 			IPTC Value
 			</th>
 		    <th scope="col" style="text-align:center">
-			EXIF Value
+			EXIF/Template Value
 			</th>
 		    <th scope="col" style="text-align:center">
 			Priority
@@ -354,7 +354,7 @@
 			IPTC Value
 			</th>
 		    <th scope="col" style="text-align:center">
-			EXIF Value
+			EXIF/Template Value
 			</th>
 		    <th scope="col" style="text-align:left">
 			Priority

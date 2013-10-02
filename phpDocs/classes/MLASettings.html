@@ -79,6 +79,7 @@ add settings link in the Plugins section entry for MLA.</span><pre>mla_admin_men
 <li class="method private "><a href="#_compose_edit_upload_tab" title="_compose_edit_upload_tab :: Compose the Edit Upload type tab content for the Settings subpage"><span class="description">Compose the Edit Upload type tab content for the Settings subpage</span><pre>_compose_edit_upload_tab()</pre></a></li>
 <li class="method private "><a href="#_compose_edit_view_tab" title="_compose_edit_view_tab :: Compose the Edit View tab content for the Settings subpage"><span class="description">Compose the Edit View tab content for the Settings subpage</span><pre>_compose_edit_view_tab()</pre></a></li>
 <li class="method private "><a href="#_compose_general_tab" title="_compose_general_tab :: Compose the General tab content for the Settings subpage"><span class="description">Compose the General tab content for the Settings subpage</span><pre>_compose_general_tab()</pre></a></li>
+<li class="method private "><a href="#_compose_import_settings" title="_compose_import_settings :: Compose HTML markup for the import settings if any settings files exist"><span class="description">Compose HTML markup for the import settings if any settings files exist</span><pre>_compose_import_settings()</pre></a></li>
 <li class="method private "><a href="#_compose_iptc_exif_tab" title="_compose_iptc_exif_tab :: Compose the IPTC/EXIF tab content for the Settings subpage"><span class="description">Compose the IPTC/EXIF tab content for the Settings subpage</span><pre>_compose_iptc_exif_tab()</pre></a></li>
 <li class="method private "><a href="#_compose_mla_gallery_tab" title="_compose_mla_gallery_tab :: Compose the MLA Gallery tab content for the Settings subpage"><span class="description">Compose the MLA Gallery tab content for the Settings subpage</span><pre>_compose_mla_gallery_tab()</pre></a></li>
 <li class="method private "><a href="#_compose_option_row" title="_compose_option_row :: Compose the table row for a single MLA option"><span class="description">Compose the table row for a single MLA option</span><pre>_compose_option_row()</pre></a></li>
@@ -88,6 +89,8 @@ add settings link in the Plugins section entry for MLA.</span><pre>mla_admin_men
 <li class="method private "><a href="#_compose_view_tab" title="_compose_view_tab :: Compose the Post MIME Type Views tab content for the Settings subpage"><span class="description">Compose the Post MIME Type Views tab content for the Settings subpage</span><pre>_compose_view_tab()</pre></a></li>
 <li class="method private "><a href="#_current_bulk_action" title="_current_bulk_action :: Get the current action selected from the bulk actions dropdown"><span class="description">Get the current action selected from the bulk actions dropdown</span><pre>_current_bulk_action()</pre></a></li>
 <li class="method private "><a href="#_delete_custom_field" title="_delete_custom_field :: Delete a custom field from the wp_postmeta table"><span class="description">Delete a custom field from the wp_postmeta table</span><pre>_delete_custom_field()</pre></a></li>
+<li class="method private "><a href="#_export_settings" title="_export_settings :: Serialize option settings and write them to a file"><span class="description">Serialize option settings and write them to a file</span><pre>_export_settings()</pre></a></li>
+<li class="method private "><a href="#_import_settings" title="_import_settings :: Read a serialized file of option settings and write them to the database"><span class="description">Read a serialized file of option settings and write them to the database</span><pre>_import_settings()</pre></a></li>
 <li class="method private "><a href="#_process_custom_field_mapping" title="_process_custom_field_mapping :: Process custom field settings against all image attachments
 without saving the settings to the mla_option"><span class="description">Process custom field settings against all image attachments
 without saving the settings to the mla_option</span><pre>_process_custom_field_mapping()</pre></a></li>
@@ -495,6 +498,21 @@ add settings link in the Plugins section entry for MLA.</h2>
 <code>array</code>'message' => status/error messages, 'body' => tab content</div>
 </div></div>
 </div>
+<a name="_compose_import_settings" id="_compose_import_settings"></a><div class="element clickable method private _compose_import_settings" data-toggle="collapse" data-target="._compose_import_settings .collapse">
+<h2>Compose HTML markup for the import settings if any settings files exist</h2>
+<pre>_compose_import_settings() : string</pre>
+<div class="labels"></div>
+<div class="row collapse"><div class="detail-description">
+<p class="long_description"></p>
+<table class="table table-bordered"><tr>
+<th>since</th>
+<td>1.50</td>
+</tr></table>
+<h3>Returns</h3>
+<div class="subelement response">
+<code>string</code>HTML markup for the Import All Settings button and dropdown list, if any</div>
+</div></div>
+</div>
 <a name="_compose_iptc_exif_tab" id="_compose_iptc_exif_tab"></a><div class="element clickable method private _compose_iptc_exif_tab" data-toggle="collapse" data-target="._compose_iptc_exif_tab .collapse">
 <h2>Compose the IPTC/EXIF tab content for the Settings subpage</h2>
 <pre>_compose_iptc_exif_tab() : array</pre>
@@ -671,6 +689,36 @@ add settings link in the Plugins section entry for MLA.</h2>
 <div class="subelement argument">
 <h4>$value</h4>
 <code>array</code><p>specific custom_field_mapping rule</p></div>
+<h3>Returns</h3>
+<div class="subelement response">
+<code>array</code>Message(s) reflecting the results of the operation</div>
+</div></div>
+</div>
+<a name="_export_settings" id="_export_settings"></a><div class="element clickable method private _export_settings" data-toggle="collapse" data-target="._export_settings .collapse">
+<h2>Serialize option settings and write them to a file</h2>
+<pre>_export_settings() : array</pre>
+<div class="labels"></div>
+<div class="row collapse"><div class="detail-description">
+<p class="long_description"><p>Options with a default value, i.e., not stored in the database are NOT written to the file.</p></p>
+<table class="table table-bordered"><tr>
+<th>since</th>
+<td>1.50</td>
+</tr></table>
+<h3>Returns</h3>
+<div class="subelement response">
+<code>array</code>Message(s) reflecting the results of the operation</div>
+</div></div>
+</div>
+<a name="_import_settings" id="_import_settings"></a><div class="element clickable method private _import_settings" data-toggle="collapse" data-target="._import_settings .collapse">
+<h2>Read a serialized file of option settings and write them to the database</h2>
+<pre>_import_settings() : array</pre>
+<div class="labels"></div>
+<div class="row collapse"><div class="detail-description">
+<p class="long_description"></p>
+<table class="table table-bordered"><tr>
+<th>since</th>
+<td>1.50</td>
+</tr></table>
 <h3>Returns</h3>
 <div class="subelement response">
 <code>array</code>Message(s) reflecting the results of the operation</div>
@@ -1104,7 +1152,7 @@ each page load and cached for subsequent use.</p></p>
 <div class="row"><footer class="span12">
             Template is built using <a href="http://twitter.github.com/bootstrap/">Twitter Bootstrap 2</a> and icons provided by <a href="http://glyphicons.com/">Glyphicons</a>.<br>
             Documentation is powered by <a href="http://www.phpdoc.org/">phpDocumentor 2.0.0a8</a> and<br>
-            generated on 2013-08-10T19:24:37-07:00.<br></footer></div>
+            generated on 2013-09-27T14:55:49-07:00.<br></footer></div>
 </div>
 </body>
 </html>

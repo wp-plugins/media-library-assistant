@@ -578,7 +578,7 @@ class MLA_Upload_List_Table extends WP_List_Table {
 		$s = isset( $_REQUEST['s'] ) ? $_REQUEST['s'] : '';
 		$upload_items = MLAMime::mla_tabulate_upload_items( $s );
 		$view_links = array();
-		foreach( $upload_items as $slug => $item )
+		foreach ( $upload_items as $slug => $item )
 			$view_links[ $slug ] = self::_get_view( $slug, $item, $current_view );
 
 		return $view_links;

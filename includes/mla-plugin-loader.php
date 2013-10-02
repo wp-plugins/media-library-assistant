@@ -47,65 +47,65 @@ if ( ! empty( $mla_plugin_loader_error_messages ) ) {
 	add_action( 'admin_notices', 'mla_plugin_loader_reporting_action' );
 }
 else {
-	add_action( 'init', 'MLATest::initialize' );
+	add_action( 'init', 'MLATest::initialize', 0x7FFFFFFF );
 	
 	/*
 	 * Template file and database access functions.
 	 */
 	require_once( MLA_PLUGIN_PATH . 'includes/class-mla-data.php' );
-	add_action( 'init', 'MLAData::initialize' );
+	add_action( 'init', 'MLAData::initialize', 0x7FFFFFFF );
 	
 	/*
 	 * Custom Taxonomies and WordPress objects.
 	 */
 	require_once( MLA_PLUGIN_PATH . 'includes/class-mla-objects.php' );
-	add_action('init', 'MLAObjects::initialize');
+	add_action( 'init', 'MLAObjects::initialize', 0x7FFFFFFF );
 	
 	/*
 	 * MIME Type functions.
 	 */
 	require_once( MLA_PLUGIN_PATH . 'includes/class-mla-mime-types.php' );
-	add_action('init', 'MLAMime::initialize');
+	add_action( 'init', 'MLAMime::initialize', 0x7FFFFFFF );
 	
 	/*
 	 * Shortcodes
 	 */
-	require_once( MLA_PLUGIN_PATH . 'includes/class-mla-shortcodes.php');
-	add_action('init', 'MLAShortcodes::initialize');
+	require_once( MLA_PLUGIN_PATH . 'includes/class-mla-shortcodes.php' );
+	add_action( 'init', 'MLAShortcodes::initialize', 0x7FFFFFFF );
 	
 	/*
 	 * WordPress 3.5 and later Edit Media screen additions, e.g., meta boxes
 	 */
 	if ( version_compare( get_bloginfo( 'version' ), '3.5', '>=' ) ) {
-		require_once( MLA_PLUGIN_PATH . 'includes/class-mla-edit-media.php');
-		add_action('init', 'MLAEdit::initialize');
+		require_once( MLA_PLUGIN_PATH . 'includes/class-mla-edit-media.php' );
+		add_action( 'init', 'MLAEdit::initialize', 0x7FFFFFFF );
 	}
 	
 	/*
 	 * WordPress 3.5 and later Media Manager (Modal window) additions
 	 */
 	if ( version_compare( get_bloginfo( 'version' ), '3.5', '>=' ) ) {
-		require_once( MLA_PLUGIN_PATH . 'includes/class-mla-media-modal.php');
-		add_action('init', 'MLAModal::initialize');
+		require_once( MLA_PLUGIN_PATH . 'includes/class-mla-media-modal.php' );
+		add_action( 'init', 'MLAModal::initialize', 0x7FFFFFFF );
 	}
 	
 	/*
 	 * Plugin settings management
 	 */
 	require_once( MLA_PLUGIN_PATH . 'includes/class-mla-options.php' );
-	add_action( 'init', 'MLAOptions::initialize' );
+	add_action( 'init', 'MLAOptions::initialize', 0x7FFFFFFF );
 	 
 	/*
 	 * Plugin settings management page
 	 */
 	require_once( MLA_PLUGIN_PATH . 'includes/class-mla-settings.php' );
-	add_action( 'init', 'MLASettings::initialize' );
+	add_action( 'init', 'MLASettings::initialize', 0x7FFFFFFF );
 	
 	/*
 	 * Main program
 	 */
-	require_once( MLA_PLUGIN_PATH . 'includes/class-mla-main.php');
-	add_action('init', 'MLA::initialize');
+	require_once( MLA_PLUGIN_PATH . 'includes/class-mla-main.php' );
+	add_action( 'init', 'MLA::initialize', 0x7FFFFFFF );
 	 
 	/*
 	 * Custom list table package that extends the core WP_List_Table class.
