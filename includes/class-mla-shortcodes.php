@@ -173,12 +173,23 @@ class MLAShortcodes {
 			$attr = shortcode_parse_atts( $attr );
 
 		/*
+		 * The mla_paginate_current parameter can be changed to support multiple galleries per page.
+		 */
+		if ( ! isset( $attr['mla_page_parameter'] ) )
+			$attr['mla_page_parameter'] = 'mla_paginate_current';
+			
+		$mla_page_parameter = $attr['mla_page_parameter'];
+		 
+		/*
 		 * Special handling of the mla_paginate_current parameter to make
 		 * "MLA pagination" easier. Look for this parameter in $_REQUEST
 		 * if it's not present in the shortcode itself.
 		 */
-		if ( isset( $_REQUEST['mla_paginate_current'] ) && ! isset( $attr['mla_paginate_current'] ) )
-			$attr['mla_paginate_current'] = $_REQUEST['mla_paginate_current'];
+		if ( ! isset( $attr[ $mla_page_parameter ] ) )
+			if ( isset( $_REQUEST[ $mla_page_parameter ] ) )
+				$attr[ $mla_page_parameter ] = $_REQUEST[ $mla_page_parameter ];
+			else
+				$attr[ $mla_page_parameter ] = '';
 		 
 		/*
 		 * These are the parameters for gallery display
@@ -262,7 +273,10 @@ class MLAShortcodes {
 		 * Merge gallery arguments with defaults, pass the query arguments on to mla_get_shortcode_attachments.
 		 */
 		 
+		$attr = apply_filters( 'mla_gallery_attributes', $attr );
 		$arguments = shortcode_atts( $default_arguments, $attr );
+		$arguments = apply_filters( 'mla_gallery_arguments', $arguments );
+		
 		self::$mla_debug = !empty( $arguments['mla_debug'] ) && ( 'true' == strtolower( $arguments['mla_debug'] ) );
 
 		/*
@@ -469,7 +483,11 @@ class MLAShortcodes {
 					$style_values['itemwidth'] = 'auto';
 					$style_template = preg_replace( '/width:[\s]*\[\+itemwidth\+\][\%]*[\;]*/', '', $style_template );
 				}
+				
+				$style_values = apply_filters( 'mla_gallery_style_values', $style_values );
+				$style_template = apply_filters( 'mla_gallery_style_template', $style_template );
 				$gallery_style = MLAData::mla_parse_template( $style_template, $style_values );
+				$gallery_style = apply_filters( 'mla_gallery_style_parse', $gallery_style, $style_template, $style_values );
 				
 				/*
 				 * Clean up the styles to resolve extra "%" suffixes on width or margin (pre v1.42 values)
@@ -525,11 +543,15 @@ class MLAShortcodes {
 			$output = '';
 
 		if ($is_gallery ) {
+			$markup_values = apply_filters( 'mla_gallery_open_values', $markup_values );
+
+			$open_template = apply_filters( 'mla_gallery_open_template', $open_template );
 			if ( empty( $open_template ) )
 				$gallery_div = '';
 			else
 				$gallery_div = MLAData::mla_parse_template( $open_template, $markup_values );
-	
+
+			$gallery_div = apply_filters( 'mla_gallery_open_parse', $gallery_div, $open_template, $markup_values );
 			$output .= apply_filters( 'mla_gallery_style', $gallery_style . $gallery_div, $style_values, $markup_values, $style_template, $open_template );
 		}
 		else {
@@ -886,8 +908,12 @@ class MLAShortcodes {
 				/*
 				 * Start of row markup
 				 */
-				if ( $markup_values['columns'] > 0 && $column_index % $markup_values['columns'] == 0 )
-					$output .= MLAData::mla_parse_template( $row_open_template, $markup_values );
+				if ( $markup_values['columns'] > 0 && $column_index % $markup_values['columns'] == 0 ) {
+					$markup_values = apply_filters( 'mla_gallery_row_open_values', $markup_values );
+					$row_open_template = apply_filters( 'mla_gallery_row_open_template', $row_open_template );
+					$parse_value = MLAData::mla_parse_template( $row_open_template, $markup_values );
+					$output .= apply_filters( 'mla_gallery_row_open_parse', $parse_value, $row_open_template, $markup_values );
+				}
 				
 				/*
 				 * item markup
@@ -897,14 +923,21 @@ class MLAShortcodes {
 					$item_values['last_in_row'] = 'last_in_row';
 				else
 					$item_values['last_in_row'] = '';
-
-				$output .= MLAData::mla_parse_template( $item_template, $item_values );
+				
+				$item_values = apply_filters( 'mla_gallery_item_values', $item_values );
+				$item_template = apply_filters( 'mla_gallery_item_template', $item_template );
+				$parse_value = MLAData::mla_parse_template( $item_template, $item_values );
+				$output .= apply_filters( 'mla_gallery_item_parse', $parse_value, $item_template, $item_values );
 	
 				/*
 				 * End of row markup
 				 */
-				if ( $markup_values['columns'] > 0 && $column_index % $markup_values['columns'] == 0 )
-					$output .= MLAData::mla_parse_template( $row_close_template, $markup_values );
+				if ( $markup_values['columns'] > 0 && $column_index % $markup_values['columns'] == 0 ) {
+					$markup_values = apply_filters( 'mla_gallery_row_close_values', $markup_values );
+					$row_close_template = apply_filters( 'mla_gallery_row_close_template', $row_close_template );
+					$parse_value = MLAData::mla_parse_template( $row_close_template, $markup_values );
+					$output .= apply_filters( 'mla_gallery_row_close_parse', $parse_value, $row_close_template, $markup_values );
+				}
 			} // is_gallery
 			elseif ( ( $is_previous || $is_next ) )
 				return $item_values['link'];
@@ -914,10 +947,17 @@ class MLAShortcodes {
 			/*
 			 * Close out partial row
 			 */
-			if ( ! ($markup_values['columns'] > 0 && $column_index % $markup_values['columns'] == 0 ) )
-				$output .= MLAData::mla_parse_template( $row_close_template, $markup_values );
+			if ( ! ($markup_values['columns'] > 0 && $column_index % $markup_values['columns'] == 0 ) ) {
+				$markup_values = apply_filters( 'mla_gallery_row_close_values', $markup_values );
+				$row_close_template = apply_filters( 'mla_gallery_row_close_template', $row_close_template );
+				$parse_value = MLAData::mla_parse_template( $row_close_template, $markup_values );
+				$output .= apply_filters( 'mla_gallery_row_close_parse', $parse_value, $row_close_template, $markup_values );
+			}
 				
-			$output .= MLAData::mla_parse_template( $close_template, $markup_values );
+			$markup_values = apply_filters( 'mla_gallery_close_values', $markup_values );
+			$close_template = apply_filters( 'mla_gallery_close_template', $close_template );
+			$parse_value = MLAData::mla_parse_template( $close_template, $markup_values );
+			$output .= apply_filters( 'mla_gallery_close_parse', $parse_value, $close_template, $markup_values );
 		} // is_gallery
 	
 		return $output;
@@ -967,6 +1007,7 @@ class MLAShortcodes {
 					$prev_next = true;
 			}
 
+		$mla_page_parameter = $arguments['mla_page_parameter'];
 		$current_page = $markup_values['current_page'];
 		$last_page = $markup_values['last_page'];
 		$end_size = absint( $arguments['mla_end_size'] );
@@ -993,7 +1034,7 @@ class MLAShortcodes {
 		if ( $prev_next && $current_page && 1 < $current_page ) {
 			$markup_values['new_page'] = $current_page - 1;
 			$new_title = ( ! empty( $arguments['mla_rollover_text'] ) ) ? 'title="' . esc_attr( self::_process_shortcode_parameter( $arguments['mla_rollover_text'], $markup_values ) ) . '" ' : '';
-			$new_url = add_query_arg( array( 'mla_paginate_current' => $current_page - 1 ), $new_base );
+			$new_url = add_query_arg( array(  $mla_page_parameter  => $current_page - 1 ), $new_base );
 			$prev_text = ( ! empty( $arguments['mla_prev_text'] ) ) ? esc_attr( self::_process_shortcode_parameter( $arguments['mla_prev_text'], $markup_values ) ) : '&laquo; Previous';
 			$page_links[] = sprintf( '<a %1$sclass="prev page-numbers%2$s" %3$s%4$shref="%5$s">%6$s</a>',
 				/* %1$s */ $new_target,
@@ -1019,7 +1060,7 @@ class MLAShortcodes {
 			else {
 				if ( $show_all || ( $new_page <= $end_size || ( $current_page && $new_page >= $current_page - $mid_size && $new_page <= $current_page + $mid_size ) || $new_page > $last_page - $end_size ) ) {
 					// build link
-					$new_url = add_query_arg( array( 'mla_paginate_current' => $new_page ), $new_base );
+					$new_url = add_query_arg( array(  $mla_page_parameter  => $new_page ), $new_base );
 					$page_links[] = sprintf( '<a %1$sclass="page-numbers%2$s" %3$s%4$shref="%5$s">%6$s</a>',
 						/* %1$s */ $new_target,
 						/* %2$s */ $new_class,
@@ -1042,7 +1083,7 @@ class MLAShortcodes {
 			// build next link
 			$markup_values['new_page'] = $current_page + 1;
 			$new_title = ( ! empty( $arguments['mla_rollover_text'] ) ) ? 'title="' . esc_attr( self::_process_shortcode_parameter( $arguments['mla_rollover_text'], $markup_values ) ) . '" ' : '';
-			$new_url = add_query_arg( array( 'mla_paginate_current' => $current_page + 1 ), $new_base );
+			$new_url = add_query_arg( array(  $mla_page_parameter  => $current_page + 1 ), $new_base );
 			$next_text = ( ! empty( $arguments['mla_next_text'] ) ) ? esc_attr( self::_process_shortcode_parameter( $arguments['mla_next_text'], $markup_values ) ) : 'Next &raquo;';
 			$page_links[] = sprintf( '<a %1$sclass="next page-numbers%2$s" %3$s%4$shref="%5$s">%6$s</a>',
 				/* %1$s */ $new_target,
@@ -1089,6 +1130,17 @@ class MLAShortcodes {
 		 */
 		$arguments = array_merge( $arguments, shortcode_atts( self::$data_selection_parameters, $attr ) );
 		$posts_per_page = absint( $arguments['posts_per_page'] );
+		$mla_page_parameter = $arguments['mla_page_parameter'];
+		
+		/*
+		 * $mla_page_parameter, if set, doesn't make it through the shortcode_atts filter,
+		 * so we handle it separately
+		 */
+		if ( ! isset( $arguments[ $mla_page_parameter ] ) )
+			if ( isset( $attr[ $mla_page_parameter ] ) )
+				$arguments[ $mla_page_parameter ] = $attr[ $mla_page_parameter ];
+			else
+				$arguments[ $mla_page_parameter ] = '';
 			
 		if ( 0 == $posts_per_page )
 			$posts_per_page = absint( $arguments['numberposts'] );
@@ -1107,8 +1159,8 @@ class MLAShortcodes {
 		if ( isset( $arguments['mla_paginate_total'] )  && $max_page > absint( $arguments['mla_paginate_total'] ) )
 			$max_page = absint( $arguments['mla_paginate_total'] );
 			
-		if ( isset( $arguments['mla_paginate_current'] ) )
-			$paged = absint( $arguments['mla_paginate_current'] );
+		if ( isset( $arguments[ $mla_page_parameter ] ) )
+			$paged = absint( $arguments[ $mla_page_parameter ] );
 		else
 			$paged = absint( $arguments['paged'] );
 		
@@ -1185,7 +1237,7 @@ class MLAShortcodes {
 			$markup_values['scheme'] = 'http://';
 			
 		$markup_values['http_host'] = $_SERVER['HTTP_HOST'];
-		$markup_values['request_uri'] = add_query_arg( array( 'mla_paginate_current' => $new_page ), $_SERVER['REQUEST_URI'] );	
+		$markup_values['request_uri'] = add_query_arg( array(  $mla_page_parameter  => $new_page ), $_SERVER['REQUEST_URI'] );	
 		$markup_values['new_url'] = set_url_scheme( $markup_values['scheme'] . $markup_values['http_host'] . $markup_values['request_uri'] );
 
 		/*
@@ -1408,6 +1460,7 @@ class MLAShortcodes {
 			'posts_per_archive_page' => 0,
 			'paged' => NULL, // page number or 'current'
 			'offset' => NULL,
+			'mla_page_parameter' => 'mla_paginate_current',
 			'mla_paginate_current' => NULL,
 			'mla_paginate_total' => NULL,
 			// TBD Time
@@ -1422,6 +1475,18 @@ class MLAShortcodes {
 		);
 
 	/**
+	 * The WP_Query object used to select items for the gallery.
+	 *
+	 * Defined as a public, static variable so it can be inspected from the
+	 * "mla_gallery_wp_query_object" action. Set to NULL at all other times.
+	 *
+	 * @since 1.51
+	 *
+	 * @var	object
+	 */
+	public static $mla_gallery_wp_query_object = NULL;
+	
+	/**
 	 * Parses shortcode parameters and returns the gallery objects
 	 *
 	 * @since .50
@@ -1432,7 +1497,7 @@ class MLAShortcodes {
 	 *
 	 * @return array List of attachments returned from WP_Query
 	 */
-	public static function mla_get_shortcode_attachments( $post_parent, $attr, $return_found_rows = false ) {
+	public static function mla_get_shortcode_attachments( $post_parent, $attr, $return_found_rows = NULL ) {
 		global $wp_query;
 
 		/*
@@ -1441,13 +1506,35 @@ class MLAShortcodes {
 		self::$query_parameters = array();
 
 		/*
-		 * Merge input arguments with defaults, then extract the query arguments.
+		 * Make sure $attr is an array, even if it's empty
 		 */
-		 
-		if ( is_string( $attr ) )
+		if ( empty( $attr ) )
+			$attr = array();
+		elseif ( is_string( $attr ) )
 			$attr = shortcode_parse_atts( $attr );
-			
+
+		/*
+		 * Merge input arguments with defaults, then extract the query arguments.
+		 *
+		 * $return_found_rows is used to indicate that the call comes from gallery_shortcode(),
+		 * which is the only call that supplies it.
+		 */
+		if ( ! is_null( $return_found_rows ) )
+			$attr = apply_filters( 'mla_gallery_query_attributes', $attr );
+
 		$arguments = shortcode_atts( self::$data_selection_parameters, $attr );
+		$mla_page_parameter = $arguments['mla_page_parameter'];
+		unset( $arguments['mla_page_parameter'] );
+		
+		/*
+		 * $mla_page_parameter, if set, doesn't make it through the shortcode_atts filter,
+		 * so we handle it separately
+		 */
+		if ( ! isset( $arguments[ $mla_page_parameter ] ) )
+			if ( isset( $attr[ $mla_page_parameter ] ) )
+				$arguments[ $mla_page_parameter ] = $attr[ $mla_page_parameter ];
+			else
+				$arguments[ $mla_page_parameter ] = '';
 
 		/*
 		 * 'RAND' is not documented in the codex, but is present in the code.
@@ -1465,6 +1552,9 @@ class MLAShortcodes {
 			$arguments['include'] = $arguments['ids'];
 		}
 		unset( $arguments['ids'] );
+
+		if ( ! is_null( $return_found_rows ) )
+			$arguments = apply_filters( 'mla_gallery_query_arguments', $arguments );
 	
 		/*
 		 * Extract taxonomy arguments
@@ -1509,6 +1599,7 @@ class MLAShortcodes {
 			} //foreach $attr
 		} // ! empty
 		unset( $arguments['tax_operator'] );
+		unset( $arguments['tax_include_children'] );
 		
 		/*
 		 * $query_arguments has been initialized in the taxonomy code above.
@@ -1589,7 +1680,7 @@ class MLAShortcodes {
 					$query_arguments[ $key ] = 1;
 				unset( $arguments[ $key ] );
 				break;
-			case 'mla_paginate_current':
+			case  $mla_page_parameter :
 			case 'mla_paginate_total':
 				if ( is_numeric( $value ) )
 					$query_arguments[ $key ] = intval( $value );
@@ -1728,15 +1819,15 @@ class MLAShortcodes {
 		/*
 		 * MLA pagination will override WordPress pagination
 		 */
-		if ( isset( $query_arguments['mla_paginate_current'] ) ) {
+		if ( isset( $query_arguments[ $mla_page_parameter ] ) ) {
 			unset( $query_arguments['nopaging'] );
 			unset( $query_arguments['offset'] );
 			unset( $query_arguments['paged'] );
 			
-			if ( isset( $query_arguments['mla_paginate_total'] ) && ( $query_arguments['mla_paginate_current'] > $query_arguments['mla_paginate_total'] ) )
+			if ( isset( $query_arguments['mla_paginate_total'] ) && ( $query_arguments[ $mla_page_parameter ] > $query_arguments['mla_paginate_total'] ) )
 				$query_arguments['offset'] = 0x7FFFFFFF; // suppress further output
 			else
-				$query_arguments['paged'] = $query_arguments['mla_paginate_current'];
+				$query_arguments['paged'] = $query_arguments[ $mla_page_parameter ];
 		}
 		else {
 			if ( isset( $query_arguments['posts_per_page'] ) || isset( $query_arguments['posts_per_archive_page'] ) ||
@@ -1744,7 +1835,7 @@ class MLAShortcodes {
 				unset( $query_arguments['nopaging'] );
 			}
 		}
-		unset( $query_arguments['mla_paginate_current'] );
+		unset( $query_arguments[ $mla_page_parameter ] );
 		unset( $query_arguments['mla_paginate_total'] );
 
 		if ( isset( $query_arguments['post_mime_type'] ) && ('all' == strtolower( $query_arguments['post_mime_type'] ) ) )
@@ -1758,7 +1849,7 @@ class MLAShortcodes {
 			$query_arguments['post__not_in'] = wp_parse_id_list( $query_arguments['exclude'] );
 	
 		$query_arguments['ignore_sticky_posts'] = true;
-		$query_arguments['no_found_rows'] = ! $return_found_rows;
+		$query_arguments['no_found_rows'] = is_null( $return_found_rows ) ? true : ! $return_found_rows;
 	
 		/*
 		 * We will always handle "orderby" in our filter
@@ -1784,11 +1875,20 @@ class MLAShortcodes {
 			self::$mla_debug_messages .= '<p><strong>mla_debug $wp_filter[posts_orderby]</strong> = ' . var_export( $wp_filter['posts_orderby'], true ) . '</p>';
 		}
 		
-		$get_posts = new WP_Query;
-		$attachments = $get_posts->query($query_arguments);
+		self::$mla_gallery_wp_query_object = new WP_Query;
+		$attachments = self::$mla_gallery_wp_query_object->query($query_arguments);
+		
+		/*
+		 * $return_found_rows is used to indicate that the call comes from gallery_shortcode(),
+		 * which is the only call that supplies it.
+		 */
+		if ( is_null( $return_found_rows ) )
+			$return_found_rows = false;
+		else 
+			do_action( 'mla_gallery_wp_query_object', $query_arguments );
 		
 		if ( $return_found_rows ) {
-			$attachments['found_rows'] = $get_posts->found_posts;
+			$attachments['found_rows'] = self::$mla_gallery_wp_query_object->found_posts;
 		}
 			
 		remove_filter( 'posts_where', 'MLAShortcodes::mla_shortcode_query_posts_where_filter', 0x7FFFFFFF, 1 );
@@ -1799,11 +1899,12 @@ class MLAShortcodes {
 			remove_filter( 'posts_clauses_request', 'MLAShortcodes::mla_shortcode_query_posts_clauses_request_filter', 0x7FFFFFFF, 1 );
 
 			self::$mla_debug_messages .= '<p><strong>mla_debug query</strong> = ' . var_export( $query_arguments, true ) . '</p>';
-			self::$mla_debug_messages .= '<p><strong>mla_debug request</strong> = ' . var_export( $get_posts->request, true ) . '</p>';
-			self::$mla_debug_messages .= '<p><strong>mla_debug query_vars</strong> = ' . var_export( $get_posts->query_vars, true ) . '</p>';
-			self::$mla_debug_messages .= '<p><strong>mla_debug post_count</strong> = ' . var_export( $get_posts->post_count, true ) . '</p>';
+			self::$mla_debug_messages .= '<p><strong>mla_debug request</strong> = ' . var_export( self::$mla_gallery_wp_query_object->request, true ) . '</p>';
+			self::$mla_debug_messages .= '<p><strong>mla_debug query_vars</strong> = ' . var_export( self::$mla_gallery_wp_query_object->query_vars, true ) . '</p>';
+			self::$mla_debug_messages .= '<p><strong>mla_debug post_count</strong> = ' . var_export( self::$mla_gallery_wp_query_object->post_count, true ) . '</p>';
 		}
 		
+		self::$mla_gallery_wp_query_object = NULL;
 		return $attachments;
 	}
 

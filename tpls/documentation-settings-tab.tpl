@@ -24,6 +24,7 @@
 <li><a href="#custom_field_parameters">Custom Field Parameters</a></li>
 <li><a href="#search_keywords">Search Keywords</a></li>
 <li><a href="#debugging_output">Debugging Output</a></li>
+<li><a href="#mla_gallery_hooks">MLA Gallery Filters (Hooks)</a></li>
 </ul>
 </li>
 <li>
@@ -38,21 +39,17 @@
 <li>
 <a href="#mla_gallery_templates"><strong>Style and Markup Templates</strong></a>
 </li>
-<li>
-<a href="#mla_style_parameters"><strong>Substitution parameters for style templates</strong></a>
-</li>
-<li>
-<a href="#mla_markup_parameters"><strong>Substitution parameters for markup templates</strong></a>
-</li>
-<li>
-<a href="#mla_attachment_parameters"><strong>Attachment-specific substitution parameters for the markup template Item part</strong></a>
-</li>
+<ul style="list-style-position:inside; list-style:disc; line-height: 15px; padding-left: 20px">
+<li><a href="#mla_style_parameters">Substitution parameters for style templates</a></li>
+<li><a href="#mla_markup_parameters">Substitution parameters for markup templates</a></li>
+<li><a href="#mla_attachment_parameters">Attachment-specific substitution parameters for the markup template Item part</a></li>
+</ul>
 <li>
 <a href="#mla_variable_parameters"><strong>Field-level markup substitution parameters</strong></a>
 </li>
-<li>
-<a href="#pdf_metadata"><strong>Metadata in PDF documents</strong></a>
-</li>
+<ul style="list-style-position:inside; list-style:disc; line-height: 15px; padding-left: 20px">
+<li><a href="#pdf_metadata">Metadata in PDF documents</a></li>
+</ul>
 <li>
 <a href="#mla_template_parameters"><strong>Content Templates</strong></a>
 <li>
@@ -68,20 +65,21 @@
 <a href="#mla_optional_uploads"><strong>Searching for Upload MIME Types</strong></a>
 </li>
 <li>
-<a href="#mla_custom_field_mapping"><strong>Custom Field Processing Options</strong></a>
+<a href="#mla_custom_field_mapping"><strong>Custom Field and Attachment Metadata Processing Options</strong></a>
 </li>
-<li>
-<a href="#mla_custom_field_parameters"><strong>Data sources for custom field mapping</strong></a>
-</li>
+<ul style="list-style-position:inside; list-style:disc; line-height: 15px; padding-left: 20px">
+<li><a href="#attachment_metadata_mapping">Adding or Changing Attachment Metadata</a></li>
+<li><a href="#mla_custom_field_parameters">Data sources for custom field mapping</a></li>
+<li><a href="#custom_field_mapping_with_templates">Custom field mapping with Content Templates</a></li>
+</ul>
 <li>
 <a href="#mla_iptc_exif_mapping"><strong>IPTC &amp; EXIF Processing Options</strong></a>
 </li>
-<li>
-<a href="#mla_gps_values"><strong>Enhanced GPS values</strong></a>
+<ul style="list-style-position:inside; list-style:disc; line-height: 15px; padding-left: 20px">
+<li><a href="#mla_gps_values">Enhanced GPS values</a></li>
+<li><a href="#mla_iptc_identifiers">IPTC identifiers and friendly names</a>
 </li>
-<li>
-<a href="#mla_iptc_identifiers"><strong>IPTC identifiers and friendly names</strong></a>
-</li>
+</ul>
 </ul>
 <h3>Plugin Code Documentation</h3>
 <p>
@@ -481,7 +479,68 @@ The search parameter ("s=keyword") will perform a keyword search. A cursory insp
 <h4>Debugging Output</h4>
 <p>
 The "mla_debug" parameter controls the display of information about the query parameters and SQL statements used to retrieve gallery items. If you code <code>mla_debug=true</code> you will see a lot of information added to the post or page containing the gallery. Of course, this parameter should <strong><em>ONLY</em></strong> be used in a development/debugging environment; it's quite ugly.
+<a name="mla_gallery_hooks"></a>
 </p>
+<h4>MLA Gallery Filters and Actions (Hooks)</h4>
+<p>
+The <code>[mla_gallery]</code> shortcode supports a comprehensive set of filters and actions the give you complete control over gallery composition from PHP code in your theme or in another plugin. An example of using the hooks from a simple, stand-alone plugin can be found here: <a title="View the Hooks Example source code" href="[+examples_url+]mla-hooks-example.php.txt" target="_blank" style="font-size:14px; font-weight:bold">mla-hooks-example.php.txt</a>. To run the example:
+<ol>
+<li>Edit the code to, for example, uncomment the <code>error_log()</code> calls so you can see what is passed to the hooks you are interested in.</li>
+<li>Remove the ".txt" extension and saving the "mla-hooks-example.php" file in your plugins directory.</li>
+<li>Go to the Plugins/Installed Plugins screen and activate the "MLA Gallery Hooks Example" plugin.</li>
+<li>Create a new <code>[mla_gallery]</code> shortcode or modify an existing shortcode, adding the <code>my_filter="all custom"</code> parameter to activate the example output.</li>
+<li>View the post or page on which the modified shortcode appears to see a list of each item's custom fields appended to the gallery captions.</li>
+</ol>
+</p>
+<p>
+The example code documents each hook with comments in the filter/action function that intercepts each hook. Generally, each part of the gallery supports three hooks: 1) a "<strong>values</strong>" hook, which lets you record or update the substitution values for that gallery part, 2) a "<strong>template</strong>" hook, which lets you record/update the template used to generate the HTML markup, and 3) a "<strong>parse</strong>" hook which lets you modify or replace the markup generated for a gallery part. The current hooks are:
+</p>
+<table>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">mla_gallery_attributes,<br />mla_gallery_arguments</td>
+<td>called at the beginning of the gallery. You can record/modify shortcode parameter values before (attributes) or after (arguments) they are combined with all the defaults.</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">mla_gallery_query_attributes,<br />mla_gallery_query_arguments</td>
+<td>called just before the <code>WP_Query->query()</code> call that selects gallery items, with query parameters beforee and after they are combined with defaults.</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">mla_gallery_wp_query_object</td>
+<td>called just after the <code>WP_Query->query()</code> call, so you can inspect/record the results.</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">use_mla_gallery_style</td>
+<td>allow or suppress the inclusin of CSS styles in the gallery output.</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">mla_gallery_style</td>
+<td>an old filter retained for compatibility with earlier MLA versions.</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">mla_gallery_style_values,<br /> mla_gallery_style_template,<br />mla_gallery_style_parse</td>
+<td>for manipulating the Style template.</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">mla_gallery_open_values,<br />mla_gallery_open_template,<br />mla_gallery_open_parse</td>
+<td>for manipulating the "Open" part of the Markup template.</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">mla_gallery_row_open_values,<br />mla_gallery_row_open_template,<br />mla_gallery_row_open_parse</td>
+<td>for manipulating the "Row Open" part of the Markup template.</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">mla_gallery_item_values,<br />mla_gallery_item_template,<br />mla_gallery_item_parse</td>
+<td>for manipulating the "Item" part of the Markup template.</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">mla_gallery_row_close_values,<br />mla_gallery_row_close_template,<br />mla_gallery_row_close_parse</td>
+<td>for manipulating the "Row Close" part of the Markup template.</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">mla_gallery_close_values,<br />mla_gallery_close_template,<br />mla_gallery_close_parse</td>
+<td>for manipulating the "Close" part of the Markup template.</td>
+</tr>
+</table>
 <a name="mla_output"></a>
 &nbsp;
 <p>
@@ -1176,7 +1235,10 @@ There are nine prefix values for field-level data. Prefix values must be coded a
 	</tr>
 	<tr>
 		<td style="padding-right: 10px; vertical-align: top; font-weight:bold">custom</td>
-		<td>WordPress Custom Fields, which you can define and populate on the Edit Media screen or map from various sources on the Settings/Media Library Assistant Custom and IPTC/EXIF tabs. The field name, or key, can contain spaces and some punctuation characters. You <strong><em>cannot use the plus sign ('+')</em></strong> in a field name you want to use with <code>[mla_gallery]</code>. Custom field names are case-sensitive; "client" and "Client" are not the same.</td>
+		<td>WordPress Custom Fields, which you can define and populate on the Edit Media screen or map from various sources on the Settings/Media Library Assistant Custom and IPTC/EXIF tabs. The field name, or key, can contain spaces and some punctuation characters. You <strong><em>cannot use the plus sign ('+')</em></strong> in a field name you want to use with <code>[mla_gallery]</code>. Custom field names are case-sensitive; "client" and "Client" are not the same.		<br />&nbsp;<br />
+		One special custom "pseudo-value" is available; <strong>ALL_CUSTOM</strong> (<code>[+custom:ALL_CUSTOM+]</code>). This returns a string representation of all custom field values. You can use this pseudo-values to quickly examine which fields are populated for a given Media Library item and what its values are.
+		<br />&nbsp;<br />
+		The ALL_CUSTOM value is altered in two ways. First, values of more than 256 characters are truncated to 256 characters. This prevents large fields from dominating the display. Second, array values are shown '(ARRAY)'.</td>
 	</tr>
 	<tr>
 		<td style="padding-right: 10px; vertical-align: top; font-weight:bold">terms</td>
@@ -1555,9 +1617,12 @@ Put on your boots and have a paddle handy - it's a swamp! Good luck.
 <p>
 <a href="#backtotop">Go to Top</a>
 </p>
-<h3>Custom Field Processing Options</h3>
+<h3>Custom Field and Attachment Metadata Processing Options</h3>
 <p>
 On the Custom Fields tab of the Settings screen you can define the rules for mapping several types of file and image metadata to WordPress custom fields. Custom field mapping can be applied automatically when an attachment is added to the Media Library. You can refresh the mapping for <strong><em>ALL</em></strong> attachments using the command buttons on the screen. You can selectively apply the mapping in the bulk edit area of the Media/Assistant submenu table and/or on the Edit Media screen for a single attachment.
+</p>
+<p>
+You can also use this screen to define rules for adding or updating elements within the WordPress-supplied "Attachment Metadata", stored in the "_wp_attachment_metadata" custom field. See the <a href="#attachment_metadata_mapping">Adding or changing Attachment Metadata</a> section below for details.
 </p>
 <p>
 This is a powerful tool, but it comes at the price of additional database storage space and processing time to maintain and retrieve the data. <strong><em>Think carefully about your needs before you use this tool.</em></strong> You can disable or delete any rules you create, so you might want to set up some rules for a special project or analysis of your library and then discard them when you're done. That said, the advantages of mapping metadata to custom fields are:
@@ -1577,7 +1642,49 @@ Several of the data elements are sourced from the WordPress "image_meta" array. 
 You can also use a <a href="#mla_template_parameters">Content Template</a> to compose custom field values from multiple sources, test for non-empty content and choose from alternative sources.
 </p>
 <p>
-If you just want to add a custom field to the Media/Assistant submenu, the quick edit area and/or the bulk edit area you can bypass the mapping logic by leaving the Data Source value as "-- None (select a value) --".
+If you just want to add a custom field to the Media/Assistant submenu, the Quick Edit area and/or the Bulk Edit area you can bypass the mapping logic by leaving the Data Source value as "-- None (select a value) --".
+</p>
+<a name="attachment_metadata_mapping"></a>
+&nbsp;<br />
+<h4>Adding or changing Attachment Metadata</h4>
+<p>
+WordPress stores an array of information for image, audio and video items in the "_wp_attachment_metadata" custom field. Plugins such as "Fullscreen Galleria" also use this field to store information like GPS coordinates. Many of the array elements, such as the "sizes" array for images, are in turn arrays of more detailed values. <strong>Compound names</strong> are used to access elements within arrays, e.g., &quot;<strong>sizes.thumbnail.file</strong>&quot; is used to specify the file name for the thumbnail version of an image.
+</p>
+<p>
+As explained elsewhere, you can access all of this data with the "meta:" <a href="#mla_variable_parameters">Field-level markup substitution parameter</a>. By coding the "meta:" prefix in the Field Title column of a field mapping rule you can add to or update this data as well, from any of the data sources listed below. You can use a <a href="#mla_template_parameters">Content Template</a> to compose a value from multiple substitution parameters and test for empty values, choosing among two or more alternatives or suppressing the mapping altogether for a given item.
+<p>
+Let's say, for example, that you want to add GPS coordinates to the "image_meta" element of the Attachment Metadata.
+<ol>
+<li>
+Open the Settings/Media Library Assistant submenu and select the Custom Fields tab. Scroll down to the "Add a new Field and Mapping Rule" section.
+</li>
+<li>
+In the Field Title text box, enter "meta:image_meta.latitude". The rule will store its results in the "latitude" element of the "image_meta" array within the Attachment Metadata field.
+</li>
+<li>
+In the Data Source dropdown, select "-- Template (see below) --". In the text box below the dropdown, enter "([+exif:GPS.LatitudeSDD+])". This is a Content Template that extracts the "GPS.LatitudeSDD" value from the EXIF data embedded in an image file. The parentheses test the result to eliminate empty values; only non-empty values will be mapped into the image_meta array.
+</li>
+<li>
+Set the other parts of the rule as needed. You can select "Keep" if some of your items already have this information or "Replace" to update all items. "Native" and "Text" are appropriate for this example. You can check "Delete NULL values" to remove any existing, empty values for this element. The "MLA Column", "Quick Edit" and "Bulk Edit" checkboxes have no meaning for Attachment Metadata elements and can be left blank; they will be ignored if checked.
+</li>
+</ol>
+</p>
+<p>
+If you are creating an IPTC/EXIF mapping rule the details are a bit different.
+<ol>
+<li>
+Open the Settings/Media Library Assistant submenu and select the IPTC/EXIF tab. Scroll down to the "Add a new Field and Mapping Rule" section.
+</li>
+<li>
+In the Field Title text box, enter "meta:image_meta.latitude". The rule will store its results in the "latitude" element of the "image_meta" array within the Attachment Metadata field.
+</li>
+<li>
+In the "EXIF/Template" text box, enter "template:([+exif:GPS.LatitudeSDD+])". This is a Content Template that extracts the "GPS.LatitudeSDD" value from the EXIF data embedded in an image file. The parentheses test the result to eliminate empty values; only non-empty values will be mapped into the image_meta array.
+</li>
+<li>
+Set the other parts of the rule as needed. You can select "EXIF" unless you also select an IPTC value and want it to have priority. You can select "Keep" if some of your items already have this information or "Replace" to update all items.
+</li>
+</ol>
 </p>
 <a name="mla_custom_field_parameters"></a>
 &nbsp;
@@ -1865,7 +1972,12 @@ If you use the "Multi" option you will almost certainly want to use the "Delete 
 </p>
 <h4>Custom field mapping for metadata fields</h4>
 <p>
-If you select "<strong>-- Metadata (see below) --</strong>" as the data source you must specify the name of the field you want in the text box below the data source dropdown box. Any of the fields in the <em>_wp_attachment_metadata</em> array may be named, including the new audio/video fields available with WordPress 3.6 and later. For example, "length_formatted" will return the length of a video attachment. You can specify fields within an array with a compound name, e.g., "audio.sample_rate" to get the sampling rate field from the "audio" array of a video attachment. If you simply specify "audio", you will get the values of every array element, e.g., "mp4,ISO/IEC 14496 AAC,48000,2,16,false,stereo". 
+If you select "<strong>-- Metadata (see below) --</strong>" as the data source you must specify the name of the field you want in the text box below the data source dropdown box. Any of the fields in the <em>_wp_attachment_metadata</em> array may be named, including the new audio/video fields available with WordPress 3.6 and later. For example, "length_formatted" will return the length of a video attachment. You can specify elements within an array with a compound name, e.g., "audio.sample_rate" to get the sampling rate field from the "audio" array of a video attachment. If you simply specify "audio", you will get the values of every array element, e.g., "mp4,ISO/IEC 14496 AAC,48000,2,16,false,stereo". 
+</p>
+<a name="custom_field_mapping_with_templates"></a>
+&nbsp;
+<p>
+<a href="#backtotop">Go to Top</a>
 </p>
 <h4>Custom field mapping with Content Templates</h4>
 <p>
@@ -1880,7 +1992,10 @@ You can use a template to compose a custom field from multiple data sources, e.g
 </p>
 You can use a template to compose a custom field from alternative data sources, depending on which fields are populated for a given attachment. For example, "<code>[+pdf:Keywords+]|[+iptc:2#025+]|none</code>" will use the PDF Keywords field, if populated, then the IPTC keywords field, if populated, or the literal "none" if neither field contains a value. With this template you can get keywords from both PDF documents and images in a single field.
 <p>
-Using a template with the Option Dropdown "Text" or "Single" values will yield a text result. For example, multiple IPTC keywords would be converted into a comma-delimited list as a string. If you combine a template with the "Export", "Array" or "Multi" values the template will deliver an array result if the fields inside the template have multiple values. For example, with "Multi" you can code "<code>[+iptc:2#020<strong>,array</strong>+][+iptc:2#025<strong>,array</strong>+]</code>" to store each of the IPTC supplemental-category <em><strong>and</strong></em> keywords values (there is no "|" in the template) in a separate custom field value. Note the use of the <strong>,array</strong> formatting option in each field; this is required to get an array result for the field.
+Using a template with the Option Dropdown "Text" or "Single" values will yield a text result. For example, multiple IPTC keywords would be converted into a comma-delimited list as a string. If you combine a template with the "Export", "Array" or "Multi" values the template will deliver an array result if the fields inside the template have multiple values. For example, with "Multi" you can code "<code>([+iptc:2#020<strong>,array</strong>+])([+iptc:2#025<strong>,array</strong>+])</code>" to store each of the IPTC supplemental-category <em><strong>and</strong></em> keywords values (there is no "|" in the template) in a separate custom field value. Note the use of the <strong>,array</strong> formatting option in each field; this is required to get an array result for the field. Also, note that each of the fields is enclosed in parentheses, so the field is suppressed if it contains no values.
+</p>
+<p>
+<strong>CAUTION:</strong> If you use the <code>[+custom:ALL_CUSTOM+]</code> pseudo value in a mapping rule, and you apply the rule more than once, you will see copies of the field you are mapping to in the result. To "clear out" a field you are mapping ALL_CUSTOM into, clear out the text box containing the template, select "Replace" and check the "Delete NULL values" box. Then, click "Map All Attachments"; that will delete the old values and give you a clean start. You'll also see that the template you deleted will be restored after the mapping is complete.
 </p>
 <a name="mla_iptc_exif_mapping"></a>
 &nbsp;
@@ -1906,6 +2021,8 @@ The three mapping tables on the IPTC/EXIF tab have the following columns:
 <dl>
 <dt>Field Title</dt>
 <dd>The standard field title, taxonomy name or Custom Field name. In the Custom Field table you can define a new field by entering its name in the blank box at the bottom of the list; the value will be saved when you click "Save Changes" at the bottom of the screen.
+<br />&nbsp;<br />
+You can also use the Custom field mapping section of this screen to define rules for adding or updating elements within the WordPress-supplied "Attachment Metadata", stored in the "_wp_attachment_metadata" custom field. Code the "meta:" prefix in the Field Title textbox to make the destination of the rule an element of the Attachment Metadata; see the <a href="#attachment_metadata_mapping">Adding or changing Attachment Metadata</a> section for more details.
 </dd>
 <dt>IPTC Value</dt>
 <dd>The IPTC (International Press Telecommunications Council) metadata, if any, embedded in the image file. For this category, you can select any of the IPTC DataSet tag and field identifiers, e.g., "2#025" for the Keywords field. The dropdown list has the identifier and the "friendly name" MLA defines for most of the IPTC fields; see the table of identifiers and friendly names in the table below. You can find more information in the <a href="http://www.iptc.org/std/IIM/4.1/specification/IIMV4.1.pdf" title="IPTC-NAA Information Interchange Model Version No. 4.1 specification" target="_blank">IPTC-NAA Information Interchange Model Version No. 4.1 specification</a>.
@@ -1946,7 +2063,7 @@ You can use a template to compose a value from multiple data sources, e.g., "<co
 You can use a template to compose a value from alternative data sources, depending on which fields are populated for a given attachment. For example, "<code>[+iptc:2#020+]|[+iptc:2#025+]|none</code>" will use the IPTC supplemental-category field, if populated, then the IPTC keywords field, if populated, or the literal "none" if neither IPTC field contains a value.
 </p>
 <p>
-Using a template in the "Standard field mapping" or "Custom field mapping" tables will yield a text result. For example, multiple IPTC keywords would be converted into a comma-delimited list as a string. In the "Taxonomy term mapping" table the template will deliver an array result if the fields inside the template have multiple values. For example, you can code "<code>[+iptc:2#020+][+iptc:2#025+]</code>" to store each of the IPTC supplemental-category <em><strong>and</strong></em> keywords values (there is no "|" in the template) as a separate taxonomy term.
+Using a template in the "Standard field mapping" or "Custom field mapping" tables will yield a text result. For example, multiple IPTC keywords would be converted into a comma-delimited list as a string. In the "Taxonomy term mapping" table the template will deliver an array result if the fields inside the template have multiple values. For example, you can code "<code>([+iptc:2#020+])([+iptc:2#025+])</code>" to store each of the IPTC supplemental-category <em><strong>and</strong></em> keywords values (there is no "|" in the template) as a separate taxonomy term. Note that each of the fields is enclosed in parentheses, so the field is suppressed if it contains no values.
 </p>
 <p>
 Note that the <strong>,array</strong> formatting option is <strong>not</strong> required to get an array result for the field in a Taxonomy term mapping template; it is assumed. If you want a <strong>text</strong>, <strong>single</strong> or <strong>export</strong> result you can add one of those formatting options to your field specification.
@@ -2035,6 +2152,16 @@ The native format of this data is somewhat complicated, so MLA converts the most
 <td style="padding-right: 10px; vertical-align: top">Second portion of Latitude</td>
 </tr>
 <tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">LatitudeSDM</td>
+<td style="padding-right: 10px; vertical-align: top">44 7.5669</td>
+<td style="padding-right: 10px; vertical-align: top">Latitude expressed as degrees and decimal minutes (MinDec),<br />with a leading "-" for Southern values</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">LatitudeSDD</td>
+<td style="padding-right: 10px; vertical-align: top">44.126116</td>
+<td style="padding-right: 10px; vertical-align: top">Latitude expressed as decimal degrees,<br />with a leading "-" for Southern values</td>
+</tr>
+<tr>
 <td style="padding-right: 10px; vertical-align: top; font-weight:bold">LatitudeDM</td>
 <td style="padding-right: 10px; vertical-align: top">44 7.5669N</td>
 <td style="padding-right: 10px; vertical-align: top">Latitude expressed as degrees and decimal minutes (MinDec)</td>
@@ -2083,6 +2210,16 @@ The native format of this data is somewhat complicated, so MLA converts the most
 <td style="padding-right: 10px; vertical-align: top; font-weight:bold">LongitudeS</td>
 <td style="padding-right: 10px; vertical-align: top">9.2055</td>
 <td style="padding-right: 10px; vertical-align: top">Second portion of Longitude</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">LongitudeSDM</td>
+<td style="padding-right: 10px; vertical-align: top">145 5.1534</td>
+<td style="padding-right: 10px; vertical-align: top">Longitude expressed as degrees and decimal minutes (MinDec),<br />with a leading "-" for Western values</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">LongitudeSDD</td>
+<td style="padding-right: 10px; vertical-align: top">145.085890</td>
+<td style="padding-right: 10px; vertical-align: top">Longitude expressed as decimal degrees,<br />with a leading "-" for Western values</td>
 </tr>
 <tr>
 <td style="padding-right: 10px; vertical-align: top; font-weight:bold">LongitudeDM</td>
@@ -2175,7 +2312,7 @@ The native format of this data is somewhat complicated, so MLA converts the most
 <p>
 <a href="#backtotop">Go to Top</a>
 </p>
-<h3>IPTC Identifiers and Friendly Names</h3>
+<h4>IPTC Identifiers and Friendly Names</h4>
 <table>
 <tr><td colspan="3" style="font-weight:bold">Envelope Record</td></tr>
 <tr><td style="padding-right: 10px; vertical-align: top; font-weight:bold">model-version</td><td style="padding-right: 10px; vertical-align: top">1#000</td><td style="padding-right: 10px; vertical-align: top">2 octet binary IIM version number</td></tr>

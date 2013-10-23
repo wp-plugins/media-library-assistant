@@ -38,7 +38,7 @@ class MLA {
 	 *
 	 * @var	string
 	 */
-	const CURRENT_MLA_VERSION = '1.50';
+	const CURRENT_MLA_VERSION = '1.51';
 
 	/**
 	 * Slug for registering and enqueueing plugin style sheet
@@ -272,7 +272,7 @@ class MLA {
 			wp_enqueue_script( self::JAVASCRIPT_INLINE_EDIT_SLUG, MLA_PLUGIN_URL . "js/mla-inline-edit-scripts{$suffix}.js", 
 				array( 'wp-lists', 'suggest', 'jquery' ), self::CURRENT_MLA_VERSION, false );
 				
-			$fields = array( 'post_title', 'post_name', 'post_excerpt', 'image_alt', 'post_parent', 'menu_order', 'post_author' );
+			$fields = array( 'post_title', 'post_name', 'post_excerpt', 'post_content', 'image_alt', 'post_parent', 'menu_order', 'post_author' );
 			$custom_fields = MLAOptions::mla_custom_field_support( 'quick_edit' );
 			$custom_fields = array_merge( $custom_fields, MLAOptions::mla_custom_field_support( 'bulk_edit' ) );
 			foreach ($custom_fields as $slug => $label ) {

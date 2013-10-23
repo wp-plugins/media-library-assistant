@@ -197,6 +197,15 @@ class MLAModal {
 		self::$mla_media_modal_settings['enableMonthsDropdown'] = ( 'checked' == MLAOptions::mla_get_option( MLAOptions::MLA_MEDIA_MODAL_MONTHS ) );
 		self::$mla_media_modal_settings['enableTermsDropdown'] = ( 'checked' == MLAOptions::mla_get_option( MLAOptions::MLA_MEDIA_MODAL_TERMS ) );
 		self::$mla_media_modal_settings['enableSearchBox'] = ( 'checked' == MLAOptions::mla_get_option( MLAOptions::MLA_MEDIA_MODAL_SEARCHBOX ) );
+
+		/*
+		 * These will be passed back to the server in the query['s'] field.
+		 */ 
+		self::$mla_media_modal_settings['filterMonth'] = 0;
+		self::$mla_media_modal_settings['filterTerm'] = 0;
+		self::$mla_media_modal_settings['searchConnector'] = 'AND';
+		self::$mla_media_modal_settings['searchFields'] = array( 'title', 'content' );
+		self::$mla_media_modal_settings['searchValue'] = '';
 		
 		$settings = array_merge( $settings, array( 'mla_settings' => self::$mla_media_modal_settings ) );
 		return $settings;
@@ -302,40 +311,40 @@ class MLAModal {
 		echo "\t" . '<script type="text/html" id="tmpl-mla-search-box">' . "\r\n";
 		echo "\t\t" . '<p class="search-box">' . "\r\n";
 		echo "\t\t" . '<label class="screen-reader-text" for="media-search-input">Search Media:</label>' . "\r\n";
-		echo "\t\t" . '<input type="text" name="mla_search_value" id="media-search-input" size="43" value="' . $search_value . '" />' . "\r\n";
+		echo "\t\t" . '<input type="text" name="s[mla_search_value]" id="media-search-input" size="43" value="' . $search_value . '" />' . "\r\n";
 		echo "\t\t" . '<input type="submit" name="mla_search_submit" id="search-submit" class="button" value="Search Media"  /><br>' . "\r\n";
 		if ( 'OR' == $search_connector ) {
-			echo "\t\t" . '<input type="radio" name="mla_search_connector" value="AND" />&nbsp;and&nbsp;' . "\r\n";
-			echo "\t\t" . '<input type="radio" name="mla_search_connector" checked="checked" value="OR" />&nbsp;or&nbsp;' . "\r\n";
+			echo "\t\t" . '<input type="radio" name="s[mla_search_connector]" value="AND" />&nbsp;and&nbsp;' . "\r\n";
+			echo "\t\t" . '<input type="radio" name="s[mla_search_connector]" checked="checked" value="OR" />&nbsp;or&nbsp;' . "\r\n";
 		} else {
-			echo "\t\t" . '<input type="radio" name="mla_search_connector" checked="checked" value="AND" />&nbsp;and&nbsp;' . "\r\n";
-			echo "\t\t" . '<input type="radio" name="mla_search_connector" value="OR" />&nbsp;or&nbsp;' . "\r\n";
+			echo "\t\t" . '<input type="radio" name="s[mla_search_connector]" checked="checked" value="AND" />&nbsp;and&nbsp;' . "\r\n";
+			echo "\t\t" . '<input type="radio" name="s[mla_search_connector]" value="OR" />&nbsp;or&nbsp;' . "\r\n";
 		}
 
 		if ( in_array( 'title', $search_fields ) )
-			echo "\t\t" . '<input type="checkbox" name="mla_search_title" id="search-title" checked="checked" value="title" />&nbsp;title&nbsp;' . "\r\n";
+			echo "\t\t" . '<input type="checkbox" name="s[mla_search_title]" id="search-title" checked="checked" value="title" />&nbsp;title&nbsp;' . "\r\n";
 		else
-			echo "\t\t" . '<input type="checkbox" name="mla_search_title" id="search-title" value="title" />&nbsp;title&nbsp;' . "\r\n";
+			echo "\t\t" . '<input type="checkbox" name="s[mla_search_title]" id="search-title" value="title" />&nbsp;title&nbsp;' . "\r\n";
 			
 		if ( in_array( 'name', $search_fields ) )
-			echo "\t\t" . '<input type="checkbox" name="mla_search_name" id="search-name" checked="checked" value="name" />&nbsp;name&nbsp;' . "\r\n";
+			echo "\t\t" . '<input type="checkbox" name="s[mla_search_name]" id="search-name" checked="checked" value="name" />&nbsp;name&nbsp;' . "\r\n";
 		else
-			echo "\t\t" . '<input type="checkbox" name="mla_search_name" id="search-name" value="name" />&nbsp;name&nbsp;' . "\r\n";
+			echo "\t\t" . '<input type="checkbox" name="s[mla_search_name]" id="search-name" value="name" />&nbsp;name&nbsp;' . "\r\n";
 
 		if ( in_array( 'alt-text', $search_fields ) )
-			echo "\t\t" . '<input type="checkbox" name="mla_search_alt_text" id="search-alt-text" checked="checked" value="alt-text" />&nbsp;ALT text&nbsp;' . "\r\n";
+			echo "\t\t" . '<input type="checkbox" name="s[mla_search_alt_text]" id="search-alt-text" checked="checked" value="alt-text" />&nbsp;ALT text&nbsp;' . "\r\n";
 		else
-			echo "\t\t" . '<input type="checkbox" name="mla_search_alt_text" id="search-alt-text" value="alt-text" />&nbsp;ALT text&nbsp;' . "\r\n";
+			echo "\t\t" . '<input type="checkbox" name="s[mla_search_alt_text]" id="search-alt-text" value="alt-text" />&nbsp;ALT text&nbsp;' . "\r\n";
 
 		if ( in_array( 'excerpt', $search_fields ) )
-			echo "\t\t" . '<input type="checkbox" name="mla_search_excerpt" id="search-excerpt" checked="checked" value="excerpt" />&nbsp;caption&nbsp;' . "\r\n";
+			echo "\t\t" . '<input type="checkbox" name="s[mla_search_excerpt]" id="search-excerpt" checked="checked" value="excerpt" />&nbsp;caption&nbsp;' . "\r\n";
 		else
-			echo "\t\t" . '<input type="checkbox" name="mla_search_excerpt" id="search-excerpt" value="excerpt" />&nbsp;caption&nbsp;' . "\r\n";
+			echo "\t\t" . '<input type="checkbox" name="s[mla_search_excerpt]" id="search-excerpt" value="excerpt" />&nbsp;caption&nbsp;' . "\r\n";
 
 		if ( in_array( 'content', $search_fields ) )
-			echo "\t\t" . '<input type="checkbox" name="mla_search_content" id="search-content" checked="checked" value="content" />&nbsp;description&nbsp;' . "\r\n";
+			echo "\t\t" . '<input type="checkbox" name="s[mla_search_content]" id="search-content" checked="checked" value="content" />&nbsp;description&nbsp;' . "\r\n";
 		else
-			echo "\t\t" . '<input type="checkbox" name="mla_search_content" id="search-content" value="content" />&nbsp;description&nbsp;' . "\r\n";
+			echo "\t\t" . '<input type="checkbox" name="s[mla_search_content]" id="search-content" value="content" />&nbsp;description&nbsp;' . "\r\n";
 
 		echo "\t\t" . '</p>' . "\r\n";
 		echo "\t" . '</script>' . "\r\n";
@@ -352,7 +361,14 @@ class MLAModal {
 	 */
 	public static function mla_admin_init_ajax_action() {
 		if ( ( defined('WP_ADMIN') && WP_ADMIN ) && ( defined('DOING_AJAX') && DOING_AJAX ) ) {
-			if ( isset( $_POST['action'] ) && ( $_POST['action'] == 'query-attachments' ) && isset( $_POST['query']['mla_source'] ) ){
+			if ( isset( $_POST['action'] ) && ( $_POST['action'] == 'query-attachments' ) && isset( $_POST['query']['s'] ) && is_array( $_POST['query']['s'] ) ){
+				foreach ( $_POST['query']['s'] as $key => $value ) {
+					$_POST['query'][ $key ] = $value;
+					$_REQUEST['query'][ $key ] = $value;
+				}
+				
+				unset( $_POST['query']['s'] );
+				unset( $_REQUEST['query']['s'] );
 				$_POST['action'] = self::JAVASCRIPT_MEDIA_MODAL_SLUG;
 				$_REQUEST['action'] = self::JAVASCRIPT_MEDIA_MODAL_SLUG;
 			}
@@ -378,7 +394,7 @@ class MLAModal {
 		$query = isset( $_REQUEST['query'] ) ? (array) $_REQUEST['query'] : array();
 		$query = array_intersect_key( $query, array_flip( array(
 			'order', 'orderby', 'posts_per_page', 'paged', 'post_mime_type',
-			'post_parent', 'post__in', 'post__not_in', 'm', 'mla_filter_term',
+			'post_parent', 'post__in', 'post__not_in', 'mla_filter_month', 'mla_filter_term',
 			'mla_search_value', 's', 'mla_search_fields', 'mla_search_connector'
 		) ) );
 
@@ -395,20 +411,30 @@ class MLAModal {
 		}
 		
 		/*
+		 * Convert mla_filter_month back to the WordPress "m" parameter
+		 */
+		if ( isset( $query['mla_filter_month'] ) ) {
+			if ( '0' != $query['mla_filter_month'] )
+				$query['m'] = $query['mla_filter_month'];
+				
+			unset( $query['mla_filter_month'] );
+		}
+		
+		/*
 		 * Process the enhanced search box OR fix up the default search box
 		 */
 		if ( isset( $query['mla_search_value'] ) ) {
 			if ( ! empty( $query['mla_search_value'] ) )
 				$query['s'] = $query['mla_search_value'];
-			else
-				unset( $query['s'] );
+//			else
+//				unset( $query['s'] );
 				
 			unset( $query['mla_search_value'] );
 		}
-		elseif ( ! empty( $query['s'] ) ) {
+/*		elseif ( ! empty( $query['s'] ) ) {
 			$query['mla_search_fields'] = array( 'title', 'content' );
 			$query['mla_search_connector'] = 'AND';
-		}
+		} // */
 		
 		if ( isset( $query['posts_per_page'] ) ) {
 			$count = $query['posts_per_page'];
@@ -418,7 +444,36 @@ class MLAModal {
 			$count = 0;
 			$offset = 0;
 		}
-		
+
+		/*
+		 * Check for sorting override
+		 */
+		$option =  MLAOptions::mla_get_option( MLAOptions::MLA_MEDIA_MODAL_ORDERBY );
+		if ( 'default' != $option ) {
+			/*
+			 * Make sure the current orderby choice still exists or revert to default.
+			 */
+			$default_orderby = array_merge( array( 'none' => array('none',false) ), MLA_List_Table::mla_get_sortable_columns( ) );
+			$found_current = false;
+			foreach ($default_orderby as $key => $value ) {
+				if ( $option == $value[0] ) {
+					$found_current = true;
+					break;
+				}
+			}
+	
+			if ( ! $found_current ) {
+				MLAOptions::mla_delete_option( MLAOptions::MLA_DEFAULT_ORDERBY );
+				$option = MLAOptions::mla_get_option( MLAOptions::MLA_DEFAULT_ORDERBY );
+			}
+
+			$query['orderby'] = $option;
+		}
+			
+		$option = MLAOptions::mla_get_option( MLAOptions::MLA_MEDIA_MODAL_ORDER );
+		if ( 'default' != $option )
+			$query['order'] = $option;
+
 		$query['post_type'] = 'attachment';
 		$query['post_status'] = 'inherit';
 		if ( current_user_can( get_post_type_object( 'attachment' )->cap->read_private_posts ) )

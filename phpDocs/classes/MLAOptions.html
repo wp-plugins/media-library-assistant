@@ -112,8 +112,16 @@ settings are being updated or reset.</span><pre>mla_taxonomy_support()</pre></a>
 <li class="constant  "><a href="#MLA_FEATURED_IN_TUNING" title="MLA_FEATURED_IN_TUNING :: Provides a unique name for a database tuning option"><span class="description">Provides a unique name for a database tuning option</span><pre>MLA_FEATURED_IN_TUNING</pre></a></li>
 <li class="constant  "><a href="#MLA_GALLERY_IN_TUNING" title="MLA_GALLERY_IN_TUNING :: Provides a unique name for a database tuning option"><span class="description">Provides a unique name for a database tuning option</span><pre>MLA_GALLERY_IN_TUNING</pre></a></li>
 <li class="constant  "><a href="#MLA_INSERTED_IN_TUNING" title="MLA_INSERTED_IN_TUNING :: Provides a unique name for a database tuning option"><span class="description">Provides a unique name for a database tuning option</span><pre>MLA_INSERTED_IN_TUNING</pre></a></li>
+<li class="constant  "><a href="#MLA_MEDIA_MODAL_DETAILS_CATEGORY_METABOX" title='MLA_MEDIA_MODAL_DETAILS_CATEGORY_METABOX :: Provides a unique name for the Media Manager Attachment Details searchable taxonomy option
+This option is for hierarchical taxonomies, e.g., "Att.'><span class="description">Provides a unique name for the Media Manager Attachment Details searchable taxonomy option
+This option is for hierarchical taxonomies, e.g., "Att.</span><pre>MLA_MEDIA_MODAL_DETAILS_CATEGORY_METABOX</pre></a></li>
+<li class="constant  "><a href="#MLA_MEDIA_MODAL_DETAILS_TAG_METABOX" title='MLA_MEDIA_MODAL_DETAILS_TAG_METABOX :: Provides a unique name for the Media Manager Attachment Details searchable taxonomy option
+This option is for flat taxonomies, e.g., "Att.'><span class="description">Provides a unique name for the Media Manager Attachment Details searchable taxonomy option
+This option is for flat taxonomies, e.g., "Att.</span><pre>MLA_MEDIA_MODAL_DETAILS_TAG_METABOX</pre></a></li>
 <li class="constant  "><a href="#MLA_MEDIA_MODAL_MIMETYPES" title="MLA_MEDIA_MODAL_MIMETYPES :: Provides a unique name for the Media Manager toolbar MIME Types option"><span class="description">Provides a unique name for the Media Manager toolbar MIME Types option</span><pre>MLA_MEDIA_MODAL_MIMETYPES</pre></a></li>
 <li class="constant  "><a href="#MLA_MEDIA_MODAL_MONTHS" title="MLA_MEDIA_MODAL_MONTHS :: Provides a unique name for the Media Manager toolbar Month and Year option"><span class="description">Provides a unique name for the Media Manager toolbar Month and Year option</span><pre>MLA_MEDIA_MODAL_MONTHS</pre></a></li>
+<li class="constant  "><a href="#MLA_MEDIA_MODAL_ORDER" title="MLA_MEDIA_MODAL_ORDER :: Provides a unique name for the Media Manager order option"><span class="description">Provides a unique name for the Media Manager order option</span><pre>MLA_MEDIA_MODAL_ORDER</pre></a></li>
+<li class="constant  "><a href="#MLA_MEDIA_MODAL_ORDERBY" title="MLA_MEDIA_MODAL_ORDERBY :: Provides a unique name for the Media Manager orderby option"><span class="description">Provides a unique name for the Media Manager orderby option</span><pre>MLA_MEDIA_MODAL_ORDERBY</pre></a></li>
 <li class="constant  "><a href="#MLA_MEDIA_MODAL_SEARCHBOX" title="MLA_MEDIA_MODAL_SEARCHBOX :: Provides a unique name for the Media Manager toolbar Search Box option"><span class="description">Provides a unique name for the Media Manager toolbar Search Box option</span><pre>MLA_MEDIA_MODAL_SEARCHBOX</pre></a></li>
 <li class="constant  "><a href="#MLA_MEDIA_MODAL_TERMS" title="MLA_MEDIA_MODAL_TERMS :: Provides a unique name for the Media Manager toolbar Taxonomy Terms option"><span class="description">Provides a unique name for the Media Manager toolbar Taxonomy Terms option</span><pre>MLA_MEDIA_MODAL_TERMS</pre></a></li>
 <li class="constant  "><a href="#MLA_MEDIA_MODAL_TOOLBAR" title="MLA_MEDIA_MODAL_TOOLBAR :: Provides a unique name for the Media Manager toolbar option"><span class="description">Provides a unique name for the Media Manager toolbar option</span><pre>MLA_MEDIA_MODAL_TOOLBAR</pre></a></li>
@@ -874,7 +882,7 @@ haven't been mapped to any attachments, yet.</p></p>
 <code>array</code><p>new values</p></div>
 <h3>Returns</h3>
 <div class="subelement response">
-<code>array</code>( 'message' => HTML message(s) reflecting results, 'values' => updated iptc_exif_mapping values, 'changed' => true if any changes detected else false )</div>
+<code>array</code>( 'message' => HTML message(s) reflecting results, 'values' => updated custom_field_mapping values, 'changed' => true if any changes detected else false )</div>
 </div></div>
 </div>
 <a name="_update_iptc_exif_custom_mapping" id="_update_iptc_exif_custom_mapping"></a><div class="element clickable method private _update_iptc_exif_custom_mapping" data-toggle="collapse" data-target="._update_iptc_exif_custom_mapping .collapse">
@@ -1106,6 +1114,20 @@ reset => reset function for 'custom' options; returns nothing. Usage:
 <div class="labels"></div>
 <div class="row collapse"><div class="detail-description"><p class="long_description"></p></div></div>
 </div>
+<a name="MLA_MEDIA_MODAL_DETAILS_CATEGORY_METABOX" id="MLA_MEDIA_MODAL_DETAILS_CATEGORY_METABOX"> </a><div class="element clickable constant  MLA_MEDIA_MODAL_DETAILS_CATEGORY_METABOX" data-toggle="collapse" data-target=".MLA_MEDIA_MODAL_DETAILS_CATEGORY_METABOX .collapse">
+<h2>Provides a unique name for the Media Manager Attachment Details searchable taxonomy option
+This option is for hierarchical taxonomies, e.g., "Att.</h2>
+<pre>MLA_MEDIA_MODAL_DETAILS_CATEGORY_METABOX </pre>
+<div class="labels"></div>
+<div class="row collapse"><div class="detail-description"><p class="long_description"><p>Categories".</p></p></div></div>
+</div>
+<a name="MLA_MEDIA_MODAL_DETAILS_TAG_METABOX" id="MLA_MEDIA_MODAL_DETAILS_TAG_METABOX"> </a><div class="element clickable constant  MLA_MEDIA_MODAL_DETAILS_TAG_METABOX" data-toggle="collapse" data-target=".MLA_MEDIA_MODAL_DETAILS_TAG_METABOX .collapse">
+<h2>Provides a unique name for the Media Manager Attachment Details searchable taxonomy option
+This option is for flat taxonomies, e.g., "Att.</h2>
+<pre>MLA_MEDIA_MODAL_DETAILS_TAG_METABOX </pre>
+<div class="labels"></div>
+<div class="row collapse"><div class="detail-description"><p class="long_description"><p>Tags".</p></p></div></div>
+</div>
 <a name="MLA_MEDIA_MODAL_MIMETYPES" id="MLA_MEDIA_MODAL_MIMETYPES"> </a><div class="element clickable constant  MLA_MEDIA_MODAL_MIMETYPES" data-toggle="collapse" data-target=".MLA_MEDIA_MODAL_MIMETYPES .collapse">
 <h2>Provides a unique name for the Media Manager toolbar MIME Types option</h2>
 <pre>MLA_MEDIA_MODAL_MIMETYPES </pre>
@@ -1115,6 +1137,18 @@ reset => reset function for 'custom' options; returns nothing. Usage:
 <a name="MLA_MEDIA_MODAL_MONTHS" id="MLA_MEDIA_MODAL_MONTHS"> </a><div class="element clickable constant  MLA_MEDIA_MODAL_MONTHS" data-toggle="collapse" data-target=".MLA_MEDIA_MODAL_MONTHS .collapse">
 <h2>Provides a unique name for the Media Manager toolbar Month and Year option</h2>
 <pre>MLA_MEDIA_MODAL_MONTHS </pre>
+<div class="labels"></div>
+<div class="row collapse"><div class="detail-description"><p class="long_description"></p></div></div>
+</div>
+<a name="MLA_MEDIA_MODAL_ORDER" id="MLA_MEDIA_MODAL_ORDER"> </a><div class="element clickable constant  MLA_MEDIA_MODAL_ORDER" data-toggle="collapse" data-target=".MLA_MEDIA_MODAL_ORDER .collapse">
+<h2>Provides a unique name for the Media Manager order option</h2>
+<pre>MLA_MEDIA_MODAL_ORDER </pre>
+<div class="labels"></div>
+<div class="row collapse"><div class="detail-description"><p class="long_description"></p></div></div>
+</div>
+<a name="MLA_MEDIA_MODAL_ORDERBY" id="MLA_MEDIA_MODAL_ORDERBY"> </a><div class="element clickable constant  MLA_MEDIA_MODAL_ORDERBY" data-toggle="collapse" data-target=".MLA_MEDIA_MODAL_ORDERBY .collapse">
+<h2>Provides a unique name for the Media Manager orderby option</h2>
+<pre>MLA_MEDIA_MODAL_ORDERBY </pre>
 <div class="labels"></div>
 <div class="row collapse"><div class="detail-description"><p class="long_description"></p></div></div>
 </div>
@@ -1227,7 +1261,7 @@ reset => reset function for 'custom' options; returns nothing. Usage:
 <div class="row"><footer class="span12">
             Template is built using <a href="http://twitter.github.com/bootstrap/">Twitter Bootstrap 2</a> and icons provided by <a href="http://glyphicons.com/">Glyphicons</a>.<br>
             Documentation is powered by <a href="http://www.phpdoc.org/">phpDocumentor 2.0.0a8</a> and<br>
-            generated on 2013-09-27T14:55:49-07:00.<br></footer></div>
+            generated on 2013-10-21T16:31:45-07:00.<br></footer></div>
 </div>
 </body>
 </html>

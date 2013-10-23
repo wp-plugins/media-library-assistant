@@ -26,7 +26,7 @@ class MLAEdit {
 		 * page. This supports all the standard meta-boxes for post types.
 		 */
 		if ( MLATest::$wordpress_3point5_plus ) {
-			add_action( 'admin_init', 'MLAEdit::mla_custom_field_support_action' );
+			add_action( 'admin_init', 'MLAEdit::mla_admin_init_action' );
 			
 			add_action( 'add_meta_boxes', 'MLAEdit::mla_add_meta_boxes_action', 10, 2 );
 
@@ -52,8 +52,32 @@ class MLAEdit {
 	 *
 	 * @return	void	echoes the HTML markup for the label and value
 	 */
-	public static function mla_custom_field_support_action( ) {
-			add_post_type_support( 'attachment', 'custom-fields' );
+	public static function mla_admin_init_action( ) {
+		static $mc_att_category_metabox = array();
+		
+		/*
+		 * Enable the enhanced "Media Categories" searchable metaboxes for hiearchical taxonomies
+		 */
+		if ( class_exists( 'Media_Categories' ) &&
+			( ( 'checked' == MLAOptions::mla_get_option( MLAOptions::MLA_MEDIA_MODAL_DETAILS_CATEGORY_METABOX ) ) ||
+			  ( 'checked' == MLAOptions::mla_get_option( MLAOptions::MLA_MEDIA_MODAL_DETAILS_TAG_METABOX ) ) ) ) {
+			$taxonomies = get_taxonomies( array ( 'show_ui' => true ), 'objects' );
+
+			foreach ( $taxonomies as $key => $value ) {
+				if ( MLAOptions::mla_taxonomy_support( $key ) ) {
+					if ( $value->hierarchical ) {
+						if ( 'checked' == MLAOptions::mla_get_option( MLAOptions::MLA_MEDIA_MODAL_DETAILS_CATEGORY_METABOX ) )
+							$mc_att_category_metabox[] = new Media_Categories( $key );
+					} // hierarchical
+					else {
+						if ( 'checked' == MLAOptions::mla_get_option( MLAOptions::MLA_MEDIA_MODAL_DETAILS_TAG_METABOX ) )
+							$mc_att_category_metabox[] = new Media_Categories( $key );
+					} // flat
+				} // is supported
+			} // foreach
+		} // class_exists
+
+		add_post_type_support( 'attachment', 'custom-fields' );
 	}
 
 	/**

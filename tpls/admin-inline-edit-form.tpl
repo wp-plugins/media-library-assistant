@@ -27,7 +27,7 @@
             <input type="radio" name="tax_action[[+tax_attr+]]" id="tax_reset_[+tax_attr+]" value="replace" /> Replace&nbsp;
             </div>
 <!-- template="custom_field" -->
-              <label class="inline-edit-[+slug+]"> <span class="title">[+label+]</span> <span class="input-text-wrap">
+              <label class="inline-edit-[+slug+]" style="clear:both"> <span class="title">[+label+]</span> <span class="input-text-wrap">
                 <input type="text" name="[+slug+]" value="" />
                 </span> </label>
 <!-- template="page" -->
@@ -47,6 +47,9 @@
                 </span> </label>
               <label> <span class="title">Caption</span> <span class="input-text-wrap">
                 <input type="text" name="post_excerpt" value="" />
+                </span> </label>
+              <label> <span class="title">Description</span> <span class="input-text-wrap">
+                <textarea class="widefat" name="post_content"></textarea>
                 </span> </label>
               <label class="inline-edit-image-alt"> <span class="title">Alt Text</span> <span class="input-text-wrap">
                 <input type="text" name="image_alt" value="" />

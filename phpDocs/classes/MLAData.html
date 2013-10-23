@@ -58,11 +58,11 @@
 <li class="method public "><a href="#mla_count_list_table_items" title="mla_count_list_table_items :: Get the total number of attachment posts"><span class="description">Get the total number of attachment posts</span><pre>mla_count_list_table_items()</pre></a></li>
 <li class="method public "><a href="#mla_exif_metadata_value" title="mla_exif_metadata_value :: Parse one EXIF metadata field"><span class="description">Parse one EXIF metadata field</span><pre>mla_exif_metadata_value()</pre></a></li>
 <li class="method public "><a href="#mla_expand_field_level_parameters" title="mla_expand_field_level_parameters :: Analyze a template, expanding Field-level Markup Substitution Parameters"><span class="description">Analyze a template, expanding Field-level Markup Substitution Parameters</span><pre>mla_expand_field_level_parameters()</pre></a></li>
-<li class="method public "><a href="#mla_fetch_attachment_image_metadata" title="mla_fetch_attachment_image_metadata :: Fetch and filter IPTC and EXIF meta data for an image attachment"><span class="description">Fetch and filter IPTC and EXIF meta data for an image attachment</span><pre>mla_fetch_attachment_image_metadata()</pre></a></li>
+<li class="method public "><a href="#mla_fetch_attachment_image_metadata" title="mla_fetch_attachment_image_metadata :: Fetch and filter IPTC and EXIF or PDF metadata for an image attachment"><span class="description">Fetch and filter IPTC and EXIF or PDF metadata for an image attachment</span><pre>mla_fetch_attachment_image_metadata()</pre></a></li>
 <li class="method public "><a href="#mla_fetch_attachment_metadata" title="mla_fetch_attachment_metadata :: Fetch and filter meta data for an attachment"><span class="description">Fetch and filter meta data for an attachment</span><pre>mla_fetch_attachment_metadata()</pre></a></li>
 <li class="method public "><a href="#mla_fetch_attachment_parent_data" title="mla_fetch_attachment_parent_data :: Returns information about an attachment's parent, if found"><span class="description">Returns information about an attachment's parent, if found</span><pre>mla_fetch_attachment_parent_data()</pre></a></li>
 <li class="method public "><a href="#mla_fetch_attachment_references" title="mla_fetch_attachment_references :: Find Featured Image and inserted image/link references to an attachment"><span class="description">Find Featured Image and inserted image/link references to an attachment</span><pre>mla_fetch_attachment_references()</pre></a></li>
-<li class="method public "><a href="#mla_find_array_element" title="mla_find_array_element :: Finds the value of a key in a possibily nested array structure"><span class="description">Finds the value of a key in a possibily nested array structure</span><pre>mla_find_array_element()</pre></a></li>
+<li class="method public "><a href="#mla_find_array_element" title="mla_find_array_element :: Finds the value of a key in a possibly nested array structure"><span class="description">Finds the value of a key in a possibly nested array structure</span><pre>mla_find_array_element()</pre></a></li>
 <li class="method public "><a href="#mla_flush_mla_galleries" title="mla_flush_mla_galleries :: Invalidates the $mla_galleries or $galleries array and cached values"><span class="description">Invalidates the $mla_galleries or $galleries array and cached values</span><pre>mla_flush_mla_galleries()</pre></a></li>
 <li class="method public "><a href="#mla_get_attachment_by_id" title="mla_get_attachment_by_id :: Retrieve an Attachment array given a $post_id"><span class="description">Retrieve an Attachment array given a $post_id</span><pre>mla_get_attachment_by_id()</pre></a></li>
 <li class="method public "><a href="#mla_get_template_placeholders" title="mla_get_template_placeholders :: Analyze a template, returning an array of the placeholders it contains"><span class="description">Analyze a template, returning an array of the placeholders it contains</span><pre>mla_get_template_placeholders()</pre></a></li>
@@ -78,10 +78,10 @@
 <li class="method public "><a href="#mla_query_posts_search_filter" title="mla_query_posts_search_filter :: Adds a keyword search to the WHERE clause, if required"><span class="description">Adds a keyword search to the WHERE clause, if required</span><pre>mla_query_posts_search_filter()</pre></a></li>
 <li class="method public "><a href="#mla_query_posts_where_filter" title="mla_query_posts_where_filter :: Adds a WHERE clause for detached items"><span class="description">Adds a WHERE clause for detached items</span><pre>mla_query_posts_where_filter()</pre></a></li>
 <li class="method public "><a href="#mla_save_post_action" title="mla_save_post_action :: Invalidates $mla_galleries and $galleries arrays and cached values after post, page or attachment updates"><span class="description">Invalidates $mla_galleries and $galleries arrays and cached values after post, page or attachment updates</span><pre>mla_save_post_action()</pre></a></li>
-<li class="method public "><a href="#mla_update_item_postmeta" title="mla_update_item_postmeta :: Update custom field data for a single attachment."><span class="description">Update custom field data for a single attachment.</span><pre>mla_update_item_postmeta()</pre></a></li>
-<li class="method public "><a href="#mla_update_single_item" title="mla_update_single_item :: Update a single item; change the meta data
-for a single attachment."><span class="description">Update a single item; change the meta data
-for a single attachment.</span><pre>mla_update_single_item()</pre></a></li>
+<li class="method public "><a href="#mla_update_item_postmeta" title='mla_update_item_postmeta :: Update custom field and "meta:" data for a single attachment'><span class="description">Update custom field and "meta:" data for a single attachment</span><pre>mla_update_item_postmeta()</pre></a></li>
+<li class="method public "><a href="#mla_update_single_item" title='mla_update_single_item :: Update a single item; change the "post" data, taxonomy terms
+and meta data for a single attachment'><span class="description">Update a single item; change the "post" data, taxonomy terms
+and meta data for a single attachment</span><pre>mla_update_single_item()</pre></a></li>
 <li class="nav-header private">» Private</li>
 <li class="method private "><a href="#_bin_to_utf8" title="_bin_to_utf8 :: Replace SQL incorrect characters (0x80 - 0xFF) with their UTF-8 equivalents"><span class="description">Replace SQL incorrect characters (0x80 - 0xFF) with their UTF-8 equivalents</span><pre>_bin_to_utf8()</pre></a></li>
 <li class="method private "><a href="#_build_mla_galleries" title="_build_mla_galleries :: Builds the $mla_galleries or $galleries array"><span class="description">Builds the $mla_galleries or $galleries array</span><pre>_build_mla_galleries()</pre></a></li>
@@ -109,8 +109,12 @@ for a single attachment.</span><pre>mla_update_single_item()</pre></a></li>
 <li class="method private "><a href="#_parse_xmp_metadata" title="_parse_xmp_metadata :: Parse an XMP object"><span class="description">Parse an XMP object</span><pre>_parse_xmp_metadata()</pre></a></li>
 <li class="method private "><a href="#_prepare_list_table_query" title="_prepare_list_table_query :: Sanitize and expand query arguments from request variables"><span class="description">Sanitize and expand query arguments from request variables</span><pre>_prepare_list_table_query()</pre></a></li>
 <li class="method private "><a href="#_process_field_level_array" title="_process_field_level_array :: Process an markup field array value according to the supplied data-format option"><span class="description">Process an markup field array value according to the supplied data-format option</span><pre>_process_field_level_array()</pre></a></li>
+<li class="method private "><a href="#_rational_to_decimal" title="_rational_to_decimal :: Convert an EXIF GPS rational value to a PHP float value"><span class="description">Convert an EXIF GPS rational value to a PHP float value</span><pre>_rational_to_decimal()</pre></a></li>
 <li class="method private "><a href="#_remove_tags" title="_remove_tags :: Remove tags from a term ids list"><span class="description">Remove tags from a term ids list</span><pre>_remove_tags()</pre></a></li>
 <li class="method private "><a href="#_search_mla_galleries" title="_search_mla_galleries :: Search the $mla_galleries or $galleries array"><span class="description">Search the $mla_galleries or $galleries array</span><pre>_search_mla_galleries()</pre></a></li>
+<li class="method private "><a href="#_set_array_element" title="_set_array_element :: Adds or replaces the value of a key in a possibly nested array structure"><span class="description">Adds or replaces the value of a key in a possibly nested array structure</span><pre>_set_array_element()</pre></a></li>
+<li class="method private "><a href="#_unset_array_element" title="_unset_array_element :: Deletes the value of a key in a possibly nested array structure"><span class="description">Deletes the value of a key in a possibly nested array structure</span><pre>_unset_array_element()</pre></a></li>
+<li class="method private "><a href="#_update_wp_attachment_metadata" title='_update_wp_attachment_metadata :: Update one "meta:" data for a single attachment'><span class="description">Update one "meta:" data for a single attachment</span><pre>_update_wp_attachment_metadata()</pre></a></li>
 <li class="nav-header">
 <i class="icon-custom icon-property"></i> Properties</li>
 <li class="property public "><a href="#%24mla_iptc_keys" title="$mla_iptc_keys :: IPTC Dataset friendly name/slug and identifiers"><span class="description">IPTC Dataset friendly name/slug and identifiers</span><pre>$mla_iptc_keys</pre></a></li>
@@ -260,11 +264,11 @@ All but request and query require an attachment ID.</p></p>
 </div></div>
 </div>
 <a name="mla_fetch_attachment_image_metadata" id="mla_fetch_attachment_image_metadata"></a><div class="element clickable method public mla_fetch_attachment_image_metadata" data-toggle="collapse" data-target=".mla_fetch_attachment_image_metadata .collapse">
-<h2>Fetch and filter IPTC and EXIF meta data for an image attachment</h2>
+<h2>Fetch and filter IPTC and EXIF or PDF metadata for an image attachment</h2>
 <pre>mla_fetch_attachment_image_metadata(int $post_id, string $path) : array</pre>
 <div class="labels"></div>
 <div class="row collapse"><div class="detail-description">
-<p class="long_description"><p>Returns</p></p>
+<p class="long_description"></p>
 <table class="table table-bordered"><tr>
 <th>since</th>
 <td>0.90</td>
@@ -279,7 +283,7 @@ All but request and query require an attachment ID.</p></p>
 </div>
 <h3>Returns</h3>
 <div class="subelement response">
-<code>array</code>Meta data variables</div>
+<code>array</code>Meta data variables, IPTC and EXIF or PDF</div>
 </div></div>
 </div>
 <a name="mla_fetch_attachment_metadata" id="mla_fetch_attachment_metadata"></a><div class="element clickable method public mla_fetch_attachment_metadata" data-toggle="collapse" data-target=".mla_fetch_attachment_metadata .collapse">
@@ -288,8 +292,7 @@ All but request and query require an attachment ID.</p></p>
 <div class="labels"></div>
 <div class="row collapse"><div class="detail-description">
 <p class="long_description"><p>Returns a filtered array of a post's meta data. Internal values beginning with '<em>'
-are stripped out or converted to an 'mla</em>' equivalent. Array data is replaced with
-a string containing the first array element.</p></p>
+are stripped out or converted to an 'mla</em>' equivalent.</p></p>
 <table class="table table-bordered"><tr>
 <th>since</th>
 <td>0.1</td>
@@ -348,8 +351,8 @@ as a Featured Image or inserted in the post as an image or link.</p></p>
 </div></div>
 </div>
 <a name="mla_find_array_element" id="mla_find_array_element"></a><div class="element clickable method public mla_find_array_element" data-toggle="collapse" data-target=".mla_find_array_element .collapse">
-<h2>Finds the value of a key in a possibily nested array structure</h2>
-<pre>mla_find_array_element(string $needle, array $haystack, string $option, boolean $keep_existing) : string</pre>
+<h2>Finds the value of a key in a possibly nested array structure</h2>
+<pre>mla_find_array_element(string $needle, array $haystack, string $option, boolean $keep_existing) : mixed</pre>
 <div class="labels"></div>
 <div class="row collapse"><div class="detail-description">
 <p class="long_description"><p>Used primarily to extract fields from the _wp_attachment_metadata custom field.
@@ -375,7 +378,7 @@ Could also be used with the ID3 metadata exposed in WordPress 3.6 and later.</p>
 </div>
 <h3>Returns</h3>
 <div class="subelement response">
-<code>string</code>value matching key(.key ...) or ''</div>
+<code>mixed</code>string or array value matching key(.key ...) or ''</div>
 </div></div>
 </div>
 <a name="mla_flush_mla_galleries" id="mla_flush_mla_galleries"></a><div class="element clickable method public mla_flush_mla_galleries" data-toggle="collapse" data-target=".mla_flush_mla_galleries .collapse">
@@ -713,7 +716,7 @@ Defined as public because it's a filter.</p></p>
 </div></div>
 </div>
 <a name="mla_update_item_postmeta" id="mla_update_item_postmeta"></a><div class="element clickable method public mla_update_item_postmeta" data-toggle="collapse" data-target=".mla_update_item_postmeta .collapse">
-<h2>Update custom field data for a single attachment.</h2>
+<h2>Update custom field and "meta:" data for a single attachment</h2>
 <pre>mla_update_item_postmeta(int $post_id, array $new_meta) : string</pre>
 <div class="labels"></div>
 <div class="row collapse"><div class="detail-description">
@@ -736,8 +739,8 @@ Defined as public because it's a filter.</p></p>
 </div></div>
 </div>
 <a name="mla_update_single_item" id="mla_update_single_item"></a><div class="element clickable method public mla_update_single_item" data-toggle="collapse" data-target=".mla_update_single_item .collapse">
-<h2>Update a single item; change the meta data
-for a single attachment.</h2>
+<h2>Update a single item; change the "post" data, taxonomy terms
+and meta data for a single attachment</h2>
 <pre>mla_update_single_item(int $post_id, array $new_data, array $tax_input, array $tax_actions) : array</pre>
 <div class="labels"></div>
 <div class="row collapse"><div class="detail-description">
@@ -1005,7 +1008,7 @@ This is required because Adobe Acrobat does NOT increment the generation number 
 <h3>Parameters</h3>
 <div class="subelement argument">
 <h4>$tpl</h4>
-<code>string</code><p>A string possibily starting with '[+template:'</p>
+<code>string</code><p>A string possibly starting with '[+template:'</p>
 </div>
 <h3>Returns</h3>
 <div class="subelement response">
@@ -1025,7 +1028,7 @@ This is required because Adobe Acrobat does NOT increment the generation number 
 <h3>Parameters</h3>
 <div class="subelement argument">
 <h4>$tpl</h4>
-<code>string</code><p>A string possibily starting with '('</p>
+<code>string</code><p>A string possibly starting with '('</p>
 </div>
 <h3>Returns</h3>
 <div class="subelement response">
@@ -1371,6 +1374,26 @@ Modeled after wp_edit_attachments_query in wp-admin/post.php</p></p>
 <code>array</code>( parameter => value ) for all field-level parameters and anything in $markup_values</div>
 </div></div>
 </div>
+<a name="_rational_to_decimal" id="_rational_to_decimal"></a><div class="element clickable method private _rational_to_decimal" data-toggle="collapse" data-target="._rational_to_decimal .collapse">
+<h2>Convert an EXIF GPS rational value to a PHP float value</h2>
+<pre>_rational_to_decimal(array $rational) : float</pre>
+<div class="labels"></div>
+<div class="row collapse"><div class="detail-description">
+<p class="long_description"></p>
+<table class="table table-bordered"><tr>
+<th>since</th>
+<td>1.50</td>
+</tr></table>
+<h3>Parameters</h3>
+<div class="subelement argument">
+<h4>$rational</h4>
+<code>array</code><p>array( 0 => numerator, 1 => denominator )</p>
+</div>
+<h3>Returns</h3>
+<div class="subelement response">
+<code>float</code>numerator/denominator</div>
+</div></div>
+</div>
 <a name="_remove_tags" id="_remove_tags"></a><div class="element clickable method private _remove_tags" data-toggle="collapse" data-target="._remove_tags .collapse">
 <h2>Remove tags from a term ids list</h2>
 <pre>_remove_tags(array $terms_before, array $tags, object $taxonomy_obj) : array</pre>
@@ -1417,6 +1440,76 @@ Modeled after wp_edit_attachments_query in wp-admin/post.php</p></p>
 <h3>Returns</h3>
 <div class="subelement response">
 <code>array</code>All posts/pages with one or more galleries that include the attachment. The array key is the parent_post ID; each entry contains post_title and post_type.</div>
+</div></div>
+</div>
+<a name="_set_array_element" id="_set_array_element"></a><div class="element clickable method private _set_array_element" data-toggle="collapse" data-target="._set_array_element .collapse">
+<h2>Adds or replaces the value of a key in a possibly nested array structure</h2>
+<pre>_set_array_element(string $needle, mixed $value, array $haystack) : boolean</pre>
+<div class="labels"></div>
+<div class="row collapse"><div class="detail-description">
+<p class="long_description"></p>
+<table class="table table-bordered"><tr>
+<th>since</th>
+<td>1.51</td>
+</tr></table>
+<h3>Parameters</h3>
+<div class="subelement argument">
+<h4>$needle</h4>
+<code>string</code><p>key value, e.g. array1.array2.element</p></div>
+<div class="subelement argument">
+<h4>$value</h4>
+<code>mixed</code><p>replacement value, string or array, by reference</p></div>
+<div class="subelement argument">
+<h4>$haystack</h4>
+<code>array</code><p>PHP nested arrays, by reference</p></div>
+<h3>Returns</h3>
+<div class="subelement response">
+<code>boolean</code>true if $needle element set, false if not</div>
+</div></div>
+</div>
+<a name="_unset_array_element" id="_unset_array_element"></a><div class="element clickable method private _unset_array_element" data-toggle="collapse" data-target="._unset_array_element .collapse">
+<h2>Deletes the value of a key in a possibly nested array structure</h2>
+<pre>_unset_array_element(string $needle, array $haystack) : boolean</pre>
+<div class="labels"></div>
+<div class="row collapse"><div class="detail-description">
+<p class="long_description"></p>
+<table class="table table-bordered"><tr>
+<th>since</th>
+<td>1.51</td>
+</tr></table>
+<h3>Parameters</h3>
+<div class="subelement argument">
+<h4>$needle</h4>
+<code>string</code><p>key value, e.g. array1.array2.element</p></div>
+<div class="subelement argument">
+<h4>$haystack</h4>
+<code>array</code><p>PHP nested arrays, by reference</p></div>
+<h3>Returns</h3>
+<div class="subelement response">
+<code>boolean</code>true if $needle element found, false if not</div>
+</div></div>
+</div>
+<a name="_update_wp_attachment_metadata" id="_update_wp_attachment_metadata"></a><div class="element clickable method private _update_wp_attachment_metadata" data-toggle="collapse" data-target="._update_wp_attachment_metadata .collapse">
+<h2>Update one "meta:" data for a single attachment</h2>
+<pre>_update_wp_attachment_metadata(array $current_values, array $new_meta) : string</pre>
+<div class="labels"></div>
+<div class="row collapse"><div class="detail-description">
+<p class="long_description"></p>
+<table class="table table-bordered"><tr>
+<th>since</th>
+<td>1.51</td>
+</tr></table>
+<h3>Parameters</h3>
+<div class="subelement argument">
+<h4>$current_values</h4>
+<code>array</code><p>The current wp_attachment_metadata value</p></div>
+<div class="subelement argument">
+<h4>$new_meta</h4>
+<code>array</code><p>Field name => value pairs</p>
+</div>
+<h3>Returns</h3>
+<div class="subelement response">
+<code>string</code>success/failure message(s); empty string if no changes.</div>
 </div></div>
 </div>
 <h3>
@@ -1609,7 +1702,7 @@ any further logic required to translate those values is contained in the filters
 <div class="row"><footer class="span12">
             Template is built using <a href="http://twitter.github.com/bootstrap/">Twitter Bootstrap 2</a> and icons provided by <a href="http://glyphicons.com/">Glyphicons</a>.<br>
             Documentation is powered by <a href="http://www.phpdoc.org/">phpDocumentor 2.0.0a8</a> and<br>
-            generated on 2013-09-27T14:55:49-07:00.<br></footer></div>
+            generated on 2013-10-21T16:31:45-07:00.<br></footer></div>
 </div>
 </body>
 </html>

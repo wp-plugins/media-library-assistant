@@ -3,8 +3,8 @@ Contributors: dglingren
 Donate link: http://fairtradejudaica.org/make-a-difference/donate/
 Tags: attachment, attachments, documents, gallery, image, images, media, library, media library, media-tags, media tags, tags, media categories, categories, IPTC, EXIF, GPS, PDF, meta, metadata, photo, photos, photograph, photographs, photoblog, photo albums, lightroom, photoshop, MIME, mime-type, icon, upload, file extensions
 Requires at least: 3.3
-Tested up to: 3.6
-Stable tag: 1.50
+Tested up to: 3.7
+Stable tag: 1.51
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -14,11 +14,11 @@ Enhances the Media Library; powerful [mla_gallery], taxonomy support, IPTC/EXIF/
 
 The Media Library Assistant provides several enhancements for managing the Media Library, including:
 
-* The **`[mla_gallery]` shortcode**, used in a post, page or custom post type to add a gallery of images and/or other Media Library items (such as PDF documents). MLA Gallery is a superset of the WordPress `[gallery]` shortcode; it is compatible with `[gallery]` and provides many enhancements. These include: 1) full query and display support for WordPress categories, tags, custom taxonomies and custom fields, 2) support for all post_mime_type values, not just images 3) media Library items need not be "attached" to the post, and 4) control over the styles, markup and content of each gallery using Style and Markup Templates.
+* The **`[mla_gallery]` shortcode**, used in a post, page or custom post type to add a gallery of images and/or other Media Library items (such as PDF documents). MLA Gallery is a superset of the WordPress `[gallery]` shortcode; it is compatible with `[gallery]` and provides many enhancements. These include: 1) full query and display support for WordPress categories, tags, custom taxonomies and custom fields, 2) support for all post_mime_type values, not just images 3) media Library items need not be "attached" to the post, and 4) control over the styles, markup and content of each gallery using Style and Markup Templates. **Twenty-five hooks** provided for complete gallery customization from your theme or plugin code.
 
 * Powerful **Content Templates**, which let you compose a value from multiple data sources, mix literal text with data values, test for empty values and choose among two or more alternatives or suppress output entirely.
 
-* **Attachment metadata** such as file size, image dimensions and where-used information can be assigned to WordPress custom fields. You can then use the custom fields in your `[mla_gallery]` display and you can add custom fields as sortable, searchable columns in the Media/Assistant submenu table.
+* **Attachment metadata** such as file size, image dimensions and where-used information can be assigned to WordPress custom fields. You can then use the custom fields in your `[mla_gallery]` display and you can add custom fields as sortable, searchable columns in the Media/Assistant submenu table. You can also **modify the WordPress `_wp_attachment_metadata` contents** to suit your needs.
 
 * **IPTC**, **EXIF (including GPS)** and **PDF** metadata can be assigned to standard WordPress fields, taxonomy terms and custom fields. You can update all existing attachments from the Settings page IPTC/EXIF tab, groups of existing attachments with a Bulk Action or one existing attachment from the Edit Media/Edit Single Item screen. Display **IPTC**, **EXIF** and **PDF** metadata with `[mla_gallery]` custom templates.
 
@@ -121,6 +121,21 @@ All of the MLA source code has been annotated with "DocBlocks", a special type o
 
 == Changelog ==
 
+= 1.51 =
+* New: For `[mla_gallery]`, **twenty-five new `apply_filters` hooks** let you modify gallery output with PHP code in your theme or another plugin. More information in the "Other Notes" section here. A complete, working example is provided in the Settings/Media Library Assistant Documentation tab.
+* New: **Attachment Metadata mapping**. Add or change values in the WordPress `_wp_attachment_metadata` array. For example, add GPS data to the `image_meta` array. Full details in the "Other Notes" section and in the Settings/Media Library Assistant Documentation tab.
+* New: **GPS Metadata fields added**: LatitudeSDM, LatitudeSDD, LongitudeSDM, LongitudeSDD with leading "-" sign for southern and western values.
+* New: A new `[mla_gallery]` parameter, `mla_page_parameter` supports **multiple paginated galleries on the same post/page**.
+* New: On the Media/Assistant submenu, the Description field has been added to the Quick Edit area.
+* New: Support for **"searchable category/tag metaboxes"** added to the ATTACHMENT DETAILS pane of the Media Manager Modal Window. This feature requires download and activation of the "Media Categories" plugin (by Eddie Moya).
+* New: The **`[+custom:ALL_CUSTOM+]` pseudo value** lets you easily display the names and values of all custom fields associated with an item. You can use it in an `[mla_gallery]` or in a custom field mapping rule.
+* Fix: Media Manager Modal Window support has been re-worked to avoid adding additional parameters to the Attachments object. This improves the handling of "drag & drop" uploading of new Media Library items.
+* Fix: Sorting the Media/Assistant submenu table by a column which no longer exists does not cause database errors. The table sort reverts to the built-in default value. In addition, the dropdown list of sortable columns is now alphabetized.
+* Fix: The "Inserted in" reporting with the "Base" option setting more reliably handles the case where one item filename is a subset of another filename. For example, file "abc.jpg" no longer matches "abcd.jpg".
+* Fix: Handling of empty `query:` and `request:` substitution parameters has been restored to the pre-v1.50 logic.
+* Fix: Custom field mapping for fields with array values is more reliably handled.
+* Fix: Test elements in Content Templates returning array results more accurately test for substitution parameters having no value. For example, `([+iptc:2#020,array+][+iptc:2#025,array+])` will be empty unless **both** of the substitution parameters have values. 
+
 = 1.50 =
 * New: **PDF metadata support**, including the traditional Document Information Dictionary and the newer, more extensive XMP metadata. Include this information in your `[mla_gallery]` display and map it to standard fields, taxonomy terms and custom fields.
 * New: **Content Templates**, which let you compose a value from multiple substitution parameters, combine text and data values, test for empty values and choose among two or more alternatives or suppress output entirely.
@@ -138,79 +153,21 @@ All of the MLA source code has been annotated with "DocBlocks", a special type o
 * Fix: Initialization functions now have a higher priority value, so they run later. This improves features such as discovery of custom taxonomies created in theme `functions.php` files that use the `init` hook.
 * Fix: Hyperlinks to Document tab from other Settings/MediaLibrary Assistant tabs have been changed to more reliable absolute href values.
 
-= 1.43 =
-* New: For `[mla_gallery]`, a new `mla_output=paginate_links` parameter creates a paginated link list for galleries with multiple "gallery pages" ( e.g.: < Prev 1 … 3 4 5 6 7 … 9 Next > ). See the Settings/Media Library Assistant Documentation tab for complete information and examples.
-* New: For `[mla_gallery]`, `mla_prev_text` and `mla_next_text` can be used in place of `mla_link_text` with the `previous_link` and `next_link` output types.
-* Fix: When resetting Settings/Media Library Assistant General tab options, a Fatal PHP error no longer occurs.
-* Fix: PHP Warning message removed for `[mla_gallery]` shortcodes with no parameters at all.
-* Fix: For WordPress version 3.6, the Media Manager taxonomy dropdown box is indented with dashes; it no longer shows plaintext version of HTML non-breaking spaces.
-* Fix: For `[mla_gallery]`, "Next" and "Previous" text default values now use acute quotes, not arrows, conforming to the WordPress values.
-* Fix: Example for the `previous_page`/`next_page` output types has been corrected, showing `posts_per_page` in all three shortcodes.
-
-= 1.42 =
-* New: **Pagination support for `[mla_gallery]`**, using the "previous_page" and "next_page" values of the "mla_output" parameter. See the Settings/Media Library Assistant Documentation tab for complete information and examples.
-* New: For `[mla_gallery]`, a new parameter ("mla_link_class") lets you add class attribute values to the hyperlinks.
-* New: For `[mla_gallery]`, a new parameter ("mla_nolink_text") replaces the empty string returned for an empty `[mla_gallery]` or null pagination links.
-* New: For `[mla_gallery]`, the **"mla_margin" and "mla_itemwidth" parameters can be set to any value**, not just percent values. You can use "auto", dimension values like "10px" or remove the properties altogether. See the Settings/Media Library Assistant Documentation tab for complete information.
-* New: Default values for the `[mla_gallery]` "columns", "mla_margin" and "mla_itemwidth" parameters can now be specified on the Settings/Media Library Assistant submenu, MLA Gallery tab.
-* New: For `[mla_gallery]`, a new substitution parameter ("last_in_row") contains a class name for the last item in each full gallery row. You can use this class name to apply specific CSS styles to the last item in each full row.
-* New: For `[mla_gallery]`, a new parameter ("tax_include_children") gives more control for queries on hierarchial taxonomies, such as `attachment_category`.
-* New: On the Media/Assistant submenu a new rollover action, "View", has been added.
-* New: On the Media/Assistant submenu a new column, "File URL", has been added.
-* New: `absolute_path`, `absolute_file_name`, `base_file`, `name_only` and `mime_type` values added to the custom field data sources list.
-* Fix: For `[mla_gallery]`, the `paged=current` value will now take its value from the "page" query variable for Single Paginated Posts that contain the `<!--nextpage-->` quicktag in the post content.
-* Fix: On the Media/Assistant submenu, the view, search, filter and sort values are retained when moving among multiple pages.
-* Fix: On the Media/Assistant submenu, the view, search and filter values are retained when re-sorting by column values.
-* Fix: On the Media/Assistant submenu, the current view is correctly highlighted for MLA enhanced table views.
-* Fix: If you disable the Media Manager Enhanced Search Media box, the WordPress-native search box functions correctly.
-* Fix: On the Settings/Media Library Assistant submenu, Custom Fields and IPTC/EXIF tabs, the field drop-downlist in the "Add a new Mapping Rule" area now includes fields that have been defined but not yet mapped to any attachments.
-
-= 1.41 =
-* New: For `[mla_gallery]`, the new `mla_output` parameter lets you get "previous_link" and "next_link" values to support moving through an `[mla_gallery]` one item at a time. Look for **Support for Alternative Gallery Output** in the Other Notes section or the Settings/Media Library Assistant Documentation tab for complete information.
-* New: For `[mla_gallery]`, field-level substitution parameters now include $_REQUEST arguments. You can pass any values you need from HTML form or hyperlink variables to the Gallery Display Content parameters and to your custom style and markup templates.
-* New: Hover text/tool tips, e.g., "Filter by...", "Edit..." added to most links on the Media/Assistant submenu table.
-* New: The ALL_EXIF and ALL_IPTC pseudo variables now limit each field value to 256 bytes or less. Array values are included once, at their most expanded level.
-* New: For `[mla_gallery]`, EXIF values containing arrays now use the ",single" and ",export" qualifiers.
-* Fix: Intermittent "full height" display of attachment thumbnails has been eliminated. Attachment thumbnail is now a link to the Edit Media screen.
-* Fix: EXIF and IPTC values containing invalid UTF8 characters are converted to valid UTF8 equivalents.
-* Fix: When editing `[gallery]` shortcodes in the Media Manager the proper gallery contents (image thumbnails) are now returned.
-* Fix: Better handling of Media/Assistant submenu table listing when returning from a Bulk Action, especially Bulk Edit. Display filters for date, category/tag and the search box are retained.
-* Fix: For `[mla_gallery]`, Gallery Content Display parameters are now processed when `mla_viewer=true`.
-* Fix: For `[mla_gallery]`, the default "alt" attribute (item caption) is processed when `mla_viewer=true`.
-* Fix: For `[mla_gallery]`, error messages are displayed for invalid "terms:" and "custom:" substitution parameters.
-
-= 1.40 =
-* New: **"base" selection** for the where-used database access tuning "Inserted in" option **can significantly improve performance** while retaining the most useful part of the where-used information. It's on the Settings/Media Library Assistant screen, General tab.
-* New: **Add Post MIME Types and define new views** for the Media/Library screen and the Media Manager/Add Media "media items" drop down list. 
-* New: MLA's Media/Assistant screen and the Media Manager/Add Media "media items" drop down list use an enhanced version of the list, **Table Views**, to support views with multiple MIME Types (e.g., "audio,video") and wildcard specifications (e.g. "*/*ms*"). You can also create views based on custom field values.
-* New: Add file extensions and MIME types for uploads to the Media Library. Search the list of over 1,500 extension/MIME type associations to get the best matches possible.
-* New: **Choose from 112 enhanced file type images** to associate more specific and colorful icons with non-image file extensions for admin screens and `[gallery]` or `[mla_gallery]` displays.
-* New: For `[mla_gallery]`, four new "Gallery Display Content" parameters, `mla_link_attributes`, `mla_image_attributes`, `mla_image_class` and `mla_image_alt`, give you complete control over the link and image portions of gallery items without requiring custom style or markup templates. 
-* New: `upload_date`, `parent_date` and eight "where used" values added to the custom field data sources list.
-* New: Five options for mapping multi-value custom fields, "text", "single", "export", "array" and "multi", give more control over the process.
-* New: "Delete NULL values" option offers better control over storing custom field values mapped from MLA data sources.
-* New: The Media/Assistant "MIME Type" column now links to a table listing filtered by MIME Type.
-* Fix: Better performance for database-intensive oprations such as custom field mapping rules processing.
-* Fix: MLA help tabs are not added to edit taxonomy screens when post_type is not "attachment".
-* Fix: Duplicate MLA help tabs not added to the WordPress Edit Tags and Categories screens.
-* Fix: Quick edit data now populates in Title/Name, Title or Name columns when ID/Parent column is hidden.
-* Fix: Terms dropdown list is now sorted by name (was by term-id) on the Media/Assistant table listing and on the Media Manager "Add Media" dialog box. 
-* Fix: Where-used reporting "Gallery in" and "MLA Gallery in" results now properly handle `[gallery]` and `[mla_gallery]` shortcodes embedded within other (enclosing) shortcodes.
-* Fix: Taxonomy support now properly handles custom taxonomies registered with `show_ui = '1'` and other variations of boolean "true", e.g., those created by the "Magic Fields 2" plugin.
-* Fix: Better error handling and reporting when processing invalid `[mla_gallery]` and `[gallery]` shortcodes.
-* Fix: Unusual calls to the 'add_meta_boxes' action, e.g., missing arguments, no longer generate Warning messages.
-* Fix: For `[mla_gallery]`, `mla_target` now works when `mla_viewer=true`.
-* Fix: For `[mla_gallery]`, `mla_debug` now works with `mla_alt_shortcode`.
-* Fix: For `[mla_gallery]`, the default `caption` value is now available to the `mla_caption` parameter.
+= 1.40 - 1.43 =
+* 1.43: Generalized pagination support with "mla_output=paginate_links". One other enhancement, four fixes.
+* 1.42: Pagination support for [mla_gallery]! Improved CSS width (itemwidth) and margin handling. Eight other enhancements, six fixes.
+* 1.41: New [mla_gallery] "previous link" and "next link" output for gallery navigation. New "request" substitution parameter to access $_REQUEST variables. Three other enhancements, seven fixes.
+* 1.40: Better performance! New custom table views, Post MIME Type and Upload file/MIMEs control; 112 file type icons to choose from. Four new Gallery Display Content parameters. four other enhancements, twelve fixes.
 
 = 1.00 - 1.30 =
-* New "mla_alt_shortcode" parameter combines [mla_gallery] with other gallery display shortcodes, e.g., Jetpack Carousel and Tiled Mosaic. Support for new 3.6 audio/video metadata. One other enhancement, eight fixes.
-* Media Manager (Add Media, etc.) enhancements: filter by more MIME types, date, taxonomy terms; enhanced search box for name/slug, ALT text, caption and attachment ID. New [mla_gallery] sort options. Four other enhancements, four fixes.
-* New [mla_gallery] mla_target and tax_operator parameters, tax_query cleanup and ids/include fix. Attachments column fix. IPTC/EXIF and Custom Field mapping fixes. Three other fixes.
-* Search by attachment ID, avoid fatal errors and other odd results when adding taxonomy terms. One other fix.
-* Map attachment metadata to custom fields; add them to [mla_gallery] display and as sortable columns on the Media/Assistant submenu table. Get Photonic Gallery (plugin) integration and six other fixes.
-where-used reporting. Specify default `[mla_gallery]` style and markup templates. Five other fixes.
- 
+* 1.30: New "mla_alt_shortcode" parameter combines [mla_gallery] with other gallery display shortcodes, e.g., Jetpack Carousel and Tiled Mosaic. Support for new 3.6 audio/video metadata. One other enhancement, eight fixes.
+* 1.20: Media Manager (Add Media, etc.) enhancements: filter by more MIME types, date, taxonomy terms; enhanced search box for name/slug, ALT text, caption and attachment ID. New [mla_gallery] sort options. Four other enhancements, four fixes.
+* 1.14: New [mla_gallery] mla_target and tax_operator parameters, tax_query cleanup and ids/include fix. Attachments column fix. IPTC/EXIF and Custom Field mapping fixes. Three other fixes.
+* 1.13: Add custom fields to the quick and bulk edit areas; sort and search on them in the Media/Assistant submenu. Expanded EXIF data access, including COMPUTED values. Google File Viewer support, two other enhancements and two fixes.
+* 1.11: Search by attachment ID, avoid fatal errors and other odd results when adding taxonomy terms. One other fix.
+* 1.10: Map attachment metadata to custom fields; add them to [mla_gallery] display and as sortable columns on the Media/Assistant submenu table. Get Photonic Gallery (plugin) integration and six other fixes.
+* 1.00: Map IPTC and EXIF metadata to standard fields, taxonomy terms and custom fields. Improved performance for where-used reporting. Specify default `[mla_gallery]` style and markup templates. Five other fixes.
+
 = 0.11 - 0.90 =
 * `[mla_gallery]` support for custom fields, taxonomy terms and IPTC/EXIF metadata. Updated for WordPress 3.5!
 * Improved default Style template, `[mla_gallery]` parameters "mla_itemwidth" and "mla_margin" for control of gallery item spacing. Quick edit support of WordPress standard Categories taxonomy has been fixed.
@@ -230,8 +187,8 @@ where-used reporting. Specify default `[mla_gallery]` style and markup templates
 
 == Upgrade Notice ==
 
-= 1.50 =
-PDF and GPS Metadata support. Content Templates; mix literal text with data values, test for empty values and choose among two or more alternatives for [mla_gallery] and data mapping. Five other enhancements, seven fixes.
+= 1.51 =
+Attachment Metadata mapping/updating, [mla_gallery] "apply_filters" hooks, multiple paginated galleries per page, "ALL_CUSTOM" pseudo value. Three other enhancements, six fixes.
 
 == Other Notes ==
 
@@ -276,9 +233,11 @@ Three parameters provide control over the placement, size and spacing of gallery
 
 Twelve parameters provide pagination support and an easy way to control the contents of gallery items without requiring the use of custom Markup templates.  
 
-<h4>Google File Viewer Support</h4>
+<h4>NEW! MLA Gallery Filters and Actions (Hooks)</h4>
 
-Four parameters provide an easy way to generate thumbnail images for the non-image file types.
+The `[mla_gallery]` shortcode supports a comprehensive set of filters and actions (twenty-five in all) that give you complete control over gallery composition from PHP code in your theme or in another plugin. An example of using the hooks from a simple, stand-alone plugin can be found in mla-hooks-example.php.txt.
+
+The example code documents each hook with comments in the filter/action function that intercepts it. Generally, each part of the gallery supports three hooks: 1) a "values" hook, which lets you record or update the substitution values for that gallery part, 2) a "template" hook, which lets you record/update the template used to generate the HTML markup, and 3) a "parse" hook which lets you modify or replace the markup generated for a gallery part. There are also hooks for manipulating shortcode and data selection attributes and for inspecting query results. 
 
 == Support for Alternative Gallery Output, e.g., pagination ==
 The `[mla_gallery]` shortcode can be used to provide "Previous" and "Next" links that support moving among the individual items in a gallery or among gallery "pages". For example, if you have many items with a specific Att. Category or Att. Tag value you can build a single-image page with links to the previous/next item having that value. You can also build a page that shows a large gallery in groups, or "gallery pages", of ten items with links to the previous/next ten items or links to all of the gallery pages of items having that value.
@@ -320,7 +279,7 @@ There are nine prefix values for field-level data.
 * `pdf`: The Document Information Dictionary (D.I.D.)and XMP metadata, if any, embedded in a PDF file. For this category, you can code any of the nine D.I.D. entries (Title, Author, Subject, Keywords, Creator, Producer, CreationDate, ModDate, Trapped). For many documents there is also a rich collection of additional metadata stored in XMP Metadata Streams.
 * `iptc`: The IPTC (International Press Telecommunications Council) metadata, if any, embedded in the image file.
 * `exif`: The EXIF (EXchangeable Image File) metadata, if any, embedded in a JPEG DCT or TIFF Rev 6.0 image file.
-* `template: A Content Template, which lets you compose a value from multiple substitution parameters and test for empty values, choosing among two or more alternatives or suppressing output entirely. See the plugin documentation for details.
+* `template`: A Content Template, which lets you compose a value from multiple substitution parameters and test for empty values, choosing among two or more alternatives or suppressing output entirely. See the plugin documentation for details.
 
 <h4>NEW! Metadata in PDF documents</h4>
 
@@ -353,13 +312,31 @@ Conditional, choice and template elements can be nested as needed. For example, 
 
 This template has a String, "Terms: " and a Conditional, "(([+terms: … none)". This Conditional separates the "Terms: " literal from the first alternative in the Choice. Within the Conditional is a Choice having four alternatives. The first alternative is a Conditional, which will be empty unless both categories and tags are present.  The second and third alternatives handle the cases where one of the two taxonomies has terms, and the final alternative is used when neither categories nor tags are present.
 
-==Custom Field Processing Options==
+==Custom Field and Attachment Metadata Processing Options==
 
 On the Custom Fields tab of the Settings screen you can define the rules for mapping several types of file and image metadata to WordPress custom fields. Custom field mapping can be applied automatically when an attachment is added to the Media Library. You can refresh the mapping for <strong><em>ALL</em></strong> attachments using the command buttons on the screen. You can selectively apply the mapping in the bulk edit area of the Media/Assistant submenu table and/or on the Edit Media screen for a single attachment. The advantages of mapping metadata to custom fields are:
 
 * You can add the data to an [mla_gallery] with a field-level markup substitution parameter. For example, add the image dimensions or a list of all the intermediate sizes available for the image.
 
 * You can add the data as a sortable column to the Media/Assistant submenu table. For example, you can find all the "orphans" in your library by adding "reference_issues" and then sorting by that column.
+
+**NEW! Adding or changing Attachment Metadata**
+
+WordPress stores an array of information for image, audio and video items in the "_wp_attachment_metadata" custom field. Plugins such as "Fullscreen Galleria" also use this field to store information like GPS coordinates. Many of the array elements, such as the "sizes" array for images, are in turn arrays of more detailed values. <strong>Compound names</strong> are used to access elements within arrays, e.g., &quot;<strong>sizes.thumbnail.file</strong>&quot; is used to specify the file name for the thumbnail version of an image.
+
+By coding the "meta:" prefix in the Field Title column of a field mapping rule you can add to or update this data, from any of the data sources listed below. You can use a **Content Template** to compose a value from multiple substitution parameters and test for empty values, choosing among two or more alternatives or suppressing the mapping altogether for a given item.
+
+Let's say, for example, that you want to add GPS coordinates to the "image_meta" element of the Attachment Metadata.
+
+1. Open the Settings/Media Library Assistant submenu and select the Custom Fields tab. Scroll down to the "Add a new Field and Mapping Rule" section.
+
+2. In the Field Title text box, enter "meta:image_meta.latitude". The rule will store its results in the "latitude" element of the "image_meta" array within the Attachment Metadata field.
+
+3. In the Data Source dropdown, select "-- Template (see below) --". In the text box below the dropdown, enter "([+exif:GPS.LatitudeSDD+])". This is a Content Template that extracts the "GPS.LatitudeSDD" value from the EXIF data embedded in an image file. The parentheses test the result to eliminate empty values; only non-empty values will be mapped into the image_meta array.
+
+4. Set the other parts of the rule as needed. You can select "Keep" if some of your items already have this information or "Replace" to update all items. "Native" and "Text" are appropriate for this example. You can check "Delete NULL values" to remove any existing, empty values for this element. The "MLA Column", "Quick Edit" and "Bulk Edit" checkboxes have no meaning for Attachment Metadata elements and can be left blank; they will be ignored if checked.
+
+If you are creating an IPTC/EXIF mapping rule the details are a bit different, but the capability is equivalent.
 
 <h4>Data sources for custom field mapping</h4>
 

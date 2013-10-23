@@ -212,9 +212,12 @@
 </form>
 
 <!-- template="custom-field-tab" -->
-<h3>Custom Field Processing Options</h3>
+<h3>Custom Field and Attachment Metadata Processing Options</h3>
 <p>
 In this tab you can define the rules for mapping several types of image metadata to WordPress custom fields. <strong>NOTE:</strong> changes to a single rule will be made permanent if you click the "Update Rule" button for that rule. The rule will be applied to existing attachments if you click the "Map All Attachments" button for that rule.
+</p>
+<p>
+You can also use this screen to define rules for adding or updating fields within the WordPress-supplied "Attachment Metadata", stored in the "_wp_attachment_metadata" custom field. See the <a href="[+settingsURL+]?page=mla-settings-menu-documentation&amp;mla_tab=documentation#attachment_metadata_mapping">Adding or changing Attachment Metadata</a> section of the Documentation for details.
 </p>
 <p>
 Custom field mapping can be applied automatically when an attachment is added to the Media Library. You can refresh the mapping for <strong><em>ALL</em></strong> attachments using the command buttons on this screen. You can selectively apply the mapping in the bulk edit area of the Media/Assistant screen and/or on the Media/Edit Media screen for a single attachment.
@@ -229,7 +232,7 @@ If you just want to add a custom field to the Media/Assistant submenu, the quick
 You can find more information about all of these topics on the <a href="[+settingsURL+]?page=mla-settings-menu-documentation&amp;mla_tab=documentation#mla_custom_field_mapping" title="Custom Field Processing Options documentation">Documentation tab</a>.
 </p>
 <p>
-<strong>NOTE:</strong> Check the box in the "MLA Column" column to make the field a sortable, searchable column in the Media/Assistant submenu table. The "file_size", "pixels", "width" and "height" data sources will sort more sensibly if you use the "Commas" format. Check the "Quick Edit" or "Bulk Edit" box to add the field to the quick edit or bulk edit areas of the Media/Assistant submenu.
+<strong>NOTE:</strong> For custom fields (but <strong>not</strong> for Attachment Metadata values), check the box in the "MLA Column" column to make the field a sortable, searchable column in the Media/Assistant submenu table. The "file_size", "pixels", "width" and "height" data sources will sort more sensibly if you use the "Commas" format. Check the "Quick Edit" or "Bulk Edit" box to add the field to the quick edit or bulk edit areas of the Media/Assistant submenu.
 </p>
 <form action="[+form_url+]" method="post" class="mla-display-settings-page" id="mla-display-settings-custom-field-tab">
 &nbsp;<br />

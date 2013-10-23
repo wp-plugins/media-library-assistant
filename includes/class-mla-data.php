@@ -152,7 +152,7 @@ class MLAData {
 	 *
 	 * @since 1.50
 	 *
-	 * @param	string	A string possibily starting with '[+template:'
+	 * @param	string	A string possibly starting with '[+template:'
 	 *
 	 * @return	string	'' or template string starting with '[+template:' and ending with the matching '+]'
 	 */
@@ -253,13 +253,19 @@ class MLAData {
 			}
 			elseif ( is_array( $element ) ) {
 				foreach ($element as $key => $value ) {
-					if ( is_scalar( $value ) ) {
+					if ( is_scalar( $value ) )
 						$value = trim( $value );
-						if ( ! empty( $value ) )
-							$final[] = $value;					
-					}
 					elseif ( ! empty( $value ) )
-						$final[] = var_export( $value, true );
+						$value = var_export( $value, true );
+
+					/*
+					 * Preserve any keys with string values
+					 */
+					if ( ! empty( $value ) )
+						if ( is_integer( $key ) )
+							$final[] = $value;
+						else
+							$final[ $key ] = $value;					
 				}
 			}
 			elseif ( ! empty( $element ) )
@@ -331,7 +337,7 @@ class MLAData {
 	 *
 	 * @since 1.50
 	 *
-	 * @param	string	A string possibily starting with '('
+	 * @param	string	A string possibly starting with '('
 	 *
 	 * @return	string	'' or template string starting with '(' and ending with the matching ')'
 	 */
@@ -555,11 +561,18 @@ class MLAData {
 						}
 					} // array of nodes
 					
-					foreach ($result as $value )
-						if ( is_scalar( $value ) && false !== strpos( $value, '[+' ) ) {
+					foreach ($result as $element )
+						if ( is_scalar( $element ) && false !== strpos( $element, '[+' ) ) {
 							$result = array();
 							break;
 						}
+						elseif ( is_array( $element ) ) {
+							foreach ( $element as $value ) 
+								if ( is_scalar( $value ) && false !== strpos( $value, '[+' ) ) {
+									$result = array();
+									break;
+								}
+						} // is_array
 	
 					break;
 				case 'choice':
@@ -778,11 +791,15 @@ class MLAData {
 				case 'query':
 					if ( isset( $query ) && isset( $query[ $value['value'] ] ) )
 						$markup_values[ $key ] = $query[ $value['value'] ];
+					else
+						$markup_values[ $key ] = '';
 
 					break;
 				case 'request':
 					if ( isset( $_REQUEST[ $value['value'] ] ) )
 						$markup_values[ $key ] = $_REQUEST[ $value['value'] ];
+					else
+						$markup_values[ $key ] = '';
 
 					break;
 				case 'terms':
@@ -810,8 +827,34 @@ class MLAData {
 					$markup_values[ $key ] = $text;
 					break;
 				case 'custom':
-					if ( 0 < $post_id )
+					if ( 0 < $post_id ) {
 						$record = get_metadata( 'post', $post_id, $value['value'], 'single' == $value['option'] );
+						if ( empty( $record ) && 'ALL_CUSTOM' == $value['value'] ) {
+							$meta_values = self::mla_fetch_attachment_metadata( $post_id );
+							$clean_data = array();
+							foreach( $meta_values as $meta_key => $meta_value ) {
+								if ( 0 !== strpos( $meta_key, 'mla_item_' ) )
+									continue;
+									
+								$meta_key = substr( $meta_key, 9 );
+								if ( is_array( $meta_value ) ) 
+									$clean_data[ $meta_key ] = '(ARRAY)';
+								elseif ( is_string( $meta_value ) )
+									$clean_data[ $meta_key ] = self::_bin_to_utf8( substr( $meta_value, 0, 256 ) );
+								else
+									$clean_data[ $meta_key ] = $meta_value;
+							} // foreach value
+			
+							/*
+							 * Convert the array to text, strip the outer "array( ... ,)" literal,
+							 * the interior linefeed/space/space separators and backslashes.
+							 */
+							$record = var_export( $clean_data, true);
+							$record = substr( $record, 7, strlen( $record ) - 10 );
+							$record = str_replace( chr(0x0A).'  ', ' ', $record );
+							$record = str_replace( '\\', '', $record );
+						} // ALL_CUSTOM
+					}
 					else
 						break;
 	
@@ -1112,9 +1155,27 @@ class MLAData {
 			return null;
 		}
 		
+		/*
+		 * Make sure the current orderby choice still exists or revert to default.
+		 */
+		$default_orderby = array_merge( array( 'none' => array('none',false) ), MLA_List_Table::mla_get_sortable_columns( ) );
+		$current_orderby = MLAOptions::mla_get_option( MLAOptions::MLA_DEFAULT_ORDERBY );
+		$found_current = false;
+		foreach ($default_orderby as $key => $value ) {
+			if ( $current_orderby == $value[0] ) {
+				$found_current = true;
+				break;
+			}
+		}
+
+		if ( ! $found_current ) {
+			MLAOptions::mla_delete_option( MLAOptions::MLA_DEFAULT_ORDERBY );
+			$current_orderby = MLAOptions::mla_get_option( MLAOptions::MLA_DEFAULT_ORDERBY );
+		}
+
 		$clean_request = array (
 			'm' => 0,
-			'orderby' => MLAOptions::mla_get_option( MLAOptions::MLA_DEFAULT_ORDERBY ),
+			'orderby' => $current_orderby,
 			'order' => MLAOptions::mla_get_option( MLAOptions::MLA_DEFAULT_ORDER ),
 			'post_type' => 'attachment',
 			'post_status' => 'inherit',
@@ -1284,7 +1345,7 @@ class MLAData {
 					self::$query_parameters['postmeta_key'] = '_wp_attachment_image_alt';
 			} // !empty
 			
-			unset( $clean_request['s'] );
+			// unset( $clean_request['s'] ); // WP v3.7 requires this to be present for posts_search filter
 			unset( $clean_request['mla_search_connector'] );
 			unset( $clean_request['mla_search_fields'] );
 			unset( $clean_request['sentence'] );
@@ -1477,6 +1538,21 @@ class MLAData {
 	}
 	
 	/**
+	 * Replaces a WordPress function deprecated in v3.7
+	 * 
+	 * Defined as public because it's a callback from array_map().
+	 *
+	 * @since 1.51
+	 *
+	 * @param	string	search term before modification
+	 *
+	 * @return	string	cleaned up search term
+	 */
+	public static function mla_search_terms_tidy( $term ) {
+		return trim( $term, "\"'\n\r " );
+	}
+	
+	/**
 	 * Adds a keyword search to the WHERE clause, if required
 	 * 
 	 * Defined as public because it's a filter.
@@ -1522,11 +1598,15 @@ class MLAData {
 				return $search_clause;
 			}
 			
+			// WordPress v3.7 says: there are no line breaks in <input /> fields
+			self::$query_parameters['s'] = str_replace( array( "\r", "\n" ), '', self::$query_parameters['s'] );
+
 			if (  self::$query_parameters['sentence'] ) {
 				$search_terms = array( self::$query_parameters['s'] );
 			} else {
-				preg_match_all('/".*?("|$)|((?<=[\r\n\t ",+])|^)[^\r\n\t ",+]+/', self::$query_parameters['s'], $matches);
-				$search_terms = array_map('_search_terms_tidy', $matches[0]);
+				// v3.6.1 was '/".*?("|$)|((?<=[\r\n\t ",+])|^)[^\r\n\t ",+]+/'
+				preg_match_all('/".*?("|$)|((?<=[\t ",+])|^)[^\t ",+]+/', self::$query_parameters['s'], $matches);
+				$search_terms = array_map('MLAData::mla_search_terms_tidy', $matches[0]);
 			}
 			
 			$fields = self::$query_parameters['mla_search_fields'];
@@ -1809,7 +1889,70 @@ class MLAData {
 	}
 	
 	/**
-	 * Finds the value of a key in a possibily nested array structure
+	 * Adds or replaces the value of a key in a possibly nested array structure
+	 *
+	 * @since 1.51
+	 *
+	 * @param string key value, e.g. array1.array2.element
+	 * @param mixed replacement value, string or array, by reference
+	 * @param array PHP nested arrays, by reference
+	 *
+	 * @return boolean	true if $needle element set, false if not
+	 */
+	private static function _set_array_element( $needle, &$value, &$haystack ) {
+		$key_array = explode( '.', $needle );
+		$key = array_shift( $key_array );
+		
+		if ( empty( $key_array ) ) {
+			$haystack[ $key ] = $value;
+			return true;
+		} // lowest level
+
+		/*
+		 * If an intermediate key is not an array, leave it alone and fail.
+		 * If an intermediate key does not exist, create an empty array for it.
+		 */
+		if ( isset( $haystack[ $key ] ) ) {
+			if ( ! is_array( $haystack[ $key ] ) )
+				return false;
+		}
+		else
+			$haystack[ $key ] = array();
+		
+		return self::_set_array_element( implode( $key_array, '.' ), $value, $haystack[ $key ] );
+	}
+	
+	/**
+	 * Deletes the value of a key in a possibly nested array structure
+	 *
+	 * @since 1.51
+	 *
+	 * @param string key value, e.g. array1.array2.element
+	 * @param array PHP nested arrays, by reference
+	 *
+	 * @return boolean	true if $needle element found, false if not
+	 */
+	private static function _unset_array_element( $needle, &$haystack ) {
+		$key_array = explode( '.', $needle );
+		$key = array_shift( $key_array );
+		
+		if ( empty( $key_array ) ) {
+			if ( isset( $haystack[ $key ] ) ) {
+				unset( $haystack[ $key ] );
+				return true;
+			}
+			
+			return false;
+		} // lowest level
+
+		if ( isset( $haystack[ $key ] ) )
+			return self::_unset_array_element( implode( $key_array, '.' ), $haystack[ $key ] );
+
+		return false;
+	}
+	
+	/**
+	 * Finds the value of a key in a possibly nested array structure
 	 *
 	 * Used primarily to extract fields from the _wp_attachment_metadata custom field.
 	 * Could also be used with the ID3 metadata exposed in WordPress 3.6 and later.
@@ -1821,7 +1964,7 @@ class MLAData {
 	 * @param string data option  'text'|'single'|'export'|'array'|'multi'
 	 * @param boolean keep existing values - for 'multi' option
 	 *
-	 * @return string value matching key(.key ...) or ''
+	 * @return mixed string or array value matching key(.key ...) or ''
 	 */
 	public static function mla_find_array_element( $needle, $haystack, $option, $keep_existing = false ) {
 		$key_array = explode( '.', $needle );
@@ -1839,9 +1982,6 @@ class MLAData {
 		}
 		else $haystack = '';
 
-//		if ( 'single' == $option && is_array( $haystack )) 
-//			$haystack = current( $haystack );
-			
 		if ( is_array( $haystack ) ) {
 			switch ( $option ) {
 				case 'single':
@@ -1869,8 +2009,7 @@ class MLAData {
 	 * Fetch and filter meta data for an attachment
 	 * 
 	 * Returns a filtered array of a post's meta data. Internal values beginning with '_'
-	 * are stripped out or converted to an 'mla_' equivalent. Array data is replaced with
-	 * a string containing the first array element.
+	 * are stripped out or converted to an 'mla_' equivalent. 
 	 *
 	 * @since 0.1
 	 *
@@ -1898,7 +2037,6 @@ class MLAData {
 						$attached_file = $post_meta_value[0];
 					} elseif ( stripos( $post_meta_key, '_wp_attachment_metadata' ) === 0 ) {
 						$key = 'mla_wp_attachment_metadata';
-						$post_meta_value = unserialize( $post_meta_value[0] );
 					} elseif ( stripos( $post_meta_key, '_wp_attachment_image_alt' ) === 0 ) {
 						$key = 'mla_wp_attachment_image_alt';
 					} else {
@@ -1911,13 +2049,20 @@ class MLAData {
 						$key = 'mla_item_' . $post_meta_key;
 				}
 				
-//				if ( is_array( $post_meta_value ) && count( $post_meta_value ) == 1 &&  isset( $post_meta_value[0] ) )
-				if ( is_array( $post_meta_value ) && count( $post_meta_value ) == 1 )
-					$value = array_shift( $post_meta_value );
-				else
-					$value = $post_meta_value;
-				
-				$results[ $key ] = $value;
+				/*
+				 * At this point, every value is an array; one element per instance of the key.
+				 * We'll test anyway, just to be sure, then convert single-instance values to a scalar.
+				 * Metadata array values are serialized for storage in the database.
+				 */
+				if ( is_array( $post_meta_value ) ) {
+					if ( count( $post_meta_value ) == 1 )
+						$post_meta_value = maybe_unserialize( $post_meta_value[0] );
+					else
+						foreach ( $post_meta_value as $single_key => $single_value )
+							$post_meta_value[ $single_key ] = maybe_unserialize( $single_value );
+				}
+
+				$results[ $key ] = $post_meta_value;
 			} // foreach $post_meta
 
 			if ( !empty( $attached_file ) ) {
@@ -2085,19 +2230,16 @@ class MLAData {
 				$inserted_in_option = MLAOptions::mla_get_option( MLAOptions::MLA_INSERTED_IN_TUNING );
 				
 			if ( 'base' == $inserted_in_option ) {
-				$like = like_escape( $references['path'] . $pathinfo['filename'] ) . '%.' . like_escape( $pathinfo['extension'] );
+				$like1 = like_escape( $references['path'] . $pathinfo['filename'] ) . '.' . like_escape( $pathinfo['extension'] );
+				$like2 = like_escape( $references['path'] . $pathinfo['filename'] ) . '-%.' . like_escape( $pathinfo['extension'] );
 				$inserts = $wpdb->get_results(
 					$wpdb->prepare(
-						"
-						SELECT ID, post_type, post_title 
-						FROM {$wpdb->posts}
-						WHERE {$exclude_revisions}(
-							CONVERT(`post_content` USING utf8 )
-							LIKE %s)
-						", "%{$like}%"
+						"SELECT ID, post_type, post_title FROM {$wpdb->posts}
+						WHERE {$exclude_revisions} ((CONVERT(`post_content` USING utf8 ) LIKE %s) OR 
+						(CONVERT(`post_content` USING utf8 ) LIKE %s))", "%{$like1}%", "%{$like2}%"
 					)
 				);
-				
+
 				if ( !empty( $inserts ) ) {
 					$references['found_reference'] = true;
 					$references['inserts'][ $pathinfo['filename'] ] = $inserts;
@@ -2114,13 +2256,8 @@ class MLAData {
 					$like = like_escape( $file );
 					$inserts = $wpdb->get_results(
 						$wpdb->prepare(
-							"
-							SELECT ID, post_type, post_title 
-							FROM {$wpdb->posts}
-							WHERE {$exclude_revisions}(
-								CONVERT(`post_content` USING utf8 )
-								LIKE %s)
-							", "%{$like}%"
+							"SELECT ID, post_type, post_title FROM {$wpdb->posts}
+							WHERE {$exclude_revisions}(CONVERT(`post_content` USING utf8 ) LIKE %s)", "%{$like}%"
 						)
 					);
 					
@@ -4043,22 +4180,29 @@ class MLAData {
 		return $text;
 	}
 		
+	/**
+	 * Convert an EXIF GPS rational value to a PHP float value
+	 * 
+	 * @since 1.50
+	 *
+	 * @param	array	array( 0 => numerator, 1 => denominator )
+	 *
+	 * @return	float	numerator/denominator
+	 */
 	private static function _rational_to_decimal( $rational ) {
 		$parts = explode('/', $rational);
 		return $parts[0] / ( $parts[1] ? $parts[1] : 1);
 	}
 	
 	/**
-	 * Fetch and filter IPTC and EXIF meta data for an image attachment
+	 * Fetch and filter IPTC and EXIF or PDF metadata for an image attachment
 	 * 
-	 * Returns 
-	 *
 	 * @since 0.90
 	 *
 	 * @param	int		post ID of attachment
 	 * @param	string	optional; if $post_id is zero, path to the image file.
 	 *
-	 * @return	array	Meta data variables
+	 * @return	array	Meta data variables, IPTC and EXIF or PDF
 	 */
 	public static function mla_fetch_attachment_image_metadata( $post_id, $path = '' ) {
 		$results = array(
@@ -4136,6 +4280,8 @@ class MLAData {
 			$gps_data['LatitudeDD'] = sprintf( '%1$01f', $degrees + $decimal_degrees );
 			$gps_data['LatitudeMinDec'] = substr( $gps_data['LatitudeDM'], strpos( $gps_data['LatitudeDM'], ' ' ) + 1 );
 			$gps_data['LatitudeDegDec'] = substr( $gps_data['LatitudeDD'], strpos( $gps_data['LatitudeDD'], '.' ) );
+			$gps_data['LatitudeSDM'] = $refs . $gps_data['LatitudeDM'];
+			$gps_data['LatitudeSDD'] = $refs . $gps_data['LatitudeDD'];
 			$gps_data['LatitudeDM'] = $gps_data['LatitudeDM'] . $ref;
 			$gps_data['LatitudeDD'] = $gps_data['LatitudeDD'] . $ref;
 		}
@@ -4164,6 +4310,8 @@ class MLAData {
 			$gps_data['LongitudeDD'] = sprintf( '%1$01f', $degrees + $decimal_degrees );
 			$gps_data['LongitudeMinDec'] = substr( $gps_data['LongitudeDM'], strpos( $gps_data['LongitudeDM'], ' ' ) + 1 );
 			$gps_data['LongitudeDegDec'] = substr( $gps_data['LongitudeDD'], strpos( $gps_data['LongitudeDD'], '.' ) );
+			$gps_data['LongitudeSDM'] = $refs . $gps_data['LongitudeDM'];
+			$gps_data['LongitudeSDD'] = $refs . $gps_data['LongitudeDD'];
 			$gps_data['LongitudeDM'] = $gps_data['LongitudeDM'] . $ref;
 			$gps_data['LongitudeDD'] = $gps_data['LongitudeDD'] . $ref;
 		}
@@ -4220,7 +4368,79 @@ class MLAData {
 	}
 	
 	/**
-	 * Update custom field data for a single attachment.
+	 * Update one "meta:" data for a single attachment
+	 * 
+	 * @since 1.51
+	 * 
+	 * @param	array	The current wp_attachment_metadata value
+	 * @param	array	Field name => value pairs
+	 *
+	 * @return	string	success/failure message(s); empty string if no changes.
+	 */
+	private static function _update_wp_attachment_metadata( &$current_values, $new_meta ) {
+		$message = '';
+		
+		foreach( $new_meta as $key => $value ) {
+			/*
+			 * The "Multi" option has no meaning for attachment_metadata;
+			 * convert to a simple array or string
+			 */ 
+			if ( isset( $value[0x80000000] ) ) {
+				unset( $value[0x80000000] );
+				unset( $value[0x80000001] );
+				unset( $value[0x80000002] );
+				
+				if ( 1 == count( $value ) ) {
+					foreach ( $value as $single_key => $single_value )
+						if ( is_integer( $single_key ) )
+							$value = $single_value;
+				} // one-element array
+			} // Multi-key value
+				
+			$old_value = self::mla_find_array_element( $key, $current_values, 'array' );
+			if ( ! empty( $old_value ) ) {
+				if ( empty( $value ) ) {
+					if ( self::_unset_array_element( $key, $current_values ) )
+						$message .= sprintf( 'Deleting meta:%1$s<br>', $key );
+					else
+						$message .= sprintf( 'ERROR: meta:%1$s not found<br>', $key );
+						
+					continue;
+				}
+			} // old_value present
+			else {
+				if ( ! empty( $value ) ) {
+					if ( self::_set_array_element( $key, $value, $current_values ) )
+						$message .= sprintf( 'Adding meta:%1$s = %2$s<br>', $key,
+							( is_array( $value ) ) ? var_export( $value, true ) : $value );
+					else
+						$message .= sprintf( 'ERROR: Adding meta:%1$s; not found<br>', $key );
+
+					continue;
+				}
+				elseif ( NULL == $value ) {
+					if ( self::_unset_array_element( $key, $current_values ) )
+						$message .= sprintf( 'Deleting Null meta:%1$s<br>', $key );
+						
+					continue;
+				}
+			} // old_value empty
+			
+			if ( $old_value != $value ) {
+					if ( self::_set_array_element( $key, $value, $current_values ) )
+						$message .= sprintf( 'Changing meta:%1$s from "%2$s" to "%3$s"<br>', $key,
+							( is_array( $old_value ) ) ? var_export( $old_value, true ) : $old_value,
+							( is_array( $value ) ) ? var_export( $value, true ) : $value );
+					else
+						$message .= sprintf( 'ERROR: Changing meta:%1$s; not found<br>', $key );
+			}
+		} // foreach new_meta
+		
+		return $message;
+	}
+	
+	/**
+	 * Update custom field and "meta:" data for a single attachment
 	 * 
 	 * @since 1.40
 	 * 
@@ -4232,8 +4452,15 @@ class MLAData {
 	public static function mla_update_item_postmeta( $post_id, $new_meta ) {
 		$post_data = self::mla_fetch_attachment_metadata( $post_id );
 		$message = '';
-		
+
+		$attachment_meta_values = array();
 		foreach ( $new_meta as $meta_key => $meta_value ) {
+			if ( 'meta:' == substr( $meta_key, 0, 5 ) ) {
+				$meta_key = substr( $meta_key, 5 );
+				$attachment_meta_values[ $meta_key ] = $meta_value;
+				continue;
+			}
+			
 			if ( $multi_key = isset( $meta_value[0x80000000] ) )
 				unset( $meta_value[0x80000000] );
 				
@@ -4281,11 +4508,7 @@ class MLAData {
 				continue; // no change or message if old and new are both NULL
 			} // no old value
 			
-			if ( is_array( $old_meta_value ) ) {
-				$old_text = var_export( $old_meta_value, true );
-			}
-			else
-				$old_text = $old_meta_value;
+			$old_text = ( is_array( $old_meta_value ) ) ? var_export( $old_meta_value, true ) : $old_meta_value;
 
 			/*
 			 * Multi-key change from existing values to new values
@@ -4336,17 +4559,33 @@ class MLAData {
 				else
 					$new_text = $meta_value;
 				
-				$message .= sprintf( 'Changing %1$s from "%2$s" to "%3$s"<br>', $meta_key, $old_text, $new_text );
-				$results = update_post_meta( $post_id, $meta_key, $meta_value );
+				if ( update_post_meta( $post_id, $meta_key, $meta_value ) )
+					$message .= sprintf( 'Changing %1$s from "%2$s" to "%3$s"<br>', $meta_key, $old_text, $new_text );
 			}
 		} // foreach $new_meta
+		
+		/*
+		 * Process the "meta:" updates, if any
+		 */
+		if ( ! empty( $attachment_meta_values ) ) {
+			if ( isset( $post_data['mla_wp_attachment_metadata'] ) ) 
+				$current_values = $post_data['mla_wp_attachment_metadata'];
+			else
+				$current_values = array();
+				
+			$results = self::_update_wp_attachment_metadata( $current_values, $attachment_meta_values );
+			if ( ! empty( $results ) ) {
+				if ( update_post_meta( $post_id, '_wp_attachment_metadata', $current_values ) )
+					$message .= $results;
+			}
+		}
 		
 		return $message;
 	}
 	
 	/**
-	 * Update a single item; change the meta data 
-	 * for a single attachment.
+	 * Update a single item; change the "post" data, taxonomy terms 
+	 * and meta data for a single attachment
 	 * 
 	 * @since 0.1
 	 * 

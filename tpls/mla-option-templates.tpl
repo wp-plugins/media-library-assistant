@@ -217,7 +217,7 @@
 <!-- template="custom-field-new-field-row" -->
         <tr>
 		<td colspan="[+column_count+]" style="font-weight:bold; height: 3em; vertical-align:bottom">
-		Add a new Custom Field and Mapping Rule
+		Add a new Field and Mapping Rule
         </td>
 		</tr>
         <tr valign="top">
@@ -524,7 +524,7 @@
 <!-- template="iptc-exif-custom-new-field-row" -->
         <tr>
 		<td colspan="[+column_count+]" style="font-weight:bold; height: 3em; vertical-align:bottom">
-		Add a new Custom Field and Mapping Rule
+		Add a new Field and Mapping Rule
         </td>
 		</tr>
         <tr valign="top">

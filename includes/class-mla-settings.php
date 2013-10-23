@@ -927,14 +927,52 @@ class MLASettings {
 		}
 		
 		/*
-		 * Fill in the current list of sortable columns
+		 * Fill in the current list of Media/Assistant table sortable columns, sorted by their labels.
+		 * Make sure the current choice still exists or revert to default.
 		 */
-		$default_orderby = MLA_List_Table::mla_get_sortable_columns( );
-		foreach ($default_orderby as $key => $value ) {
-			MLAOptions::$mla_option_definitions[MLAOptions::MLA_DEFAULT_ORDERBY]['options'][] = $value[0];
-			MLAOptions::$mla_option_definitions[MLAOptions::MLA_DEFAULT_ORDERBY]['texts'][] = $value[1];
+		$columns = array();
+		foreach ( MLA_List_Table::mla_get_sortable_columns( ) as $key => $value ) {
+			if ( ! array_key_exists( $value[1], $columns ) ) {
+				$columns[ $value[1] ] = $value[0];
+			}
 		}
 		
+		uksort( $columns, 'strnatcasecmp' );
+		$options = array_merge( array('None' => 'none'), $columns );
+		$current = MLAOptions::mla_get_option( MLAOptions::MLA_DEFAULT_ORDERBY );
+		MLAOptions::$mla_option_definitions[MLAOptions::MLA_DEFAULT_ORDERBY]['options'] = array();
+		MLAOptions::$mla_option_definitions[MLAOptions::MLA_DEFAULT_ORDERBY]['texts'] = array();
+		$found_current = false;
+		foreach ($options as $key => $value ) {
+			MLAOptions::$mla_option_definitions[MLAOptions::MLA_DEFAULT_ORDERBY]['options'][] = $value;
+			MLAOptions::$mla_option_definitions[MLAOptions::MLA_DEFAULT_ORDERBY]['texts'][] = $key;
+			if ( $current == $value )
+				$found_current = true;
+		}
+
+		if ( ! $found_current ) {
+			MLAOptions::mla_delete_option( MLAOptions::MLA_DEFAULT_ORDERBY );
+		}
+
+		/*
+		 * Validate the Media Manager sort order or revert to default
+		 */
+		$options = array_merge( array(' -- Media Manager Default -- ' => 'default', 'None' => 'none'), $columns );
+		$current = MLAOptions::mla_get_option( MLAOptions::MLA_MEDIA_MODAL_ORDERBY );
+		MLAOptions::$mla_option_definitions[MLAOptions::MLA_MEDIA_MODAL_ORDERBY]['options'] = array();
+		MLAOptions::$mla_option_definitions[MLAOptions::MLA_MEDIA_MODAL_ORDERBY]['texts'] = array();
+		$found_current = false;
+		foreach ($options as $key => $value ) {
+			MLAOptions::$mla_option_definitions[MLAOptions::MLA_MEDIA_MODAL_ORDERBY]['options'][] = $value;
+			MLAOptions::$mla_option_definitions[MLAOptions::MLA_MEDIA_MODAL_ORDERBY]['texts'][] = $key;
+			if ( $current == $value )
+				$found_current = true;
+		}
+
+		if ( ! $found_current ) {
+			MLAOptions::mla_delete_option( MLAOptions::MLA_MEDIA_MODAL_ORDERBY );
+		}
+
 		$options_list = '';
 		foreach ( MLAOptions::$mla_option_definitions as $key => $value ) {
 			if ( 'general' == $value['tab'] )
@@ -2183,7 +2221,8 @@ class MLASettings {
 	private static function _compose_documentation_tab( ) {
 		$page_template = MLAData::mla_load_template( MLA_PLUGIN_PATH . 'tpls/documentation-settings-tab.tpl' );
 		$page_values = array(
-			'phpDocs_url' => MLA_PLUGIN_URL . 'phpDocs/index.html'
+			'phpDocs_url' => MLA_PLUGIN_URL . 'phpDocs/index.html',
+			'examples_url' => MLA_PLUGIN_URL . 'examples/'
 		);
 		
 		return array(

@@ -137,6 +137,28 @@ class MLAOptions {
 	const MLA_MEDIA_MODAL_SEARCHBOX = 'media_modal_searchbox';
 	
 	/**
+	 * Provides a unique name for the Media Manager Attachment Details searchable taxonomy option
+	 * This option is for hierarchical taxonomies, e.g., "Att. Categories".
+	 */
+	const MLA_MEDIA_MODAL_DETAILS_CATEGORY_METABOX = 'media_modal_details_category_metabox';
+	
+	/**
+	 * Provides a unique name for the Media Manager Attachment Details searchable taxonomy option
+	 * This option is for flat taxonomies, e.g., "Att. Tags".
+	 */
+	const MLA_MEDIA_MODAL_DETAILS_TAG_METABOX = 'media_modal_details_tag_metabox';
+	
+	/**
+	 * Provides a unique name for the Media Manager orderby option
+	 */
+	const MLA_MEDIA_MODAL_ORDERBY = 'media_modal_orderby';
+	
+	/**
+	 * Provides a unique name for the Media Manager order option
+	 */
+	const MLA_MEDIA_MODAL_ORDER = 'media_modal_order';
+	
+	/**
 	 * Provides a unique name for the Post MIME Types option
 	 */
 	const MLA_POST_MIME_TYPES = 'post_mime_types';
@@ -474,6 +496,38 @@ class MLAOptions {
 				'std' => 'checked',
 				'help' => 'Check this option to enable search box enhancements.'),
 	
+		self::MLA_MEDIA_MODAL_DETAILS_CATEGORY_METABOX =>
+			array('tab' => 'general',
+				'name' => 'Media Manager Searchable Categories metaboxes',
+				'type' => 'checkbox',
+				'std' => '',
+				'help' => 'Check this option to enable searchable metaboxes in the "ATTACHMENT DETAILS" pane.<br>&nbsp;&nbsp;This option is for <strong>hierarchical taxonomies, e.g., "Att. Categories".</strong><br>&nbsp;&nbsp;You must also install and activate the <strong>"Media Categories" plugin</strong> (by Eddie Moya) to implement this option.'),
+	
+		self::MLA_MEDIA_MODAL_DETAILS_TAG_METABOX =>
+			array('tab' => 'general',
+				'name' => 'Media Manager Searchable Tags metaboxes',
+				'type' => 'checkbox',
+				'std' => '',
+				'help' => 'Check this option to enable searchable metaboxes in the "ATTACHMENT DETAILS" pane.<br>&nbsp;&nbsp;This option is for <strong>flat taxonomies, e.g., "Att. Tags".</strong><br>&nbsp;&nbsp;You must also install and activate the <strong>"Media Categories" plugin</strong> (by Eddie Moya) to implement this option.'),
+	
+		self::MLA_MEDIA_MODAL_ORDERBY =>
+			array('tab' => '',
+				'name' => 'Media Manager Order By',
+				'type' => 'select',
+				'std' => 'default',
+				'options' => array('default', 'none', 'title_name'),
+				'texts' => array(' -- Media Manager Default -- ', 'None', 'Title/Name'),
+				'help' => 'If you want to override the Media Manager default,<br>&nbsp;&nbsp;select a column for the sort order of the Media Library listing.'),
+	
+		self::MLA_MEDIA_MODAL_ORDER =>
+			array('tab' => '',
+				'name' => 'Media Manager Order',
+				'type' => 'radio',
+				'std' => 'default',
+				'options' => array('default', 'ASC', 'DESC'),
+				'texts' => array(' -- Media Manager Default -- ', 'Ascending', 'Descending'),
+				'help' => 'Choose the sort order.'),
+
 		'template_header' =>
 			array('tab' => 'mla_gallery',
 				'name' => 'Default [mla_gallery] Templates and Settings',
@@ -1498,7 +1552,6 @@ class MLAOptions {
 		global $wpdb;
 		static $upload_dir, $intermediate_sizes = NULL, $wp_attached_files = NULL, $wp_attachment_metadata = NULL;
 		static $current_id = 0, $file_info = NULL, $parent_info = NULL, $references = NULL;
-		
 		if ( 'none' == $data_value['data_source'] )
 			return '';
 
@@ -1872,11 +1925,11 @@ class MLAOptions {
 			if ( 'none' == $new_value['data_source'] )
 				continue;
 
-		/*
-		 * Convert checkbox value(s)
-		 */
-		$new_value['no_null'] = isset( $new_value['no_null'] ) ? (boolean) isset( $new_value['no_null'] ) : false;
-
+			/*
+			 * Convert checkbox value(s)
+			 */
+			$new_value['no_null'] = isset( $new_value['no_null'] );
+	
 			$new_text = self::_evaluate_data_source( $post_id, $category, $new_value, $attachment_metadata );
 			if ( 'multi' == $new_value['option'] ) {
 				if ( ' ' == $new_text ) {
@@ -1900,8 +1953,18 @@ class MLAOptions {
 			}
 			else {
 				if ( $new_value['keep_existing'] ) {
-					if ( is_string( $old_text = get_metadata( 'post', $post_id, $new_value['name'], true ) ) )
-						$old_text = trim( $old_text );
+					if ( 'meta:' == substr( $new_value['name'], 0, 5 ) ) {
+						$meta_key = substr( $new_value['name'], 5 );
+						$attachment_metadata = maybe_unserialize( get_metadata( 'post', $post_id, '_wp_attachment_metadata', true ) );
+						if ( array( $attachment_metadata ) )
+							$old_text = MLAData::mla_find_array_element( $meta_key, $attachment_metadata, 'array' );
+						else
+							$old_text = '';
+					}
+					else {
+						if ( is_string( $old_text = get_metadata( 'post', $post_id, $new_value['name'], true ) ) )
+							$old_text = trim( $old_text );
+					}
 						
 					if ( ( ' ' != $new_text ) && empty( $old_text ) )
 						$custom_updates[ $new_value['name'] ] = $new_text;
@@ -2088,7 +2151,7 @@ class MLAOptions {
 	 * @param	array 	current custom_field_mapping values 
 	 * @param	array	new values
 	 *
-	 * @return	array	( 'message' => HTML message(s) reflecting results, 'values' => updated iptc_exif_mapping values, 'changed' => true if any changes detected else false )
+	 * @return	array	( 'message' => HTML message(s) reflecting results, 'values' => updated custom_field_mapping values, 'changed' => true if any changes detected else false )
 	 */
 	private static function _update_custom_field_mapping( $current_values, $new_values ) {
 		$error_list = '';
@@ -2159,11 +2222,19 @@ class MLAOptions {
 					continue;
 				} // delete rule
 			} // isset action
-
+			
+			/*
+			 * For "meta:" fields, the UI options are not appropriate
+			 */
+			if ( 'meta:' == substr( $new_key, 0, 5 ) ) {
+				unset( $new_value['mla_column'] );
+				unset( $new_value['quick_edit'] );
+				unset( $new_value['bulk_edit'] );
+			}
+			
 			if ( $old_values['data_source'] != $new_value['data_source'] ) {
 				$any_setting_changed = true;
 				
-//				if ( 'meta' == $old_values['data_source'] ) {
 				if ( in_array( $old_values['data_source'], array( 'meta', 'template' ) ) ) {
 					$new_value['meta_name'] = '';
 				}
@@ -2663,7 +2734,19 @@ class MLAOptions {
 				}
 				
 				if ( $new_value['keep_existing'] ) {
-					$old_value =  get_metadata( 'post', $post->ID, $new_key, true );
+					if ( 'meta:' == substr( $new_key, 0, 5 ) ) {
+						$meta_key = substr( $new_key, 5 );
+						$attachment_metadata = maybe_unserialize( get_metadata( 'post', $post->ID, '_wp_attachment_metadata', true ) );
+						if ( array( $attachment_metadata ) )
+							$old_value = MLAData::mla_find_array_element( $meta_key, $attachment_metadata, 'array' );
+						else
+							$old_value = '';
+					}
+					else {
+						if ( is_string( $old_value = get_metadata( 'post', $post->ID, $new_key, true ) ) )
+							$old_value = trim( $old_value );
+					}
+						
 					if ( ( ! empty( $new_text ) ) && empty( $old_value ) ) {
 						$custom_updates[ $new_key ] = $new_text;
 					}

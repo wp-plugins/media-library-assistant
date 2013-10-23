@@ -560,6 +560,7 @@ class MLA_List_Table extends WP_List_Table {
 		$inline_data .= '	<div class="post_title">' . esc_attr( $item->post_title ) . "</div>\r\n";
 		$inline_data .= '	<div class="post_name">' . esc_attr( $item->post_name ) . "</div>\r\n";
 		$inline_data .= '	<div class="post_excerpt">' . esc_attr( $item->post_excerpt ) . "</div>\r\n";
+		$inline_data .= '	<div class="post_content">' . esc_attr( $item->post_content ) . "</div>\r\n";
 		
 		if ( !empty( $item->mla_wp_attachment_metadata ) ) {
 			if ( isset( $item->mla_wp_attachment_image_alt ) )
@@ -576,7 +577,7 @@ class MLA_List_Table extends WP_List_Table {
 		$custom_fields = array_merge( $custom_fields, MLAOptions::mla_custom_field_support( 'bulk_edit' ) );
 		foreach ($custom_fields as $slug => $label ) {
 			$value = get_metadata( 'post', $item->ID, $label, true );
-			$inline_data .= '	<div class="' . $slug . '">' . $value . "</div>\r\n";
+			$inline_data .= '	<div class="' . $slug . '">' . esc_html( $value ) . "</div>\r\n";
 		}
 		
 		$taxonomies = get_object_taxonomies( 'attachment', 'objects' );
@@ -908,7 +909,7 @@ class MLA_List_Table extends WP_List_Table {
 	 * @return	string	HTML markup to be placed inside the column
 	 */
 	function column_post_mime_type( $item ) {
-		return sprintf( '<a href="%1$s" title="Filter by &#8220;%2$s&#8221;"">%2$s</a>', esc_url( add_query_arg( array_merge( self::mla_submenu_arguments( false ), array(
+		return sprintf( '<a href="%1$s" title="Filter by &#8220;%2$s&#8221;">%2$s</a>', esc_url( add_query_arg( array_merge( self::mla_submenu_arguments( false ), array(
 			'page' => MLA::ADMIN_PAGE_SLUG,
 			'post_mime_type' => urlencode( $item->post_mime_type ),
 			'heading_suffix' => urlencode( 'MIME Type: ' . $item->post_mime_type ) 
