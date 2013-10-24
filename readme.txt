@@ -4,7 +4,7 @@ Donate link: http://fairtradejudaica.org/make-a-difference/donate/
 Tags: attachment, attachments, documents, gallery, image, images, media, library, media library, media-tags, media tags, tags, media categories, categories, IPTC, EXIF, GPS, PDF, meta, metadata, photo, photos, photograph, photographs, photoblog, photo albums, lightroom, photoshop, MIME, mime-type, icon, upload, file extensions
 Requires at least: 3.3
 Tested up to: 3.7
-Stable tag: 1.51
+Stable tag: 1.52
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -121,6 +121,10 @@ All of the MLA source code has been annotated with "DocBlocks", a special type o
 
 == Changelog ==
 
+= 1.52 =
+* Fix: **Corrected serious defect in `[mla_gallery]`** that incorrectly limited the number of items returned for non-paginated galleries.
+* Fix: Eliminated "Strict Standards" messages issued from MLAModal functions.
+
 = 1.51 =
 * New: For `[mla_gallery]`, **twenty-five new `apply_filters` hooks** let you modify gallery output with PHP code in your theme or another plugin. More information in the "Other Notes" section here. A complete, working example is provided in the Settings/Media Library Assistant Documentation tab.
 * New: **Attachment Metadata mapping**. Add or change values in the WordPress `_wp_attachment_metadata` array. For example, add GPS data to the `image_meta` array. Full details in the "Other Notes" section and in the Settings/Media Library Assistant Documentation tab.
@@ -187,8 +191,8 @@ All of the MLA source code has been annotated with "DocBlocks", a special type o
 
 == Upgrade Notice ==
 
-= 1.51 =
-Attachment Metadata mapping/updating, [mla_gallery] "apply_filters" hooks, multiple paginated galleries per page, "ALL_CUSTOM" pseudo value. Three other enhancements, six fixes.
+= 1.52 =
+Corrects serious defect in [mla_gallery] that incorrectly limits the number of items returned for non-paginated galleries. One other fix.
 
 == Other Notes ==
 

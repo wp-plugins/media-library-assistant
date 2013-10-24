@@ -84,7 +84,7 @@ class MLAModal {
 	 *
 	 * @return	array	( value => label ) pairs
 	 */
-	private function _months_dropdown( $post_type ) {
+	private static function _months_dropdown( $post_type ) {
 		global $wpdb, $wp_locale;
 
 		$months = $wpdb->get_results( $wpdb->prepare( "
@@ -123,7 +123,7 @@ class MLAModal {
 	 *
 	 * @return	array	( value => label ) pairs
 	 */
-	private function _terms_options( $markup ) {
+	private static function _terms_options( $markup ) {
 		$match_count = preg_match_all( "#\<option(( class=\"([^\"]+)\" )|( ))value=((\'([^\']+)\')|(\"([^\"]+)\"))([^\>]*)\>([^\<]*)\<.*#", $markup, $matches );
 		if ( ( $match_count == false ) || ( $match_count == 0 ) )
 			return array( 'class' => array( '' ), 'value' => array( '0' ), 'text' => array( 'Show all terms' ) );

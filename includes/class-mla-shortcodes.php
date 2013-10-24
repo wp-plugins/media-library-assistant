@@ -188,8 +188,8 @@ class MLAShortcodes {
 		if ( ! isset( $attr[ $mla_page_parameter ] ) )
 			if ( isset( $_REQUEST[ $mla_page_parameter ] ) )
 				$attr[ $mla_page_parameter ] = $_REQUEST[ $mla_page_parameter ];
-			else
-				$attr[ $mla_page_parameter ] = '';
+//			else
+//				$attr[ $mla_page_parameter ] = '';
 		 
 		/*
 		 * These are the parameters for gallery display
@@ -1534,7 +1534,7 @@ class MLAShortcodes {
 			if ( isset( $attr[ $mla_page_parameter ] ) )
 				$arguments[ $mla_page_parameter ] = $attr[ $mla_page_parameter ];
 			else
-				$arguments[ $mla_page_parameter ] = '';
+				$arguments[ $mla_page_parameter ] = NULL;
 
 		/*
 		 * 'RAND' is not documented in the codex, but is present in the code.
