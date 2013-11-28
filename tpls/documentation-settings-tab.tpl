@@ -1,9 +1,7 @@
 ﻿<!-- template="documentation-tab" -->
 <div class="mla-display-settings-page" id="mla-display-settings-documentation-tab" style="width:700px">
 <h3>Plugin and Shortcode Documentation. In this tab, jump to:</h3>
-<ul style="list-style-position:inside; list-style:disc; line-height: 18px">
-<li>
-<a href="#mla_gallery"><strong>MLA Gallery Shortcode</strong></a>
+<div style="float:left; margin-right: 15px;"><a href="#mla_gallery"><strong>MLA Gallery Shortcode</strong></a>
 <ul style="list-style-position:inside; list-style:disc; line-height: 15px; padding-left: 20px">
 <li><a href="#gallery_display_style">Gallery Display Style</a></li>
 <li><a href="#gallery_display_content">Gallery Display Content</a></li>
@@ -25,8 +23,22 @@
 <li><a href="#search_keywords">Search Keywords</a></li>
 <li><a href="#debugging_output">Debugging Output</a></li>
 <li><a href="#mla_gallery_hooks">MLA Gallery Filters (Hooks)</a></li>
-</ul>
-</li>
+</ul></div>
+<div style="float:left; margin-left: 15px;"><a href="#mla_tag_cloud"><strong>MLA Tag Cloud Shortcode</strong></a>
+<ul style="list-style-position:inside; list-style:disc; line-height: 15px; padding-left: 20px">
+<li><a href="#tag_cloud_output">Tag Cloud Output Formats</a></li>
+<li><a href="#tag_cloud_items">Tag Cloud Item Parameters</a></li>
+<li><a href="#tag_cloud_link">Tag Cloud Item Link</a></li>
+<li><a href="#tag_cloud_display_style">Tag Cloud Display Style (list and grid)</a></li>
+<li><a href="#tag_cloud_display_content">Tag Cloud Display Content</a></li>
+<li><a href="#tag_cloud_data_selection">Tag Cloud Data Selection Parameters</a></li>
+<li><a href="#tag_cloud_debugging_output">Tag Cloud Debugging Output</a></li>
+<li><a href="#tag_cloud_substitution">Tag Cloud Substitution Parameters</a></li>
+<li><a href="#tag_cloud_pagination_parameters">Tag Cloud Pagination Parameters</a></li>
+<li><a href="#tag_cloud_pagination_example">A Tag Cloud Pagination Example</a></li>
+<li><a href="#mla_tag_cloud_hooks">MLA Tag Cloud Filters (Hooks)</a></li>
+</ul></div>
+<ul style="list-style-position:inside; list-style:disc; line-height: 18px; clear:both">
 <li>
 <a href="#mla_output"><strong>Support for Alternative Gallery Output, e.g., Pagination</strong></a>
 </li>
@@ -54,6 +66,9 @@
 <a href="#mla_template_parameters"><strong>Content Templates</strong></a>
 <li>
 <a href="#mla_table_example"><strong>A table-based Style and Markup template example</strong></a>
+</li>
+<li>
+<a href="#mla_text_widget"><strong>The MLA Text Widget</strong></a>
 </li>
 <li>
 <a href="#mla_views"><strong>Library Views/Post MIME Type Processing</strong></a>
@@ -330,10 +345,36 @@ The <code>[mla_gallery]</code> shortcode supports an additional Size value, "ico
 </p>
 <h4>Link</h4>
 <p>
-The Link parameter specifies the target for the link from the gallery to the attachment. The default value, "permalink" (or its synonym "post"), links to the attachment's media page. The "file" and "full" values link directly to the attachment file.
+The Link parameter specifies the target and type of link from the gallery item to the attachment or other destination. You can also specify a non-hyperlink treatment for the item.
 </p>
+<table>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">permalink, post</td>
+<td>Link to the attachment's "media page". This is the default value.</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">file, full</td>
+<td>Link directly to the attachment file.</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">thumbnail,&nbsp;medium,<br />large</td>
+<td>For image attachments, the size of the image file you want to link to.</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold; font-style:italic">(other registered size)</td>
+<td>For image attachments, any additional image size that was registered with add_image_size(). If the specified size is not available or if the attachment is not an image, the link will go directly to the attachment file.</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">span</td>
+<td>Substitutes a <code>&lt;span&gt;&lt;/span&gt;</code> tag for the hyperlink tag. You can use the "mla_link_attributes" and "mla_link_class" parameters to add attributes to the <code>&lt;span&gt;</code> tag. You can use the "mla_link_text" parameter to customize the text within the span.</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">none</td>
+<td>Eliminates the hyperlink tag surrounding the thumbnail image or text. You can use the "mla_link_text" parameter to customize the contents.</td>
+</tr>
+</table>
 <p>
-For image attachments you can also specify the size of the image file you want to link to. Valid values include "thumbnail", "medium", "large" and any additional image size that was registered with add_image_size(). If the specified size is not available or if the attachment is not an image, the link will go directly to the attachment file.
+&nbsp;
 <a name="include_exclude"></a>
 </p>
 <h4>Include, Exclude</h4>
@@ -483,7 +524,7 @@ The "mla_debug" parameter controls the display of information about the query pa
 </p>
 <h4>MLA Gallery Filters and Actions (Hooks)</h4>
 <p>
-The <code>[mla_gallery]</code> shortcode supports a comprehensive set of filters and actions the give you complete control over gallery composition from PHP code in your theme or in another plugin. An example of using the hooks from a simple, stand-alone plugin can be found here: <a title="View the Hooks Example source code" href="[+examples_url+]mla-hooks-example.php.txt" target="_blank" style="font-size:14px; font-weight:bold">mla-hooks-example.php.txt</a>. To run the example:
+The <code>[mla_gallery]</code> shortcode supports a comprehensive set of filters and actions that give you complete control over gallery composition from PHP code in your theme or in another plugin. An example of using the hooks from a simple, stand-alone plugin can be found here: <a title="View the Hooks Example source code" href="[+examples_url+]mla-hooks-example.php.txt" target="_blank" style="font-size:14px; font-weight:bold">mla-hooks-example.php.txt</a>. To run the example:
 <ol>
 <li>Edit the code to, for example, uncomment the <code>error_log()</code> calls so you can see what is passed to the hooks you are interested in.</li>
 <li>Remove the ".txt" extension and saving the "mla-hooks-example.php" file in your plugins directory.</li>
@@ -501,16 +542,24 @@ The example code documents each hook with comments in the filter/action function
 <td>called at the beginning of the gallery. You can record/modify shortcode parameter values before (attributes) or after (arguments) they are combined with all the defaults.</td>
 </tr>
 <tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">mla_gallery_initial_content</td>
+<td>called just after the <code>mla_gallery_attributes</code> filter, so you can inspect/modify any content enclosed by the <code>[mla_gallery]content[\mla_gallery]</code> "enclosing" shortcode format.</td>
+</tr>
+<tr>
 <td style="padding-right: 10px; vertical-align: top; font-weight:bold">mla_gallery_query_attributes,<br />mla_gallery_query_arguments</td>
-<td>called just before the <code>WP_Query->query()</code> call that selects gallery items, with query parameters beforee and after they are combined with defaults.</td>
+<td>called just before the <code>WP_Query->query()</code> call that selects gallery items, with query parameters before or after they are combined with defaults.</td>
 </tr>
 <tr>
 <td style="padding-right: 10px; vertical-align: top; font-weight:bold">mla_gallery_wp_query_object</td>
 <td>called just after the <code>WP_Query->query()</code> call, so you can inspect/record the results.</td>
 </tr>
 <tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">mla_gallery_final_content</td>
+<td>called just after the <code>mla_gallery_wp_query_object</code> filter, so you can inspect/modify any content enclosed by the <code>[mla_gallery]content[\mla_gallery]</code> "enclosing" shortcode format before it is passed to the alternative gallery shortcode.</td>
+</tr>
+<tr>
 <td style="padding-right: 10px; vertical-align: top; font-weight:bold">use_mla_gallery_style</td>
-<td>allow or suppress the inclusin of CSS styles in the gallery output.</td>
+<td>allow or suppress the inclusion of CSS styles in the gallery output.</td>
 </tr>
 <tr>
 <td style="padding-right: 10px; vertical-align: top; font-weight:bold">mla_gallery_style</td>
@@ -541,6 +590,725 @@ The example code documents each hook with comments in the filter/action function
 <td>for manipulating the "Close" part of the Markup template.</td>
 </tr>
 </table>
+<a name="mla_tag_cloud"></a>
+&nbsp;
+<p>
+<a href="#backtotop">Go to Top</a>
+</p>
+<h3>MLA Tag Cloud Shortcode</h3>
+<p>
+The <code>[mla_tag_cloud]</code> shortcode function displays a list of taxonomy terms in what is called a 'tag cloud', where the size of each term is determined by how many times that particular term has been assigned to Media Library items (attachments). The cloud works with both flat (e.g., Att. Tags) and hierarchical taxonomies (e.g., Att. Categories) MLA Tag Cloud provides many enhancements to the basic "cloud" display. These include:
+</p>
+<ul class="mla_settings">
+<li>Full support for WordPress categories, tags and custom taxonomies. You can select from any taxonomy or list of taxonomies defined in your site.</li>
+<li>Several display formats, including "flat","list" and "grid" (modeled after the <code>[mla_gallery]</code> display).</li>
+<li>Complete support for paginated clouds; display hundreds or thousands of terms in managable groups.</li>
+<li>Control over the styles, markup and content of each cloud using Style and Markup Templates. You can customize the "list" and "grid" formats to suit any need.</li>
+<li>Access to a wide range of content using the term-specific and Field-level Substitution parameters. A powerful Content Template facility lets you assemble content from multiple sources and vary the results depending on which data elements contain non-empty values for a given term.</li>
+<li>Display Style and Display Content parameters for easy customization of the cloud display and the destination of the links behind each term.
+</li>
+<li>A comprehensive set of filters gives you access to each step of the cloud generation process from PHP code in your theme or other plugins.
+</li>
+</ul>
+<p>
+Many of the <code>[mla_tag_cloud]</code> concepts and shortcode parameters are modeled after the <code>[mla_gallery]</code> shortcode, so the learning curve is short. Differences and parameters unique to the cloud are given in the sections below.
+<a name="tag_cloud_output"></a>
+</p>
+<h4>Tag Cloud Output Formats</h4>
+<p>
+The traditional tag cloud output is a "heat map" of term names where larger names are associated with more attachments than smaller names. The terms' display format is determined by the "mla_output" parameter:
+</p>
+<table>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">flat</td>
+<td>Returns a sequence of hypelink tags without further HTML markup. The "separator" parameter content (default, one newline character) is inserted between each hyperlink.</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">list</td>
+<td>Returns hyperlinks enclosed by one of the HTML list tags; unordered (&lt;ul&gt;&lt;/ul&gt;), ordered (&lt;ol&gt;&lt;/ol&gt;) or definitions (&lt;dl&gt;&lt;/dl&gt;), which allow for each term to have a "caption". The "itemtag", "termtag" and "captiontag" parameters customize the list markup.</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">grid</td>
+<td>Modeled on the galleries produced by <code>[mla_gallery]</code>; a rectangular display with rows and columns. The tag parameters listed above, the "columns" parameter and the Display Style parameters customize the display.</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">array</td>
+<td>Returns a PHP array of cloud hyperlinks. This output format is not available through the shortcode; it is allowed when the <code>MLAShortcodes::mla_tag_cloud()</code> function is called directly from your theme or plugin PHP code.</td>
+</tr>
+</table>
+<p>
+The "list" and "grid" formats can be extensively customized by using custom Style and Markup Templates. The <code>[mla_tag_cloud]</code> shortcode also supports pagination with "previous_link", "current_link", "next_link", "previous_page", "next_page" and "paginate_links" formats. These are essentially the same as those for the <code>[mla_gallery]</code> shortcode.
+<a name="tag_cloud_items"></a>
+</p>
+<h4>Tag Cloud Item Parameters</h4>
+<p>
+Each item in the tag cloud comprises a term name of varying size, a hyperlink surrounding the term name and a "title" attribute (Rollover Text) displayed when the cursor hovers over the term name hyperlink. The following parameters customize item content and markup:
+</p>
+<table>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">smallest</td>
+<td>The text size (default 8) of the tag with the smallest count value (units given by unit parameter).</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">largest</td>
+<td>The text size (default 22) of the tag with the highest count value (units given by the unit parameter).</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">unit</td>
+<td>Unit of measure as pertains to the smallest and largest values. This can be any CSS length value, e.g. pt (the default), px, em, %.</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">separator</td>
+<td>The text/space between tags. Default '\n' (whitespace)</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">single_text</td>
+<td>The text for the "title" attribute (Rollover Text) when the count value is one. The default is '%d item". If you change the default, don't forget to include the '%d" placeholder.</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">multiple_text</td>
+<td>The text for the "title" attribute (Rollover Text) when the count value is zero or more than one. The default is '%d items". If you change the default, don't forget to include the '%d" placeholder.</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">link</td>
+<td>Chooses the destination of the item hyperlink; details in the next section below.</td>
+</tr>
+</table>
+<p>
+The Item parameters are an easy way to customize the content and markup for each cloud item. For the list and grid formats you can also use the <a href="#tag_cloud_display_content">Tag Cloud Display Content parameters</a> and/or Style and Markup Templates for even greater flexibility.
+<a name="tag_cloud_link"></a>
+</p>
+<h4>Tag Cloud Item Link</h4>
+<p>
+The Link parameter specifies the target and type of link from the tag cloud term/item to the item's archive page, edit page or other destination. You can also specify a non-hyperlink treatment for each item.
+</p>
+<table>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">view</td>
+<td>Link to the term's "archive page"; this is the default value. Support for archive pages, or "tag archives", is theme-dependent. There is an introduction to tag archives in the WordPress Codex at the bottom of the <a href="http://codex.wordpress.org/Function_Reference/wp_tag_cloud#Creating_a_Tag_Archive" title="Codex Tag Archive Discussion" target="_blank"><code>wp_tag_cloud</code> Function Reference</a>.</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">edit</td>
+<td>Link to the term's "edit tag/category" admin screen. This is only useful if the user is logged in and has the appropriate role or capabilities for accessing the edit screen.</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold; font-style:italic">(mla_link_href)</td>
+<td>Link to a custom destination, typically another post/page. If the "mla_link_href" parameter is present the value of the "link" parameter is ignored. See the pagination example later in this section for more details.</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">span</td>
+<td>Substitutes a <code>&lt;span&gt;&lt;/span&gt;</code> tag for the hyperlink tag. You can use the "mla_link_attributes" and "mla_link_class" parameters to add attributes to the <code>&lt;span&gt;</code> tag. You can use the "mla_link_text" parameter to customize the text within the span.</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">none</td>
+<td>Eliminates the hyperlink tag surrounding the item text. You can use the "mla_link_text" parameter to customize the contents.</td>
+</tr>
+</table>
+<p>
+Using the "mla_link_href" parameter to completely replace the link destination URL is a common and useful choice. With this parameter us can use the tag cloud to select a term and then go to another post/page that uses that selection as part of an <code>[mla_gallery]</code> shortcode. The pagination example later in this section uses this technique. 
+<a name="tag_cloud_display_style"></a>
+</p>
+<h4>Tag Cloud Display Style (list and grid)</h4>
+<p>
+Two parameters provide a way to apply custom style and markup templates to your <code>[mla_tag_cloud]</code> display. These parameters replace the default style and/or markup templates with templates you define on the "MLA Gallery" tab of the Settings page. Templates are supported for the "list" and "grid" cloud formats.
+</p>
+<table>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">mla_style</td>
+<td>replaces the default style template for an <code>[mla_tag_cloud]</code> shortcode. You can code "none" to suppress the addition of CSS inline styles entirely.</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">mla_markup</td>
+<td>replaces the default markup template for an <code>[mla_tag_cloud]</code> shortcode</td>
+</tr>
+</table>
+<p>
+Three parameters provide control over the placement, size and spacing of terms in the "grid" format without requiring the use of custom Style templates.
+</p>
+<table>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">mla_float</td>
+<td>specifies the CSS float attribute of the ".tag-cloud-item" style. Acceptable values are "left", "none", "right"; the default value is "right" if current locale is RTL, "left" on LTR (left-to-right inline flow, e.g., English).</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">mla_margin</td>
+<td>specifies the CSS margin property of the ".tag-cloud-item" style. The default value is "1.5%", a percent of the total grid width. You can also specify any dimension value, e.g., "10px" or "2em", as well as the "auto" or "inherit" values. Finally, you can specify "none", which will remove the margin property from the styles template altogether.</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">mla_itemwidth</td>
+<td>specifies the CSS width attribute of the ".tag-cloud-item" style. You can specify a percent of the total grid width, e.g., "33.3%". You can also specify any dimension value, e.g., "10px" or "2em", as well as the "auto" or "inherit" values. You can specify "none", which will remove the margin property from the styles template altogether.
+<br />&nbsp;<br />
+Two additional values, "calculate" (the default) and "exact",  calculate the width automatically, based on the "columns" and "mla_margin" values. For "calculate", the width is calculated by dividing 100% by the number of columns, then subtracting twice the margin. For example, the default value is (floor(1000/3)/10) - ( 2.0 * 1.5 ) = 30.3%. Adding in the left and right margins makes each column 33.3% and the total width will be 99.9%
+<br />&nbsp;<br />
+For the "exact" value, the calculation is the same but the margin is ignored, so the width value would be 33.3%.</td>
+</tr>
+</table>
+<p>
+The default margin and width calculations try to make the total width of each row as close to 100% as possible, but never exceed 100% due to rounding errors. If you have more advanced style and format needs, you can define custom style and/or markup templates. You can also code <code>mla_style=none</code> to suppress inline styles entirely and use a separate stylesheet to control the format of the grid.
+<a name="tag_cloud_display_content"></a>
+</p>
+<h4>Tag Cloud Display Content</h4>
+<p>
+Eight parameters provide an easy way to control the contents of tag cloud items without requiring the use of custom Markup templates.  
+</p>
+<table>
+<tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">mla_link_attributes</td>
+<td>adds one or more HTML attributes to the hyperlink for each item; see below</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">mla_link_class</td>
+<td><strong>adds</strong> one or more classes to any already defined for the hyperlink </td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">mla_link_href</td>
+<td>replaces the HTML "href" attribute in the hyperlink for each item; see below</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">mla_link_text</td>
+<td>replaces the term name text displayed for each item</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">mla_nolink_text</td>
+<td>replaces the empty string displayed when there are no cloud items or no pagination link</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">mla_rollover_text</td>
+<td>replaces the HTML "title" attribute in the hyperlink for each item. This is the attachment title text displayed when the mouse rolls or hovers over the term name</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">mla_caption</td>
+<td>replaces the caption text displayed beneath each item. The caption appears for "grid" items and for "list" items when the "captiontag" parameter is present.</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">mla_target</td>
+<td>adds an HTML "target" attribute to the hyperlink for each gallery item; see below</td>
+</tr>
+<tr>
+</table>
+<p>
+All but the "mla_target" parameter support the <a href="#tag_cloud_markup_parameters">Markup</a>, <a href="#tag_cloud_item_parameters">Item-specific</a>, <a href="#tag_cloud_variable_parameters">Field-level</a> and <a href="#mla_template_parameters">Content Template</a> substitution arguments defined for Markup Templates. For example, if you code "<code>mla_rollover_text='{+slug+} : {+rollover_text+}'</code>, the rollover text will contain the term slug, a colon, and the appropriate "single text" or "multiple text". Simply add "{+" before the substitution parameter name and add "+}" after the name. Note that the enclosing delimiters are different than those used in the templates, since the WordPress shortcode parser reserves square brackets ("[" and "]") for its own use.
+</p>
+<p>
+The "mla_link_href" parameter is a great way to change the destination your cloud item links to and/or add arguments to the link for later processing. For example, to make a gallery item link back to the current page/post you can code: <code>mla_link_href='{+page_url+}'</code>. You can also add arguments to the link, e.g., <code>mla_link_href='{+page_url+}&amp;amp;myarg=myvalue'</code>. Note the use of the HTML entity name "&amp;amp;" to put an ampersand in the value; the WordPress "visual" post editor will replace "&", "<" and ">" with "&amp;amp;", "&amp;lt;" and "&amp;gt;" whether you like it not. The <strong>only</strong> markup parameters modified by this parameter are "link_url" and "thelink". The markup parameters "viewlink" and "editlink" are not modified.
+</p>
+<p>
+The "mla_link_attributes" parameter accepts any value and adds it to the "&lt;a&gt;" or "&lt;span&gt;" tags for the item. For example, you can add a unique identifier to each item by adding <code>mla_link_attributes='id="{+selector}-{+index+}"'</code> to your shortcode (note the use of single quotes around the parameter value and the double quotes within the parameter). <strong>IMPORTANT:</strong> since the shortcode parser reserves square brackets ("[" and "]") for its own use, <strong>you must substitute curly braces for square brackets</strong> if your attributes require brackets. If you must code a curly brace in your attribute value, preface it with <strong>two backslash characters</strong>, e.g., "\\{" or "\\}". If you code an attribute already present in the tag, your value will override the existing value.
+</p>
+<p>
+The "mla_target" parameter accepts any value and adds an HTML "target" attribute to the hyperlink with that value. For example, if you code <code>mla_target="_blank"</code> the item will open in a new window or tab. You can also use "_self", "_parent", "_top" or the "<em>framename</em>" of a named frame.
+<a name="tag_cloud_data_selection"></a>
+</p>
+<h4>Tag Cloud Data Selection Parameters</h4>
+<p>
+The data selection parameters specify which taxonomy (or taxonomies) the terms are taken from, which terms are returned for the cloud and the order in which the terms are returned:
+</p>
+<table>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">taxonomy</td>
+<td>The taxonomy or taxonomies to retrieve terms from. Use the name/slug of each taxonomy, not the display name, e.g., 'post_tag', category', 'attachment_tag', or 'attachment_category'. You can specify multiple taxonomies as a comma-separated string or (if you are calling <code>MLAShortcodes::mla_tag_cloud()</code> function directly from your theme or plugin PHP code) as an array.</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">include</td>
+<td>A comma-separated list of term ids (<strong>not</strong> names or slugs) to include. Only the terms in this list that are used in the taxonomies you specified will be retrieved.</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">exclude</td>
+<td>A comma-separated list of term ids (<strong>not</strong> names or slugs) to exclude from the returned values.</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">parent</td>
+<td>Get direct children of this term (only terms whose explicit parent is this value). If 0 is passed, only top-level terms are returned.</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">minimum</td>
+<td>The minimum number of attachments that must be associated with the term for the term to be included. For example, "minimum=1" will omit "empty" terms.</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">number</td>
+<td>The maximum number of "most popular" terms to return. The default, zero, returns them all. Terms are sorted by "count DESC, id ASC" to apply this constraint.</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">orderby</td>
+<td>The sort order of the retrieved terms. Can be one or more of "count", "id" (term_id), "name" (the default), "none", "random", or "slug".</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">order</td>
+<td>Can be "ASC" (ascending, the default) or "DESC" (descending).</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">preserve_case</td>
+<td>Preserve upper- and lower-case distinctions when sorting by name. The default, "false", specifies a case-insensitive sort order.</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">limit</td>
+<td>The number of terms to return. This parameter is used for pagination; it is applied <strong>after</strong> and separate from the "number" parameter above.</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">offset</td>
+<td>The number of terms to skip before returning the results. This parameter is used for pagination.</td>
+</tr>
+</table>
+<p>
+You can sort on more than one value, e.g., <code>orderby="author, date DESC"</code> and you can specify ASC/DESC on a value by value basis. <strong>NOTE: multiple orderby values are separated by commas, not spaces.</strong> This is a change from WP_Query.
+<a name="tag_cloud_debugging_output"></a>
+</p>
+<h4>Debugging Output</h4>
+<p>
+The "mla_debug" parameter controls the display of information about the query parameters and SQL statements used to retrieve tag cloud items. If you code <code>mla_debug=true</code> you will see a lot of information added to the post or page containing the cloud. Of course, this parameter should <strong><em>ONLY</em></strong> be used in a development/debugging environment; it's quite ugly.
+<a name="tag_cloud_substitution"></a>
+</p>
+<h4>Tag Cloud Substitution Parameters</h4>
+<p>
+Style and Markup templates give you great flexibility for the content and format of each [mla_tag_cloud] when you use the "list" and "grid" output formats. You can define as many templates as you need. 
+</p>
+<p>
+Style templates provide cloud-specific CSS inline styles (you can code mla_style=none to suppress the addition of CSS inline styles entirely). Markup templates provide the HTML markup for 1) the beginning of the cloud, 2) the beginning of each row ("grid" format), 3) each cloud item, 4) the end of each row ("grid" format) and 5) the end of the cloud. The MLA Gallery tab on the Settings page lets you add, change and delete custom templates. The default templates are also displayed on this tab for easy reference. 
+</p>
+<p>
+For the "grid" output format, all of the Markup template sections are used. For the "list" output format, only the "Open", "Item" and "Close" sections are used. There are two default templates for the "list" format; "tag-cloud-ul" and "tag-cloud-dl". As the names imply, the "tag-cloud-dl" default is used when the "captiontag" parameter is present in the shortcode. If you name a custom Markup template in your shortcode, it will be used whether the "captiontag" is present or not.
+</p>
+<p>
+The following <strong>field-level substitution parameters</strong> are available in the Style template and any of the Markup template sections:</p>
+<table>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">request</td>
+<td>The parameters defined in the <code>$_REQUEST</code> array; the "query strings" sent from the browser. The PHP $_REQUEST variable is a superglobal Array that contains the contents of both $_GET, $_POST, and $_COOKIE arrays.</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">query</td>
+<td>The parameters defined in the <code>[mla_tag_cloud]</code> shortcode. For example, if your shortcode is <code>[mla gallery taxonomy=attachment_tag div-class=some_class]</code> you can access the parameters as <code>[+query:taxonomy+]</code> and <code>[+query:div-class+]</code> respectively. You can define your own parameters, e.g., "div-class"; they will be accessible as field-level data but will otherwise be ignored.</td>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">template</td>
+<td>A Content Template, which lets you compose a value from multiple substitution parameters and test for empty values, choosing among two or more alternatives or suppressing output entirely. See the <a href="#mla_template_parameters">Content Templates</a> section for details. Note that the formatting option is not supported for content templates.</td>
+</tr>
+</table>
+<p>
+Tag cloud substitution parameters for the <strong>Style template</strong> are:
+</p>
+<table>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">mla_style</td>
+<td>shortcode parameter, default = 'tag-cloud'</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">mla_markup</td>
+<td>shortcode parameter, default = 'tag-cloud-ul', or 'tag-cloud-dl' if the "captiontag" parameter is present.</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">instance</td>
+<td>starts at '1', incremented for each additional shortcode in the post/page</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">taxonomy</td>
+<td>the slug of the taxonomy on which the cloud is based. Multiple taxonomy slugs are joined with a dash to form a single value.</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">itemtag</td>
+<td>shortcode parameter, default = 'ul', or 'dl' if the "captiontag" parameter is present.</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">termtag</td>
+<td>shortcode parameter, default = 'li', or 'dd' if the "captiontag" parameter is present.</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">captiontag</td>
+<td>shortcode parameter, default = '', i.e., no caption tag value.</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">columns</td>
+<td>shortcode parameter, default = '3'; only meaningful for the "grid" output format.</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">itemwidth</td>
+<td>shortcode parameter, default is calculated by dividing 100% by the number of columns and subtracting twice the margin value, e.g., 30.3% for three columns and a margin value of 1.5%. Can also contain other dimensional values such as '10px' or CSS-specific values like 'auto' or 'inherit'.</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">margin</td>
+<td>shortcode parameter, default = '1.5%'. Can also contain other dimensional values such as '10px' or CSS-specific values like 'auto' or 'inherit'.</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">float</td>
+<td>'right' if current locale is RTL, 'left' if not</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">selector</td>
+<td>"mla_gallery-{$instance}", e.g., mla_gallery-1</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">found_rows</td>
+<td>the number of terms retrieved for the cloud</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">min_count</td>
+<td>the smallest number of attachments associated with any term</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">max_count</td>
+<td>the largest number of attachments associated with any term</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">min_scaled_count</td>
+<td>the smallest scaled count associated with any term</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">max_scaled_count</td>
+<td>the largest scaled count associated with any term</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">spread</td>
+<td>max_scaled_count - min_scaled_count</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">smallest</td>
+<td>the text size of the tag with the smallest count value</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">largest</td>
+<td>the text size of the tag with the largest count value</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">unit</td>
+<td>Unit of measure as pertains to the smallest and largest values</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">font_spread</td>
+<td>largest - smallest</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">font_step</td>
+<td>font_spread / spread</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">separator</td>
+<td>The text/space between tags</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">single_text</td>
+<td>Rollover Text when the count value is one</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">multiple_text</td>
+<td> Rollover Text when the count value is zero or more than one</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">echo</td>
+<td>whether the output is echoed directly to the browser (true) or returned to the caller (false). For a shortcode, always false.</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">link</td>
+<td>the destination of the item hyperlink</td>
+</tr>
+</table>
+<p>
+Tag cloud substitution parameters for the <strong>Markup template</strong> are available in all of the template sections. They include all of the parameters defined above (for the Style template). Additional markup-specific parameters are:
+</p>
+<table>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">site_url</td>
+<td>absolute URL to the site directory, without trailing slash</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">page_ID</td>
+<td>the ID value of the page or post on which the tag cloud appears, if any.</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">page_url</td>
+<td>absolute URL to the page or post on which the tag cloud appears, if any, with trailing slash</td>
+</tr>
+</table>
+<p>
+Tag cloud <strong>item-specific substitution parameters</strong> for the Markup template are available in the "Item" section of the template. They include all of the parameters defined above (for the Style and Markup templates) Additional item-specific parameters are:
+</p>
+<table>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">index</td>
+<td>starts at '1', incremented for each item in the cloud</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">last_in_row</td>
+<td>for the "grid" output format, set to "last_in_row" for the last item in each full cloud row, and to an empty string for all other items in the row. If the cloud ends with a partial row, the last_in_row parameter is not set.</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">key</td>
+<td>set to the "tags" array key/index value. Only useful if the <code>mla_get_terms_query_results()</code> filter has altered the array keys.</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">term_id</td>
+<td>the term id</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">name</td>
+<td>the term display name</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">slug</td>
+<td>the term slug</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">term_group</td>
+<td>the term group</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">term_taxonomy_id</td>
+<td>the term-taxonomy id</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">taxonomy</td>
+<td>the primary taxonomy for this term</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">description</td>
+<td>the term description, if any</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">parent</td>
+<td>the direct parent of the term</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">count</td>
+<td>the number of attachments associated with the term</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">scaled_count</td>
+<td>scaled count value, for determining font size. The default fomula for scaling the count is <code>round(log10($tag->count + 1) * 100)</code></td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">font_size</td>
+<td>the numeric portion of the CSS "font-size" attribute</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">link_url</td>
+<td>the URL portion of "thelink" (below). Derived from editlink_url, termlink_url or mla_link_href.</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">editlink_url</td>
+<td>URL of the term's "edit category/tag" page</td></tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">termlink_url</td>
+<td>URL of the term's archive page</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">caption</td>
+<td>if captiontag is not empty, contains term description or the mla_caption value</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">link_attributes</td>
+<td>link attributes, if any, drawn from the mla_target, mla_link_attributes and mla_link_class parameters</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">rollover_text</td>
+<td>the "title" attribute value, drawn from single_text/multiple_text or the mla_rollover_text parameters</td>
+</tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">link_style</td>
+<td>the CSS "style" attribute, drawn from the font_size and unit parameters</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">link_text</td>
+<td>the text enclosed by the hyperlink, drawn from the term name or mla_link_text parameter</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">editlink</td>
+<td>full hyperlink to the term's "edit category/tag" page, including all the Display Content parameters</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">termlink</td>
+<td>full hyperlink to the term's archive page, including all the Display Content parameters</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">thelink</td>
+<td>full hyperlink to the chosen destination as determined by the "link" and "mla_link_href" parameters</td>
+</tr>
+</table>
+<p>
+&nbsp;
+<a name="tag_cloud_pagination_parameters"></a>
+</p>
+<h4>Tag Cloud Pagination Parameters</h4>
+<p>
+If you have a large number of terms in your cloud taxonomy you may want to paginate the cloud display, i.e., divide the cloud into two or more pages of a reasonable size. Pagination support for <code>[mla_tag_cloud]</code> is modeled on similar functions for<code>[mla_gallery]</code>, and you can find more explaination of the ideas behind pagination in the <a href="#mla_output"><strong>Support for Alternative Gallery Output, e.g., Pagination</strong></a> section. Five parameters are supplied for this purpose:
+<table>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">limit</td>
+<td>the maximum number of terms to display in one cloud "page". Think of this as a "terms per page" value.</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">offset</td>
+<td>the number of terms to skip over before starting the current cloud page. This parameter is usually derived automatically from the more useful "mla_cloud_current" parameter.</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">mla_page_parameter</td>
+<td>the name of the parameter containing the current page number; default "mla_cloud_current". You can change the name if you need multiple paginated clouds on one post/page.</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">mla_cloud_current</td>
+<td>the current cloud page number. The name of this parameter can be changed to support multiple paginated clouds on one post/page. This parameter will automatically be added to the URLs generated by pagination output types and managed for you.</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">term_id</td>
+<td>the id of the current term within the cloud. This parameter is used with the "previous_link", "current_link" and "next_link" output types. You <strong>must</strong> supply a term_id value when using these output types.</td>
+</tr>
+</table>
+<p>
+The <code>[mla_tag_cloud]</code> shortcode can be used to provide "Previous" and "Next" links that support moving among the individual items in a cloud or among cloud "pages". For example, if you have many terms in your Att. Category or Att. Tag taxonomies you can build a term-specific <code>[mla_gallery]</code> page with links to the previous/next term in the taxonomy (a complete pagination example is included below). You can also build a page that shows a large taxonomy in groups, or "cloud pages", of ten terms with links to the previous/next ten terms or links to all of the cloud pages of terms in the taxonomy.
+<p>
+The <strong>"mla_output"</strong> parameter determines the type of output the shortcode will return. For pagination output, you can choose from six values: 
+</p>
+<table>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">next_link</td>
+<td>returns a link to the next cloud item, based on the "term_id" parameter value. The optional "<strong>,wrap</strong>" qualifier determines what happens at the end of the cloud. If you omit the qualifier, an empty string is returned for the "next_link" from the last item. If you code the ",wrap" qualifier, the "next_link" from the last item will be to the first item.</td>
+</tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">current_link</td>
+<td>returns a link to the current cloud item, based on the "term_id" parameter value. This gives you an easy way to provide a visual indication of where you are within the taxonomy. The "span" and  "none" link formats are often used with this mla_output type.</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">previous_link</td>
+<td>returns a link to the previous cloud item, based on the "term_id" parameter value. The optional "<strong>,wrap</strong>" qualifier determines what happens at the beginning of the cloud. If you omit the qualifier, an empty string is returned for the "previous_link" from the first item. If you code the ",wrap" qualifier, "previous_link" from the gallery item will be to the last item.</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">next_page</td>
+<td>returns a link to the next "page" of cloud items, based on the "mla_cloud_current" parameter value. The optional "<strong>,wrap</strong>" or "<strong>,last</strong>" qualifiers determine what happens at the end of the taxonomy. If you omit the qualifier, an empty string is returned for the "next_page" if there are no more items in the taxonomy. If you code the ",wrap" qualifier, the "next_page" from the last page of items will be to the first page. If you code the ",last" qualifier, the "next_page" link will return to/remain on the last page.</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">previous_page</td>
+<td>returns a link to the previous "page" of cloud items, based on the "mla_cloud_current" parameter value. The optional "<strong>,wrap</strong>" or "<strong>,first</strong>" qualifiers determine what happens at the beginning of the taxonomy. If you omit the qualifier, an empty string is returned for the "previous_link" from the first page. If you code the ",wrap" qualifier, "previous_page" from the first page will be to the last page. If you code the ",first" qualifier, the "previous_link" link will return to/remain on the first page.</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">paginate_links</td>
+<td>returns a link to cloud items at the start and end of the list and to pages around the current "cloud page" ( e.g.: &laquo; Previous 1 ... 3 4 5 6 7 ... 9 Next &raquo; ), based on the "mla_cloud_current" parameter value. The optional "<strong>,show_all</strong>" qualifier will show all of the cloud pages instead of a short list around the current page. The optional "<strong>,prev_next</strong>" qualifier will include the "&laquo; Previous" and "Next &raquo;" portions of the link list.</td>
+</tr>
+</table>
+<p>
+The best way to understand cloud pagination is by example, as in the next section below.
+<a name="tag_cloud_pagination_example"></a>
+</p>
+<h4>Tag Cloud Pagination Example</h4>
+<p>
+This section takes you through several of the <code>[mla_tag_cloud]</code> features, step by step. Let's start with a very simple cloud showing all of the terms in the "Att. Category" taxonomy:
+</p>
+<p>
+<code>[mla_tag_cloud taxonomy=attachment_category number=0]</code>
+</p>
+<p>
+The "number=0" parameter overrides the default maximum of 45 terms, showing all of the terms in the taxonomy. Let's paginate the cloud and limit the terms display to ten terms per "page":
+</p>
+<p>
+<code>[mla_tag_cloud taxonomy=attachment_category number=0 limit=10]<br />
+[mla_tag_cloud taxonomy=attachment_category number=0 limit=10  mla_output="paginate_links,prev_next"]</code>
+</p>
+<p>
+The "limit=10" parameter (on <strong>both</strong> shortcodes) limits the term display to ten terms. The second <code>[mla_tag_cloud]</code> shortcode, adding the 'mla_output="paginate_links,prev_next"' parameter, displays a line of pagination links below the cloud page. Coordination between the two shortcodes is automatic, using the "mla_cloud_current" parameter added to the URLs by the shortcode.
+</p>
+<p>Now we'll make the cloud a convenient way to control a term-specific <code>[mla_gallery]</code>. The next step uses the "mla_link_href" parameter to change the link destination of each cloud term, returning to the current page with the term id of the selected term. We also add the "mla_cloud_current" parameter to each of these new links, so the tag cloud page is retained when a term is selected:
+</p>
+<p>
+<code>[mla_tag_cloud taxonomy=attachment_category number=0 limit=10 mla_link_href="{+page_url+}?current_id={+term_id+}&amp;amp;mla_cloud_current={+request:mla_cloud_current+}]<br />
+[mla_tag_cloud taxonomy=attachment_category number=0 limit=10  mla_output="paginate_links,prev_next"]</code>
+</p>
+<p>
+The "&amp;amp;" before the "mla_cloud_current" parameter is required to get by the WordPress Visual Editor. The "{+request:mla_cloud_current+}" value copies the current page number from the URL ($_REQUEST array) and adds it to each term's link. Now, let's use the "current_id={+term_id+}" information in the link to compose a term-specific <code>[mla_gallery]</code>: 
+</p>
+<p>
+<code>[mla_tag_cloud taxonomy=attachment_category number=0 limit=10 mla_link_href="{+page_url+}?current_id={+term_id+}&amp;amp;mla_cloud_current={+request:mla_cloud_current+}]<br />
+[mla_tag_cloud taxonomy=attachment_category number=0 limit=10  mla_output="paginate_links,prev_next"]
+<br />&nbsp;<br />
+[mla_gallery post_mime_type=all tax_query="array ( 0 => array ( 'taxonomy' => 'attachment_category', 'field' => 'id', 'terms' => array( {+request:current_id+} ), 'include_children' => false ) )" mla_caption="{+title+}" columns=5 size=icon link=file]</code>
+</p>
+<p>
+The most complicated part of the new shortcode is the "tax_query" parameter, which we're using to ensure that the gallery items displayed match the count displayed for each term in the tag cloud. The tag cloud count does not contain items associated with any "child terms", or sub-categories, of the cloud item. To match this count we must use the "include_children=false" and "field=id" parameters of the "tax_query".
+</p>
+<p>
+We can easily paginate the term-specific gallery by adding a second <code>[mla_gallery]</code> shortcode and a "posts_per_page" parameter to both shortcodes:
+</p>
+<p>
+<code>[mla_tag_cloud taxonomy=attachment_category number=0 limit=10 mla_link_href="{+page_url+}?current_id={+term_id+}&amp;amp;mla_cloud_current={+request:mla_cloud_current+}]<br />
+[mla_tag_cloud taxonomy=attachment_category number=0 limit=10  mla_output="paginate_links,prev_next"]
+<br />&nbsp;<br />
+[mla_gallery post_mime_type=all tax_query="array ( 0 => array ( 'taxonomy' => 'attachment_category', 'field' => 'id', 'terms' => array( {+request:current_id+} ), 'include_children' => false ) )" mla_caption="{+title+}" columns=5 posts_per_page=5 size=icon link=file]
+<br />&nbsp;<br />
+[mla_gallery post_mime_type=all tax_query="array ( 0 => array ( 'taxonomy' => 'attachment_category', 'field' => 'id', 'terms' => array( {+request:current_id+} ), 'include_children' => false ) )" columns=5 posts_per_page=5 mla_output="paginate_links,prev_next"]</code>
+</p>
+<p>
+The pagination controls for the tag cloud and the gallery operate independently because by default they use different names for their respective "_current" page parameters. Our page now has a lot of functionality without requiring any WordPress templates or PHP code.
+</p>
+<p>
+For extra credit, let's add some more navigation options to the page. We'll build previous, current and next term links at the bottom of the page. These are enclosed in an HTML table so they all appear on one line of the page. Here is just the additional content; the table of three link navigation controls:
+</p>
+<p>
+<code>
+&lt;table width=99%&gt;&lt;tr&gt;<br />
+&lt;td width=33% style="text-align: left"&gt;[mla_tag_cloud taxonomy=attachment_category number=0 term_id="{+request:current_id+}" mla_output="previous_link" smallest=12 largest=12 mla_link_href="{+page_url+}?current_id={+term_id+}" mla_link_text="Previous: {+name+}"]&lt;/td&gt;<br />&nbsp;<br />
+&lt;td width=33% style="text-align: center; font-weight: bold:"&gt;[mla_tag_cloud taxonomy=attachment_category number=0 term_id="{+request:current_id+}" mla_output=current_link smallest=12 largest=12 mla_link_text="Current: {+name+}" link=span]&lt;/td&gt;<br />&nbsp;<br />
+&lt;td width=33% style="text-align: right"&gt;[mla_tag_cloud taxonomy=attachment_category number=0 term_id="{+request:current_id+}" mla_output="next_link" smallest=12 largest=12 mla_link_href="{+page_url+}?current_id={+term_id+}" mla_link_text="Next: {+name+}"]&lt;/td&gt;<br />
+&lt;/tr&gt;&lt;/table&gt;
+</code>
+</p>
+<p>
+The "smallest=12" and "largest=12" parameters make "font-size" the same for all of the term names regardless of how many items are associated with the term. The "mla_link_text" parameters add labels to each of the three navigation links. Finally, the "link=span" parameter in the middle ("mla_output=current_link") shortcode removes the hyperlink behind the term name, since it would just take you back to the page you're already on.
+<a name="mla_tag_cloud_hooks"></a>
+</p>
+<h4>MLA Tag Cloud Filters (Hooks)</h4>
+<p>
+The <code>[mla_tag_cloud]</code> shortcode supports a comprehensive set of filters that give you complete control over cloud composition from PHP code in your theme or in another plugin. An example of using the hooks from a simple, stand-alone plugin can be found here: <a title="View the Tag Cloud Hooks Example source code" href="[+examples_url+]mla-cloud-hooks-example.php.txt" target="_blank" style="font-size:14px; font-weight:bold">mla-cloud-hooks-example.php.txt</a>. To run the example:
+<ol>
+<li>Edit the code to, for example, uncomment the <code>error_log()</code> calls so you can see what is passed to the hooks you are interested in.</li>
+<li>Remove the ".txt" extension and save the "mla-cloud-hooks-example.php" file in your plugins directory. You can give the plugin and it file any (unique) name you like.</li>
+<li>Go to the Plugins/Installed Plugins screen and activate the "MLA Tag Cloud Hooks Example" plugin.</li>
+<li>Create a new <code>[mla_tag_cloud]</code> shortcode or modify an existing shortcode, adding the <code>my_filter="color cloud"</code> parameter to activate the example output.</li>
+<li>View the post or page on which the modified shortcode appears to see a tag cloud with a range of colors applied to the terms.</li>
+</ol>
+</p>
+<p>
+The example code documents each hook with comments in the filter/action function that intercepts each hook. Generally, each part of the gallery supports three hooks: 1) a "<strong>values</strong>" hook, which lets you record or update the substitution values for that gallery part, 2) a "<strong>template</strong>" hook, which lets you record/update the template used to generate the HTML markup, and 3) a "<strong>parse</strong>" hook which lets you modify or replace the markup generated for a gallery part. The current hooks are:
+</p>
+<table>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">mla_tag_cloud_attributes,<br />mla_tag_cloud_arguments</td>
+<td>called at the beginning of the cloud generation. You can record/modify shortcode parameter values before (attributes) or after (arguments) they are combined with all the defaults.</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">mla_get_terms_query_attributes,<br />mla_get_terms_query_arguments</td>
+<td>called just before the <code>WP_Query->query()</code> call that selects gallery items, with query parameters before or after they are combined with defaults.</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">mla_get_terms_query_results</td>
+<td>called just after the <code>$wpdb->get_results</code> call, so you can inspect/record or modify the results.</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">mla_tag_cloud_scale</td>
+<td>called as the scaled_count (size) of each term is calculated, so you can modify the results.</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">use_mla_tag_cloud_style</td>
+<td>allow or suppress the inclusion of CSS styles in the tag cloud output.</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">mla_tag_cloud_style_values,<br /> mla_tag_cloud_style_template,<br />mla_tag_cloud_style_parse</td>
+<td>for manipulating the Style template.</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">mla_tag_cloud_open_values,<br />mla_tag_cloud_open_template,<br />mla_tag_cloud_open_parse</td>
+<td>for manipulating the "Open" part of the Markup template used in a "list" or "grid" cloud.</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">mla_tag_cloud_row_open_values,<br />mla_tag_cloud_row_open_template,<br />mla_tag_cloud_row_open_parse</td>
+<td>for manipulating the "Row Open" part of the Markup template used in a "grid" cloud.</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">mla_tag_cloud_item_values,<br />mla_tag_cloud_item_template,<br />mla_tag_cloud_item_parse</td>
+<td>for manipulating the "Item" part of the Markup template used in a "list" or "grid" cloud.</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">mla_tag_cloud_row_close_values,<br />mla_tag_cloud_row_close_template,<br />mla_tag_cloud_row_close_parse</td>
+<td>for manipulating the "Row Close" part of the Markup template used in a "grid" cloud.</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">mla_tag_cloud_close_values,<br />mla_tag_cloud_close_template,<br />mla_tag_cloud_close_parse</td>
+<td>for manipulating the "Close" part of the Markup template used in a "list" or "grid" cloud.</td>
+</tr>
+</table>
 <a name="mla_output"></a>
 &nbsp;
 <p>
@@ -548,11 +1316,11 @@ The example code documents each hook with comments in the filter/action function
 </p>
 <h3>Support for Alternative Gallery Output, e.g., Pagination</h3>
 <p>
-The <code>[mla_gallery]</code> shortcode can be used to provide "Previous" and "Next" links that support moving among the individual items in a gallery or among gallery "pages". For example, if you have many items with a specific Att. Category or Att. Tag value you can build a single-image page with links to the previous/next item having that value. You can also build a page that shows a large gallery in groups, or "gallery pages", of ten items with links to the previous/next ten items or links to all of the gallery pages of items having that value. Finally, you can get a set of links to all pages in the gallery or links around the current page ( e.g.: &larr; Prev 1 … 3 4 5 6 7 … 9 Next &rarr; ).
+The <code>[mla_gallery]</code> shortcode can be used to provide "Previous" and "Next" links that support moving among the individual items in a gallery or among gallery "pages". For example, if you have many items with a specific Att. Category or Att. Tag value you can build a single-image page with links to the previous/next item having that value. You can also build a page that shows a large gallery in groups, or "gallery pages", of ten items with links to the previous/next ten items or links to all of the gallery pages of items having that value. Finally, you can get a set of links to all pages in the gallery or links around the current page ( e.g.: &laquo; Previous 1 ... 3 4 5 6 7 ... 9 Next &raquo; ).
 </p>
 <h4>The <code>mla_output</code> parameter</h4>
 <p>
-The <strong>"mla_output"</strong> parameter determines the type of output the shortcode will return. Explanation and examples of each output type are given later in this section. You can choose from six values:
+The <strong>"mla_output"</strong> parameter determines the type of output the shortcode will return. Explanation and examples of each output type are given later in this section. You can choose from seven values:
 </p>
 <table>
 <tr>
@@ -562,6 +1330,9 @@ The <strong>"mla_output"</strong> parameter determines the type of output the sh
 <tr>
 <td style="padding-right: 10px; vertical-align: top; font-weight:bold">next_link</td>
 <td>returns a link to the next gallery item. The optional "<strong>,wrap</strong>" qualifier determines what happens at the end of the gallery. If you omit the qualifier, an empty string is returned for the "next_link" from the last item in the gallery. If you code the ",wrap" qualifier, the "next_link" from the last item will be to the first gallery item.</td>
+</tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">current_link</td>
+<td>returns a link to the current gallery item. This gives you an easy way to provide a visual indication of where you are within the overall gallery. The "span" and  "none" link formats are often used with this mla_output type.</td>
 </tr>
 <tr>
 <td style="padding-right: 10px; vertical-align: top; font-weight:bold">previous_link</td>
@@ -577,7 +1348,7 @@ The <strong>"mla_output"</strong> parameter determines the type of output the sh
 </tr>
 <tr>
 <td style="padding-right: 10px; vertical-align: top; font-weight:bold">paginate_links</td>
-<td>returns a link to gallery items at the start and end of the list and to pages around the current "gallery page" ( e.g.: &larr; Prev 1 … 3 4 5 6 7 … 9 Next &rarr; ). The optional "<strong>,show_all</strong>" qualifier will show all of the gallery pages instead of a short list around the current page. The optional "<strong>,prev_next</strong>" qualifier will include the "&larr; Prev" and "Next &rarr;" portions of the link list.</td>
+<td>returns a link to gallery items at the start and end of the list and to pages around the current "gallery page" ( e.g.: &laquo; Previous 1 ... 3 4 5 6 7 ... 9 Next &raquo; ). The optional "<strong>,show_all</strong>" qualifier will show all of the gallery pages instead of a short list around the current page. The optional "<strong>,prev_next</strong>" qualifier will include the "&laquo; Previous" and "Next &raquo;" portions of the link list.</td>
 </tr>
 </table>
 <h4>Next and previous gallery items; the <code>next_link</code> and <code>previous_link</code> output types</h4>
@@ -683,11 +1454,11 @@ The next or previous link returned can use the following Gallery Display Content
 </tr>
 <tr>
 <td style="padding-right: 10px; vertical-align: top; font-weight:bold">mla_prev_text</td>
-<td>the "previous page" text (default "&larr; Previous"); an alternative to "mla_link_text" for <code>mla_output=previous_page</code></td>
+<td>the "previous page" text (default "&laquo; Previous"); an alternative to "mla_link_text" for <code>mla_output=previous_page</code></td>
 </tr>
 <tr>
 <td style="padding-right: 10px; vertical-align: top; font-weight:bold">mla_next_text</td>
-<td>the "next page" text (default "Next &rarr;") an alternative to "mla_link_text" for <code>mla_output=next_page</code></td>
+<td>the "next page" text (default "Next &raquo;") an alternative to "mla_link_text" for <code>mla_output=next_page</code></td>
 </tr>
 <tr>
 <td style="padding-right: 10px; vertical-align: top; font-weight:bold">mla_nolink_text</td>
@@ -803,11 +1574,11 @@ The <strong>Page Selection Parameters</strong>, <strong>Gallery Display Content 
 </tr>
 <tr>
 <td style="padding-right: 10px; vertical-align: top; font-weight:bold">mla_prev_text</td>
-<td>the "previous page" text (default "&larr; Previous") , which appears when the ",prev_next" qualifier is added to the output_type</td>
+<td>the "previous page" text (default "&laquo; Previous") , which appears when the ",prev_next" qualifier is added to the output_type</td>
 </tr>
 <tr>
 <td style="padding-right: 10px; vertical-align: top; font-weight:bold">mla_next_text</td>
-<td>the "next page" text (default "Next &rarr;") , which appears when the ",prev_next" qualifier is added to the output_type</td>
+<td>the "next page" text (default "Next &raquo;") , which appears when the ",prev_next" qualifier is added to the output_type</td>
 </tr>
 <tr>
 <td style="padding-right: 10px; vertical-align: top; font-weight:bold">mla_paginate_type</td>
@@ -876,6 +1647,14 @@ Here, <code>[mla_gallery]</code> selects the images with an Att. Tag of "fauna" 
 </code>
 <p>
 Photonic recognizes the <code>type=default</code> parameter and takes over, using the other three parameters to format its results. This example is a less convenient but more flexible alternative to the native Photonic support built-in to <code>[mla_gallery]</code> (see next section).
+</p>
+<p>
+You can also use the "enclosing shortcode" form if the alternate shortcode, such as Fullscreen Galleria's "fsg_link", requires it. You would code this form as:
+</p>
+<code>
+[mla_gallery ids="1,2,3" mla_alt_shortcode=fsg_link mla_alt_ids_name=include class=button]View the gallery[/mla_gallery]
+</code>
+<p>If you mix the self-closing and enclosing versions of [mla_gallery] on one post/page you must use the "xhtml-style closing shortcodes like [mla_gallery /]" for the self-closing shortcodes.
 </p>
 <p>
 <strong>NOTE:</strong> When you use "mla_alt_shortcode" to pass format/display responsibility off to another shortcode you will lose the <code>[mla_gallery]</code> Gallery Display Style (e.g. "mla_float") and Gallery Display Content (e.g. "mla_caption") parameters. There is no reliable way for <code>[mla_gallery]</code> to pass this information on to the other shortcode you've specified.
@@ -1035,6 +1814,14 @@ In a template, substitution parameters are surrounded by opening ('[+') and clos
 <td>absolute URL to the site directory, without trailing slash</td>
 </tr>
 <tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">page_ID</td>
+<td>the ID value of the page or post on which the gallery appears, if any.</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">page_url</td>
+<td>absolute URL to the page or post on which the gallery appears, if any, with trailing slash</td>
+</tr>
+<tr>
 <td style="padding-right: 10px; vertical-align: top; font-weight:bold">base_url</td>
 <td>absolute URL to the upload directory, without trailing slash</td>
 </tr>
@@ -1119,6 +1906,10 @@ These substitution parameters are only available in the "Item" part of the marku
 <tr>
 <td style="padding-right: 10px; vertical-align: top; font-weight:bold">height</td>
 <td>height in pixels, for image types</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">orientation</td>
+<td>"portrait" (height > width) or "landscape", for image types; empty for non-image types</td>
 </tr>
 <tr>
 <td style="padding-right: 10px; vertical-align: top; font-weight:bold">image_meta</td>
@@ -1231,7 +2022,7 @@ There are nine prefix values for field-level data. Prefix values must be coded a
 	</tr>
 	<tr>
 		<td style="padding-right: 10px; vertical-align: top; font-weight:bold">query</td>
-		<td>The parameters defined in the <code>[mla_gallery]</code> shortcode. For example, if your shortcode is <code>[mla gallery attachment_tag=my-tag div-class=some_class]</code> you can access the parameters as <code>[+query:attachment_tag+]</code> and <code>[+query:div-class+]</code> respectively. Only the parameters actually coded in the shortcode are accessible; default values for parameters not actually coded are not available. You can define your own parameters, e.g., "div-class"; they will be accessible as field-level data but will otherwise be ignored.</td>
+		<td>The parameters defined in the <code>[mla_gallery]</code> shortcode. For example, if your shortcode is <code>[mla_gallery attachment_tag=my-tag div-class=some_class]</code> you can access the parameters as <code>[+query:attachment_tag+]</code> and <code>[+query:div-class+]</code> respectively. Only the parameters actually present in the shortcode are accessible; default values for parameters not actually present are not available. You can define your own parameters, e.g., "div-class"; they will be accessible as field-level data but will otherwise be ignored.</td>
 	</tr>
 	<tr>
 		<td style="padding-right: 10px; vertical-align: top; font-weight:bold">custom</td>
@@ -1279,7 +2070,7 @@ There are nine prefix values for field-level data. Prefix values must be coded a
 	</tr>
 	<tr>
 		<td style="padding-right: 10px; vertical-align: top; font-weight:bold">template</td>
-		<td>A Content Template, which lets you compose a value from multiple substitution parameters and test for empty values, choosing among two or more alternatives or suppressing output entirely. See the <a href="#mla_template_parameters">Content Templates</a> section for details.</td> Note that the formatting option is not supported for templates.
+		<td>A Content Template, which lets you compose a value from multiple substitution parameters and test for empty values, choosing among two or more alternatives or suppressing output entirely. See the <a href="#mla_template_parameters">Content Templates</a> section for details. Note that the formatting option is not supported for templates.</td>
 	</tr>
 </table>
 <a name="pdf_metadata"></a>
@@ -1401,7 +2192,7 @@ Conditional, choice and template elements can be nested as needed. For example, 
 <code>[+template: Terms: (([+terms:category+], [+terms:post_tag+])|[+ terms: category +]|[+terms:post_tag +]|none)+]</code>
 </p>
 <p>
-This template has a String, "Terms: " and a Conditional, "(([+terms: … none)". This Conditional separates the "Terms: " literal from the first alternative in the Choice. Within the Conditional is a Choice having four alternatives. The first alternative is a Conditional, which will be empty unless both categories and tags are present.  The second and third alternatives handle the cases where one of the two taxonomies has terms, and the final alternative is used when neither categories nor tags are present.
+This template has a String, "Terms: " and a Conditional, "(([+terms: ... none)". This Conditional separates the "Terms: " literal from the first alternative in the Choice. Within the Conditional is a Choice having four alternatives. The first alternative is a Conditional, which will be empty unless both categories and tags are present.  The second and third alternatives handle the cases where one of the two taxonomies has terms, and the final alternative is used when neither categories nor tags are present.
 </p>
 <h4>Special characters inside templates</h4>
 <p>
@@ -1480,8 +2271,37 @@ The Item markup section shows how to use the "terms", "custom", "iptc" and "exif
 		<td><code>&lt;/table&gt;</code></td>
 	</tr>
 </table>
-<a name="mla_views"></a>
+<a name="mla_text_widget"></a>
 &nbsp;
+<p>
+<a href="#backtotop">Go to Top</a>
+</p>
+<h3>The MLA Text Widget</h3>
+<p>
+The MLA Text Widget lets you add content such as <code>[mla_gallery]</code> and <code>[mla_tag_cloud]</code> displays to your site's sidebars. It is an easy way to add slide shows and navigation features to all your pages. The MLA Text Widget is based on the WordPress Text widget, but adds the ability to include <strong>any</strong> shortcode to widget content. To use the MLA Text Widget:
+<ol>
+<li>Go to the Appearance/Widgets Administration screen</li>
+<li>Open the sidebar, footer, or Theme section to which you wish to add the Text Widget</li>
+<li>Find the Text Widget in the list of Widgets</li>
+<li>Click and drag the Widget to the spot you wish it to appear</li>
+</ol>
+</p>
+<p>
+To open and edit the MLA Text Widget: 
+<ol>
+<li>Click the down arrow to the right of the MLA Text Widget title</li>
+<li>Set the MLA Text Widget Title (optional)</li>
+<li>Add the text or HTML code to the box or edit what is currently there</li>
+<li>If desired, choose the option to Automatically add paragraphs to wrap each block of text in an HTML paragraph tag</li>
+<li>Click Save to save the Widget</li>
+<li>Click Close to close the Widget</li>
+<li>Switch tabs in your browser and review the results; make changes if necessary</li>
+</ol>
+</p>
+<p>
+To add an <code>[mla_gallery]</code> or <code>[mla_tag_cloud]</code> shortcode to your widget, simply enter the shortcode name and parameters just as you would in the body of a post or page. Aside from the usually more limited area devoted to displaying the widget content, there are no differences in the way shortcodes are processed in the MLA Widget. Also, there is nothing special about the two MLA shortcodes; <strong>any</strong> shortcode can be added to the MLA Widget.
+<a name="mla_views"></a>
+</p>
 <p>
 <a href="#backtotop">Go to Top</a>
 </p>
@@ -1756,6 +2576,10 @@ Set the other parts of the rule as needed. You can select "EXIF" unless you also
 <tr>
 <td style="padding-right: 10px; vertical-align: top; font-weight:bold">height</td>
 <td>for image types, height in pixels</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">orientation</td>
+<td>"portrait" (height > width) or "landscape", for image types; empty for non-image types</td>
 </tr>
 <tr>
 <td style="padding-right: 10px; vertical-align: top; font-weight:bold">hwstring_small</td>
@@ -2044,6 +2868,15 @@ You can also enter a Content Template here by coding the "template:" prefix at t
 </dd>
 <dt>Existing Text</dt>
 <dd>Images already in the Media Library will have non-blank values in many fields and may have existing terms in a taxonomy. You can select "Keep" to retain these values or "Replace" to always map a metadata value into the field. For a taxonomy, "Keep" will retain any terms already assigned to the item and "Replace" will delete any existing terms before assigning metadata values as terms.
+</dd>
+</dl>
+<p>
+The Taxonomy term mapping table has two additional columns:
+</p>
+<dl>
+<dt>Delimiter(s)</dt>
+<dd>
+In some cases multiple terms will be contained in a single IPTC or EXIF value. For example, Microsoft Windows stores its "Tags" in a single EXIF value (called Keywords) as a semicolon-delimited list, e.g., "tag1; tag2". You can separate terms encoded in this way by entering one or more delimiter characters in this column.
 </dd>
 <dt>Parent</dt>
 <dd>For hierarchical taxonomies such as Categories you can select one of the existing terms in the taxonomy as the parent term for any terms you are mapping from metadata values. For example, you could define "IPTC Keywords" as a parent and then assign all of the 2#025 values under that parent term.

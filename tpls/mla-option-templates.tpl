@@ -330,6 +330,9 @@
 			Existing Text
 			</th>
 		    <th scope="col" style="text-align:center">
+			Delimiter(s)
+			</th>
+		    <th scope="col" style="text-align:center">
 			Parent
 			</th>
 			</tr>
@@ -432,6 +435,9 @@
                 <option [+keep_selected+] value="1">Keep</option>
                 <option [+replace_selected+] value="">Replace</option>
             </select>
+        </td>
+		<td style="text-align:center;">
+            <input name="iptc_exif_mapping[taxonomy][[+key+]][delimiters]" id="iptc_exif_taxonomy_delimiters_[+key+]" type="text" size="[+delimiters_size+]" value="[+delimiters_text+]" />
         </td>
 		<td style="text-align:left;">
 [+parent_select+]
@@ -578,8 +584,8 @@
 		margin-left: 0;
 		vertical-align: top;
 	}
+	/* see mla_gallery_shortcode() in media-library-assistant/includes/class-mla-shortcodes.php */
 </style>
-<!-- see mla_gallery_shortcode() in media-library-assistant/includes/class-mla-shortcodes.php -->
 
 <!-- template="default-open-markup" -->
 <div id='[+selector+]' class='gallery galleryid-[+id+] gallery-columns-[+columns+] gallery-size-[+size_class+]'>
@@ -589,7 +595,7 @@
 
 <!-- template="default-item-markup" -->
 <[+itemtag+] class='gallery-item [+last_in_row+]'>
-	<[+icontag+] class='gallery-icon'>
+	<[+icontag+] class='gallery-icon [+orientation+]'>
 		[+link+]
 	</[+icontag+]>
 	<[+captiontag+] class='wp-caption-text gallery-caption'>
@@ -602,3 +608,63 @@
 
 <!-- template="default-close-markup" -->
 </div>
+
+<!-- template="tag-cloud-style" -->
+<style type='text/css'>
+	#[+selector+] {
+		margin: auto;
+		width: 100%;
+	}
+	#[+selector+] .tag-cloud-item {
+		float: [+float+];
+		margin: [+margin+];
+		text-align: center;
+		width: [+itemwidth+];
+	}
+	#[+selector+] .tag-cloud-caption {
+		margin-left: 0;
+		vertical-align: top;
+	}
+	/* see mla_tag_cloud() in media-library-assistant/includes/class-mla-shortcodes.php */
+</style>
+
+<!-- template="tag-cloud-open-markup" -->
+<div id='[+selector+]' class='tag-cloud tag-cloud-taxonomy-[+taxonomy+] tag-cloud-columns-[+columns+]'>
+
+<!-- template="tag-cloud-row-open-markup" -->
+<!-- row-open -->
+
+<!-- template="tag-cloud-item-markup" -->
+<[+itemtag+] class='tag-cloud-item [+last_in_row+]'>
+	<[+termtag+] class='tag-cloud-term'>
+		[+thelink+]
+	</[+termtag+]>
+	<[+captiontag+] class='wp-caption-text tag-cloud-caption'>
+		[+caption+]
+	</[+captiontag+]>
+</[+itemtag+]>
+
+<!-- template="tag-cloud-row-close-markup" -->
+<br style="clear: both" />
+
+<!-- template="tag-cloud-close-markup" -->
+</div>
+
+<!-- template="tag-cloud-ul-open-markup" -->
+<[+itemtag+] id='[+selector+]' class='tag-cloud tag-cloud-taxonomy-[+taxonomy+]'>
+
+<!-- template="tag-cloud-ul-item-markup" -->
+	<[+termtag+] class='tag-cloud-term'>[+thelink+]</[+termtag+]>
+
+<!-- template="tag-cloud-ul-close-markup" -->
+</[+itemtag+]>
+
+<!-- template="tag-cloud-dl-open-markup" -->
+<[+itemtag+] id='[+selector+]' class='tag-cloud tag-cloud-taxonomy-[+taxonomy+]'>
+
+<!-- template="tag-cloud-dl-item-markup" -->
+	<[+termtag+] class='tag-cloud-term'>[+thelink+]</[+termtag+]>
+	<[+captiontag+] class='wp-caption-text tag-cloud-caption'>[+caption+]</[+captiontag+]>
+
+<!-- template="tag-cloud-dl-close-markup" -->
+</[+itemtag+]>

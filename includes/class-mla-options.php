@@ -533,6 +533,48 @@ class MLAOptions {
 				'name' => 'Default [mla_gallery] Templates and Settings',
 				'type' => 'header'),
 		
+		'default_tag_cloud_style' =>
+			array('tab' => '',
+				'name' => 'Style Template',
+				'type' => 'select',
+				'std' => 'tag-cloud',
+				'options' => array(),
+				'texts' => array(),
+				'help' => 'Select the default style template for your [mla_tag_cloud] shortcodes.'),
+	
+		'default_tag_cloud_markup' =>
+			array('tab' => '',
+				'name' => 'Markup Template',
+				'type' => 'select',
+				'std' => 'tag-cloud',
+				'options' => array(),
+				'texts' => array(),
+				'help' => 'Select the default markup template for your [mla_tag_cloud] shortcodes.'),
+	
+		'mla_tag_cloud_columns' =>
+			array('tab' => '',
+				'name' => 'Default columns',
+				'type' => 'text',
+				'std' => '3',
+				'size' => 3,
+				'help' => 'Enter the number of [mla_tag_cloud] columns; must be a positive integer.'),
+		
+		'mla_tag_cloud_margin' =>
+			array('tab' => '',
+				'name' => 'Default mla_margin',
+				'type' => 'text',
+				'std' => '1.5%',
+				'size' => 10,
+				'help' => 'Enter the CSS "margin" property value, in length (px, em, pt, etc.), percent (%), "auto" or "inherit".<br>&nbsp;&nbsp;Enter "none" to remove the property entirely.'),
+		
+		'mla_tag_cloud_itemwidth' =>
+			array('tab' => '',
+				'name' => 'Default mla_itemwidth',
+				'type' => 'text',
+				'std' => 'calculate',
+				'size' => 10,
+				'help' => 'Enter the CSS "width" property value, in length (px, em, pt, etc.), percent (%), "auto" or "inherit".<br>&nbsp;&nbsp;Enter "calculate" (the default) to calculate the value taking the "margin" value into account.<br>&nbsp;&nbsp;Enter "exact" to calculate the value without considering the "margin" value.<br>&nbsp;&nbsp;Enter "none" to remove the property entirely.'),
+		
 		'default_style' =>
 			array('tab' => 'mla_gallery',
 				'name' => 'Style Template',
@@ -1420,6 +1462,7 @@ class MLAOptions {
 			'extension' => '',
 			'width' => '',
 			'height' => '',
+			'orientation' => '',
 			'hwstring_small' => '',
 			'sizes' => array()
 		);
@@ -1430,8 +1473,24 @@ class MLAOptions {
 		$attachment_metadata = isset( $wp_attachment_metadata[ $post_id ]->meta_value ) ? unserialize( $wp_attachment_metadata[ $post_id ]->meta_value ) : array();
 		if ( !empty( $attachment_metadata ) ) {
 			$sizes = isset( $attachment_metadata['sizes'] ) ? $attachment_metadata['sizes'] : array();
-			$results['width'] = isset( $attachment_metadata['width'] ) ? $attachment_metadata['width'] : '';;
-			$results['height'] = isset( $attachment_metadata['height'] ) ? $attachment_metadata['height'] : '';;
+			
+			if ( isset( $attachment_metadata['width'] ) ) {
+				$results['width'] = $attachment_metadata['width'];
+				$width = absint( $results['width'] );
+			}
+			else
+				$width = 0;
+			
+			if ( isset( $attachment_metadata['height'] ) ) {
+				$results['height'] = $attachment_metadata['height'];
+				$height = absint( $results['height'] );
+			}
+			else
+				$height = 0;
+			
+			if ( $width && $height )
+				$results['orientation'] = ( $height > $width ) ? 'portrait' : 'landscape';
+			
 			$results['hwstring_small'] = isset( $attachment_metadata['hwstring_small'] ) ? $attachment_metadata['hwstring_small'] : '';
 
 			if ( isset( $attachment_metadata['image_meta'] ) ) {
@@ -1656,6 +1715,7 @@ class MLAOptions {
 			case 'extension':
 			case 'width':
 			case 'height':
+			case 'orientation':
 			case 'hwstring_small':
 			case 'aperture':
 			case 'credit':
@@ -2042,6 +2102,7 @@ class MLAOptions {
 		'pixels',
 		'width',
 		'height',
+		'orientation',
 		'hwstring_small',
 		'size_keys',
 		'size_names',
@@ -2664,6 +2725,34 @@ class MLAOptions {
 					else
 						$new_text = $iptc_value;
 
+				/*
+				 * Parse out individual terms if Delimiter(s) are present
+				 */
+				if ( ! empty( $new_value['delimiters'] ) ) {
+					$text = $new_value['delimiters'];
+					$delimiters = array();
+					while ( ! empty( $text ) ) {
+						$delimiters[] = $text[0];
+						$text = substr($text, 1);
+					}
+					
+					if ( is_scalar( $new_text ) )
+						$new_text = array( $new_text );
+			
+					foreach( $delimiters as $delimiter ) {
+						$new_terms = array();
+						foreach ( $new_text as $text ) {
+								$fragments = explode( $delimiter, $text );
+								foreach( $fragments as $fragment ) {
+									$fragment = trim( $fragment );
+									if ( ! empty( $fragment ) )
+										$new_terms[] = $fragment;
+								} // foreach fragment
+						} // foreach $text
+						$new_text = array_unique( $new_terms );
+					} // foreach $delimiter
+				}
+				
 				if ( !empty( $new_text ) ) {
 					if ( $new_value['hierarchical'] ) {
 						if ( is_string( $new_text ) )
@@ -2936,6 +3025,7 @@ class MLAOptions {
 					'exif_value' => '',
 					'iptc_first' => true,
 					'keep_existing' => true,
+					'delimiters' => '',
 					'parent' => 0
 				);
 			}
@@ -2981,6 +3071,12 @@ class MLAOptions {
 				$old_values['keep_existing'] = $boolean_value;
 			}
 			
+			if ( $old_values['delimiters'] != $new_value['delimiters'] ) {
+				$any_setting_changed = true;
+				$message_list .= "<br>{$old_values['name']} changing Delimiter(s) from '{$old_values['delimiters']}' to '{$new_value['delimiters']}'.\r\n";
+				$old_values['delimiters'] = $new_value['delimiters'];
+			}
+
 			if ( isset( $new_value['parent'] ) && ( $old_values['parent'] != $new_value['parent'] ) ) {
 				$any_setting_changed = true;
 				$message_list .= "<br>{$old_values['name']} changing Parent from {$old_values['parent']} to {$new_value['parent']}.\r\n";
@@ -2996,7 +3092,7 @@ class MLAOptions {
 		/*
 		 * Uncomment this for debugging.
 		 */
-		// $error_list .= $message_list;
+		//$error_list .= $message_list;
 
 		return array( 'message' => $error_list, 'values' => $current_values, 'changed' => $settings_changed );
 	} // _update_iptc_exif_taxonomy_mapping
@@ -3120,7 +3216,7 @@ class MLAOptions {
 		/*
 		 * Uncomment this for debugging.
 		 */
-		// $error_list .= $message_list;
+		//$error_list .= $message_list;
 
 		return array( 'message' => $error_list, 'values' => $current_values, 'changed' => $settings_changed );
 	} // _update_iptc_exif_custom_mapping
@@ -3240,6 +3336,8 @@ class MLAOptions {
 								'exif_selected' => '',
 								'keep_selected' => '',
 								'replace_selected' => '',
+								'delimiters_size' => 4,
+								'delimiters_text' => '',
 								'parent_select' => ''
 							);
 							
@@ -3258,7 +3356,9 @@ class MLAOptions {
 								else
 									$row_values['replace_selected'] = 'selected="selected"';
 
-								if ( $row_value->hierarchical ) {
+								$row_values['delimiters_text'] = $current_value['delimiters'];
+
+ 								if ( $row_value->hierarchical ) {
 									$parent = ( isset( $current_value['parent'] ) ) ? (integer) $current_value['parent'] : 0;
 									$select_values = array (
 										'array' => 'taxonomy',

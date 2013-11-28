@@ -3,7 +3,7 @@
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <meta name="viewport" content="width=device-width; initial-scale=1.0; maximum-scale=1.0; user-scalable=0;">
 <meta charset="utf-8">
-<title>Media Library Assistant » \MLATest</title>
+<title>Media Library Assistant » \MLATextWidget</title>
 <meta name="author" content="Mike van Riel">
 <meta name="description" content="">
 <link href="../css/template.css" rel="stylesheet" media="all">
@@ -54,27 +54,29 @@
 <ul class="side-nav nav nav-list">
 <li class="nav-header">
 <i class="icon-custom icon-method"></i> Methods</li>
-<li class="method public "><a href="#initialize" title="initialize :: Initialization function, similar to __construct()"><span class="description">Initialization function, similar to __construct()</span><pre>initialize()</pre></a></li>
-<li class="method public "><a href="#min_WordPress_version" title="min_WordPress_version :: Test that your WordPress version is at least that of the $min_version"><span class="description">Test that your WordPress version is at least that of the $min_version</span><pre>min_WordPress_version()</pre></a></li>
-<li class="method public "><a href="#min_php_version" title="min_php_version :: Test that your PHP version is at least that of the $min_php_version"><span class="description">Test that your PHP version is at least that of the $min_php_version</span><pre>min_php_version()</pre></a></li>
+<li class="method public "><a href="#__construct" title="__construct :: Calls the parent constructor to set some defaults."><span class="description">Calls the parent constructor to set some defaults.</span><pre>__construct()</pre></a></li>
+<li class="method public "><a href="#form" title='form :: Echo the "edit widget" form on the Appearance/Widgets admin screen'><span class="description">Echo the "edit widget" form on the Appearance/Widgets admin screen</span><pre>form()</pre></a></li>
+<li class="method public "><a href="#mla_text_widget_plugins_loaded_action" title="mla_text_widget_plugins_loaded_action :: Load a plugin text domain"><span class="description">Load a plugin text domain</span><pre>mla_text_widget_plugins_loaded_action()</pre></a></li>
+<li class="method public "><a href="#mla_text_widget_widgets_init_action" title="mla_text_widget_widgets_init_action :: Register the widget with WordPress"><span class="description">Register the widget with WordPress</span><pre>mla_text_widget_widgets_init_action()</pre></a></li>
+<li class="method public "><a href="#update" title="update :: Sanitize widget definition as it is saved to the database"><span class="description">Sanitize widget definition as it is saved to the database</span><pre>update()</pre></a></li>
+<li class="method public "><a href="#widget" title='widget :: Display the widget content - called from the WordPress "front end"'><span class="description">Display the widget content - called from the WordPress "front end"</span><pre>widget()</pre></a></li>
 <li class="nav-header">
-<i class="icon-custom icon-property"></i> Properties</li>
-<li class="property public "><a href="#%24wordpress_3point5_plus" title="$wordpress_3point5_plus :: True if WordPress version is 3.5 or newer"><span class="description">True if WordPress version is 3.5 or newer</span><pre>$wordpress_3point5_plus</pre></a></li>
+<i class="icon-custom icon-constant"></i> Constants</li>
+<li class="constant  "><a href="#MLA_TEXT_DOMAIN" title="MLA_TEXT_DOMAIN :: Provides a unique name for the plugin text domain"><span class="description">Provides a unique name for the plugin text domain</span><pre>MLA_TEXT_DOMAIN</pre></a></li>
 </ul>
 </div>
 <div class="span8">
-<a name="%5CMLATest" id="\MLATest"></a><ul class="breadcrumb">
+<a name="%5CMLATextWidget" id="\MLATextWidget"></a><ul class="breadcrumb">
 <li>
 <a href="../index.html"><i class="icon-custom icon-class"></i></a><span class="divider">\</span>
 </li>
 <li><a href="../namespaces/global.html">global</a></li>
 <li class="active">
-<span class="divider">\</span><a href="../classes/MLATest.html">MLATest</a>
+<span class="divider">\</span><a href="../classes/MLATextWidget.html">MLATextWidget</a>
 </li>
 </ul>
-<div href="../classes/MLATest.html" class="element class">
-<p class="short_description">Class MLA (Media Library Assistant) Test provides basic run-time tests
-to ensure the plugin can run in the current WordPress envrionment.</p>
+<div href="../classes/MLATextWidget.html" class="element class">
+<p class="short_description">Class MLA (Media Library Assistant) Text Widget defines a shortcode-enabled version of the WordPress Text widget</p>
 <div class="details">
 <p class="long_description"></p>
 <table class="table table-bordered">
@@ -84,76 +86,111 @@ to ensure the plugin can run in the current WordPress envrionment.</p>
 </tr>
 <tr>
 <th>since</th>
-<td>0.1</td>
+<td>1.60</td>
 </tr>
 </table>
 <h3>
 <i class="icon-custom icon-method"></i> Methods</h3>
-<a name="initialize" id="initialize"></a><div class="element clickable method public initialize" data-toggle="collapse" data-target=".initialize .collapse">
-<h2>Initialization function, similar to __construct()</h2>
-<pre>initialize() : void</pre>
+<a name="__construct" id="__construct"></a><div class="element clickable method public __construct" data-toggle="collapse" data-target=".__construct .collapse">
+<h2>Calls the parent constructor to set some defaults.</h2>
+<pre>__construct() : void</pre>
 <div class="labels"></div>
 <div class="row collapse"><div class="detail-description">
 <p class="long_description"></p>
 <table class="table table-bordered"><tr>
 <th>since</th>
-<td>0.60</td>
+<td>1.60</td>
 </tr></table>
 </div></div>
 </div>
-<a name="min_WordPress_version" id="min_WordPress_version"></a><div class="element clickable method public min_WordPress_version" data-toggle="collapse" data-target=".min_WordPress_version .collapse">
-<h2>Test that your WordPress version is at least that of the $min_version</h2>
-<pre>min_WordPress_version(string $min_version) : string</pre>
+<a name="form" id="form"></a><div class="element clickable method public form" data-toggle="collapse" data-target=".form .collapse">
+<h2>Echo the "edit widget" form on the Appearance/Widgets admin screen</h2>
+<pre>form(array $instance) : void</pre>
 <div class="labels"></div>
 <div class="row collapse"><div class="detail-description">
 <p class="long_description"></p>
 <table class="table table-bordered"><tr>
 <th>since</th>
-<td>0.1</td>
+<td>1.60</td>
 </tr></table>
 <h3>Parameters</h3>
 <div class="subelement argument">
-<h4>$min_version</h4>
-<code>string</code><p>representing the minimum required version of WordPress, e.g. '3.3.0'</p>
-</div>
-<h3>Returns</h3>
-<div class="subelement response">
-<code>string</code>'' if pass else error message</div>
+<h4>$instance</h4>
+<code>array</code><p>Previous definition values, from the database</p></div>
 </div></div>
 </div>
-<a name="min_php_version" id="min_php_version"></a><div class="element clickable method public min_php_version" data-toggle="collapse" data-target=".min_php_version .collapse">
-<h2>Test that your PHP version is at least that of the $min_php_version</h2>
-<pre>min_php_version(string $min_version) : string</pre>
+<a name="mla_text_widget_plugins_loaded_action" id="mla_text_widget_plugins_loaded_action"></a><div class="element clickable method public mla_text_widget_plugins_loaded_action" data-toggle="collapse" data-target=".mla_text_widget_plugins_loaded_action .collapse">
+<h2>Load a plugin text domain</h2>
+<pre>mla_text_widget_plugins_loaded_action() : void</pre>
+<div class="labels"></div>
+<div class="row collapse"><div class="detail-description">
+<p class="long_description"><p>Defined as public because it's an action.</p></p>
+<table class="table table-bordered"><tr>
+<th>since</th>
+<td>1.60</td>
+</tr></table>
+</div></div>
+</div>
+<a name="mla_text_widget_widgets_init_action" id="mla_text_widget_widgets_init_action"></a><div class="element clickable method public mla_text_widget_widgets_init_action" data-toggle="collapse" data-target=".mla_text_widget_widgets_init_action .collapse">
+<h2>Register the widget with WordPress</h2>
+<pre>mla_text_widget_widgets_init_action() : void</pre>
+<div class="labels"></div>
+<div class="row collapse"><div class="detail-description">
+<p class="long_description"><p>Defined as public because it's an action.</p></p>
+<table class="table table-bordered"><tr>
+<th>since</th>
+<td>1.60</td>
+</tr></table>
+</div></div>
+</div>
+<a name="update" id="update"></a><div class="element clickable method public update" data-toggle="collapse" data-target=".update .collapse">
+<h2>Sanitize widget definition as it is saved to the database</h2>
+<pre>update(array $new_instance, array $old_instance) : array</pre>
 <div class="labels"></div>
 <div class="row collapse"><div class="detail-description">
 <p class="long_description"></p>
 <table class="table table-bordered"><tr>
 <th>since</th>
-<td>0.1</td>
+<td>1.60</td>
 </tr></table>
 <h3>Parameters</h3>
 <div class="subelement argument">
-<h4>$min_version</h4>
-<code>string</code><p>representing the minimum required version of PHP, e.g. '5.3.2'</p>
-</div>
+<h4>$new_instance</h4>
+<code>array</code><p>Current definition values, to be saved in the database</p></div>
+<div class="subelement argument">
+<h4>$old_instance</h4>
+<code>array</code><p>Previous definition values, from the database</p></div>
 <h3>Returns</h3>
 <div class="subelement response">
-<code>string</code>'' if pass else error message</div>
+<code>array</code>Updated definition values to be saved in the database</div>
+</div></div>
+</div>
+<a name="widget" id="widget"></a><div class="element clickable method public widget" data-toggle="collapse" data-target=".widget .collapse">
+<h2>Display the widget content - called from the WordPress "front end"</h2>
+<pre>widget(array $args, array $instance) : void</pre>
+<div class="labels"></div>
+<div class="row collapse"><div class="detail-description">
+<p class="long_description"></p>
+<table class="table table-bordered"><tr>
+<th>since</th>
+<td>1.60</td>
+</tr></table>
+<h3>Parameters</h3>
+<div class="subelement argument">
+<h4>$args</h4>
+<code>array</code><p>Widget arguments</p></div>
+<div class="subelement argument">
+<h4>$instance</h4>
+<code>array</code><p>Widget definition, from the database</p></div>
 </div></div>
 </div>
 <h3>
-<i class="icon-custom icon-property"></i> Properties</h3>
-<a name="%24wordpress_3point5_plus" id="$wordpress_3point5_plus"> </a><div class="element clickable property public $wordpress_3point5_plus" data-toggle="collapse" data-target=".$wordpress_3point5_plus .collapse">
-<h2>True if WordPress version is 3.5 or newer</h2>
-<pre>$wordpress_3point5_plus : boolean</pre>
+<i class="icon-custom icon-constant"></i> Constants</h3>
+<a name="MLA_TEXT_DOMAIN" id="MLA_TEXT_DOMAIN"> </a><div class="element clickable constant  MLA_TEXT_DOMAIN" data-toggle="collapse" data-target=".MLA_TEXT_DOMAIN .collapse">
+<h2>Provides a unique name for the plugin text domain</h2>
+<pre>MLA_TEXT_DOMAIN </pre>
 <div class="labels"></div>
-<div class="row collapse"><div class="detail-description">
-<p class="long_description"></p>
-<table class="table table-bordered"><tr>
-<th>since</th>
-<td>0.60</td>
-</tr></table>
-</div></div>
+<div class="row collapse"><div class="detail-description"><p class="long_description"></p></div></div>
 </div>
 </div>
 </div>

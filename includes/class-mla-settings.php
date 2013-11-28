@@ -172,6 +172,22 @@ class MLASettings {
 			MLAOptions::mla_update_option( 'custom_field_mapping', $new_values );
 		} // version is less than 1.40
 		
+		if ( ((float)'1.60') > ((float)$current_version) ) {
+			/*
+			 * Add delimiters values to taxonomy mapping rules
+			 */
+			$option_value = MLAOptions::mla_get_option( 'iptc_exif_mapping' );
+			$new_values = array();
+			
+			foreach ( $option_value['taxonomy'] as $key => $value ) {
+				$value['delimiters'] = isset( $value['delimiters'] ) ? $value['delimiters'] : '';
+				$new_values[ $key ] = $value;
+			}
+
+			$option_value['taxonomy'] = $new_values;
+			MLAOptions::mla_update_option( 'iptc_exif_mapping', $option_value );
+		} // version is less than 1.60
+		
 		MLAOptions::mla_update_option( MLAOptions::MLA_VERSION_OPTION, MLA::CURRENT_MLA_VERSION );
 	}
 	
@@ -1759,38 +1775,41 @@ class MLASettings {
 		$page_values['options_list'] = $options_list;
 
 		/*
-		 * Add style templates; default goes first
+		 * Add style templates; defaults go first
 		 */
+		$default_styles = array( 'default', 'tag-cloud' );
 		$style_options_list = '';
 		$templates = MLAOptions::mla_get_style_templates();
 		
-		$name = 'default';
-		$value =$templates['default'];
-		if ( ! empty( $value ) ) {
-			$template_values = array (
-				'help' => 'The default template cannot be altered or deleted, but you can copy the styles.'
-			);
-			$control_cells = MLAData::mla_parse_template( self::$page_template_array['mla-gallery-default'], $template_values );
-			
-			$template_values = array (
-				'readonly' => 'readonly="readonly"',
-				'name_name' => 'mla_style_templates_name[default]',
-				'name_id' => 'mla_style_templates_name_default',
-				'name_text' => 'default',
-				'control_cells' => $control_cells,
-				'value_name' => 'mla_style_templates_value[default]',
-				'value_id' => 'mla_style_templates_value_default',
-				'value_text' => esc_textarea( $value ),
-				'value_help' => 'List of substitution parameters, e.g., [+selector+], on Documentation tab.'
-			);
-
-			$style_options_list .= MLAData::mla_parse_template( self::$page_template_array['mla-gallery-style'], $template_values );
-		} // $value
+		foreach ( $default_styles as $default ) {
+			$name = $default;
+			$value =$templates[$default];
+			if ( ! empty( $value ) ) {
+				$template_values = array (
+					'help' => 'This default template cannot be altered or deleted, but you can copy the styles.'
+				);
+				$control_cells = MLAData::mla_parse_template( self::$page_template_array['mla-gallery-default'], $template_values );
+				
+				$template_values = array (
+					'readonly' => 'readonly="readonly"',
+					'name_name' => "mla_style_templates_name[{$default}]",
+					'name_id' => "mla_style_templates_name_{$default}",
+					'name_text' => $default,
+					'control_cells' => $control_cells,
+					'value_name' => "mla_style_templates_value[{$default}]",
+					'value_id' => "mla_style_templates_value_{$default}",
+					'value_text' => esc_textarea( $value ),
+					'value_help' => 'List of substitution parameters, e.g., [+selector+], on Documentation tab.'
+				);
+	
+				$style_options_list .= MLAData::mla_parse_template( self::$page_template_array['mla-gallery-style'], $template_values );
+			} // $value
+		} // foreach default
 		
 		foreach ( $templates as $name => $value ) {
 			$slug = sanitize_title( $name );
 
-			if ( 'default' == $name )
+			if ( in_array( $name, $default_styles ) )
 				continue; // already handled above
 				
 			$template_values = array (
@@ -1843,59 +1862,62 @@ class MLASettings {
 		$page_values['style_options_list'] = $style_options_list;
 		
 		/*
-		 * Add markup templates; default goes first
+		 * Add markup templates; defaults go first
 		 */
+		$default_markups = array( 'default', 'tag-cloud', 'tag-cloud-ul', 'tag-cloud-dl' );
 		$markup_options_list = '';
 		$templates = MLAOptions::mla_get_markup_templates();
 		
-		$name = 'default';
-		$value =$templates['default'];
-		if ( ! empty( $value ) ) {
-			$template_values = array (
-				'help' => 'The default template cannot be altered or deleted, but you can copy the markup.'
-			);
-			$control_cells = MLAData::mla_parse_template( self::$page_template_array['mla-gallery-default'], $template_values );
-			
-			$template_values = array (
-				'readonly' => 'readonly="readonly"',
-				'name_name' => 'mla_markup_templates_name[default]',
-				'name_id' => 'mla_markup_templates_name_default',
-				'name_text' => 'default',
-				'control_cells' => $control_cells,
-
-				'open_name' => 'mla_markup_templates_open[default]',
-				'open_id' => 'mla_markup_templates_open_default',
-				'open_text' => esc_textarea( $value['open'] ),
-				'open_help' => 'Markup for the beginning of the gallery. List of parameters, e.g., [+selector+], on Documentation tab.',
-
-				'row_open_name' => 'mla_markup_templates_row_open[default]',
-				'row_open_id' => 'mla_markup_templates_row_open_default',
-				'row_open_text' => esc_textarea( $value['row-open'] ),
-				'row_open_help' => 'Markup for the beginning of each row in the gallery.',
-
-				'item_name' => 'mla_markup_templates_item[default]',
-				'item_id' => 'mla_markup_templates_item_default',
-				'item_text' => esc_textarea( $value['item'] ),
-				'item_help' => 'Markup for each item/cell of the gallery.',
-
-				'row_close_name' => 'mla_markup_templates_row_close[default]',
-				'row_close_id' => 'mla_markup_templates_row_close_default',
-				'row_close_text' => esc_textarea( $value['row-close'] ),
-				'row_close_help' => 'Markup for the end of each row in the gallery.',
-
-				'close_name' => 'mla_markup_templates_close[default]',
-				'close_id' => 'mla_markup_templates_close_default',
-				'close_text' => esc_textarea( $value['close'] ),
-				'close_help' => 'Markup for the end of the gallery.'
-			);
-
-			$markup_options_list .= MLAData::mla_parse_template( self::$page_template_array['mla-gallery-markup'], $template_values );
-		} // $value
+		foreach ( $default_markups as $default ) {
+			$name = $default;
+			$value =$templates[$default];
+			if ( ! empty( $value ) ) {
+				$template_values = array (
+					'help' => 'This default template cannot be altered or deleted, but you can copy the markup.'
+				);
+				$control_cells = MLAData::mla_parse_template( self::$page_template_array['mla-gallery-default'], $template_values );
+				
+				$template_values = array (
+					'readonly' => 'readonly="readonly"',
+					'name_name' => "mla_markup_templates_name[{$default}]",
+					'name_id' => "mla_markup_templates_name_{$default}",
+					'name_text' => $default,
+					'control_cells' => $control_cells,
+	
+					'open_name' => "mla_markup_templates_open[{$default}]",
+					'open_id' => "mla_markup_templates_open_{$default}",
+					'open_text' => isset( $value['open'] ) ? esc_textarea( $value['open'] ) : '',
+					'open_help' => 'Markup for the beginning of the gallery. List of parameters, e.g., [+selector+], on Documentation tab.',
+	
+					'row_open_name' => "mla_markup_templates_row_open[{$default}]",
+					'row_open_id' => "mla_markup_templates_row_open_{$default}",
+					'row_open_text' => isset( $value['row-open'] ) ? esc_textarea( $value['row-open'] ) : '',
+					'row_open_help' => 'Markup for the beginning of each row in the gallery.',
+	
+					'item_name' => "mla_markup_templates_item[{$default}]",
+					'item_id' => "mla_markup_templates_item_{$default}",
+					'item_text' => isset( $value['item'] ) ? esc_textarea( $value['item'] ) : '',
+					'item_help' => 'Markup for each item/cell of the gallery.',
+	
+					'row_close_name' => "mla_markup_templates_row_close[{$default}]",
+					'row_close_id' => "mla_markup_templates_row_close_{$default}",
+					'row_close_text' => isset( $value['row-close'] ) ? esc_textarea( $value['row-close'] ) : '',
+					'row_close_help' => 'Markup for the end of each row in the gallery.',
+	
+					'close_name' => "mla_markup_templates_close[{$default}]",
+					'close_id' => "mla_markup_templates_close_{$default}",
+					'close_text' => isset( $value['close'] ) ? esc_textarea( $value['close'] ) : '',
+					'close_help' => 'Markup for the end of the gallery.'
+				);
+	
+				$markup_options_list .= MLAData::mla_parse_template( self::$page_template_array['mla-gallery-markup'], $template_values );
+			} // $value
+		} // foreach default
 		
 		foreach ( $templates as $name => $value ) {
 			$slug = sanitize_title( $name );
 
-			if ( 'default' == $name )
+			if ( in_array( $name, $default_markups ) )
 				continue; // already handled above
 				
 			$template_values = array (
@@ -2050,8 +2072,12 @@ class MLASettings {
 								case 'add_rule_map':
 								case 'add_field_map':
 									$page_content = self::_save_custom_field_settings( $settings );
-									$map_content = self::_process_custom_field_mapping( $settings );
-									$page_content['message'] .= '<br>&nbsp;<br>' . $map_content['message'];
+									if ( false === strpos( $page_content['message'], 'ERROR:' ) ) {
+										$current_values = MLAOptions::mla_get_option( 'custom_field_mapping' );
+										$settings = array( $value['name'] => $current_values[$value['name']] );
+										$map_content = self::_process_custom_field_mapping( $settings );
+										$page_content['message'] .= '<br>&nbsp;<br>' . $map_content['message'];
+									}
 									break;
 								default:
 									// ignore everything else
@@ -2159,8 +2185,12 @@ class MLASettings {
 								case 'add_rule_map':
 								case 'add_field_map':
 									$page_content = self::_save_iptc_exif_custom_settings( $settings );
-									$map_content = self::_process_iptc_exif_custom( $settings );
-									$page_content['message'] .= '<br>&nbsp;<br>' . $map_content['message'];
+									if ( false === strpos( $page_content['message'], 'ERROR:' ) ) {
+										$current_values = MLAOptions::mla_get_option( 'iptc_exif_mapping' );
+										$settings = array( 'custom' => array( $value['name'] => $current_values['custom'][$value['name']] ) );
+										$map_content = self::_process_iptc_exif_custom( $settings );
+										$page_content['message'] .= '<br>&nbsp;<br>' . $map_content['message'];
+									}
 									break;
 								default:
 									// ignore everything else
@@ -2339,9 +2369,10 @@ class MLASettings {
 		/*
 		 * Build new style template array, noting changes
 		 */
+		$default_styles = array( 'default', 'tag-cloud' );
 		$templates_changed = false;
 		foreach ( $new_names as $name => $new_name ) {
-			if ( 'default' == $name )
+			if ( in_array( $name, $default_styles ) )
 				continue;
 
 			if( array_key_exists( $name, $new_deletes ) ) {
@@ -2418,9 +2449,10 @@ class MLASettings {
 		/*
 		 * Build new markup template array, noting changes
 		 */
+		$default_markups = array( 'default', 'tag-cloud', 'tag-cloud-ul', 'tag-cloud-dl' );
 		$templates_changed = false;
 		foreach ( $new_names as $name => $new_name ) {
-			if ( 'default' == $name )
+			if ( in_array( $name, $default_markups ) )
 				continue;
 
 			if( array_key_exists( $name, $new_deletes ) ) {
@@ -2458,11 +2490,6 @@ class MLASettings {
 			}
 			
 			if ( $new_slug != $name ) {
-				if( array_key_exists( $new_slug, $old_templates ) ) {
-					$error_list .= "<br>ERROR: duplicate new markup template name '{$new_slug}', reverting to '{$name}'.";
-					$new_slug = $name;
-				}
-				
 				if( array_key_exists( $new_slug, $old_templates ) ) {
 					$error_list .= "<br>ERROR: duplicate new markup template name '{$new_slug}', reverting to '{$name}'.";
 					$new_slug = $name;

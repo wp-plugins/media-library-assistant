@@ -797,10 +797,25 @@ class MLAData {
 					break;
 				case 'request':
 					if ( isset( $_REQUEST[ $value['value'] ] ) )
-						$markup_values[ $key ] = $_REQUEST[ $value['value'] ];
+						$record = $_REQUEST[ $value['value'] ];
 					else
-						$markup_values[ $key ] = '';
+						$record = '';
 
+					if ( is_scalar( $record ) )
+						$text = sanitize_text_field( (string) $record );
+					elseif ( is_array( $record ) ) {
+						if ( 'export' == $value['option'] )
+							$text = sanitize_text_field( var_export( $record, true ) );
+						else {
+							$text = '';
+							foreach ( $record as $term ) {
+								$term_name = sanitize_text_field( $term );
+								$text .= strlen( $text ) ? ',' . $term_name : $term_name;
+							}
+						}
+					} // is_array
+
+					$markup_values[ $key ] = $text;
 					break;
 				case 'terms':
 					if ( 0 < $post_id )
@@ -866,7 +881,7 @@ class MLAData {
 							$text = sanitize_text_field( (string) $record );
 						elseif ( is_array( $record ) ) {
 							if ( 'export' == $value['option'] )
-								$text = sanitize_text_field( var_export( $haystack, true ) );
+								$text = sanitize_text_field( var_export( $record, true ) );
 							else {
 								$text = '';
 								foreach ( $record as $term ) {
@@ -2502,11 +2517,13 @@ class MLAData {
 					 */
 					if ( empty( $match ) || ( ' ' == substr( $match, 0, 1 ) ) ) {
 						$instance++;
-						$galleries_array[ $result_id ]['galleries'][ $instance ]['query'] = trim( $matches[1][$index] );
+						/*
+						 * Remove trailing "/" from XHTML-style self-closing shortcodes
+						 */
+						$galleries_array[ $result_id ]['galleries'][ $instance ]['query'] = trim( rtrim( $matches[1][$index], '/' ) );
 						$galleries_array[ $result_id ]['galleries'][ $instance ]['results'] = array();
-						
 						$post = $result; // set global variable for mla_gallery_shortcode
-						$attachments = MLAShortcodes::mla_get_shortcode_attachments( $result_id, $galleries_array[ $result_id ]['galleries'][ $instance ]['query'] );
+						$attachments = MLAShortcodes::mla_get_shortcode_attachments( $result_id, $galleries_array[ $result_id ]['galleries'][ $instance ]['query'] . ' where_used_query=this-is-a-where-used-query' );
 
 						if ( is_string( $attachments ) ) {
 							trigger_error( htmlentities( sprintf( '(%1$s) %2$s (ID %3$d) query "%4$s" failed, returning "%5$s"', $result->post_type, $result->post_title, $result->ID, $galleries_array[ $result_id ]['galleries'][ $instance ]['query'], $attachments) ), E_USER_WARNING );

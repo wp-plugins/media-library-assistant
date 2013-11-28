@@ -38,7 +38,7 @@ class MLA {
 	 *
 	 * @var	string
 	 */
-	const CURRENT_MLA_VERSION = '1.52';
+	const CURRENT_MLA_VERSION = '1.60';
 
 	/**
 	 * Slug for registering and enqueueing plugin style sheet
@@ -247,6 +247,11 @@ class MLA {
 	public static function mla_admin_enqueue_scripts_action( $page_hook ) {
 		$suffix = defined('SCRIPT_DEBUG') && SCRIPT_DEBUG ? '' : '.min';
 		
+		if ( 'checked' != MLAOptions::mla_get_option( MLAOptions::MLA_SCREEN_DISPLAY_LIBRARY ) ) {
+			wp_register_style( self::STYLESHEET_SLUG . '-nolibrary', MLA_PLUGIN_URL . 'css/mla-nolibrary.css', false, self::CURRENT_MLA_VERSION );
+			wp_enqueue_style( self::STYLESHEET_SLUG . '-nolibrary' );
+		}
+
 		if( 'edit-tags.php' == $page_hook ) {
 			wp_register_style( self::STYLESHEET_SLUG, MLA_PLUGIN_URL . 'css/mla-edit-tags-style.css', false, self::CURRENT_MLA_VERSION );
 			wp_enqueue_style( self::STYLESHEET_SLUG );
@@ -308,9 +313,12 @@ class MLA {
 	 * @return	void
 	 */
 	public static function mla_admin_menu_action( ) {
-		if ( 'checked' != MLAOptions::mla_get_option( MLAOptions::MLA_SCREEN_DISPLAY_LIBRARY ) )
-			remove_submenu_page( 'upload.php', 'upload.php' );
+//		if ( 'checked' != MLAOptions::mla_get_option( MLAOptions::MLA_SCREEN_DISPLAY_LIBRARY ) )
+//			remove_submenu_page( 'upload.php', 'upload.php' );
 		
+		if ( 'checked' != MLAOptions::mla_get_option( MLAOptions::MLA_SCREEN_DISPLAY_LIBRARY ) )
+			add_action( 'load-upload.php', 'MLA::mla_load_media_action' );
+			
 		$page_title = MLAOptions::mla_get_option( MLAOptions::MLA_SCREEN_PAGE_TITLE );
 		$menu_title = MLAOptions::mla_get_option( MLAOptions::MLA_SCREEN_MENU_TITLE );
 		$hook = add_submenu_page( 'upload.php', $page_title, $menu_title, 'upload_files', self::ADMIN_PAGE_SLUG, 'MLA::mla_render_admin_page' );
@@ -342,7 +350,16 @@ class MLA {
 			add_action( 'admin_head-edit-tags.php', 'MLA::mla_add_help_tab' );
 		}
 		
-		if ( $menu_position = (integer) MLAOptions::mla_get_option( MLAOptions::MLA_SCREEN_ORDER ) ) {
+		/*
+		 * If we are suppressing the Media/Library submenu, force Media/Assistant to come first
+		 */
+		if ( 'checked' != MLAOptions::mla_get_option( MLAOptions::MLA_SCREEN_DISPLAY_LIBRARY ) ) {
+			$menu_position = 4;
+		} else {
+			$menu_position = (integer) MLAOptions::mla_get_option( MLAOptions::MLA_SCREEN_ORDER );
+		}
+
+		if ( $menu_position ) {
 			global $submenu_file, $submenu;
 			foreach ( $submenu['upload.php'] as $menu_order => $menu_item ) {
 				if ( self::ADMIN_PAGE_SLUG == $menu_item[2] ) {
@@ -355,6 +372,33 @@ class MLA {
 		}
 
 		add_filter( 'parent_file', 'MLA::mla_parent_file_filter', 10, 1 );
+	}
+	
+	/**
+	 * Redirect to Media/Assistant if Media/Library is hidden
+	 *
+	 * @since 1.60
+	 *
+	 * @return	void
+	 */
+	public static function mla_load_media_action( ) {
+		if ( 'checked' != MLAOptions::mla_get_option( MLAOptions::MLA_SCREEN_DISPLAY_LIBRARY ) ) {
+			$query_args = '?page=mla-menu';
+			
+			/*
+			 * Compose a message if returning from the Edit Media screen
+			 */
+			if ( ! empty( $_GET['deleted'] ) && $deleted = absint( $_GET['deleted'] ) ) {
+				$query_args .= '&mla_admin_message=' . urlencode( sprintf( _n( 'Item permanently deleted.', '%d items permanently deleted.', $deleted ), number_format_i18n( $_GET['deleted'] ) ) );
+			}
+			
+			if ( ! empty( $_GET['trashed'] ) && $trashed = absint( $_GET['trashed'] ) ) {
+				$query_args .= '&mla_admin_message=' . urlencode( sprintf( 'Item $1%d: moved to Trash.', number_format_i18n( $_GET['ids'] ) ) );
+			}
+			
+			wp_redirect( admin_url( 'upload.php' ) . $query_args, 302 );
+			exit;
+		}
 	}
 	
 	/**
@@ -555,29 +599,36 @@ class MLA {
 	 * @return	string	The updated top-level menu page
 	 */
 	public static function mla_parent_file_filter( $parent_file ) {
-		global $submenu_file, $submenu;
-		
+		global $submenu_file, $submenu, $hook_suffix;
+
 		/*
 		 * Make sure the "Assistant" submenu line is bolded if it's the default
 		 */
-		if ( 'upload.php' == $parent_file && NULL == $submenu_file ) {
-			reset( $submenu['upload.php'] );
-			$current = current( $submenu['upload.php'] );
-			if ( self::ADMIN_PAGE_SLUG == $current[2] )
-				$submenu_file = self::ADMIN_PAGE_SLUG;
+		if ( 'media_page_' . self::ADMIN_PAGE_SLUG == $hook_suffix ) {
+			$submenu_file = self::ADMIN_PAGE_SLUG;
+		}
+			
+		/*
+		 * Make sure the "Assistant" submenu line is bolded if the Media/Library submenu is hidden
+		 */
+		if ( 'checked' != MLAOptions::mla_get_option( MLAOptions::MLA_SCREEN_DISPLAY_LIBRARY ) &&
+		     'upload.php' == $parent_file && 'upload.php' == $submenu_file ) {
+			$submenu_file = self::ADMIN_PAGE_SLUG;
 		}
 			
 		/*
 		 * Make sure the "Assistant" submenu line is bolded when we go to the Edit Media page
 		 */
-		if ( isset( $_REQUEST['mla_source'] ) )
+		if ( isset( $_REQUEST['mla_source'] ) ) {
 			$submenu_file = self::ADMIN_PAGE_SLUG;
+		}
 			
 		/*
 		 * WordPress 3.5 adds native support for taxonomies
 		 */
-		if( MLATest::$wordpress_3point5_plus ) 
+		if( MLATest::$wordpress_3point5_plus ) {
 			return $parent_file;
+		}
 
 		if ( isset( $_REQUEST['taxonomy'] ) ) {
 			$taxonomies = get_object_taxonomies( 'attachment', 'objects' );
@@ -634,9 +685,13 @@ class MLA {
 		}
 		
 		$page_content = array(
-			 'message' => '',
+			'message' => '',
 			'body' => '' 
 		);
+		
+		if ( !empty( $_REQUEST['mla_admin_message'] ) ) {
+			$page_content['message'] = $_REQUEST['mla_admin_message'];
+		}
 		
 		/*
 		 * The category taxonomy (edit screens) is a special case because 
@@ -664,7 +719,6 @@ class MLA {
 						case 'edit':
 							if ( !empty( $_REQUEST['bulk_custom_field_map'] ) ) {
 								$updates = MLAOptions::mla_evaluate_custom_field_mapping( $post_id, 'single_attachment_mapping' );
-								
 								$item_content = MLAData::mla_update_single_item( $post_id, $updates );
 								break;
 							}
@@ -672,7 +726,6 @@ class MLA {
 							if ( !empty( $_REQUEST['bulk_map'] ) ) {
 								$item = get_post( $post_id );
 								$updates = MLAOptions::mla_evaluate_iptc_exif_mapping( $item, 'iptc_exif_mapping' );
-
 								$item_content = MLAData::mla_update_single_item( $post_id, $updates );
 								break;
 							}

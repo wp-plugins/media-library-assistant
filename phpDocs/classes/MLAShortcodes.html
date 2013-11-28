@@ -58,10 +58,13 @@
 <li class="method public "><a href="#mla_attachment_list_shortcode" title="mla_attachment_list_shortcode :: WordPress Shortcode; renders a complete list of all attachments and references to them"><span class="description">WordPress Shortcode; renders a complete list of all attachments and references to them</span><pre>mla_attachment_list_shortcode()</pre></a></li>
 <li class="method public "><a href="#mla_gallery_shortcode" title="mla_gallery_shortcode :: The MLA Gallery shortcode."><span class="description">The MLA Gallery shortcode.</span><pre>mla_gallery_shortcode()</pre></a></li>
 <li class="method public "><a href="#mla_get_shortcode_attachments" title="mla_get_shortcode_attachments :: Parses shortcode parameters and returns the gallery objects"><span class="description">Parses shortcode parameters and returns the gallery objects</span><pre>mla_get_shortcode_attachments()</pre></a></li>
+<li class="method public "><a href="#mla_get_terms" title="mla_get_terms :: Retrieve the terms in one or more taxonomies."><span class="description">Retrieve the terms in one or more taxonomies.</span><pre>mla_get_terms()</pre></a></li>
 <li class="method public "><a href="#mla_shortcode_query_posts_clauses_filter" title="mla_shortcode_query_posts_clauses_filter :: Filters all clauses for shortcode queries, pre caching plugins"><span class="description">Filters all clauses for shortcode queries, pre caching plugins</span><pre>mla_shortcode_query_posts_clauses_filter()</pre></a></li>
 <li class="method public "><a href="#mla_shortcode_query_posts_clauses_request_filter" title="mla_shortcode_query_posts_clauses_request_filter :: Filters all clauses for shortcode queries, post caching plugins"><span class="description">Filters all clauses for shortcode queries, post caching plugins</span><pre>mla_shortcode_query_posts_clauses_request_filter()</pre></a></li>
 <li class="method public "><a href="#mla_shortcode_query_posts_orderby_filter" title="mla_shortcode_query_posts_orderby_filter :: Filters the ORDERBY clause for shortcode queries"><span class="description">Filters the ORDERBY clause for shortcode queries</span><pre>mla_shortcode_query_posts_orderby_filter()</pre></a></li>
 <li class="method public "><a href="#mla_shortcode_query_posts_where_filter" title="mla_shortcode_query_posts_where_filter :: Filters the WHERE clause for shortcode queries"><span class="description">Filters the WHERE clause for shortcode queries</span><pre>mla_shortcode_query_posts_where_filter()</pre></a></li>
+<li class="method public "><a href="#mla_tag_cloud" title="mla_tag_cloud :: The MLA Tag Cloud support function."><span class="description">The MLA Tag Cloud support function.</span><pre>mla_tag_cloud()</pre></a></li>
+<li class="method public "><a href="#mla_tag_cloud_shortcode" title="mla_tag_cloud_shortcode :: The MLA Tag Cloud shortcode."><span class="description">The MLA Tag Cloud shortcode.</span><pre>mla_tag_cloud_shortcode()</pre></a></li>
 <li class="nav-header private">» Private</li>
 <li class="method private "><a href="#_paginate_links" title="_paginate_links :: Handles pagnation output types 'previous_page', 'next_page', and 'paginate_links'"><span class="description">Handles pagnation output types 'previous_page', 'next_page', and 'paginate_links'</span><pre>_paginate_links()</pre></a></li>
 <li class="method private "><a href="#_process_pagination_output_types" title="_process_pagination_output_types :: Handles pagnation output types 'previous_page', 'next_page', and 'paginate_links'"><span class="description">Handles pagnation output types 'previous_page', 'next_page', and 'paginate_links'</span><pre>_process_pagination_output_types()</pre></a></li>
@@ -73,8 +76,9 @@
 <li class="property public "><a href="#%24mla_debug_messages" title="$mla_debug_messages :: Accumulates debug messages"><span class="description">Accumulates debug messages</span><pre>$mla_debug_messages</pre></a></li>
 <li class="property public "><a href="#%24mla_gallery_wp_query_object" title="$mla_gallery_wp_query_object :: The WP_Query object used to select items for the gallery."><span class="description">The WP_Query object used to select items for the gallery.</span><pre>$mla_gallery_wp_query_object</pre></a></li>
 <li class="nav-header private">» Private</li>
-<li class="property private "><a href="#%24data_selection_parameters" title="$data_selection_parameters :: Data selection parameters for the WP_Query in [mla_gallery]"><span class="description">Data selection parameters for the WP_Query in [mla_gallery]</span><pre>$data_selection_parameters</pre></a></li>
 <li class="property private "><a href="#%24mla_debug" title="$mla_debug :: Turn debug collection and display on or off"><span class="description">Turn debug collection and display on or off</span><pre>$mla_debug</pre></a></li>
+<li class="property private "><a href="#%24mla_get_shortcode_attachments_parameters" title="$mla_get_shortcode_attachments_parameters :: Data selection parameters for the WP_Query in [mla_gallery]"><span class="description">Data selection parameters for the WP_Query in [mla_gallery]</span><pre>$mla_get_shortcode_attachments_parameters</pre></a></li>
+<li class="property private "><a href="#%24mla_get_terms_parameters" title="$mla_get_terms_parameters :: Data selection parameters for [mla_tag_cloud]"><span class="description">Data selection parameters for [mla_tag_cloud]</span><pre>$mla_get_terms_parameters</pre></a></li>
 <li class="property private "><a href="#%24query_parameters" title='$query_parameters :: WP_Query filter "parameters"'><span class="description">WP_Query filter "parameters"</span><pre>$query_parameters</pre></a></li>
 </ul>
 </div>
@@ -130,7 +134,7 @@
 </div>
 <a name="mla_gallery_shortcode" id="mla_gallery_shortcode"></a><div class="element clickable method public mla_gallery_shortcode" data-toggle="collapse" data-target=".mla_gallery_shortcode .collapse">
 <h2>The MLA Gallery shortcode.</h2>
-<pre>mla_gallery_shortcode(array $attr) : string</pre>
+<pre>mla_gallery_shortcode(array $attr, string $content) : string</pre>
 <div class="labels"></div>
 <div class="row collapse"><div class="detail-description">
 <p class="long_description"><p>This is a superset of the WordPress Gallery shortcode for displaying images on a post,
@@ -143,7 +147,10 @@ Enhancements include many additional selection parameters and full taxonomy supp
 <h3>Parameters</h3>
 <div class="subelement argument">
 <h4>$attr</h4>
-<code>array</code><p>Attributes of the shortcode.</p></div>
+<code>array</code><p>Attributes of the shortcode</p></div>
+<div class="subelement argument">
+<h4>$content</h4>
+<code>string</code><p>Optional content for enclosing shortcodes; used with mla_alt_shortcode</p></div>
 <h3>Returns</h3>
 <div class="subelement response">
 <code>string</code>HTML content to display gallery.</div>
@@ -173,6 +180,52 @@ Enhancements include many additional selection parameters and full taxonomy supp
 <h3>Returns</h3>
 <div class="subelement response">
 <code>array</code>List of attachments returned from WP_Query</div>
+</div></div>
+</div>
+<a name="mla_get_terms" id="mla_get_terms"></a><div class="element clickable method public mla_get_terms" data-toggle="collapse" data-target=".mla_get_terms .collapse">
+<h2>Retrieve the terms in one or more taxonomies.</h2>
+<pre>mla_get_terms(array $attr) : array</pre>
+<div class="labels"></div>
+<div class="row collapse"><div class="detail-description">
+<p class="long_description"><p>Alternative to WordPress get_terms() function that provides
+an accurate count of attachments associated with each term.</p>
+
+<p>taxonomy - string containing one or more (comma-delimited) taxonomy names
+or an array of taxonomy names.</p>
+
+<p>include - An array, comma- or space-delimited string of term ids to include
+in the return array.</p>
+
+<p>exclude - An array, comma- or space-delimited string of term ids to exclude
+from the return array. If 'include' is non-empty, 'exclude' is ignored.</p>
+
+<p>parent - term_id of the terms' immediate parent; 0 for top-level terms.</p>
+
+<p>minimum - minimum number of attachments a term must have to be included.</p>
+
+<p>number - maximum number of term objects to return. Terms are ordered by count,
+descending and then by term_id before this value is applied.</p>
+
+<p>orderby - 'count', 'id', 'name', 'none', 'random', 'slug'</p>
+
+<p>order - 'ASC', 'DESC'</p>
+
+<p>preserve_case - 'true', 'false' to make orderby case-sensitive.</p>
+
+<p>limit - final number of term objects to return, for pagination.</p>
+
+<p>offset - number of term objects to skip, for pagination.</p></p>
+<table class="table table-bordered"><tr>
+<th>since</th>
+<td>1.60</td>
+</tr></table>
+<h3>Parameters</h3>
+<div class="subelement argument">
+<h4>$attr</h4>
+<code>array</code><p>taxonomies to search and query parameters</p></div>
+<h3>Returns</h3>
+<div class="subelement response">
+<code>array</code>array of term objects, empty if none found</div>
 </div></div>
 </div>
 <a name="mla_shortcode_query_posts_clauses_filter" id="mla_shortcode_query_posts_clauses_filter"></a><div class="element clickable method public mla_shortcode_query_posts_clauses_filter" data-toggle="collapse" data-target=".mla_shortcode_query_posts_clauses_filter .collapse">
@@ -255,6 +308,45 @@ Defined as public because it's a filter.</p></p>
 <h3>Returns</h3>
 <div class="subelement response">
 <code>string</code>query clause after modification</div>
+</div></div>
+</div>
+<a name="mla_tag_cloud" id="mla_tag_cloud"></a><div class="element clickable method public mla_tag_cloud" data-toggle="collapse" data-target=".mla_tag_cloud .collapse">
+<h2>The MLA Tag Cloud support function.</h2>
+<pre>mla_tag_cloud(array $attr) : string</pre>
+<div class="labels"></div>
+<div class="row collapse"><div class="detail-description">
+<p class="long_description"><p>This is an alternative to the WordPress wp_tag_cloud function, with additional
+options to customize the hyperlink behind each term.</p></p>
+<table class="table table-bordered"><tr>
+<th>since</th>
+<td>1.60</td>
+</tr></table>
+<h3>Parameters</h3>
+<div class="subelement argument">
+<h4>$attr</h4>
+<code>array</code><p>Attributes of the shortcode.</p></div>
+<h3>Returns</h3>
+<div class="subelement response">
+<code>string</code>HTML content to display the tag cloud.</div>
+</div></div>
+</div>
+<a name="mla_tag_cloud_shortcode" id="mla_tag_cloud_shortcode"></a><div class="element clickable method public mla_tag_cloud_shortcode" data-toggle="collapse" data-target=".mla_tag_cloud_shortcode .collapse">
+<h2>The MLA Tag Cloud shortcode.</h2>
+<pre>mla_tag_cloud_shortcode(array $attr) : string</pre>
+<div class="labels"></div>
+<div class="row collapse"><div class="detail-description">
+<p class="long_description"><p>This is an interface to the mla_tag_cloud function.</p></p>
+<table class="table table-bordered"><tr>
+<th>since</th>
+<td>1.60</td>
+</tr></table>
+<h3>Parameters</h3>
+<div class="subelement argument">
+<h4>$attr</h4>
+<code>array</code><p>Attributes of the shortcode.</p></div>
+<h3>Returns</h3>
+<div class="subelement response">
+<code>string</code>HTML content to display the tag cloud.</div>
 </div></div>
 </div>
 <a name="_paginate_links" id="_paginate_links"></a><div class="element clickable method private _paginate_links" data-toggle="collapse" data-target="._paginate_links .collapse">
@@ -416,18 +508,6 @@ Enhanced version of /wp-includes/formatting.php function sanitize_sql_orderby().
 </tr></table>
 </div></div>
 </div>
-<a name="%24data_selection_parameters" id="$data_selection_parameters"> </a><div class="element clickable property private $data_selection_parameters" data-toggle="collapse" data-target=".$data_selection_parameters .collapse">
-<h2>Data selection parameters for the WP_Query in [mla_gallery]</h2>
-<pre>$data_selection_parameters : array</pre>
-<div class="labels"></div>
-<div class="row collapse"><div class="detail-description">
-<p class="long_description"></p>
-<table class="table table-bordered"><tr>
-<th>since</th>
-<td>1.30</td>
-</tr></table>
-</div></div>
-</div>
 <a name="%24mla_debug" id="$mla_debug"> </a><div class="element clickable property private $mla_debug" data-toggle="collapse" data-target=".$mla_debug .collapse">
 <h2>Turn debug collection and display on or off</h2>
 <pre>$mla_debug : boolean</pre>
@@ -437,6 +517,30 @@ Enhanced version of /wp-includes/formatting.php function sanitize_sql_orderby().
 <table class="table table-bordered"><tr>
 <th>since</th>
 <td>0.70</td>
+</tr></table>
+</div></div>
+</div>
+<a name="%24mla_get_shortcode_attachments_parameters" id="$mla_get_shortcode_attachments_parameters"> </a><div class="element clickable property private $mla_get_shortcode_attachments_parameters" data-toggle="collapse" data-target=".$mla_get_shortcode_attachments_parameters .collapse">
+<h2>Data selection parameters for the WP_Query in [mla_gallery]</h2>
+<pre>$mla_get_shortcode_attachments_parameters : array</pre>
+<div class="labels"></div>
+<div class="row collapse"><div class="detail-description">
+<p class="long_description"></p>
+<table class="table table-bordered"><tr>
+<th>since</th>
+<td>1.30</td>
+</tr></table>
+</div></div>
+</div>
+<a name="%24mla_get_terms_parameters" id="$mla_get_terms_parameters"> </a><div class="element clickable property private $mla_get_terms_parameters" data-toggle="collapse" data-target=".$mla_get_terms_parameters .collapse">
+<h2>Data selection parameters for [mla_tag_cloud]</h2>
+<pre>$mla_get_terms_parameters : array</pre>
+<div class="labels"></div>
+<div class="row collapse"><div class="detail-description">
+<p class="long_description"></p>
+<table class="table table-bordered"><tr>
+<th>since</th>
+<td>1.60</td>
 </tr></table>
 </div></div>
 </div>
@@ -464,7 +568,7 @@ any further logic required to translate those values is contained in the filter.
 <div class="row"><footer class="span12">
             Template is built using <a href="http://twitter.github.com/bootstrap/">Twitter Bootstrap 2</a> and icons provided by <a href="http://glyphicons.com/">Glyphicons</a>.<br>
             Documentation is powered by <a href="http://www.phpdoc.org/">phpDocumentor 2.0.0a8</a> and<br>
-            generated on 2013-10-21T16:31:45-07:00.<br></footer></div>
+            generated on 2013-11-27T11:31:02-08:00.<br></footer></div>
 </div>
 </body>
 </html>

@@ -3,8 +3,8 @@ Contributors: dglingren
 Donate link: http://fairtradejudaica.org/make-a-difference/donate/
 Tags: attachment, attachments, documents, gallery, image, images, media, library, media library, media-tags, media tags, tags, media categories, categories, IPTC, EXIF, GPS, PDF, meta, metadata, photo, photos, photograph, photographs, photoblog, photo albums, lightroom, photoshop, MIME, mime-type, icon, upload, file extensions
 Requires at least: 3.3
-Tested up to: 3.7
-Stable tag: 1.52
+Tested up to: 3.7.1
+Stable tag: 1.60
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -121,6 +121,19 @@ All of the MLA source code has been annotated with "DocBlocks", a special type o
 
 == Changelog ==
 
+= 1.60 =
+* New: **`[mla_tag_cloud]` shortcode**. Enhanced tag cloud for any taxonomy, with "grid" format, full Display Content and custom template support along the lines of `[mla_gallery]`. Paginated clouds are also supported. Full details in the [Other Notes section](http://wordpress.org/extend/plugins/media-library-assistant/other_notes/ "Click here, then scroll down") and on the Settings/Media Library Assistant Documentation tab.
+* New: **`MLA Text Widget`**. You can add widgets containing `[mla_gallery]`, `[mla_tag_cloud]` or **any shortcode** to the sidebars on your site. More information in the [Other Notes section](http://wordpress.org/extend/plugins/media-library-assistant/other_notes/ "Click here, then scroll down").
+* New: For `[mla_gallery]`, **new 'page_ID' and 'page_url'** substitution parameters for easier 'mla_link_href' composition.
+* New: For `[mla_gallery]`, **link=span and link=none** let you replace the hyperlink enclosing each gallery thumbnail with non-link content. 
+* New: For `[mla_gallery]`, **default Style and Markup templates conform to WordPress 3.7 conventions**. The "orientation" attribute has been added to Attachment-specific substitution parameters and as a Data Source for custom field mapping. 
+* New: **Enhanced IPTC/EXIF Taxonomy term mapping.** You can now separate multiple terms contained in a single IPTC/EXIF value by specifying one or more delimiters. For example, specify ";" to separate values like "tag1; tag2" into separate terms.
+* New: For `[mla_gallery]`, **Support for Other Gallery-generating Shortcodes now includes the "enclosing shortcode" form**. You can pass content to the alternate shortcode by coding something like `[mla_gallery ids="1230,1227" mla_alt_shortcode=fsg_link mla_alt_ids_name=include class=button]View the gallery[/mla_gallery]`. New filters are provided for inspecting/modifying the content.
+* Fix: On the Media/Assistant submenu, **where-used errors are no longer returned for** XHTML-style self-closing shortcodes, i.e., ending with "/]", and for tax_query and meta_query parameters containing substitution parameters.
+* Fix: **Hiding the Media/Library submenu is now more reliable**. The Media/Library submenu is hidden with a CSS style, but is still available for use by plugins such as Enable Media Replace. The Media/Assistant submenu is automatically moved up to the top of the submenu list. Attempts to display the Media/Library submenu, e.g., after deleting an item from the Edit Media screen, are redirected to the Media/Assistant submenu.
+* Fix: For the Settings/Media Library Assistant "Custom Fields" and "IPTC/EXIF" tabs, the **"Add Rule/Add Field and Map All Attachments" buttons now map values correctly**. In previous MLA versions, the rule was added but the attachment values were not mapped.
+* Fix: For `[mla_gallery]`, **array values are now accepted in [+request:+] substitution parameters**, and the `,export` option is supported as well. Array values can be passed from the URL or HTML forms to parameters that accept a list of values, such as taxonomy queries.
+
 = 1.52 =
 * Fix: **Corrected serious defect in `[mla_gallery]`** that incorrectly limited the number of items returned for non-paginated galleries.
 * Fix: Eliminated "Strict Standards" messages issued from MLAModal functions.
@@ -191,8 +204,8 @@ All of the MLA source code has been annotated with "DocBlocks", a special type o
 
 == Upgrade Notice ==
 
-= 1.52 =
-Corrects serious defect in [mla_gallery] that incorrectly limits the number of items returned for non-paginated galleries. One other fix.
+= 1.60 =
+New [mla_tag_cloud] shortcode and shortcode-enabled MLA Text Widget. Five other enhancements, four fixes.
 
 == Other Notes ==
 
@@ -214,92 +227,201 @@ I have used and learned much from the following books (among many):
 
 Media Library Assistant includes many images drawn (with permission) from the [Crystal Project Icons](http://www.softicons.com/free-icons/system-icons/crystal-project-icons-by-everaldo-coelho), created by [Everaldo Coelho](http://www.everaldo.com), founder of [Yellowicon](http://www.yellowicon.com).
 
-== MLA Gallery Shortcode ==
+== NEW! MLA Tag Cloud Shortcode ==
 
-The `[mla_gallery]` shortcode is used in a post, page or custom post type to add a gallery of images and/or other Media Library items (such as PDF documents). MLA Gallery is a superset of the `[gallery]` shortcode in the WordPress core; it is compatible with `[gallery]` and provides many enhancements. These include:
+The `[mla_tag_cloud]` shortcode displays a list of taxonomy terms in what is called a 'tag cloud', where the size of each term is determined by how many times that particular term has been assigned to Media Library items (attachments). The cloud works with both flat (e.g., Att. Tags) and hierarchical taxonomies (e.g., Att. Categories) MLA Tag Cloud provides many enhancements to the basic "cloud" display. These include:
 
-* Full support for WordPress categories, tags and custom taxonomies. You can select items with any of the taxonomy parameters documented in the WP_Query class.
-* Support for all post_mime_type values, not just images.
-* Media Library items need not be "attached" to the post. You can build a gallery with any combination of items in the Library using taxonomy terms, custom fields and more.
-* Control over the styles, markup and content of each gallery using the Style and Markup Templates documented below.
-* Access to a wide range of content using the Attachment-specific and Field-level Substitution parameters documented below. A powerful Content Template facility lets you assemble content from multiple sources and vary the results depending on which data elements contain non-empty values for a given gallery item.
-* Combine [mla_gallery] data selection with other popular gallery-generating plugins to get the best of both.
+* Full support for WordPress categories, tags and custom taxonomies. You can select from any taxonomy or list of taxonomies defined in your site.
+* Several display formats, including "flat","list" and "grid" (modeled after the `[mla_gallery]` display).
+* Complete support for paginated clouds; display hundreds or thousands of terms in managable groups.
+* Control over the styles, markup and content of each cloud using Style and Markup Templates. You can customize the "list" and "grid" formats to suit any need.
+* Access to a wide range of content using the term-specific and Field-level Substitution parameters. A powerful Content Template facility lets you assemble content from multiple sources and vary the results depending on which data elements contain non-empty values for a given term.
+* Display Style and Display Content parameters for easy customization of the cloud display and the destination of the links behind each term.
+* A comprehensive set of filters gives you access to each step of the cloud generation process from PHP code in your theme or other plugins.
 
-All of the options/parameters documented for the `[gallery]` shortcode are supported by the `[mla_gallery]` shortcode; you can find them in the WordPress Codex. Most of the parameters documented for the WP_Query class are also supported; see the WordPress Codex. Because the `[mla_gallery]` shortcode is designed to work with Media Library items, there are some parameter differences and extensions; full documentation comes on the Settings/Media Library Assistant screen of the plugin.
+Many of the `[mla_tag_cloud]` concepts and shortcode parameters are modeled after the `[mla_gallery]` shortcode, so the learning curve is short. Differences and parameters unique to the cloud are given in the sections below.
 
-<h4>Gallery Display Style</h4>
+<h4>Tag Cloud Output Formats</h4>
 
-Two parameters provide a way to apply custom style and markup templates to your `[mla_gallery]` display: These parameters replace the default style and/or markup templates with templates you define on the "MLA Gallery" tab of the Settings page.
+The traditional tag cloud output is a "heat map" of term names where larger names are associated with more attachments than smaller names. The terms' display format is determined by the "mla_output" parameter:
 
-Three parameters provide control over the placement, size and spacing of gallery items without requiring the use of custom Style templates.
+* `flat` - Returns a sequence of hypelink tags without further HTML markup. The "separator" parameter content (default, one newline character) is inserted between each hyperlink.
 
-<h4>Gallery Display Content</h4>
+* `list` - Returns hyperlinks enclosed by one of the HTML list tags; unordered (&lt;ul&gt;&lt;/ul&gt;), ordered (&lt;ol&gt;&lt;/ol&gt;) or definitions (&lt;dl&gt;&lt;/dl&gt;), which allow for each term to have a "caption". The "itemtag", "termtag" and "captiontag" parameters customize the list markup.
 
-Twelve parameters provide pagination support and an easy way to control the contents of gallery items without requiring the use of custom Markup templates.  
+* `grid` - Modeled on the galleries produced by `[mla_gallery]`; a rectangular display with rows and columns. The tag parameters listed above, the "columns" parameter and the Display Style parameters customize the display.
 
-<h4>NEW! MLA Gallery Filters and Actions (Hooks)</h4>
+* `array` - Returns a PHP array of cloud hyperlinks. This output format is not available through the shortcode; it is allowed when the `MLAShortcodes::mla_tag_cloud()` function is called directly from your theme or plugin PHP code.
 
-The `[mla_gallery]` shortcode supports a comprehensive set of filters and actions (twenty-five in all) that give you complete control over gallery composition from PHP code in your theme or in another plugin. An example of using the hooks from a simple, stand-alone plugin can be found in mla-hooks-example.php.txt.
+The "list" and "grid" formats can be extensively customized by using custom Style and Markup Templates. The `[mla_tag_cloud]` shortcode also supports pagination with "previous_link", "current_link", "next_link", "previous_page", "next_page" and "paginate_links" formats. These are essentially the same as those for the `[mla_gallery]` shortcode.
 
-The example code documents each hook with comments in the filter/action function that intercepts it. Generally, each part of the gallery supports three hooks: 1) a "values" hook, which lets you record or update the substitution values for that gallery part, 2) a "template" hook, which lets you record/update the template used to generate the HTML markup, and 3) a "parse" hook which lets you modify or replace the markup generated for a gallery part. There are also hooks for manipulating shortcode and data selection attributes and for inspecting query results. 
+<h4>Tag Cloud Item Parameters</h4>
 
-== Support for Alternative Gallery Output, e.g., pagination ==
-The `[mla_gallery]` shortcode can be used to provide "Previous" and "Next" links that support moving among the individual items in a gallery or among gallery "pages". For example, if you have many items with a specific Att. Category or Att. Tag value you can build a single-image page with links to the previous/next item having that value. You can also build a page that shows a large gallery in groups, or "gallery pages", of ten items with links to the previous/next ten items or links to all of the gallery pages of items having that value.
+Each item in the tag cloud comprises a term name of varying size, a hyperlink surrounding the term name and a "title" attribute (Rollover Text) displayed when the cursor hovers over the term name hyperlink. The following parameters customize item content and markup:
 
-The **"mla_output"** parameter determines the type of output the shortcode will return. You can choose from six values:
+* `smallest`
+* `largest`
+* `unit`
+* `separator`
+* `single_text`
+* `multiple_text`
+* `link`
 
-* `gallery`: The default value; returns the traditional gallery of image thumbnails, captions, etc.
-* `next_link`: returns a link to the next gallery item.
-* `previous_link`: returns a link to the previous gallery item.
-* `next_page`: returns a link to the next "page" of gallery items.
-* `previous_page`: returns a link to the previous "page" of gallery items.
-* `paginate_links`: returns a link to gallery items at the start and end of the list and to pages around the current "gallery page" ( e.g.: &larr; Prev 1 … 3 4 5 6 7 … 9 Next &rarr; ).
+The Item parameters are an easy way to customize the content and markup for each cloud item. For the list and grid formats you can also use the Tag Cloud Display Content parameters and/or Style and Markup Templates for even greater flexibility.
 
-== Support for Other Gallery-generating Shortcodes ==
+<h4>Tag Cloud Item Link</h4>
 
-The [mla_gallery] shortcode can be used in combination with other gallery-generating shortcodes to give you the data selection power of [mla_gallery] and the formatting/display power of popular alternatives such as the WordPress.com Jetpack Carousel and Tiled Galleries modules. Any shortcode that accepts "ids=" or a similar parameter listing the attachment ID values for the gallery can be used. For example, if you want to select images using the MLA Att. Category taxonomy but want to display a Jetpack "Tiled Mosaic" gallery, you can code:
+The Link parameter specifies the target and type of link from the tag cloud term/item to the item's archive page, edit page or other destination. You can also specify a non-hyperlink treatment for each item.
 
-`[mla_gallery attachment_category=vegetable tax_operator="NOT IN" mla_alt_shortcode=gallery type="rectangular" mla_alt_ids_name=include]`
+* `view` - Link to the term's "archive page"
+* `edit` - Link to the term's "edit tag/category" admin screen
+* `(mla_link_href)` - Link to a custom destination, typically another post/page
+* `span` - Substitutes a `&lt;span&gt;&lt;/span&gt;` tag for the hyperlink tag
+* `none` - Eliminates the hyperlink tag
 
-== MLA Gallery Style and Markup Templates ==
+Using the "mla_link_href" parameter to completely replace the link destination URL is a common and useful choice. With this parameter us can use the tag cloud to select a term and then go to another post/page that uses that selection as part of an `[mla_gallery]` shortcode.
 
-The Style and Markup templates give you great flexibility for the content and format of each `[mla_gallery]`. You can define as many templates as you need.
+<h4>Tag Cloud Display Style (list and grid)</h4>
 
-Style templates provide gallery-specific CSS inline styles. Markup templates provide the HTML markup for 1) the beginning of the gallery, 2) the beginning of each row, 3) each gallery item, 4) the end of each row and 5) the end of the gallery. The attachment-specific markup parameters let you choose among most of the attachment fields, not just the caption.
+These parameters provide a way to apply custom style and markup templates to your `[mla_tag_cloud]` display.
 
-The MLA Gallery tab on the Settings page lets you add, change and delete custom templates. The default templates are also displayed on this tab for easy reference.
+* `mla_style` - replaces the default style template
+* `mla_markup` - replaces the default markup template
+* `mla_float` - specifies the CSS float attribute of the ".tag-cloud-item" style
+* `mla_margin` - specifies the CSS margin property of the ".tag-cloud-item" style
+* `mla_itemwidth` - specifies the CSS width attribute of the ".tag-cloud-item" style
 
-<h3>Field-level Markup Substitution Parameters</h3>
+<h4>Tag Cloud Display Content</h4>
 
-Field-level substitution parameters let you access query arguments, custom fields, taxonomy terms, and attachment metadata for display in an MLA gallery. Formatting options let you control what happens when a field has multiple values.
+Eight parameters provide an easy way to control the contents of tag cloud items without requiring the use of custom Markup templates.  
 
-There are nine prefix values for field-level data.
+* `mla_link_attributes`
+* `mla_link_class`
+* `mla_link_href`
+* `mla_link_text`
+* `mla_nolink_text`
+* `mla_rollover_text`
+* `mla_caption`
+* `mla_target`
 
-* `request`: The parameters defined in the `$_REQUEST` array; the "query strings" sent from the browser.
-* `query`: The parameters defined in the `[mla_gallery]` shortcode.
-* `custom`: WordPress custom fields, which you can define and populate on the Edit Media screen.
-* `terms`: WordPress Category, tag or custom taxonomy terms.
-* `meta`: The WordPress "attachment metadata", if any, embedded in the image/audio/video file. For this category, you can code any of the field names embedded in the `_wp_attachment_metadata` array.
-* `pdf`: The Document Information Dictionary (D.I.D.)and XMP metadata, if any, embedded in a PDF file. For this category, you can code any of the nine D.I.D. entries (Title, Author, Subject, Keywords, Creator, Producer, CreationDate, ModDate, Trapped). For many documents there is also a rich collection of additional metadata stored in XMP Metadata Streams.
-* `iptc`: The IPTC (International Press Telecommunications Council) metadata, if any, embedded in the image file.
-* `exif`: The EXIF (EXchangeable Image File) metadata, if any, embedded in a JPEG DCT or TIFF Rev 6.0 image file.
-* `template`: A Content Template, which lets you compose a value from multiple substitution parameters and test for empty values, choosing among two or more alternatives or suppressing output entirely. See the plugin documentation for details.
+<h4>Tag Cloud Data Selection Parameters</h4>
 
-<h4>NEW! Metadata in PDF documents</h4>
+The data selection parameters specify which taxonomy (or taxonomies) the terms are taken from, which terms are returned for the cloud and the order in which the terms are returned:
 
-Metadata in PDF documents comes from two sources. Early versions of the PDF specification defined a Document Information Dictionary (D.I.D.) containing up to nine (optional) fields: Title, Author, Subject, Keywords, Creator, Producer, CreationDate, ModDate and Trapped.</td>
+* `taxonomy` - The taxonomy or taxonomies to retrieve terms from
+* `include` - A comma-separated list of term ids to include
+* `exclude` - A comma-separated list of term ids to exclude from the returned values
+* `parent` - Get direct children of this term
+* `minimum` - The minimum number of attachments required
+* `number` - The maximum number of "most popular" terms to return
+* `orderby` - The sort order of the retrieved terms
+* `order` - "ASC" or "DESC"
+* `preserve_case` - Preserve upper- and lower-case distinctions when sorting by name
+* `limit` - The number of terms to return
+* `offset` - The number of terms to skip before returning the results
 
-More recent versions of the specification add a second source of metadata, Metadata Streams, holding data defined by the Extensible Metadata Platform (XMP) framework. XMP metadata varies from document to document but is often extensive. MLA provides access to this data in three ways:
+<h4>Tag Cloud Substitution Parameters</h4>
 
-1. If a D.I.D. field is not stored in the document, MLA will copy appropriate values from the XMP data into the empty field to populate it as often as possible. For example, the "creator" value(s) in the "dc" namespace ("dc.creator") might be copied to an empty "Author" field, or the "dc.subject" value(s) might be copied to an empty Keywords field.
+Style and Markup templates give you great flexibility for the content and format of each [mla_tag_cloud] when you use the "list" and "grid" output formats. The following <strong>field-level substitution parameters</strong> are available in the Style template and any of the Markup template sections:
 
-2. Additional values in the "xmp", "xmpMM", "xmpRights", "xap", "xapMM", "dc", "pdf" and "pdfx" namespaces are copied up to the root level for easier access. For example, the "pdfx.SourceModified" value can be accessed as "SourceModified", without the "pdfx." portion of the compound name.
+* `request` - The parameters defined in the `$_REQUEST` array; the "query strings" sent from the browser.
+* `query` - The parameters defined in the `[mla_tag_cloud]` shortcode.
+* `template` - A Content Template, which lets you compose a value from multiple substitution parameters and test for empty values, choosing among two or more alternatives or suppressing output entirely.
 
-3. Other namespaces in the document are copied to arrays at the root level. For example, some documents contain information in the "photoshop" namespace, such as "photoshop.CaptionWriter" and "photoshop.AuthorsPosition". The native values of some fields, e.g., "dc.creator", can be an array.
+Twenty-eight tag cloud substitution parameters are available for the <strong>Style template</strong>. Tag cloud substitution parameters for the <strong>Markup template</strong> are available in all of the template sections. They include all of the parameters defined above (for the Style template) and three additional markup-specific parameters. Tag cloud <strong>item-specific substitution parameters</strong> for the Markup template are available in the "Item" section of the template. They include all of the parameters defined above (for the Style and Markup templates) and twenty-five additional item-specific parameters.
 
-A special "pseudo value", "ALL_PDF", returns a string representation of all the metadata. You can use this pseudo-value to examine the metadata in a document, find field names and see what values are present.
+<h4>Tag Cloud Pagination Parameters</h4>
 
-== NEW! Content Templates ==
+If you have a large number of terms in your cloud taxonomy you may want to paginate the cloud display, i.e., divide the cloud into two or more pages of a reasonable size. Pagination support for `[mla_tag_cloud]` is modeled on similar functions for`[mla_gallery]`, and you can find more explaination of the ideas behind pagination in the <strong>Support for Alternative Gallery Output, e.g., Pagination</strong> documentation section. Five parameters are supplied for this purpose:
+
+* `limit` - the maximum number of terms to display in one cloud "page"
+* `offset` - the number of terms to skip over before starting the current cloud page
+* `mla_page_parameter` - the name of the parameter containing the current page number
+* `mla_cloud_current` - the default current cloud page number
+* `term_id` - the id of the current term within the cloud
+
+The `[mla_tag_cloud]` shortcode can be used to provide "Previous" and "Next" links that support moving among the individual items in a cloud or among cloud "pages". For example, if you have many terms in your Att. Category or Att. Tag taxonomies you can build a term-specific `[mla_gallery]` page with links to the previous/next term in the taxonomy (a complete pagination example is included below). You can also build a page that shows a large taxonomy in groups, or "cloud pages", of ten terms with links to the previous/next ten terms or links to all of the cloud pages of terms in the taxonomy.
+
+The <strong>"mla_output"</strong> parameter determines the type of output the shortcode will return. For pagination output, you can choose from six values: 
+
+* `next_link` - returns a link to the next cloud item, based on the "term_id" parameter value
+* `current_link` - returns a link to the current cloud item, based on the "term_id" parameter value
+* `previous_link` - returns a link to the previous cloud item, based on the "term_id" parameter value
+* `next_page` - returns a link to the next "page" of cloud items, based on the "mla_cloud_current" parameter value
+* `previous_page` - returns a link to the previous "page" of cloud items, based on the "mla_cloud_current" parameter value
+* `paginate_links` - returns a link to cloud items at the start and end of the list and to pages around the current "cloud page" ( e.g.: &laquo; Previous 1 … 3 4 5 6 7 … 9 Next &raquo; ), based on the "mla_cloud_current" parameter value
+
+The best way to understand cloud pagination is by example, as in the next section below.
+
+<h4>Tag Cloud Pagination Example</h4>
+
+This section takes you through several of the `[mla_tag_cloud]` features, step by step. Let's start with a very simple cloud showing all of the terms in the "Att. Category" taxonomy:
+
+`
+[mla_tag_cloud taxonomy=attachment_category number=0]
+`
+
+The "number=0" parameter overrides the default maximum of 45 terms, showing all of the terms in the taxonomy. Let's paginate the cloud and limit the terms display to ten terms per "page":
+
+`
+[mla_tag_cloud taxonomy=attachment_category number=0 limit=10]
+[mla_tag_cloud taxonomy=attachment_category number=0 limit=10  mla_output="paginate_links,prev_next"]
+`
+
+The "limit=10" parameter (on <strong>both</strong> shortcodes) limits the term display to ten terms. The second `[mla_tag_cloud]` shortcode, adding the 'mla_output="paginate_links,prev_next"' parameter, displays a line of pagination links below the cloud page. Coordination between the two shortcodes is automatic, using the "mla_cloud_current" parameter added to the URLs by the shortcode.
+
+Now we'll make the cloud a convenient way to control a term-specific `[mla_gallery]`. The next step uses the "mla_link_href" parameter to change the link destination of each cloud term, returning to the current page with the term id of the selected term. We also add the "mla_cloud_current" parameter to each of these new links, so the tag cloud page is retained when a term is selected:
+
+`
+[mla_tag_cloud taxonomy=attachment_category number=0 limit=10 mla_link_href="{+page_url+}?current_id={+term_id+}&amp;amp;mla_cloud_current={+request:mla_cloud_current+}]
+[mla_tag_cloud taxonomy=attachment_category number=0 limit=10  mla_output="paginate_links,prev_next"]
+`
+
+The "&amp;amp;" before the "mla_cloud_current" parameter is required to get by the WordPress Visual Editor. The "{+request:mla_cloud_current+}" value copies the current page number from the URL ($_REQUEST array) and adds it to each term's link. Now, let's use the "current_id={+term_id+}" information in the link to compose a term-specific `[mla_gallery]`: 
+
+`
+[mla_tag_cloud taxonomy=attachment_category number=0 limit=10 mla_link_href="{+page_url+}?current_id={+term_id+}&amp;amp;mla_cloud_current={+request:mla_cloud_current+}]<br />
+[mla_tag_cloud taxonomy=attachment_category number=0 limit=10  mla_output="paginate_links,prev_next"]
+
+[mla_gallery post_mime_type=all tax_query="array ( 0 => array ( 'taxonomy' => 'attachment_category', 'field' => 'id', 'terms' => array( {+request:current_id+} ), 'include_children' => false ) )" mla_caption="{+title+}" columns=5 size=icon link=file]
+`
+
+The most complicated part of the new shortcode is the "tax_query" parameter, which we're using to ensure that the gallery items displayed match the count displayed for each term in the tag cloud. The tag cloud count does not contain items associated with any "child terms", or sub-categories, of the cloud item. To match this count we must use the "include_children=false" and "field=id" parameters of the "tax_query".
+
+We can easily paginate the term-specific gallery by adding a second `[mla_gallery]` shortcode and a "posts_per_page" parameter to both shortcodes:
+
+`
+[mla_tag_cloud taxonomy=attachment_category number=0 limit=10 mla_link_href="{+page_url+}?current_id={+term_id+}&amp;amp;mla_cloud_current={+request:mla_cloud_current+}]<br />
+[mla_tag_cloud taxonomy=attachment_category number=0 limit=10  mla_output="paginate_links,prev_next"]
+
+[mla_gallery post_mime_type=all tax_query="array ( 0 => array ( 'taxonomy' => 'attachment_category', 'field' => 'id', 'terms' => array( {+request:current_id+} ), 'include_children' => false ) )" mla_caption="{+title+}" columns=5 posts_per_page=5 size=icon link=file]
+
+[mla_gallery post_mime_type=all tax_query="array ( 0 => array ( 'taxonomy' => 'attachment_category', 'field' => 'id', 'terms' => array( {+request:current_id+} ), 'include_children' => false ) )" columns=5 posts_per_page=5 mla_output="paginate_links,prev_next"]
+`
+
+The pagination controls for the tag cloud and the gallery operate independently because by default they use different names for their respective "_current" page parameters. Our page now has a lot of functionality without requiring any WordPress templates or PHP code.
+
+For extra credit, let's add some more navigation options to the page. We'll build previous, current and next term links at the bottom of the page. These are enclosed in an HTML table so they all appear on one line of the page. Here is just the additional content; the table of three link navigation controls:
+
+`
+&lt;table width=99%&gt;&lt;tr&gt;
+&lt;td width=33% style="text-align: left"&gt;[mla_tag_cloud taxonomy=attachment_category number=0 term_id="{+request:current_id+}" mla_output="previous_link" smallest=12 largest=12 mla_link_href="{+page_url+}?current_id={+term_id+}" mla_link_text="Previous: {+name+}"]&lt;/td&gt;
+
+&lt;td width=33% style="text-align: center; font-weight: bold:"&gt;[mla_tag_cloud taxonomy=attachment_category number=0 term_id="{+request:current_id+}" mla_output=current_link smallest=12 largest=12 mla_link_text="Current: {+name+}" link=span]&lt;/td&gt;
+
+&lt;td width=33% style="text-align: right"&gt;[mla_tag_cloud taxonomy=attachment_category number=0 term_id="{+request:current_id+}" mla_output="next_link" smallest=12 largest=12 mla_link_href="{+page_url+}?current_id={+term_id+}" mla_link_text="Next: {+name+}"]&lt;/td&gt;
+&lt;/tr&gt;&lt;/table&gt;
+`
+
+The "smallest=12" and "largest=12" parameters make "font-size" the same for all of the term names regardless of how many items are associated with the term. The "mla_link_text" parameters add labels to each of the three navigation links. Finally, the "link=span" parameter in the middle ("mla_output=current_link") shortcode removes the hyperlink behind the term name, since it would just take you back to the page you're already on.
+
+<h4>MLA Tag Cloud Filters (Hooks)</h4>
+
+The `[mla_tag_cloud]` shortcode supports a comprehensive set of filters that give you complete control over cloud composition from PHP code in your theme or in another plugin. An example of using the hooks from a simple, stand-alone plugin can be found in the MLA `/examples` directory.
+
+The example code documents each hook with comments in the filter/action function that intercepts each hook. Generally, each part of the gallery supports three hooks: 1) a "<strong>values</strong>" hook, which lets you record or update the substitution values for that gallery part, 2) a "<strong>template</strong>" hook, which lets you record/update the template used to generate the HTML markup, and 3) a "<strong>parse</strong>" hook which lets you modify or replace the markup generated for a gallery part. Hooks are also provided to inspect/modify the shortcode attributes and the array of tag objects returned by the data selection function.
+
+== Content Templates ==
 
 Content Templates (templates) are one of the Field-level Markup Substitution Parameters, indicated by a prefix value ( `[+template: ... +]` ). Within a template you can have any combination of four elements:
 
@@ -316,52 +438,23 @@ Conditional, choice and template elements can be nested as needed. For example, 
 
 This template has a String, "Terms: " and a Conditional, "(([+terms: … none)". This Conditional separates the "Terms: " literal from the first alternative in the Choice. Within the Conditional is a Choice having four alternatives. The first alternative is a Conditional, which will be empty unless both categories and tags are present.  The second and third alternatives handle the cases where one of the two taxonomies has terms, and the final alternative is used when neither categories nor tags are present.
 
-==Custom Field and Attachment Metadata Processing Options==
+== The MLA Text Widget ==
 
-On the Custom Fields tab of the Settings screen you can define the rules for mapping several types of file and image metadata to WordPress custom fields. Custom field mapping can be applied automatically when an attachment is added to the Media Library. You can refresh the mapping for <strong><em>ALL</em></strong> attachments using the command buttons on the screen. You can selectively apply the mapping in the bulk edit area of the Media/Assistant submenu table and/or on the Edit Media screen for a single attachment. The advantages of mapping metadata to custom fields are:
+The MLA Text Widget lets you add content such as <code>[mla_gallery]</code> and <code>[mla_tag_cloud]</code> displays to your site's sidebars. It is an easy way to add slide shows and navigation features to all your pages. The MLA Text Widget is based on the WordPress Text widget, but adds the ability to include <strong>any</strong> shortcode to widget content. To use the MLA Text Widget:
 
-* You can add the data to an [mla_gallery] with a field-level markup substitution parameter. For example, add the image dimensions or a list of all the intermediate sizes available for the image.
+1. Go to the Appearance/Widgets Administration screen
+1. Open the sidebar, footer, or Theme section to which you wish to add the Text Widget
+1. Find the Text Widget in the list of Widgets
+1. Click and drag the Widget to the spot you wish it to appear
 
-* You can add the data as a sortable column to the Media/Assistant submenu table. For example, you can find all the "orphans" in your library by adding "reference_issues" and then sorting by that column.
+To open and edit the MLA Text Widget: 
 
-**NEW! Adding or changing Attachment Metadata**
+1. Click the down arrow to the right of the MLA Text Widget title
+1. Set the MLA Text Widget Title (optional)
+1. Add the text or HTML code to the box or edit what is currently there
+1. If desired, choose the option to Automatically add paragraphs to wrap each block of text in an HTML paragraph tag
+1. Click Save to save the Widget
+1. Click Close to close the Widget
+1. Switch tabs in your browser and review the results; make changes if necessary
 
-WordPress stores an array of information for image, audio and video items in the "_wp_attachment_metadata" custom field. Plugins such as "Fullscreen Galleria" also use this field to store information like GPS coordinates. Many of the array elements, such as the "sizes" array for images, are in turn arrays of more detailed values. <strong>Compound names</strong> are used to access elements within arrays, e.g., &quot;<strong>sizes.thumbnail.file</strong>&quot; is used to specify the file name for the thumbnail version of an image.
-
-By coding the "meta:" prefix in the Field Title column of a field mapping rule you can add to or update this data, from any of the data sources listed below. You can use a **Content Template** to compose a value from multiple substitution parameters and test for empty values, choosing among two or more alternatives or suppressing the mapping altogether for a given item.
-
-Let's say, for example, that you want to add GPS coordinates to the "image_meta" element of the Attachment Metadata.
-
-1. Open the Settings/Media Library Assistant submenu and select the Custom Fields tab. Scroll down to the "Add a new Field and Mapping Rule" section.
-
-2. In the Field Title text box, enter "meta:image_meta.latitude". The rule will store its results in the "latitude" element of the "image_meta" array within the Attachment Metadata field.
-
-3. In the Data Source dropdown, select "-- Template (see below) --". In the text box below the dropdown, enter "([+exif:GPS.LatitudeSDD+])". This is a Content Template that extracts the "GPS.LatitudeSDD" value from the EXIF data embedded in an image file. The parentheses test the result to eliminate empty values; only non-empty values will be mapped into the image_meta array.
-
-4. Set the other parts of the rule as needed. You can select "Keep" if some of your items already have this information or "Replace" to update all items. "Native" and "Text" are appropriate for this example. You can check "Delete NULL values" to remove any existing, empty values for this element. The "MLA Column", "Quick Edit" and "Bulk Edit" checkboxes have no meaning for Attachment Metadata elements and can be left blank; they will be ignored if checked.
-
-If you are creating an IPTC/EXIF mapping rule the details are a bit different, but the capability is equivalent.
-
-<h4>Data sources for custom field mapping</h4>
-
-A complete list of the <strong>42 data source elements</strong> is on the plugin's Settings page. In addition, you can map any of the fields found in the attachment's WordPress metadata array to a custom field. 
-
-**NEW!** You can use a template to compose a custom field from alternative data sources, depending on which fields are populated for a given attachment. For example, "`[+pdf:Keywords+]|[+iptc:2#025+]|none`" will use the PDF Keywords field, if populated, then the IPTC keywords field, if populated, or the literal "none" if neither field contains a value. With this template you can get keywords from both PDF documents and images in a single field.
-
-==IPTC &amp; EXIF Processing Options==
-
-Some image file formats such as JPEG DCT or TIFF Rev 6.0 support the addition of data about the image, or <em>metadata</em>, in the image file. Many popular image processing programs such as Adobe PhotoShop allow you to populate metadata fields with information such as a copyright notice, caption, the image author and keywords that categorize the image in a larger collection. WordPress uses some of this information to populate the Title, Slug and Description fields when you add an image to the Media Library.
-
-The Media Library Assistant has powerful tools for copying image metadata to:
-
-* the WordPress standard fields, e.g., the Caption
-* taxonomy terms, e.g., in categories, tags or custom taxonomies
-* WordPress custom fields
-
-You can define the rules for mapping metadata on the "IPTC/EXIF" tab of the Settings page. You can choose to automatically apply the rules when new media are added to the Library (or not). You can click the "Map IPTC/EXIF metadata" button on the Edit Media/Edit Single Item screen or in the bulk edit area to selectively apply the rules to one or more images. You can click the "Map All Attachments Now" to apply the rules to <strong>all of the images in your library</strong> at one time.
-
-You can use a template to compose a value from multiple data sources, e.g., `Taken with [+meta:camera+] at [+dimensions+] using ISO [+exif:ISOSpeedRatings,single+] and [+exif:ExposureTime+] exposure time`.
-
-You can use a template to compose a value from alternative data sources, depending on which fields are populated for a given attachment. For example, `[+iptc:2#020+]|[+iptc:2#025+]|none` will use the IPTC supplemental-category field, if populated, then the IPTC keywords field, if populated, or the literal "none" if neither IPTC field contains a value.
-
-Using a template in the "Standard field mapping" or "Custom field mapping" tables will yield a text result. For example, multiple IPTC keywords would be converted into a comma-delimited list as a string. In the "Taxonomy term mapping" table the template will deliver an array result if the fields inside the template have multiple values. For example, you can code `[+iptc:2#020+][+iptc:2#025+]` to store each of the IPTC supplemental-category <em><strong>and</strong></em> keywords values (there is no "|" in the template) as a separate taxonomy term.
+To add an <code>[mla_gallery]</code> or <code>[mla_tag_cloud]</code> shortcode to your widget, simply enter the shortcode name and parameters just as you would in the body of a post or page. Aside from the usually more limited area devoted to displaying the widget content, there are no differences in the way shortcodes are processed in the MLA Widget. Also, there is nothing special about the two MLA shortcodes; <strong>any</strong> shortcode can be added to the MLA Widget.

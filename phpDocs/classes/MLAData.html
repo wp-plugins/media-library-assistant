@@ -78,6 +78,7 @@
 <li class="method public "><a href="#mla_query_posts_search_filter" title="mla_query_posts_search_filter :: Adds a keyword search to the WHERE clause, if required"><span class="description">Adds a keyword search to the WHERE clause, if required</span><pre>mla_query_posts_search_filter()</pre></a></li>
 <li class="method public "><a href="#mla_query_posts_where_filter" title="mla_query_posts_where_filter :: Adds a WHERE clause for detached items"><span class="description">Adds a WHERE clause for detached items</span><pre>mla_query_posts_where_filter()</pre></a></li>
 <li class="method public "><a href="#mla_save_post_action" title="mla_save_post_action :: Invalidates $mla_galleries and $galleries arrays and cached values after post, page or attachment updates"><span class="description">Invalidates $mla_galleries and $galleries arrays and cached values after post, page or attachment updates</span><pre>mla_save_post_action()</pre></a></li>
+<li class="method public "><a href="#mla_search_terms_tidy" title="mla_search_terms_tidy :: Replaces a WordPress function deprecated in v3.7"><span class="description">Replaces a WordPress function deprecated in v3.7</span><pre>mla_search_terms_tidy()</pre></a></li>
 <li class="method public "><a href="#mla_update_item_postmeta" title='mla_update_item_postmeta :: Update custom field and "meta:" data for a single attachment'><span class="description">Update custom field and "meta:" data for a single attachment</span><pre>mla_update_item_postmeta()</pre></a></li>
 <li class="method public "><a href="#mla_update_single_item" title='mla_update_single_item :: Update a single item; change the "post" data, taxonomy terms
 and meta data for a single attachment'><span class="description">Update a single item; change the "post" data, taxonomy terms
@@ -713,6 +714,25 @@ Defined as public because it's a filter.</p></p>
 <h4>$post_id</h4>
 <code>integer</code><p>ID of post/page/attachment; not used at this time</p>
 </div>
+</div></div>
+</div>
+<a name="mla_search_terms_tidy" id="mla_search_terms_tidy"></a><div class="element clickable method public mla_search_terms_tidy" data-toggle="collapse" data-target=".mla_search_terms_tidy .collapse">
+<h2>Replaces a WordPress function deprecated in v3.7</h2>
+<pre>mla_search_terms_tidy(string $term) : string</pre>
+<div class="labels"></div>
+<div class="row collapse"><div class="detail-description">
+<p class="long_description"><p>Defined as public because it's a callback from array_map().</p></p>
+<table class="table table-bordered"><tr>
+<th>since</th>
+<td>1.51</td>
+</tr></table>
+<h3>Parameters</h3>
+<div class="subelement argument">
+<h4>$term</h4>
+<code>string</code><p>search term before modification</p></div>
+<h3>Returns</h3>
+<div class="subelement response">
+<code>string</code>cleaned up search term</div>
 </div></div>
 </div>
 <a name="mla_update_item_postmeta" id="mla_update_item_postmeta"></a><div class="element clickable method public mla_update_item_postmeta" data-toggle="collapse" data-target=".mla_update_item_postmeta .collapse">
@@ -1702,7 +1722,7 @@ any further logic required to translate those values is contained in the filters
 <div class="row"><footer class="span12">
             Template is built using <a href="http://twitter.github.com/bootstrap/">Twitter Bootstrap 2</a> and icons provided by <a href="http://glyphicons.com/">Glyphicons</a>.<br>
             Documentation is powered by <a href="http://www.phpdoc.org/">phpDocumentor 2.0.0a8</a> and<br>
-            generated on 2013-10-21T16:31:45-07:00.<br></footer></div>
+            generated on 2013-11-27T11:31:01-08:00.<br></footer></div>
 </div>
 </body>
 </html>

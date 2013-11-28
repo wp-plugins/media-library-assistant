@@ -348,7 +348,7 @@ class MLA_List_Table extends WP_List_Table {
 	}
 	
 	/**
-	 * Initializes some properties from $_REQUEST vairables, then
+	 * Initializes some properties from $_REQUEST variables, then
 	 * calls the parent constructor to set some default configs.
 	 *
 	 * @since 0.1

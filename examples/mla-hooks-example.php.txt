@@ -8,7 +8,7 @@
  * you can use to customize the gallery display.
  *
  * @package MLA Gallery Hooks Example
- * @version 1.00
+ * @version 1.02
  */
 
 /*
@@ -16,7 +16,7 @@ Plugin Name: MLA Gallery Hooks Example
 Plugin URI: http://fairtradejudaica.org/media-library-assistant-a-wordpress-plugin/
 Description: Provides an example of hooking the filters provided by the [mla_gallery] shortcode
 Author: David Lingren
-Version: 1.00
+Version: 1.02
 Author URI: http://fairtradejudaica.org/our-story/staff/
 
 Copyright 2013 David Lingren
@@ -69,10 +69,12 @@ class MLAGalleryHooksExample {
 		 * Comment out the filters you don't need; save them for future use
 		 */
 		add_filter( 'mla_gallery_attributes', 'MLAGalleryHooksExample::mla_gallery_attributes_filter', 10, 1 );
+		add_filter( 'mla_gallery_initial_content', 'MLAGalleryHooksExample::mla_gallery_initial_content_filter', 10, 2 );
 		add_filter( 'mla_gallery_arguments', 'MLAGalleryHooksExample::mla_gallery_arguments_filter', 10, 1 );
 		add_filter( 'mla_gallery_query_attributes', 'MLAGalleryHooksExample::mla_gallery_query_attributes_filter', 10, 1 );
 		add_filter( 'mla_gallery_query_arguments', 'MLAGalleryHooksExample::mla_gallery_query_arguments_filter', 10, 1 );
 		add_action( 'mla_gallery_wp_query_object', 'MLAGalleryHooksExample::mla_gallery_wp_query_object_action', 10, 1 );
+		add_filter( 'mla_gallery_final_content', 'MLAGalleryHooksExample::mla_gallery_final_content_filter', 10, 1 );
 		
 		add_filter( 'use_mla_gallery_style', 'MLAGalleryHooksExample::use_mla_gallery_style_filter', 10, 2 );
 		
@@ -140,6 +142,41 @@ class MLAGalleryHooksExample {
 
 		return $shortcode_attributes;
 	} // mla_gallery_attributes_filter
+
+	/**
+	 * Save the enclosed content
+	 *
+	 * @since 1.02
+	 *
+	 * @var	NULL|string
+	 */
+	private static $shortcode_content = NULL;
+	
+	/**
+	 * MLA Gallery Enclosed Content, initial filter
+	 *
+	 * This filter gives you an opportunity to record or modify the content enclosed by the shortcode
+	 * when the [mla_gallery]content[/mla_gallery] form is used.
+	 * This initial filter is called just after the 'mla_gallery_attributes' filter above.
+	 *
+	 * @since 1.02
+	 *
+	 * @param	NULL|string	content enclosed by the shortcode, if any
+	 * @param	array	the shortcode parameters passed in to the shortcode
+	 *
+	 * @return	array	updated shortcode content
+	 */
+	public static function mla_gallery_initial_content_filter( $shortcode_content, $shortcode_attributes ) {
+		//error_log( 'MLAGalleryHooksExample::mla_gallery_initial_content_filter $shortcode_content = ' . var_export( $shortcode_content, true ), 0 );
+		//error_log( 'MLAGalleryHooksExample::mla_gallery_initial_content_filter $shortcode_attributes = ' . var_export( $shortcode_attributes, true ), 0 );
+		
+		/*
+		 * Save the attributes for use in the later filters
+		 */
+		self::$shortcode_content = $shortcode_content;
+
+		return $shortcode_content;
+	} // mla_gallery_initial_content_filter
 
 	/**
 	 * Save the shortcode arguments
@@ -270,6 +307,26 @@ class MLAGalleryHooksExample {
 		 */
 		return;
 	} // mla_gallery_wp_query_object_action
+
+	/**
+	 * MLA Gallery Enclosed Content, final filter
+	 *
+	 * This filter gives you an opportunity to record or modify the content enclosed by the shortcode
+	 * when the [mla_gallery]content[/mla_gallery] form is used.
+	 * This final filter is called just after the WP_query and before control is passed
+	 * to the alternate gallery shortcode.
+	 *
+	 * @since 1.02
+	 *
+	 * @param	NULL|string	content enclosed by the shortcode, if any
+	 *
+	 * @return	array	updated shortcode content
+	 */
+	public static function mla_gallery_final_content_filter( $shortcode_content ) {
+		//error_log( 'MLAGalleryHooksExample::mla_gallery_final_content_filter $shortcode_content = ' . var_export( $shortcode_content, true ), 0 );
+
+		return $shortcode_content;
+	} // mla_gallery_final_content_filter
 
 	/**
 	 * Use MLA Gallery Style
@@ -511,6 +568,28 @@ class MLAGalleryHooksExample {
 	 */
 	public static function mla_gallery_item_values_filter( $item_values ) {
 		//error_log( 'MLAGalleryHooksExample::mla_gallery_item_values_filter $item_values = ' . var_export( $item_values, true ), 0 );
+		
+		/*
+		 * For this first example, we will reformat the 'date' value as d/m/Y. We use a shortcode parameter of our
+		 * own to do this on a gallery-by-gallery basis, leaving other [mla_gallery] instances untouched.
+		 */
+		if ( isset( self::$shortcode_attributes['my_filter'] ) && 'format date' == self::$shortcode_attributes['my_filter'] ) {
+
+			/*
+			 * Default format is YYYY-MM-DD HH:MM:SS (HH = 00 - 23), or 'Y-m-d H:i:s'
+			 * Convert to UNIX timestamp so any reformat is possible
+			 */
+			$old_date = $item_values['date'];
+			$timestamp = mktime( substr( $old_date, 11, 2 ), substr( $old_date, 14, 2 ), substr( $old_date, 17, 2 ), substr( $old_date, 5, 2 ), substr( $old_date, 8, 2 ), substr( $old_date, 0, 4 ) );
+	
+			/*
+			 * Update the $item_values and pass them back from the filter.
+			 * We must also update the caption because it was composed before this filter is called.
+			 */
+			$item_values['date'] = date( 'd/m/Y', $timestamp );
+			$item_values['caption'] = $item_values['description'] . $item_values['date'];
+			return $item_values;
+		}
 		
 		/*
 		 * For our example, we will add to the $item_values['caption'] value an unordered list
