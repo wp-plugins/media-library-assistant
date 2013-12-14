@@ -269,7 +269,7 @@ class MLAShortcodes {
 			 * attachment-specific Gallery Display Content parameters must be evaluated
 			 * later, when all of the information is available.
 			 */
-			if ( in_array( $attr_key, $mla_item_specific_arguments ) )
+			if ( array_key_exists( $attr_key, $mla_item_specific_arguments ) )
 				continue;
 				
 			$attr_value = str_replace( '{+', '[+', str_replace( '+}', '+]', $attr_value ) );
@@ -477,8 +477,12 @@ class MLAShortcodes {
 		if ( apply_filters( 'use_mla_gallery_style', $use_mla_gallery_style, $style_values['mla_style'] ) ) {
 			$style_template = MLAOptions::mla_fetch_gallery_template( $style_values['mla_style'], 'style' );
 			if ( empty( $style_template ) ) {
-				$style_values['mla_style'] = 'default';
-				$style_template = MLAOptions::mla_fetch_gallery_template( 'default', 'style' );
+				$style_values['mla_style'] = $default_arguments['mla_style'];
+				$style_template = MLAOptions::mla_fetch_gallery_template( $style_values['mla_style'], 'style' );
+				if ( empty( $style_template ) ) {
+					$style_values['mla_style'] = 'default';
+					$style_template = MLAOptions::mla_fetch_gallery_template( 'default', 'style' );
+				}
 			}
 				
 			if ( ! empty ( $style_template ) ) {
@@ -524,8 +528,12 @@ class MLAShortcodes {
 
 		$open_template = MLAOptions::mla_fetch_gallery_template( $markup_values['mla_markup'] . '-open', 'markup' );
 		if ( false === $open_template ) {
-			$markup_values['mla_markup'] = 'tag-cloud';
+			$markup_values['mla_markup'] = $default_arguments['mla_markup'];
 			$open_template = MLAOptions::mla_fetch_gallery_template( $markup_values['mla_markup'] . '-open', 'markup' );
+			if ( false === $open_template ) {
+				$markup_values['mla_markup'] = 'default';
+				$open_template = MLAOptions::mla_fetch_gallery_template( $markup_values['mla_markup'] . '-open', 'markup' );
+			}
 		}
 		if ( empty( $open_template ) )
 			$open_template = '';
@@ -1126,7 +1134,7 @@ class MLAShortcodes {
 			 * item-specific Display Content parameters must be evaluated
 			 * later, when all of the information is available.
 			 */
-			if ( in_array( $attr_key, $mla_item_specific_arguments ) )
+			if ( array_key_exists( $attr_key, $mla_item_specific_arguments ) )
 				continue;
 				
 			$attr_value = str_replace( '{+', '[+', str_replace( '+}', '+]', $attr_value ) );

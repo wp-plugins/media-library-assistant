@@ -1731,7 +1731,7 @@ class MLAOptions {
 					$result = $file_info[ $data_source ];
 				break;
 			case 'file_size':
-				$filesize = @ filesize( $file_info['absolute_path_raw'] . $file_info['file_name'] );
+				$filesize = @ filesize( $file_info['absolute_file_name_raw'] );
 				if ( ! (false === $filesize ) )
 					$result = $filesize;
 				break;

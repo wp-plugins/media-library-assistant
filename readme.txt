@@ -3,8 +3,8 @@ Contributors: dglingren
 Donate link: http://fairtradejudaica.org/make-a-difference/donate/
 Tags: attachment, attachments, documents, gallery, image, images, media, library, media library, media-tags, media tags, tags, media categories, categories, IPTC, EXIF, GPS, PDF, meta, metadata, photo, photos, photograph, photographs, photoblog, photo albums, lightroom, photoshop, MIME, mime-type, icon, upload, file extensions
 Requires at least: 3.3
-Tested up to: 3.7.1
-Stable tag: 1.60
+Tested up to: 3.8
+Stable tag: 1.61
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -121,6 +121,12 @@ All of the MLA source code has been annotated with "DocBlocks", a special type o
 
 == Changelog ==
 
+= 1.61 =
+* Tested for compatibility with WordPress version 3.8 - no issues found.
+* Fix: For custom field mapping, **the file_size data source** is now populated when the file name contains characters outside the printable ASCII range.
+* Fix: For `[mla_gallery]`, **field-level markup substitution parameters in item-specific parameters such as mla_link_href** are expanded properly. This corrects a defect introduced in v1.60.
+* Fix: For `[mla_gallery]`, **correct default style and markup templates** are applied when the shortcode `mla_style=` and/or `mla_markup=` parameters name templates that do not exist. The previous version incorrectly supplied the "tag-cloud" template in this case.
+
 = 1.60 =
 * New: **`[mla_tag_cloud]` shortcode**. Enhanced tag cloud for any taxonomy, with "grid" format, full Display Content and custom template support along the lines of `[mla_gallery]`. Paginated clouds are also supported. Full details in the [Other Notes section](http://wordpress.org/extend/plugins/media-library-assistant/other_notes/ "Click here, then scroll down") and on the Settings/Media Library Assistant Documentation tab.
 * New: **`MLA Text Widget`**. You can add widgets containing `[mla_gallery]`, `[mla_tag_cloud]` or **any shortcode** to the sidebars on your site. More information in the [Other Notes section](http://wordpress.org/extend/plugins/media-library-assistant/other_notes/ "Click here, then scroll down").
@@ -204,8 +210,8 @@ All of the MLA source code has been annotated with "DocBlocks", a special type o
 
 == Upgrade Notice ==
 
-= 1.60 =
-New [mla_tag_cloud] shortcode and shortcode-enabled MLA Text Widget. Five other enhancements, four fixes.
+= 1.61 =
+Three fixes, including one significant fix for item-specific markup substitution parameters. Tested for compatibility with WP 3.8.
 
 == Other Notes ==
 
