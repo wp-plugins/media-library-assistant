@@ -4,7 +4,7 @@ Donate link: http://fairtradejudaica.org/make-a-difference/donate/
 Tags: attachment, attachments, documents, gallery, image, images, media, library, media library, media-tags, media tags, tags, media categories, categories, IPTC, EXIF, GPS, PDF, meta, metadata, photo, photos, photograph, photographs, photoblog, photo albums, lightroom, photoshop, MIME, mime-type, icon, upload, file extensions
 Requires at least: 3.3
 Tested up to: 3.8
-Stable tag: 1.61
+Stable tag: 1.70
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -43,14 +43,16 @@ This plugin was inspired by my work on the WordPress web site for our nonprofit,
 
 == Installation ==
 
-1. Upload `media-library-assistant` and its subfolders to your `/wp-content/plugins/` directory
+1. Upload `media-library-assistant` and its subfolders to your `/wp-content/plugins/` directory, **OR** Visit the Plugins/Add New page and search for "Media Library Assistant"; click "Install Now" to upload it
 1. Activate the plugin through the "Plugins" menu in WordPress
-1. Visit the Settings page to customize category and tag support
-1. Visit the Settings page Custom Fields and IPTC/EXIF tabs to map metadata to attachment fields
+
+1. Visit the Settings/Media Library Assistant page to customize taxonomy (e.g., category and tag) support
+1. Visit the Settings/Media Library Assistant Custom Fields and IPTC/EXIF tabs to map metadata to attachment fields
 1. Visit the "Assistant" submenu in the Media admin section
 1. Click the Screen Options link to customize the display
 1. Use the enhanced Edit, Quick Edit and Bulk Edit pages to assign categories and tags
 1. Use the `[mla_gallery]` shortcode to add galleries of images, documents and more to your posts and pages
+1. Use the `[mla_tagcloud]` shortcode to add clickable lists of taxonomy terms to your posts and pages
 
 == Frequently Asked Questions ==
 
@@ -101,7 +103,7 @@ Some of the MLA features such as where-used reporting and ALT Text sorting/searc
 
 = Are other language versions available? =
 
-Not at this time; I don't have working knowledge of anything but English. If you'd like to volunteer to produce another version, I'll rework the code to internationalize it and work with you to localize it.
+Not yet, but all of the internationalization work in the plugin source code has been completed and there is a Portable Object Template (.POT) available in the "/languages" directory. I don't have working knowledge of anything but English, but if you'd like to volunteer to produce a translation, I would be delighted to work with you to make it happen. Have a look at the "MLA Internationalization Guide.php" file in the languages directory and get in touch.
 
 = What's in the "phpDocs" directory and do I need it? =
 
@@ -120,6 +122,17 @@ All of the MLA source code has been annotated with "DocBlocks", a special type o
 9. The Media Manager popup modal window showing additional filters for date and taxonomy terms. Also shows the enhanced Search Media box.
 
 == Changelog ==
+
+= 1.70 =
+* New: **Internationalization (i18n) and Localization (l10n) support!** All of the internationalization work in the plugin source code has been completed and there is a Portable Object Template (.POT) available in the "/languages" directory. I don't have working knowledge of anything but English, but if you'd like to volunteer to produce a translation, I would be delighted to work with you to make it happen. Have a look at the "MLA Internationalization Guide.php" file in the languages directory and get in touch.
+* New: For Custom Field and IPTC/EXIF mapping, **twelve new `apply_filters/do_action` hooks**  give you complete control over rule execution and value creation from PHP code in your theme or in another plugin. More information in the "Other Notes" section here. A complete, working example is provided in the Settings/Media Library Assistant Documentation tab.
+* New: For Settings/Media Library Assistant Custom Fields and IPTC/EXIF tabs **"Enable ... Mapping when updating media metadata" options** allow you to apply mapping rules whenever the media metadata is updated, not just on new uploads.
+* Fix: On the Settings/Media Library Assistant IPTC/EXIF tab, **Taxonomy Parent dropdown now reflects term hierarchy**.
+* Fix: MLAMime::mla_upload_mimes_filter() returns the MLA updated list of allowed types, not the WordPress default list.
+* Fix: MLAMime::mla_upload_mimes_filter() now respects the WordPress per-user 'unfiltered_html' capability.
+* Fix: When uploading new attachments, attachment metadata (_wp_attachment_metadata) is now updated from custom field and IPTC/EXIF mapping rules that contain the "meta:" prefix.
+* Fix: For WordPress 3.5 and later, a more efficient query is used to compose the "Attachments" column in the Media/taxonomy submenu tables.
+* Fix: Documentation for custom field and IPTC/EXIF mapping has been restructured and expanded to better explain these features.
 
 = 1.61 =
 * Tested for compatibility with WordPress version 3.8 - no issues found.
@@ -140,41 +153,10 @@ All of the MLA source code has been annotated with "DocBlocks", a special type o
 * Fix: For the Settings/Media Library Assistant "Custom Fields" and "IPTC/EXIF" tabs, the **"Add Rule/Add Field and Map All Attachments" buttons now map values correctly**. In previous MLA versions, the rule was added but the attachment values were not mapped.
 * Fix: For `[mla_gallery]`, **array values are now accepted in [+request:+] substitution parameters**, and the `,export` option is supported as well. Array values can be passed from the URL or HTML forms to parameters that accept a list of values, such as taxonomy queries.
 
-= 1.52 =
-* Fix: **Corrected serious defect in `[mla_gallery]`** that incorrectly limited the number of items returned for non-paginated galleries.
-* Fix: Eliminated "Strict Standards" messages issued from MLAModal functions.
-
-= 1.51 =
-* New: For `[mla_gallery]`, **twenty-five new `apply_filters` hooks** let you modify gallery output with PHP code in your theme or another plugin. More information in the "Other Notes" section here. A complete, working example is provided in the Settings/Media Library Assistant Documentation tab.
-* New: **Attachment Metadata mapping**. Add or change values in the WordPress `_wp_attachment_metadata` array. For example, add GPS data to the `image_meta` array. Full details in the "Other Notes" section and in the Settings/Media Library Assistant Documentation tab.
-* New: **GPS Metadata fields added**: LatitudeSDM, LatitudeSDD, LongitudeSDM, LongitudeSDD with leading "-" sign for southern and western values.
-* New: A new `[mla_gallery]` parameter, `mla_page_parameter` supports **multiple paginated galleries on the same post/page**.
-* New: On the Media/Assistant submenu, the Description field has been added to the Quick Edit area.
-* New: Support for **"searchable category/tag metaboxes"** added to the ATTACHMENT DETAILS pane of the Media Manager Modal Window. This feature requires download and activation of the "Media Categories" plugin (by Eddie Moya).
-* New: The **`[+custom:ALL_CUSTOM+]` pseudo value** lets you easily display the names and values of all custom fields associated with an item. You can use it in an `[mla_gallery]` or in a custom field mapping rule.
-* Fix: Media Manager Modal Window support has been re-worked to avoid adding additional parameters to the Attachments object. This improves the handling of "drag & drop" uploading of new Media Library items.
-* Fix: Sorting the Media/Assistant submenu table by a column which no longer exists does not cause database errors. The table sort reverts to the built-in default value. In addition, the dropdown list of sortable columns is now alphabetized.
-* Fix: The "Inserted in" reporting with the "Base" option setting more reliably handles the case where one item filename is a subset of another filename. For example, file "abc.jpg" no longer matches "abcd.jpg".
-* Fix: Handling of empty `query:` and `request:` substitution parameters has been restored to the pre-v1.50 logic.
-* Fix: Custom field mapping for fields with array values is more reliably handled.
-* Fix: Test elements in Content Templates returning array results more accurately test for substitution parameters having no value. For example, `([+iptc:2#020,array+][+iptc:2#025,array+])` will be empty unless **both** of the substitution parameters have values. 
-
-= 1.50 =
-* New: **PDF metadata support**, including the traditional Document Information Dictionary and the newer, more extensive XMP metadata. Include this information in your `[mla_gallery]` display and map it to standard fields, taxonomy terms and custom fields.
-* New: **Content Templates**, which let you compose a value from multiple substitution parameters, combine text and data values, test for empty values and choose among two or more alternatives or suppress output entirely.
-* New: **GPS Metadata** is extracted from EXIF metadata and converted to a variety of convenient formats. Include this information in your `[mla_gallery]` display and map it to standard fields, taxonomy terms and custom fields.
-* New: You can **customize the position, label and title** of the Media/Assistant submenu screen. You can also **remove the default Media/Library** submenu screen.
-* New: On the Settings/Media Library Assistant General tab you can **export and import ALL of your MLA settings** to a simple text file. Backup your settings before making big changes, move settings between sites, etc.
-* New: On the Settings/Media Library Assistant General tab you can **set the depth and child handling for the filter-by taxonomy** on the Media/Assistant submenu.
-* New: On the Media/Assistant submenu, **search, filter and sort values are retained when a "Filter by" value is set** by clicking on an active link in the table.
-* New: On the Media/Assistant submenu, a **"Clear Filter by" button** allows you to clear the filter-by value while retaining other search, filter and sort values.
-* Fix: On the Media/Assistant submenu, the **"Filter by" values are retained** when the Bulk Actions Apply button and the Filter button are clicked.
-* Fix: On the Media/Assistant submenu, **bulk edit of `post_parent`, `post_author` and custom fields** now updates every item in the list, not just the first item.
-* Fix: On the Media/Assistant submenu, "where-used" information for files whose name is a subset of another file's name has been corrected. For example, where-used values for file "abc.jpg" was previously reported in the results for file "bc.jpg" in certain cases.
-* Fix: On the Media/Assistant submenu, "Empty Trash" button/function has been implemented.
-* Fix: PHP Warnings are no longer issued when plugins such as "Codepress Admin Columns" use the HTTP "page" query variable in unexpected ways.
-* Fix: Initialization functions now have a higher priority value, so they run later. This improves features such as discovery of custom taxonomies created in theme `functions.php` files that use the `init` hook.
-* Fix: Hyperlinks to Document tab from other Settings/MediaLibrary Assistant tabs have been changed to more reliable absolute href values.
+= 1.50 - 1.52 =
+* 1.52: Corrected serious defect in [mla_gallery] that incorrectly limited the number of items returned for non-paginated galleries. One other fix.
+* 1.51: Attachment Metadata mapping/updating, [mla_gallery] "apply_filters" hooks, multiple paginated galleries per page, "ALL_CUSTOM" pseudo value. Three other enhancements, six fixes.
+* 1.50: PDF and GPS Metadata support. Content Templates; mix literal text with data values, test for empty values and choose among two or more alternatives for [mla_gallery] and data mapping. Four other enhancements, seven fixes.
 
 = 1.40 - 1.43 =
 * 1.43: Generalized pagination support with "mla_output=paginate_links". One other enhancement, four fixes.
@@ -210,30 +192,57 @@ All of the MLA source code has been annotated with "DocBlocks", a special type o
 
 == Upgrade Notice ==
 
-= 1.61 =
-Three fixes, including one significant fix for item-specific markup substitution parameters. Tested for compatibility with WP 3.8.
+= 1.70 =
+Internationalization and localization support! Custom Field and IPTC/EXIF Mapping hooks. One other enhancement, six fixes.
 
 == Other Notes ==
 
-In this section, scroll down to see:
-
-* Acknowledgements
-* Highlights from the documentation, including new and unique plugin features
+In this section, scroll down to see highlights from the documentation, including new and unique plugin features
 
 **NOTE:** Complete documentation is included in the Documentation tab on the Settings/Media Library Assistant admin screen and the drop-down "Help" content in the admin screens.
 
 == Acknowledgements ==
 
-I have used and learned much from the following books (among many):
-
-* Professional WordPress; Design and Development, by Hal Stern, David Damstra and Brad Williams (Apr 5, 2010) ISBN-13: 978-0470560549
-* Professional WordPress Plugin Development, by Brad Williams, Ozh Richard and Justin Tadlock (Mar 15, 2011) ISBN-13: 978-0470916223
-* WordPress 3 Plugin Development Essentials, by Brian Bondari and Everett Griffiths (Mar 24, 2011) ISBN-13: 978-1849513524
-* WordPress and Ajax, by Ronald Huereca (Jan 13, 2011) ISBN-13: 978-1451598650
-
 Media Library Assistant includes many images drawn (with permission) from the [Crystal Project Icons](http://www.softicons.com/free-icons/system-icons/crystal-project-icons-by-everaldo-coelho), created by [Everaldo Coelho](http://www.everaldo.com), founder of [Yellowicon](http://www.yellowicon.com).
 
-== NEW! MLA Tag Cloud Shortcode ==
+== NEW! MLA Custom Field and IPTC/EXIF Mapping Actions and Filters (Hooks) ==
+The Custom Field and IPTC/EXIF Mapping tools support a comprehensive set of filters and actions that give you complete control over rule execution and value creation from PHP code in your theme or in another plugin. An example of using the hooks from a simple, stand-alone plugin can be found in the "examples" directory.
+
+The example code documents each hook with comments in the filter/action function that intercepts each hook. There are hooks that run at the beginning and end of the overall mapping operation as well as hooks for each mapping rule. 
+
+In addition, there are hooks that run when attachments are uploaded to the Media Library and when the "attachment metadata" is altered, e.g., when the Media/Edit Media "Edit Image" function is used. Plugins and other image editing code can destroy the attachment metadata or the IPTC/EXIF metadata embedded in an image file. These hooks may give you an opportunity to preserve and repair the metadata you need in spite of such damage.
+
+The current mapping hooks are:
+
+* **mla_mapping_settings** - called before any mapping rules are executed. You can add, change or delete rules from the settings/rules array.
+
+* **mla_mapping_rule** - called once for each mapping rule, before the rule is evaluated. You can change the rule parameters, or prevent rule evaluation.
+
+* **mla_mapping_custom_value** - called once for each custom field mapping rule, after the rule is evaluated. You can change the new value produced by the rule.
+* **mla_mapping_iptc_value** - called once for each IPTC/EXIF mapping rule, after the IPTC portion of the rule is evaluated. You can change the new value produced by the rule.
+
+* **mla_mapping_exif_value** - called once for each IPTC/EXIF mapping rule, after the EXIF portion of the rule is evaluated. You can change the new value produced by the rule.
+
+* **mla_mapping_updates** - called AFTER all mapping rules are applied. You can add, change or remove updates for the attachment's standard fields, taxonomies and/or custom fields.
+
+The current insert attachment/update attachment metadata hooks are:
+
+* **mla_upload_prefilter** - gives you an opportunity to record the original IPTC, EXIF and WordPress image_metadata <strong>before</strong> the file is stored in the Media Library. You can also modify the file name that will be used in the Media Library. Many plugins and image editing functions alter or destroy this information,
+so this may be your last change to preserve it.
+
+* **mla_upload_filter** - gives you an opportunity to record some additional metadata
+for audio and video media <strong>after</strong> the file is stored in the Media Library.
+
+* **mla_add_attachment** - called at the end of the wp_insert_attachment() function,
+after the file is in place and the post object has been created in the database. By this time, other plugins have probably run their own 'add_attachment' filters and done their work/damage to metadata, etc.
+
+* **mla_update_attachment_metadata_options** - lets you inspect or change the processing options that will control the MLA mapping rules in the update_attachment_metadata filter.
+
+* **mla_update_attachment_metadata_prefilter** - called at the end of the wp_update_attachment_metadata() function, <strong>before</strong> any MLA mapping rules are applied. The prefilter gives you an opportunity to record or update the metadata before the mapping.
+
+* **mla_update_attachment_metadata_postfilter** - This filter is called <strong>after</strong> MLA mapping rules are applied during wp_update_attachment_metadata() processing. The postfilter gives you an opportunity to record or update the metadata after the mapping.
+
+== MLA Tag Cloud Shortcode ==
 
 The `[mla_tag_cloud]` shortcode displays a list of taxonomy terms in what is called a 'tag cloud', where the size of each term is determined by how many times that particular term has been assigned to Media Library items (attachments). The cloud works with both flat (e.g., Att. Tags) and hierarchical taxonomies (e.g., Att. Categories) MLA Tag Cloud provides many enhancements to the basic "cloud" display. These include:
 
@@ -263,15 +272,7 @@ The "list" and "grid" formats can be extensively customized by using custom Styl
 
 <h4>Tag Cloud Item Parameters</h4>
 
-Each item in the tag cloud comprises a term name of varying size, a hyperlink surrounding the term name and a "title" attribute (Rollover Text) displayed when the cursor hovers over the term name hyperlink. The following parameters customize item content and markup:
-
-* `smallest`
-* `largest`
-* `unit`
-* `separator`
-* `single_text`
-* `multiple_text`
-* `link`
+Each item in the tag cloud comprises a term name of varying size, a hyperlink surrounding the term name and a "title" attribute (Rollover Text) displayed when the cursor hovers over the term name hyperlink. Seven parameters customize item content and markup.
 
 The Item parameters are an easy way to customize the content and markup for each cloud item. For the list and grid formats you can also use the Tag Cloud Display Content parameters and/or Style and Markup Templates for even greater flexibility.
 
@@ -279,83 +280,33 @@ The Item parameters are an easy way to customize the content and markup for each
 
 The Link parameter specifies the target and type of link from the tag cloud term/item to the item's archive page, edit page or other destination. You can also specify a non-hyperlink treatment for each item.
 
-* `view` - Link to the term's "archive page"
-* `edit` - Link to the term's "edit tag/category" admin screen
-* `(mla_link_href)` - Link to a custom destination, typically another post/page
-* `span` - Substitutes a `&lt;span&gt;&lt;/span&gt;` tag for the hyperlink tag
-* `none` - Eliminates the hyperlink tag
-
 Using the "mla_link_href" parameter to completely replace the link destination URL is a common and useful choice. With this parameter us can use the tag cloud to select a term and then go to another post/page that uses that selection as part of an `[mla_gallery]` shortcode.
 
 <h4>Tag Cloud Display Style (list and grid)</h4>
 
-These parameters provide a way to apply custom style and markup templates to your `[mla_tag_cloud]` display.
-
-* `mla_style` - replaces the default style template
-* `mla_markup` - replaces the default markup template
-* `mla_float` - specifies the CSS float attribute of the ".tag-cloud-item" style
-* `mla_margin` - specifies the CSS margin property of the ".tag-cloud-item" style
-* `mla_itemwidth` - specifies the CSS width attribute of the ".tag-cloud-item" style
+Five parameters provide a way to apply custom style and markup templates to your `[mla_tag_cloud]` display.
 
 <h4>Tag Cloud Display Content</h4>
 
 Eight parameters provide an easy way to control the contents of tag cloud items without requiring the use of custom Markup templates.  
 
-* `mla_link_attributes`
-* `mla_link_class`
-* `mla_link_href`
-* `mla_link_text`
-* `mla_nolink_text`
-* `mla_rollover_text`
-* `mla_caption`
-* `mla_target`
-
 <h4>Tag Cloud Data Selection Parameters</h4>
 
-The data selection parameters specify which taxonomy (or taxonomies) the terms are taken from, which terms are returned for the cloud and the order in which the terms are returned:
-
-* `taxonomy` - The taxonomy or taxonomies to retrieve terms from
-* `include` - A comma-separated list of term ids to include
-* `exclude` - A comma-separated list of term ids to exclude from the returned values
-* `parent` - Get direct children of this term
-* `minimum` - The minimum number of attachments required
-* `number` - The maximum number of "most popular" terms to return
-* `orderby` - The sort order of the retrieved terms
-* `order` - "ASC" or "DESC"
-* `preserve_case` - Preserve upper- and lower-case distinctions when sorting by name
-* `limit` - The number of terms to return
-* `offset` - The number of terms to skip before returning the results
+The data selection parameters specify which taxonomy (or taxonomies) the terms are taken from, which terms are returned for the cloud and the order in which the terms are returned.
 
 <h4>Tag Cloud Substitution Parameters</h4>
 
-Style and Markup templates give you great flexibility for the content and format of each [mla_tag_cloud] when you use the "list" and "grid" output formats. The following <strong>field-level substitution parameters</strong> are available in the Style template and any of the Markup template sections:
-
-* `request` - The parameters defined in the `$_REQUEST` array; the "query strings" sent from the browser.
-* `query` - The parameters defined in the `[mla_tag_cloud]` shortcode.
-* `template` - A Content Template, which lets you compose a value from multiple substitution parameters and test for empty values, choosing among two or more alternatives or suppressing output entirely.
+Style and Markup templates give you great flexibility for the content and format of each [mla_tag_cloud] when you use the "list" and "grid" output formats. The request, query and template <strong>field-level substitution parameters</strong> are available in the Style template and any of the Markup template sections.
 
 Twenty-eight tag cloud substitution parameters are available for the <strong>Style template</strong>. Tag cloud substitution parameters for the <strong>Markup template</strong> are available in all of the template sections. They include all of the parameters defined above (for the Style template) and three additional markup-specific parameters. Tag cloud <strong>item-specific substitution parameters</strong> for the Markup template are available in the "Item" section of the template. They include all of the parameters defined above (for the Style and Markup templates) and twenty-five additional item-specific parameters.
 
 <h4>Tag Cloud Pagination Parameters</h4>
 
-If you have a large number of terms in your cloud taxonomy you may want to paginate the cloud display, i.e., divide the cloud into two or more pages of a reasonable size. Pagination support for `[mla_tag_cloud]` is modeled on similar functions for`[mla_gallery]`, and you can find more explaination of the ideas behind pagination in the <strong>Support for Alternative Gallery Output, e.g., Pagination</strong> documentation section. Five parameters are supplied for this purpose:
-
-* `limit` - the maximum number of terms to display in one cloud "page"
-* `offset` - the number of terms to skip over before starting the current cloud page
-* `mla_page_parameter` - the name of the parameter containing the current page number
-* `mla_cloud_current` - the default current cloud page number
-* `term_id` - the id of the current term within the cloud
+If you have a large number of terms in your cloud taxonomy you may want to paginate the cloud display, i.e., divide the cloud into two or more pages of a reasonable size. Pagination support for `[mla_tag_cloud]` is modeled on similar functions for`[mla_gallery]`, and you can find more explaination of the ideas behind pagination in the <strong>Support for Alternative Gallery Output, e.g., Pagination</strong> documentation section. Five parameters are supplied for this purpose.
 
 The `[mla_tag_cloud]` shortcode can be used to provide "Previous" and "Next" links that support moving among the individual items in a cloud or among cloud "pages". For example, if you have many terms in your Att. Category or Att. Tag taxonomies you can build a term-specific `[mla_gallery]` page with links to the previous/next term in the taxonomy (a complete pagination example is included below). You can also build a page that shows a large taxonomy in groups, or "cloud pages", of ten terms with links to the previous/next ten terms or links to all of the cloud pages of terms in the taxonomy.
 
-The <strong>"mla_output"</strong> parameter determines the type of output the shortcode will return. For pagination output, you can choose from six values: 
-
-* `next_link` - returns a link to the next cloud item, based on the "term_id" parameter value
-* `current_link` - returns a link to the current cloud item, based on the "term_id" parameter value
-* `previous_link` - returns a link to the previous cloud item, based on the "term_id" parameter value
-* `next_page` - returns a link to the next "page" of cloud items, based on the "mla_cloud_current" parameter value
-* `previous_page` - returns a link to the previous "page" of cloud items, based on the "mla_cloud_current" parameter value
-* `paginate_links` - returns a link to cloud items at the start and end of the list and to pages around the current "cloud page" ( e.g.: &laquo; Previous 1 … 3 4 5 6 7 … 9 Next &raquo; ), based on the "mla_cloud_current" parameter value
+The <strong>"mla_output"</strong> parameter determines the type of output the shortcode will return. For pagination output, you can choose from six values.
 
 The best way to understand cloud pagination is by example, as in the next section below.
 

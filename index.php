@@ -6,7 +6,7 @@
  * will the rest of the plugin be loaded and run.
  *
  * @package Media Library Assistant
- * @version 1.61
+ * @version 1.70
  */
 
 /*
@@ -14,7 +14,9 @@ Plugin Name: Media Library Assistant
 Plugin URI: http://fairtradejudaica.org/media-library-assistant-a-wordpress-plugin/
 Description: Enhances the Media Library; powerful[mla_gallery], taxonomy support, IPTC/EXIF processing, bulk & quick edit actions and where-used reporting.
 Author: David Lingren
-Version: 1.61
+Text Domain: media-library-assistant
+Domain Path: /languages
+Version: 1.70
 Author URI: http://fairtradejudaica.org/our-story/staff/
 
 Copyright 2011-2013 David Lingren

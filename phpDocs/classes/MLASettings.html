@@ -70,6 +70,7 @@ add settings link in the Plugins section entry for MLA.</span><pre>mla_admin_men
 <li class="method public "><a href="#mla_get_icon_type_dropdown" title="mla_get_icon_type_dropdown :: Get an HTML select element representing a list of icon types"><span class="description">Get an HTML select element representing a list of icon types</span><pre>mla_get_icon_type_dropdown()</pre></a></li>
 <li class="method public "><a href="#mla_inline_edit_upload_action" title="mla_inline_edit_upload_action :: Ajax handler for Upload MIME Types inline editing (quick and bulk edit)"><span class="description">Ajax handler for Upload MIME Types inline editing (quick and bulk edit)</span><pre>mla_inline_edit_upload_action()</pre></a></li>
 <li class="method public "><a href="#mla_inline_edit_view_action" title="mla_inline_edit_view_action :: Ajax handler for Post MIME Types inline editing (quick and bulk edit)"><span class="description">Ajax handler for Post MIME Types inline editing (quick and bulk edit)</span><pre>mla_inline_edit_view_action()</pre></a></li>
+<li class="method public "><a href="#mla_localize_tablist" title="mla_localize_tablist :: Localize $mla_option_definitions array"><span class="description">Localize $mla_option_definitions array</span><pre>mla_localize_tablist()</pre></a></li>
 <li class="method public "><a href="#mla_render_settings_page" title='mla_render_settings_page :: Render (echo) the "Media Library Assistant" subpage in the Settings section'><span class="description">Render (echo) the "Media Library Assistant" subpage in the Settings section</span><pre>mla_render_settings_page()</pre></a></li>
 <li class="method public "><a href="#mla_screen_options_show_screen_filter" title="mla_screen_options_show_screen_filter :: Only show screen options on the View and Upload tabs"><span class="description">Only show screen options on the View and Upload tabs</span><pre>mla_screen_options_show_screen_filter()</pre></a></li>
 <li class="method public "><a href="#mla_set_screen_option_filter" title='mla_set_screen_option_filter :: Save the "Views/Uploads per page" option set by this user'><span class="description">Save the "Views/Uploads per page" option set by this user</span><pre>mla_set_screen_option_filter()</pre></a></li>
@@ -328,6 +329,19 @@ add settings link in the Plugins section entry for MLA.</h2>
 <table class="table table-bordered"><tr>
 <th>since</th>
 <td>1.40</td>
+</tr></table>
+</div></div>
+</div>
+<a name="mla_localize_tablist" id="mla_localize_tablist"></a><div class="element clickable method public mla_localize_tablist" data-toggle="collapse" data-target=".mla_localize_tablist .collapse">
+<h2>Localize $mla_option_definitions array</h2>
+<pre>mla_localize_tablist() : void</pre>
+<div class="labels"></div>
+<div class="row collapse"><div class="detail-description">
+<p class="long_description"><p>Localization must be done at runtime, and these calls cannot be placed
+in the "public static" array definition itself.</p></p>
+<table class="table table-bordered"><tr>
+<th>since</th>
+<td>1.6x</td>
 </tr></table>
 </div></div>
 </div>
@@ -1065,7 +1079,10 @@ Each tab is defined by an array with the following elements:</h2>
 <pre>$mla_tablist : array</pre>
 <div class="labels"></div>
 <div class="row collapse"><div class="detail-description">
-<p class="long_description"><p>array key => HTML id/name attribute and option database key (OMIT MLA_OPTION_PREFIX)</p>
+<p class="long_description"><p>The array must be populated at runtime in MLASettings::mla_localize_tablist(),
+because Localization calls cannot be placed in the "public static" array definition itself.</p>
+
+<p>array key => HTML id/name attribute and option database key (OMIT MLA_OPTION_PREFIX)</p>
 
 <p>title => tab label / heading text
 render => rendering function for tab messages and content. Usage:
@@ -1152,7 +1169,7 @@ each page load and cached for subsequent use.</p></p>
 <div class="row"><footer class="span12">
             Template is built using <a href="http://twitter.github.com/bootstrap/">Twitter Bootstrap 2</a> and icons provided by <a href="http://glyphicons.com/">Glyphicons</a>.<br>
             Documentation is powered by <a href="http://www.phpdoc.org/">phpDocumentor 2.0.0a8</a> and<br>
-            generated on 2013-11-27T11:31:02-08:00.<br></footer></div>
+            generated on 2014-01-11T19:47:37-08:00.<br></footer></div>
 </div>
 </body>
 </html>

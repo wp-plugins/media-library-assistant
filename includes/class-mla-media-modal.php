@@ -62,8 +62,7 @@ class MLAModal {
  		 * Finally wp_enqueue_media() contains:
 		 * do_action( 'wp_enqueue_media' );
 		 */
-		if ( MLATest::$wordpress_3point5_plus && ( 'checked' == MLAOptions::mla_get_option( MLAOptions::MLA_MEDIA_MODAL_TOOLBAR ) )
-) {
+		if ( MLATest::$wordpress_3point5_plus && ( 'checked' == MLAOptions::mla_get_option( MLAOptions::MLA_MEDIA_MODAL_TOOLBAR ) ) ) {
 			add_filter( 'media_view_settings', 'MLAModal::mla_media_view_settings_filter', 10, 2 );
 			add_filter( 'media_view_strings', 'MLAModal::mla_media_view_strings_filter', 10, 2 );
 			add_action( 'wp_enqueue_media', 'MLAModal::mla_wp_enqueue_media_action', 10, 0 );
@@ -95,22 +94,24 @@ class MLAModal {
 		", $post_type ) );
 
 		$month_count = count( $months );
-		$month_array = array( '0' => 'Show all dates' );
-		
-		if ( !$month_count || ( 1 == $month_count && 0 == $months[0]->month ) )
+		$month_array = array( '0' => __( 'Show all dates', 'media-library-assistant' ) );
+
+		if ( !$month_count || ( 1 == $month_count && 0 == $months[0]->month ) ) {
 			return $month_array;
+		}
 
 		foreach ( $months as $arc_row ) {
-			if ( 0 == $arc_row->year )
+			if ( 0 == $arc_row->year ) {
 				continue;
+			}
 
 			$month = zeroise( $arc_row->month, 2 );
 			$year = $arc_row->year;
 			$month_array[ esc_attr( $arc_row->year . $month ) ] = 
 				/* translators: 1: month name, 2: 4-digit year */
-				sprintf( __( '%1$s %2$d' ), $wp_locale->get_month( $month ), $year );
+				sprintf( __( '%1$s %2$d', 'media-library-assistant' ), $wp_locale->get_month( $month ), $year );
 		}
-		
+
 		return $month_array;
 	}
 
@@ -125,24 +126,26 @@ class MLAModal {
 	 */
 	private static function _terms_options( $markup ) {
 		$match_count = preg_match_all( "#\<option(( class=\"([^\"]+)\" )|( ))value=((\'([^\']+)\')|(\"([^\"]+)\"))([^\>]*)\>([^\<]*)\<.*#", $markup, $matches );
-		if ( ( $match_count == false ) || ( $match_count == 0 ) )
+		if ( ( $match_count == false ) || ( $match_count == 0 ) ) {
 			return array( 'class' => array( '' ), 'value' => array( '0' ), 'text' => array( 'Show all terms' ) );
-		
+		}
+
 		$class_array = array();
 		$value_array = array();
 		$text_array = array();
-			
+
 		foreach ( $matches[11] as $index => $text ) {
 			$class_array[ $index ] = $matches[3][ $index ];
 			$value_array[ $index ] = ( ! '' == $matches[6][ $index ] )? $matches[7][ $index ] : $matches[9][ $index ];
 
-			if ( version_compare( get_bloginfo( 'version' ), '3.6', '>=' ) )
+			if ( version_compare( get_bloginfo( 'version' ), '3.6', '>=' ) ) {
 				$text_array[ $index ] = str_replace( '&nbsp;', '-', $text);
-			else
+			} else {
 				$text_array[ $index ] = $text;
-				
+			}
+
 		} // foreach
-				
+
 		return array( 'class' => $class_array, 'value' => $value_array, 'text' => $text_array );
 	}
 
@@ -170,7 +173,7 @@ class MLAModal {
 			'searchFields' => array( 'title', 'content' ),
 			'searchConnector' => 'AND'
 			);
-	
+
 	/**
 	 * Adds settings values to be passed to the Media Manager in /wp-includes/js/media-views.js.
 	 * Declared public because it is a filter.
@@ -185,14 +188,14 @@ class MLAModal {
 	public static function mla_media_view_settings_filter( $settings, $post ) {
 		self::$mla_media_modal_settings['ajaxNonce'] = wp_create_nonce( MLA::MLA_ADMIN_NONCE );
 		self::$mla_media_modal_settings['mimeTypes'] = MLAMime::mla_pluck_table_views();
-		self::$mla_media_modal_settings['mimeTypes']['detached'] = 'Unattached';
+		self::$mla_media_modal_settings['mimeTypes']['detached'] = MLAOptions::$mla_option_definitions[ MLAOptions::MLA_POST_MIME_TYPES ]['std']['unattached']['plural'];
 		self::$mla_media_modal_settings['months'] = self::_months_dropdown('attachment');
 
 		$terms_options = self::_terms_options( MLA_List_Table::mla_get_taxonomy_filter_dropdown() );
 		self::$mla_media_modal_settings['termsClass'] = $terms_options['class'];
 		self::$mla_media_modal_settings['termsValue'] = $terms_options['value'];
 		self::$mla_media_modal_settings['termsText'] = $terms_options['text'];
-		
+
 		self::$mla_media_modal_settings['enableMimeTypes'] = ( 'checked' == MLAOptions::mla_get_option( MLAOptions::MLA_MEDIA_MODAL_MIMETYPES ) );
 		self::$mla_media_modal_settings['enableMonthsDropdown'] = ( 'checked' == MLAOptions::mla_get_option( MLAOptions::MLA_MEDIA_MODAL_MONTHS ) );
 		self::$mla_media_modal_settings['enableTermsDropdown'] = ( 'checked' == MLAOptions::mla_get_option( MLAOptions::MLA_MEDIA_MODAL_TERMS ) );
@@ -206,7 +209,7 @@ class MLAModal {
 		self::$mla_media_modal_settings['searchConnector'] = 'AND';
 		self::$mla_media_modal_settings['searchFields'] = array( 'title', 'content' );
 		self::$mla_media_modal_settings['searchValue'] = '';
-		
+
 		$settings = array_merge( $settings, array( 'mla_settings' => self::$mla_media_modal_settings ) );
 		return $settings;
 	} // mla_mla_media_view_settings_filter
@@ -226,7 +229,7 @@ class MLAModal {
 		$mla_strings = array(
 			'searchBoxPlaceholder' => 'Search Box',
 			);
-			
+
 		$strings = array_merge( $strings, array( 'mla_strings' => $mla_strings ) );
 		return $strings;
 	} // mla_mla_media_view_strings_filter
@@ -262,15 +265,17 @@ class MLAModal {
 		 * Adjust the toolbar styles based on which controls are present
 		 */
 		if ( self::$mla_media_modal_settings['enableSearchBox'] ) {
-			if ( self::$mla_media_modal_settings['enableMonthsDropdown'] && self::$mla_media_modal_settings['enableTermsDropdown'] )
+			if ( self::$mla_media_modal_settings['enableMonthsDropdown'] && self::$mla_media_modal_settings['enableTermsDropdown'] ) {
 				$height = '100px';
-			else
+			} else {
 				$height = '70px';
-		} else
+			}
+		} else {
 			$height = '50px';
+		}
 
 		echo '<style type="text/css">' . "\r\n";
-		
+
 		if ( self::$mla_media_modal_settings['enableSearchBox'] ) {
 			echo "\t\t.media-frame .media-frame-content .media-toolbar-secondary {\r\n";
 			echo "\t\t\twidth: 150px; }\r\n";
@@ -289,62 +294,70 @@ class MLAModal {
 		echo "\t\t\tfont-family: sans-serif;\r\n";
 		echo "\t\t\t-webkit-appearance: none; }\r\n";
 		echo "\t" . '</style>' . "\r\n";
-		
+
 		/*
 		 * Compose the Search Media box
 		 */
-		if ( isset( $_REQUEST['query']['mla_search_value'] ) )
+		if ( isset( $_REQUEST['query']['mla_search_value'] ) ) {
 			$search_value = esc_attr( stripslashes( trim( $_REQUEST['query']['mla_search_value'] ) ) );
-		else
+		} else {
 			$search_value = '';
-			
-		if ( isset( $_REQUEST['query']['mla_search_fields'] ) )
-			$search_fields = $_REQUEST['query']['mla_search_fields'];
-		else
-			$search_fields = array ( 'title', 'content' );
+		}
 
-		if ( isset( $_REQUEST['query']['mla_search_connector'] ) )
+		if ( isset( $_REQUEST['query']['mla_search_fields'] ) ) {
+			$search_fields = $_REQUEST['query']['mla_search_fields'];
+		} else {
+			$search_fields = array ( 'title', 'content' );
+		}
+
+		if ( isset( $_REQUEST['query']['mla_search_connector'] ) ) {
 			$search_connector = $_REQUEST['query']['mla_search_connector'];
-		else
+		} else {
 			$search_connector = 'AND';
+		}
 
 		echo "\t" . '<script type="text/html" id="tmpl-mla-search-box">' . "\r\n";
 		echo "\t\t" . '<p class="search-box">' . "\r\n";
-		echo "\t\t" . '<label class="screen-reader-text" for="media-search-input">Search Media:</label>' . "\r\n";
+		echo "\t\t" . '<label class="screen-reader-text" for="media-search-input">' . __( 'Search Media', 'media-library-assistant' ) . ':</label>' . "\r\n";
 		echo "\t\t" . '<input type="text" name="s[mla_search_value]" id="media-search-input" size="43" value="' . $search_value . '" />' . "\r\n";
-		echo "\t\t" . '<input type="submit" name="mla_search_submit" id="search-submit" class="button" value="Search Media"  /><br>' . "\r\n";
+		echo "\t\t" . '<input type="submit" name="mla_search_submit" id="search-submit" class="button" value="' . __( 'Search Media', 'media-library-assistant' ) . '"  /><br>' . "\r\n";
 		if ( 'OR' == $search_connector ) {
-			echo "\t\t" . '<input type="radio" name="s[mla_search_connector]" value="AND" />&nbsp;and&nbsp;' . "\r\n";
-			echo "\t\t" . '<input type="radio" name="s[mla_search_connector]" checked="checked" value="OR" />&nbsp;or&nbsp;' . "\r\n";
+			echo "\t\t" . '<input type="radio" name="s[mla_search_connector]" value="AND" />&nbsp;' . __( 'and', 'media-library-assistant' ) . "&nbsp;\r\n";
+			echo "\t\t" . '<input type="radio" name="s[mla_search_connector]" checked="checked" value="OR" />&nbsp;' . __( 'or', 'media-library-assistant' ) . "&nbsp;\r\n";
 		} else {
-			echo "\t\t" . '<input type="radio" name="s[mla_search_connector]" checked="checked" value="AND" />&nbsp;and&nbsp;' . "\r\n";
-			echo "\t\t" . '<input type="radio" name="s[mla_search_connector]" value="OR" />&nbsp;or&nbsp;' . "\r\n";
+			echo "\t\t" . '<input type="radio" name="s[mla_search_connector]" checked="checked" value="AND" />&nbsp;' . __( 'and', 'media-library-assistant' ) . "&nbsp;\r\n";
+			echo "\t\t" . '<input type="radio" name="s[mla_search_connector]" value="OR" />&nbsp;' . __( 'or', 'media-library-assistant' ) . "&nbsp;\r\n";
 		}
 
-		if ( in_array( 'title', $search_fields ) )
-			echo "\t\t" . '<input type="checkbox" name="s[mla_search_title]" id="search-title" checked="checked" value="title" />&nbsp;title&nbsp;' . "\r\n";
-		else
-			echo "\t\t" . '<input type="checkbox" name="s[mla_search_title]" id="search-title" value="title" />&nbsp;title&nbsp;' . "\r\n";
-			
-		if ( in_array( 'name', $search_fields ) )
-			echo "\t\t" . '<input type="checkbox" name="s[mla_search_name]" id="search-name" checked="checked" value="name" />&nbsp;name&nbsp;' . "\r\n";
-		else
-			echo "\t\t" . '<input type="checkbox" name="s[mla_search_name]" id="search-name" value="name" />&nbsp;name&nbsp;' . "\r\n";
+		if ( in_array( 'title', $search_fields ) ) {
+			echo "\t\t" . '<input type="checkbox" name="s[mla_search_title]" id="search-title" checked="checked" value="title" />&nbsp;' . __( 'Title', 'media-library-assistant' ) . "&nbsp;\r\n";
+		} else {
+			echo "\t\t" . '<input type="checkbox" name="s[mla_search_title]" id="search-title" value="title" />&nbsp;' . __( 'Title', 'media-library-assistant' ) . "&nbsp;\r\n";
+		}
 
-		if ( in_array( 'alt-text', $search_fields ) )
-			echo "\t\t" . '<input type="checkbox" name="s[mla_search_alt_text]" id="search-alt-text" checked="checked" value="alt-text" />&nbsp;ALT text&nbsp;' . "\r\n";
-		else
-			echo "\t\t" . '<input type="checkbox" name="s[mla_search_alt_text]" id="search-alt-text" value="alt-text" />&nbsp;ALT text&nbsp;' . "\r\n";
+		if ( in_array( 'name', $search_fields ) ) {
+			echo "\t\t" . '<input type="checkbox" name="s[mla_search_name]" id="search-name" checked="checked" value="name" />&nbsp;' . __( 'Name', 'media-library-assistant' ) . "&nbsp;\r\n";
+		} else {
+			echo "\t\t" . '<input type="checkbox" name="s[mla_search_name]" id="search-name" value="name" />&nbsp;' . __( 'Name', 'media-library-assistant' ) . "&nbsp;\r\n";
+		}
 
-		if ( in_array( 'excerpt', $search_fields ) )
-			echo "\t\t" . '<input type="checkbox" name="s[mla_search_excerpt]" id="search-excerpt" checked="checked" value="excerpt" />&nbsp;caption&nbsp;' . "\r\n";
-		else
-			echo "\t\t" . '<input type="checkbox" name="s[mla_search_excerpt]" id="search-excerpt" value="excerpt" />&nbsp;caption&nbsp;' . "\r\n";
+		if ( in_array( 'alt-text', $search_fields ) ) {
+			echo "\t\t" . '<input type="checkbox" name="s[mla_search_alt_text]" id="search-alt-text" checked="checked" value="alt-text" />&nbsp;' . __( 'ALT Text', 'media-library-assistant' ) . "&nbsp;\r\n";
+		} else {
+			echo "\t\t" . '<input type="checkbox" name="s[mla_search_alt_text]" id="search-alt-text" value="alt-text" />&nbsp;' . __( 'ALT Text', 'media-library-assistant' ) . "&nbsp;\r\n";
+		}
 
-		if ( in_array( 'content', $search_fields ) )
-			echo "\t\t" . '<input type="checkbox" name="s[mla_search_content]" id="search-content" checked="checked" value="content" />&nbsp;description&nbsp;' . "\r\n";
-		else
-			echo "\t\t" . '<input type="checkbox" name="s[mla_search_content]" id="search-content" value="content" />&nbsp;description&nbsp;' . "\r\n";
+		if ( in_array( 'excerpt', $search_fields ) ) {
+			echo "\t\t" . '<input type="checkbox" name="s[mla_search_excerpt]" id="search-excerpt" checked="checked" value="excerpt" />&nbsp;' . __( 'Caption', 'media-library-assistant' ) . "&nbsp;\r\n";
+		} else {
+			echo "\t\t" . '<input type="checkbox" name="s[mla_search_excerpt]" id="search-excerpt" value="excerpt" />&nbsp;' . __( 'Caption', 'media-library-assistant' ) . "&nbsp;\r\n";
+		}
+
+		if ( in_array( 'content', $search_fields ) ) {
+			echo "\t\t" . '<input type="checkbox" name="s[mla_search_content]" id="search-content" checked="checked" value="content" />&nbsp;' . __( 'Description', 'media-library-assistant' ) . "&nbsp;\r\n";
+		} else {
+			echo "\t\t" . '<input type="checkbox" name="s[mla_search_content]" id="search-content" value="content" />&nbsp;' . __( 'Description', 'media-library-assistant' ) . "&nbsp;\r\n";
+		}
 
 		echo "\t\t" . '</p>' . "\r\n";
 		echo "\t" . '</script>' . "\r\n";
@@ -366,7 +379,7 @@ class MLAModal {
 					$_POST['query'][ $key ] = $value;
 					$_REQUEST['query'][ $key ] = $value;
 				}
-				
+
 				unset( $_POST['query']['s'] );
 				unset( $_REQUEST['query']['s'] );
 				$_POST['action'] = self::JAVASCRIPT_MEDIA_MODAL_SLUG;
@@ -385,8 +398,9 @@ class MLAModal {
 	 * @return	void	echo HTML <tr> markup for updated row or error message, then die()
 	 */
 	public static function mla_query_attachments_action() {
-		if ( ! current_user_can( 'upload_files' ) )
+		if ( ! current_user_can( 'upload_files' ) ) {
 			wp_send_json_error();
+		}
 
 		/*
 		 * Pick out and clean up the query terms we can process
@@ -402,45 +416,39 @@ class MLAModal {
 			if ( 'detached' == $query['post_mime_type'] ) {
 				$query['detached'] = '1';
 				unset( $query['post_mime_type'] );
-			}
-			else {
+			} else {
 				$view = $query['post_mime_type'];
 				unset( $query['post_mime_type'] );
 				$query = array_merge( $query, MLAMime::mla_prepare_view_query( 'view', $view ) );
 			}
 		}
-		
+
 		/*
 		 * Convert mla_filter_month back to the WordPress "m" parameter
 		 */
 		if ( isset( $query['mla_filter_month'] ) ) {
-			if ( '0' != $query['mla_filter_month'] )
+			if ( '0' != $query['mla_filter_month'] ) {
 				$query['m'] = $query['mla_filter_month'];
-				
+			}
+
 			unset( $query['mla_filter_month'] );
 		}
-		
+
 		/*
 		 * Process the enhanced search box OR fix up the default search box
 		 */
 		if ( isset( $query['mla_search_value'] ) ) {
-			if ( ! empty( $query['mla_search_value'] ) )
+			if ( ! empty( $query['mla_search_value'] ) ) {
 				$query['s'] = $query['mla_search_value'];
-//			else
-//				unset( $query['s'] );
-				
+			}
+
 			unset( $query['mla_search_value'] );
 		}
-/*		elseif ( ! empty( $query['s'] ) ) {
-			$query['mla_search_fields'] = array( 'title', 'content' );
-			$query['mla_search_connector'] = 'AND';
-		} // */
-		
+
 		if ( isset( $query['posts_per_page'] ) ) {
 			$count = $query['posts_per_page'];
 			$offset = $count * (isset( $query['paged'] ) ? $query['paged'] - 1 : 0);
-		}
-		else {
+		} else {
 			$count = 0;
 			$offset = 0;
 		}
@@ -461,7 +469,7 @@ class MLAModal {
 					break;
 				}
 			}
-	
+
 			if ( ! $found_current ) {
 				MLAOptions::mla_delete_option( MLAOptions::MLA_DEFAULT_ORDERBY );
 				$option = MLAOptions::mla_get_option( MLAOptions::MLA_DEFAULT_ORDERBY );
@@ -469,21 +477,23 @@ class MLAModal {
 
 			$query['orderby'] = $option;
 		}
-			
+
 		$option = MLAOptions::mla_get_option( MLAOptions::MLA_MEDIA_MODAL_ORDER );
-		if ( 'default' != $option )
+		if ( 'default' != $option ) {
 			$query['order'] = $option;
+		}
 
 		$query['post_type'] = 'attachment';
 		$query['post_status'] = 'inherit';
-		if ( current_user_can( get_post_type_object( 'attachment' )->cap->read_private_posts ) )
+		if ( current_user_can( get_post_type_object( 'attachment' )->cap->read_private_posts ) ) {
 			$query['post_status'] .= ',private';
-	
+		}
+
 		$query = MLAData::mla_query_media_modal_items( $query, $offset, $count );
-	
+
 		$posts = array_map( 'wp_prepare_attachment_for_js', $query->posts );
 		$posts = array_filter( $posts );
-	
+
 		wp_send_json_success( $posts );
 	}
 } //Class MLAModal

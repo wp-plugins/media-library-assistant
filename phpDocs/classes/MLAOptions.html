@@ -55,7 +55,7 @@
 <li class="nav-header">
 <i class="icon-custom icon-method"></i> Methods</li>
 <li class="method public "><a href="#initialize" title="initialize :: Initialization function, similar to __construct()"><span class="description">Initialization function, similar to __construct()</span><pre>initialize()</pre></a></li>
-<li class="method public "><a href="#mla_add_attachment_action" title="mla_add_attachment_action :: Perform ITC/EXIF mapping on just-inserted attachment"><span class="description">Perform ITC/EXIF mapping on just-inserted attachment</span><pre>mla_add_attachment_action()</pre></a></li>
+<li class="method public "><a href="#mla_add_attachment_action" title="mla_add_attachment_action :: Set $add_attachment_id to just-inserted attachment"><span class="description">Set $add_attachment_id to just-inserted attachment</span><pre>mla_add_attachment_action()</pre></a></li>
 <li class="method public "><a href="#mla_custom_field_option_handler" title="mla_custom_field_option_handler :: Render and manage custom field mapping options"><span class="description">Render and manage custom field mapping options</span><pre>mla_custom_field_option_handler()</pre></a></li>
 <li class="method public "><a href="#mla_custom_field_option_value" title="mla_custom_field_option_value :: Fetch custom field option value given a slug"><span class="description">Fetch custom field option value given a slug</span><pre>mla_custom_field_option_value()</pre></a></li>
 <li class="method public "><a href="#mla_custom_field_support" title="mla_custom_field_support :: Evaluate file information for custom field mapping"><span class="description">Evaluate file information for custom field mapping</span><pre>mla_custom_field_support()</pre></a></li>
@@ -63,18 +63,22 @@
 <li class="method public "><a href="#mla_evaluate_custom_field_mapping" title="mla_evaluate_custom_field_mapping :: Evaluate custom field mapping updates for a post"><span class="description">Evaluate custom field mapping updates for a post</span><pre>mla_evaluate_custom_field_mapping()</pre></a></li>
 <li class="method public "><a href="#mla_evaluate_iptc_exif_mapping" title="mla_evaluate_iptc_exif_mapping :: Evaluate IPTC/EXIF mapping updates for a post"><span class="description">Evaluate IPTC/EXIF mapping updates for a post</span><pre>mla_evaluate_iptc_exif_mapping()</pre></a></li>
 <li class="method public "><a href="#mla_fetch_gallery_template" title="mla_fetch_gallery_template :: Fetch style or markup template from $mla_templates"><span class="description">Fetch style or markup template from $mla_templates</span><pre>mla_fetch_gallery_template()</pre></a></li>
+<li class="method public "><a href="#mla_get_data_source" title="mla_get_data_source :: Get IPTC/EXIF or custom field mapping data source"><span class="description">Get IPTC/EXIF or custom field mapping data source</span><pre>mla_get_data_source()</pre></a></li>
 <li class="method public "><a href="#mla_get_markup_templates" title="mla_get_markup_templates :: Get ALL markup templates from $mla_templates, including 'default'"><span class="description">Get ALL markup templates from $mla_templates, including 'default'</span><pre>mla_get_markup_templates()</pre></a></li>
 <li class="method public "><a href="#mla_get_option" title="mla_get_option :: Return the stored value or default value of a defined MLA option"><span class="description">Return the stored value or default value of a defined MLA option</span><pre>mla_get_option()</pre></a></li>
 <li class="method public "><a href="#mla_get_style_templates" title="mla_get_style_templates :: Get ALL style templates from $mla_templates, including 'default'"><span class="description">Get ALL style templates from $mla_templates, including 'default'</span><pre>mla_get_style_templates()</pre></a></li>
 <li class="method public "><a href="#mla_iptc_exif_option_handler" title="mla_iptc_exif_option_handler :: Render and manage iptc/exif support options"><span class="description">Render and manage iptc/exif support options</span><pre>mla_iptc_exif_option_handler()</pre></a></li>
+<li class="method public "><a href="#mla_localize_option_definitions_array" title="mla_localize_option_definitions_array :: Localize $mla_option_definitions array"><span class="description">Localize $mla_option_definitions array</span><pre>mla_localize_option_definitions_array()</pre></a></li>
 <li class="method public "><a href="#mla_put_markup_templates" title="mla_put_markup_templates :: Put user-defined markup templates to $mla_templates and database"><span class="description">Put user-defined markup templates to $mla_templates and database</span><pre>mla_put_markup_templates()</pre></a></li>
 <li class="method public "><a href="#mla_put_style_templates" title="mla_put_style_templates :: Put user-defined style templates to $mla_templates and database"><span class="description">Put user-defined style templates to $mla_templates and database</span><pre>mla_put_style_templates()</pre></a></li>
 <li class="method public "><a href="#mla_taxonomy_option_handler" title="mla_taxonomy_option_handler :: Render and manage taxonomy support options, e.g., Categories and Post Tags"><span class="description">Render and manage taxonomy support options, e.g., Categories and Post Tags</span><pre>mla_taxonomy_option_handler()</pre></a></li>
 <li class="method public "><a href="#mla_taxonomy_support" title="mla_taxonomy_support :: Determine MLA support for a taxonomy, handling the special case where the
 settings are being updated or reset."><span class="description">Determine MLA support for a taxonomy, handling the special case where the
 settings are being updated or reset.</span><pre>mla_taxonomy_support()</pre></a></li>
-<li class="method public "><a href="#mla_update_attachment_metadata_filter" title="mla_update_attachment_metadata_filter :: Perform Custom Field mapping on just-inserted or updated attachment"><span class="description">Perform Custom Field mapping on just-inserted or updated attachment</span><pre>mla_update_attachment_metadata_filter()</pre></a></li>
+<li class="method public "><a href="#mla_update_attachment_metadata_filter" title="mla_update_attachment_metadata_filter :: Perform IPTC/EXIF and Custom Field mapping on just-inserted attachment"><span class="description">Perform IPTC/EXIF and Custom Field mapping on just-inserted attachment</span><pre>mla_update_attachment_metadata_filter()</pre></a></li>
 <li class="method public "><a href="#mla_update_option" title="mla_update_option :: Add or update the stored value of a defined MLA option"><span class="description">Add or update the stored value of a defined MLA option</span><pre>mla_update_option()</pre></a></li>
+<li class="method public "><a href="#mla_wp_handle_upload_filter" title="mla_wp_handle_upload_filter :: Called once for each file uploaded"><span class="description">Called once for each file uploaded</span><pre>mla_wp_handle_upload_filter()</pre></a></li>
+<li class="method public "><a href="#mla_wp_handle_upload_prefilter_filter" title="mla_wp_handle_upload_prefilter_filter :: Examine or alter the filename before the file is made permanent"><span class="description">Examine or alter the filename before the file is made permanent</span><pre>mla_wp_handle_upload_prefilter_filter()</pre></a></li>
 <li class="nav-header private">» Private</li>
 <li class="method private "><a href="#_compose_custom_field_option_list" title="_compose_custom_field_option_list :: Compose a Custom Field Options list with current selection"><span class="description">Compose a Custom Field Options list with current selection</span><pre>_compose_custom_field_option_list()</pre></a></li>
 <li class="method private "><a href="#_compose_data_source_option_list" title="_compose_data_source_option_list :: Compose a (Custom Field) Data Source Options list with current selection"><span class="description">Compose a (Custom Field) Data Source Options list with current selection</span><pre>_compose_data_source_option_list()</pre></a></li>
@@ -86,18 +90,20 @@ settings are being updated or reset.</span><pre>mla_taxonomy_support()</pre></a>
 <li class="method private "><a href="#_evaluate_post_information" title="_evaluate_post_information :: Evaluate post information for custom field mapping"><span class="description">Evaluate post information for custom field mapping</span><pre>_evaluate_post_information()</pre></a></li>
 <li class="method private "><a href="#_get_custom_field_names" title="_get_custom_field_names :: Generate a list of all (post) Custom Field names"><span class="description">Generate a list of all (post) Custom Field names</span><pre>_get_custom_field_names()</pre></a></li>
 <li class="method private "><a href="#_load_option_templates" title="_load_option_templates :: Load style and markup templates to $mla_templates"><span class="description">Load style and markup templates to $mla_templates</span><pre>_load_option_templates()</pre></a></li>
+<li class="method private "><a href="#_update_attachment_metadata" title="_update_attachment_metadata :: Update _wp_attachment_metadata for just-inserted attachment"><span class="description">Update _wp_attachment_metadata for just-inserted attachment</span><pre>_update_attachment_metadata()</pre></a></li>
 <li class="method private "><a href="#_update_custom_field_mapping" title="_update_custom_field_mapping :: Update custom field mappings"><span class="description">Update custom field mappings</span><pre>_update_custom_field_mapping()</pre></a></li>
 <li class="method private "><a href="#_update_iptc_exif_custom_mapping" title="_update_iptc_exif_custom_mapping :: Update Custom field portion of IPTC/EXIF mappings"><span class="description">Update Custom field portion of IPTC/EXIF mappings</span><pre>_update_iptc_exif_custom_mapping()</pre></a></li>
 <li class="method private "><a href="#_update_iptc_exif_standard_mapping" title="_update_iptc_exif_standard_mapping :: Update Standard field portion of IPTC/EXIF mappings"><span class="description">Update Standard field portion of IPTC/EXIF mappings</span><pre>_update_iptc_exif_standard_mapping()</pre></a></li>
 <li class="method private "><a href="#_update_iptc_exif_taxonomy_mapping" title="_update_iptc_exif_taxonomy_mapping :: Update Taxonomy term portion of IPTC/EXIF mappings"><span class="description">Update Taxonomy term portion of IPTC/EXIF mappings</span><pre>_update_iptc_exif_taxonomy_mapping()</pre></a></li>
 <li class="nav-header">
 <i class="icon-custom icon-property"></i> Properties</li>
-<li class="property public "><a href="#%24mla_option_definitions" title="$mla_option_definitions :: $mla_option_definitions defines the database options and admin page areas for setting/updating them."><span class="description">$mla_option_definitions defines the database options and admin page areas for setting/updating them.</span><pre>$mla_option_definitions</pre></a></li>
+<li class="property public "><a href="#%24mla_option_definitions" title="$mla_option_definitions :: $mla_option_definitions defines the database options and admin page areas for setting/updating them"><span class="description">$mla_option_definitions defines the database options and admin page areas for setting/updating them</span><pre>$mla_option_definitions</pre></a></li>
 <li class="property public "><a href="#%24process_featured_in" title='$process_featured_in :: Option setting for "Featured in" reporting'><span class="description">Option setting for "Featured in" reporting</span><pre>$process_featured_in</pre></a></li>
 <li class="property public "><a href="#%24process_gallery_in" title='$process_gallery_in :: Option setting for "Gallery in" reporting'><span class="description">Option setting for "Gallery in" reporting</span><pre>$process_gallery_in</pre></a></li>
 <li class="property public "><a href="#%24process_inserted_in" title='$process_inserted_in :: Option setting for "Inserted in" reporting'><span class="description">Option setting for "Inserted in" reporting</span><pre>$process_inserted_in</pre></a></li>
 <li class="property public "><a href="#%24process_mla_gallery_in" title='$process_mla_gallery_in :: Option setting for "MLA Gallery in" reporting'><span class="description">Option setting for "MLA Gallery in" reporting</span><pre>$process_mla_gallery_in</pre></a></li>
 <li class="nav-header private">» Private</li>
+<li class="property private "><a href="#%24add_attachment_id" title="$add_attachment_id :: Attachment ID passed from mla_add_attachment_action to mla_update_attachment_metadata_filter"><span class="description">Attachment ID passed from mla_add_attachment_action to mla_update_attachment_metadata_filter</span><pre>$add_attachment_id</pre></a></li>
 <li class="property private "><a href="#%24custom_field_data_sources" title="$custom_field_data_sources :: Array of Data Source names for custom field mapping"><span class="description">Array of Data Source names for custom field mapping</span><pre>$custom_field_data_sources</pre></a></li>
 <li class="property private "><a href="#%24mla_option_templates" title="$mla_option_templates :: Style and Markup templates"><span class="description">Style and Markup templates</span><pre>$mla_option_templates</pre></a></li>
 <li class="nav-header">
@@ -181,18 +187,18 @@ and provides functions to get and put them from/to WordPress option variables</p
 </div></div>
 </div>
 <a name="mla_add_attachment_action" id="mla_add_attachment_action"></a><div class="element clickable method public mla_add_attachment_action" data-toggle="collapse" data-target=".mla_add_attachment_action .collapse">
-<h2>Perform ITC/EXIF mapping on just-inserted attachment</h2>
-<pre>mla_add_attachment_action(integer $post_id) : void</pre>
+<h2>Set $add_attachment_id to just-inserted attachment</h2>
+<pre>mla_add_attachment_action(integer $post_ID) : void</pre>
 <div class="labels"></div>
 <div class="row collapse"><div class="detail-description">
-<p class="long_description"></p>
+<p class="long_description"><p>All of the actual processing is done later, in mla_update_attachment_metadata_filter.</p></p>
 <table class="table table-bordered"><tr>
 <th>since</th>
 <td>1.00</td>
 </tr></table>
 <h3>Parameters</h3>
 <div class="subelement argument">
-<h4>$post_id</h4>
+<h4>$post_ID</h4>
 <code>integer</code><p>ID of just-inserted attachment</p>
 </div>
 </div></div>
@@ -326,7 +332,7 @@ and provides functions to get and put them from/to WordPress option variables</p
 </div>
 <a name="mla_evaluate_iptc_exif_mapping" id="mla_evaluate_iptc_exif_mapping"></a><div class="element clickable method public mla_evaluate_iptc_exif_mapping" data-toggle="collapse" data-target=".mla_evaluate_iptc_exif_mapping .collapse">
 <h2>Evaluate IPTC/EXIF mapping updates for a post</h2>
-<pre>mla_evaluate_iptc_exif_mapping(object $post, string $category, array $settings) : array</pre>
+<pre>mla_evaluate_iptc_exif_mapping(object $post, string $category, array $settings, array $attachment_metadata) : array</pre>
 <div class="labels"></div>
 <div class="row collapse"><div class="detail-description">
 <p class="long_description"></p>
@@ -344,6 +350,10 @@ and provides functions to get and put them from/to WordPress option variables</p
 <div class="subelement argument">
 <h4>$settings</h4>
 <code>array</code><p>(optional) iptc_exif_mapping values, default - current option value</p>
+</div>
+<div class="subelement argument">
+<h4>$attachment_metadata</h4>
+<code>array</code><p>(optional) _wp_attachment_metadata, for MLAOptions::mla_update_attachment_metadata_filter</p>
 </div>
 <h3>Returns</h3>
 <div class="subelement response">
@@ -371,6 +381,39 @@ and provides functions to get and put them from/to WordPress option variables</p
 <h3>Returns</h3>
 <div class="subelement response">
 <code>string</code><code>boolean</code><code>null</code>requested template, false if not found or null if no templates</div>
+</div></div>
+</div>
+<a name="mla_get_data_source" id="mla_get_data_source"></a><div class="element clickable method public mla_get_data_source" data-toggle="collapse" data-target=".mla_get_data_source .collapse">
+<h2>Get IPTC/EXIF or custom field mapping data source</h2>
+<pre>mla_get_data_source(integer $post_id, string $category, array $data_value, array $attachment_metadata) : string | array</pre>
+<div class="labels"></div>
+<div class="row collapse"><div class="detail-description">
+<p class="long_description"><p>Defined as public so MLA Mapping Hooks clients can call it.
+Isolates clients from changes to _evaluate_data_source().</p></p>
+<table class="table table-bordered"><tr>
+<th>since</th>
+<td>1.70</td>
+</tr></table>
+<h3>Parameters</h3>
+<div class="subelement argument">
+<h4>$post_id</h4>
+<code>integer</code><p>post->ID of attachment</p>
+</div>
+<div class="subelement argument">
+<h4>$category</h4>
+<code>string</code><p>category/scope to evaluate against: custom_field_mapping or single_attachment_mapping</p>
+</div>
+<div class="subelement argument">
+<h4>$data_value</h4>
+<code>array</code><p>data source specification ( name, *data_source, *keep_existing, *format, mla_column, quick_edit, bulk_edit, *meta_name, *option, no_null )</p>
+</div>
+<div class="subelement argument">
+<h4>$attachment_metadata</h4>
+<code>array</code><p>(optional) _wp_attachment_metadata, default NULL (use current postmeta database value)</p>
+</div>
+<h3>Returns</h3>
+<div class="subelement response">
+<code>string</code><code>array</code>data source value</div>
 </div></div>
 </div>
 <a name="mla_get_markup_templates" id="mla_get_markup_templates"></a><div class="element clickable method public mla_get_markup_templates" data-toggle="collapse" data-target=".mla_get_markup_templates .collapse">
@@ -463,6 +506,19 @@ and provides functions to get and put them from/to WordPress option variables</p
 <h3>Returns</h3>
 <div class="subelement response">
 <code>string</code>HTML table row markup for 'render' else message(s) reflecting the results of the operation.</div>
+</div></div>
+</div>
+<a name="mla_localize_option_definitions_array" id="mla_localize_option_definitions_array"></a><div class="element clickable method public mla_localize_option_definitions_array" data-toggle="collapse" data-target=".mla_localize_option_definitions_array .collapse">
+<h2>Localize $mla_option_definitions array</h2>
+<pre>mla_localize_option_definitions_array() : void</pre>
+<div class="labels"></div>
+<div class="row collapse"><div class="detail-description">
+<p class="long_description"><p>Localization must be done at runtime, and these calls cannot be placed
+in the "public static" array definition itself.</p></p>
+<table class="table table-bordered"><tr>
+<th>since</th>
+<td>1.6x</td>
+</tr></table>
 </div></div>
 </div>
 <a name="mla_put_markup_templates" id="mla_put_markup_templates"></a><div class="element clickable method public mla_put_markup_templates" data-toggle="collapse" data-target=".mla_put_markup_templates .collapse">
@@ -567,11 +623,12 @@ settings are being updated or reset.</h2>
 </div></div>
 </div>
 <a name="mla_update_attachment_metadata_filter" id="mla_update_attachment_metadata_filter"></a><div class="element clickable method public mla_update_attachment_metadata_filter" data-toggle="collapse" data-target=".mla_update_attachment_metadata_filter .collapse">
-<h2>Perform Custom Field mapping on just-inserted or updated attachment</h2>
+<h2>Perform IPTC/EXIF and Custom Field mapping on just-inserted attachment</h2>
 <pre>mla_update_attachment_metadata_filter(array $data, integer $post_id) : void</pre>
 <div class="labels"></div>
 <div class="row collapse"><div class="detail-description">
-<p class="long_description"></p>
+<p class="long_description"><p>This filter tests the $add_attachment_id variable set by the mla_add_attachment_action
+to ensure that mapping is only performed for new additions, not metadata updates.</p></p>
 <table class="table table-bordered"><tr>
 <th>since</th>
 <td>1.10</td>
@@ -607,6 +664,46 @@ settings are being updated or reset.</h2>
 <h3>Returns</h3>
 <div class="subelement response">
 <code>boolean</code>True if the value was changed or false if the update failed</div>
+</div></div>
+</div>
+<a name="mla_wp_handle_upload_filter" id="mla_wp_handle_upload_filter"></a><div class="element clickable method public mla_wp_handle_upload_filter" data-toggle="collapse" data-target=".mla_wp_handle_upload_filter .collapse">
+<h2>Called once for each file uploaded</h2>
+<pre>mla_wp_handle_upload_filter(array $file) : array</pre>
+<div class="labels"></div>
+<div class="row collapse"><div class="detail-description">
+<p class="long_description"></p>
+<table class="table table-bordered"><tr>
+<th>since</th>
+<td>1.70</td>
+</tr></table>
+<h3>Parameters</h3>
+<div class="subelement argument">
+<h4>$file</h4>
+<code>array</code><p>file parameters ( 'name' )</p>
+</div>
+<h3>Returns</h3>
+<div class="subelement response">
+<code>array</code>updated file parameters</div>
+</div></div>
+</div>
+<a name="mla_wp_handle_upload_prefilter_filter" id="mla_wp_handle_upload_prefilter_filter"></a><div class="element clickable method public mla_wp_handle_upload_prefilter_filter" data-toggle="collapse" data-target=".mla_wp_handle_upload_prefilter_filter .collapse">
+<h2>Examine or alter the filename before the file is made permanent</h2>
+<pre>mla_wp_handle_upload_prefilter_filter(array $file) : array</pre>
+<div class="labels"></div>
+<div class="row collapse"><div class="detail-description">
+<p class="long_description"></p>
+<table class="table table-bordered"><tr>
+<th>since</th>
+<td>1.70</td>
+</tr></table>
+<h3>Parameters</h3>
+<div class="subelement argument">
+<h4>$file</h4>
+<code>array</code><p>file parameters ( 'name' )</p>
+</div>
+<h3>Returns</h3>
+<div class="subelement response">
+<code>array</code>updated file parameters</div>
 </div></div>
 </div>
 <a name="_compose_custom_field_option_list" id="_compose_custom_field_option_list"></a><div class="element clickable method private _compose_custom_field_option_list" data-toggle="collapse" data-target="._compose_custom_field_option_list .collapse">
@@ -748,7 +845,7 @@ settings are being updated or reset.</h2>
 </div>
 <a name="_evaluate_data_source" id="_evaluate_data_source"></a><div class="element clickable method private _evaluate_data_source" data-toggle="collapse" data-target="._evaluate_data_source .collapse">
 <h2>Evaluate custom field mapping data source</h2>
-<pre>_evaluate_data_source(integer $post_id, string $category, array $data_value, array $attachment_metadata) : string</pre>
+<pre>_evaluate_data_source(integer $post_id, string $category, array $data_value, array $attachment_metadata) : string | array</pre>
 <div class="labels"></div>
 <div class="row collapse"><div class="detail-description">
 <p class="long_description"></p>
@@ -767,15 +864,15 @@ settings are being updated or reset.</h2>
 </div>
 <div class="subelement argument">
 <h4>$data_value</h4>
-<code>array</code><p>data source specification ( name, data_source, keep_existing, format, mla_column, quick_edit, bulk_edit, meta_name, no_null, option )</p>
+<code>array</code><p>data source specification ( name, *data_source, *keep_existing, *format, mla_column, quick_edit, bulk_edit, *meta_name, *option, no_null )</p>
 </div>
 <div class="subelement argument">
 <h4>$attachment_metadata</h4>
-<code>array</code><p>(optional) attachment_metadata, default NULL (use current postmeta database value)</p>
+<code>array</code><p>(optional) _wp_attachment_metadata, default NULL (use current postmeta database value)</p>
 </div>
 <h3>Returns</h3>
 <div class="subelement response">
-<code>string</code>data source value</div>
+<code>string</code><code>array</code>data source value</div>
 </div></div>
 </div>
 <a name="_evaluate_file_information" id="_evaluate_file_information"></a><div class="element clickable method private _evaluate_file_information" data-toggle="collapse" data-target="._evaluate_file_information .collapse">
@@ -861,6 +958,28 @@ haven't been mapped to any attachments, yet.</p></p>
 <th>since</th>
 <td>0.80</td>
 </tr></table>
+</div></div>
+</div>
+<a name="_update_attachment_metadata" id="_update_attachment_metadata"></a><div class="element clickable method private _update_attachment_metadata" data-toggle="collapse" data-target="._update_attachment_metadata .collapse">
+<h2>Update _wp_attachment_metadata for just-inserted attachment</h2>
+<pre>_update_attachment_metadata(array $updates, array $data) : array</pre>
+<div class="labels"></div>
+<div class="row collapse"><div class="detail-description">
+<p class="long_description"></p>
+<table class="table table-bordered"><tr>
+<th>since</th>
+<td>1.70</td>
+</tr></table>
+<h3>Parameters</h3>
+<div class="subelement argument">
+<h4>$updates</h4>
+<code>array</code><p>Attachment metadata updates</p></div>
+<div class="subelement argument">
+<h4>$data</h4>
+<code>array</code><p>Attachment metadata, by reference; updated by this function</p></div>
+<h3>Returns</h3>
+<div class="subelement response">
+<code>array</code>Attachment metadata updates, with "meta:" elements removed</div>
 </div></div>
 </div>
 <a name="_update_custom_field_mapping" id="_update_custom_field_mapping"></a><div class="element clickable method private _update_custom_field_mapping" data-toggle="collapse" data-target="._update_custom_field_mapping .collapse">
@@ -954,10 +1073,13 @@ haven't been mapped to any attachments, yet.</p></p>
 <h3>
 <i class="icon-custom icon-property"></i> Properties</h3>
 <a name="%24mla_option_definitions" id="$mla_option_definitions"> </a><div class="element clickable property public $mla_option_definitions" data-toggle="collapse" data-target=".$mla_option_definitions .collapse">
-<h2>$mla_option_definitions defines the database options and admin page areas for setting/updating them.</h2>
+<h2>$mla_option_definitions defines the database options and admin page areas for setting/updating them</h2>
 <pre>$mla_option_definitions </pre>
 <div class="labels"></div>
-<div class="row collapse"><div class="detail-description"><p class="long_description"><p>Each option is defined by an array with the following elements:</p>
+<div class="row collapse"><div class="detail-description"><p class="long_description"><p>The array must be populated at runtime in MLAOptions::mla_localize_option_definitions_array(),
+because Localization calls cannot be placed in the "public static" array definition itself.</p>
+
+<p>Each option is defined by an array with the following elements:</p>
 
 <p>array key => HTML id/name attribute and option database key (OMIT MLA_OPTION_PREFIX)</p>
 
@@ -1025,6 +1147,19 @@ reset => reset function for 'custom' options; returns nothing. Usage:
 <table class="table table-bordered"><tr>
 <th>since</th>
 <td>1.00</td>
+</tr></table>
+</div></div>
+</div>
+<a name="%24add_attachment_id" id="$add_attachment_id"> </a><div class="element clickable property private $add_attachment_id" data-toggle="collapse" data-target=".$add_attachment_id .collapse">
+<h2>Attachment ID passed from mla_add_attachment_action to mla_update_attachment_metadata_filter</h2>
+<pre>$add_attachment_id : integer</pre>
+<div class="labels"></div>
+<div class="row collapse"><div class="detail-description">
+<p class="long_description"><p>Ensures that IPTC/EXIF and Custom Field mapping is only performed when the attachment is first
+added to the Media Library.</p></p>
+<table class="table table-bordered"><tr>
+<th>since</th>
+<td>1.70</td>
 </tr></table>
 </div></div>
 </div>
@@ -1261,7 +1396,7 @@ This option is for flat taxonomies, e.g., "Att.</h2>
 <div class="row"><footer class="span12">
             Template is built using <a href="http://twitter.github.com/bootstrap/">Twitter Bootstrap 2</a> and icons provided by <a href="http://glyphicons.com/">Glyphicons</a>.<br>
             Documentation is powered by <a href="http://www.phpdoc.org/">phpDocumentor 2.0.0a8</a> and<br>
-            generated on 2013-11-27T11:31:02-08:00.<br></footer></div>
+            generated on 2014-01-11T19:47:37-08:00.<br></footer></div>
 </div>
 </body>
 </html>

@@ -618,7 +618,7 @@ of attachments of each type, and
 <h3>Parameters</h3>
 <div class="subelement argument">
 <h4>$post_mime_types</h4>
-<code>array</code><p>Content types (image, audio, video) and presentation strings, e.g. 'image' => array(__('Images'), __('Manage Images'), _n_noop('Image <span class="count">(%s)</span>', 'Images <span class="count">(%s)</span>')),</p>
+<code>array</code><p>Content types (image, audio, video) and presentation strings, e.g. 'image' => array(__('Images', 'media-library-assistant'), __('Manage Images', 'media-library-assistant'), _n_noop('Image <span class="count">(%s)</span>', 'Images <span class="count">(%s)</span>', 'media-library-assistant')),</p>
 </div>
 <h3>Returns</h3>
 <div class="subelement response">
@@ -808,7 +808,7 @@ Defined as public because it's a filter.</p></p>
 </div>
 <a name="mla_upload_mimes_filter" id="mla_upload_mimes_filter"></a><div class="element clickable method public mla_upload_mimes_filter" data-toggle="collapse" data-target=".mla_upload_mimes_filter .collapse">
 <h2>Retrieve list of allowed MIME types and file extensions; use this filter to remove types</h2>
-<pre>mla_upload_mimes_filter(array $mime_types) : array</pre>
+<pre>mla_upload_mimes_filter(array $mime_types, mixed $user) : array</pre>
 <div class="labels"></div>
 <div class="row collapse"><div class="detail-description">
 <p class="long_description"><p>Called from /wp-includes/functions.php, function get_allowed_mime_types(). That function
@@ -830,6 +830,10 @@ respect this restriction, so any list we produce will be passed thru that functi
 <div class="subelement argument">
 <h4>$mime_types</h4>
 <code>array</code><p>Mime types keyed by the file extension regex corresponding to those types</p></div>
+<div class="subelement argument">
+<h4>$user</h4>
+<code>mixed</code><p>User ID (integer) or object for checking against 'unfiltered_html' capability</p>
+</div>
 <h3>Returns</h3>
 <div class="subelement response">
 <code>array</code>Updated allowed MIME types</div>
@@ -1268,7 +1272,7 @@ Defined as public because it's a filter.</p></p>
 <div class="row"><footer class="span12">
             Template is built using <a href="http://twitter.github.com/bootstrap/">Twitter Bootstrap 2</a> and icons provided by <a href="http://glyphicons.com/">Glyphicons</a>.<br>
             Documentation is powered by <a href="http://www.phpdoc.org/">phpDocumentor 2.0.0a8</a> and<br>
-            generated on 2013-11-27T11:31:02-08:00.<br></footer></div>
+            generated on 2014-01-11T19:47:37-08:00.<br></footer></div>
 </div>
 </body>
 </html>

@@ -83,18 +83,27 @@
 <a href="#mla_custom_field_mapping"><strong>Custom Field and Attachment Metadata Processing Options</strong></a>
 </li>
 <ul style="list-style-position:inside; list-style:disc; line-height: 15px; padding-left: 20px">
+<li><a href="#custom_field_mapping_table">The custom field mapping table</a></li>
+<li><a href="#custom_field_mapping_buttons">Custom field mapping command buttons</a></li>
 <li><a href="#attachment_metadata_mapping">Adding or Changing Attachment Metadata</a></li>
-<li><a href="#mla_custom_field_parameters">Data sources for custom field mapping</a></li>
 <li><a href="#custom_field_mapping_with_templates">Custom field mapping with Content Templates</a></li>
+<li><a href="#other_custom_field_mapping">Other mapping techniques</a></li>
+<li><a href="#mla_custom_field_parameters">Data sources for custom field mapping</a></li>
 </ul>
 <li>
 <a href="#mla_iptc_exif_mapping"><strong>IPTC &amp; EXIF Processing Options</strong></a>
 </li>
 <ul style="list-style-position:inside; list-style:disc; line-height: 15px; padding-left: 20px">
+<li><a href="#iptc_exif_mapping_tables">IPTC/EXIF mapping tables</a></li>
+<li><a href="#iptc_exif_mapping_buttons">IPTC/EXIF mapping command buttons</a></li>
+<li><a href="#iptc_exif_mapping_with_templates">EXIF/Template mapping with Content Templates</a></li>
+<li><a href="#other_iptc_exif_mapping">Other mapping techniques</a></li>
+<li><a href="#wordpress_default_mapping">WordPress default title, slug and description mapping</a></li>
 <li><a href="#mla_gps_values">Enhanced GPS values</a></li>
 <li><a href="#mla_iptc_identifiers">IPTC identifiers and friendly names</a>
 </li>
 </ul>
+<li><a href="#mla_mapping_hooks"><strong>MLA Custom Field and IPTC/EXIF Mapping Actions and Filters (Hooks)</strong></a></li>
 </ul>
 <h3>Plugin Code Documentation</h3>
 <p>
@@ -2439,7 +2448,7 @@ Put on your boots and have a paddle handy - it's a swamp! Good luck.
 </p>
 <h3>Custom Field and Attachment Metadata Processing Options</h3>
 <p>
-On the Custom Fields tab of the Settings screen you can define the rules for mapping several types of file and image metadata to WordPress custom fields. Custom field mapping can be applied automatically when an attachment is added to the Media Library. You can refresh the mapping for <strong><em>ALL</em></strong> attachments using the command buttons on the screen. You can selectively apply the mapping in the bulk edit area of the Media/Assistant submenu table and/or on the Edit Media screen for a single attachment.
+In the Custom Fields tab of the Settings screen you can define the rules for mapping several types of file and image metadata to WordPress custom fields. Custom field mapping can be applied automatically when an attachment is added to the Media Library. You can refresh the mapping for <strong><em>ALL</em></strong> attachments using the command buttons on the screen. You can selectively apply the mapping in the bulk edit area of the Media/Assistant submenu table and/or on the Edit Media screen for a single attachment.
 </p>
 <p>
 You can also use this screen to define rules for adding or updating elements within the WordPress-supplied "Attachment Metadata", stored in the "_wp_attachment_metadata" custom field. See the <a href="#attachment_metadata_mapping">Adding or changing Attachment Metadata</a> section below for details.
@@ -2452,20 +2461,187 @@ This is a powerful tool, but it comes at the price of additional database storag
 <li>You can add the data as a sortable, searchable column to the Media/Assistant submenu table. For example, you can find all the "orphans" in your library by adding "reference_issues" and then sorting by that column. You can also click on any value in the column to filter the display on a single custom field value.</li>
 </ul>
 <p>
+If you just want to add a custom field to the Media/Assistant submenu, the quick edit area and/or the bulk edit area you can bypass the mapping logic by leaving the Data Source value as "-- None (select a value) --".
+</p>
+<a name="custom_field_mapping_table"></a>&nbsp;
+<p>
+<a href="#backtotop">Go to Top</a>
+</p>
+<h4>The custom field mapping table</h4>
+<p>
+The table contains the rules that map data sources to custom fields. Each rule is displayed as two rows of rule parameters followed by command buttons for maintaining the rule and using it to map attachment data. The rule parameters are:
+</p>
+<dl>
+<dt>Enable custom field mapping when adding new media</dt>
+<dd>
+Check this box to enable mapping when uploading new media (attachments). Click Save Changes at the bottom of the screen if you change this option. Does NOT affect the operation of the "Map" buttons on the bulk edit, single edit and settings screens.<dt>Field Title</dt>
+</dd>
+<dd>
+Contains the name of the custom field or metadata element to which the rule applies. Attachment metadata elements are displayed as a "meta:" prefix followed by the element name; see the <a href="#attachment_metadata_mapping">Adding or changing Attachment Metadata</a> section for more details.
+</dd>
+<dt>Data Source dropdown</dt>
+<dd>
+Contains a list of data elements you can map to the custom field. You can also select "Metadata" or "Template" and use the text box below the dropdown to specify attachment metadata or a content template for the source. See the <a href="#mla_custom_field_parameters">Data sources for custom field mapping</a> section for definitions of the data elements you can select from.
+<br />&nbsp;<br />
+If you just want to add a custom field to the Media/Assistant submenu, the quick edit area and/or the bulk edit area you can bypass the mapping logic by leaving the Data Source value as "-- None (select a value) --".
+<br />&nbsp;<br />
 Most of the data elements are static, i.e., they do not change after the attachment is added to the Media Library.
 The parent/reference information (parent_type, parent_name, parent_issues, reference_issues) and the "where-used" information (featured in, inserted in, gallery in and MLA gallery in) is dynamic; it will change as you define galleries, insert images in posts, define featured images, etc. Because of the database processing required to update this information, <strong><em>parent, where-used and reference data are NOT automatically refreshed</em></strong>. If you use these elements, you must manually refresh them with the "map data" buttons on the Settings screen, the bulk edit area or the Edit Media screen.
-</p>
-<p>
+<br />&nbsp;<br />
 Several of the data elements are sourced from the WordPress "image_meta" array. The credit, caption, copyright and title elements are taken from the IPTC/EXIF metadata (if any), but they go through a number of filtering rules that are not easy to replicate with the MLA IPTC/EXIF processing rules. You may find these "image_meta" elements more useful than the raw IPTC/EXIF metadata.
-</p>
+</dd>
+<dt>Existing Text dropdown</dt>
+<dd>
+If the custom field already has values for one or more items, you can use "Keep" to retain them or "Replace" to delete them. For options other than "Multi", "Keep" means that an item with a non-blank value in the field will be unchanged, and new values will be stored only in those items that do not have an existing value. For the "Multi" option, the existing value(s) will be retained and any new values will be added as separate instances. 
+<br />&nbsp;<br />
+You can combine "Keep" and "Multi" in useful ways. For example, you might enter some values manually or source them from another plugin or application. Then, map the same field using an MLA data source with the "Keep" and "Multi" parameters. That will add the MLA values to the values you already entered, giving you a single column with both results.
+</dd>
+<dt>Format dropdown</dt>
+<dd>
+Sorting by custom fields in the Media/Assistant submenu is by string values. For numeric data this can cause odd-looking results, e.g., dimensions of "1200x768" will sort before "640x480". Numeic data sources are converted to strings and padded on the left with spaces if you use the "commas" format. This padding makes them sort more sensibly. The following example shows the results for the &quot;size_bytes[large]&quot; data source, sorted in ascending order:
+<table style="margin-left: 40px; margin-bottom: 10px;">
+<thead>
+<tr>
+<td style="width: 80px; text-align:left">
+Native
+</td>
+<td style="width: 80px; text-align:right">
+Commas
+</td>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>374871</td>
+<td style="width: 80px; text-align:right">4,096</td>
+</tr>
+<tr>
+<td>4096</td>
+<td style="width: 80px; text-align:right">8,192</td>
+</tr>
+<tr>
+<td>440242</td>
+<td style="width: 80px; text-align:right">374,871</td>
+</tr>
+<tr>
+<td>8192</td>
+<td style="width: 80px; text-align:right">440,242</td>
+</tr>
+</tbody>
+</table>
+Four data sources, "file_size", "pixels", "width" and "height", are <strong>always</strong> padded on the left with spaces, even if you use the "Native" format.
+</dd>
+<dt>MLA Column checkbox</dt>
+<dd>
+Check this box if you want a custom field to appear as a sortable column in the Media/Assistant submenu table. Attachment metadata elements cannot be used as a table column; this box is ignored if the Field Title contains the "meta:" prefix.
+</dd>
+<dt>Quick Edit checkbox</dt>
+<dd>
+Check this box if you want the field to appear in the Media/Assistant submenu Quick Edit area.
+</dd>
+<dt>Bulk Edit checkbox</dt>
+<dd>
+Check this box if you want the field to appear in the Media/Assistant submenu Bulk Edit area.
+</dd>
+<dt>Template/Metadata text</dt>
+<dd>
+If you select "<strong>-- Metadata (see below) --</strong>" as the data source you must specify the name of the field you want in the text box below the data source dropdown box. Any of the fields in the <em>_wp_attachment_metadata</em> array may be named, including the new audio/video fields available with WordPress 3.6 and later. For example, "length_formatted" will return the length of a video attachment. You can specify elements within an array with a compound name, e.g., "audio.sample_rate" to get the sampling rate field from the "audio" array of a video attachment. If you simply specify "audio", you will get the values of every array element, e.g., "mp4,ISO/IEC 14496 AAC,48000,2,16,false,stereo".
+<br />&nbsp;<br />
+If you select "<strong>-- Template (see below) --</strong>" as the data source you must enter your template in the text box below the data source dropdown box. See the <a href="#custom_field_mapping_with_templates">Custom field mapping with Content Templates</a> section for more details.
+</dd>
+<dt>Option Dropdown</dt>
+<dd>
+Several data sources can return more than one value. For example, the "Inserted in" source can return a list of posts/pages that contain references to Media Library items. The format option dropdown can further refine your specification where multiple values exist. There are five options:
+<table style="margin-left: 40px; margin-bottom: 10px;">
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">Text</td>
+<td>(the default) stores a list of the data source values, separated by commas</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">Single</td>
+<td>stores the first value and discards any additional values, e.g., "mp4" for the "audio" example below</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">Export</td>
+<td>for single values, same as Text. For multiple values, stores all the field names and values (including nested arrays). For example, the below audio data would be returned in Export format as "array ('dataformat' => 'mp4', 'codec' => 'ISO/IEC 14496-3 AAC', 'sample_rate' => 48000, 'channels' => 2, 'bits_per_sample' => 16, 'lossless' => false, 'channelmode' => 'stereo')".</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">Array</td>
+<td>stores an array of values in a single instance (database row) of the custom field.</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">Multi</td>
+<td>stores each unique value in a separate instance (database row) of the custom field. This is the most flexible format, as explained below.</td>
+</tr>
+</table>
+The "Multi" option takes advantage of WordPress' ability to store multiple values for a given custom field name (key) as distinct instances (database rows). For example, consider an image that has been inserted in two different posts, "First Post" and "Second Post". The "Text" option would store both titles in a single custom field instance; "First Post,Second Post". The "Multi" option would store two instances, "First Post" and "Second Post". If the custom field is added to the Media/Assistant submenu table as a column, you could click on either of the two values to filter the table listing by value. That would show you all the items inserted in First Post or all the items inserted in Second Post.
+</dd>
+<dt>Delete NULL values checkbox</dt>
+<dd>
+The "Delete NULL values" checkbox lets you control what happens if the data source you've selected does not have a value for every attachment. If the checkbox is cleared (not checked), a single space character will be stored for each attachment if the data source value is empty. If the checkbox is set (checked), there will be no entry/row at all in the metadata table for empty data source values and the custom field will not appear in the Edit Media screen for those attachments. This saves space but might confuse other applications that expect a value to be present for all attachments.
+<br />&nbsp;<br />
+If you use the "Multi" option you will almost certainly want to use the "Delete NULL values" option as well.
+</dd>
+</dl>
+<a name="custom_field_mapping_buttons"></a>&nbsp;
 <p>
-You can also use a <a href="#mla_template_parameters">Content Template</a> to compose custom field values from multiple sources, test for non-empty content and choose from alternative sources.
+<a href="#backtotop">Go to Top</a>
 </p>
+<h4>Custom field mapping command buttons</h4>
 <p>
-If you just want to add a custom field to the Media/Assistant submenu, the Quick Edit area and/or the Bulk Edit area you can bypass the mapping logic by leaving the Data Source value as "-- None (select a value) --".
+The screen contains command buttons for maintaining the rules and using them to map attachment data. For each of the existing rules the command buttons are:
 </p>
-<a name="attachment_metadata_mapping"></a>
-&nbsp;<br />
+<dl>
+<dt>Delete Rule</dt>
+<dd>
+Click this button to delete the mapping rule but leave the custom field values assigned to attachments intact.
+</dd>
+<dt>Delete Rule AND Field</dt>
+<dd>
+Click this button to delete the mapping rule AND delete the custom field values assigned to attachments as well.
+</dd>
+<dt>Update Rule</dt>
+<dd>
+Click this button to save any changes to the rule parameters, but do not perform any mapping.
+</dd>
+<dt>Map All Attachments</dt>
+<dd>
+Click this button to map all attachments using this one rule with its current parameters.  Rule changes are <strong><em>NOT</em></strong> saved when you click this button, and <strong><em>THERE IS NO UNDO FOR THE MAPPING ACTIONS!</em></strong>
+</dd>
+</dl>
+<p>
+At the bottom of the screen are command buttons for adding a new rule, adding a new field and mapping attachment data using all of the existing rules:
+</p>
+<dl>
+<dt>Add Rule</dt>
+<dd>
+To define a new rule for an existing custom field, select the field name from the dropdown list, enter the rule parameters and click this button.
+</dd>
+<dt>Add Rule and Map All Attachments</dt>
+<dd>
+Click this button to define a new rule and map all attachments using all the rule&rsquo;s parameters.
+</dd>
+<dt>Add Field</dt>
+<dd>
+To define a new rule and a new custom field, enter the field name in the text box, enter the rule parameters and click this button.
+</dd>
+<dt>Add Field and Map All Attachments</dt>
+<dd>
+Click this button to define a new rule, define a new custom field and map all attachments using all the rule&rsquo;s parameters.
+</dd>
+<dt>Save Changes</dt>
+<dd>
+Click this button to update all of the existing rules at one time. This is handy of you change several rules at once.
+</dd>
+<dt>Map All Rules, All Attachments Now</dt>
+<dd>
+Click this button to map all attachments using all of the rules with their current parameters. Rule changes are <strong><em>NOT</em></strong> saved when you click this button, and <strong><em>THERE IS NO UNDO FOR THE MAPPING ACTIONS!</em></strong>
+</dd>
+</dl>
+<a name="attachment_metadata_mapping"></a>&nbsp;
+<p>
+<a href="#backtotop">Go to Top</a>
+</p>
 <h4>Adding or changing Attachment Metadata</h4>
 <p>
 WordPress stores an array of information for image, audio and video items in the "_wp_attachment_metadata" custom field. Plugins such as "Fullscreen Galleria" also use this field to store information like GPS coordinates. Many of the array elements, such as the "sizes" array for images, are in turn arrays of more detailed values. <strong>Compound names</strong> are used to access elements within arrays, e.g., &quot;<strong>sizes.thumbnail.file</strong>&quot; is used to specify the file name for the thumbnail version of an image.
@@ -2506,8 +2682,45 @@ Set the other parts of the rule as needed. You can select "EXIF" unless you also
 </li>
 </ol>
 </p>
-<a name="mla_custom_field_parameters"></a>
+<a name="custom_field_mapping_with_templates"></a>
 &nbsp;
+<p>
+<a href="#backtotop">Go to Top</a>
+</p>
+<h4>Custom field mapping with Content Templates</h4>
+<p>
+If you select "<strong>-- Template (see below) --</strong>" as the data source you must enter your template in the text box below the data source dropdown box. Do not code the "template:" prefix, just enter the template text.
+</p>
+<p>
+Within a template, all of the data sources listed above are available. For example, you can code <code>[+pixels+]</code> or <code>[+size_keys,single+]</code>.
+</p>
+<p>
+You can use a template to compose a custom field from multiple data sources, e.g., "<code>Taken with [+meta:camera+] at [+dimensions+] using ISO [+exif:ISOSpeedRatings,single+] and [+exif:ExposureTime+] exposure time</code>".
+<p>
+</p>
+You can use a template to compose a custom field from alternative data sources, depending on which fields are populated for a given attachment. For example, "<code>[+pdf:Keywords+]|[+iptc:2#025+]|none</code>" will use the PDF Keywords field, if populated, then the IPTC keywords field, if populated, or the literal "none" if neither field contains a value. With this template you can get keywords from both PDF documents and images in a single field.
+<p>
+Using a template with the Option Dropdown "Text" or "Single" values will yield a text result. For example, multiple IPTC keywords would be converted into a comma-delimited list as a string. If you combine a template with the "Export", "Array" or "Multi" values the template will deliver an array result if the fields inside the template have multiple values. For example, with "Multi" you can code "<code>([+iptc:2#020<strong>,array</strong>+])([+iptc:2#025<strong>,array</strong>+])</code>" to store each of the IPTC supplemental-category <em><strong>and</strong></em> keywords values (there is no "|" in the template) in a separate custom field value. Note the use of the <strong>,array</strong> formatting option in each field; this is required to get an array result for the field. Also, note that each of the fields is enclosed in parentheses, so the field is suppressed if it contains no values.
+</p>
+<p>
+<strong>CAUTION:</strong> If you use the <code>[+custom:ALL_CUSTOM+]</code> pseudo value in a mapping rule, and you apply the rule more than once, you will see copies of the field you are mapping to in the result. To "clear out" a field you are mapping ALL_CUSTOM into, clear out the text box containing the template, select "Replace" and check the "Delete NULL values" box. Then, click "Map All Attachments"; that will delete the old values and give you a clean start. You'll also see that the template you deleted will be restored after the mapping is complete.
+</p>
+<a name="other_custom_field_mapping"></a>&nbsp;
+<p>
+<a href="#backtotop">Go to Top</a>
+</p>
+<h4>Other mapping techniques</h4>
+<p>
+There are two other ways you can perform custom field mapping for one or more existing attachments:
+<dl>
+<dt>Single Item Edit/Edit Media screen</dt>
+<dd>For WordPress 3.5 and later, you can click the "Map Custom Field metadata" link in the "Image Metadata" postbox to apply the existing mapping rules to a single attachment.  For WordPress 3.4.x and earlier, you can click the "Map Custom Field metadata" button on the Single Item Edit screen to apply the existing mapping rules.
+</dd>
+<dt>Bulk Action edit area</dt>
+<dd>To perform mapping for a group of attachments you can use the Bulk Action facility on the main Assistant screen. Check the attachments you want to map, select "edit" from the Bulk Actions dropdown list and click "Apply". The bulk edit area will open with a list of the checked attachments in the left-hand column. You can click the "Map Custom Field metadata" button in the lower left corner of the area to apply the existing mapping rules to the attachments in the list.
+</dd>
+</dl>
+<a name="mla_custom_field_parameters"></a>&nbsp;
 <p>
 <a href="#backtotop">Go to Top</a>
 </p>
@@ -2716,113 +2929,7 @@ Set the other parts of the rule as needed. You can select "EXIF" unless you also
 <td>for image types, the value stored in WordPress "image_meta" array</td>
 </tr>
 </table>
-<h4>Existing Text dropdown</h4>
-<p>
-If the custom field already has values for one or more items, you can use "Keep" to retain them or "Replace" to delete them. For options other than "Multi", "Keep" means that an item with a non-blank value in the field will be unchanged, and new values will be stored only in those items that do not have an existing value. For the "Multi" option, the existing value(s) will be retained and any new values will be added as separate instances. 
-</p>
-<p>
-You can combine "Keep" and "Multi" in useful ways. For example, you might enter some values manually or source them from another plugin or application. Then, map the same field using an MLA data source with the "Keep" and "Multi" parameters. That will add the MLA values to the values you already entered, giving you a single column with both results.
-</p>
-<h4>Format dropdown</h4>
-<p>
-Sorting by custom fields in the Media/Assistant submenu is by string values. For numeric data this can cause odd-looking results, e.g., dimensions of "1200x768" will sort before "640x480". Numeic data sources are converted to strings and padded on the left with spaces if you use the "commas" format. This padding makes them sort more sensibly. The following example shows the results for the &quot;size_bytes[large]&quot; data source, sorted in ascending order:</p>
-<table style="margin-left: 80px">
-<thead>
-<tr>
-<td style="width: 80px; text-align:left">
-Native
-</td>
-<td style="width: 80px; text-align:right">
-Commas
-</td>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>374871</td>
-<td style="width: 80px; text-align:right">4,096</td>
-</tr>
-<tr>
-<td>4096</td>
-<td style="width: 80px; text-align:right">8,192</td>
-</tr>
-<tr>
-<td>440242</td>
-<td style="width: 80px; text-align:right">374,871</td>
-</tr>
-<tr>
-<td>8192</td>
-<td style="width: 80px; text-align:right">440,242</td>
-</tr>
-</tbody>
-</table>
-<p>
-Four data sources, "file_size", "pixels", "width" and "height", are <strong>always</strong> padded on the left with spaces, even if you use the "Native" format.
-<h4>Option dropdown</h4>
-<p>
-Several data sources can return more than one value. For example, the "Inserted in" source can return a list of posts/pages that contain references to Media Library items. The format option dropdown can further refine your specification where multiple values exist. There are five options:
-</p>
-<table>
-<tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">Text</td>
-<td>(the default) stores a list of the data source values, separated by commas</td>
-</tr>
-<tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">Single</td>
-<td>stores the first value and discards any additional values, e.g., "mp4" for the "audio" example below</td>
-</tr>
-<tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">Export</td>
-<td>for single values, same as Text. For multiple values, stores all the field names and values (including nested arrays). For example, the below audio data would be returned in Export format as "array ('dataformat' => 'mp4', 'codec' => 'ISO/IEC 14496-3 AAC', 'sample_rate' => 48000, 'channels' => 2, 'bits_per_sample' => 16, 'lossless' => false, 'channelmode' => 'stereo')".</td>
-</tr>
-<tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">Array</td>
-<td>stores an array of values in a single instance (database row) of the custom field.</td>
-</tr>
-<tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">Multi</td>
-<td>stores each unique value in a separate instance (database row) of the custom field. This is the most flexible format, as explained below.</td>
-</tr>
-</table>
-<p>
-The "Multi" option takes advantage of WordPress' ability to store multiple values for a given custom field name (key) as distinct instances (database rows). For example, consider an image that has been inserted in two different posts, "First Post" and "Second Post". The "Text" option would store both titles in a single custom field instance; "First Post,Second Post". The "Multi" option would store two instances, "First Post" and "Second Post". If the custom field is added to the Media/Assistant submenu table as a column, you could click on either of the two values to filter the table listing by value. That would show you all the items inserted in First Post or all the items inserted in Second Post.
-</p>
-<h4>Delete NULL values Checkbox</h4>
-<p>
-The "Delete NULL values" checkbox lets you control what happens if the data source you've selected does not have a value for every attachment. If the checkbox is cleared (not checked), a single space character will be stored for each attachment if the data source value is empty. If the checkbox is set (checked), there will be no entry/row at all in the metadata table for empty data source values and the custom field will not appear in the Edit Media screen for those attachments. This saves space but might confuse other applications that expect a value to be present for all attachments.
-</p>
-<p>
-If you use the "Multi" option you will almost certainly want to use the "Delete NULL values" option as well.
-</p>
-<h4>Custom field mapping for metadata fields</h4>
-<p>
-If you select "<strong>-- Metadata (see below) --</strong>" as the data source you must specify the name of the field you want in the text box below the data source dropdown box. Any of the fields in the <em>_wp_attachment_metadata</em> array may be named, including the new audio/video fields available with WordPress 3.6 and later. For example, "length_formatted" will return the length of a video attachment. You can specify elements within an array with a compound name, e.g., "audio.sample_rate" to get the sampling rate field from the "audio" array of a video attachment. If you simply specify "audio", you will get the values of every array element, e.g., "mp4,ISO/IEC 14496 AAC,48000,2,16,false,stereo". 
-</p>
-<a name="custom_field_mapping_with_templates"></a>
-&nbsp;
-<p>
-<a href="#backtotop">Go to Top</a>
-</p>
-<h4>Custom field mapping with Content Templates</h4>
-<p>
-If you select "<strong>-- Template (see below) --</strong>" as the data source you must enter your template in the text box below the data source dropdown box. Do not code the "template:" prefix, just enter the template text.
-</p>
-<p>
-Within a template, all of the data sources listed above are available. For example, you can code <code>[+pixels+]</code> or <code>[+size_keys,single+]</code>.
-</p>
-<p>
-You can use a template to compose a custom field from multiple data sources, e.g., "<code>Taken with [+meta:camera+] at [+dimensions+] using ISO [+exif:ISOSpeedRatings,single+] and [+exif:ExposureTime+] exposure time</code>".
-<p>
-</p>
-You can use a template to compose a custom field from alternative data sources, depending on which fields are populated for a given attachment. For example, "<code>[+pdf:Keywords+]|[+iptc:2#025+]|none</code>" will use the PDF Keywords field, if populated, then the IPTC keywords field, if populated, or the literal "none" if neither field contains a value. With this template you can get keywords from both PDF documents and images in a single field.
-<p>
-Using a template with the Option Dropdown "Text" or "Single" values will yield a text result. For example, multiple IPTC keywords would be converted into a comma-delimited list as a string. If you combine a template with the "Export", "Array" or "Multi" values the template will deliver an array result if the fields inside the template have multiple values. For example, with "Multi" you can code "<code>([+iptc:2#020<strong>,array</strong>+])([+iptc:2#025<strong>,array</strong>+])</code>" to store each of the IPTC supplemental-category <em><strong>and</strong></em> keywords values (there is no "|" in the template) in a separate custom field value. Note the use of the <strong>,array</strong> formatting option in each field; this is required to get an array result for the field. Also, note that each of the fields is enclosed in parentheses, so the field is suppressed if it contains no values.
-</p>
-<p>
-<strong>CAUTION:</strong> If you use the <code>[+custom:ALL_CUSTOM+]</code> pseudo value in a mapping rule, and you apply the rule more than once, you will see copies of the field you are mapping to in the result. To "clear out" a field you are mapping ALL_CUSTOM into, clear out the text box containing the template, select "Replace" and check the "Delete NULL values" box. Then, click "Map All Attachments"; that will delete the old values and give you a clean start. You'll also see that the template you deleted will be restored after the mapping is complete.
-</p>
-<a name="mla_iptc_exif_mapping"></a>
-&nbsp;
+<a name="mla_iptc_exif_mapping"></a>&nbsp;
 <p>
 <a href="#backtotop">Go to Top</a>
 </p>
@@ -2839,7 +2946,15 @@ The Media Library Assistant has powerful tools for copying image metadata to:
 </ul>
 You can define the rules for mapping metadata on the "IPTC/EXIF" tab of the Settings page. You can choose to automatically apply the rules when new media are added to the Library (or not). You can click the "Map IPTC/EXIF metadata" button on the Edit Media/Edit Single Item screen or in the bulk edit area to selectively apply the rules to one or more images. You can click the "Map All Attachments Now" to apply the rules to <strong><em>ALL of the images in your library</em></strong> at one time.
 </p>
-<h4>Mapping tables</h4>
+<p>If you click any of the three "Map All Attachments, ... Now" buttons, the rules currently displayed in that category will be immediately applied to <strong>all</strong> of the attachments in your site. Rule changes are <strong>not</strong> saved when you click any of these buttons.<strong>THERE IS NO UNDO FOR THESE ACTIONS!</strong></p>
+<p>
+If you just want to add a custom field to the Media/Assistant submenu, the quick edit area and/or the bulk edit area go to the "Custom Fields" tab and follow the instructions there.
+</p>
+<a name="iptc_exif_mapping_tables"></a>&nbsp;
+<p>
+<a href="#backtotop">Go to Top</a>
+</p>
+<h4>IPTC/EXIF mapping tables</h4>
 <p>
 The three mapping tables on the IPTC/EXIF tab have the following columns:
 <dl>
@@ -2882,6 +2997,78 @@ In some cases multiple terms will be contained in a single IPTC or EXIF value. F
 <dd>For hierarchical taxonomies such as Categories you can select one of the existing terms in the taxonomy as the parent term for any terms you are mapping from metadata values. For example, you could define "IPTC Keywords" as a parent and then assign all of the 2#025 values under that parent term.
 </dd>
 </dl>
+<a name="iptc_exif_mapping_buttons"></a>&nbsp;
+<p>
+<a href="#backtotop">Go to Top</a>
+</p>
+<h4>IPTC/EXIF mapping command buttons</h4>
+<p>
+The screen contains command buttons for maintaining the rules and using them to map attachment data. For each of the three mapping categories, a button allows immediate mapping using the current rule parameters. Rule parameter changes are <strong><em>NOT</em></strong> saved when you click these buttons, and <strong><em>THERE IS NO UNDO FOR THE MAPPING ACTIONS!</em></strong>
+</p>
+<dl>
+<dt>Map All Attachments, Standard Fields Now</dt>
+<dd>
+Click this button to map the Title, Name/Slug, ALT Text, Caption and Description rules for all attachments.
+</dd>
+<dt>Map All Attachments, Taxonomy Terms Now</dt>
+<dd>
+Click this button to map IPTC/EXIF values such as keywords to taxonomy terms.
+</dd>
+<dt>Map All Attachments, Custom Fields Now</dt>
+<dd>
+Click this button to map all attachments using all of the IPTC/EXIF to custom field rules.
+</dd>
+</dl>
+<p>
+For each of the IPTC/EXIF to custom field existing rules the command buttons are:
+</p>
+<dl>
+<dt>Delete Rule</dt>
+<dd>
+Click this button to delete the mapping rule but leave the custom field values assigned to attachments intact.
+</dd>
+<dt>Delete Rule AND Field</dt>
+<dd>
+Click this button to delete the mapping rule AND delete the custom field values assigned to attachments as well.
+</dd>
+<dt>Update Rule</dt>
+<dd>
+Click this button to save any changes to the rule parameters, but do not perform any mapping.
+</dd>
+<dt>Map All Attachments</dt>
+<dd>
+Click this button to map all attachments using this one rule with its current parameters.  Rule changes are <strong><em>NOT</em></strong> saved when you click this button, and <strong><em>THERE IS NO UNDO FOR THE MAPPING ACTIONS!</em></strong>
+</dd>
+</dl>
+<p>
+At the bottom of the screen are command buttons for adding a new IPTC/EXIF to custom field rule, adding a new field and mapping attachment data using all of the existing rules:
+</p>
+<dl>
+<dt>Add Rule</dt>
+<dd>
+To define a new rule for an existing custom field, select the field name from the dropdown list, enter the rule parameters and click this button.
+</dd>
+<dt>Add Rule and Map All Attachments</dt>
+<dd>
+Click this button to define a new rule and map all attachments using all the rule&rsquo;s parameters.
+</dd>
+<dt>Add Field</dt>
+<dd>
+To define a new rule and a new custom field, enter the field name in the text box, enter the rule parameters and click this button.
+</dd>
+<dt>Add Field and Map All Attachments</dt>
+<dd>
+Click this button to define a new rule, define a new custom field and map all attachments using all the rule&rsquo;s parameters.
+</dd>
+<dt>Save Changes</dt>
+<dd>
+Click this button to update all of the existing rules at one time. This is handy of you change several rules at once.
+</dd>
+</dl>
+<a name="iptc_exif_mapping_with_templates"></a>&nbsp;
+<p>
+<a href="#backtotop">Go to Top</a>
+</p>
 <h4>EXIF/Template mapping with Content Templates</h4>
 <p>
 If you code the "template:" prefix at the beginning of the EXIF/Template value you have all the power of Content Templates at your disposal. Do <strong>not</strong> add the "[+" and "+]" delimeters; the prefix is all you need.
@@ -2909,6 +3096,10 @@ Each button applies the rules in just one category, so you can update taxonomy t
 <p>
 These buttons <strong><em>DO NOT</em></strong> save any rules changes you've made, so you can make a temporary rule change and process your attachments without disturbing the standing rules.
 </p>
+<a name="other_iptc_exif_mapping"></a>&nbsp;
+<p>
+<a href="#backtotop">Go to Top</a>
+</p>
 <h4>Other mapping techniques</h4>
 <p>
 There are two other ways you can perform metadata mapping to one or more existing Media Library images:
@@ -2920,6 +3111,10 @@ There are two other ways you can perform metadata mapping to one or more existin
 <dd>To perform mapping for a group of attachments you can use the Bulk Action facility on the main Assistant screen. Check the attachments you want to map, select "edit" from the Bulk Actions dropdown list and click "Apply". The bulk edit area will open with a list of the checked attachments in the left-hand column. You can click the "Map IPTC/EXIF metadata" button in the lower left corner of the area to apply the standing mapping rules to the attachments in the list.
 </dd>
 </dl>
+</p>
+<a name="wordpress_default_mapping"></a>&nbsp;
+<p>
+<a href="#backtotop">Go to Top</a>
 </p>
 <h4>WordPress default title, slug and description mapping</h4>
 <p>
@@ -2938,8 +3133,11 @@ The priority order for mapping the post_content value from non-blank IPTC/EXIF m
 <ol style="line-height: 1.25em;  margin-left: 20px ">
 <li>EXIF "ImageDescription" (if different from post_title)</li>
 <li>IPTC 2#120 "caption-or-abstract" (if different from post_title)</li>
-<a name="mla_gps_values"></a>
 </ol>
+</p>
+<a name="mla_gps_values"></a>&nbsp;
+<p>
+<a href="#backtotop">Go to Top</a>
 </p>
 <h4>Enhanced GPS values</h4>
 <p>
@@ -3229,6 +3427,108 @@ The native format of this data is somewhat complicated, so MLA converts the most
 <tr><td style="padding-right: 10px; vertical-align: top; font-weight:bold">subfile</td><td style="padding-right: 10px; vertical-align: top">8#010</td><td style="padding-right: 10px; vertical-align: top">Subfile DataSet containing the objectdata itself; repeatable</td></tr>
 <tr><td colspan="3" style="font-weight:bold">&nbsp;<br />Post ObjectData Descriptor Record</td></tr>
 <tr><td style="padding-right: 10px; vertical-align: top; font-weight:bold">confirmed-objectdata-size</td><td style="padding-right: 10px; vertical-align: top">9#010</td><td style="padding-right: 10px; vertical-align: top">4 octet binary total objectdata size</td></tr>
+</table>
+<a name="mla_mapping_hooks"></a>&nbsp;
+<p>
+<a href="#backtotop">Go to Top</a>
+</p>
+<h3>MLA Custom Field and IPTC/EXIF Mapping Actions and Filters (Hooks)</h3>
+<p>
+The Custom Field and IPTC/EXIF Mapping tools support a comprehensive set of filters and actions that give you complete control over rule execution and value creation from PHP code in your theme or in another plugin. An example of using the hooks from a simple, stand-alone plugin can be found here: <a title="View the Mapping Hooks Example source code" href="[+examples_url+]mla-mapping-hooks-example.php.txt" target="_blank" style="font-size:14px; font-weight:bold">mla-mapping-hooks-example.php.txt</a>. To run the example:
+<ol>
+<li>Edit the code to uncomment the <code>error_log()</code> calls so you can see what is passed to the hooks you are interested in.</li>
+<li>Remove the ".txt" extension and saving the "mla-mapping-hooks-example.php" file in your plugins directory.</li>
+<li>Go to the Plugins/Installed Plugins screen and activate the "MLA Mapping Hooks Example" plugin.</li>
+<li>Upload a new attachment and/or run the mapping rules to exercise the filters and write mapping information to the site's Error Log.</li>
+<li>Examine the Error Log to see the mapping information.</li>
+</ol>
+</p>
+<p>
+The example code documents each hook with comments in the filter/action function that intercepts each hook. There are hooks that run at the beginning and end of the overall mapping operation as well as hooks for each mapping rule. 
+</p>
+<p>
+In addition, there are hooks that run when attachments are uploaded to the Media Library and when the "attachment metadata" is altered, e.g., when the Media/Edit Media "Edit Image" function is used. Plugins and other image editing code can destroy the attachment metadata or the IPTC/EXIF metadata embedded in an image file. These hooks may give you an opportunity to preserve and repair the metadata you need in spite of such damage.
+</p>
+<p>
+The current mapping hooks are:
+</p>
+<table>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">mla_mapping_settings</td>
+<td>called before any mapping rules are executed. You can add, change or delete rules from the settings/rules array.</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">mla_mapping_rule</td>
+<td>called once for each mapping rule, before the rule is evaluated. You can change the rule parameters, or prevent rule evaluation.</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">mla_mapping_custom_value</td>
+<td>called once for each custom field mapping rule, after the rule is evaluated. You can change the new value produced by the rule.</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">mla_mapping_iptc_value</td>
+<td>called once for each IPTC/EXIF mapping rule, after the IPTC portion of the rule is evaluated. You can change the new value produced by the rule.</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">mla_mapping_exif_value</td>
+<td>called once for each IPTC/EXIF mapping rule, after the EXIF portion of the rule is evaluated. You can change the new value produced by the rule.</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">mla_mapping_updates</td>
+<td>called AFTER all mapping rules are applied. You can add, change or remove updates for the attachment's standard fields, taxonomies and/or custom fields.</td>
+</tr>
+</table>
+<p>
+The current insert attachment/update attachment metadata hooks are:
+</p>
+<table>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">mla_upload_prefilter</td>
+<td>gives you an opportunity to record the original IPTC, EXIF and
+WordPress image_metadata <strong>before</strong> the file is stored in the Media Library.
+You can also modify the file name that will be used in the Media Library.
+<br />&nbsp;<br />
+Many plugins and image editing functions alter or destroy this information,
+so this may be your last change to preserve it.</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">mla_upload_filter</td>
+<td>gives you an opportunity to record some additional metadata
+for audio and video media <strong>after</strong> the file is stored in the Media Library.
+</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">mla_add_attachment</td>
+<td>called at the end of the wp_insert_attachment() function,
+after the file is in place and the post object has been created in the database.
+<br />&nbsp;<br />
+By this time, other plugins have probably run their own 'add_attachment' filters
+and done their work/damage to metadata, etc.
+</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">mla_update_attachment<br />_metadata_options</td>
+<td>lets you inspect or change the processing options that will
+control the MLA mapping rules in the update_attachment_metadata filter.
+</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">mla_update_attachment<br />_metadata_prefilter</td>
+<td>called at the end of the wp_update_attachment_metadata() function,
+<strong>before</strong> any MLA mapping rules are applied. The prefilter gives you an
+opportunity to record or update the metadata before the mapping.
+<br />&nbsp;<br />
+The wp_update_attachment_metadata() function is called at the end of the file upload process and at several later points, such as when an image attachment is edited or by
+plugins that alter the attachment file.
+</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">mla_update_attachment<br />_metadata_postfilter</td>
+<td>This filter is called <strong>after</strong> MLA mapping rules are applied during
+wp_update_attachment_metadata() processing. The postfilter gives you
+an opportunity to record or update the metadata after the mapping.
+</td>
+</tr>
 </table>
 <p>
 <a href="#backtotop">Go to Top</a>

@@ -175,7 +175,7 @@ textarea[readonly] {
 .quick-edit-row-upload fieldset.inline-edit-col label,
 .quick-edit-row-view fieldset.inline-edit-col label {
 	float:left;
-	width: 23em
+	width: 26em
 }
 
 .quick-edit-row-upload fieldset.inline-edit-col input.inline-edit-menu-order,

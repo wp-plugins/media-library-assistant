@@ -5,16 +5,16 @@
 		  <thead>
 		  <tr>
 		    <th scope="col" style="text-align:center">
-			Support
+			[+Support+]
 			</th>
 		    <th scope="col" style="text-align:center">
-			Inline Edit
+			[+Inline Edit+]
 			</th>
 		    <th scope="col" style="text-align:center">
-			List Filter
+			[+List Filter+]
 			</th>
 		    <th scope="col" style="text-align:left">
-			Taxonomy
+			[+Taxonomy+]
 			</th>
 			</tr>
 			</thead>
@@ -48,25 +48,25 @@
 		  <thead>
 		  <tr style="text-align:center">
 		    <th scope="col">
-			Field Title
+			[+Field Title+]
 			</th>
 		    <th scope="col">
-			Data Source
+			[+Data Source+]
 			</th>
 		    <th scope="col">
-			Existing Text
+			[+Existing Text+]
 			</th>
 		    <th scope="col">
-			Format
+			[+Format+]
 			</th>
 		    <th scope="col">
-			MLA Column
+			[+MLA Column+]
 			</th>
 		    <th scope="col">
-			Quick Edit
+			[+Quick Edit+]
 			</th>
 		    <th scope="col">
-			Bulk Edit
+			[+Bulk Edit+]
 			</th>
 			</tr>
 			</thead>
@@ -83,7 +83,7 @@
 <!-- template="custom-field-empty-row" -->
         <tr>
 		<td colspan="[+column_count+]" style="font-weight:bold; height: 4em; text-align:center; vertical-align:middle">
-		No Custom Field Mapping Rules Defined
+		[+No Mapping Rules+]
         </td>
 		</tr>
 <!-- template="custom-field-rule-row" -->
@@ -99,14 +99,14 @@
         </td>
 		<td style="text-align:left;">
             <select name="custom_field_mapping[[+key+]][keep_existing]" id="custom_field_keep_existing_[+key+]">
-                <option [+keep_selected+] value="1">Keep</option>
-                <option [+replace_selected+] value="">Replace</option>
+                <option [+keep_selected+] value="1">[+Keep+]</option>
+                <option [+replace_selected+] value="">[+Replace+]</option>
             </select>
         </td>
 		<td style="text-align:left;">
             <select name="custom_field_mapping[[+key+]][format]" id="custom_field_format_[+key+]">
-                <option [+native_format+] value="native">Native</option>
-                <option [+commas_format+] value="commas">Commas</option>
+                <option [+native_format+] value="native">[+Native+]</option>
+                <option [+commas_format+] value="commas">[+Commas+]</option>
             </select>
         </td>
 		<td style="text-align:center;">
@@ -127,31 +127,31 @@
             <input name="custom_field_mapping[[+key+]][meta_name]" id="custom_field_meta_name_[+key+]" type="text" size="[+meta_name_size+]" value="[+meta_name+]" />
         </td>
 		<td colspan="[+column_count_meta+]" style="text-align:left; vertical-align:middle;">
-			<strong>Option:</strong>&nbsp;
+			<strong>[+Option+]:</strong>&nbsp;
             <select name="custom_field_mapping[[+key+]][option]" id="custom_field_option_[+key+]">
-                <option [+text_option+] value="text">Text</option>
-                <option [+single_option+] value="single">Single</option>
-                <option [+export_option+] value="export">Export</option>
-                <option [+array_option+] value="array">Array</option>
-                <option [+multi_option+] value="multi">Multi</option>
+                <option [+text_option+] value="text">[+Text+]</option>
+                <option [+single_option+] value="single">[+Single+]</option>
+                <option [+export_option+] value="export">[+Export+]</option>
+                <option [+array_option+] value="array">[+Array+]</option>
+                <option [+multi_option+] value="multi">[+Multi+]</option>
             </select>
             &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-            <input type="checkbox" name="custom_field_mapping[[+key+]][no_null]" id="custom_field_no_null_[+key+]" [+no_null_checked+] value="1" /> <strong>Delete NULL values</strong>
+            <input type="checkbox" name="custom_field_mapping[[+key+]][no_null]" id="custom_field_no_null_[+key+]" [+no_null_checked+] value="1" /> <strong>[+Delete NULL values+]</strong>
         </td>
 		</tr>
         <tr valign="top">
 		<td colspan="[+column_count+]" style="padding-bottom: 10px">
-	        <input type="submit" name="custom_field_mapping[[+key+]][action][delete_rule]" class="button-primary" style="height: 18px; line-height: 16px" value="Delete Rule" />
-	        <input type="submit" name="custom_field_mapping[[+key+]][action][delete_field]" class="button-primary" style="height: 18px; line-height: 16px" value="Delete Rule AND Field" />
-	        <input type="submit" name="custom_field_mapping[[+key+]][action][update_rule]" class="button-primary" style="height: 18px; line-height: 16px" value="Update Rule" />
-	        <input type="submit" name="custom_field_mapping[[+key+]][action][map_now]" class="button-secondary" style="height: 18px; line-height: 16px" value="Map All Attachments" />
+	        <input type="submit" name="custom_field_mapping[[+key+]][action][delete_rule]" class="button-primary" style="height: 18px; line-height: 16px" value="[+Delete Rule+]" />
+	        <input type="submit" name="custom_field_mapping[[+key+]][action][delete_field]" class="button-primary" style="height: 18px; line-height: 16px" value="[+Delete Field+]" />
+	        <input type="submit" name="custom_field_mapping[[+key+]][action][update_rule]" class="button-primary" style="height: 18px; line-height: 16px" value="[+Update Rule+]" />
+	        <input type="submit" name="custom_field_mapping[[+key+]][action][map_now]" class="button-secondary" style="height: 18px; line-height: 16px" value="[+Map All Attachments+]" />
         </td>
 		</tr>
 
 <!-- template="custom-field-new-rule-row" -->
         <tr>
 		<td colspan="[+column_count+]" style="font-weight:bold; height: 3em; vertical-align:bottom">
-		Add a new Mapping Rule
+		[+Add new Rule+]
         </td>
 		</tr>
         <tr valign="top">
@@ -167,14 +167,14 @@
         </td>
 		<td style="text-align:left;">
             <select name="custom_field_mapping[[+key+]][keep_existing]" id="custom_field_keep_existing_[+key+]">
-                <option [+keep_selected+] value="1">Keep</option>
-                <option [+replace_selected+] value="">Replace</option>
+                <option [+keep_selected+] value="1">[+Keep+]</option>
+                <option [+replace_selected+] value="">[+Replace+]</option>
             </select>
         </td>
 		<td style="text-align:left;">
             <select name="custom_field_mapping[[+key+]][format]" id="custom_field_format_[+key+]">
-                <option [+native_format+] value="native">Native</option>
-                <option [+commas_format+] value="commas">Commas</option>
+                <option [+native_format+] value="native">[+Native+]</option>
+                <option [+commas_format+] value="commas">[+Commas+]</option>
             </select>
         </td>
 		<td style="text-align:center;">
@@ -195,29 +195,29 @@
             <input name="custom_field_mapping[[+key+]][meta_name]" id="custom_field_meta_name_[+key+]" type="text" size="[+meta_name_size+]" value="[+meta_name+]" />
         </td>
 		<td colspan="[+column_count_meta+]" style="text-align:left; vertical-align:middle;">
-			<strong>Option:</strong>&nbsp;
+			<strong>[+Option+]:</strong>&nbsp;
             <select name="custom_field_mapping[[+key+]][option]" id="custom_field_option_[+key+]">
-                <option [+text_option+] value="text">Text</option>
-                <option [+single_option+] value="single">Single</option>
-                <option [+export_option+] value="export">Export</option>
-                <option [+array_option+] value="array">Array</option>
-                <option [+multi_option+] value="multi">Multi</option>
+                <option [+text_option+] value="text">[+Text+]</option>
+                <option [+single_option+] value="single">[+Single+]</option>
+                <option [+export_option+] value="export">[+Export+]</option>
+                <option [+array_option+] value="array">[+Array+]</option>
+                <option [+multi_option+] value="multi">[+Multi+]</option>
             </select>
             &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-            <input type="checkbox" name="custom_field_mapping[[+key+]][no_null]" id="custom_field_no_null_[+key+]" [+no_null_checked+] value="1" /> <strong>Delete NULL values</strong>
+            <input type="checkbox" name="custom_field_mapping[[+key+]][no_null]" id="custom_field_no_null_[+key+]" [+no_null_checked+] value="1" /> <strong>[+Delete NULL values+]</strong>
         </td>
 		</tr>
         <tr valign="top">
 		<td colspan="[+column_count+]">
-	        <input type="submit" name="custom_field_mapping[[+key+]][action][add_rule]" type="submit" class="button-primary" value="Add Rule" />
-	        <input type="submit" name="custom_field_mapping[[+key+]][action][add_rule_map]" type="submit" class="button-secondary" value="Add Rule and Map All Attachments" />
+	        <input type="submit" name="custom_field_mapping[[+key+]][action][add_rule]" type="submit" class="button-primary" value="[+Add Rule+]" />
+	        <input type="submit" name="custom_field_mapping[[+key+]][action][add_rule_map]" type="submit" class="button-secondary" value="[+Map All Attachments+]" />
         </td>
 		</tr>
 
 <!-- template="custom-field-new-field-row" -->
         <tr>
 		<td colspan="[+column_count+]" style="font-weight:bold; height: 3em; vertical-align:bottom">
-		Add a new Field and Mapping Rule
+		[+Add new Field+]
         </td>
 		</tr>
         <tr valign="top">
@@ -231,14 +231,14 @@
         </td>
 		<td style="text-align:left;">
             <select name="custom_field_mapping[[+key+]][keep_existing]" id="custom_field_keep_existing_[+key+]">
-                <option [+keep_selected+] value="1">Keep</option>
-                <option [+replace_selected+] value="">Replace</option>
+                <option [+keep_selected+] value="1">[+Keep+]</option>
+                <option [+replace_selected+] value="">[+Replace+]</option>
             </select>
         </td>
 		<td style="text-align:left;">
             <select name="custom_field_mapping[[+key+]][format]" id="custom_field_format_[+key+]">
-                <option [+native_format+] value="native">Native</option>
-                <option [+commas_format+] value="commas">Commas</option>
+                <option [+native_format+] value="native">[+Native+]</option>
+                <option [+commas_format+] value="commas">[+Commas+]</option>
             </select>
         </td>
 		<td style="text-align:center;">
@@ -259,22 +259,22 @@
             <input name="custom_field_mapping[[+key+]][meta_name]" id="custom_field_meta_name_[+key+]" type="text" size="[+meta_name_size+]" value="[+meta_name+]" />
         </td>
 		<td colspan="[+column_count_meta+]" style="text-align:left; vertical-align:middle;">
-			<strong>Option:</strong>&nbsp;
+			<strong>[+Option+]:</strong>&nbsp;
             <select name="custom_field_mapping[[+key+]][option]" id="custom_field_option_[+key+]">
-                <option [+text_option+] value="text">Text</option>
-                <option [+single_option+] value="single">Single</option>
-                <option [+export_option+] value="export">Export</option>
-                <option [+array_option+] value="array">Array</option>
-                <option [+multi_option+] value="multi">Multi</option>
+                <option [+text_option+] value="text">[+Text+]</option>
+                <option [+single_option+] value="single">[+Single+]</option>
+                <option [+export_option+] value="export">[+Export+]</option>
+                <option [+array_option+] value="array">[+Array+]</option>
+                <option [+multi_option+] value="multi">[+Multi+]</option>
             </select>
             &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-            <input type="checkbox" name="custom_field_mapping[[+key+]][no_null]" id="custom_field_no_null_[+key+]" [+no_null_checked+] value="1" /> <strong>Delete NULL values</strong>
+            <input type="checkbox" name="custom_field_mapping[[+key+]][no_null]" id="custom_field_no_null_[+key+]" [+no_null_checked+] value="1" /> <strong>[+Delete NULL values+]</strong>
         </td>
 		</tr>
         <tr valign="top">
 		<td colspan="[+column_count+]">
-	        <input type="submit" name="custom_field_mapping[[+key+]][action][add_field]" type="submit" class="button-primary" value="Add Field" />
-	        <input type="submit" name="custom_field_mapping[[+key+]][action][add_field_map]" type="submit" class="button-secondary" value="Add Field and Map All Attachments" />
+	        <input type="submit" name="custom_field_mapping[[+key+]][action][add_field]" type="submit" class="button-primary" value="[+Add Field+]" />
+	        <input type="submit" name="custom_field_mapping[[+key+]][action][add_field_map]" type="submit" class="button-secondary" value="[+Map All Attachments+]" />
         </td>
 		</tr>
 
@@ -285,19 +285,19 @@
 		  <thead>
 		  <tr>
 		    <th scope="col" style="text-align:center">
-			Field Title
+			[+Field Title+]
 			</th>
 		    <th scope="col" style="text-align:center">
-			IPTC Value
+			[+IPTC Value+]
 			</th>
 		    <th scope="col" style="text-align:center">
-			EXIF/Template Value
+			[+EXIF/Template Value+]
 			</th>
 		    <th scope="col" style="text-align:left">
-			Priority
+			[+Priority+]
 			</th>
 		    <th scope="col" style="text-align:left">
-			Existing Text
+			[+Existing Text+]
 			</th>
 			</tr>
 			</thead>
@@ -315,25 +315,25 @@
 		  <thead>
 		  <tr>
 		    <th scope="col" style="text-align:center">
-			Field Title
+			[+Field Title+]
 			</th>
 		    <th scope="col" style="text-align:center">
-			IPTC Value
+			[+IPTC Value+]
 			</th>
 		    <th scope="col" style="text-align:center">
-			EXIF/Template Value
+			[+EXIF/Template Value+]
 			</th>
 		    <th scope="col" style="text-align:center">
-			Priority
+			[+Priority+]
 			</th>
 		    <th scope="col" style="text-align:center">
-			Existing Text
+			[+Existing Text+]
 			</th>
 		    <th scope="col" style="text-align:center">
-			Delimiter(s)
+			[+Delimiter(s)+]
 			</th>
 		    <th scope="col" style="text-align:center">
-			Parent
+			[+Parent+]
 			</th>
 			</tr>
 			</thead>
@@ -351,19 +351,19 @@
 		  <thead>
 		  <tr>
 		    <th scope="col" style="text-align:center">
-			Field Title
+			[+Field Title+]
 			</th>
 		    <th scope="col" style="text-align:center">
-			IPTC Value
+			[+IPTC Value+]
 			</th>
 		    <th scope="col" style="text-align:center">
-			EXIF/Template Value
+			[+EXIF/Template Value+]
 			</th>
-		    <th scope="col" style="text-align:left">
-			Priority
+		    <th scope="col" style="text-align:center">
+			[+Priority+]
 			</th>
-		    <th scope="col" style="text-align:left">
-			Existing Text
+		    <th scope="col" style="text-align:center">
+			[+Existing Text+]
 			</th>
 			</tr>
 			</thead>
@@ -397,14 +397,14 @@
         </td>
 		<td style="text-align:left;">
             <select name="iptc_exif_mapping[standard][[+key+]][iptc_first]" id="iptc_exif_standard_priority_[+key+]">
-                <option [+iptc_selected+] value="1">IPTC</option>
-                <option [+exif_selected+] value="">EXIF</option>
+                <option [+iptc_selected+] value="1">[+IPTC+]</option>
+                <option [+exif_selected+] value="">[+EXIF+]</option>
             </select>
         </td>
 		<td style="text-align:left;">
             <select name="iptc_exif_mapping[standard][[+key+]][keep_existing]" id="iptc_exif_standard_existing_[+key+]">
-                <option [+keep_selected+] value="1">Keep</option>
-                <option [+replace_selected+] value="">Replace</option>
+                <option [+keep_selected+] value="1">[+Keep+]</option>
+                <option [+replace_selected+] value="">[+Replace+]</option>
             </select>
         </td>
 		</tr>
@@ -426,14 +426,14 @@
         </td>
 		<td style="text-align:left;">
             <select name="iptc_exif_mapping[taxonomy][[+key+]][iptc_first]" id="iptc_exif_taxonomy_priority_[+key+]">
-                <option [+iptc_selected+] value="1">IPTC</option>
-                <option [+exif_selected+] value="">EXIF</option>
+                <option [+iptc_selected+] value="1">[+IPTC+]</option>
+                <option [+exif_selected+] value="">[+EXIF+]</option>
             </select>
         </td>
 		<td style="text-align:left;">
             <select name="iptc_exif_mapping[taxonomy][[+key+]][keep_existing]" id="iptc_exif_taxonomy_existing_[+key+]">
-                <option [+keep_selected+] value="1">Keep</option>
-                <option [+replace_selected+] value="">Replace</option>
+                <option [+keep_selected+] value="1">[+Keep+]</option>
+                <option [+replace_selected+] value="">[+Replace+]</option>
             </select>
         </td>
 		<td style="text-align:center;">
@@ -447,7 +447,7 @@
 <!-- template="iptc-exif-custom-empty-row" -->
         <tr>
 		<td colspan="[+column_count+]" style="font-weight:bold; height: 4em; text-align:center; vertical-align:middle">
-		No Custom Field Mapping Rules Defined
+		[+No Mapping Rules+]
         </td>
 		</tr>
 
@@ -467,30 +467,30 @@
         </td>
 		<td style="text-align:left;">
             <select name="iptc_exif_mapping[custom][[+key+]][iptc_first]" id="iptc_exif_custom_priority_[+key+]">
-                <option [+iptc_selected+] value="1">IPTC</option>
-                <option [+exif_selected+] value="">EXIF</option>
+                <option [+iptc_selected+] value="1">[+IPTC+]</option>
+                <option [+exif_selected+] value="">[+EXIF+]</option>
             </select>
         </td>
 		<td style="text-align:left;">
             <select name="iptc_exif_mapping[custom][[+key+]][keep_existing]" id="iptc_exif_custom_existing_[+key+]">
-                <option [+keep_selected+] value="1">Keep</option>
-                <option [+replace_selected+] value="">Replace</option>
+                <option [+keep_selected+] value="1">[+Keep+]</option>
+                <option [+replace_selected+] value="">[+Replace+]</option>
             </select>
         </td>
 		</tr>
         <tr valign="top">
 		<td colspan="[+column_count+]" style="padding-bottom: 10px">
-	        <input type="submit" name="iptc_exif_mapping[custom][[+key+]][action][delete_rule]" class="button-primary" style="height: 18px; line-height: 16px" value="Delete Rule" />
-	        <input type="submit" name="iptc_exif_mapping[custom][[+key+]][action][delete_field]" class="button-primary" style="height: 18px; line-height: 16px" value="Delete Rule AND Field" />
-	        <input type="submit" name="iptc_exif_mapping[custom][[+key+]][action][update_rule]" class="button-primary" style="height: 18px; line-height: 16px" value="Update Rule" />
-	        <input type="submit" name="iptc_exif_mapping[custom][[+key+]][action][map_now]" class="button-secondary" style="height: 18px; line-height: 16px" value="Map All Attachments" />
+	        <input type="submit" name="iptc_exif_mapping[custom][[+key+]][action][delete_rule]" class="button-primary" style="height: 18px; line-height: 16px" value="[+Delete Rule+]" />
+	        <input type="submit" name="iptc_exif_mapping[custom][[+key+]][action][delete_field]" class="button-primary" style="height: 18px; line-height: 16px" value="[+Delete Field+]" />
+	        <input type="submit" name="iptc_exif_mapping[custom][[+key+]][action][update_rule]" class="button-primary" style="height: 18px; line-height: 16px" value="[+Update Rule+]" />
+	        <input type="submit" name="iptc_exif_mapping[custom][[+key+]][action][map_now]" class="button-secondary" style="height: 18px; line-height: 16px" value="[+Map All Attachments+]" />
         </td>
 		</tr>
 
 <!-- template="iptc-exif-custom-new-rule-row" -->
         <tr>
 		<td colspan="[+column_count+]" style="font-weight:bold; height: 3em; vertical-align:bottom">
-		Add a new Mapping Rule
+		[+Add new Rule+]
         </td>
 		</tr>
         <tr valign="top">
@@ -509,28 +509,28 @@
         </td>
 		<td style="text-align:left;">
             <select name="iptc_exif_mapping[custom][[+key+]][iptc_first]" id="iptc_exif_custom_priority_[+key+]">
-                <option [+iptc_selected+] value="1">IPTC</option>
-                <option [+exif_selected+] value="">EXIF</option>
+                <option [+iptc_selected+] value="1">[+IPTC+]</option>
+                <option [+exif_selected+] value="">[+EXIF+]</option>
             </select>
         </td>
 		<td style="text-align:left;">
             <select name="iptc_exif_mapping[custom][[+key+]][keep_existing]" id="iptc_exif_custom_existing_[+key+]">
-                <option [+keep_selected+] value="1">Keep</option>
-                <option [+replace_selected+] value="">Replace</option>
+                <option [+keep_selected+] value="1">[+Keep+]</option>
+                <option [+replace_selected+] value="">[+Replace+]</option>
             </select>
         </td>
 		</tr>
         <tr valign="top">
 		<td colspan="[+column_count+]">
-	        <input type="submit" name="iptc_exif_mapping[custom][[+key+]][action][add_rule]" type="submit" class="button-primary" value="Add Rule" />
-	        <input type="submit" name="iptc_exif_mapping[custom][[+key+]][action][add_rule_map]" type="submit" class="button-secondary" value="Add Rule and Map All Attachments" />
+	        <input type="submit" name="iptc_exif_mapping[custom][[+key+]][action][add_rule]" type="submit" class="button-primary" value="[+Add Rule+]" />
+	        <input type="submit" name="iptc_exif_mapping[custom][[+key+]][action][add_rule_map]" type="submit" class="button-secondary" value="[+Map All Attachments+]" />
         </td>
 		</tr>
 
 <!-- template="iptc-exif-custom-new-field-row" -->
         <tr>
 		<td colspan="[+column_count+]" style="font-weight:bold; height: 3em; vertical-align:bottom">
-		Add a new Field and Mapping Rule
+		[+Add new Field+]
         </td>
 		</tr>
         <tr valign="top">
@@ -547,21 +547,21 @@
         </td>
 		<td style="text-align:left;">
             <select name="iptc_exif_mapping[custom][[+key+]][iptc_first]" id="iptc_exif_custom_priority_[+key+]">
-                <option [+iptc_selected+] value="1">IPTC</option>
-                <option [+exif_selected+] value="">EXIF</option>
+                <option [+iptc_selected+] value="1">[+IPTC+]</option>
+                <option [+exif_selected+] value="">[+EXIF+]</option>
             </select>
         </td>
 		<td style="text-align:left;">
             <select name="iptc_exif_mapping[custom][[+key+]][keep_existing]" id="iptc_exif_custom_existing_[+key+]">
-                <option [+keep_selected+] value="1">Keep</option>
-                <option [+replace_selected+] value="">Replace</option>
+                <option [+keep_selected+] value="1">[+Keep+]</option>
+                <option [+replace_selected+] value="">[+Replace+]</option>
             </select>
         </td>
 		</tr>
         <tr valign="top">
 		<td colspan="[+column_count+]">
-	        <input type="submit" name="iptc_exif_mapping[custom][[+key+]][action][add_field]" type="submit" class="button-primary" value="Add Field" />
-	        <input type="submit" name="iptc_exif_mapping[custom][[+key+]][action][add_field_map]" type="submit" class="button-secondary" value="Add Field and Map All Attachments" />
+	        <input type="submit" name="iptc_exif_mapping[custom][[+key+]][action][add_field]" type="submit" class="button-primary" value="[+Add Field+]" />
+	        <input type="submit" name="iptc_exif_mapping[custom][[+key+]][action][add_field_map]" type="submit" class="button-secondary" value="[+Map All Attachments+]" />
         </td>
 		</tr>
 
