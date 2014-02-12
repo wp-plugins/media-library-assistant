@@ -29,7 +29,7 @@ class MLA {
 	 *
 	 * @var	string
 	 */
-	const CURRENT_MLA_VERSION = '1.70';
+	const CURRENT_MLA_VERSION = '1.71';
 
 	/**
 	 * Slug for registering and enqueueing plugin style sheet
@@ -177,8 +177,7 @@ class MLA {
 	 *
 	 * @return	void
 	 */
-	public static function initialize( )
-	{
+	public static function initialize( ) {
 		add_action( 'admin_init', 'MLA::mla_admin_init_action' );
 		add_action( 'admin_enqueue_scripts', 'MLA::mla_admin_enqueue_scripts_action' );
 		add_action( 'admin_menu', 'MLA::mla_admin_menu_action' );
@@ -214,6 +213,10 @@ class MLA {
 		 */
 		MLAOptions::mla_localize_option_definitions_array();
 		MLASettings::mla_localize_tablist();
+		MLA_List_Table::mla_localize_default_columns_array();
+		MLA_Upload_List_Table::mla_localize_default_columns_array();
+		MLA_Upload_Optional_List_Table::mla_localize_default_columns_array();
+		MLA_View_List_Table::mla_localize_default_columns_array();
 	}
 
 	/**
@@ -448,8 +451,7 @@ class MLA {
 	 *
 	 * @return	void
 	 */
-	public static function mla_add_help_tab( )
-	{
+	public static function mla_add_help_tab( ) {
 		$screen = get_current_screen();
 		/*
 		 * Is this one of our pages?
@@ -574,8 +576,7 @@ class MLA {
 	 *
 	 * @return	string|void	New value if this is our option, otherwise nothing
 	 */
-	public static function mla_set_screen_option_filter( $status, $option, $value )
-	{
+	public static function mla_set_screen_option_filter( $status, $option, $value ) {
 		if ( 'mla_entries_per_page' == $option ) {
 			return $value;
 		} elseif ( $status ) {
@@ -594,8 +595,7 @@ class MLA {
 	 *
 	 * @return	void
 	 */
-	public static function mla_edit_tax_redirect( )
-	{
+	public static function mla_edit_tax_redirect( ) {
 		/*
 		 * WordPress 3.5 adds native support for taxonomies
 		 */

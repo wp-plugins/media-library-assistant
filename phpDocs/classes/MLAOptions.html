@@ -56,6 +56,7 @@
 <i class="icon-custom icon-method"></i> Methods</li>
 <li class="method public "><a href="#initialize" title="initialize :: Initialization function, similar to __construct()"><span class="description">Initialization function, similar to __construct()</span><pre>initialize()</pre></a></li>
 <li class="method public "><a href="#mla_add_attachment_action" title="mla_add_attachment_action :: Set $add_attachment_id to just-inserted attachment"><span class="description">Set $add_attachment_id to just-inserted attachment</span><pre>mla_add_attachment_action()</pre></a></li>
+<li class="method public "><a href="#mla_attachment_display_settings_option_handler" title="mla_attachment_display_settings_option_handler :: Render and manage Attachment Display Settings options; alignment, link type and size"><span class="description">Render and manage Attachment Display Settings options; alignment, link type and size</span><pre>mla_attachment_display_settings_option_handler()</pre></a></li>
 <li class="method public "><a href="#mla_custom_field_option_handler" title="mla_custom_field_option_handler :: Render and manage custom field mapping options"><span class="description">Render and manage custom field mapping options</span><pre>mla_custom_field_option_handler()</pre></a></li>
 <li class="method public "><a href="#mla_custom_field_option_value" title="mla_custom_field_option_value :: Fetch custom field option value given a slug"><span class="description">Fetch custom field option value given a slug</span><pre>mla_custom_field_option_value()</pre></a></li>
 <li class="method public "><a href="#mla_custom_field_support" title="mla_custom_field_support :: Evaluate file information for custom field mapping"><span class="description">Evaluate file information for custom field mapping</span><pre>mla_custom_field_support()</pre></a></li>
@@ -201,6 +202,43 @@ and provides functions to get and put them from/to WordPress option variables</p
 <h4>$post_ID</h4>
 <code>integer</code><p>ID of just-inserted attachment</p>
 </div>
+</div></div>
+</div>
+<a name="mla_attachment_display_settings_option_handler" id="mla_attachment_display_settings_option_handler"></a><div class="element clickable method public mla_attachment_display_settings_option_handler" data-toggle="collapse" data-target=".mla_attachment_display_settings_option_handler .collapse">
+<h2>Render and manage Attachment Display Settings options; alignment, link type and size</h2>
+<pre>mla_attachment_display_settings_option_handler(string $action, string $key, array $value, array $args) : string</pre>
+<div class="labels"></div>
+<div class="row collapse"><div class="detail-description">
+<p class="long_description"></p>
+<table class="table table-bordered">
+<tr>
+<th>since</th>
+<td>1.71</td>
+</tr>
+<tr>
+<th>uses</th>
+<td>\global\MLASettings::$page_template_array</td>
+</tr>
+</table>
+<h3>Parameters</h3>
+<div class="subelement argument">
+<h4>$action</h4>
+<code>string</code><p>'render', 'update', 'delete', or 'reset'</p>
+</div>
+<div class="subelement argument">
+<h4>$key</h4>
+<code>string</code><p>option name, e.g., 'image_default_align'</p>
+</div>
+<div class="subelement argument">
+<h4>$value</h4>
+<code>array</code><p>option parameters</p></div>
+<div class="subelement argument">
+<h4>$args</h4>
+<code>array</code><p>Optional. null (default) for 'render' else option data, e.g., $_REQUEST</p>
+</div>
+<h3>Returns</h3>
+<div class="subelement response">
+<code>string</code>HTML table row markup for 'render' else message(s) reflecting the results of the operation.</div>
 </div></div>
 </div>
 <a name="mla_custom_field_option_handler" id="mla_custom_field_option_handler"></a><div class="element clickable method public mla_custom_field_option_handler" data-toggle="collapse" data-target=".mla_custom_field_option_handler .collapse">
@@ -517,7 +555,7 @@ Isolates clients from changes to _evaluate_data_source().</p></p>
 in the "public static" array definition itself.</p></p>
 <table class="table table-bordered"><tr>
 <th>since</th>
-<td>1.6x</td>
+<td>1.70</td>
 </tr></table>
 </div></div>
 </div>
@@ -1396,7 +1434,7 @@ This option is for flat taxonomies, e.g., "Att.</h2>
 <div class="row"><footer class="span12">
             Template is built using <a href="http://twitter.github.com/bootstrap/">Twitter Bootstrap 2</a> and icons provided by <a href="http://glyphicons.com/">Glyphicons</a>.<br>
             Documentation is powered by <a href="http://www.phpdoc.org/">phpDocumentor 2.0.0a8</a> and<br>
-            generated on 2014-01-11T19:47:37-08:00.<br></footer></div>
+            generated on 2014-02-11T20:56:42-08:00.<br></footer></div>
 </div>
 </body>
 </html>

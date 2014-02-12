@@ -404,8 +404,7 @@ class MLASettings {
 	 *
 	 * @return	void
 	 */
-	public static function mla_add_help_tab_action( )
-	{
+	public static function mla_add_help_tab_action( ) {
 		$screen = get_current_screen();
 
 		/*
@@ -837,7 +836,7 @@ class MLASettings {
 	 *
 	 * @var	array
 	 */
-	private static $page_template_array = null;
+	public static $page_template_array = null;
 
 	/**
 	 * Definitions for Settings page tab ids, titles and handlers
@@ -864,7 +863,7 @@ class MLASettings {
 	 * Localization must be done at runtime, and these calls cannot be placed
 	 * in the "public static" array definition itself.
 	 *
-	 * @since 1.6x
+	 * @since 1.70
 	 *
 	 * @return	void
 	 */
@@ -2955,8 +2954,9 @@ class MLASettings {
 
 		$count = count( $post_meta_ids );
 		if ( $count ) {
+			$count_text = sprintf( _n( '%s attachment', '%s attachments', $count, 'media-library-assistant' ), $count );
 			/* translators: 1: number of attachments */
-			return sprintf( __( 'Deleted custom field value from %1$s.', 'media-library-assistant' ) . '<br>', _n( '%s attachment', '%s attachments', $count, 'media-library-assistant' ) );
+			return sprintf( __( 'Deleted custom field value from %1$s.', 'media-library-assistant' ) . '<br>', $count_text );
 		}
 
 		return __( 'No attachments contained this custom field.', 'media-library-assistant' ) . '<br>';

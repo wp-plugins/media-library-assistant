@@ -245,8 +245,7 @@ class MLA_List_Table extends WP_List_Table {
 	 *
 	 * @return	array	name => array( orderby value, heading ) for sortable columns
 	 */
-	public static function mla_get_sortable_columns( )
-	{
+	public static function mla_get_sortable_columns( ) {
 		$results = array() ;
 
 		foreach ( MLA_List_Table::$default_sortable_columns as $key => $value ) {
@@ -291,27 +290,24 @@ class MLA_List_Table extends WP_List_Table {
 	 *
 	 * @return	array	list of table columns
 	 */
-	public static function mla_manage_columns_filter( )
-	{
+	public static function mla_manage_columns_filter( ) {
 		return MLA_List_Table::$default_columns;
 	}
 
 	/**
-	 * Adds support for taxonomy and custom field columns
+	 * Builds the $default_columns array with translated source texts.
 	 *
-	 * Called in the admin_init action because the list_table object isn't
-	 * created in time to affect the "screen options" setup.
+	 * Called from MLA:mla_plugins_loaded_action because the $default_columns information might be
+	 * accessed from "front end" posts/pages.
 	 *
-	 * @since 0.30
+	 * @since 1.71
 	 *
 	 * @return	void
 	 */
-	public static function mla_admin_init_action( )
-	{
+	public static function mla_localize_default_columns_array( ) {
 		/*
 		 * Build the default columns array at runtime to accomodate calls to the localization functions
 		 */
-		 
 		self::$default_columns = array(
 			'cb' => '<input type="checkbox" />', //Render a checkbox instead of text
 			'icon' => '',
@@ -337,7 +333,19 @@ class MLA_List_Table extends WP_List_Table {
 			'attached_to' => _x( 'Attached to', 'list_table_column', 'media-library-assistant' ),
 			// taxonomy and custom field columns added below
 		);
+	}
 
+	/**
+	 * Adds support for taxonomy and custom field columns
+	 *
+	 * Called in the admin_init action because the list_table object isn't
+	 * created in time to affect the "screen options" setup.
+	 *
+	 * @since 0.30
+	 *
+	 * @return	void
+	 */
+	public static function mla_admin_init_action( ) {
 		$taxonomies = get_taxonomies( array ( 'show_ui' => true ), 'names' );
 
 		foreach ( $taxonomies as $tax_name ) {
@@ -402,7 +410,11 @@ class MLA_List_Table extends WP_List_Table {
 		if ( 't_' == substr( $column_name, 0, 2 ) ) {
 			$taxonomy = substr( $column_name, 2 );
 			$tax_object = get_taxonomy( $taxonomy );
-			$terms = wp_get_object_terms( $item->ID, $taxonomy );
+			$terms = get_object_term_cache( $item->ID, $taxonomy );
+			
+			if ( false === $terms ) {
+				$terms = wp_get_object_terms( $item->ID, $taxonomy );
+			}
 
 			if ( !is_wp_error( $terms ) ) {
 				if ( empty( $terms ) ) {
@@ -470,8 +482,7 @@ class MLA_List_Table extends WP_List_Table {
 	 * @param	array	A singular attachment (post) object
 	 * @return	string	HTML markup to be placed inside the column
 	 */
-	function column_cb( $item )
-	{
+	function column_cb( $item ) {
 		return sprintf( '<input type="checkbox" name="cb_%1$s[]" value="%2$s" />',
 		/*%1$s*/ $this->_args['singular'], //Let's simply repurpose the table's singular label ("attachment")
 		/*%2$s*/ $item->ID //The value of the checkbox should be the object's id
@@ -486,8 +497,7 @@ class MLA_List_Table extends WP_List_Table {
 	 * @param	array	A singular attachment (post) object
 	 * @return	string	HTML markup to be placed inside the column
 	 */
-	function column_icon( $item )
-	{
+	function column_icon( $item ) {
 		if ( 'checked' == MLAOptions::mla_get_option( MLAOptions::MLA_ENABLE_MLA_ICONS ) ) {
 			$thumb = wp_get_attachment_image( $item->ID, array( 64, 64 ), true, array( 'class' => 'mla_media_thumbnail_64_64' ) );
 		} else {
@@ -599,12 +609,28 @@ class MLA_List_Table extends WP_List_Table {
 		$taxonomies = get_object_taxonomies( 'attachment', 'objects' );
 
 		foreach ( $taxonomies as $tax_name => $tax_object ) {
-			if ( $tax_object->hierarchical && $tax_object->show_ui && MLAOptions::mla_taxonomy_support($tax_name, 'quick-edit') ) {
-				$inline_data .= '	<div class="mla_category" id="' . $tax_name . '_' . $item->ID . '">'
-					. implode( ',', wp_get_object_terms( $item->ID, $tax_name, array( 'fields' => 'ids' ) ) ) . "</div>\r\n";
-			} elseif ( $tax_object->show_ui && MLAOptions::mla_taxonomy_support($tax_name, 'quick-edit') ) {
-				$inline_data .= '	<div class="mla_tags" id="'.$tax_name.'_'.$item->ID. '">'
-					. esc_html( str_replace( ',', ', ', get_terms_to_edit( $item->ID, $tax_name ) ) ) . "</div>\r\n";
+			if ( $tax_object->show_ui && MLAOptions::mla_taxonomy_support( $tax_name, 'quick-edit' ) ) {
+				$terms = get_object_term_cache( $item->ID, $tax_name );
+				if ( false === $terms ) {
+					$terms = wp_get_object_terms( $item->ID, $tax_name );
+				}
+				$ids = array();
+
+				if ( $tax_object->hierarchical ) {
+					foreach( $terms as $term ) {
+						$ids[] = $term->term_id;
+					}
+				
+					$inline_data .= '	<div class="mla_category" id="' . $tax_name . '_' . $item->ID . '">'
+						. implode( ',', $ids ) . "</div>\r\n";
+				} else {
+					foreach( $terms as $term ) {
+						$ids[] = $term->name;
+					}
+				
+					$inline_data .= '	<div class="mla_tags" id="'.$tax_name.'_'.$item->ID. '">'
+						. esc_attr( implode( ', ', $ids ) ) . "</div>\r\n";
+				}
 			}
 		}
 
@@ -1225,8 +1251,7 @@ class MLA_List_Table extends WP_List_Table {
 	 * 
 	 * @return	array	Column information,e.g., array(0 => 'ID_parent, 1 => 'title_name')
 	 */
-	function get_hidden_columns( )
-	{
+	function get_hidden_columns( ) {
 		$columns = get_user_option( 'managemedia_page_' . MLA::ADMIN_PAGE_SLUG . 'columnshidden' );
 
 		if ( is_array( $columns ) ) {
@@ -1466,8 +1491,7 @@ class MLA_List_Table extends WP_List_Table {
 	 * 
 	 * @return	array	Contains all the bulk actions: 'slugs'=>'Visible Titles'
 	 */
-	function get_bulk_actions( )
-	{
+	function get_bulk_actions( ) {
 		$actions = array();
 
 		if ( $this->is_trash ) {
@@ -1497,8 +1521,7 @@ class MLA_List_Table extends WP_List_Table {
 	 *
 	 * @return	array	Contains all the bulk actions: 'slugs'=>'Visible Titles'
 	 */
-	function extra_tablenav( $which )
-	{
+	function extra_tablenav( $which ) {
 		echo ( '<div class="alignleft actions">' );
 
 		if ( 'top' == $which ) {

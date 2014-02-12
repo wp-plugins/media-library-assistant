@@ -14,6 +14,33 @@
  */
 class MLAEdit {
 	/**
+	 * Slug for localizing and enqueueing CSS - Add Media and related dialogs
+	 *
+	 * @since 1.20
+	 *
+	 * @var	string
+	 */
+	const JAVASCRIPT_EDIT_MEDIA_STYLES = 'mla-edit-media-style';
+
+	/**
+	 * Slug for localizing and enqueueing JavaScript - Add Media and related dialogs
+	 *
+	 * @since 1.20
+	 *
+	 * @var	string
+	 */
+	const JAVASCRIPT_EDIT_MEDIA_SLUG = 'mla-edit-media-scripts';
+
+	/**
+	 * Object name for localizing JavaScript - Add Media and related dialogs
+	 *
+	 * @since 1.20
+	 *
+	 * @var	string
+	 */
+	const JAVASCRIPT_EDIT_MEDIA_OBJECT = 'mla_edit_media_vars';
+
+	/**
 	 * Initialization function, similar to __construct()
 	 *
 	 * @since 0.80
@@ -22,11 +49,13 @@ class MLAEdit {
 	 */
 	public static function initialize() {
 		/*
-		 * WordPress 3.5 uses the advanced-form-edit.php function for the Edit Media
+		 * WordPress 3.5 uses the edit-form-advanced.php file for the Edit Media
 		 * page. This supports all the standard meta-boxes for post types.
 		 */
 		if ( MLATest::$wordpress_3point5_plus ) {
 			add_action( 'admin_init', 'MLAEdit::mla_admin_init_action' );
+
+			add_action( 'admin_enqueue_scripts', 'MLAEdit::mla_admin_enqueue_scripts_action' );
 
 			add_action( 'add_meta_boxes', 'MLAEdit::mla_add_meta_boxes_action', 10, 2 );
 
@@ -79,6 +108,41 @@ class MLAEdit {
 		} // class_exists
 
 		add_post_type_support( 'attachment', 'custom-fields' );
+	}
+
+	/**
+	 * Load the plugin's Style Sheet and Javascript files
+	 *
+	 * @since 1.71
+	 *
+	 * @param	string	Name of the page being loaded
+	 *
+	 * @return	void
+	 */
+	public static function mla_admin_enqueue_scripts_action( $page_hook ) {
+		if ( ( 'post.php' != $page_hook ) || ( ! isset( $_REQUEST['post'] ) ) || ( ! isset( $_REQUEST['action'] ) ) || ( 'edit' != $_REQUEST['action'] ) ) {
+			return;
+		}
+		
+		$post = get_post( $_REQUEST['post'] );
+		if ( 'attachment' != $post->post_type ) {
+			return;
+		}
+
+		/*
+		 * Register and queue the style sheet, if needed
+		 */
+		//wp_register_style( self::JAVASCRIPT_EDIT_MEDIA_STYLES, MLA_PLUGIN_URL . 'css/mla-edit-media-style.css', false, MLA::CURRENT_MLA_VERSION );
+		//wp_enqueue_style( self::JAVASCRIPT_EDIT_MEDIA_STYLES );
+
+		$suffix = defined('SCRIPT_DEBUG') && SCRIPT_DEBUG ? '' : '.min';
+		wp_enqueue_script( self::JAVASCRIPT_EDIT_MEDIA_SLUG, MLA_PLUGIN_URL . "js/mla-edit-media-scripts{$suffix}.js", 
+			array( 'post', 'wp-lists', 'suggest', 'jquery' ), MLA::CURRENT_MLA_VERSION, false );
+		$script_variables = array(
+			'comma' => _x( ',', 'tag_delimiter', 'media-library-assistant' ),
+			'Ajax_Url' => admin_url( 'admin-ajax.php' ) 
+		);
+		wp_localize_script( self::JAVASCRIPT_EDIT_MEDIA_SLUG, self::JAVASCRIPT_EDIT_MEDIA_OBJECT, $script_variables );
 	}
 
 	/**
@@ -152,31 +216,65 @@ class MLAEdit {
 			$post = (object) array ( 'ID' => 0 );
 		}
 
-		if ( 'attachment' == $post_type ) {
-			add_meta_box( 'mla-parent-info', __( 'Parent Info', 'media-library-assistant' ), 'MLAEdit::mla_parent_info_handler', 'attachment', 'normal', 'core' );
-			add_meta_box( 'mla-menu-order', __( 'Menu Order', 'media-library-assistant' ), 'MLAEdit::mla_menu_order_handler', 'attachment', 'normal', 'core' );
+		if ( 'attachment' != $post_type ) {
+			return;
+		}
+		
+		/*
+		 * Use the mla_hierarchical_meta_box callback function for MLA supported taxonomies
+		 */
+		global $wp_meta_boxes;
+		$screen = convert_to_screen( 'attachment' );
+		$page = $screen->id;
+		$taxonomies = get_taxonomies( array ( 'show_ui' => true ), 'objects' );
 
-			$image_metadata = get_metadata( 'post', $post->ID, '_wp_attachment_metadata', true );
-			if ( !empty( $image_metadata ) ) {
-				add_meta_box( 'mla-image-metadata', __( 'Attachment Metadata', 'media-library-assistant' ), 'MLAEdit::mla_image_metadata_handler', 'attachment', 'normal', 'core' );
-			}
+		foreach ( $taxonomies as $key => $value ) {
+			if ( MLAOptions::mla_taxonomy_support( $key ) ) {
+				if ( $value->hierarchical ) {
+					if ( 'checked' == MLAOptions::mla_get_option( MLAOptions::MLA_MEDIA_MODAL_DETAILS_CATEGORY_METABOX ) ) {
+						foreach ( array_keys( $wp_meta_boxes[$page] ) as $a_context ) {
+							foreach ( array('high', 'sorted', 'core', 'default', 'low') as $a_priority ) {
+								if ( isset( $wp_meta_boxes[$page][$a_context][$a_priority][ $key . 'div' ] ) ) {
+									$box = &$wp_meta_boxes[$page][$a_context][$a_priority][ $key . 'div' ];
 
-			if ( MLAOptions::$process_featured_in ) {
-				add_meta_box( 'mla-featured-in', __( 'Featured in', 'media-library-assistant' ), 'MLAEdit::mla_featured_in_handler', 'attachment', 'normal', 'core' );
-			}
+									if ( 'post_categories_meta_box' == $box['callback'] ) {
+										$box['callback'] = 'MLAEdit::mla_hierarchical_meta_box';
+									}
+								} // isset $box
+							} // foreach priority
+						} // foreach context
+					}
+				} else { // hierarchical
+					if ( 'checked' == MLAOptions::mla_get_option( MLAOptions::MLA_MEDIA_MODAL_DETAILS_TAG_METABOX ) ) {
+						continue;
+					}
+				} // flat
+			} // is supported
+		} // foreach
 
-			if ( MLAOptions::$process_inserted_in ) {
-				add_meta_box( 'mla-inserted-in', __( 'Inserted in', 'media-library-assistant' ), 'MLAEdit::mla_inserted_in_handler', 'attachment', 'normal', 'core' );
-			}
+		add_meta_box( 'mla-parent-info', __( 'Parent Info', 'media-library-assistant' ), 'MLAEdit::mla_parent_info_handler', 'attachment', 'normal', 'core' );
+		add_meta_box( 'mla-menu-order', __( 'Menu Order', 'media-library-assistant' ), 'MLAEdit::mla_menu_order_handler', 'attachment', 'normal', 'core' );
 
-			if ( MLAOptions::$process_gallery_in ) {
-				add_meta_box( 'mla-gallery-in', __( 'Gallery in', 'media-library-assistant' ), 'MLAEdit::mla_gallery_in_handler', 'attachment', 'normal', 'core' );
-			}
+		$image_metadata = get_metadata( 'post', $post->ID, '_wp_attachment_metadata', true );
+		if ( !empty( $image_metadata ) ) {
+			add_meta_box( 'mla-image-metadata', __( 'Attachment Metadata', 'media-library-assistant' ), 'MLAEdit::mla_image_metadata_handler', 'attachment', 'normal', 'core' );
+		}
 
-			if ( MLAOptions::$process_mla_gallery_in ) {
-				add_meta_box( 'mla-mla-gallery-in', __( 'MLA Gallery in', 'media-library-assistant' ), 'MLAEdit::mla_mla_gallery_in_handler', 'attachment', 'normal', 'core' );
-			}
-		} // 'attachment'
+		if ( MLAOptions::$process_featured_in ) {
+			add_meta_box( 'mla-featured-in', __( 'Featured in', 'media-library-assistant' ), 'MLAEdit::mla_featured_in_handler', 'attachment', 'normal', 'core' );
+		}
+
+		if ( MLAOptions::$process_inserted_in ) {
+			add_meta_box( 'mla-inserted-in', __( 'Inserted in', 'media-library-assistant' ), 'MLAEdit::mla_inserted_in_handler', 'attachment', 'normal', 'core' );
+		}
+
+		if ( MLAOptions::$process_gallery_in ) {
+			add_meta_box( 'mla-gallery-in', __( 'Gallery in', 'media-library-assistant' ), 'MLAEdit::mla_gallery_in_handler', 'attachment', 'normal', 'core' );
+		}
+
+		if ( MLAOptions::$process_mla_gallery_in ) {
+			add_meta_box( 'mla-mla-gallery-in', __( 'MLA Gallery in', 'media-library-assistant' ), 'MLAEdit::mla_mla_gallery_in_handler', 'attachment', 'normal', 'core' );
+		}
 	} // mla_add_meta_boxes_action
 
 	/**
@@ -461,5 +559,139 @@ class MLAEdit {
 			MLAData::mla_update_single_item( $post_ID, $new_data );
 		}
 	} // mla_edit_attachment_action
+	
+	/**
+	 * Display taxonomy "checklist" form fields
+	 *
+	 * Adapted from the WordPress post_categories_meta_box() in /wp-admin/includes/meta-boxes.php.
+	 * Includes the "? Search" area to filter the term checklist by entering part
+	 * or all of a word/phrase in the term label.
+	 * Output to the Media/Edit Media screen and to the Media Manager Modal Window.
+	 *
+	 * @since 1.71
+	 *
+	 * @param object The current post
+	 * @param array The meta box parameters
+	 *
+	 * @return void Echoes HTML for the form fields
+	 */
+	public static function mla_hierarchical_meta_box( $post, $box ) {
+		$defaults = array('taxonomy' => 'category', 'in_modal' => false );
+		$post_id = $post->ID;
+		
+		if ( !isset( $box['args'] ) || !is_array( $box['args'] ) ) {
+			$args = array();
+		} else {
+			$args = $box['args'];
+		}
+		
+		extract( wp_parse_args( $args, $defaults ), EXTR_SKIP );
+		$tax = get_taxonomy( $taxonomy );
+		$name = ( $taxonomy == 'category' ) ? 'post_category' : 'tax_input[' . $taxonomy . ']';
+
+		if ( $in_modal ) {
+			$div_taxonomy_id = "taxonomy-{$taxonomy}";
+			$tabs_ul_id = "{$taxonomy}-tabs";
+			$tab_all_id = "{$taxonomy}-all";
+			$tab_all_ul_id = "{$taxonomy}checklist";
+			$tab_pop_id = "{$taxonomy}-pop";
+			$tab_pop_ul_id = "{$taxonomy}checklist-pop";
+			$input_terms_name = "attachments[{$post_id}][{$name}]";
+			$input_terms_id = "{$name}-id";
+			$div_adder_id = "{$taxonomy}-adder";
+			$link_adder_id = "{$taxonomy}-add-toggle";
+			$link_adder_p_id = "{$taxonomy}-add";
+			$div_search_id = "{$taxonomy}-searcher";
+			$link_search_id = "{$taxonomy}-search-toggle";
+			$link_search_p_id = "{$taxonomy}-search";
+			$input_new_name = "new{$taxonomy}";
+			$input_new_id = "new{$taxonomy}";
+			$input_new_parent_name = "new{$taxonomy}_parent";
+			$input_new_submit_id = "{$taxonomy}-add-submit";
+			$span_ajax_id = "{$taxonomy}-ajax-response";
+		} else {
+			$div_taxonomy_id = "taxonomy-{$taxonomy}";
+			$tabs_ul_id = "{$taxonomy}-tabs";
+			$tab_all_id = "{$taxonomy}-all";
+			$tab_all_ul_id = "{$taxonomy}checklist";
+			$tab_pop_id = "{$taxonomy}-pop";
+			$tab_pop_ul_id = "{$taxonomy}checklist-pop";
+			$input_terms_name = "{$name}[]";
+			$input_terms_id = "{$name}-id";
+			$div_adder_id = "{$taxonomy}-adder";
+			$link_adder_id = "{$taxonomy}-add-toggle";
+			$link_adder_p_id = "{$taxonomy}-add";
+			$div_search_id = "{$taxonomy}-searcher";
+			$link_search_id = "{$taxonomy}-search-toggle";
+			$link_search_p_id = "{$taxonomy}-search";
+			$input_new_name = "new{$taxonomy}";
+			$input_new_id = "new{$taxonomy}";
+			$input_new_parent_name = "new{$taxonomy}_parent";
+			$input_new_submit_id = "{$taxonomy}-add-submit";
+			$span_ajax_id = "{$taxonomy}-ajax-response";
+		}
+		
+
+		?>
+		<div id="<?php echo $div_taxonomy_id; ?>" class="categorydiv">
+			<ul id="<?php echo $tabs_ul_id; ?>" class="category-tabs">
+				<li class="tabs"><a href="#<?php echo $tab_all_id; ?>"><?php echo $tax->labels->all_items; ?></a></li>
+				<li class="hide-if-no-js"><a href="#<?php echo $tab_pop_id; ?>"><?php _e( 'Most Used' ); ?></a></li>
+			</ul>
+	
+			<div id="<?php echo $tab_pop_id; ?>" class="tabs-panel" style="display: none;">
+				<ul id="<?php echo $tab_pop_ul_id; ?>" class="categorychecklist form-no-clear" >
+					<?php $popular_ids = wp_popular_terms_checklist($taxonomy); ?>
+				</ul>
+			</div>
+	
+			<div id="<?php echo $tab_all_id; ?>" class="tabs-panel">
+				<?php
+				echo "<input type='hidden' name='{$input_terms_name}' id='{$input_terms_id}' value='0' />"; // Allows for an empty term set to be sent. 0 is an invalid Term ID and will be ignored by empty() checks.
+				?>
+				<ul id="<?php echo $tab_all_ul_id; ?>" data-wp-lists="list:<?php echo $taxonomy?>" class="categorychecklist form-no-clear">
+					<?php wp_terms_checklist($post->ID, array( 'taxonomy' => $taxonomy, 'popular_cats' => $popular_ids ) ) ?>
+				</ul>
+			</div>
+		<?php if ( current_user_can($tax->cap->edit_terms) ) : ?>
+				<div id="<?php echo $div_adder_id; ?>" class="wp-hidden-children">
+					<h4>
+						<a id="<?php echo $link_adder_id; ?>" href="#<?php echo $link_adder_p_id; ?>" class="hide-if-no-js">
+							<?php
+								/* translators: %s: add new taxonomy label */
+								printf( __( '+ %s', 'media-library-assistant' ), $tax->labels->add_new_item );
+							?>
+						</a>
+						&nbsp;&nbsp;
+						<a id="<?php echo $link_search_id; ?>" href="#<?php echo $link_search_p_id; ?>" class="hide-if-no-js">
+							<?php
+								echo __( '? Search', 'media-library-assistant' );
+							?>
+						</a>
+					</h4>
+					<p id="<?php echo $link_adder_p_id; ?>" class="category-add wp-hidden-child">
+						<label class="screen-reader-text" for="<?php echo $input_new_name; ?>"><?php echo $tax->labels->add_new_item; ?></label>
+						<input type="text" name="<?php echo $input_new_name; ?>" id="<?php echo $input_new_id; ?>" class="form-required form-input-tip" value="<?php echo esc_attr( $tax->labels->new_item_name ); ?>" aria-required="true"/>
+						<label class="screen-reader-text" for="<?php echo $input_new_parent_name; ?>">
+							<?php echo $tax->labels->parent_item_colon; ?>
+						</label>
+						<?php wp_dropdown_categories( array( 'taxonomy' => $taxonomy, 'hide_empty' => 0, 'name' => $input_new_parent_name, 'orderby' => 'name', 'hierarchical' => 1, 'show_option_none' => '&mdash; ' . $tax->labels->parent_item . ' &mdash;' ) ); ?>
+						<input type="button" id="<?php echo $input_new_submit_id; ?>" data-wp-lists="add:<?php echo $taxonomy ?>checklist:<?php echo $taxonomy ?>-add" class="button category-add-submit" value="<?php echo esc_attr( $tax->labels->add_new_item ); ?>" />
+						<?php wp_nonce_field( 'add-'.$taxonomy, '_ajax_nonce-add-'.$taxonomy, false ); ?>
+						<span id="<?php echo $span_ajax_id; ?>"></span>
+					</p>
+				</div>
+				<div id="<?php echo $div_search_id; ?>" class="wp-hidden-children">
+					<p id="<?php echo $link_search_p_id; ?>" class="category-add wp-hidden-child">
+						<label class="screen-reader-text" for="search-<?php echo $taxonomy; ?>"><?php echo $tax->labels->search_items; ?></label>
+						<input type="text" name="search-<?php echo $taxonomy; ?>" id="search-<?php echo $taxonomy; ?>" class="form-required form-input-tip" value="<?php echo esc_attr( $tax->labels->search_items ); ?>" aria-required="true"/>
+						<?php wp_nonce_field( 'search-'.$taxonomy, '_ajax_nonce-search-'.$taxonomy, false ); ?>
+						<span id="<?php echo $taxonomy; ?>-ajax-response"></span>
+					</p>
+				</div>
+			<?php endif; ?>
+		</div>
+		<?php
+	} // mla_hierarchical_meta_box
 } //Class MLAEdit
 ?>

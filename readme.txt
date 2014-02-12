@@ -4,7 +4,7 @@ Donate link: http://fairtradejudaica.org/make-a-difference/donate/
 Tags: attachment, attachments, documents, gallery, image, images, media, library, media library, media-tags, media tags, tags, media categories, categories, IPTC, EXIF, GPS, PDF, meta, metadata, photo, photos, photograph, photographs, photoblog, photo albums, lightroom, photoshop, MIME, mime-type, icon, upload, file extensions
 Requires at least: 3.3
 Tested up to: 3.8
-Stable tag: 1.70
+Stable tag: 1.71
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -123,6 +123,16 @@ All of the MLA source code has been annotated with "DocBlocks", a special type o
 
 == Changelog ==
 
+= 1.71 =
+* New: **Searchable Category meta boxes** have been added to the Media/Edit Media screen. Click the "$ Search" link at the bottom of the meta box and type all or part of a term in the textbox to filter the display.
+* New: **Attachment Display Settings** options added to the Settings/Media Library Assistant General tab allowing a convenient way to manage the WordPress 'image_default_link_type', 'image_default_align', and 'image_default_size' options.
+* Fix: Drag and Drop re-ordering of WordPress `[gallery]` items is now preserved in the Media Manager "Edit Gallery" Modal Window.
+* Fix: Updated data is now properly displayed after Quick Edit changes it, e.g., ALT Text.
+* Fix: Some internationalization/initialization logic moved from `admin_init` action to the `init` action to accomodate (rare) "front end" use of table column names, e.g., the "Views" table.
+* Fix: Modest database access reductions in the Media/Assistant submenu table preparation.
+* Fix: Eliminated PHP Warning and Notice messages from `class-mla-mime-types.php` in WP v3.5.x.
+* Fix: Corrected post ID parameter defect in the `mla_mapping_updates` filter during IPTC/EXIF mapping.
+
 = 1.70 =
 * New: **Internationalization (i18n) and Localization (l10n) support!** All of the internationalization work in the plugin source code has been completed and there is a Portable Object Template (.POT) available in the "/languages" directory. I don't have working knowledge of anything but English, but if you'd like to volunteer to produce a translation, I would be delighted to work with you to make it happen. Have a look at the "MLA Internationalization Guide.php" file in the languages directory and get in touch.
 * New: For Custom Field and IPTC/EXIF mapping, **twelve new `apply_filters/do_action` hooks**  give you complete control over rule execution and value creation from PHP code in your theme or in another plugin. More information in the "Other Notes" section here. A complete, working example is provided in the Settings/Media Library Assistant Documentation tab.
@@ -192,8 +202,8 @@ All of the MLA source code has been annotated with "DocBlocks", a special type o
 
 == Upgrade Notice ==
 
-= 1.70 =
-Internationalization and localization support! Custom Field and IPTC/EXIF Mapping hooks. One other enhancement, six fixes.
+= 1.71 =
+Searchable Category meta boxes for the Media/Edit Media screen. Support for the WordPress "Attachment Display Settings". Six fixes.
 
 == Other Notes ==
 

@@ -258,7 +258,7 @@ class MLAMime {
 	 *
 	 * @return	array	Updated allowed MIME types
 	 */
-	public static function mla_upload_mimes_filter( $mime_types, $user ) {
+	public static function mla_upload_mimes_filter( $mime_types, $user = NULL ) {
 		global $wp_filter;
 
 		if ( self::$disable_mla_filtering || ! self::_get_upload_mime_templates() ) {

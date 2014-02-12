@@ -101,7 +101,7 @@ class MLAObjects {
 			} // taxonomy support
 		} // foreach
 	} // _build_taxonomies
-
+	
 	/**
 	 * WordPress Filter for edit taxonomy "Attachments" column,
 	 * which replaces the "Posts" column with an equivalent "Attachments" column.
@@ -190,7 +190,6 @@ class MLAObjects {
 		}
 		
 		$results = new WP_Query( $request );
-		error_log( 'ids results = ' . var_export( $results, true ), 0 );
 		if ( ! empty( $results->error ) ){
 			/* translators: 1: taxonomy 2: error message */
 			error_log( sprintf( _x( 'ERROR: mla_taxonomy_column_filter( "%1$s" ) - WP_Query failed: "%2$s"', 'error_log', 'media-library-assistant' ), $taxonomy, $results->error ), 0 );

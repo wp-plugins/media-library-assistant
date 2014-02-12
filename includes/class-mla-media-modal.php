@@ -69,8 +69,102 @@ class MLAModal {
 			add_action( 'print_media_templates', 'MLAModal::mla_print_media_templates_action', 10, 0 );
 			add_action( 'admin_init', 'MLAModal::mla_admin_init_ajax_action' );
 			add_action( 'wp_ajax_' . self::JAVASCRIPT_MEDIA_MODAL_SLUG, 'MLAModal::mla_query_attachments_action' );
+
+			add_filter( 'get_media_item_args', 'MLAModal::mla_get_media_item_args_filter', 10, 1 );
+			add_filter( 'attachment_fields_to_edit', 'MLAModal::mla_attachment_fields_to_edit_filter', 10, 2 );
 		} // $wordpress_3point5_plus
 	}
+
+	/**
+	 * Saves the get_media_item_args array for the attachment_fields_to_edit filter
+	 *
+	 * Declared public because it is a filter.
+	 *
+	 * @since 1.71
+	 *
+	 * @param	array	arguments for the get_media_item function in /wp-admin/includes/media.php
+	 *
+	 * @return	array	arguments for the get_media_item function (unchanged)
+	 */
+	public static function mla_get_media_item_args_filter( $args ) {
+		self::$media_item_args = $args;
+		return $args;
+	} // mla_get_media_item_args_filter
+	
+	/**
+	 * The get_media_item_args array
+	 *
+	 * @since 1.71
+	 *
+	 * @var	array ( 'errors' => array of strings, 'in_modal => boolean )
+	 */
+	private static $media_item_args = array( 'errors' => null, 'in_modal' => false );
+
+	/**
+	 * Add/change custom fields to the Edit Media screen and Modal Window
+	 *
+	 * Called from /wp-admin/includes/media.php, function get_compat_media_markup();
+	 * If "get_media_item_args"['in_modal'] => false ) its the Edit Media screen.
+	 * If "get_media_item_args"['in_modal'] => true ) its the Media Manager Modal Window.
+	 * For the Modal Window, $form_fields contains all the "compat-attachment-fields"
+	 * including the taxonomies, which we want to enhance.
+	 * Declared public because it is a filter.
+	 *
+	 * @since 1.71
+	 *
+	 * @param	array	descriptors for the "compat-attachment-fields" 
+	 * @param	object	the post to be edited
+	 *
+	 * @return	array	updated descriptors for the "compat-attachment-fields"
+	 */
+	public static function mla_attachment_fields_to_edit_filter( $form_fields, $post ) {
+
+		if ( isset( self::$media_item_args['in_modal'] ) && self::$media_item_args['in_modal'] ) {
+			$taxonomies = get_taxonomies( array ( 'show_ui' => true ), 'objects' );
+	
+			foreach ( $taxonomies as $key => $value ) {
+				if ( MLAOptions::mla_taxonomy_support( $key ) ) {
+					if ( isset( $form_fields[ $key ] ) ) {
+						$field = $form_fields[ $key ];
+					} else {
+						continue;
+					}
+					
+					if ( $value->hierarchical ) {
+						if ( 'checked' == MLAOptions::mla_get_option( MLAOptions::MLA_MEDIA_MODAL_DETAILS_CATEGORY_METABOX ) ) {
+							continue;
+
+							$box = array (
+								'id' => $key . 'div',
+								'title' => $field['labels']->name,
+								'callback' => 'MLAEdit::mla_hierarchical_meta_box',
+								'args' => array ( 'taxonomy' => $key, 'in_modal' => true ),
+								
+							);
+							
+					        ob_start();
+							MLAEdit::mla_hierarchical_meta_box( $post, $box );
+							$row_content = ob_get_clean();
+							
+							$row  = "\t\t<tr class='compat-field-{$key}'>\n";
+							$row .= "\t\t<td>\n";
+							$row .= $row_content;
+							$row .= "\t\t</td>\n";
+							$row .= "\t\t</tr>\n";
+							$form_fields[ $key ] = array( 'tr' => $row );
+						} // checked
+					} else { // hierarchical
+						if ( 'checked' == MLAOptions::mla_get_option( MLAOptions::MLA_MEDIA_MODAL_DETAILS_TAG_METABOX ) ) {
+							continue;
+						} // checked
+					} // flat
+				} // is supported
+			} // foreach
+		} // in_modal
+		
+		self::$media_item_args = array( 'errors' => null, 'in_modal' => false );
+		return $form_fields;
+	} // mla_attachment_fields_to_edit_filter
 
 	/**
 	 * Display a monthly dropdown for filtering items
@@ -274,26 +368,29 @@ class MLAModal {
 			$height = '50px';
 		}
 
-		echo '<style type="text/css">' . "\r\n";
+//		W3C says style is not allowed within a div
+//		echo '<script type="text/html" id="tmpl-mla-search-box-css">' . "\n";
+		echo "\t" . '<style type="text/css">' . "\n";
 
 		if ( self::$mla_media_modal_settings['enableSearchBox'] ) {
-			echo "\t\t.media-frame .media-frame-content .media-toolbar-secondary {\r\n";
-			echo "\t\t\twidth: 150px; }\r\n";
+			echo "\t\t.media-frame .media-frame-content .media-toolbar-secondary {\n";
+			echo "\t\t\twidth: 150px; }\n";
 		}
 
-		echo "\t\t.media-frame .media-frame-content .attachments-browser .media-toolbar {\r\n";
-		echo "\t\t\theight: {$height}; }\r\n";
-		echo "\t\t.media-frame .media-frame-content .attachments-browser .attachments,\r\n";
-		echo "\t\t.media-frame .media-frame-content .attachments-browser .uploader-inline {\r\n";
-		echo "\t\t\ttop: {$height}; }\r\n";
-		echo "\t\t.media-frame .media-frame-content p.search-box {\r\n";
-		echo "\t\t\tmargin-top: 7px;\r\n";
-		echo "\t\t\tpadding: 4px;\r\n";
-		echo "\t\t\tline-height: 18px;\r\n";
-		echo "\t\t\tcolor: #464646;\r\n";
-		echo "\t\t\tfont-family: sans-serif;\r\n";
-		echo "\t\t\t-webkit-appearance: none; }\r\n";
-		echo "\t" . '</style>' . "\r\n";
+		echo "\t\t.media-frame .media-frame-content .attachments-browser .media-toolbar {\n";
+		echo "\t\t\theight: {$height}; }\n";
+		echo "\t\t.media-frame .media-frame-content .attachments-browser .attachments,\n";
+		echo "\t\t.media-frame .media-frame-content .attachments-browser .uploader-inline {\n";
+		echo "\t\t\ttop: {$height}; }\n";
+		echo "\t\t.media-frame .media-frame-content p.search-box {\n";
+		echo "\t\t\tmargin-top: 7px;\n";
+		echo "\t\t\tpadding: 4px;\n";
+		echo "\t\t\tline-height: 18px;\n";
+		echo "\t\t\tcolor: #464646;\n";
+		echo "\t\t\tfont-family: sans-serif;\n";
+		echo "\t\t\t-webkit-appearance: none; }\n";
+		echo "\t" . '</style>' . "\n";
+/*		echo "\t" . '</script>' . "\n"; */
 
 		/*
 		 * Compose the Search Media box
@@ -386,7 +483,7 @@ class MLAModal {
 				$_REQUEST['action'] = self::JAVASCRIPT_MEDIA_MODAL_SLUG;
 			}
 		}
-	} // mla_print_media_templates_action
+	} // mla_admin_init_ajax_action
 
 	/**
 	 * Ajax handler for Media Manager queries 

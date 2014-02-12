@@ -1109,9 +1109,8 @@ class MLAData {
 	 *
 	 * @return	integer	Number of attachment posts
 	 */
-	public static function mla_count_list_table_items( $request, $offset = NULL, $count = NULL )
-	{
-		if ( NULL != $offset && NULL != $count ) {
+	public static function mla_count_list_table_items( $request, $offset = NULL, $count = NULL ) {
+		if ( NULL !== $offset && NULL !== $count ) {
 			$request = self::_prepare_list_table_query( $request, $offset, $count );
 			self::$mla_list_table_items = self::_execute_list_table_query( $request );
 			return self::$mla_list_table_items->found_posts;
@@ -1270,7 +1269,7 @@ class MLAData {
 					$clean_request[ $key ] = sanitize_key( $value );
 					break;
 				case 'orderby':
-					if ( 'none' == $value ) {
+					if ( in_array( $value, array( 'none', 'post__in' ) ) ) {
 						$clean_request[ $key ] = $value;
 					} else {
 						$sortable_columns = MLA_List_Table::mla_get_sortable_columns( );
@@ -1855,12 +1854,17 @@ class MLAData {
 		if ( isset( self::$query_parameters['orderby'] ) ) {
 			if ( 'c_' == substr( self::$query_parameters['orderby'], 0, 2 ) ) {
 				$orderby = self::$mla_alt_text_view . '.meta_value';
-			} else { // custom field sort
+			} /* custom field sort */ else { 
 				switch ( self::$query_parameters['orderby'] ) {
 					case 'none':
 						$orderby = '';
 						$orderby_clause = '';
 						break;
+					/*
+					 * post__in is passed from Media Manager Modal Window
+					 */
+					case 'post__in':
+						return $orderby_clause;
 					/*
 					 * There are two columns defined that end up sorting on post_title,
 					 * so we can't use the database column to identify the column but
@@ -1969,6 +1973,9 @@ class MLAData {
 
 		if ( $save_id == $parent_id ) {
 			return $parent_data;
+		} elseif ( $parent_id == -1 ) {
+			$save_id = -1;
+			return NULL;
 		}
 
 		$parent_data = array();
@@ -2126,10 +2133,13 @@ class MLAData {
 	 * @return	array	Meta data variables
 	 */
 	public static function mla_fetch_attachment_metadata( $post_id ) {
-		static $save_id = 0, $results;
+		static $save_id = -1, $results;
 
 		if ( $save_id == $post_id ) {
 			return $results;
+		} elseif ( $post_id == -1 ) {
+			$save_id = -1;
+			return NULL;
 		}
 
 		$attached_file = NULL;
@@ -2209,10 +2219,13 @@ class MLAData {
 	 */
 	public static function mla_fetch_attachment_references( $ID, $parent ) {
 		global $wpdb;
-		static $save_id = 0, $references, $inserted_in_option = NULL;
+		static $save_id = -1, $references, $inserted_in_option = NULL;
 
 		if ( $save_id == $ID ) {
 			return $references;
+		} elseif ( $ID == -1 ) {
+			$save_id = -1;
+			return NULL;
 		}
 
 		/*
@@ -5009,7 +5022,11 @@ class MLAData {
 				'body' => '' 
 			);
 		} else {
-			self::mla_get_attachment_by_id( -1 ); // invalidate the cached item
+			// invalidate the cached item
+			self::mla_get_attachment_by_id( -1 );
+			self::mla_fetch_attachment_parent_data( -1 );
+			self::mla_fetch_attachment_metadata( -1 );
+			self::mla_fetch_attachment_references( -1, 0 );
 
 			if ( wp_update_post( $updates ) ) {
 				/* translators: 1: post ID */
@@ -5104,7 +5121,7 @@ class MLAData {
 		$print_offset = ( 0 <= $offset );
 
 		if ( $print_offset ) {
-			$print_length = $bytes_per_row += 5;
+			$print_length = $bytes_per_row + 5;
 		} else {
 			$print_length = $bytes_per_row;
 		}

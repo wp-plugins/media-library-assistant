@@ -56,6 +56,8 @@
 <i class="icon-custom icon-method"></i> Methods</li>
 <li class="method public "><a href="#initialize" title="initialize :: Initialization function, similar to __construct()"><span class="description">Initialization function, similar to __construct()</span><pre>initialize()</pre></a></li>
 <li class="method public "><a href="#mla_admin_init_ajax_action" title="mla_admin_init_ajax_action :: Adjust ajax handler for Media Manager queries"><span class="description">Adjust ajax handler for Media Manager queries</span><pre>mla_admin_init_ajax_action()</pre></a></li>
+<li class="method public "><a href="#mla_attachment_fields_to_edit_filter" title="mla_attachment_fields_to_edit_filter :: Add/change custom fields to the Edit Media screen and Modal Window"><span class="description">Add/change custom fields to the Edit Media screen and Modal Window</span><pre>mla_attachment_fields_to_edit_filter()</pre></a></li>
+<li class="method public "><a href="#mla_get_media_item_args_filter" title="mla_get_media_item_args_filter :: Saves the get_media_item_args array for the attachment_fields_to_edit filter"><span class="description">Saves the get_media_item_args array for the attachment_fields_to_edit filter</span><pre>mla_get_media_item_args_filter()</pre></a></li>
 <li class="method public "><a href="#mla_media_view_settings_filter" title="mla_media_view_settings_filter :: Adds settings values to be passed to the Media Manager in /wp-includes/js/media-views.js."><span class="description">Adds settings values to be passed to the Media Manager in /wp-includes/js/media-views.js.</span><pre>mla_media_view_settings_filter()</pre></a></li>
 <li class="method public "><a href="#mla_media_view_strings_filter" title="mla_media_view_strings_filter :: Adds strings values to be passed to the Media Manager in /wp-includes/js/media-views.js."><span class="description">Adds strings values to be passed to the Media Manager in /wp-includes/js/media-views.js.</span><pre>mla_media_view_strings_filter()</pre></a></li>
 <li class="method public "><a href="#mla_print_media_templates_action" title="mla_print_media_templates_action :: Prints the templates used in the MLA Media Manager enhancements."><span class="description">Prints the templates used in the MLA Media Manager enhancements.</span><pre>mla_print_media_templates_action()</pre></a></li>
@@ -67,6 +69,7 @@
 <li class="nav-header">
 <i class="icon-custom icon-property"></i> Properties</li>
 <li class="nav-header private">» Private</li>
+<li class="property private "><a href="#%24media_item_args" title="$media_item_args :: The get_media_item_args array"><span class="description">The get_media_item_args array</span><pre>$media_item_args</pre></a></li>
 <li class="property private "><a href="#%24mla_media_modal_settings" title="$mla_media_modal_settings :: Share the settings values between mla_media_view_settings_filter
 and mla_print_media_templates_action"><span class="description">Share the settings values between mla_media_view_settings_filter
 and mla_print_media_templates_action</span><pre>$mla_media_modal_settings</pre></a></li>
@@ -125,6 +128,54 @@ and mla_print_media_templates_action</span><pre>$mla_media_modal_settings</pre><
 <th>since</th>
 <td>1.20</td>
 </tr></table>
+</div></div>
+</div>
+<a name="mla_attachment_fields_to_edit_filter" id="mla_attachment_fields_to_edit_filter"></a><div class="element clickable method public mla_attachment_fields_to_edit_filter" data-toggle="collapse" data-target=".mla_attachment_fields_to_edit_filter .collapse">
+<h2>Add/change custom fields to the Edit Media screen and Modal Window</h2>
+<pre>mla_attachment_fields_to_edit_filter(array $form_fields, object $post) : array</pre>
+<div class="labels"></div>
+<div class="row collapse"><div class="detail-description">
+<p class="long_description"><p>Called from /wp-admin/includes/media.php, function get_compat_media_markup();
+If "get_media_item_args"['in_modal'] => false ) its the Edit Media screen.
+If "get_media_item_args"['in_modal'] => true ) its the Media Manager Modal Window.
+For the Modal Window, $form_fields contains all the "compat-attachment-fields"
+including the taxonomies, which we want to enhance.
+Declared public because it is a filter.</p></p>
+<table class="table table-bordered"><tr>
+<th>since</th>
+<td>1.71</td>
+</tr></table>
+<h3>Parameters</h3>
+<div class="subelement argument">
+<h4>$form_fields</h4>
+<code>array</code><p>descriptors for the "compat-attachment-fields"</p>
+</div>
+<div class="subelement argument">
+<h4>$post</h4>
+<code>object</code><p>the post to be edited</p></div>
+<h3>Returns</h3>
+<div class="subelement response">
+<code>array</code>updated descriptors for the "compat-attachment-fields"</div>
+</div></div>
+</div>
+<a name="mla_get_media_item_args_filter" id="mla_get_media_item_args_filter"></a><div class="element clickable method public mla_get_media_item_args_filter" data-toggle="collapse" data-target=".mla_get_media_item_args_filter .collapse">
+<h2>Saves the get_media_item_args array for the attachment_fields_to_edit filter</h2>
+<pre>mla_get_media_item_args_filter(array $args) : array</pre>
+<div class="labels"></div>
+<div class="row collapse"><div class="detail-description">
+<p class="long_description"><p>Declared public because it is a filter.</p></p>
+<table class="table table-bordered"><tr>
+<th>since</th>
+<td>1.71</td>
+</tr></table>
+<h3>Parameters</h3>
+<div class="subelement argument">
+<h4>$args</h4>
+<code>array</code><p>arguments for the get_media_item function in /wp-admin/includes/media.php</p>
+</div>
+<h3>Returns</h3>
+<div class="subelement response">
+<code>array</code>arguments for the get_media_item function (unchanged)</div>
 </div></div>
 </div>
 <a name="mla_media_view_settings_filter" id="mla_media_view_settings_filter"></a><div class="element clickable method public mla_media_view_settings_filter" data-toggle="collapse" data-target=".mla_media_view_settings_filter .collapse">
@@ -251,6 +302,18 @@ and mla_print_media_templates_action</span><pre>$mla_media_modal_settings</pre><
 </div>
 <h3>
 <i class="icon-custom icon-property"></i> Properties</h3>
+<a name="%24media_item_args" id="$media_item_args"> </a><div class="element clickable property private $media_item_args" data-toggle="collapse" data-target=".$media_item_args .collapse">
+<h2>The get_media_item_args array</h2>
+<pre>$media_item_args : array</pre>
+<div class="labels"></div>
+<div class="row collapse"><div class="detail-description">
+<p class="long_description"></p>
+<table class="table table-bordered"><tr>
+<th>since</th>
+<td>1.71</td>
+</tr></table>
+</div></div>
+</div>
 <a name="%24mla_media_modal_settings" id="$mla_media_modal_settings"> </a><div class="element clickable property private $mla_media_modal_settings" data-toggle="collapse" data-target=".$mla_media_modal_settings .collapse">
 <h2>Share the settings values between mla_media_view_settings_filter
 and mla_print_media_templates_action</h2>
@@ -309,7 +372,7 @@ and mla_print_media_templates_action</h2>
 <div class="row"><footer class="span12">
             Template is built using <a href="http://twitter.github.com/bootstrap/">Twitter Bootstrap 2</a> and icons provided by <a href="http://glyphicons.com/">Glyphicons</a>.<br>
             Documentation is powered by <a href="http://www.phpdoc.org/">phpDocumentor 2.0.0a8</a> and<br>
-            generated on 2014-01-11T19:47:37-08:00.<br></footer></div>
+            generated on 2014-02-11T20:56:42-08:00.<br></footer></div>
 </div>
 </body>
 </html>

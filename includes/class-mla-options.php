@@ -356,7 +356,7 @@ class MLAOptions {
 	 * Localization must be done at runtime, and these calls cannot be placed
 	 * in the "public static" array definition itself.
 	 *
-	 * @since 1.6x
+	 * @since 1.70
 	 *
 	 * @return	void
 	 */
@@ -636,6 +636,53 @@ class MLAOptions {
 					'options' => array('default', 'ASC', 'DESC'),
 					'texts' => array( '&mdash; ' . __( 'Media Manager Default', 'media-library-assistant' ) . ' &mdash;', 'Ascending', 'Descending' ),
 					'help' => __( 'Choose the sort order.', 'media-library-assistant' )),
+
+			'attachment_display_settings_subheader' =>
+				array('tab' => 'general',
+					'name' => __( 'Attachment Display Settings', 'media-library-assistant' ),
+					'type' => 'subheader'),
+
+			'image_default_align' =>
+				array('tab' => 'general',
+					'name' => __( 'Alignment', 'media-library-assistant' ),
+					/* translators: 1: option name, e.g., Alignment, Link To or Size */
+					'help' => __( sprintf( 'Select a value for the default %1$s option in the Attachment Display Settings.', __( 'Alignment', 'media-library-assistant' ) ), 'media-library-assistant' ),
+					'std' =>  'default', 
+					'options' => array('default', 'left', 'center', 'right', 'none'),
+					'texts' => array('&mdash; ' . __( 'Media Manager Default', 'media-library-assistant' ) . ' &mdash;', __( 'Left', 'media-library-assistant' ), __( 'Center', 'media-library-assistant' ), __( 'Right', 'media-library-assistant' ), __( 'None', 'media-library-assistant' )),
+					'type' => 'custom',
+					'render' => 'mla_attachment_display_settings_option_handler',
+					'update' => 'mla_attachment_display_settings_option_handler',
+					'delete' => 'mla_attachment_display_settings_option_handler',
+					'reset' => 'mla_attachment_display_settings_option_handler'),
+
+			'image_default_link_type' =>
+				array('tab' => 'general',
+					'name' => __( 'Link To', 'media-library-assistant' ),
+					/* translators: 1: option name, e.g., Alignment, Link To or Size */
+					'help' => __( sprintf( 'Select a value for the default %1$s option in the Attachment Display Settings.', __( 'Link To', 'media-library-assistant' ) ), 'media-library-assistant' ),
+					'std' =>  'default', 
+					'options' => array('default', 'file', 'post', 'custom', 'none'),
+					'texts' => array('&mdash; ' . __( 'Media Manager Default', 'media-library-assistant' ) . ' &mdash;', __( 'Media File', 'media-library-assistant' ), __( 'Attachment Page', 'media-library-assistant' ), __( 'Custom URL', 'media-library-assistant' ), __( 'None', 'media-library-assistant' )),
+					'type' => 'custom',
+					'render' => 'mla_attachment_display_settings_option_handler',
+					'update' => 'mla_attachment_display_settings_option_handler',
+					'delete' => 'mla_attachment_display_settings_option_handler',
+					'reset' => 'mla_attachment_display_settings_option_handler'),
+
+			'image_default_size' =>
+				array('tab' => 'general',
+					'name' => __( 'Size', 'media-library-assistant' ),
+					/* translators: 1: option name, e.g., Alignment, Link To or Size */
+					'help' => __( sprintf( 'Select a value for the default %1$s option in the Attachment Display Settings.', __( 'Size', 'media-library-assistant' ) ), 'media-library-assistant' ),
+					'std' =>  'default', 
+					'options' => array('default', 'thumbnail', 'medium', 'large', 'full'),
+					'texts' => array('&mdash; ' . __( 'Media Manager Default', 'media-library-assistant' ) . ' &mdash;', __( 'Thumbnail', 'media-library-assistant' ), __( 'Medium', 'media-library-assistant' ), __( 'Large', 'media-library-assistant' ), __( 'Full Size', 'media-library-assistant' )),
+					'type' => 'custom',
+					'render' => 'mla_attachment_display_settings_option_handler',
+					'update' => 'mla_attachment_display_settings_option_handler',
+					'delete' => 'mla_attachment_display_settings_option_handler',
+					'reset' => 'mla_attachment_display_settings_option_handler'),
 
 			'template_header' =>
 				array('tab' => 'mla_gallery',
@@ -1273,6 +1320,70 @@ class MLAOptions {
 				return false;
 		} // $support_type
 	} // mla_taxonomy_support
+
+	/**
+	 * Render and manage Attachment Display Settings options; alignment, link type and size
+ 	 *
+	 * @since 1.71
+	 * @uses MLASettings::$page_template_array contains select_option and select templates
+	 *
+	 * @param	string 	'render', 'update', 'delete', or 'reset'
+	 * @param	string 	option name, e.g., 'image_default_align'
+	 * @param	array 	option parameters
+	 * @param	array 	Optional. null (default) for 'render' else option data, e.g., $_REQUEST
+	 *
+	 * @return	string	HTML table row markup for 'render' else message(s) reflecting the results of the operation.
+	 */
+	public static function mla_attachment_display_settings_option_handler( $action, $key, $value, $args = null ) {
+		switch ( $action ) {
+			case 'render':
+				$current_value = get_option( $key );
+				if ( empty( $current_value ) ) {
+					$current_value = $value['std'];
+				}
+				
+				$select_options = '';
+				foreach ( $value['options'] as $optid => $option ) {
+					$option_values = array(
+						'selected' => '',
+						'value' => $option,
+						'text' => $value['texts'][$optid]
+					);
+
+					if ( $option == $current_value ) {
+						$option_values['selected'] = 'selected="selected"';
+					}
+
+					$select_options .= MLAData::mla_parse_template( MLASettings::$page_template_array['select-option'], $option_values );
+				}
+
+				$option_values = array(
+					'key' => MLA_OPTION_PREFIX . $key,
+					'value' => $value['name'],
+					'options' => $select_options,
+					'help' => $value['help'] 
+				);
+
+				return MLAData::mla_parse_template( MLASettings::$page_template_array['select'], $option_values );
+			case 'update':
+			case 'delete':
+				$msg = '<br>update_option(' . $key . ")\r\n";
+				$new_value = $args[ MLA_OPTION_PREFIX . $key ];
+				if ( $value['std'] == $new_value ) {
+					$new_value = '';
+				}
+				
+				update_option( $key, $new_value );
+				return $msg;
+			case 'reset':
+				$msg = '<br>update_option(' . $key . ")\r\n";
+				update_option( $key, '' );
+				return $msg;
+			default:
+				/* translators: 1: option name 2: action, e.g., update, delete, reset */
+				return '<br>' . sprintf( __( 'ERROR: Custom %1$s unknown action "%2$s"', 'media-library-assistant' ), $key, $action ) . "\r\n";
+		}
+	} // mla_attachment_display_settings_option_handler
 
 	/**
 	 * Render and manage taxonomy support options, e.g., Categories and Post Tags
@@ -3258,7 +3369,7 @@ class MLAOptions {
 			}
 		} // update custom field mappings
 
-		$updates = apply_filters( 'mla_mapping_updates', $updates, $post_id, $category, $settings, $attachment_metadata );
+		$updates = apply_filters( 'mla_mapping_updates', $updates, $post->ID, $category, $settings, $attachment_metadata );
 		return $updates;
 	} // mla_evaluate_iptc_exif_mapping
 

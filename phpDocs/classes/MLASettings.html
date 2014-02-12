@@ -117,12 +117,12 @@ without saving the settings to the mla_option</span><pre>_process_iptc_exif_taxo
 <li class="method private "><a href="#_version_upgrade" title="_version_upgrade :: Database and option update check, for installing new versions"><span class="description">Database and option update check, for installing new versions</span><pre>_version_upgrade()</pre></a></li>
 <li class="nav-header">
 <i class="icon-custom icon-property"></i> Properties</li>
+<li class="property public "><a href="#%24page_template_array" title="$page_template_array :: Template file for the Settings page(s) and parts"><span class="description">Template file for the Settings page(s) and parts</span><pre>$page_template_array</pre></a></li>
 <li class="nav-header private">» Private</li>
 <li class="property private "><a href="#%24current_page_hook" title="$current_page_hook :: Holds screen id to match help text to corresponding screen"><span class="description">Holds screen id to match help text to corresponding screen</span><pre>$current_page_hook</pre></a></li>
 <li class="property private "><a href="#%24mla_tablist" title="$mla_tablist :: Definitions for Settings page tab ids, titles and handlers
 Each tab is defined by an array with the following elements:"><span class="description">Definitions for Settings page tab ids, titles and handlers
 Each tab is defined by an array with the following elements:</span><pre>$mla_tablist</pre></a></li>
-<li class="property private "><a href="#%24page_template_array" title="$page_template_array :: Template file for the Settings page(s) and parts"><span class="description">Template file for the Settings page(s) and parts</span><pre>$page_template_array</pre></a></li>
 <li class="nav-header">
 <i class="icon-custom icon-constant"></i> Constants</li>
 <li class="constant  "><a href="#JAVASCRIPT_INLINE_EDIT_UPLOAD_OBJECT" title="JAVASCRIPT_INLINE_EDIT_UPLOAD_OBJECT :: Object name for localizing JavaScript - MLA View List Table"><span class="description">Object name for localizing JavaScript - MLA View List Table</span><pre>JAVASCRIPT_INLINE_EDIT_UPLOAD_OBJECT</pre></a></li>
@@ -341,7 +341,7 @@ add settings link in the Plugins section entry for MLA.</h2>
 in the "public static" array definition itself.</p></p>
 <table class="table table-bordered"><tr>
 <th>since</th>
-<td>1.6x</td>
+<td>1.70</td>
 </tr></table>
 </div></div>
 </div>
@@ -1061,6 +1061,19 @@ without saving the settings to the mla_option</h2>
 </div>
 <h3>
 <i class="icon-custom icon-property"></i> Properties</h3>
+<a name="%24page_template_array" id="$page_template_array"> </a><div class="element clickable property public $page_template_array" data-toggle="collapse" data-target=".$page_template_array .collapse">
+<h2>Template file for the Settings page(s) and parts</h2>
+<pre>$page_template_array : array</pre>
+<div class="labels"></div>
+<div class="row collapse"><div class="detail-description">
+<p class="long_description"><p>This array contains all of the template parts for the Settings page(s). The array is built once
+each page load and cached for subsequent use.</p></p>
+<table class="table table-bordered"><tr>
+<th>since</th>
+<td>0.80</td>
+</tr></table>
+</div></div>
+</div>
 <a name="%24current_page_hook" id="$current_page_hook"> </a><div class="element clickable property private $current_page_hook" data-toggle="collapse" data-target=".$current_page_hook .collapse">
 <h2>Holds screen id to match help text to corresponding screen</h2>
 <pre>$current_page_hook : array</pre>
@@ -1087,19 +1100,6 @@ because Localization calls cannot be placed in the "public static" array definit
 <p>title => tab label / heading text
 render => rendering function for tab messages and content. Usage:
     $tab_content = <a href="">'render'</a>;</p></p>
-<table class="table table-bordered"><tr>
-<th>since</th>
-<td>0.80</td>
-</tr></table>
-</div></div>
-</div>
-<a name="%24page_template_array" id="$page_template_array"> </a><div class="element clickable property private $page_template_array" data-toggle="collapse" data-target=".$page_template_array .collapse">
-<h2>Template file for the Settings page(s) and parts</h2>
-<pre>$page_template_array : array</pre>
-<div class="labels"></div>
-<div class="row collapse"><div class="detail-description">
-<p class="long_description"><p>This array contains all of the template parts for the Settings page(s). The array is built once
-each page load and cached for subsequent use.</p></p>
 <table class="table table-bordered"><tr>
 <th>since</th>
 <td>0.80</td>
@@ -1169,7 +1169,7 @@ each page load and cached for subsequent use.</p></p>
 <div class="row"><footer class="span12">
             Template is built using <a href="http://twitter.github.com/bootstrap/">Twitter Bootstrap 2</a> and icons provided by <a href="http://glyphicons.com/">Glyphicons</a>.<br>
             Documentation is powered by <a href="http://www.phpdoc.org/">phpDocumentor 2.0.0a8</a> and<br>
-            generated on 2014-01-11T19:47:37-08:00.<br></footer></div>
+            generated on 2014-02-11T20:56:42-08:00.<br></footer></div>
 </div>
 </body>
 </html>
