@@ -1,8 +1,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: Media Library Assistant\n"
-"POT-Creation-Date: 2014-03-27 19:31-0800\n"
-"PO-Revision-Date: 2014-03-27 19:31-0800\n"
+"POT-Creation-Date: 2014-03-28 14:58-0800\n"
+"PO-Revision-Date: 2014-03-28 14:59-0800\n"
 "Last-Translator: David Lingren <david@fairtradejudaica.org>\n"
 "Language-Team: David Lingren <david@fairtradejudaica.org>\n"
 "Language: en_US\n"
@@ -612,17 +612,17 @@ msgstr ""
 msgid "PARENT"
 msgstr ""
 
-#: includes/class-mla-edit-media.php:751
+#: includes/class-mla-edit-media.php:745
 msgid "Most Used"
 msgstr ""
 
 #. translators: %s: add new taxonomy label
-#: includes/class-mla-edit-media.php:780
+#: includes/class-mla-edit-media.php:774
 #, php-format
 msgid "+ %s"
 msgstr ""
 
-#: includes/class-mla-edit-media.php:786
+#: includes/class-mla-edit-media.php:780
 msgid "?&nbsp;Search"
 msgstr ""
 
@@ -1197,49 +1197,47 @@ msgstr ""
 msgid "ERROR: Item %1$d could NOT be moved to Trash."
 msgstr ""
 
-#: includes/class-mla-media-modal.php:204
-#: includes/class-mla-media-modal.php:210
-#: includes/class-mla-media-modal.php:245
-#: includes/class-mla-media-modal.php:251
-#: includes/class-mla-media-modal.php:717
-#: includes/class-mla-media-modal.php:751
-#: includes/class-mla-media-modal.php:796
+#: includes/class-mla-media-modal.php:221
+#: includes/class-mla-media-modal.php:227
+#: includes/class-mla-media-modal.php:691
+#: includes/class-mla-media-modal.php:725
+#: includes/class-mla-media-modal.php:770
 msgid "Click to toggle"
 msgstr ""
 
-#: includes/class-mla-media-modal.php:289
+#: includes/class-mla-media-modal.php:263
 msgid "Show all dates"
 msgstr ""
 
 #. translators: 1: month name, 2: 4-digit year
-#: includes/class-mla-media-modal.php:304
+#: includes/class-mla-media-modal.php:278
 #, php-format
 msgid "%1$s %2$d"
 msgstr ""
 
-#: includes/class-mla-media-modal.php:430
+#: includes/class-mla-media-modal.php:404
 msgid "Search Box"
 msgstr ""
 
-#: includes/class-mla-media-modal.php:431
+#: includes/class-mla-media-modal.php:405
 msgid "Loading..."
 msgstr ""
 
-#: includes/class-mla-media-modal.php:762
+#: includes/class-mla-media-modal.php:736
 msgid "Tags"
 msgstr ""
 
 #. translators: %s: add new taxonomy label
-#: includes/class-mla-media-modal.php:764
+#: includes/class-mla-media-modal.php:738
 #, php-format
 msgid "Add New %1$s"
 msgstr ""
 
-#: includes/class-mla-media-modal.php:780
+#: includes/class-mla-media-modal.php:754
 msgid "Choose from the most used tags"
 msgstr ""
 
-#: includes/class-mla-media-modal.php:802
+#: includes/class-mla-media-modal.php:776
 msgid "Not Supported"
 msgstr ""
 
@@ -1706,8 +1704,10 @@ msgid ""
 "Check the \"Support\" box to add the taxonomy to the Assistant and the Edit "
 "Media screen.<br>Check the \"Inline Edit\" box to display the taxonomy in "
 "the Quick Edit and Bulk Edit areas.<br>Check the \"Checklist\" box to enable "
-"the checkbox-style meta box for a flat taxonomy.<br>Use the \"List Filter\" "
-"option to select the taxonomy on which to filter the Assistant table listing."
+"the checklist-style meta box for a flat taxonomy.<br>You must also check the "
+"<strong>\"Enable enhanced checklist taxonomies\"</strong> box below to "
+"enable this feature.<br>Use the \"List Filter\" option to select the "
+"taxonomy on which to filter the Assistant table listing."
 msgstr ""
 
 #: includes/class-mla-options.php:500
@@ -1842,13 +1842,14 @@ msgid "Media/Edit Media Enhancements"
 msgstr ""
 
 #: includes/class-mla-options.php:605
-msgid "Enable taxonomy &quot;? Search&quot; feature"
+msgid "Enable enhanced \"checklist\" taxonomies"
 msgstr ""
 
 #: includes/class-mla-options.php:608
 msgid ""
-"Check/uncheck this option to enable/disable the &quot;? Search&quot; feature "
-"for hierarchical taxonomies, e.g., Att. Categories."
+"Check this option to enable the \"? Search\" feature for hierarchical "
+"taxonomies, e.g., Att. Categories.<br>&nbsp;&nbsp;This option also enables "
+"the \"checklist-style\" support for flat taxonomies, e.g., Att. Tags."
 msgstr ""
 
 #: includes/class-mla-options.php:612
@@ -1907,25 +1908,26 @@ msgid "Check this option to enable search box enhancements."
 msgstr ""
 
 #: includes/class-mla-options.php:659
-msgid "Media Manager Categories meta boxes"
+msgid "Media Manager Checklist meta boxes"
 msgstr ""
 
 #: includes/class-mla-options.php:662
 msgid ""
 "Check this option to enable MLA-enhanced meta boxes in the \"ATTACHMENT "
-"DETAILS\" pane.<br>&nbsp;&nbsp;This option is for <strong>hierarchical "
-"taxonomies, e.g., \"Categories\" or \"Att. Categories\".</strong>"
+"DETAILS\" pane.<br>&nbsp;&nbsp;This option is for any taxonomy that uses a "
+"<strong>\"checklist-style\"</strong> meta box.</strong>"
 msgstr ""
 
 #: includes/class-mla-options.php:666
-msgid "Media Manager Tags meta boxes"
+msgid "Media Manager Flat meta boxes"
 msgstr ""
 
 #: includes/class-mla-options.php:669
 msgid ""
 "Check this option to enable MLA-enhanced meta boxes in the \"ATTACHMENT "
-"DETAILS\" pane.<br>&nbsp;&nbsp;This option is for <strong>flat taxonomies, e."
-"g., \"Tags\" or \"Att. Tags\".</strong>"
+"DETAILS\" pane.<br>&nbsp;&nbsp;This option is for <strong>flat taxonomies</"
+"strong>, e.g., \"Tags\" or \"Att. Tags\", that do not use the \"checklist-"
+"style\" meta box."
 msgstr ""
 
 #: includes/class-mla-options.php:673

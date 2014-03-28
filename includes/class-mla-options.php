@@ -476,7 +476,7 @@ class MLAOptions {
 
 			self::MLA_TAXONOMY_SUPPORT =>
 				array('tab' => 'general',
-					'help' => __( 'Check the "Support" box to add the taxonomy to the Assistant and the Edit Media screen.<br>Check the "Inline Edit" box to display the taxonomy in the Quick Edit and Bulk Edit areas.<br>Check the "Checklist" box to enable the checkbox-style meta box for a flat taxonomy.<br>Use the "List Filter" option to select the taxonomy on which to filter the Assistant table listing.', 'media-library-assistant' ),
+					'help' => __( 'Check the "Support" box to add the taxonomy to the Assistant and the Edit Media screen.<br>Check the "Inline Edit" box to display the taxonomy in the Quick Edit and Bulk Edit areas.<br>Check the "Checklist" box to enable the checklist-style meta box for a flat taxonomy.<br>You must also check the <strong>"Enable enhanced checklist taxonomies"</strong> box below to enable this feature.<br>Use the "List Filter" option to select the taxonomy on which to filter the Assistant table listing.', 'media-library-assistant' ),
 					'std' =>  array (
 						'tax_support' => array (
 							'attachment_category' => 'checked',
@@ -602,10 +602,10 @@ class MLAOptions {
 
 			self::MLA_EDIT_MEDIA_SEARCH_TAXONOMY =>
 				array('tab' => 'general',
-					'name' => __( 'Enable taxonomy &quot;? Search&quot; feature', 'media-library-assistant' ),
+					'name' => __( 'Enable enhanced "checklist" taxonomies', 'media-library-assistant' ),
 					'type' => 'checkbox',
 					'std' => 'checked',
-					'help' => __( 'Check/uncheck this option to enable/disable the &quot;? Search&quot; feature for hierarchical taxonomies, e.g., Att. Categories.', 'media-library-assistant' )),
+					'help' => __( 'Check this option to enable the "? Search" feature for hierarchical taxonomies, e.g., Att. Categories.<br>&nbsp;&nbsp;This option also enables the "checklist-style" support for flat taxonomies, e.g., Att. Tags.', 'media-library-assistant' )),
 
 			self::MLA_EDIT_MEDIA_META_BOXES =>
 				array('tab' => 'general',
@@ -656,17 +656,17 @@ class MLAOptions {
 
 			self::MLA_MEDIA_MODAL_DETAILS_CATEGORY_METABOX =>
 				array('tab' => 'general',
-					'name' => __( 'Media Manager Categories meta boxes', 'media-library-assistant' ),
+					'name' => __( 'Media Manager Checklist meta boxes', 'media-library-assistant' ),
 					'type' => 'checkbox',
 					'std' => 'checked',
-					'help' => __( 'Check this option to enable MLA-enhanced meta boxes in the "ATTACHMENT DETAILS" pane.<br>&nbsp;&nbsp;This option is for <strong>hierarchical taxonomies, e.g., "Categories" or "Att. Categories".</strong>', 'media-library-assistant' )),
+					'help' => __( 'Check this option to enable MLA-enhanced meta boxes in the "ATTACHMENT DETAILS" pane.<br>&nbsp;&nbsp;This option is for any taxonomy that uses a <strong>"checklist-style"</strong> meta box.</strong>', 'media-library-assistant' )),
 
 			self::MLA_MEDIA_MODAL_DETAILS_TAG_METABOX =>
 				array('tab' => 'general',
-					'name' => __( 'Media Manager Tags meta boxes', 'media-library-assistant' ),
+					'name' => __( 'Media Manager Flat meta boxes', 'media-library-assistant' ),
 					'type' => 'checkbox',
 					'std' => 'checked',
-					'help' => __( 'Check this option to enable MLA-enhanced meta boxes in the "ATTACHMENT DETAILS" pane.<br>&nbsp;&nbsp;This option is for <strong>flat taxonomies, e.g., "Tags" or "Att. Tags".</strong>', 'media-library-assistant' )),
+					'help' => __( 'Check this option to enable MLA-enhanced meta boxes in the "ATTACHMENT DETAILS" pane.<br>&nbsp;&nbsp;This option is for <strong>flat taxonomies</strong>, e.g., "Tags" or "Att. Tags", that do not use the "checklist-style" meta box.', 'media-library-assistant' )),
 
 			self::MLA_MEDIA_MODAL_ORDERBY =>
 				array('tab' => '',

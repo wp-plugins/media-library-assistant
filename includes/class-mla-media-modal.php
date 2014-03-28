@@ -166,96 +166,70 @@ class MLAModal {
 						$use_checklist =  MLAOptions::mla_taxonomy_support( $key, 'flat-checklist' );
 					}
 
+					/*
+					 * Make sure the appropriate MMMW Enhancement option has been checked
+					 */
 					if ( $use_checklist ) {
-						if ( 'checked' == MLAOptions::mla_get_option( MLAOptions::MLA_MEDIA_MODAL_DETAILS_CATEGORY_METABOX ) ) {
-							/*
-							 * Remove "Media Categories" meta box, if present.
-							 */
-							if ( isset( $form_fields[ $key . '_metabox' ] ) ) {
-								unset( $form_fields[ $key . '_metabox' ] );
-							}
+						if ( 'checked' !== MLAOptions::mla_get_option( MLAOptions::MLA_MEDIA_MODAL_DETAILS_CATEGORY_METABOX ) ) {
+							continue;
+						}
+					} else {
+						if ( 'checked' !== MLAOptions::mla_get_option( MLAOptions::MLA_MEDIA_MODAL_DETAILS_TAG_METABOX ) ) {
+							continue;
+						}
+					}
 
-							/*
-							 * Simulate the default text box, but with term id values
-							 */
-							$post_id = $post->ID;
-							$label = $field['labels']->name;
-							$terms = get_object_term_cache( $post_id, $key );
+					/*
+					 * Remove "Media Categories" meta box, if present.
+					 */
+					if ( isset( $form_fields[ $key . '_metabox' ] ) ) {
+						unset( $form_fields[ $key . '_metabox' ] );
+					}
 
-							if ( false === $terms ) {
-								$terms = wp_get_object_terms( $post_id, $key );
-							}
+					/*
+					 * Simulate the default MMMW text box with a hidden field;
+					 * use term names for flat taxonomies and term_ids for hierarchical.
+					 */
+					$post_id = $post->ID;
+					$label = $field['labels']->name;
+					$terms = get_object_term_cache( $post_id, $key );
 
-							if ( is_wp_error( $terms ) || empty( $terms ) ) {
-								$terms = array();
-							}
+					if ( false === $terms ) {
+						$terms = wp_get_object_terms( $post_id, $key );
+					}
 
-							$list = array();
-							foreach ( $terms as $term ) {
-								$list[] = $term->term_id;
-							} // foreach $term
+					if ( is_wp_error( $terms ) || empty( $terms ) ) {
+						$terms = array();
+					}
 
-							sort( $list );
-							$list = join( ',', $list );
+					$list = array();
+					foreach ( $terms as $term ) {
+						if ( $value->hierarchical ) {
+							$list[] = $term->term_id;
+						} else {
+							$list[] = $term->name;
+						}
+					} // foreach $term
 
-							$row  = "\t\t<tr class='compat-field-{$key} mla-taxonomy-row'>\n";
-							$row .= "\t\t<th class='label' valign='top' scope='row'>\n";
-							$row .= "\t\t<label for='mla-attachments-{$post_id}-{$key}'>\n";
-							$row .= "\t\t<span title='" . __( 'Click to toggle', 'media-library-assistant' ) . "' class='alignleft'>{$label}</span><br class='clear'>\n";
-							$row .= "\t\t</label></th>\n";
-							$row .= "\t\t<td class='field'>\n";
-							$row .= "\t\t<div class='mla-taxonomy-field'>\n";
-							$row .= "\t\t<input name='mla_attachments[{$post_id}][{$key}]' class='text' id='mla-attachments-{$post_id}-{$key}' type='hidden' value='{$list}'>\n";
-							$row .= "\t\t<div id='mla-taxonomy-{$key}' class='categorydiv'>\n";
-							$row .= '&lt;- ' . __( 'Click to toggle', 'media-library-assistant' ) . "\n";
-							$row .= "\t\t</div>\n";
-							$row .= "\t\t</div>\n";
-							$row .= "\t\t</td>\n";
-							$row .= "\t\t</tr>\n";
-							$form_fields[ $key ] = array( 'tr' => $row );
-						} // checked
-					} /* use_checklist */ else { // flat
-						if ( 'checked' == MLAOptions::mla_get_option( MLAOptions::MLA_MEDIA_MODAL_DETAILS_TAG_METABOX ) ) {
-							/*
-							 * Simulate the default text box
-							 */
-							$post_id = $post->ID;
-							$label = $field['labels']->name;
-							$terms = get_object_term_cache( $post_id, $key );
+					sort( $list );
+					$list = join( ',', $list );
+					$class = ( $value->hierarchical ) ? 'categorydiv' : 'tagsdiv';
 
-							if ( false === $terms ) {
-								$terms = wp_get_object_terms( $post_id, $key );
-							}
-
-							if ( is_wp_error( $terms ) || empty( $terms ) ) {
-								$terms = array();
-							}
-
-							$list = array();
-							foreach ( $terms as $term ) {
-								$list[] = $term->name;
-							} // foreach $term
-
-							sort( $list );
-							$list = join( ', ', $list );
-
-							$row  = "\t\t<tr class='compat-field-{$key} mla-taxonomy-row'>\n";
-							$row .= "\t\t<th class='label' valign='top' scope='row'>\n";
-							$row .= "\t\t<label for='mla-attachments-{$post_id}-{$key}'>\n";
-							$row .= "\t\t<span title='" . __( 'Click to toggle', 'media-library-assistant' ) . "' class='alignleft'>{$label}</span><br class='clear'>\n";
-							$row .= "\t\t</label></th>\n";
-							$row .= "\t\t<td class='field'>\n";
-							$row .= "\t\t<div class='mla-taxonomy-field'>\n";
-							$row .= "\t\t<input name='mla_attachments[{$post_id}][{$key}]' class='text' id='mla-attachments-{$post_id}-{$key}' type='hidden' value='{$list}'>\n";
-							$row .= "\t\t<div class='tagsdiv' id='mla-taxonomy-{$key}'>\n";
-							$row .= '&lt;- ' . __( 'Click to toggle', 'media-library-assistant' ) . "\n";
-							$row .= "\t\t</div>\n";
-							$row .= "\t\t</div>\n";
-							$row .= "\t\t</td>\n";
-							$row .= "\t\t</tr>\n";
-							$form_fields[ $key ] = array( 'tr' => $row );
-						} // checked
-					} // flat
+					$row  = "\t\t<tr class='compat-field-{$key} mla-taxonomy-row'>\n";
+					$row .= "\t\t<th class='label' valign='top' scope='row'>\n";
+					$row .= "\t\t<label for='mla-attachments-{$post_id}-{$key}'>\n";
+					$row .= "\t\t<span title='" . __( 'Click to toggle', 'media-library-assistant' ) . "' class='alignleft'>{$label}</span><br class='clear'>\n";
+					$row .= "\t\t</label></th>\n";
+					$row .= "\t\t<td class='field'>\n";
+					$row .= "\t\t<div class='mla-taxonomy-field'>\n";
+					$row .= "\t\t<input name='mla_attachments[{$post_id}][{$key}]' class='text' id='mla-attachments-{$post_id}-{$key}' type='hidden' value='{$list}'>\n";
+					$row .= "\t\t<div id='mla-taxonomy-{$key}' class='{$class}'>\n";
+					$row .= '&lt;- ' . __( 'Click to toggle', 'media-library-assistant' ) . "\n";
+					$row .= "\t\t</div>\n";
+					$row .= "\t\t</div>\n";
+					$row .= "\t\t</td>\n";
+					$row .= "\t\t</tr>\n";
+					$form_fields[ $key ] = array( 'tr' => $row );
 				} // is supported
 			} // foreach
 		} // in_modal
@@ -834,7 +808,7 @@ class MLAModal {
 					$use_checklist =  MLAOptions::mla_taxonomy_support( $key, 'flat-checklist' );
 				}
 
-				if ( $use_checklist ) {
+				if ( $value->hierarchical ) {
 					$terms = array_map( 'absint', preg_split( '/,+/', $_REQUEST[ $key ] ) );
 				} else {
 					$terms = array_map( 'trim', preg_split( '/,+/', $_REQUEST[ $key ] ) );
@@ -853,7 +827,7 @@ class MLAModal {
 
 					ob_start();
 
-					if ( $use_checklist ) {
+					if ( $value->hierarchical ) {
 						wp_terms_checklist( $id, array( 'taxonomy' => $key, 'popular_cats' => $popular_ids ) );
 					} else {
 						$checklist_walker = new MLA_Checklist_Walker;

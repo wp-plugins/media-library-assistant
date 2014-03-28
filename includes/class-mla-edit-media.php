@@ -590,8 +590,7 @@ class MLAEdit {
 	} // mla_edit_attachment_action
 
 	/**
-	 * Add flat taxonomy term from "checklist" meta box on both the Edit/Edit Media screen and
-	 * the Media Manager Modal WIndow
+	 * Add flat taxonomy term from "checklist" meta box on the Media Manager Modal Window
 	 *
 	 * Adapted from the WordPress post_categories_meta_box() in /wp-admin/includes/meta-boxes.php.
 	 *
@@ -630,9 +629,8 @@ class MLAEdit {
 				continue;
 			}
 			$term = get_term( $id, $key );
-			$slug = $term->slug;
 			$name = $term->name;
-			$new_terms_markup .= "<li id='{$key}-{$id}'><label class='selectit'><input value='{$slug}' type='checkbox' name='tax_input[{$key}][]' id='in-{$key}-{$id}' checked='checked' />{$name}</label></li>\n";
+			$new_terms_markup .= "<li id='{$key}-{$id}'><label class='selectit'><input value='{$name}' type='checkbox' name='tax_input[{$key}][]' id='in-{$key}-{$id}' checked='checked' />{$name}</label></li>\n";
 		} // foreach new_name
 
 		$input_new_parent_name = "new{$key}_parent";
@@ -680,10 +678,6 @@ class MLAEdit {
 		extract( wp_parse_args( $args, $defaults ), EXTR_SKIP );
 		$tax = get_taxonomy( $taxonomy );
 		$name = ( $taxonomy == 'category' ) ? 'post_category' : 'tax_input[' . $taxonomy . ']';
-
-		if ( ! $use_checklist = $tax->hierarchical ) {
-			$use_checklist =  MLAOptions::mla_taxonomy_support( $taxonomy, 'flat-checklist' );
-		}
 
 		/*
 		 * Id and Name attributes in the popup Modal Window must not conflict with
@@ -763,7 +757,7 @@ class MLAEdit {
 				echo "<input type='hidden' name='{$input_terms_name}' id='{$input_terms_id}' value='0' />";
 				?>
 				<ul id="<?php echo $tab_all_ul_id; ?>" data-wp-lists="list:<?php echo $taxonomy?>" class="categorychecklist form-no-clear">
-					<?php if ( $use_checklist ): ?>
+					<?php if ( $tax->hierarchical ): ?>
 					<?php wp_terms_checklist($post->ID, array( 'taxonomy' => $taxonomy, 'popular_cats' => $popular_ids ) ) ?>
 					<?php else: ?>
                     <?php $checklist_walker = new MLA_Checklist_Walker; ?>
@@ -791,7 +785,7 @@ class MLAEdit {
 						<label class="screen-reader-text" for="<?php echo $input_new_name; ?>"><?php echo $tax->labels->add_new_item; ?></label>
 						<input type="text" name="<?php echo $input_new_name; ?>" id="<?php echo $input_new_id; ?>" class="form-required form-input-tip" value="<?php echo esc_attr( $tax->labels->new_item_name ); ?>" aria-required="true"/>
 
-						<?php if ( $use_checklist ): ?>
+						<?php if ( $tax->hierarchical ): ?>
 						<label class="screen-reader-text" for="<?php echo $input_new_parent_name; ?>">
 							<?php echo $tax->labels->parent_item_colon; ?>
 						</label>
@@ -858,9 +852,9 @@ class MLA_Checklist_Walker extends Walker_Category {
 		$class = in_array( $taxonomy_object->term_id, $popular_cats ) ? ' class="popular-category"' : '';
         
 		/*
-		 * For flat taxonomies, <input> value is $taxonomy_object->slug instead of $taxonomy_object->term_id
+		 * For flat taxonomies, <input> value is $taxonomy_object->name instead of $taxonomy_object->term_id
 		 */
-		$output .= "\n<li id='{$taxonomy}-{$taxonomy_object->term_id}'$class>" . '<label class="selectit MLA"><input value="' . $taxonomy_object->slug . '" type="checkbox" name="'.$name.'[]" id="in-'.$taxonomy.'-' . $taxonomy_object->term_id . '"' . checked( in_array( $taxonomy_object->term_id, $selected_cats ), true, false ) . disabled( empty( $args['disabled'] ), false, false ) . ' /> ' . esc_html( apply_filters('the_category', $taxonomy_object->name )) . '</label>';
+		$output .= "\n<li id='{$taxonomy}-{$taxonomy_object->term_id}'$class>" . '<label class="selectit MLA"><input value="' . $taxonomy_object->name . '" type="checkbox" name="'.$name.'[]" id="in-'.$taxonomy.'-' . $taxonomy_object->term_id . '"' . checked( in_array( $taxonomy_object->term_id, $selected_cats ), true, false ) . disabled( empty( $args['disabled'] ), false, false ) . ' /> ' . esc_html( apply_filters('the_category', $taxonomy_object->name )) . '</label>';
 	}
 
 	/**
