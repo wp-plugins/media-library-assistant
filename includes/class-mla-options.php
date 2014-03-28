@@ -47,6 +47,11 @@ class MLAOptions {
 	const MLA_MLA_GALLERY_IN_TUNING = 'mla_gallery_in_tuning';
 
 	/**
+	 * Provides a unique name for the taxonomy count Attachments option
+	 */
+	const MLA_COUNT_TERM_ATTACHMENTS = 'count_term_attachments';
+
+	/**
 	 * Provides a unique name for the taxonomy support option
 	 */
 	const MLA_TAXONOMY_SUPPORT = 'taxonomy_support';
@@ -82,9 +87,14 @@ class MLAOptions {
 	const MLA_DEFAULT_ORDER = 'default_order';
 
 	/**
-	 * Provides a unique name for the default table views width option
+	 * Provides a unique name for the Media/Assistant submenu table views width option
 	 */
 	const MLA_TABLE_VIEWS_WIDTH = 'table_views_width';
+
+	/**
+	 * Provides a unique name for the Media/Assistant submenu table thumbnail/icon size option
+	 */
+	const MLA_TABLE_ICON_SIZE = 'table_icon_size';
 
 	/**
 	 * Provides a unique name for the taxonomy filter maximum depth option
@@ -112,7 +122,18 @@ class MLAOptions {
 	const MLA_NEW_CUSTOM_FIELD = '__NEW FIELD__';
 
 	/**
-	 * Provides a unique name for the Media Manager toolbar option
+	 * Provides a unique name for the "searchable taxonomies" option
+	 */
+	const MLA_EDIT_MEDIA_SEARCH_TAXONOMY = 'edit_media_search_taxonomy';
+
+	/**
+	 * Provides a unique name for the Edit Media additional meta boxes option
+	 */
+	const MLA_EDIT_MEDIA_META_BOXES = 'edit_media_meta_boxes';
+
+	/**
+	 * Provides a unique name for the Media Manager toolbar option, which
+	 * also controls the ATTACHMENT DETAILS enhancements
 	 */
 	const MLA_MEDIA_MODAL_TOOLBAR = 'media_modal_toolbar';
 
@@ -291,7 +312,7 @@ class MLAOptions {
 			( 'checked' == MLAOptions::mla_get_option( 'enable_custom_field_update' ) ) ) {
 			add_filter( 'wp_handle_upload_prefilter', 'MLAOptions::mla_wp_handle_upload_prefilter_filter', 1, 1 );
 			add_filter( 'wp_handle_upload', 'MLAOptions::mla_wp_handle_upload_filter', 1, 1 );
-			
+
 			add_action( 'add_attachment', 'MLAOptions::mla_add_attachment_action', 0x7FFFFFFF, 1 );
 			add_filter( 'wp_update_attachment_metadata', 'MLAOptions::mla_update_attachment_metadata_filter', 0x7FFFFFFF, 2 );
 		}
@@ -446,9 +467,16 @@ class MLAOptions {
 					'name' => __( 'Taxonomy Support', 'media-library-assistant' ),
 					'type' => 'header'),
 
+			self::MLA_COUNT_TERM_ATTACHMENTS =>
+				array('tab' => 'general',
+					'name' => __( 'Compute Attachments Column', 'media-library-assistant' ),
+					'type' => 'checkbox',
+					'std' => 'checked',
+					'help' => __( 'Check this option to calculate attachments per term in the Attachments Column.', 'media-library-assistant' )),
+
 			self::MLA_TAXONOMY_SUPPORT =>
 				array('tab' => 'general',
-					'help' => __( 'Check the "Support" box to add the taxonomy to the Assistant and the Edit Media screen.<br>Check the "Inline Edit" box to display the taxonomy in the Quick Edit and Bulk Edit areas.<br>Use the "List Filter" option to select the taxonomy on which to filter the Assistant table listing.', 'media-library-assistant' ),
+					'help' => __( 'Check the "Support" box to add the taxonomy to the Assistant and the Edit Media screen.<br>Check the "Inline Edit" box to display the taxonomy in the Quick Edit and Bulk Edit areas.<br>Check the "Checklist" box to enable the checkbox-style meta box for a flat taxonomy.<br>Use the "List Filter" option to select the taxonomy on which to filter the Assistant table listing.', 'media-library-assistant' ),
 					'std' =>  array (
 						'tax_support' => array (
 							'attachment_category' => 'checked',
@@ -458,6 +486,7 @@ class MLAOptions {
 							'attachment_category' => 'checked',
 							'attachment_tag' => 'checked',
 						),
+						'tax_flat_checklist' => array(),
 						'tax_filter' => 'attachment_category'
 						), 
 					'type' => 'custom',
@@ -465,13 +494,6 @@ class MLAOptions {
 					'update' => 'mla_taxonomy_option_handler',
 					'delete' => 'mla_taxonomy_option_handler',
 					'reset' => 'mla_taxonomy_option_handler'),
-
-			'attachments_column' =>
-				array('tab' => '',
-					'name' => __( 'Attachments Column', 'media-library-assistant' ),
-					'type' => 'hidden', // checkbox',
-					'std' => 'checked',
-					'help' => __( 'Check this option to replace the Posts column with the Attachments Column.', 'media-library-assistant' )),
 
 			'media_assistant_header' =>
 				array('tab' => 'general',
@@ -545,6 +567,14 @@ class MLAOptions {
 					'size' => 10,
 					'help' => __( 'Enter the width for the views list, in pixels (px) or percent (%)', 'media-library-assistant' )),
 
+			self::MLA_TABLE_ICON_SIZE =>
+				array('tab' => 'general',
+					'name' => __( 'Icon Size', 'media-library-assistant' ),
+					'type' => 'text',
+					'std' => '',
+					'size' => 10,
+					'help' => __( 'Enter the size of the thumbnail/icon images, in pixels', 'media-library-assistant' )),
+
 			'taxonomy_filter_subheader' =>
 				array('tab' => 'general',
 					'name' => __( 'Taxonomy Filter parameters', 'media-library-assistant' ),
@@ -564,6 +594,25 @@ class MLAOptions {
 					'type' => 'checkbox',
 					'std' => 'checked',
 					'help' => __( 'Check/uncheck this option to include/exclude children for hierarchical taxonomies.', 'media-library-assistant' )),
+
+			'edit_media_header' =>
+				array('tab' => 'general',
+					'name' => __( 'Media/Edit Media Enhancements', 'media-library-assistant' ),
+					'type' => 'header'),
+
+			self::MLA_EDIT_MEDIA_SEARCH_TAXONOMY =>
+				array('tab' => 'general',
+					'name' => __( 'Enable taxonomy &quot;? Search&quot; feature', 'media-library-assistant' ),
+					'type' => 'checkbox',
+					'std' => 'checked',
+					'help' => __( 'Check/uncheck this option to enable/disable the &quot;? Search&quot; feature for hierarchical taxonomies, e.g., Att. Categories.', 'media-library-assistant' )),
+
+			self::MLA_EDIT_MEDIA_META_BOXES =>
+				array('tab' => 'general',
+					'name' => __( 'Enable Edit Media additional meta boxes', 'media-library-assistant' ),
+					'type' => 'checkbox',
+					'std' => 'checked',
+					'help' => __( 'Check this option to add "Parent Info", "Menu Order", "Attachment Metadata" and four "where-used" meta boxes to the Edit Media screen.', 'media-library-assistant' )),
 
 			'media_modal_header' =>
 				array('tab' => 'general',
@@ -607,17 +656,17 @@ class MLAOptions {
 
 			self::MLA_MEDIA_MODAL_DETAILS_CATEGORY_METABOX =>
 				array('tab' => 'general',
-					'name' => __( 'Media Manager Searchable Categories metaboxes', 'media-library-assistant' ),
+					'name' => __( 'Media Manager Categories meta boxes', 'media-library-assistant' ),
 					'type' => 'checkbox',
-					'std' => '',
-					'help' => __( 'Check this option to enable searchable metaboxes in the "ATTACHMENT DETAILS" pane.<br>&nbsp;&nbsp;This option is for <strong>hierarchical taxonomies, e.g., "Att. Categories".</strong><br>&nbsp;&nbsp;You must also install and activate the <strong>"Media Categories" plugin</strong> (by Eddie Moya) to implement this option.', 'media-library-assistant' )),
+					'std' => 'checked',
+					'help' => __( 'Check this option to enable MLA-enhanced meta boxes in the "ATTACHMENT DETAILS" pane.<br>&nbsp;&nbsp;This option is for <strong>hierarchical taxonomies, e.g., "Categories" or "Att. Categories".</strong>', 'media-library-assistant' )),
 
 			self::MLA_MEDIA_MODAL_DETAILS_TAG_METABOX =>
 				array('tab' => 'general',
-					'name' => __( 'Media Manager Searchable Tags metaboxes', 'media-library-assistant' ),
+					'name' => __( 'Media Manager Tags meta boxes', 'media-library-assistant' ),
 					'type' => 'checkbox',
-					'std' => '',
-					'help' => __( 'Check this option to enable searchable metaboxes in the "ATTACHMENT DETAILS" pane.<br>&nbsp;&nbsp;This option is for <strong>flat taxonomies, e.g., "Att. Tags".</strong><br>&nbsp;&nbsp;You must also install and activate the <strong>"Media Categories" plugin</strong> (by Eddie Moya) to implement this option.', 'media-library-assistant' )),
+					'std' => 'checked',
+					'help' => __( 'Check this option to enable MLA-enhanced meta boxes in the "ATTACHMENT DETAILS" pane.<br>&nbsp;&nbsp;This option is for <strong>flat taxonomies, e.g., "Tags" or "Att. Tags".</strong>', 'media-library-assistant' )),
 
 			self::MLA_MEDIA_MODAL_ORDERBY =>
 				array('tab' => '',
@@ -1296,6 +1345,17 @@ class MLAOptions {
 				}
 
 				return $is_supported;
+			case 'flat-checklist':
+				$tax_flat_checklist = isset( $tax_options['tax_flat_checklist'] ) ? $tax_options['tax_flat_checklist'] : array();
+				$is_supported = array_key_exists( $tax_name, $tax_flat_checklist );
+
+				if ( !empty( $_REQUEST['mla-general-options-save'] ) ) {
+					$is_supported = isset( $_REQUEST['tax_flat_checklist'][ $tax_name ] );
+				} elseif ( !empty( $_REQUEST['mla-general-options-reset'] ) ) {
+					$is_supported = false;
+				}
+
+				return $is_supported;
 			case 'filter':
 				$tax_filter = isset( $tax_options['tax_filter'] ) ? $tax_options['tax_filter'] : '';
 				if ( '' == $tax_name ) {
@@ -1341,7 +1401,7 @@ class MLAOptions {
 				if ( empty( $current_value ) ) {
 					$current_value = $value['std'];
 				}
-				
+
 				$select_options = '';
 				foreach ( $value['options'] as $optid => $option ) {
 					$option_values = array(
@@ -1372,7 +1432,7 @@ class MLAOptions {
 				if ( $value['std'] == $new_value ) {
 					$new_value = '';
 				}
-				
+
 				update_option( $key, $new_value );
 				return $msg;
 			case 'reset':
@@ -1405,6 +1465,7 @@ class MLAOptions {
 				$current_values = self::mla_get_option( $key );
 				$tax_support = isset( $current_values['tax_support'] ) ? $current_values['tax_support'] : array();
 				$tax_quick_edit = isset( $current_values['tax_quick_edit'] ) ? $current_values['tax_quick_edit'] : array();
+				$tax_flat_checklist = isset( $current_values['tax_flat_checklist'] ) ? $current_values['tax_flat_checklist'] : array();
 				$tax_filter = isset( $current_values['tax_filter'] ) ? $current_values['tax_filter'] : '';
 
 				/*
@@ -1451,8 +1512,17 @@ class MLAOptions {
 						'name' => $tax_object->labels->name,
 						'support_checked' => array_key_exists( $tax_name, $tax_support ) ? 'checked=checked' : '',
 						'quick_edit_checked' => array_key_exists( $tax_name, $tax_quick_edit ) ? 'checked=checked' : '',
+						'flat_checklist_checked' => array_key_exists( $tax_name, $tax_flat_checklist ) ? 'checked=checked' : '',
+						'flat_checklist_disabled' => '',
+						'flat_checklist_value' => 'checked',
 						'filter_checked' => ( $tax_name == $tax_filter ) ? 'checked=checked' : ''
 					);
+
+					if ( $tax_object->hierarchical ) {
+						$option_values['flat_checklist_checked'] = 'checked=checked';
+						$option_values['flat_checklist_disabled'] = 'disabled=disabled';
+						$option_values['flat_checklist_value'] = 'disabled';
+					}
 
 					$row .= MLAData::mla_parse_template( $taxonomy_row, $option_values );
 				}
@@ -1460,6 +1530,7 @@ class MLAOptions {
 				$option_values = array (
 					'Support' => __( 'Support', 'media-library-assistant' ),
 					'Inline Edit' => __( 'Inline Edit', 'media-library-assistant' ),
+					'Checklist' => __( 'Checklist', 'media-library-assistant' ),
 					'List Filter' => __( 'List Filter', 'media-library-assistant' ),
 					'Taxonomy' => __( 'Taxonomy', 'media-library-assistant' ),
 					'taxonomy_rows' => $row,
@@ -1471,6 +1542,7 @@ class MLAOptions {
 			case 'delete':
 				$tax_support = isset( $args['tax_support'] ) ? $args['tax_support'] : array();
 				$tax_quick_edit = isset( $args['tax_quick_edit'] ) ? $args['tax_quick_edit'] : array();
+				$tax_flat_checklist = isset( $args['tax_flat_checklist'] ) ? $args['tax_flat_checklist'] : array();
 				$tax_filter = isset( $args['tax_filter'] ) ? $args['tax_filter'] : '';
 
 				$msg = '';
@@ -1481,17 +1553,28 @@ class MLAOptions {
 					$tax_filter = '';
 				}
 
-				foreach ( $tax_quick_edit as $tax_name => $tax_value ) {				
+				foreach ( $tax_quick_edit as $tax_name => $tax_value ) {
 					if ( !array_key_exists( $tax_name, $tax_support ) ) {
 						/* translators: 1: taxonomy name */
-						$msg .= '<br>' . sprintf( __( 'Quick Edit ignored; %1$s not supported.', 'media-library-assistant' ), $tax_name ) . "\r\n";
+						$msg .= '<br>' . sprintf( __( 'Inline Edit ignored; %1$s not supported.', 'media-library-assistant' ), $tax_name ) . "\r\n";
 						unset( $tax_quick_edit[ $tax_name ] );
+					}
+				}
+
+				foreach ( $tax_flat_checklist as $tax_name => $tax_value ) {
+					if ( 'disabled' == $tax_value ) {
+						unset( $tax_flat_checklist[ $tax_name ] );
+					} elseif ( !array_key_exists( $tax_name, $tax_support ) ) {
+						/* translators: 1: taxonomy name */
+						$msg .= '<br>' . sprintf( __( 'Checklist ignored; %1$s not supported.', 'media-library-assistant' ), $tax_name ) . "\r\n";
+						unset( $tax_flat_checklist[ $tax_name ] );
 					}
 				}
 
 				$value = array (
 					'tax_support' => $tax_support,
 					'tax_quick_edit' => $tax_quick_edit,
+					'tax_flat_checklist' => $tax_flat_checklist,
 					'tax_filter' => $tax_filter
 					);
 
@@ -1543,7 +1626,7 @@ class MLAOptions {
 		if ( ! class_exists( 'getID3' ) ) {
 			require( ABSPATH . WPINC . '/ID3/getid3.php' );
 		}
-		
+
 		$id3 = new getID3();
 		$id3_data = $id3->analyze( $file['file'] );
 		$file = apply_filters( 'mla_upload_filter', $file, $id3_data );
@@ -1598,7 +1681,7 @@ class MLAOptions {
 					unset( $updates['custom_updates'][ $key ] );
 				}
 			} // foreach $updates
-			
+
 			if ( empty( $updates['custom_updates'] ) ) {
 				unset( $updates['custom_updates'] );
 			}
@@ -1633,25 +1716,25 @@ class MLAOptions {
 		$options['enable_custom_field_mapping'] = 'checked' == MLAOptions::mla_get_option( 'enable_custom_field_mapping' );
 		$options['enable_iptc_exif_update'] = 'checked' == MLAOptions::mla_get_option( 'enable_iptc_exif_update' );
 		$options['enable_custom_field_update'] = 'checked' == MLAOptions::mla_get_option( 'enable_custom_field_update' );
-		
+
 		$options = apply_filters( 'mla_update_attachment_metadata_options', $options, $data, $post_id );
 		$data = apply_filters( 'mla_update_attachment_metadata_prefilter', $data, $post_id, $options );
-		
+
 		if ( $options['is_upload'] ) {
 			if ( $options['enable_iptc_exif_mapping'] ) {
 				$item = get_post( $post_id );
 				$updates = MLAOptions::mla_evaluate_iptc_exif_mapping( $item, 'iptc_exif_mapping', NULL, $data );
 				$updates = self::_update_attachment_metadata( $updates, $data );
-	
+
 				if ( !empty( $updates ) ) {
 					$item_content = MLAData::mla_update_single_item( $post_id, $updates );
 				}
 			}
-	
+
 			if ( $options['enable_custom_field_mapping'] ) {
 				$updates = MLAOptions::mla_evaluate_custom_field_mapping( $post_id, 'single_attachment_mapping', NULL, $data );
 				$updates = self::_update_attachment_metadata( $updates, $data );
-	
+
 				if ( !empty( $updates ) ) {
 					$item_content = MLAData::mla_update_single_item( $post_id, $updates );
 				}
@@ -1661,16 +1744,16 @@ class MLAOptions {
 				$item = get_post( $post_id );
 				$updates = MLAOptions::mla_evaluate_iptc_exif_mapping( $item, 'iptc_exif_mapping', NULL, $data );
 				$updates = self::_update_attachment_metadata( $updates, $data );
-	
+
 				if ( !empty( $updates ) ) {
 					$item_content = MLAData::mla_update_single_item( $post_id, $updates );
 				}
 			}
-	
+
 			if ( $options['enable_custom_field_update'] ) {
 				$updates = MLAOptions::mla_evaluate_custom_field_mapping( $post_id, 'single_attachment_mapping', NULL, $data );
 				$updates = self::_update_attachment_metadata( $updates, $data );
-	
+
 				if ( !empty( $updates ) ) {
 					$item_content = MLAData::mla_update_single_item( $post_id, $updates );
 				}
@@ -1726,7 +1809,7 @@ class MLAOptions {
 					break;
 				case 'default_hidden_columns':
 					if ( $value['mla_column'] ) {
-						$results[ ] = $slug;
+						$results[] = $slug;
 					}
 					break;
 				case 'default_sortable_columns':
@@ -1937,6 +2020,41 @@ class MLAOptions {
 	} // mla_get_data_source
 
 	/**
+	 * Identify custom field mapping data source
+	 *
+	 * Determines whether a name matches any of the element-level data source dropdown options, i.e.,
+	 * excludes "template:" and "meta:" values.
+	 *
+	 * @since 1.80
+	 *
+	 * @param	string 	candidate data source name
+	 *
+	 * @return	boolean	true if candidate name matches a data source
+	 */
+	public static function mla_is_data_source( $candidate_name ) {
+		static $intermediate_sizes = NULL;
+
+		/*
+		 * The [size] elements are expanded with available image sizes;
+		 * convert valid sizes back to the generic [size] value to match the list.
+		 */
+		$match_count = preg_match( '/(.+)\[(.+)\]/', $candidate_name, $matches );
+		if ( 1 == $match_count ) {
+			if ( NULL === $intermediate_sizes ) {
+				$intermediate_sizes = get_intermediate_image_sizes();
+			}
+
+			if ( in_array( $matches[2], $intermediate_sizes ) ) {
+				$candidate_name = $matches[1] . '[size]';
+			} else {
+				return false;
+			}
+		}
+
+		return in_array( $candidate_name, self::$custom_field_data_sources );
+	} // mla_is_data_source
+
+	/**
 	 * Evaluate custom field mapping data source
 	 *
 	 * @since 1.10
@@ -1952,6 +2070,7 @@ class MLAOptions {
 		global $wpdb;
 		static $upload_dir, $intermediate_sizes = NULL, $wp_attached_files = NULL, $wp_attachment_metadata = NULL;
 		static $current_id = 0, $file_info = NULL, $parent_info = NULL, $references = NULL;
+
 		if ( 'none' == $data_value['data_source'] ) {
 			return '';
 		}
@@ -2326,7 +2445,7 @@ class MLAOptions {
 		/*
 		 * Make numeric values sortable as strings, make all value non-empty
 		 */
-		if ( in_array( $data_source, array( 'file_size', 'pixels', 'width', 'height' ) ) ) {
+		if ( 'raw' != $data_value['format'] && in_array( $data_source, array( 'file_size', 'pixels', 'width', 'height' ) ) ) {
 			$result = str_pad( $result, 15, ' ', STR_PAD_LEFT );
 		} elseif ( empty( $result ) ) {
 			$result =  ' ';
@@ -2353,7 +2472,7 @@ class MLAOptions {
 		}
 
 		$settings = apply_filters( 'mla_mapping_settings', $settings, $post_id, $category, $attachment_metadata );
-		
+
 		$custom_updates = array();
 		foreach ( $settings as $setting_key => $setting_value ) {
 			/*
@@ -2365,7 +2484,7 @@ class MLAOptions {
 			if ( NULL === $setting_value ) {
 				continue;
 			}
-		
+
 			if ( 'none' == $setting_value['data_source'] ) {
 				continue;
 			}
@@ -3081,7 +3200,7 @@ class MLAOptions {
 		}
 
 		$settings = apply_filters( 'mla_mapping_settings', $settings, $post->ID, $category, $attachment_metadata );
-		
+
 		if ( $update_all || ( 'iptc_exif_standard_mapping' == $category ) ) {
 			foreach ( $settings['standard'] as $setting_key => $setting_value ) {
 				$setting_value = apply_filters( 'mla_mapping_rule', $setting_value, $post->ID, 'iptc_exif_standard_mapping', $attachment_metadata );
@@ -3339,7 +3458,7 @@ class MLAOptions {
 				if ( $setting_value['keep_existing'] ) {
 					if ( 'meta:' == substr( $setting_key, 0, 5 ) ) {
 						$meta_key = substr( $setting_key, 5 );
-						
+
 						if ( NULL === $attachment_metadata ) {
 							$attachment_metadata = maybe_unserialize( get_metadata( 'post', $post->ID, '_wp_attachment_metadata', true ) );
 						}
@@ -3481,7 +3600,7 @@ class MLAOptions {
 			 * Field Title can change as a result of localization
 			 */
 			$new_value['name'] = self::$mla_option_definitions['iptc_exif_mapping']['std']['standard'][ $new_key ]['name'];
-			
+
 			if ( $old_values['name'] != $new_value['name'] ) {
 				$any_setting_changed = true;
 				/* translators: 1: custom field name 2: attribute 3: old value 4: new value */

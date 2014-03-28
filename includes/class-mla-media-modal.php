@@ -41,6 +41,33 @@ class MLAModal {
 	const JAVASCRIPT_MEDIA_MODAL_OBJECT = 'mla_media_modal_vars';
 
 	/**
+	 * Slug for the "query attachments" action - Add Media and related dialogs
+	 *
+	 * @since 1.80
+	 *
+	 * @var	string
+	 */
+	const JAVASCRIPT_QUERY_ATTACHMENTS_ACTION = 'mla-query-attachments';
+
+	/**
+	 * Slug for the "fill compat-attachment-fields" action - Add Media and related dialogs
+	 *
+	 * @since 1.80
+	 *
+	 * @var	string
+	 */
+	const JAVASCRIPT_FILL_COMPAT_ACTION = 'mla-fill-compat-fields';
+
+	/**
+	 * Slug for the "update compat-attachment-fields" action - Add Media and related dialogs
+	 *
+	 * @since 1.80
+	 *
+	 * @var	string
+	 */
+	const JAVASCRIPT_UPDATE_COMPAT_ACTION = 'mla-update-compat-fields';
+
+	/**
 	 * Initialization function, similar to __construct()
 	 *
 	 * @since 1.20
@@ -63,15 +90,18 @@ class MLAModal {
 		 * do_action( 'wp_enqueue_media' );
 		 */
 		if ( MLATest::$wordpress_3point5_plus && ( 'checked' == MLAOptions::mla_get_option( MLAOptions::MLA_MEDIA_MODAL_TOOLBAR ) ) ) {
+			add_filter( 'get_media_item_args', 'MLAModal::mla_get_media_item_args_filter', 10, 1 );
+			add_filter( 'attachment_fields_to_edit', 'MLAModal::mla_attachment_fields_to_edit_filter', 0x7FFFFFFF, 2 );
+
 			add_filter( 'media_view_settings', 'MLAModal::mla_media_view_settings_filter', 10, 2 );
 			add_filter( 'media_view_strings', 'MLAModal::mla_media_view_strings_filter', 10, 2 );
 			add_action( 'wp_enqueue_media', 'MLAModal::mla_wp_enqueue_media_action', 10, 0 );
 			add_action( 'print_media_templates', 'MLAModal::mla_print_media_templates_action', 10, 0 );
-			add_action( 'admin_init', 'MLAModal::mla_admin_init_ajax_action' );
-			add_action( 'wp_ajax_' . self::JAVASCRIPT_MEDIA_MODAL_SLUG, 'MLAModal::mla_query_attachments_action' );
+			add_action( 'admin_init', 'MLAModal::mla_admin_init_action' );
 
-			add_filter( 'get_media_item_args', 'MLAModal::mla_get_media_item_args_filter', 10, 1 );
-			add_filter( 'attachment_fields_to_edit', 'MLAModal::mla_attachment_fields_to_edit_filter', 10, 2 );
+			add_action( 'wp_ajax_' . self::JAVASCRIPT_QUERY_ATTACHMENTS_ACTION, 'MLAModal::mla_query_attachments_action' );
+			add_action( 'wp_ajax_' . self::JAVASCRIPT_FILL_COMPAT_ACTION, 'MLAModal::mla_fill_compat_fields_action' );
+			add_action( 'wp_ajax_' . self::JAVASCRIPT_UPDATE_COMPAT_ACTION, 'MLAModal::mla_update_compat_fields_action' );
 		} // $wordpress_3point5_plus
 	}
 
@@ -90,7 +120,7 @@ class MLAModal {
 		self::$media_item_args = $args;
 		return $args;
 	} // mla_get_media_item_args_filter
-	
+
 	/**
 	 * The get_media_item_args array
 	 *
@@ -118,50 +148,118 @@ class MLAModal {
 	 * @return	array	updated descriptors for the "compat-attachment-fields"
 	 */
 	public static function mla_attachment_fields_to_edit_filter( $form_fields, $post ) {
-
+		/*
+		 * This logic is only required for the Media Manager Modal Window.
+		 * For the non-Modal Media/Edit Media screen, the MLAEdit::mla_add_meta_boxes_action
+		 * function changes the default meta box to the MLA searchable meta box.
+		 */
 		if ( isset( self::$media_item_args['in_modal'] ) && self::$media_item_args['in_modal'] ) {
-			$taxonomies = get_taxonomies( array ( 'show_ui' => true ), 'objects' );
-	
-			foreach ( $taxonomies as $key => $value ) {
+			foreach ( get_taxonomies( array ( 'show_ui' => true ), 'objects' ) as $key => $value ) {
 				if ( MLAOptions::mla_taxonomy_support( $key ) ) {
 					if ( isset( $form_fields[ $key ] ) ) {
 						$field = $form_fields[ $key ];
 					} else {
 						continue;
 					}
-					
-					if ( $value->hierarchical ) {
-						if ( 'checked' == MLAOptions::mla_get_option( MLAOptions::MLA_MEDIA_MODAL_DETAILS_CATEGORY_METABOX ) ) {
-							continue;
 
-							$box = array (
-								'id' => $key . 'div',
-								'title' => $field['labels']->name,
-								'callback' => 'MLAEdit::mla_hierarchical_meta_box',
-								'args' => array ( 'taxonomy' => $key, 'in_modal' => true ),
-								
-							);
-							
-					        ob_start();
-							MLAEdit::mla_hierarchical_meta_box( $post, $box );
-							$row_content = ob_get_clean();
-							
-							$row  = "\t\t<tr class='compat-field-{$key}'>\n";
-							$row .= "\t\t<td>\n";
-							$row .= $row_content;
+					if ( ! $use_checklist = $value->hierarchical ) {
+						$use_checklist =  MLAOptions::mla_taxonomy_support( $key, 'flat-checklist' );
+					}
+
+					if ( $use_checklist ) {
+						if ( 'checked' == MLAOptions::mla_get_option( MLAOptions::MLA_MEDIA_MODAL_DETAILS_CATEGORY_METABOX ) ) {
+							/*
+							 * Remove "Media Categories" meta box, if present.
+							 */
+							if ( isset( $form_fields[ $key . '_metabox' ] ) ) {
+								unset( $form_fields[ $key . '_metabox' ] );
+							}
+
+							/*
+							 * Simulate the default text box, but with term id values
+							 */
+							$post_id = $post->ID;
+							$label = $field['labels']->name;
+							$terms = get_object_term_cache( $post_id, $key );
+
+							if ( false === $terms ) {
+								$terms = wp_get_object_terms( $post_id, $key );
+							}
+
+							if ( is_wp_error( $terms ) || empty( $terms ) ) {
+								$terms = array();
+							}
+
+							$list = array();
+							foreach ( $terms as $term ) {
+								$list[] = $term->term_id;
+							} // foreach $term
+
+							sort( $list );
+							$list = join( ',', $list );
+
+							$row  = "\t\t<tr class='compat-field-{$key} mla-taxonomy-row'>\n";
+							$row .= "\t\t<th class='label' valign='top' scope='row'>\n";
+							$row .= "\t\t<label for='mla-attachments-{$post_id}-{$key}'>\n";
+							$row .= "\t\t<span title='" . __( 'Click to toggle', 'media-library-assistant' ) . "' class='alignleft'>{$label}</span><br class='clear'>\n";
+							$row .= "\t\t</label></th>\n";
+							$row .= "\t\t<td class='field'>\n";
+							$row .= "\t\t<div class='mla-taxonomy-field'>\n";
+							$row .= "\t\t<input name='mla_attachments[{$post_id}][{$key}]' class='text' id='mla-attachments-{$post_id}-{$key}' type='hidden' value='{$list}'>\n";
+							$row .= "\t\t<div id='mla-taxonomy-{$key}' class='categorydiv'>\n";
+							$row .= '&lt;- ' . __( 'Click to toggle', 'media-library-assistant' ) . "\n";
+							$row .= "\t\t</div>\n";
+							$row .= "\t\t</div>\n";
 							$row .= "\t\t</td>\n";
 							$row .= "\t\t</tr>\n";
 							$form_fields[ $key ] = array( 'tr' => $row );
 						} // checked
-					} else { // hierarchical
+					} /* use_checklist */ else { // flat
 						if ( 'checked' == MLAOptions::mla_get_option( MLAOptions::MLA_MEDIA_MODAL_DETAILS_TAG_METABOX ) ) {
-							continue;
+							/*
+							 * Simulate the default text box
+							 */
+							$post_id = $post->ID;
+							$label = $field['labels']->name;
+							$terms = get_object_term_cache( $post_id, $key );
+
+							if ( false === $terms ) {
+								$terms = wp_get_object_terms( $post_id, $key );
+							}
+
+							if ( is_wp_error( $terms ) || empty( $terms ) ) {
+								$terms = array();
+							}
+
+							$list = array();
+							foreach ( $terms as $term ) {
+								$list[] = $term->name;
+							} // foreach $term
+
+							sort( $list );
+							$list = join( ', ', $list );
+
+							$row  = "\t\t<tr class='compat-field-{$key} mla-taxonomy-row'>\n";
+							$row .= "\t\t<th class='label' valign='top' scope='row'>\n";
+							$row .= "\t\t<label for='mla-attachments-{$post_id}-{$key}'>\n";
+							$row .= "\t\t<span title='" . __( 'Click to toggle', 'media-library-assistant' ) . "' class='alignleft'>{$label}</span><br class='clear'>\n";
+							$row .= "\t\t</label></th>\n";
+							$row .= "\t\t<td class='field'>\n";
+							$row .= "\t\t<div class='mla-taxonomy-field'>\n";
+							$row .= "\t\t<input name='mla_attachments[{$post_id}][{$key}]' class='text' id='mla-attachments-{$post_id}-{$key}' type='hidden' value='{$list}'>\n";
+							$row .= "\t\t<div class='tagsdiv' id='mla-taxonomy-{$key}'>\n";
+							$row .= '&lt;- ' . __( 'Click to toggle', 'media-library-assistant' ) . "\n";
+							$row .= "\t\t</div>\n";
+							$row .= "\t\t</div>\n";
+							$row .= "\t\t</td>\n";
+							$row .= "\t\t</tr>\n";
+							$form_fields[ $key ] = array( 'tr' => $row );
 						} // checked
 					} // flat
 				} // is supported
 			} // foreach
 		} // in_modal
-		
+
 		self::$media_item_args = array( 'errors' => null, 'in_modal' => false );
 		return $form_fields;
 	} // mla_attachment_fields_to_edit_filter
@@ -232,7 +330,8 @@ class MLAModal {
 			$class_array[ $index ] = $matches[3][ $index ];
 			$value_array[ $index ] = ( ! '' == $matches[6][ $index ] )? $matches[7][ $index ] : $matches[9][ $index ];
 
-			if ( version_compare( get_bloginfo( 'version' ), '3.6', '>=' ) ) {
+			$current_version = get_bloginfo( 'version' );
+			if ( version_compare( $current_version, '3.9', '<' ) && version_compare( $current_version, '3.6', '>=' ) ) {
 				$text_array[ $index ] = str_replace( '&nbsp;', '-', $text);
 			} else {
 				$text_array[ $index ] = $text;
@@ -252,12 +351,17 @@ class MLAModal {
 	 * @var	array
 	 */
 	private static $mla_media_modal_settings = array(
-			'ajaxAction' => self::JAVASCRIPT_MEDIA_MODAL_SLUG,
-			'ajaxNonce' => '',
+			'ajaxQueryAttachmentsAction' => self::JAVASCRIPT_QUERY_ATTACHMENTS_ACTION,
+			'ajaxFillCompatAction' => self::JAVASCRIPT_FILL_COMPAT_ACTION,
+			'ajaxUpdateCompatAction' => self::JAVASCRIPT_UPDATE_COMPAT_ACTION,
+			'ajaxFillCompatNonce' => '',
+			'ajaxUpdateCompatNonce' => '',
 			'enableMimeTypes' => false,
 			'enableMonthsDropdown' => false,
 			'enableTermsDropdown' => false,
 			'enableSearchBox' => false,
+			'enableDetailsCategory' => false,
+			'enableDetailsTag' => false,
 			'mimeTypes' => '',
 			'months' => '',
 			'termsClass' => array(),
@@ -294,6 +398,8 @@ class MLAModal {
 		self::$mla_media_modal_settings['enableMonthsDropdown'] = ( 'checked' == MLAOptions::mla_get_option( MLAOptions::MLA_MEDIA_MODAL_MONTHS ) );
 		self::$mla_media_modal_settings['enableTermsDropdown'] = ( 'checked' == MLAOptions::mla_get_option( MLAOptions::MLA_MEDIA_MODAL_TERMS ) );
 		self::$mla_media_modal_settings['enableSearchBox'] = ( 'checked' == MLAOptions::mla_get_option( MLAOptions::MLA_MEDIA_MODAL_SEARCHBOX ) );
+		self::$mla_media_modal_settings['enableDetailsCategory'] = ( 'checked' == MLAOptions::mla_get_option( MLAOptions::MLA_MEDIA_MODAL_DETAILS_CATEGORY_METABOX ) );
+		self::$mla_media_modal_settings['enableDetailsTag'] = ( 'checked' == MLAOptions::mla_get_option( MLAOptions::MLA_MEDIA_MODAL_DETAILS_TAG_METABOX ) );
 
 		/*
 		 * These will be passed back to the server in the query['s'] field.
@@ -321,7 +427,8 @@ class MLAModal {
 	 */
 	public static function mla_media_view_strings_filter( $strings, $post ) {
 		$mla_strings = array(
-			'searchBoxPlaceholder' => 'Search Box',
+			'searchBoxPlaceholder' => __( 'Search Box', 'media-library-assistant' ),
+			'loadingText' => __( 'Loading...', 'media-library-assistant' )
 			);
 
 		$strings = array_merge( $strings, array( 'mla_strings' => $mla_strings ) );
@@ -340,8 +447,8 @@ class MLAModal {
 		$suffix = defined('SCRIPT_DEBUG') && SCRIPT_DEBUG ? '' : '.min';
 
 		// replaced by inline styles for now
-		// wp_register_style( self::JAVASCRIPT_MEDIA_MODAL_STYLES, MLA_PLUGIN_URL . 'css/mla-media-modal-style.css', false, MLA::CURRENT_MLA_VERSION );
-		// wp_enqueue_style( self::JAVASCRIPT_MEDIA_MODAL_STYLES );
+		wp_register_style( self::JAVASCRIPT_MEDIA_MODAL_STYLES, MLA_PLUGIN_URL . 'css/mla-media-modal-style.css', false, MLA::CURRENT_MLA_VERSION );
+		wp_enqueue_style( self::JAVASCRIPT_MEDIA_MODAL_STYLES );
 
 		wp_enqueue_script( self::JAVASCRIPT_MEDIA_MODAL_SLUG, MLA_PLUGIN_URL . "js/mla-media-modal-scripts{$suffix}.js", array( 'media-views' ), MLA::CURRENT_MLA_VERSION, false );
 	} // mla_wp_enqueue_media_action
@@ -360,37 +467,13 @@ class MLAModal {
 		 */
 		if ( self::$mla_media_modal_settings['enableSearchBox'] ) {
 			if ( self::$mla_media_modal_settings['enableMonthsDropdown'] && self::$mla_media_modal_settings['enableTermsDropdown'] ) {
-				$height = '100px';
+				$height = '120px';
 			} else {
-				$height = '70px';
+				$height = '80px';
 			}
 		} else {
 			$height = '50px';
 		}
-
-//		W3C says style is not allowed within a div
-//		echo '<script type="text/html" id="tmpl-mla-search-box-css">' . "\n";
-		echo "\t" . '<style type="text/css">' . "\n";
-
-		if ( self::$mla_media_modal_settings['enableSearchBox'] ) {
-			echo "\t\t.media-frame .media-frame-content .media-toolbar-secondary {\n";
-			echo "\t\t\twidth: 150px; }\n";
-		}
-
-		echo "\t\t.media-frame .media-frame-content .attachments-browser .media-toolbar {\n";
-		echo "\t\t\theight: {$height}; }\n";
-		echo "\t\t.media-frame .media-frame-content .attachments-browser .attachments,\n";
-		echo "\t\t.media-frame .media-frame-content .attachments-browser .uploader-inline {\n";
-		echo "\t\t\ttop: {$height}; }\n";
-		echo "\t\t.media-frame .media-frame-content p.search-box {\n";
-		echo "\t\t\tmargin-top: 7px;\n";
-		echo "\t\t\tpadding: 4px;\n";
-		echo "\t\t\tline-height: 18px;\n";
-		echo "\t\t\tcolor: #464646;\n";
-		echo "\t\t\tfont-family: sans-serif;\n";
-		echo "\t\t\t-webkit-appearance: none; }\n";
-		echo "\t" . '</style>' . "\n";
-/*		echo "\t" . '</script>' . "\n"; */
 
 		/*
 		 * Compose the Search Media box
@@ -413,65 +496,65 @@ class MLAModal {
 			$search_connector = 'AND';
 		}
 
-		echo "\t" . '<script type="text/html" id="tmpl-mla-search-box">' . "\r\n";
-		echo "\t\t" . '<p class="search-box">' . "\r\n";
-		echo "\t\t" . '<label class="screen-reader-text" for="media-search-input">' . __( 'Search Media', 'media-library-assistant' ) . ':</label>' . "\r\n";
-		echo "\t\t" . '<input type="text" name="s[mla_search_value]" id="media-search-input" size="43" value="' . $search_value . '" />' . "\r\n";
-		echo "\t\t" . '<input type="submit" name="mla_search_submit" id="search-submit" class="button" value="' . __( 'Search Media', 'media-library-assistant' ) . '"  /><br>' . "\r\n";
-		if ( 'OR' == $search_connector ) {
-			echo "\t\t" . '<input type="radio" name="s[mla_search_connector]" value="AND" />&nbsp;' . __( 'and', 'media-library-assistant' ) . "&nbsp;\r\n";
-			echo "\t\t" . '<input type="radio" name="s[mla_search_connector]" checked="checked" value="OR" />&nbsp;' . __( 'or', 'media-library-assistant' ) . "&nbsp;\r\n";
-		} else {
-			echo "\t\t" . '<input type="radio" name="s[mla_search_connector]" checked="checked" value="AND" />&nbsp;' . __( 'and', 'media-library-assistant' ) . "&nbsp;\r\n";
-			echo "\t\t" . '<input type="radio" name="s[mla_search_connector]" value="OR" />&nbsp;' . __( 'or', 'media-library-assistant' ) . "&nbsp;\r\n";
-		}
-
-		if ( in_array( 'title', $search_fields ) ) {
-			echo "\t\t" . '<input type="checkbox" name="s[mla_search_title]" id="search-title" checked="checked" value="title" />&nbsp;' . __( 'Title', 'media-library-assistant' ) . "&nbsp;\r\n";
-		} else {
-			echo "\t\t" . '<input type="checkbox" name="s[mla_search_title]" id="search-title" value="title" />&nbsp;' . __( 'Title', 'media-library-assistant' ) . "&nbsp;\r\n";
-		}
-
-		if ( in_array( 'name', $search_fields ) ) {
-			echo "\t\t" . '<input type="checkbox" name="s[mla_search_name]" id="search-name" checked="checked" value="name" />&nbsp;' . __( 'Name', 'media-library-assistant' ) . "&nbsp;\r\n";
-		} else {
-			echo "\t\t" . '<input type="checkbox" name="s[mla_search_name]" id="search-name" value="name" />&nbsp;' . __( 'Name', 'media-library-assistant' ) . "&nbsp;\r\n";
-		}
-
-		if ( in_array( 'alt-text', $search_fields ) ) {
-			echo "\t\t" . '<input type="checkbox" name="s[mla_search_alt_text]" id="search-alt-text" checked="checked" value="alt-text" />&nbsp;' . __( 'ALT Text', 'media-library-assistant' ) . "&nbsp;\r\n";
-		} else {
-			echo "\t\t" . '<input type="checkbox" name="s[mla_search_alt_text]" id="search-alt-text" value="alt-text" />&nbsp;' . __( 'ALT Text', 'media-library-assistant' ) . "&nbsp;\r\n";
-		}
-
-		if ( in_array( 'excerpt', $search_fields ) ) {
-			echo "\t\t" . '<input type="checkbox" name="s[mla_search_excerpt]" id="search-excerpt" checked="checked" value="excerpt" />&nbsp;' . __( 'Caption', 'media-library-assistant' ) . "&nbsp;\r\n";
-		} else {
-			echo "\t\t" . '<input type="checkbox" name="s[mla_search_excerpt]" id="search-excerpt" value="excerpt" />&nbsp;' . __( 'Caption', 'media-library-assistant' ) . "&nbsp;\r\n";
-		}
-
-		if ( in_array( 'content', $search_fields ) ) {
-			echo "\t\t" . '<input type="checkbox" name="s[mla_search_content]" id="search-content" checked="checked" value="content" />&nbsp;' . __( 'Description', 'media-library-assistant' ) . "&nbsp;\r\n";
-		} else {
-			echo "\t\t" . '<input type="checkbox" name="s[mla_search_content]" id="search-content" value="content" />&nbsp;' . __( 'Description', 'media-library-assistant' ) . "&nbsp;\r\n";
-		}
-
-		echo "\t\t" . '</p>' . "\r\n";
-		echo "\t" . '</script>' . "\r\n";
+		// Include mla javascript templates
+		require_once MLA_PLUGIN_PATH . '/includes/mla-media-modal-js-template.php';
 	} // mla_print_media_templates_action
 
 	/**
 	 * Adjust ajax handler for Media Manager queries 
 	 *
-	 * Replace 'query-attachments' with our own handler if the request is coming from the "Assistant" tab
+	 * Replace 'query-attachments' with our own handler if the request is coming from the "Assistant" tab.
+	 * Clean up the 'save-attachment-compat' values, removing the taxonomy updates MLS already handled.
 	 *
 	 * @since 1.20
 	 *
 	 * @return	void	
 	 */
-	public static function mla_admin_init_ajax_action() {
+	public static function mla_admin_init_action() {
+		/*
+		 * Build a list of enhanced taxonomies for later $_REQUEST/$_POST cleansing.
+		 * Remove "Media Categories" instances, if present.
+		 */
+		$enhanced_taxonomies = array();
+		foreach ( get_taxonomies( array ( 'show_ui' => true ), 'objects' ) as $key => $value ) {
+			if ( MLAOptions::mla_taxonomy_support( $key ) ) {
+				if ( ! $use_checklist = $value->hierarchical ) {
+					$use_checklist = MLAOptions::mla_taxonomy_support( $key, 'flat-checklist' );
+				}
+
+				if ( $use_checklist ) {
+					if ( 'checked' == MLAOptions::mla_get_option( MLAOptions::MLA_MEDIA_MODAL_DETAILS_CATEGORY_METABOX ) ) {
+						$enhanced_taxonomies[] = $key;
+
+						if ( class_exists( 'Media_Categories' ) && is_array( Media_Categories::$instances ) ) {
+							foreach( Media_Categories::$instances as $index => $instance ) {
+								if ( $instance->taxonomy == $key ) {
+									// unset( Media_Categories::$instances[ $index ] );
+									Media_Categories::$instances[ $index ]->taxonomy = 'MLA-has-disabled-this-instance';
+								}
+							}
+						} // class_exists
+					} // checked
+				} // use_checklist
+			} // supported
+		} // foreach taxonomy 
+
 		if ( ( defined('WP_ADMIN') && WP_ADMIN ) && ( defined('DOING_AJAX') && DOING_AJAX ) ) {
-			if ( isset( $_POST['action'] ) && ( $_POST['action'] == 'query-attachments' ) && isset( $_POST['query']['s'] ) && is_array( $_POST['query']['s'] ) ){
+//error_log( 'DEBUG: mla_admin_init_action Ajax $_REQUEST = ' . var_export( $_REQUEST, true ), 0 );
+
+			/*
+			 * If there's no action variable, we have nothing to do
+			 */
+			if ( ! isset( $_POST['action'] ) ) {
+				return;
+			}
+
+ 			/*
+			 * The 'query-attachments' action fills the Modal Window thumbnail pane with media items.
+			 * If the 's' value is an array, the MLA Enhanced elements are present; unpack the arguments
+			 * and substitute our handler for the WordPress default handler.
+			 */
+			if ( ( $_POST['action'] == 'query-attachments' ) && isset( $_POST['query']['s'] ) && is_array( $_POST['query']['s'] ) ){
 				foreach ( $_POST['query']['s'] as $key => $value ) {
 					$_POST['query'][ $key ] = $value;
 					$_REQUEST['query'][ $key ] = $value;
@@ -479,20 +562,336 @@ class MLAModal {
 
 				unset( $_POST['query']['s'] );
 				unset( $_REQUEST['query']['s'] );
-				$_POST['action'] = self::JAVASCRIPT_MEDIA_MODAL_SLUG;
-				$_REQUEST['action'] = self::JAVASCRIPT_MEDIA_MODAL_SLUG;
-			}
+				$_POST['action'] = self::JAVASCRIPT_QUERY_ATTACHMENTS_ACTION;
+				$_REQUEST['action'] = self::JAVASCRIPT_QUERY_ATTACHMENTS_ACTION;
+				return;
+			} // query-attachments
+
+ 			/*
+			 * The 'save-attachment-compat' action updates taxonomy and custom field
+			 * values for an item. Remove any MLA-enhanced taxonomy data from the
+			 * incoming data. The other taxonomies will be processed by
+			 * /wp-admin/includes/ajax-actions.php, function wp_ajax_save_attachment_compat().
+			 */
+			if ( ( $_POST['action'] == 'save-attachment-compat' ) ){
+				if ( empty( $_REQUEST['id'] ) || ! $id = absint( $_REQUEST['id'] ) ) {
+					wp_send_json_error();
+				}
+
+				if ( empty( $_REQUEST['attachments'] ) || empty( $_REQUEST['attachments'][ $id ] ) ) {
+					wp_send_json_error();
+				}
+
+				/*
+				 * Media Categories uses this
+				 */
+				if ( isset( $_REQUEST['category-filter'] ) ) {
+					unset( $_REQUEST['category-filter'] );
+					unset( $_POST['category-filter'] );
+				}
+
+				if ( isset( $_REQUEST['mla_attachments'] ) ) {
+					unset( $_REQUEST['mla_attachments'] );
+					unset( $_POST['mla_attachments'] );
+				}
+
+				if ( isset( $_REQUEST['tax_input'] ) ) {
+					unset( $_REQUEST['tax_input'] );
+					unset( $_POST['tax_input'] );
+				}
+
+				foreach( $enhanced_taxonomies as $taxonomy ) {
+					if ( isset( $_REQUEST['attachments'][ $id ][ $taxonomy ] ) ) {
+						unset( $_REQUEST['attachments'][ $id ][ $taxonomy ] );
+						unset( $_POST['attachments'][ $id ][ $taxonomy ] );
+					}
+
+					if ( isset( $_REQUEST[ $taxonomy ] ) ) {
+						unset( $_REQUEST[ $taxonomy ] );
+						unset( $_POST[ $taxonomy ] );
+					}
+
+					if ( ( 'category' == $taxonomy ) && isset( $_REQUEST['post_category'] ) ) {
+						unset( $_REQUEST['post_category'] );
+						unset( $_POST['post_category'] );
+					}
+
+					if ( isset( $_REQUEST[ 'new' . $taxonomy ] ) ) {
+						unset( $_REQUEST[ 'new' . $taxonomy ] );
+						unset( $_POST[ 'new' . $taxonomy ] );
+						unset( $_REQUEST[ 'new' . $taxonomy . '_parent' ] );
+						unset( $_POST[ 'new' . $taxonomy . '_parent' ] );
+						unset( $_REQUEST[ '_ajax_nonce-add-' . $taxonomy ] );
+						unset( $_POST[ '_ajax_nonce-add-' . $taxonomy ] );
+					}
+
+					if ( isset( $_REQUEST[ 'search-' . $taxonomy ] ) ) {
+						unset( $_REQUEST[ 'search-' . $taxonomy ] );
+						unset( $_POST[ 'search-' . $taxonomy ] );
+						unset( $_REQUEST[ '_ajax_nonce-search-' . $taxonomy ] );
+						unset( $_POST[ '_ajax_nonce-search-' . $taxonomy ] );
+					}
+				} // foreach taxonomy
+			} // save-attachment-compat
 		}
-	} // mla_admin_init_ajax_action
+	} // mla_admin_init_action
 
 	/**
-	 * Ajax handler for Media Manager queries 
+	 * Ajax handler for Media Manager "fill compat-attachment-fields" queries 
+	 *
+	 * Prepares an array of (HTML) taxonomy meta boxes with attachment-specific values.
+	 *
+	 * @since 1.80
+	 *
+	 * @return	void	passes array of results to wp_send_json_success() for JSON encoding and transmission
+	 */
+	public static function mla_fill_compat_fields_action() {
+		if ( empty( $_REQUEST['query'] ) || ! $requested = $_REQUEST['query'] ) {
+			wp_send_json_error();
+		}
+
+		if ( empty( $_REQUEST['id'] ) || ! $post_id = absint( $_REQUEST['id'] ) ) {
+			wp_send_json_error();
+		}
+
+		if ( null == ( $post = get_post( $post_id ) ) ) {
+			wp_send_json_error();
+		}
+
+		$results = array();
+
+		/*
+		 * Match all supported taxonomies against the requested list
+		 */
+		foreach ( get_taxonomies( array ( 'show_ui' => true ), 'objects' ) as $key => $value ) {
+			if ( MLAOptions::mla_taxonomy_support( $key ) ) {
+				if ( is_integer( $index = array_search( $key, $requested ) ) ) {
+					$request = $requested[ $index ];
+				} else {
+					continue;
+				}
+
+				if ( ! $use_checklist = $value->hierarchical ) {
+					$use_checklist = MLAOptions::mla_taxonomy_support( $key, 'flat-checklist' );
+				}
+
+				if ( $use_checklist ) {
+					if ( 'checked' == MLAOptions::mla_get_option( MLAOptions::MLA_MEDIA_MODAL_DETAILS_CATEGORY_METABOX ) ) {
+						unset( $requested[ $index ] );
+						$label = $value->label;
+						$terms = get_object_term_cache( $post_id, $key );
+
+						if ( false === $terms ) {
+							$terms = wp_get_object_terms( $post_id, $key );
+						}
+
+						if ( is_wp_error( $terms ) || empty( $terms ) ) {
+							$terms = array();
+						}
+
+						$list = array();
+						foreach ( $terms as $term ) {
+							$list[] = $term->term_id;
+						} // foreach $term
+
+						sort( $list );
+						$list = join( ',', $list );
+
+						/*
+						 * Simulate the 'add_meta_boxes' callback
+						 */
+						$box = array (
+							'id' => $key . 'div',
+							'title' => $label,
+							'callback' => 'MLAEdit::mla_checklist_meta_box',
+							'args' => array ( 'taxonomy' => $key, 'in_modal' => true ),
+
+						);
+
+						ob_start();
+						MLAEdit::mla_checklist_meta_box( $post, $box );
+						$row_content = ob_get_clean();
+
+						$row = "\t\t<th class='label' valign='top' scope='row' style='width: 99%;'>\n";
+						$row .= "\t\t<label for='mla-attachments-{$post_id}-{$key}'>\n";
+						$row .= "\t\t<span title='" . __( 'Click to toggle', 'media-library-assistant' ) . "' class='alignleft' style='width: 99%; text-align: left;'>{$label}</span><br class='clear'>\n";
+						$row .= "\t\t</label></th>\n";
+						$row .= "\t\t<td class='field' style='width: 99%; display: none'>\n";
+						$row .= "\t\t<div class='mla-taxonomy-field'>\n";
+						$row .= "\t\t<input name='attachments[{$post_id}][{$key}]' class='text' id='mla-attachments-{$post_id}-{$key}' type='hidden' value='{$list}'>\n";
+						$row .= $row_content;
+						$row .= "\t\t</div>\n";
+						$row .= "\t\t</td>\n";
+						$results[ $key ] = $row;
+					} // checked
+				} /* use_checklist */ else { // flat
+					if ( 'checked' == MLAOptions::mla_get_option( MLAOptions::MLA_MEDIA_MODAL_DETAILS_TAG_METABOX ) ) {
+						unset( $requested[ $index ] );
+						$label = $value->label;
+						$terms = get_object_term_cache( $post_id, $key );
+
+						if ( false === $terms ) {
+							$terms = wp_get_object_terms( $post_id, $key );
+						}
+
+						if ( is_wp_error( $terms ) || empty( $terms ) ) {
+							$terms = array();
+						}
+
+						$list = array();
+						foreach ( $terms as $term ) {
+							$list[] = $term->name;
+						} // foreach $term
+
+						sort( $list );
+						$hidden_list = join( ',', $list );
+
+						$row = "\t\t<th class='label' valign='top' scope='row' style='width: 99%;'>\n";
+						$row .= "\t\t<label for='mla-attachments-{$post_id}-{$key}'>\n";
+						$row .= "\t\t<span title='" . __( 'Click to toggle', 'media-library-assistant' ) . "' class='alignleft' style='width: 99%; text-align: left;'>{$label}</span><br class='clear'>\n";
+						$row .= "\t\t</label></th>\n";
+						$row .= "\t\t<td class='field' style='width: 99%; display: none'>\n";
+						$row .= "\t\t<div class='mla-taxonomy-field'>\n";
+						$row .= "\t\t<div class='tagsdiv' id='mla-taxonomy-{$key}'>\n";
+						$row .= "\t\t<div class='jaxtag'>\n";
+						$row .= "\t\t<div class='nojs-tags hide-if-js'>\n";
+						$row .= "\t\t<input name='attachments[{$post_id}][{$key}]' class='the-tags' id='mla-attachments-{$post_id}-{$key}' type='hidden' value='{$hidden_list}'>\n";
+						$row .= "\t\t<input name='mla_tags[{$post_id}][{$key}]' class='server-tags' id='mla-tags-{$post_id}-{$key}' type='hidden' value='{$hidden_list}'>\n";
+						$row .= "\t\t</div>\n"; // nojs-tags
+						$row .= "\t\t<div class='ajaxtag'>\n";
+						$row .= "\t\t<label class='screen-reader-text' for='new-tag-{$key}'>" . __( 'Tags', 'media-library-assistant' ) . "</label>\n";
+						/* translators: %s: add new taxonomy label */
+						$row .= "\t\t<div class='taghint'>" . sprintf( __( 'Add New %1$s', 'media-library-assistant' ), $label ) . "</div>\n";
+						$row .= "\t\t<p>\n";
+						$row .= "\t\t<input name='newtag[{$key}]' class='newtag form-input-tip' id='new-tag-{$key}' type='text' size='16' value='' autocomplete='off'>\n";
+						$row .= "\t\t<input class='button tagadd' type='button' value='Add'>\n";
+						$row .= "\t\t</p>\n";
+						$row .= "\t\t</div>\n"; // ajaxtag
+						$row .= "\t\t<p class='howto'>Separate tags with commas</p>\n";
+						$row .= "\t\t</div>\n"; // jaxtag
+						$row .= "\t\t<div class='tagchecklist'>\n";
+
+						foreach ( $list as $index => $term ) {
+							$row .= "\t\t<span><a class='ntdelbutton' id='post_tag-check-num-{$index}'>X</a>&nbsp;{$term}</span>\n";
+						}
+
+						$row .= "\t\t</div>\n"; // tagchecklist
+						$row .= "\t\t</div>\n"; // tagsdiv
+						$row .= "\t\t<p><a class='tagcloud-link' id='mla-link-{$key}' href='#titlediv'>" . __( 'Choose from the most used tags', 'media-library-assistant' ) . "</a></p>\n";
+						$row .= "\t\t</div>\n"; // mla-taxonomy-field
+						$row .= "\t\t</td>\n";
+						$results[ $key ] = $row;
+					} // checked
+				} // flat
+			} // is supported
+		} // foreach
+
+		/*
+		 * Any left-over requests are for unsupported taxonomies
+		 */
+		foreach( $requested as $key ) {
+			$row  = "\t\t<tr class='compat-field-{$key} mla-taxonomy-row'>\n";
+			$row .= "\t\t<th class='label' valign='top' scope='row'>\n";
+			$row .= "\t\t<label for='mla-attachments-{$post_id}-{$key}'>\n";
+			$row .= "\t\t<span title='" . __( 'Click to toggle', 'media-library-assistant' ) . "' class='alignleft'>{$label}</span><br class='clear'>\n";
+			$row .= "\t\t</label></th>\n";
+			$row .= "\t\t<td class='field' style='display: none'>\n";
+			$row .= "\t\t<div class='mla-taxonomy-field'>\n";
+			$row .= "\t\t<input name='attachments[{$post_id}][{$key}]' class='text' id='mla-attachments-{$post_id}-{$key}' type='hidden' value=''>\n";
+			$row .= "\t\t<div id='taxonomy-{$key}' class='categorydiv'>\n";
+			$row .= __( 'Not Supported', 'media-library-assistant' ) . ".\n";
+			$row .= "\t\t</div>\n";
+			$row .= "\t\t</div>\n";
+			$row .= "\t\t</td>\n";
+			$row .= "\t\t</tr>\n";
+			$results[ $key ] = $row;
+		}
+
+		wp_send_json_success( $results );
+	} // mla_fill_compat_fields_action
+
+	/**
+	 * Ajax handler for Media Manager "update compat-attachment-fields" queries 
+	 *
+	 * Updates one (or more) supported taxonomy and returns updated checkbox or tag/term lists
+	 *
+	 * @since 1.80
+	 *
+	 * @return	void	passes array of results to wp_send_json_success() for JSON encoding and transmission
+	 */
+	public static function mla_update_compat_fields_action() {
+		global $post;
+
+		if ( empty( $_REQUEST['id'] ) || ! $id = absint( $_REQUEST['id'] ) ) {
+			wp_send_json_error();
+		}
+
+		$results = array();
+
+		foreach ( get_taxonomies( array ( 'show_ui' => true ), 'objects' ) as $key => $value ) {
+			if ( isset( $_REQUEST[ $key ] ) && MLAOptions::mla_taxonomy_support( $key ) ) {
+				if ( ! $use_checklist = $value->hierarchical ) {
+					$use_checklist =  MLAOptions::mla_taxonomy_support( $key, 'flat-checklist' );
+				}
+
+				if ( $use_checklist ) {
+					$terms = array_map( 'absint', preg_split( '/,+/', $_REQUEST[ $key ] ) );
+				} else {
+					$terms = array_map( 'trim', preg_split( '/,+/', $_REQUEST[ $key ] ) );
+				}
+
+				wp_set_object_terms( $id, $terms, $key, false );
+
+				if ( $use_checklist ) {
+					if ( empty( $post ) ) {
+						$post = get_post( $id ); // for wp_popular_terms_checklist
+					}
+
+					ob_start();
+					$popular_ids = wp_popular_terms_checklist( $key );
+					$results[$key]["mla-{$key}-checklist-pop"] = ob_get_clean();
+
+					ob_start();
+
+					if ( $use_checklist ) {
+						wp_terms_checklist( $id, array( 'taxonomy' => $key, 'popular_cats' => $popular_ids ) );
+					} else {
+						$checklist_walker = new MLA_Checklist_Walker;
+						wp_terms_checklist( $id, array( 'taxonomy' => $key, 'popular_cats' => $popular_ids, 'walker' => $checklist_walker ) );
+					}
+
+					$results[$key]["mla-{$key}-checklist"] = ob_get_clean();
+				} else {
+					$terms = wp_get_object_terms( $id, $key );
+					if ( is_wp_error( $terms ) || empty( $terms ) ) {
+						$terms = array();
+					}
+
+					$list = array();
+					foreach ( $terms as $term ) {
+						$list[] = $term->name;
+					} // foreach $term
+
+					sort( $list );
+					$hidden_list = join( ',', $list );
+
+					$results[$key]["mla-attachments-{$id}-{$key}"] = "\t\t<input name='attachments[{$id}][{$key}]' class='the-tags' id='mla-attachments-{$id}-{$key}' type='hidden' value='{$hidden_list}'>\n";
+					$results[$key]["mla-tags-{$id}-{$key}"] = "\t\t<input name='mla_tags[{$id}][{$key}]' class='server-tags' id='mla-tags-{$id}-{$key}' type='hidden' value='{$hidden_list}'>\n";
+				}
+			} // set and supported
+		} // foreach taxonomy
+
+		wp_send_json_success( $results );
+	} // mla_update_compat_fields_action
+
+	/**
+	 * Ajax handler for Media Manager "Query Attachments" queries 
 	 *
 	 * Adapted from wp_ajax_query_attachments in /wp-admin/includes/ajax-actions.php
 	 *
 	 * @since 1.20
 	 *
-	 * @return	void	echo HTML <tr> markup for updated row or error message, then die()
+	 * @return	void	passes array of post arrays to wp_send_json_success() for JSON encoding and transmission
 	 */
 	public static function mla_query_attachments_action() {
 		if ( ! current_user_can( 'upload_files' ) ) {
@@ -587,7 +986,6 @@ class MLAModal {
 		}
 
 		$query = MLAData::mla_query_media_modal_items( $query, $offset, $count );
-
 		$posts = array_map( 'wp_prepare_attachment_for_js', $query->posts );
 		$posts = array_filter( $posts );
 

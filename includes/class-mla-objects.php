@@ -93,15 +93,12 @@ class MLAObjects {
 		foreach ( $taxonomies as $tax_name ) {
 			if ( MLAOptions::mla_taxonomy_support( $tax_name ) ) {
 				register_taxonomy_for_object_type( $tax_name, 'attachment');
-				if (  'checked' == MLAOptions::mla_get_option( 'attachments_column' ) ) {
-
-					add_filter( "manage_edit-{$tax_name}_columns", 'MLAObjects::mla_taxonomy_get_columns_filter', 10, 1 ); // $columns
-					add_filter( "manage_{$tax_name}_custom_column", 'MLAObjects::mla_taxonomy_column_filter', 10, 3 ); // $place_holder, $column_name, $tag->term_id
-				} // option is checked
+				add_filter( "manage_edit-{$tax_name}_columns", 'MLAObjects::mla_taxonomy_get_columns_filter', 10, 1 ); // $columns
+				add_filter( "manage_{$tax_name}_custom_column", 'MLAObjects::mla_taxonomy_column_filter', 10, 3 ); // $place_holder, $column_name, $tag->term_id
 			} // taxonomy support
 		} // foreach
 	} // _build_taxonomies
-	
+
 	/**
 	 * WordPress Filter for edit taxonomy "Attachments" column,
 	 * which replaces the "Posts" column with an equivalent "Attachments" column.
@@ -148,58 +145,65 @@ class MLAObjects {
 	 *					and alink to retrieve a list of them
 	 */
 	public static function mla_taxonomy_column_filter( $place_holder, $column_name, $term_id ) {
+		static $taxonomy = NULL, $tax_object = NULL, $count_terms = false, $terms = array();
+
 		/*
-		 * Adding or inline-editing a tag is done with AJAX, and there's no current screen object
+		 * Do these setup tasks once per page load
 		 */
-		if ( isset( $_POST['action'] ) && in_array( $_POST['action'], array( 'add-tag', 'inline-save-tax' ) ) ) {
-			$taxonomy = !empty($_POST['taxonomy']) ? $_POST['taxonomy'] : 'post_tag';
+		if ( NULL == $taxonomy ) {
+			/*
+			 * Adding or inline-editing a tag is done with AJAX, and there's no current screen object
+			 */
+			if ( isset( $_POST['action'] ) && in_array( $_POST['action'], array( 'add-tag', 'inline-save-tax' ) ) ) {
+				$taxonomy = !empty($_POST['taxonomy']) ? $_POST['taxonomy'] : 'post_tag';
+			} else {
+				$screen = get_current_screen();
+				$taxonomy = !empty( $screen->taxonomy ) ? $screen->taxonomy : 'post_tag';
+			}
+
+			$tax_object = get_taxonomy( $taxonomy );
+
+			$count_terms = 'checked' == MLAOptions::mla_get_option( MLAOptions::MLA_COUNT_TERM_ATTACHMENTS );
+			if ( $count_terms ) {
+				$terms = get_transient( MLA_OPTION_PREFIX . 't_term_counts_' . $taxonomy );
+
+				if ( ! is_array( $terms ) ) {
+					$cloud = MLAShortcodes::mla_get_terms( array(
+						'taxonomy' => $taxonomy,
+						'fields' => 't.term_id, t.name, t.slug, COUNT(p.ID) AS `count`',
+						'number' => 0,
+						'no_orderby' => true
+					) );
+
+					unset( $cloud['found_rows'] );
+					foreach( $cloud as $term ) {
+						$terms[ $term->term_id ] = $term;
+					}
+
+					set_transient( MLA_OPTION_PREFIX . 't_term_counts_' . $taxonomy, $terms, 300 ); // five minutes
+				}// build the array
+			} // set $terms
+		} // setup tasks
+
+		if ( isset( $terms[ $term_id ] ) ) {
+			$term = $terms[ $term_id ];
+			$column_text = number_format_i18n( $term->count );
 		} else {
-			$screen = get_current_screen();
-			$taxonomy = !empty( $screen->taxonomy ) ? $screen->taxonomy : 'post_tag';
+			$term = get_term( $term_id, $taxonomy );
+
+			if ( is_wp_error( $term ) ) {
+				/* translators: 1: taxonomy 2: error message */
+				error_log( sprintf( _x( 'ERROR: mla_taxonomy_column_filter( "%1$s" ) - get_term failed: "%2$s"', 'error_log', 'media-library-assistant' ), $taxonomy, $term->get_error_message() ), 0 );
+				return 0;
+			} elseif ($count_terms ) {
+				$column_text = number_format_i18n( 0 );
+			} else {
+				$column_text = __( 'click to search', 'media-library-assistant' );
+			}
 		}
-
-		$term = get_term( $term_id, $taxonomy );
-
-		if ( is_wp_error( $term ) ) {
-			/* translators: 1: taxonomy 2: error message */
-			error_log( sprintf( _x( 'ERROR: mla_taxonomy_column_filter( "%1$s" ) - get_term failed: "%2$s"', 'error_log', 'media-library-assistant' ), $taxonomy, $term->get_error_message() ), 0 );
-			return 0;
-		}
-
-		$request = array (
-			'post_type' => 'attachment', 
-			'post_status' => 'inherit',
-			'orderby' => 'none',
-			'nopaging' => true,
-			'posts_per_page' => 0,
-			'posts_per_archive_page' => 0,
-			'cache_results' => false,
-			'update_post_meta_cache' => false,
-			'update_post_term_cache' => false,
-			'tax_query' => array(
-				array(
-					'taxonomy' => $taxonomy,
-					'field' => 'slug',
-					'terms' => $term->slug,
-					'include_children' => false 
-				) )
-				);
-
-		if ( MLATest::$wordpress_3point5_plus ) {
-			$request['fields'] = 'ids';
-		}
-		
-		$results = new WP_Query( $request );
-		if ( ! empty( $results->error ) ){
-			/* translators: 1: taxonomy 2: error message */
-			error_log( sprintf( _x( 'ERROR: mla_taxonomy_column_filter( "%1$s" ) - WP_Query failed: "%2$s"', 'error_log', 'media-library-assistant' ), $taxonomy, $results->error ), 0 );
-			return 0;
-		}
-
-		$tax_object = get_taxonomy($taxonomy);
 
 		return sprintf( '<a href="%1$s">%2$s</a>', esc_url( add_query_arg(
-				array( 'page' => MLA::ADMIN_PAGE_SLUG, 'mla-tax' => $taxonomy, 'mla-term' => $term->slug, 'heading_suffix' => urlencode( $tax_object->label . ':' . $term->name ) ), 'upload.php' ) ), number_format_i18n( $results->post_count ) );
+				array( 'page' => MLA::ADMIN_PAGE_SLUG, 'mla-tax' => $taxonomy, 'mla-term' => $term->slug, 'heading_suffix' => urlencode( $tax_object->label . ':' . $term->name ) ), 'upload.php' ) ), $column_text );
 	}
 } //Class MLAObjects
 

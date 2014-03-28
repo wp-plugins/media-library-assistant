@@ -184,7 +184,7 @@ class MLA_List_Table extends WP_List_Table {
 
 		foreach ( $num_posts as $mime_type => $number ) {
 			if ( ( $number > 0 ) && ( $mime_type <> 'trash' ) ) {
-				$available[ ] = $mime_type;
+				$available[] = $mime_type;
 			}
 		}
 
@@ -411,7 +411,7 @@ class MLA_List_Table extends WP_List_Table {
 			$taxonomy = substr( $column_name, 2 );
 			$tax_object = get_taxonomy( $taxonomy );
 			$terms = get_object_term_cache( $item->ID, $taxonomy );
-			
+
 			if ( false === $terms ) {
 				$terms = wp_get_object_terms( $item->ID, $taxonomy );
 			}
@@ -424,7 +424,7 @@ class MLA_List_Table extends WP_List_Table {
 				$list = array();
 				foreach ( $terms as $term ) {
 					$term_name = esc_html( sanitize_term_field( 'name', $term->name, $term->term_id, 'category', 'display' ) );
-					$list[ ] = sprintf( '<a href="%1$s" title="' . __( 'Filter by', 'media-library-assistant' ) . ' &#8220;%2$s&#8221;">%3$s</a>', esc_url( add_query_arg( array_merge( self::mla_submenu_arguments( false ), array(
+					$list[] = sprintf( '<a href="%1$s" title="' . __( 'Filter by', 'media-library-assistant' ) . ' &#8220;%2$s&#8221;">%3$s</a>', esc_url( add_query_arg( array_merge( self::mla_submenu_arguments( false ), array(
 						'page' => MLA::ADMIN_PAGE_SLUG,
 						'mla-tax' => $taxonomy,
 						'mla-term' => $term->slug,
@@ -450,9 +450,9 @@ class MLA_List_Table extends WP_List_Table {
 				 * They are not links because no search will match them.
 				 */
 				if ( is_array( $value ) ) {
-					$list[ ] = 'array( ' . implode( ', ', $value ) . ' )';
+					$list[] = 'array( ' . implode( ', ', $value ) . ' )';
 				} else {
-					$list[ ] = sprintf( '<a href="%1$s" title="' . __( 'Filter by', 'media-library-assistant' ) . ' &#8220;%2$s&#8221;">%3$s</a>', esc_url( add_query_arg( array_merge( self::mla_submenu_arguments( false ), array(
+					$list[] = sprintf( '<a href="%1$s" title="' . __( 'Filter by', 'media-library-assistant' ) . ' &#8220;%2$s&#8221;">%3$s</a>', esc_url( add_query_arg( array_merge( self::mla_submenu_arguments( false ), array(
 						'page' => MLA::ADMIN_PAGE_SLUG,
 						'mla-metakey' => urlencode( MLA_List_Table::$default_columns[ $column_name ] ),
 						'mla-metavalue' => urlencode( $value ),
@@ -614,20 +614,25 @@ class MLA_List_Table extends WP_List_Table {
 				if ( false === $terms ) {
 					$terms = wp_get_object_terms( $item->ID, $tax_name );
 				}
+
+				if ( is_wp_error( $terms ) || empty( $terms ) ) {
+					$terms = array();
+				}
+
 				$ids = array();
 
 				if ( $tax_object->hierarchical ) {
 					foreach( $terms as $term ) {
 						$ids[] = $term->term_id;
 					}
-				
+
 					$inline_data .= '	<div class="mla_category" id="' . $tax_name . '_' . $item->ID . '">'
 						. implode( ',', $ids ) . "</div>\r\n";
 				} else {
 					foreach( $terms as $term ) {
 						$ids[] = $term->name;
 					}
-				
+
 					$inline_data .= '	<div class="mla_tags" id="'.$tax_name.'_'.$item->ID. '">'
 						. esc_attr( implode( ', ', $ids ) ) . "</div>\r\n";
 				}
@@ -1153,10 +1158,10 @@ class MLA_List_Table extends WP_List_Table {
 		/*
 		 * Search box arguments
 		 */
-		if ( !empty( $_REQUEST['s'] ) && !empty( $_REQUEST['mla_search_fields'] ) ) {
+		if ( !empty( $_REQUEST['s'] ) ) {
 			$submenu_arguments['s'] = $_REQUEST['s'];
 			$submenu_arguments['mla_search_connector'] = $_REQUEST['mla_search_connector'];
-			$submenu_arguments['mla_search_fields'] = $_REQUEST['mla_search_fields'];
+			$submenu_arguments['mla_search_fields'] = isset ( $_REQUEST['mla_search_fields'] ) ? $_REQUEST['mla_search_fields'] : array();
 		}
 
 		/*

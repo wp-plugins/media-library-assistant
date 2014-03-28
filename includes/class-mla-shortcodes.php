@@ -42,6 +42,12 @@ class MLAShortcodes {
 		), $atts)); */
 
 		/*
+		 * This shortcode is not documented and no longer supported.
+		 */
+		echo 'The [mla_attachment_list] shortcode is no longer supported.';
+		return;
+
+		/*
 		 * Process the where-used settings option
 		 */
 		if ('checked' == MLAOptions::mla_get_option( MLAOptions::MLA_EXCLUDE_REVISIONS ) ) {
@@ -181,6 +187,12 @@ class MLAShortcodes {
 		}
 
 		/*
+		 * Filter the attributes before $mla_page_parameter and "request:" prefix processing.
+		 */
+		 
+		$attr = apply_filters( 'mla_gallery_raw_attributes', $attr );
+
+		/*
 		 * The mla_paginate_current parameter can be changed to support multiple galleries per page.
 		 */
 		if ( ! isset( $attr['mla_page_parameter'] ) ) {
@@ -242,15 +254,17 @@ class MLAShortcodes {
 			'mla_mid_size' => 2,
 			'mla_prev_text' => '&laquo; ' . __( 'Previous', 'media-library-assistant' ),
 			'mla_next_text' => __( 'Next', 'media-library-assistant' ) . ' &raquo;',
-			'mla_paginate_type' => 'plain'),
+			'mla_paginate_type' => 'plain',
+			'mla_paginate_rows' => NULL ),
 			$mla_item_specific_arguments
 		);
 
+		$html5 = current_theme_supports( 'html5', 'gallery' );
 		$default_arguments = array_merge( array(
 			'size' => 'thumbnail', // or 'medium', 'large', 'full' or registered size
-			'itemtag' => 'dl',
-			'icontag' => 'dt',
-			'captiontag' => 'dd',
+			'itemtag' => $html5 ? 'figure' : 'dl',
+			'icontag' => $html5 ? 'div' : 'dt',
+			'captiontag' => $html5 ? 'figcaption' : 'dd',
 			'columns' => MLAOptions::mla_get_option('mla_gallery_columns'),
 			'link' => 'permalink', // or 'post' or file' or a registered size
 			// Photonic-specific
@@ -308,7 +322,11 @@ class MLAShortcodes {
 		$is_gallery = 'gallery' == $output_parameters[0];
 		$is_pagination = in_array( $output_parameters[0], array( 'previous_page', 'next_page', 'paginate_links' ) ); 
 
-		$attachments = self::mla_get_shortcode_attachments( $post->ID, $attr, $is_pagination );
+		if ( $is_pagination && ( NULL !== $arguments['mla_paginate_rows'] ) ) {
+			$attachments['found_rows'] = absint( $arguments['mla_paginate_rows'] );
+		} else {
+			$attachments = self::mla_get_shortcode_attachments( $post->ID, $attr, $is_pagination );
+		}
 
 		if ( is_string( $attachments ) ) {
 			return $attachments;
@@ -491,7 +509,13 @@ class MLAShortcodes {
 		);
 
 		$style_template = $gallery_style = '';
-		$use_mla_gallery_style = ( 'none' != strtolower( $style_values['mla_style'] ) );
+
+		if ( 'theme' == strtolower( $style_values['mla_style'] ) ) {
+			$use_mla_gallery_style = apply_filters( 'use_default_gallery_style', true );
+		} else {
+			$use_mla_gallery_style = ( 'none' != strtolower( $style_values['mla_style'] ) );
+		}
+
 		if ( apply_filters( 'use_mla_gallery_style', $use_mla_gallery_style, $style_values['mla_style'] ) ) {
 			$style_template = MLAOptions::mla_fetch_gallery_template( $style_values['mla_style'], 'style' );
 			if ( empty( $style_template ) ) {
@@ -1339,14 +1363,15 @@ class MLAShortcodes {
 		$min_scaled_count = 0x7FFFFFFF;
 		$max_scaled_count = 0;
 		foreach ( $tags as $key => $tag ) {
-			$tag->scaled_count = apply_filters( 'mla_tag_cloud_scale', round(log10($tag->count + 1) * 100), $attr, $arguments, $tag );
+			$tag_count = isset ( $tag->count ) ? $tag->count : 0;
+			$tag->scaled_count = apply_filters( 'mla_tag_cloud_scale', round(log10($tag_count + 1) * 100), $attr, $arguments, $tag );
 
-			if ( $tag->count < $min_count ) {
-				$min_count = $tag->count;
+			if ( $tag_count < $min_count ) {
+				$min_count = $tag_count;
 			}
 
-			if ( $tag->count > $max_count ) {
-				$max_count = $tag->count;
+			if ( $tag_count > $max_count ) {
+				$max_count = $tag_count;
 			}
 
 			if ( $tag->scaled_count < $min_scaled_count ) {
@@ -1583,7 +1608,7 @@ class MLAShortcodes {
 				$attr['posts_per_page'] = $attr['limit'];
 			}
 
-			$pagination_result = self::_process_pagination_output_types( $output_parameters, $markup_values, $arguments, $attr, $found_rows, $output );
+			$pagination_result = self::_process_pagination_output_types( $output_parameters, $markup_values, $arguments, $attr, $found_rows );
 			if ( false !== $pagination_result ) {
 				return $pagination_result;
 			}
@@ -1672,7 +1697,7 @@ class MLAShortcodes {
 			$item_values['taxonomy'] = wptexturize( $tag->taxonomy );
 			$item_values['description'] = wptexturize( $tag->description );
 			$item_values['parent'] = $tag->parent;
-			$item_values['count'] = $tag->count;
+			$item_values['count'] = isset ( $tag->count ) ? $tag->count : 0; 
 			$item_values['scaled_count'] = $tag->scaled_count;
 			$item_values['font_size'] = str_replace( ',', '.', ( $item_values['smallest'] + ( ( $item_values['scaled_count'] - $item_values['min_scaled_count'] ) * $item_values['font_step'] ) ) );
 			$item_values['link_url'] = $tag->link;
@@ -1887,7 +1912,7 @@ class MLAShortcodes {
 	 * @param string raw shortcode parameter, e.g., "text {+field+} {brackets} \\{braces\\}"
 	 * @param string template substitution values, e.g., ('instance' => '1', ...  )
 	 *
-	 * @return string query specification with HTML escape sequences and line breaks removed
+	 * @return string parameter with brackets, braces, substitution parameters and templates processed
 	 */
 	private static function _process_shortcode_parameter( $text, $markup_values ) {
 		$new_text = str_replace( '{', '[', str_replace( '}', ']', $text ) );
@@ -2413,8 +2438,12 @@ class MLAShortcodes {
 			'meta_query' => '',
 			// Search
 			's' => '',
-			// Returned fields, for support topic by leoloso
-			'fields' => ''
+			// Returned fields, for support topic "Adding 'fields' to function mla_get_shortcode_attachments" by leoloso
+			'fields' => '',
+			// Caching parameters, for support topic "Lag in attachment categories" by Ruriko
+			'cache_results' => NULL,
+			'update_post_meta_cache' => NULL,
+			'update_post_term_cache' => NULL,
 		);
 
 	/**
@@ -2722,9 +2751,19 @@ class MLAShortcodes {
 				}
 				unset( $arguments[ $key ] );
 				break;
-			case 'nopaging': // boolean
+			case 'nopaging': // boolean value, default false
 				if ( ! empty( $value ) && ( 'false' != strtolower( $value ) ) ) {
 					$query_arguments[ $key ] = true;
+				}
+
+				unset( $arguments[ $key ] );
+				break;
+			// boolean values, default true
+			case 'cache_results':
+			case 'update_post_meta_cache':
+			case 'update_post_term_cache':
+				if ( ! empty( $value ) && ( 'true' != strtolower( $value ) ) ) {
+					$query_arguments[ $key ] = false;
 				}
 
 				unset( $arguments[ $key ] );
@@ -2888,6 +2927,15 @@ class MLAShortcodes {
 			self::$mla_debug_messages .= '<p><strong>mla_debug $wp_filter[posts_orderby]</strong> = ' . var_export( $wp_filter['posts_orderby'], true ) . '</p>';
 		}
 
+		/*
+		 * Disable Relevanssi - A Better Search, v3.2 by Mikko Saari 
+		 * relevanssi_prevent_default_request( $request, $query )
+		 * apply_filters('relevanssi_admin_search_ok', $admin_search_ok, $query );
+		 */
+		if ( function_exists( 'relevanssi_prevent_default_request' ) ) {
+			add_filter( 'relevanssi_admin_search_ok', 'MLAData::mla_query_relevanssi_admin_search_ok_filter' );
+		}
+
 		self::$mla_gallery_wp_query_object = new WP_Query;
 		$attachments = self::$mla_gallery_wp_query_object->query($query_arguments);
 
@@ -2905,12 +2953,16 @@ class MLAShortcodes {
 			$attachments['found_rows'] = self::$mla_gallery_wp_query_object->found_posts;
 		}
 
-		remove_filter( 'posts_where', 'MLAShortcodes::mla_shortcode_query_posts_where_filter', 0x7FFFFFFF, 1 );
-		remove_filter( 'posts_orderby', 'MLAShortcodes::mla_shortcode_query_posts_orderby_filter', 0x7FFFFFFF, 1 );
+		if ( function_exists( 'relevanssi_prevent_default_request' ) ) {
+			remove_filter( 'relevanssi_admin_search_ok', 'MLAData::mla_query_relevanssi_admin_search_ok_filter' );
+		}
+
+		remove_filter( 'posts_where', 'MLAShortcodes::mla_shortcode_query_posts_where_filter', 0x7FFFFFFF );
+		remove_filter( 'posts_orderby', 'MLAShortcodes::mla_shortcode_query_posts_orderby_filter', 0x7FFFFFFF );
 
 		if ( self::$mla_debug ) {
-			remove_filter( 'posts_clauses', 'MLAShortcodes::mla_shortcode_query_posts_clauses_filter', 0x7FFFFFFF, 1 );
-			remove_filter( 'posts_clauses_request', 'MLAShortcodes::mla_shortcode_query_posts_clauses_request_filter', 0x7FFFFFFF, 1 );
+			remove_filter( 'posts_clauses', 'MLAShortcodes::mla_shortcode_query_posts_clauses_filter', 0x7FFFFFFF );
+			remove_filter( 'posts_clauses_request', 'MLAShortcodes::mla_shortcode_query_posts_clauses_request_filter', 0x7FFFFFFF );
 
 			self::$mla_debug_messages .= '<p><strong>' . __( 'mla_debug query', 'media-library-assistant' ) . '</strong> = ' . var_export( $query_arguments, true ) . '</p>';
 			self::$mla_debug_messages .= '<p><strong>' . __( 'mla_debug request', 'media-library-assistant' ) . '</strong> = ' . var_export( self::$mla_gallery_wp_query_object->request, true ) . '</p>';
@@ -2982,7 +3034,8 @@ class MLAShortcodes {
 		global $wpdb;
 
 		if ( self::$mla_debug ) {
-			self::$mla_debug_messages .= '<p><strong>' . __( 'mla_debug ORDER BY filter, incoming', 'media-library-assistant' ) . '</strong> = ' . var_export( $orderby_clause, true ) . '<br>' . __( 'Replacement ORDER BY clause', 'media-library-assistant' ) . ' = ' . var_export( self::$query_parameters['orderby'], true ) . '</p>';
+			$replacement = isset( self::$query_parameters['orderby'] ) ? var_export( self::$query_parameters['orderby'], true ) : 'none';
+			self::$mla_debug_messages .= '<p><strong>' . __( 'mla_debug ORDER BY filter, incoming', 'media-library-assistant' ) . '</strong> = ' . var_export( $orderby_clause, true ) . '<br>' . __( 'Replacement ORDER BY clause', 'media-library-assistant' ) . ' = ' . $replacement . '</p>';
 		}
 
 		if ( isset( self::$query_parameters['orderby'] ) ) {
@@ -3037,13 +3090,17 @@ class MLAShortcodes {
 	 */
 	private static $mla_get_terms_parameters = array(
 		'taxonomy' => 'post_tag',
+		'post_mime_type' => 'all',
+		'fields' => 't.term_id, t.name, t.slug, t.term_group, tt.term_taxonomy_id, tt.taxonomy, tt.description, tt.parent, COUNT(p.ID) AS `count`',
 		'include' => '',
 		'exclude' => '',
 		'parent' => '',
 		'minimum' => 0,
+		'no_count' => false,
 		'number' => 45,
 		'orderby' => 'name',
 		'order' => 'ASC',
+		'no_orderby' => false,
 		'preserve_case' => false,
 		'limit' => 0,
 		'offset' => 0
@@ -3069,12 +3126,16 @@ class MLAShortcodes {
 	 *
 	 * minimum - minimum number of attachments a term must have to be included.
 	 *
+	 * no_count - true to to suppress count of attachments per term else false
+	 *
 	 * number - maximum number of term objects to return. Terms are ordered by count,
 	 * descending and then by term_id before this value is applied.
 	 *
 	 * orderby - 'count', 'id', 'name', 'none', 'random', 'slug'
 	 *
 	 * order - 'ASC', 'DESC'
+	 *
+	 * no_orderby - true to suppress ALL sorting clauses else false
 	 *
 	 * preserve_case - 'true', 'false' to make orderby case-sensitive.
 	 *
@@ -3110,12 +3171,35 @@ class MLAShortcodes {
 		$query = array();
 		$query_parameters = array();
 
-		$query[] = 'SELECT t.term_id, t.name, t.slug, t.term_group, tt.term_taxonomy_id, tt.taxonomy, tt.description, tt.parent, COUNT(p.ID) AS `count`';
+		/*
+		 * If we're not counting attachments per term, strip
+		 * post fields out of list and adjust the orderby  value
+		 */
+		if ( $no_count = 'true' == (string) $arguments['no_count'] ) {
+			$field_array = explode( ',', $arguments['fields'] );
+			foreach ( $field_array as $index => $field ) {
+				if ( false !== strpos( $field, 'p.' ) ) {
+					unset( $field_array[ $index ] );
+				}
+			}
+			$arguments['fields'] = implode( ',', $field_array );
+			$arguments['minimum'] = 0;
+			$arguments['post_mime_type'] = 'all';
+
+			if ( 'count' ==strtolower( $arguments['orderby'] ) ) {
+				$arguments['orderby'] = 'none';
+			}
+		}
+
+		$query[] = 'SELECT ' . $arguments['fields'];
 		$query[] = 'FROM `' . $wpdb->terms . '` AS t';
 		$query[] = 'JOIN `' . $wpdb->term_taxonomy . '` AS tt ON t.term_id = tt.term_id';
-		$query[] = 'LEFT JOIN `' . $wpdb->term_relationships . '` AS tr ON tt.term_taxonomy_id = tr.term_taxonomy_id';
-		$query[] = 'LEFT JOIN `' . $wpdb->posts . '` AS p ON tr.object_id = p.ID';
-		$query[] = "AND p.post_type IN ('attachment') AND p.post_status IN ('inherit')";
+
+		if ( ! $no_count ) {
+			$query[] = 'LEFT JOIN `' . $wpdb->term_relationships . '` AS tr ON tt.term_taxonomy_id = tr.term_taxonomy_id';
+			$query[] = 'LEFT JOIN `' . $wpdb->posts . '` AS p ON tr.object_id = p.ID';
+			$query[] = "AND p.post_type IN ('attachment') AND p.post_status IN ('inherit')";
+		}
 
 		/*
 		 * Add taxonomy constraint
@@ -3157,7 +3241,17 @@ class MLAShortcodes {
 			$query[] = "AND tt.parent = '{$parent}'";
 		}
 
-		$query[] = ' ) GROUP BY tr.term_taxonomy_id';
+		if ( 'all' !== strtolower( $arguments['post_mime_type'] ) ) {
+			$where = str_replace( '%', '%%', wp_post_mime_type_where( $arguments['post_mime_type'], 'p' ) );
+			
+			if ( 0 == absint( $arguments['minimum'] ) ) {
+				$query[] = ' AND ( p.post_mime_type IS NULL OR ' . substr( $where, 6 );
+			} else {
+				$query[] = $where;
+			}
+		}
+		
+		$query[] = ' ) GROUP BY tt.term_taxonomy_id';
 
 		if ( 0 < absint( $arguments['minimum'] ) ) {
 			$query[] = 'HAVING count >= %d';
@@ -3165,9 +3259,15 @@ class MLAShortcodes {
 		}
 
 		/*
-		 * For now, always select the most popular terms
+		 * For now, always select the most popular terms,
+		 * except when specifically told to omit the clause
 		 */
-		$query[] = 'ORDER BY count DESC, t.term_id ASC';
+		if ( $arguments['no_orderby'] ) {
+			$arguments['orderby'] = 'count';
+			$arguments['order']  = 'DESC';
+		} elseif ( ! $no_count ) {
+			$query[] = 'ORDER BY count DESC, t.term_id ASC';
+		}
 
 		/*
 		 * Limit the total number of terms returned
@@ -3241,15 +3341,18 @@ class MLAShortcodes {
 		/*
 		 * If we're limiting the final results, we need to get an accurate total count first
 		 */
-		if ( 0 < $offset || 0 < $limit ) {
+		if ( ! $no_count && ( 0 < $offset || 0 < $limit ) ) {
 			$count_query = 'SELECT COUNT(*) as count FROM (' . join(' ', $query) . ' ) as subQuery';
 			$count = $wpdb->get_results( $wpdb->prepare( $count_query, $query_parameters ) );
 			$found_rows = $count[0]->count;
 		}
 
 		if ( ! empty( $final_parameters ) ) {
-		    array_unshift($query, 'SELECT * FROM (');
-		    $query[] = ') AS subQuery';
+			if ( ! $no_count ) {
+			    array_unshift($query, 'SELECT * FROM (');
+			    $query[] = ') AS subQuery';
+			}
+
 			$query = array_merge( $query, $final_parameters );
 		}
 
@@ -3270,7 +3373,6 @@ class MLAShortcodes {
 
 		$tags['found_rows'] = $found_rows;
 		$tags = apply_filters( 'mla_get_terms_query_results', $tags );
-
 		return $tags;
 	}
 } // Class MLAShortcodes

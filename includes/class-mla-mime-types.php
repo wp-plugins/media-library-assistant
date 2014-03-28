@@ -293,7 +293,7 @@ class MLAMime {
 
 		$items[ $extensions ] = $mime_type;
 		unset( $items['.bad.value.'] );
-		
+
 		/*
 		 * Respect the WordPress per-user 'unfiltered_html' capability test
 		 */
@@ -1513,6 +1513,15 @@ class MLAMime {
 	private static $mla_upload_mime_templates = NULL;
 
 	/**
+	 * In-memory cache of the default Upload MIME Type descriptions
+	 *
+	 * @since 1.80
+	 *
+	 * @var	array	extension => description
+	 */
+	private static $mla_upload_mime_descriptions = NULL;
+
+	/**
 	 * Highest existing Upload MIME Type ID value
 	 *
 	 * @since 1.40
@@ -1769,13 +1778,16 @@ class MLAMime {
 
 		/*
 		 * Start with the MLA extensions, initialized to an inactive state
+		 * Save the descriptions for use in _put_upload_mime_types()
 		 */
+		self::$mla_upload_mime_descriptions = array();
 		$template_array = MLAData::mla_load_template( 'mla-default-mime-types.tpl' );
 		if ( isset( $template_array['mla-mime-types'] ) ) {
 			$mla_mime_types = preg_split('/[\r\n]+/', $template_array['mla-mime-types'] );
 			foreach ( $mla_mime_types as $mla_type ) {
 				$array = explode(',', $mla_type );
 				$key = strtolower( $array[0] );
+				self::$mla_upload_mime_descriptions[ $key ] = $array[4];
 				self::$mla_upload_mime_templates[ $key ] = array(
 					'post_ID' => ++self::$mla_upload_mime_highest_ID,
 					'mime_type' => $array[1],
@@ -1893,8 +1905,9 @@ class MLAMime {
 		 * Apply the current settings, if any
 		 */
 		foreach ( self::$mla_upload_mime_templates as $key => $value ) {
+			$default_description = isset( self::$mla_upload_mime_descriptions[ $key ] ) ? self::$mla_upload_mime_descriptions[ $key ] : '';
 			self::$mla_upload_mime_templates[ $key ]['disabled'] = isset( $mla_upload_mimes['disabled'][ $key ] );
-			self::$mla_upload_mime_templates[ $key ]['description'] = isset( $mla_upload_mimes['description'][ $key ] ) ? $mla_upload_mimes['description'][ $key ] : '';
+			self::$mla_upload_mime_templates[ $key ]['description'] = isset( $mla_upload_mimes['description'][ $key ] ) ? $mla_upload_mimes['description'][ $key ] : $default_description;
 			if ( isset( $mla_upload_mimes['icon_type'][ $key ] ) ) {
 				self::$mla_upload_mime_templates[ $key ]['icon_type'] = $mla_upload_mimes['icon_type'][ $key ];
 			}
@@ -1923,7 +1936,7 @@ class MLAMime {
 			}
 
 			$description = trim( $value['description'] );
-			if ( ! empty( $description ) ) {
+			if ( ! empty( $description ) && ( $description != self::$mla_upload_mime_descriptions[ $key ] ) ) {
 				$mla_upload_mimes['description'][ $key ] =  $description;
 			}
 
@@ -2044,7 +2057,7 @@ class MLAMime {
 	 *
 	 * @return	array	Message(s) reflecting the results of the operation
 	 */
-	public static function mla_update_upload_mime( $request ) {
+	public static function mla_update_upload_mime( $request = NULL ) {
 		if ( self::_get_upload_mime_templates() ) {
 			$errors = '';
 		} else {
@@ -2052,6 +2065,14 @@ class MLAMime {
 				'message' => __( 'ERROR: Cannot load Upload MIME Types', 'media-library-assistant' ),
 				'body' => ''
 			);
+		}
+
+		/*
+		 * $request = NULL is a call from MLASettings::_version_upgrade
+		 */
+		if ( NULL == $request ) {
+			self::_put_upload_mime_templates();
+			return;
 		}
 
 		$messages = '';

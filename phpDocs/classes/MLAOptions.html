@@ -18,7 +18,10 @@
 <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse"><span class="icon-bar"></span><span class="icon-bar"></span><span class="icon-bar"></span></a><a class="brand" href="../index.html">Media Library Assistant</a><div class="nav-collapse"><ul class="nav">
 <li class="dropdown">
 <a href="#api" class="dropdown-toggle" data-toggle="dropdown">
-                                    API Documentation <b class="caret"></b></a><ul class="dropdown-menu"></ul>
+                                    API Documentation <b class="caret"></b></a><ul class="dropdown-menu">
+<li><a>Packages</a></li>
+<li><a href="../packages/Media%20Library%20Assistant.html"><i class="icon-folder-open"></i> Media Library Assistant</a></li>
+</ul>
 </li>
 <li class="dropdown" id="charts-menu">
 <a href="#charts" class="dropdown-toggle" data-toggle="dropdown">
@@ -69,6 +72,7 @@
 <li class="method public "><a href="#mla_get_option" title="mla_get_option :: Return the stored value or default value of a defined MLA option"><span class="description">Return the stored value or default value of a defined MLA option</span><pre>mla_get_option()</pre></a></li>
 <li class="method public "><a href="#mla_get_style_templates" title="mla_get_style_templates :: Get ALL style templates from $mla_templates, including 'default'"><span class="description">Get ALL style templates from $mla_templates, including 'default'</span><pre>mla_get_style_templates()</pre></a></li>
 <li class="method public "><a href="#mla_iptc_exif_option_handler" title="mla_iptc_exif_option_handler :: Render and manage iptc/exif support options"><span class="description">Render and manage iptc/exif support options</span><pre>mla_iptc_exif_option_handler()</pre></a></li>
+<li class="method public "><a href="#mla_is_data_source" title="mla_is_data_source :: Identify custom field mapping data source"><span class="description">Identify custom field mapping data source</span><pre>mla_is_data_source()</pre></a></li>
 <li class="method public "><a href="#mla_localize_option_definitions_array" title="mla_localize_option_definitions_array :: Localize $mla_option_definitions array"><span class="description">Localize $mla_option_definitions array</span><pre>mla_localize_option_definitions_array()</pre></a></li>
 <li class="method public "><a href="#mla_put_markup_templates" title="mla_put_markup_templates :: Put user-defined markup templates to $mla_templates and database"><span class="description">Put user-defined markup templates to $mla_templates and database</span><pre>mla_put_markup_templates()</pre></a></li>
 <li class="method public "><a href="#mla_put_style_templates" title="mla_put_style_templates :: Put user-defined style templates to $mla_templates and database"><span class="description">Put user-defined style templates to $mla_templates and database</span><pre>mla_put_style_templates()</pre></a></li>
@@ -109,8 +113,11 @@ settings are being updated or reset.</span><pre>mla_taxonomy_support()</pre></a>
 <li class="property private "><a href="#%24mla_option_templates" title="$mla_option_templates :: Style and Markup templates"><span class="description">Style and Markup templates</span><pre>$mla_option_templates</pre></a></li>
 <li class="nav-header">
 <i class="icon-custom icon-constant"></i> Constants</li>
+<li class="constant  "><a href="#MLA_COUNT_TERM_ATTACHMENTS" title="MLA_COUNT_TERM_ATTACHMENTS :: Provides a unique name for the taxonomy count Attachments option"><span class="description">Provides a unique name for the taxonomy count Attachments option</span><pre>MLA_COUNT_TERM_ATTACHMENTS</pre></a></li>
 <li class="constant  "><a href="#MLA_DEFAULT_ORDER" title="MLA_DEFAULT_ORDER :: Provides a unique name for the default order option"><span class="description">Provides a unique name for the default order option</span><pre>MLA_DEFAULT_ORDER</pre></a></li>
 <li class="constant  "><a href="#MLA_DEFAULT_ORDERBY" title="MLA_DEFAULT_ORDERBY :: Provides a unique name for the default orderby option"><span class="description">Provides a unique name for the default orderby option</span><pre>MLA_DEFAULT_ORDERBY</pre></a></li>
+<li class="constant  "><a href="#MLA_EDIT_MEDIA_META_BOXES" title="MLA_EDIT_MEDIA_META_BOXES :: Provides a unique name for the Edit Media additional meta boxes option"><span class="description">Provides a unique name for the Edit Media additional meta boxes option</span><pre>MLA_EDIT_MEDIA_META_BOXES</pre></a></li>
+<li class="constant  "><a href="#MLA_EDIT_MEDIA_SEARCH_TAXONOMY" title='MLA_EDIT_MEDIA_SEARCH_TAXONOMY :: Provides a unique name for the "searchable taxonomies" option'><span class="description">Provides a unique name for the "searchable taxonomies" option</span><pre>MLA_EDIT_MEDIA_SEARCH_TAXONOMY</pre></a></li>
 <li class="constant  "><a href="#MLA_ENABLE_MLA_ICONS" title="MLA_ENABLE_MLA_ICONS :: Provides a unique name for the Enable MLA Icons option"><span class="description">Provides a unique name for the Enable MLA Icons option</span><pre>MLA_ENABLE_MLA_ICONS</pre></a></li>
 <li class="constant  "><a href="#MLA_ENABLE_POST_MIME_TYPES" title="MLA_ENABLE_POST_MIME_TYPES :: Provides a unique name for the Enable Post MIME Types option"><span class="description">Provides a unique name for the Enable Post MIME Types option</span><pre>MLA_ENABLE_POST_MIME_TYPES</pre></a></li>
 <li class="constant  "><a href="#MLA_ENABLE_UPLOAD_MIMES" title="MLA_ENABLE_UPLOAD_MIMES :: Provides a unique name for the Enable Upload MIME Types option"><span class="description">Provides a unique name for the Enable Upload MIME Types option</span><pre>MLA_ENABLE_UPLOAD_MIMES</pre></a></li>
@@ -131,7 +138,9 @@ This option is for flat taxonomies, e.g., "Att.</span><pre>MLA_MEDIA_MODAL_DETAI
 <li class="constant  "><a href="#MLA_MEDIA_MODAL_ORDERBY" title="MLA_MEDIA_MODAL_ORDERBY :: Provides a unique name for the Media Manager orderby option"><span class="description">Provides a unique name for the Media Manager orderby option</span><pre>MLA_MEDIA_MODAL_ORDERBY</pre></a></li>
 <li class="constant  "><a href="#MLA_MEDIA_MODAL_SEARCHBOX" title="MLA_MEDIA_MODAL_SEARCHBOX :: Provides a unique name for the Media Manager toolbar Search Box option"><span class="description">Provides a unique name for the Media Manager toolbar Search Box option</span><pre>MLA_MEDIA_MODAL_SEARCHBOX</pre></a></li>
 <li class="constant  "><a href="#MLA_MEDIA_MODAL_TERMS" title="MLA_MEDIA_MODAL_TERMS :: Provides a unique name for the Media Manager toolbar Taxonomy Terms option"><span class="description">Provides a unique name for the Media Manager toolbar Taxonomy Terms option</span><pre>MLA_MEDIA_MODAL_TERMS</pre></a></li>
-<li class="constant  "><a href="#MLA_MEDIA_MODAL_TOOLBAR" title="MLA_MEDIA_MODAL_TOOLBAR :: Provides a unique name for the Media Manager toolbar option"><span class="description">Provides a unique name for the Media Manager toolbar option</span><pre>MLA_MEDIA_MODAL_TOOLBAR</pre></a></li>
+<li class="constant  "><a href="#MLA_MEDIA_MODAL_TOOLBAR" title="MLA_MEDIA_MODAL_TOOLBAR :: Provides a unique name for the Media Manager toolbar option, which
+also controls the ATTACHMENT DETAILS enhancements"><span class="description">Provides a unique name for the Media Manager toolbar option, which
+also controls the ATTACHMENT DETAILS enhancements</span><pre>MLA_MEDIA_MODAL_TOOLBAR</pre></a></li>
 <li class="constant  "><a href="#MLA_MLA_GALLERY_IN_TUNING" title="MLA_MLA_GALLERY_IN_TUNING :: Provides a unique name for a database tuning option"><span class="description">Provides a unique name for a database tuning option</span><pre>MLA_MLA_GALLERY_IN_TUNING</pre></a></li>
 <li class="constant  "><a href="#MLA_NEW_CUSTOM_FIELD" title='MLA_NEW_CUSTOM_FIELD :: Provides a unique name for the Custom Field "new field" key'><span class="description">Provides a unique name for the Custom Field "new field" key</span><pre>MLA_NEW_CUSTOM_FIELD</pre></a></li>
 <li class="constant  "><a href="#MLA_NEW_CUSTOM_RULE" title='MLA_NEW_CUSTOM_RULE :: Provides a unique name for the Custom Field "new rule" key'><span class="description">Provides a unique name for the Custom Field "new rule" key</span><pre>MLA_NEW_CUSTOM_RULE</pre></a></li>
@@ -140,7 +149,8 @@ This option is for flat taxonomies, e.g., "Att.</span><pre>MLA_MEDIA_MODAL_DETAI
 <li class="constant  "><a href="#MLA_SCREEN_MENU_TITLE" title="MLA_SCREEN_MENU_TITLE :: Provides a unique name for the admin screen menu title option"><span class="description">Provides a unique name for the admin screen menu title option</span><pre>MLA_SCREEN_MENU_TITLE</pre></a></li>
 <li class="constant  "><a href="#MLA_SCREEN_ORDER" title="MLA_SCREEN_ORDER :: Provides a unique name for the admin screen menu order option"><span class="description">Provides a unique name for the admin screen menu order option</span><pre>MLA_SCREEN_ORDER</pre></a></li>
 <li class="constant  "><a href="#MLA_SCREEN_PAGE_TITLE" title="MLA_SCREEN_PAGE_TITLE :: Provides a unique name for the admin screen page title option"><span class="description">Provides a unique name for the admin screen page title option</span><pre>MLA_SCREEN_PAGE_TITLE</pre></a></li>
-<li class="constant  "><a href="#MLA_TABLE_VIEWS_WIDTH" title="MLA_TABLE_VIEWS_WIDTH :: Provides a unique name for the default table views width option"><span class="description">Provides a unique name for the default table views width option</span><pre>MLA_TABLE_VIEWS_WIDTH</pre></a></li>
+<li class="constant  "><a href="#MLA_TABLE_ICON_SIZE" title="MLA_TABLE_ICON_SIZE :: Provides a unique name for the Media/Assistant submenu table thumbnail/icon size option"><span class="description">Provides a unique name for the Media/Assistant submenu table thumbnail/icon size option</span><pre>MLA_TABLE_ICON_SIZE</pre></a></li>
+<li class="constant  "><a href="#MLA_TABLE_VIEWS_WIDTH" title="MLA_TABLE_VIEWS_WIDTH :: Provides a unique name for the Media/Assistant submenu table views width option"><span class="description">Provides a unique name for the Media/Assistant submenu table views width option</span><pre>MLA_TABLE_VIEWS_WIDTH</pre></a></li>
 <li class="constant  "><a href="#MLA_TAXONOMY_FILTER_DEPTH" title="MLA_TAXONOMY_FILTER_DEPTH :: Provides a unique name for the taxonomy filter maximum depth option"><span class="description">Provides a unique name for the taxonomy filter maximum depth option</span><pre>MLA_TAXONOMY_FILTER_DEPTH</pre></a></li>
 <li class="constant  "><a href="#MLA_TAXONOMY_FILTER_INCLUDE_CHILDREN" title="MLA_TAXONOMY_FILTER_INCLUDE_CHILDREN :: Provides a unique name for the taxonomy filter maximum depth option"><span class="description">Provides a unique name for the taxonomy filter maximum depth option</span><pre>MLA_TAXONOMY_FILTER_INCLUDE_CHILDREN</pre></a></li>
 <li class="constant  "><a href="#MLA_TAXONOMY_SUPPORT" title="MLA_TAXONOMY_SUPPORT :: Provides a unique name for the taxonomy support option"><span class="description">Provides a unique name for the taxonomy support option</span><pre>MLA_TAXONOMY_SUPPORT</pre></a></li>
@@ -544,6 +554,26 @@ Isolates clients from changes to _evaluate_data_source().</p></p>
 <h3>Returns</h3>
 <div class="subelement response">
 <code>string</code>HTML table row markup for 'render' else message(s) reflecting the results of the operation.</div>
+</div></div>
+</div>
+<a name="mla_is_data_source" id="mla_is_data_source"></a><div class="element clickable method public mla_is_data_source" data-toggle="collapse" data-target=".mla_is_data_source .collapse">
+<h2>Identify custom field mapping data source</h2>
+<pre>mla_is_data_source(string $candidate_name) : boolean</pre>
+<div class="labels"></div>
+<div class="row collapse"><div class="detail-description">
+<p class="long_description"><p>Determines whether a name matches any of the element-level data source dropdown options, i.e.,
+excludes "template:" and "meta:" values.</p></p>
+<table class="table table-bordered"><tr>
+<th>since</th>
+<td>1.80</td>
+</tr></table>
+<h3>Parameters</h3>
+<div class="subelement argument">
+<h4>$candidate_name</h4>
+<code>string</code><p>candidate data source name</p></div>
+<h3>Returns</h3>
+<div class="subelement response">
+<code>boolean</code>true if candidate name matches a data source</div>
 </div></div>
 </div>
 <a name="mla_localize_option_definitions_array" id="mla_localize_option_definitions_array"></a><div class="element clickable method public mla_localize_option_definitions_array" data-toggle="collapse" data-target=".mla_localize_option_definitions_array .collapse">
@@ -1227,6 +1257,12 @@ added to the Media Library.</p></p>
 </div>
 <h3>
 <i class="icon-custom icon-constant"></i> Constants</h3>
+<a name="MLA_COUNT_TERM_ATTACHMENTS" id="MLA_COUNT_TERM_ATTACHMENTS"> </a><div class="element clickable constant  MLA_COUNT_TERM_ATTACHMENTS" data-toggle="collapse" data-target=".MLA_COUNT_TERM_ATTACHMENTS .collapse">
+<h2>Provides a unique name for the taxonomy count Attachments option</h2>
+<pre>MLA_COUNT_TERM_ATTACHMENTS </pre>
+<div class="labels"></div>
+<div class="row collapse"><div class="detail-description"><p class="long_description"></p></div></div>
+</div>
 <a name="MLA_DEFAULT_ORDER" id="MLA_DEFAULT_ORDER"> </a><div class="element clickable constant  MLA_DEFAULT_ORDER" data-toggle="collapse" data-target=".MLA_DEFAULT_ORDER .collapse">
 <h2>Provides a unique name for the default order option</h2>
 <pre>MLA_DEFAULT_ORDER </pre>
@@ -1236,6 +1272,18 @@ added to the Media Library.</p></p>
 <a name="MLA_DEFAULT_ORDERBY" id="MLA_DEFAULT_ORDERBY"> </a><div class="element clickable constant  MLA_DEFAULT_ORDERBY" data-toggle="collapse" data-target=".MLA_DEFAULT_ORDERBY .collapse">
 <h2>Provides a unique name for the default orderby option</h2>
 <pre>MLA_DEFAULT_ORDERBY </pre>
+<div class="labels"></div>
+<div class="row collapse"><div class="detail-description"><p class="long_description"></p></div></div>
+</div>
+<a name="MLA_EDIT_MEDIA_META_BOXES" id="MLA_EDIT_MEDIA_META_BOXES"> </a><div class="element clickable constant  MLA_EDIT_MEDIA_META_BOXES" data-toggle="collapse" data-target=".MLA_EDIT_MEDIA_META_BOXES .collapse">
+<h2>Provides a unique name for the Edit Media additional meta boxes option</h2>
+<pre>MLA_EDIT_MEDIA_META_BOXES </pre>
+<div class="labels"></div>
+<div class="row collapse"><div class="detail-description"><p class="long_description"></p></div></div>
+</div>
+<a name="MLA_EDIT_MEDIA_SEARCH_TAXONOMY" id="MLA_EDIT_MEDIA_SEARCH_TAXONOMY"> </a><div class="element clickable constant  MLA_EDIT_MEDIA_SEARCH_TAXONOMY" data-toggle="collapse" data-target=".MLA_EDIT_MEDIA_SEARCH_TAXONOMY .collapse">
+<h2>Provides a unique name for the "searchable taxonomies" option</h2>
+<pre>MLA_EDIT_MEDIA_SEARCH_TAXONOMY </pre>
 <div class="labels"></div>
 <div class="row collapse"><div class="detail-description"><p class="long_description"></p></div></div>
 </div>
@@ -1338,7 +1386,8 @@ This option is for flat taxonomies, e.g., "Att.</h2>
 <div class="row collapse"><div class="detail-description"><p class="long_description"></p></div></div>
 </div>
 <a name="MLA_MEDIA_MODAL_TOOLBAR" id="MLA_MEDIA_MODAL_TOOLBAR"> </a><div class="element clickable constant  MLA_MEDIA_MODAL_TOOLBAR" data-toggle="collapse" data-target=".MLA_MEDIA_MODAL_TOOLBAR .collapse">
-<h2>Provides a unique name for the Media Manager toolbar option</h2>
+<h2>Provides a unique name for the Media Manager toolbar option, which
+also controls the ATTACHMENT DETAILS enhancements</h2>
 <pre>MLA_MEDIA_MODAL_TOOLBAR </pre>
 <div class="labels"></div>
 <div class="row collapse"><div class="detail-description"><p class="long_description"></p></div></div>
@@ -1391,8 +1440,14 @@ This option is for flat taxonomies, e.g., "Att.</h2>
 <div class="labels"></div>
 <div class="row collapse"><div class="detail-description"><p class="long_description"></p></div></div>
 </div>
+<a name="MLA_TABLE_ICON_SIZE" id="MLA_TABLE_ICON_SIZE"> </a><div class="element clickable constant  MLA_TABLE_ICON_SIZE" data-toggle="collapse" data-target=".MLA_TABLE_ICON_SIZE .collapse">
+<h2>Provides a unique name for the Media/Assistant submenu table thumbnail/icon size option</h2>
+<pre>MLA_TABLE_ICON_SIZE </pre>
+<div class="labels"></div>
+<div class="row collapse"><div class="detail-description"><p class="long_description"></p></div></div>
+</div>
 <a name="MLA_TABLE_VIEWS_WIDTH" id="MLA_TABLE_VIEWS_WIDTH"> </a><div class="element clickable constant  MLA_TABLE_VIEWS_WIDTH" data-toggle="collapse" data-target=".MLA_TABLE_VIEWS_WIDTH .collapse">
-<h2>Provides a unique name for the default table views width option</h2>
+<h2>Provides a unique name for the Media/Assistant submenu table views width option</h2>
 <pre>MLA_TABLE_VIEWS_WIDTH </pre>
 <div class="labels"></div>
 <div class="row collapse"><div class="detail-description"><p class="long_description"></p></div></div>
@@ -1434,7 +1489,7 @@ This option is for flat taxonomies, e.g., "Att.</h2>
 <div class="row"><footer class="span12">
             Template is built using <a href="http://twitter.github.com/bootstrap/">Twitter Bootstrap 2</a> and icons provided by <a href="http://glyphicons.com/">Glyphicons</a>.<br>
             Documentation is powered by <a href="http://www.phpdoc.org/">phpDocumentor 2.0.0a8</a> and<br>
-            generated on 2014-02-11T20:56:42-08:00.<br></footer></div>
+            generated on 2014-03-27T17:01:48-07:00.<br></footer></div>
 </div>
 </body>
 </html>

@@ -995,6 +995,25 @@ class MLAData {
 						$markup_values[ $key ] = $record;
 					}
 
+				case '':
+					$candidate = str_replace( '{', '[', str_replace( '}', ']', $value['value'] ) );
+					$key = str_replace( '{', '[', str_replace( '}', ']', $key ) );
+
+					if ( MLAOptions::mla_is_data_source( $candidate ) ) {
+						$data_value = array(
+							'data_source' => $candidate,
+							'keep_existing' => false,
+							'format' => 'raw',
+							'option' => 'text' );
+
+						$data_value =  MLAOptions::mla_get_data_source( $post_id, 'single_attachment_mapping', $data_value );
+						if ( ( 'commas' == $value['format'] ) && is_numeric( $data_value ) ) {
+							$data_value = number_format( (float)$data_value );
+						}
+
+						$markup_values[ $key ] = $data_value;
+					}
+
 					break;
 				default:
 					// ignore anything else
@@ -1054,7 +1073,7 @@ class MLAData {
 			$template_length = $template_end + 2 - $template_offset;
 			$template_content = substr( $tpl, $template_offset + 11, $template_length - (11 + 2) );
 			$placeholders = self::mla_get_template_placeholders( $template_content );
-			$result = array( 'template:' . $template_content => array( 'prefix' => 'template', 'value' => $template_content, 'option' => $default_option ) );
+			$result = array( 'template:' . $template_content => array( 'prefix' => 'template', 'value' => $template_content, 'option' => $default_option, 'format' => 'native' ) );
 			$results = array_merge( $results, $result, $placeholders );
 			$tpl = substr_replace( $tpl, '', $template_offset, $template_length );
 		} // found a template
@@ -1066,7 +1085,7 @@ class MLAData {
 
 		foreach ( $matches[0] as $match ) {
 			$key = substr( $match, 2, (strlen( $match ) - 4 ) );
-			$result = array( 'prefix' => '', 'value' => '', 'option' => $default_option );
+			$result = array( 'prefix' => '', 'value' => '', 'option' => $default_option, 'format' => 'native' );
 			$match_count = preg_match( '/\[\+(.+):(.+)/', $match, $matches );
 			if ( 1 == $match_count ) {
 				$result['prefix'] = $matches[1];
@@ -1075,10 +1094,17 @@ class MLAData {
 				$tail = substr( $match, 2);
 			}
 
-			$match_count = preg_match( '/([^,]+)(,(text|single|export|array|multi))\+\]/', $tail, $matches );
+			$match_count = preg_match( '/([^,]+)(,(text|single|export|array|multi|commas))\+\]/', $tail, $matches );
 			if ( 1 == $match_count ) {
 				$result['value'] = $matches[1];
-				$result['option'] = $matches[3];
+
+				if ( 'commas' == $matches[3] ) {		
+					$result['option'] = 'text';
+					$result['format'] = 'commas';
+				} else {
+					$result['option'] = $matches[3];
+				}
+
 			} else {
 				$result['value'] = substr( $tail, 0, (strlen( $tail ) - 2 ) );
 			}
@@ -1414,20 +1440,18 @@ class MLAData {
 		 * There must be at least one search field to do a search.
 		 */
 		if ( isset( $clean_request['s'] ) ) {
-			if ( ! empty( $clean_request['mla_search_fields'] ) ) {
-				self::$query_parameters['s'] = $clean_request['s'];
-				self::$query_parameters['mla_search_connector'] = $clean_request['mla_search_connector'];
-				self::$query_parameters['mla_search_fields'] = $clean_request['mla_search_fields'];
-				self::$query_parameters['sentence'] = isset( $clean_request['sentence'] );
-				self::$query_parameters['exact'] = isset( $clean_request['exact'] );
+			  self::$query_parameters['s'] = $clean_request['s'];
+			  self::$query_parameters['mla_search_connector'] = $clean_request['mla_search_connector'];
+			  self::$query_parameters['mla_search_fields'] = $clean_request['mla_search_fields'];
+			  self::$query_parameters['sentence'] = isset( $clean_request['sentence'] );
+			  self::$query_parameters['exact'] = isset( $clean_request['exact'] );
 
-			 	if ( in_array( 'alt-text', self::$query_parameters['mla_search_fields'] ) ) {
-					self::$query_parameters['use_postmeta_view'] = true;
-					self::$query_parameters['postmeta_key'] = '_wp_attachment_image_alt';
-				}
-			} // !empty
+			  if ( in_array( 'alt-text', self::$query_parameters['mla_search_fields'] ) ) {
+				  self::$query_parameters['use_postmeta_view'] = true;
+				  self::$query_parameters['postmeta_key'] = '_wp_attachment_image_alt';
+			  }
 
-			// unset( $clean_request['s'] ); // WP v3.7 requires this to be present for posts_search filter
+			unset( $clean_request['s'] );
 			unset( $clean_request['mla_search_connector'] );
 			unset( $clean_request['mla_search_fields'] );
 			unset( $clean_request['sentence'] );
@@ -1588,6 +1612,15 @@ class MLAData {
 		add_filter( 'posts_where', 'MLAData::mla_query_posts_where_filter' );
 		add_filter( 'posts_orderby', 'MLAData::mla_query_posts_orderby_filter' );
 
+		/*
+		 * Disable Relevanssi - A Better Search, v3.2 by Mikko Saari 
+		 * relevanssi_prevent_default_request( $request, $query )
+		 * apply_filters('relevanssi_admin_search_ok', $admin_search_ok, $query );
+		 */
+		if ( function_exists( 'relevanssi_prevent_default_request' ) ) {
+			add_filter( 'relevanssi_admin_search_ok', 'MLAData::mla_query_relevanssi_admin_search_ok_filter' );
+		}
+
 		if ( isset( self::$query_parameters['debug'] ) ) {
 			global $wp_filter;
 			$debug_array = array( 'posts_search' => $wp_filter['posts_search'], 'posts_join' => $wp_filter['posts_join'], 'posts_where' => $wp_filter['posts_where'], 'posts_orderby' => $wp_filter['posts_orderby'] );
@@ -1599,21 +1632,35 @@ class MLAData {
 				/* translators: 1: query filter details */
 				error_log( sprintf( _x( 'DEBUG: _execute_list_table_query $wp_filter = "%1$s".', 'error_log', 'media-library-assistant' ), var_export( $debug_array, true ) ), 0 );
 			}
+
+			add_filter( 'posts_clauses', 'MLAData::mla_query_posts_clauses_filter', 0x7FFFFFFF, 1 );
+			add_filter( 'posts_clauses_request', 'MLAData::mla_query_posts_clauses_request_filter', 0x7FFFFFFF, 1 );
 		} // debug
 
 		$results = new WP_Query( $request );
 
 		if ( isset( self::$query_parameters['debug'] ) ) {
-			$debug_array = array( 'request' => $request, 'query_parameters' => self::$query_parameters, 'SQL_request' => $results->request, 'post_count' => $results->post_count, 'found_posts' => $results->found_posts );
+			remove_filter( 'posts_clauses', 'MLAData::mla_query_posts_clauses_filter', 0x7FFFFFFF );
+			remove_filter( 'posts_clauses_request', 'MLAData::mla_query_posts_clauses_request_filter', 0x7FFFFFFF );
+
+			$debug_array = array( 'request' => $request, 'query_parameters' => self::$query_parameters, 'post_count' => $results->post_count, 'found_posts' => $results->found_posts );
 
 			if ( 'console' == self::$query_parameters['debug'] ) {
 				/* translators: 1: query details */
 				trigger_error( sprintf( __( '_execute_list_table_query WP_Query = "%1$s".', 'media-library-assistant' ), var_export( $debug_array, true ) ), E_USER_WARNING );
+				/* translators: 1: SQL statement */
+				trigger_error( sprintf( __( '_execute_list_table_query SQL_request = "%1$s".', 'media-library-assistant' ), var_export( $results->request, true ) ), E_USER_WARNING );
 			} else {
 				/* translators: 1: query details */
 				error_log( sprintf( _x( 'DEBUG: _execute_list_table_query WP_Query = "%1$s".', 'error_log', 'media-library-assistant' ), var_export( $debug_array, true ) ), 0 );
+				/* translators: 1: SQL statement */
+				error_log( sprintf( _x( 'DEBUG: _execute_list_table_query SQL_request = "%1$s".', 'error_log', 'media-library-assistant' ), var_export( $results->request, true ) ), 0 );
 			}
 		} // debug
+
+		if ( function_exists( 'relevanssi_prevent_default_request' ) ) {
+			remove_filter( 'relevanssi_admin_search_ok', 'MLAData::mla_query_relevanssi_admin_search_ok_filter' );
+		}
 
 		remove_filter( 'posts_orderby', 'MLAData::mla_query_posts_orderby_filter' );
 		remove_filter( 'posts_where', 'MLAData::mla_query_posts_where_filter' );
@@ -1667,26 +1714,14 @@ class MLAData {
 			} // debug
 
 			/*
-			 * Interpret a numeric value as the ID of a specific attachment or the ID of a parent post/page
+			 * Interpret a numeric value as the ID of a specific attachment or the ID of a parent post/page;
+			 * add it to the regular text-based search.
 			 */
 			if ( is_numeric( self::$query_parameters['s'] ) ) {
 				$id = absint( self::$query_parameters['s'] );
-				$search_clause = ' AND ( ( ' . $wpdb->posts . '.ID = ' . $id . ' ) OR ( ' . $wpdb->posts . '.post_parent = ' . $id . ' ) ) ';
-
-				if ( isset( self::$query_parameters['debug'] ) ) {
-					$debug_array['search_clause'] = $search_clause;
-					$debug_array['search_string'] = $search_string;
-
-					if ( 'console' == self::$query_parameters['debug'] ) {
-						/* translators: 1: numeric search box details */
-						trigger_error( sprintf( __( 'mla_query_posts_search_filter is_numeric, = "%1$s".', 'media-library-assistant' ), var_export( $debug_array, true ) ), E_USER_WARNING );
-					} else {
-						/* translators: 1: numeric search box details */
-						error_log( sprintf( _x( 'DEBUG: mla_query_posts_search_filter is_numeric, = "%1$s".', 'error_log', 'media-library-assistant' ), var_export( $debug_array, true ) ), 0 );
-					}
-				} // debug
-
-				return $search_clause;
+				$numeric_clause = '( ( ' . $wpdb->posts . '.ID = ' . $id . ' ) OR ( ' . $wpdb->posts . '.post_parent = ' . $id . ' ) ) OR ';
+			} else {
+				$numeric_clause = '';
 			}
 
 			// WordPress v3.7 says: there are no line breaks in <input /> fields
@@ -1703,44 +1738,51 @@ class MLAData {
 			$fields = self::$query_parameters['mla_search_fields'];
 			$percent = self::$query_parameters['exact'] ? '' : '%';
 			$connector = '';
-			foreach ( $search_terms as $term ) {
-				$term = esc_sql( like_escape( $term ) );
-				$inner_connector = '';
-				$search_clause .= "{$connector}(";
 
-				if ( in_array( 'content', $fields ) ) {
-					$search_clause .= "{$inner_connector}({$wpdb->posts}.post_content LIKE '{$percent}{$term}{$percent}')";
-					$inner_connector = ' OR ';
-				}
-
-				if ( in_array( 'title', $fields ) ) {
-					$search_clause .= "{$inner_connector}({$wpdb->posts}.post_title LIKE '{$percent}{$term}{$percent}')";
-					$inner_connector = ' OR ';
-				}
-
-				if ( in_array( 'excerpt', $fields ) ) {
-					$search_clause .= "{$inner_connector}({$wpdb->posts}.post_excerpt LIKE '{$percent}{$term}{$percent}')";
-					$inner_connector = ' OR ';
-				}
-
-				if ( in_array( 'alt-text', $fields ) ) {
-					$view_name = self::$mla_alt_text_view;
-					$search_clause .= "{$inner_connector}({$view_name}.meta_value LIKE '{$percent}{$term}{$percent}')";
-					$inner_connector = ' OR ';
-				}
-
-				if ( in_array( 'name', $fields ) ) {
-					$search_clause .= "{$inner_connector}({$wpdb->posts}.post_name LIKE '{$percent}{$term}{$percent}')";
-				}
-
-				$search_clause .= ")";
-				$connector = ' ' . self::$query_parameters['mla_search_connector'] . ' ';
-			} // foreach
+			if ( empty( $fields ) ) {
+				$search_clause = '1=0';
+			} else {
+			  foreach ( $search_terms as $term ) {
+				  $term = esc_sql( like_escape( $term ) );
+				  $inner_connector = '';
+				  $search_clause .= "{$connector}(";
+  
+				  if ( in_array( 'content', $fields ) ) {
+					  $search_clause .= "{$inner_connector}({$wpdb->posts}.post_content LIKE '{$percent}{$term}{$percent}')";
+					  $inner_connector = ' OR ';
+				  }
+  
+				  if ( in_array( 'title', $fields ) ) {
+					  $search_clause .= "{$inner_connector}({$wpdb->posts}.post_title LIKE '{$percent}{$term}{$percent}')";
+					  $inner_connector = ' OR ';
+				  }
+  
+				  if ( in_array( 'excerpt', $fields ) ) {
+					  $search_clause .= "{$inner_connector}({$wpdb->posts}.post_excerpt LIKE '{$percent}{$term}{$percent}')";
+					  $inner_connector = ' OR ';
+				  }
+  
+				  if ( in_array( 'alt-text', $fields ) ) {
+					  $view_name = self::$mla_alt_text_view;
+					  $search_clause .= "{$inner_connector}({$view_name}.meta_value LIKE '{$percent}{$term}{$percent}')";
+					  $inner_connector = ' OR ';
+				  }
+  
+				  if ( in_array( 'name', $fields ) ) {
+					  $search_clause .= "{$inner_connector}({$wpdb->posts}.post_name LIKE '{$percent}{$term}{$percent}')";
+				  }
+  
+				  $search_clause .= ")";
+				  $connector = ' ' . self::$query_parameters['mla_search_connector'] . ' ';
+			  } // foreach
+			}
 
 			if ( !empty($search_clause) ) {
-				$search_clause = " AND ({$search_clause}) ";
+				$search_clause = " AND ( {$numeric_clause}{$search_clause} ) ";
+
 				if ( !is_user_logged_in() ) {
-					$search_clause .= " AND ($wpdb->posts.post_password = '') ";
+					$post_password = $wpdb->posts.post_password;
+					$search_clause .= " AND ( {$post_password} = '' ) ";
 				}
 			}
 
@@ -1774,6 +1816,11 @@ class MLAData {
 	 */
 	public static function mla_query_posts_join_filter( $join_clause ) {
 		global $table_prefix;
+
+		if ( isset( self::$query_parameters['debug'] ) ) {
+			$debug_array = array( 'join_string' => $join_clause );
+		}
+
 		/*
 		 * '_wp_attachment_image_alt' is special; we have to use an SQL VIEW to
 		 * build an intermediate table and modify the JOIN to include posts with
@@ -1783,6 +1830,18 @@ class MLAData {
 			$view_name = self::$mla_alt_text_view;
 			$join_clause .= " LEFT JOIN {$view_name} ON ({$table_prefix}posts.ID = {$view_name}.post_id)";
 		}
+
+		if ( isset( self::$query_parameters['debug'] ) ) {
+			$debug_array['join_clause'] = $join_clause;
+
+			if ( 'console' == self::$query_parameters['debug'] ) {
+				/* translators: 1: search box details */
+				trigger_error( sprintf( __( 'mla_query_posts_join_filter = "%1$s".', 'media-library-assistant' ), var_export( $debug_array, true ) ), E_USER_WARNING );
+			} else {
+				/* translators: 1: search box details */
+				error_log( sprintf( _x( 'DEBUG: mla_query_posts_join_filter = "%1$s".', 'error_log', 'media-library-assistant' ), var_export( $debug_array, true ) ), 0 );
+			}
+		} // debug
 
 		return $join_clause;
 	}
@@ -1801,6 +1860,10 @@ class MLAData {
 	 */
 	public static function mla_query_posts_where_filter( $where_clause ) {
 		global $table_prefix;
+
+		if ( isset( self::$query_parameters['debug'] ) ) {
+			$debug_array = array( 'where_string' => $where_clause );
+		}
 
 		/*
 		 * WordPress filters meta_value thru trim() - which we must reverse
@@ -1833,6 +1896,18 @@ class MLAData {
 			$where_clause .= " AND {$table_prefix}posts.post_parent < 1";
 		}
 
+		if ( isset( self::$query_parameters['debug'] ) ) {
+			$debug_array['where_clause'] = $where_clause;
+
+			if ( 'console' == self::$query_parameters['debug'] ) {
+				/* translators: 1: search box details */
+				trigger_error( sprintf( __( 'mla_query_posts_where_filter = "%1$s".', 'media-library-assistant' ), var_export( $debug_array, true ) ), E_USER_WARNING );
+			} else {
+				/* translators: 1: search box details */
+				error_log( sprintf( _x( 'DEBUG: mla_query_posts_where_filter = "%1$s".', 'error_log', 'media-library-assistant' ), var_export( $debug_array, true ) ), 0 );
+			}
+		} // debug
+
 		return $where_clause;
 	}
 
@@ -1850,6 +1925,10 @@ class MLAData {
 	 */
 	public static function mla_query_posts_orderby_filter( $orderby_clause ) {
 		global $table_prefix;
+
+		if ( isset( self::$query_parameters['debug'] ) ) {
+			$debug_array = array( 'orderby_string' => $orderby_clause );
+		}
 
 		if ( isset( self::$query_parameters['orderby'] ) ) {
 			if ( 'c_' == substr( self::$query_parameters['orderby'], 0, 2 ) ) {
@@ -1897,7 +1976,81 @@ class MLAData {
 			}
 		} // isset
 
+		if ( isset( self::$query_parameters['debug'] ) ) {
+			$debug_array['orderby_clause'] = $orderby_clause;
+
+			if ( 'console' == self::$query_parameters['debug'] ) {
+				/* translators: 1: search box details */
+				trigger_error( sprintf( __( 'mla_query_posts_orderby_filter = "%1$s".', 'media-library-assistant' ), var_export( $debug_array, true ) ), E_USER_WARNING );
+			} else {
+				/* translators: 1: search box details */
+				error_log( sprintf( _x( 'DEBUG: mla_query_posts_orderby_filter = "%1$s".', 'error_log', 'media-library-assistant' ), var_export( $debug_array, true ) ), 0 );
+			}
+		} // debug
+
 		return $orderby_clause;
+	}
+
+	/**
+	 * Disable Relevanssi - A Better Search, v3.2 by Mikko Saari
+	 * Defined as public because it's a filter.
+	 *
+	 * @since 1.80
+	 *
+	 * @param	boolean	Default setting
+	 *
+	 * @return	boolean	Updated setting
+	 */
+	public static function mla_query_relevanssi_admin_search_ok_filter( $admin_search_ok ) {
+		return false;
+	}
+
+	/**
+	 * Filters all clauses for shortcode queries, pre caching plugins
+	 * 
+	 * This is for debug purposes only.
+	 * Defined as public because it's a filter.
+	 *
+	 * @since 1.80
+	 *
+	 * @param	array	query clauses before modification
+	 *
+	 * @return	array	query clauses after modification (none)
+	 */
+	public static function mla_query_posts_clauses_filter( $pieces ) {
+		if ( 'console' == self::$query_parameters['debug'] ) {
+			/* translators: 1: SQL clauses */
+			trigger_error( sprintf( __( 'mla_query_posts_clauses_filter = "%1$s".', 'media-library-assistant' ), var_export( $pieces, true ) ), E_USER_WARNING );
+		} else {
+			/* translators: 1: SQL clauses */
+			error_log( sprintf( _x( 'DEBUG: mla_query_posts_clauses_filter = "%1$s".', 'error_log', 'media-library-assistant' ), var_export( $pieces, true ) ), 0 );
+		}
+
+		return $pieces;
+	}
+
+	/**
+	 * Filters all clauses for shortcode queries, post caching plugins
+	 * 
+	 * This is for debug purposes only.
+	 * Defined as public because it's a filter.
+	 *
+	 * @since 1.80
+	 *
+	 * @param	array	query clauses before modification
+	 *
+	 * @return	array	query clauses after modification (none)
+	 */
+	public static function mla_query_posts_clauses_request_filter( $pieces ) {
+		if ( 'console' == self::$query_parameters['debug'] ) {
+			/* translators: 1: SQL clauses */
+			trigger_error( sprintf( __( 'mla_query_posts_clauses_request_filter = "%1$s".', 'media-library-assistant' ), var_export( $pieces, true ) ), E_USER_WARNING );
+		} else {
+			/* translators: 1: SQL clauses */
+			error_log( sprintf( _x( 'DEBUG: mla_query_posts_clauses_request_filter = "%1$s".', 'error_log', 'media-library-assistant' ), var_export( $pieces, true ) ), 0 );
+		}
+
+		return $pieces;
 	}
 
 	/** 
@@ -2364,12 +2517,36 @@ class MLAData {
 			if ( 'base' == $inserted_in_option ) {
 				$like1 = like_escape( $references['path'] . $pathinfo['filename'] ) . '.' . like_escape( $pathinfo['extension'] );
 				$like2 = like_escape( $references['path'] . $pathinfo['filename'] ) . '-%.' . like_escape( $pathinfo['extension'] );
-				$inserts = $wpdb->get_results(
+/*				$inserts = $wpdb->get_results(
 					$wpdb->prepare(
 						"SELECT ID, post_type, post_title FROM {$wpdb->posts}
 						WHERE {$exclude_revisions} ((CONVERT(`post_content` USING utf8 ) LIKE %s) OR 
 						(CONVERT(`post_content` USING utf8 ) LIKE %s))", "%{$like1}%", "%{$like2}%"
 					)
+				); */
+
+/*				$inserts = $wpdb->get_results(
+					$wpdb->prepare(
+						"SELECT ID, post_type, post_title, CONVERT(`post_content` USING utf8 ) AS POST_CONTENT FROM {$wpdb->posts}
+						WHERE {$exclude_revisions} ( ( POST_CONTENT LIKE %s) OR 
+						( POST_CONTENT LIKE %s) )", "%{$like1}%", "%{$like2}%"
+					)
+				); */
+
+				$query_parameters = array();
+				$query = array();
+				$query[] = "SELECT ID, post_type, post_title, CONVERT(`post_content` USING utf8 ) AS POST_CONTENT FROM {$wpdb->posts} WHERE {$exclude_revisions} ( 1=0";
+
+				foreach ( $references['files'] as $file => $file_data ) {
+					$query[] = 'OR ( POST_CONTENT LIKE %s)';
+					$query_parameters[] = '%' . like_escape( $file ) . '%';
+				}
+
+				$query[] = ')';
+				$query =  join(' ', $query);
+
+				$inserts = $wpdb->get_results(
+					$wpdb->prepare( $query, $query_parameters )
 				);
 
 				if ( !empty( $inserts ) ) {
@@ -2466,7 +2643,7 @@ class MLAData {
 			}
 
 			if ( !$references['found_parent'] && !empty( $references['parent_title'] ) ) {
-				$errors .= '(' . sprintf( __( 'BAD PARENT', 'media-library-assistant' ) . '%1$s) ', $suffix );
+				$errors .= '(' . sprintf( __( 'UNUSED', 'media-library-assistant' ) . '%1$s) ', $suffix );
 			}
 		}
 
@@ -2648,7 +2825,6 @@ class MLAData {
 						if ( is_string( $attachments ) ) {
 							/* translators: 1: post_type, 2: post_title, 3: post ID, 4: query string, 5: error message */
 							trigger_error( htmlentities( sprintf( __( '(%1$s) %2$s (ID %3$d) query "%4$s" failed, returning "%5$s"', 'media-library-assistant' ), $result->post_type, $result->post_title, $result->ID, $galleries_array[ $result_id ]['galleries'][ $instance ]['query'], $attachments) ), E_USER_WARNING );
-							trigger_error( sprintf( __( 'mla_query_posts_search_filter not numeric, = "%1$s".', 'media-library-assistant' ), var_export( $debug_array, true ) ), E_USER_WARNING );
 						} elseif ( ! empty( $attachments ) ) {
 							foreach ( $attachments as $attachment ) {
 								$galleries_array[ $result_id ]['results'][ $attachment->ID ] = $attachment->ID;
@@ -4866,10 +5042,19 @@ class MLAData {
 						$updates[ $key ] = $value;
 					}
 					break;
+				/*
+				 * bulk_image_alt requires a separate key because some attachment types
+				 * should not get a value, e.g., text or PDF documents
+				 */
+				case 'bulk_image_alt':
+					if ( empty( $post_data[ 'mla_wp_attachment_metadata' ] ) ) {
+						break;
+					}
+					// fallthru
 				case 'image_alt':
 					$key = 'mla_wp_attachment_image_alt';
 					if ( !isset( $post_data[ $key ] ) ) {
-						$post_data[ $key ] = '';
+						$post_data[ $key ] = NULL;
 					}
 
 					if ( $value == $post_data[ $key ] ) {
@@ -4877,7 +5062,7 @@ class MLAData {
 					}
 
 					if ( empty( $value ) ) {
-						if ( delete_post_meta( $post_id, '_wp_attachment_image_alt', $value ) ) {
+						if ( delete_post_meta( $post_id, '_wp_attachment_image_alt' ) ) {
 							/* translators: 1: old_value */
 							$message .= sprintf( __( 'Deleting ALT Text, was "%1$s"', 'media-library-assistant' ) . '<br>', esc_attr( $post_data[ $key ] ) );
 						} else {
@@ -4947,6 +5132,24 @@ class MLAData {
 					$message .= sprintf( __( 'Changing %1$s from "%2$s" to "%3$s"', 'media-library-assistant' ) . '<br>', __( 'Author', 'media-library-assistant' ), $from_user->display_name, $to_user->display_name );
 					$updates[ $key ] = $value;
 					break;
+				case 'comment_status':
+					if ( $value == $post_data[ $key ] ) {
+						break;
+					}
+
+					/* translators: 1: element name 2: old_value 3: new_value */
+					$message .= sprintf( __( 'Changing %1$s from "%2$s" to "%3$s"', 'media-library-assistant' ) . '<br>', __( 'Comments', 'media-library-assistant' ), esc_attr( $post_data[ $key ] ), esc_attr( $value ) );
+					$updates[ $key ] = $value;
+					break;
+				case 'ping_status':
+					if ( $value == $post_data[ $key ] ) {
+						break;
+					}
+
+					/* translators: 1: element name 2: old_value 3: new_value */
+					$message .= sprintf( __( 'Changing %1$s from "%2$s" to "%3$s"', 'media-library-assistant' ) . '<br>', __( 'Pings', 'media-library-assistant' ), esc_attr( $post_data[ $key ] ), esc_attr( $value ) );
+					$updates[ $key ] = $value;
+					break;
 				case 'taxonomy_updates':
 					$tax_input = $value['inputs'];
 					$tax_actions = $value['actions'];
@@ -5001,6 +5204,7 @@ class MLAData {
 					) );
 
 					if ( $terms_before != $terms_after ) {
+						delete_transient( MLA_OPTION_PREFIX . 't_term_counts_' . $taxonomy );
 						/* translators: 1: action_name, 2: taxonomy */
 						$message .= sprintf( __( '%1$s "%2$s" terms', 'media-library-assistant' ) . '<br>', $action_name, $taxonomy );
 					}
@@ -5035,7 +5239,7 @@ class MLAData {
 				 * Uncomment this for debugging.
 				 */
 				// $final_message .= '<br>' . $message;
-				// error_log( 'DEBUG: message = ' . var_export( $message, true ), 0 );
+				// error_log( 'DEBUG: mla_update_single_item message = ' . var_export( $message, true ), 0 );
 
 				return array(
 					'message' => $final_message,

@@ -105,19 +105,28 @@ textarea[readonly] {
 	margin-bottom: 10px
 }
 
-#wpbody-content .quick-edit-row-attachment .inline-edit-col-left,
-#wpbody-content .bulk-edit-row-attachment .inline-edit-col-left {
+#wpbody-content .quick-edit-row-attachment .inline-edit-col-left {
 	width: 40%
 }
 
-#wpbody-content .quick-edit-row-attachment .inline-edit-col-center,
+#wpbody-content .quick-edit-row-attachment .inline-edit-col-center {
+	width: 20%
+}
+
+#wpbody-content .quick-edit-row-attachment .inline-edit-col-right {
+	width: 39%
+}
+
+#wpbody-content .bulk-edit-row-attachment .inline-edit-col-left {
+	width: 30%
+}
+
 #wpbody-content .bulk-edit-row-attachment .inline-edit-col-center {
 	width: 20%
 }
 
-#wpbody-content .quick-edit-row-attachment .inline-edit-col-right,
 #wpbody-content .bulk-edit-row-attachment .inline-edit-col-right {
-	width: 39%
+	width: 49%
 }
 
 .quick-edit-row-attachment fieldset.inline-edit-col-left label span.title,

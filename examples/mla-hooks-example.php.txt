@@ -8,7 +8,7 @@
  * you can use to customize the gallery display.
  *
  * @package MLA Gallery Hooks Example
- * @version 1.02
+ * @version 1.03
  */
 
 /*
@@ -19,7 +19,7 @@ Author: David Lingren
 Version: 1.02
 Author URI: http://fairtradejudaica.org/our-story/staff/
 
-Copyright 2013 David Lingren
+Copyright 2013, 2014 David Lingren
 
 	This program is free software; you can redistribute it and/or modify
 	it under the terms of the GNU General Public License as published by
@@ -68,6 +68,7 @@ class MLAGalleryHooksExample {
 		 *
 		 * Comment out the filters you don't need; save them for future use
 		 */
+		add_filter( 'mla_gallery_raw_attributes', 'MLAGalleryHooksExample::mla_gallery_raw_attributes_filter', 10, 1 );
 		add_filter( 'mla_gallery_attributes', 'MLAGalleryHooksExample::mla_gallery_attributes_filter', 10, 1 );
 		add_filter( 'mla_gallery_initial_content', 'MLAGalleryHooksExample::mla_gallery_initial_content_filter', 10, 2 );
 		add_filter( 'mla_gallery_arguments', 'MLAGalleryHooksExample::mla_gallery_arguments_filter', 10, 1 );
@@ -114,6 +115,39 @@ class MLAGalleryHooksExample {
 	 */
 	private static $shortcode_attributes = array();
 	
+	/**
+	 * MLA Gallery Raw (Display) Attributes
+	 *
+	 * This filter gives you an opportunity to record or modify the arguments passed in to the shortcode
+	 * before they pass through the logic to handle the 'mla_page_parameter' and "request:" prefix processing.
+	 *
+	 * The $shortcode_attributes array is where you will find any of your own parameters that are coded in the
+	 * shortcode, e.g., [mla_gallery my_parameter="my value"].
+	 *
+	 * @since 1.03
+	 *
+	 * @param	array	the raw shortcode parameters passed in to the shortcode
+	 *
+	 * @return	array	updated shortcode attributes
+	 */
+	public static function mla_gallery_raw_attributes_filter( $shortcode_attributes ) {
+		/*
+		 * Uncomment the error_log statements in any of the filters to see what's passed in
+		 */
+		error_log( 'MLAGalleryHooksExample::mla_gallery_raw_attributes_filter $shortcode_attributes = ' . var_export( $shortcode_attributes, true ), 0 );
+		
+		/*
+		 * Note that the global $post; object is available here and in all later filters.
+		 * It contains the post/page on which the [mla_gallery] appears.
+		 * Some [mla_gallery] invocations are not associated with a post/page; these will
+		 * have a substitute $post pbject with $post->ID == 0.
+		 */
+		global $post;
+		error_log( 'MLAGalleryHooksExample::mla_gallery_raw_attributes_filter $post->ID = ' . var_export( $post->ID, true ), 0 );
+		
+		return $shortcode_attributes;
+	} // mla_gallery_raw_attributes_filter
+
 	/**
 	 * MLA Gallery (Display) Attributes
 	 *
@@ -588,6 +622,13 @@ class MLAGalleryHooksExample {
 			 */
 			$item_values['date'] = date( 'd/m/Y', $timestamp );
 			$item_values['caption'] = $item_values['description'] . $item_values['date'];
+
+			/*
+			 * This alternative generates a "clickable" caption value
+			 * linked directly to the item's attached file.
+			 */
+			//$item_values['caption'] = sprintf( '<a href="%1$s">%2$s<br>%3$s</a>', $item_values['file_url'], $item_values['title'], $item_values['date'] );
+
 			return $item_values;
 		}
 		

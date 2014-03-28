@@ -306,7 +306,7 @@ class MLAMappingHooksExample {
 		 *		'name' => custom field name
 		 *		'data_source' => 'none', 'meta', 'template' or data source name
 		 *		'keep_existing' => boolean; true to preserve existing content
-		 *		'format' => 'native', 'commas'
+		 *		'format' => 'native', 'commas', 'raw'
 		 *		'mla_column' => boolean; not used
 		 *		'quick_edit' => boolean; not used
 		 *		'bulk_edit' => boolean; not used

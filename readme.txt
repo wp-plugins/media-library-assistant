@@ -1,10 +1,10 @@
 === Plugin Name ===
 Contributors: dglingren
 Donate link: http://fairtradejudaica.org/make-a-difference/donate/
-Tags: attachment, attachments, documents, gallery, image, images, media, library, media library, media-tags, media tags, tags, media categories, categories, IPTC, EXIF, GPS, PDF, meta, metadata, photo, photos, photograph, photographs, photoblog, photo albums, lightroom, photoshop, MIME, mime-type, icon, upload, file extensions
+Tags: attachment, attachments, documents, gallery, image, images, media, library, media library, tag cloud, media-tags, media tags, tags, media categories, categories, IPTC, EXIF, GPS, PDF, meta, metadata, photo, photos, photograph, photographs, photoblog, photo albums, lightroom, photoshop, MIME, mime-type, icon, upload, file extensions
 Requires at least: 3.3
-Tested up to: 3.8
-Stable tag: 1.71
+Tested up to: 3.9
+Stable tag: 1.80
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -14,13 +14,15 @@ Enhances the Media Library; powerful [mla_gallery], taxonomy support, IPTC/EXIF/
 
 The Media Library Assistant provides several enhancements for managing the Media Library, including:
 
-* The **`[mla_gallery]` shortcode**, used in a post, page or custom post type to add a gallery of images and/or other Media Library items (such as PDF documents). MLA Gallery is a superset of the WordPress `[gallery]` shortcode; it is compatible with `[gallery]` and provides many enhancements. These include: 1) full query and display support for WordPress categories, tags, custom taxonomies and custom fields, 2) support for all post_mime_type values, not just images 3) media Library items need not be "attached" to the post, and 4) control over the styles, markup and content of each gallery using Style and Markup Templates. **Twenty-five hooks** provided for complete gallery customization from your theme or plugin code.
+* The **`[mla_gallery]` shortcode**, used in a post, page or custom post type to add a gallery of images and/or other Media Library items (such as PDF documents). MLA Gallery is a superset of the WordPress `[gallery]` shortcode; it is compatible with `[gallery]` and provides many enhancements. These include: 1) full query and display support for WordPress categories, tags, custom taxonomies and custom fields, 2) support for all post_mime_type values, not just images 3) media Library items need not be "attached" to the post, and 4) control over the styles, markup and content of each gallery using Style and Markup Templates. **Twenty-eight hooks** provided for complete gallery customization from your theme or plugin code.
+
+* The **`[mla_tag_cloud]` shortcode**, used in a post, page, custom post type or widget to display the "most used" terms in your Media Library where the size of each term is determined by how many times that particular term has been assigned to Media Library items. **Twenty-five hooks** provided for complete cloud customization from your theme or plugin code.
 
 * Powerful **Content Templates**, which let you compose a value from multiple data sources, mix literal text with data values, test for empty values and choose among two or more alternatives or suppress output entirely.
 
 * **Attachment metadata** such as file size, image dimensions and where-used information can be assigned to WordPress custom fields. You can then use the custom fields in your `[mla_gallery]` display and you can add custom fields as sortable, searchable columns in the Media/Assistant submenu table. You can also **modify the WordPress `_wp_attachment_metadata` contents** to suit your needs.
 
-* **IPTC**, **EXIF (including GPS)** and **PDF** metadata can be assigned to standard WordPress fields, taxonomy terms and custom fields. You can update all existing attachments from the Settings page IPTC/EXIF tab, groups of existing attachments with a Bulk Action or one existing attachment from the Edit Media/Edit Single Item screen. Display **IPTC**, **EXIF** and **PDF** metadata with `[mla_gallery]` custom templates.
+* **IPTC**, **EXIF (including GPS)** and **PDF** metadata can be assigned to standard WordPress fields, taxonomy terms and custom fields. You can update all existing attachments from the Settings page IPTC/EXIF tab, groups of existing attachments with a Bulk Action or one existing attachment from the Edit Media/Edit Single Item screen. Display **IPTC**, **EXIF** and **PDF** metadata with `[mla_gallery]` custom templates. **Twelve hooks** provided for complete mapping customization from your theme or plugin code.
 
 * Complete control over **Post MIME Types, File Upload extensions/MIME Types and file type icon images**. Fifty four (54) additional upload types, 112 file type icon images and a searchable list of over 1,500 file extension/MIME type associations.
 
@@ -62,11 +64,11 @@ You can add support for many attachment metadata values such as file size by vis
 
 = How can I use Categories, Tags and custom taxonomies to select images for display in my posts and pages? =
 
-The powerful `[mla_gallery]` shortcode supports almost all of the query flexibility provided by the WP_Query class. You can find [complete documentation](http://wordpress.org/extend/plugins/media-library-assistant/other_notes/ "Complete Documentation") in the Other Notes section.
+The powerful `[mla_gallery]` shortcode supports almost all of the query flexibility provided by the WP_Query class. You can find complete documentation in the Settings/Media Library Assistant Documentation tab.
 
 = Can I use `[mla_gallery]` for attachments other than images? =
 
-Yes! The `[mla_gallery]` shortcode supports all MIME types when you add the post_mime_type parameter to your query. You can build a gallery of your PDF documents, plain text files and other attachments. You can mix images and other MIME types in the same gallery, too; check out [the documentation](http://wordpress.org/extend/plugins/media-library-assistant/other_notes/ "Complete Documentation").
+Yes! The `[mla_gallery]` shortcode supports all MIME types when you add the post_mime_type parameter to your query. You can build a gallery of your PDF documents, plain text files and other attachments. You can mix images and other MIME types in the same gallery, too.
 
 = Can I attach an image to more than one post or page? =
 
@@ -119,9 +121,36 @@ All of the MLA source code has been annotated with "DocBlocks", a special type o
 6. The Settings page MLA Gallery tab, where you can add custom style and markup templates for `[mla_gallery]` shortcode output.
 7. The Settings page IPTC &amp; EXIF Processing Options screen, where you can map image metadata to standard fields (e.g. caption), taxonomy terms and custom fields.
 8. The Settings page Custom Field Processing Options screen, where you can map attachment metadata to custom fields for display in [mla_gallery] shortcodes and as sortable, searchable columns in the Media/Assistant submenu.
-9. The Media Manager popup modal window showing additional filters for date and taxonomy terms. Also shows the enhanced Search Media box.
+9. The Media Manager popup modal window showing additional filters for date and taxonomy terms. Also shows the enhanced Search Media box and the **full-function taxonomy support in the ATTACHMENT DETAILS area**.
 
 == Changelog ==
+
+= 1.80 =
+* New: For the Media Manager Modal Window, **Native support for "checkbox-style" and "tag hint-style" taxonomy meta boxes** is available. See the [Other Notes section](http://wordpress.org/extend/plugins/media-library-assistant/other_notes/ "Click here, then scroll down") section for more details.
+* New: **For flat taxonomies**, e.g., "Tags" or "Att. Tags", **a "checkbox-style" meta box** is available. See the [Other Notes section](http://wordpress.org/extend/plugins/media-library-assistant/other_notes/ "Click here, then scroll down") section for more details.
+* New: An option (General tab) is provided to **disable term-specific counts** in the Attachments column of the taxonomy edit screens.
+* New: An option (General tab) is provided to **suppress the MLA-specific metaboxes on the Media/Edit Media screen**. This removes the "Parent Info", "Menu Order", "Attachment Metadata"  and the four "where-used" meta boxes.
+* New: Bulk edit area now includes **Title, Caption, Description, ALT Text, Comments and Pings** fields. Text fields may contain a Content Template, allowing conditional replacement of the field value.
+* New: **A numeric value in the Media/Assistant search box** will do a text-based search in addition to the post or parent ID search. This eliminates the requirement to add quotes to the value to force a text-based search. You can still add quotes to avoid the parent/post ID part of the search, or avoid the text-based search by unchecking all of the search field boxes.
+* New: A new option, **Icon Size**, sets the thumbnail/icon size on the Media/Assistant submenu table. Find it in the Table Defaults section of the Settings/Media Library Assistant General tab.
+* New: More debugging information displayed/logged when Media/Assistant search box begins with ">|<" or <|>".
+* New: For `[mla_gallery]`, the **Data sources for custom field mapping** are now available as Attachment-specific substitution parameters. A new "commas" option allows better formatting of numeric data source values.
+* New: For `[mla_gallery]`, **mla_gallery_raw_attributes filter** allows access to the shortcode parameters before they pass through the logic to handle `mla_page_parameter` and "request:" prefix processing. The `mla-hooks-example.php.txt` example has been updated as well.
+* New: For `[mla_gallery]`, **mla_paginate_rows** allows you to avoid redundant database queries just to create pagination controls, if you have some other way of knowing how many items a gallery contains.
+* New: For `[mla_gallery]`, **WP_Query caching parameters** allow you to avoid additional database queries just to fill the post, metadata and/or term cache if your application does not require them.
+* New: For `[mla_tag_cloud]`, **post_mime_type** allows you to filter the tag cloud counts by MIME type so they will match the results delivered by `[mla_gallery]` and other gallery shortcodes.
+* New: For `[mla_tag_cloud]`, a new `no_count` parameter enables or disables the computation of term-specific attachment counts.
+* New: For `[mla_gallery]`, the **HTML5 figure, div and figcaption** tags are used for themes that register support for HTML5.
+* New: For `[mla_gallery]`, a new `mla_style` setting ("theme") lets the theme control use of the MLA style template by hooking the `use_default_gallery_style` filter.
+* Fix: The term-specific counts computation in the Attachments column of the taxonomy edit screens is significantly more efficient.
+* Fix: Removed an intermittant PHP Warning message for logged-in users without the "upload_files" capability.
+* Fix: The `[mla_tag_cloud]` templates are no longer offered in the default `[mla_gallery]` template dropdown list.
+* Fix: Default descriptions for `mla_upload_mime` option values are no longer stored in the options table, saving space.
+* Fix: **Support for the "Media Categories" plugin (by Eddie Moya) is no longer required and has been removed.**
+* Fix: The where-used term **"BAD PARENT"** has been replaced with the less severe **"UNUSED"** to more clearly indicate that the item has a valid parent but is not used for anything in the parent post/page.
+* Fix: The **"Inserted in" reporting with the "Base" option** setting explicitly tests for all registered intermediate sizes, giving more precise results.
+* Fix: Peaceful co-existance with **Relevanssi - A Better Search, v3.2+ by Mikko Saari**, using a filter provided by that plugin to disable interference with the Media/Assistant submenu search box and the `[mla_gallery]` shortcode.
+* Fix: Removed support for the ancient, bug-ridden and unused `[mla_attachment_list]` shortcode.
 
 = 1.71 =
 * New: **Searchable Category meta boxes** have been added to the Media/Edit Media screen. Click the "$ Search" link at the bottom of the meta box and type all or part of a term in the textbox to filter the display.
@@ -135,7 +164,7 @@ All of the MLA source code has been annotated with "DocBlocks", a special type o
 
 = 1.70 =
 * New: **Internationalization (i18n) and Localization (l10n) support!** All of the internationalization work in the plugin source code has been completed and there is a Portable Object Template (.POT) available in the "/languages" directory. I don't have working knowledge of anything but English, but if you'd like to volunteer to produce a translation, I would be delighted to work with you to make it happen. Have a look at the "MLA Internationalization Guide.php" file in the languages directory and get in touch.
-* New: For Custom Field and IPTC/EXIF mapping, **twelve new `apply_filters/do_action` hooks**  give you complete control over rule execution and value creation from PHP code in your theme or in another plugin. More information in the "Other Notes" section here. A complete, working example is provided in the Settings/Media Library Assistant Documentation tab.
+* New: For Custom Field and IPTC/EXIF mapping, **twelve new `apply_filters/do_action` hooks**  give you complete control over rule execution and value creation from PHP code in your theme or in another plugin. More information in the [Other Notes section](http://wordpress.org/extend/plugins/media-library-assistant/other_notes/ "Click here, then scroll down") section here. A complete, working example is provided in the Settings/Media Library Assistant Documentation tab.
 * New: For Settings/Media Library Assistant Custom Fields and IPTC/EXIF tabs **"Enable ... Mapping when updating media metadata" options** allow you to apply mapping rules whenever the media metadata is updated, not just on new uploads.
 * Fix: On the Settings/Media Library Assistant IPTC/EXIF tab, **Taxonomy Parent dropdown now reflects term hierarchy**.
 * Fix: MLAMime::mla_upload_mimes_filter() returns the MLA updated list of allowed types, not the WordPress default list.
@@ -144,24 +173,9 @@ All of the MLA source code has been annotated with "DocBlocks", a special type o
 * Fix: For WordPress 3.5 and later, a more efficient query is used to compose the "Attachments" column in the Media/taxonomy submenu tables.
 * Fix: Documentation for custom field and IPTC/EXIF mapping has been restructured and expanded to better explain these features.
 
-= 1.61 =
-* Tested for compatibility with WordPress version 3.8 - no issues found.
-* Fix: For custom field mapping, **the file_size data source** is now populated when the file name contains characters outside the printable ASCII range.
-* Fix: For `[mla_gallery]`, **field-level markup substitution parameters in item-specific parameters such as mla_link_href** are expanded properly. This corrects a defect introduced in v1.60.
-* Fix: For `[mla_gallery]`, **correct default style and markup templates** are applied when the shortcode `mla_style=` and/or `mla_markup=` parameters name templates that do not exist. The previous version incorrectly supplied the "tag-cloud" template in this case.
-
-= 1.60 =
-* New: **`[mla_tag_cloud]` shortcode**. Enhanced tag cloud for any taxonomy, with "grid" format, full Display Content and custom template support along the lines of `[mla_gallery]`. Paginated clouds are also supported. Full details in the [Other Notes section](http://wordpress.org/extend/plugins/media-library-assistant/other_notes/ "Click here, then scroll down") and on the Settings/Media Library Assistant Documentation tab.
-* New: **`MLA Text Widget`**. You can add widgets containing `[mla_gallery]`, `[mla_tag_cloud]` or **any shortcode** to the sidebars on your site. More information in the [Other Notes section](http://wordpress.org/extend/plugins/media-library-assistant/other_notes/ "Click here, then scroll down").
-* New: For `[mla_gallery]`, **new 'page_ID' and 'page_url'** substitution parameters for easier 'mla_link_href' composition.
-* New: For `[mla_gallery]`, **link=span and link=none** let you replace the hyperlink enclosing each gallery thumbnail with non-link content. 
-* New: For `[mla_gallery]`, **default Style and Markup templates conform to WordPress 3.7 conventions**. The "orientation" attribute has been added to Attachment-specific substitution parameters and as a Data Source for custom field mapping. 
-* New: **Enhanced IPTC/EXIF Taxonomy term mapping.** You can now separate multiple terms contained in a single IPTC/EXIF value by specifying one or more delimiters. For example, specify ";" to separate values like "tag1; tag2" into separate terms.
-* New: For `[mla_gallery]`, **Support for Other Gallery-generating Shortcodes now includes the "enclosing shortcode" form**. You can pass content to the alternate shortcode by coding something like `[mla_gallery ids="1230,1227" mla_alt_shortcode=fsg_link mla_alt_ids_name=include class=button]View the gallery[/mla_gallery]`. New filters are provided for inspecting/modifying the content.
-* Fix: On the Media/Assistant submenu, **where-used errors are no longer returned for** XHTML-style self-closing shortcodes, i.e., ending with "/]", and for tax_query and meta_query parameters containing substitution parameters.
-* Fix: **Hiding the Media/Library submenu is now more reliable**. The Media/Library submenu is hidden with a CSS style, but is still available for use by plugins such as Enable Media Replace. The Media/Assistant submenu is automatically moved up to the top of the submenu list. Attempts to display the Media/Library submenu, e.g., after deleting an item from the Edit Media screen, are redirected to the Media/Assistant submenu.
-* Fix: For the Settings/Media Library Assistant "Custom Fields" and "IPTC/EXIF" tabs, the **"Add Rule/Add Field and Map All Attachments" buttons now map values correctly**. In previous MLA versions, the rule was added but the attachment values were not mapped.
-* Fix: For `[mla_gallery]`, **array values are now accepted in [+request:+] substitution parameters**, and the `,export` option is supported as well. Array values can be passed from the URL or HTML forms to parameters that accept a list of values, such as taxonomy queries.
+= 1.60 - 1.61 =
+* 1.61: Three fixes, including one significant fix for item-specific markup substitution parameters. Tested for compatibility with WP 3.8.
+* 1.60: New [mla_tag_cloud] shortcode and shortcode-enabled MLA Text Widget. Five other enhancements, four fixes.
 
 = 1.50 - 1.52 =
 * 1.52: Corrected serious defect in [mla_gallery] that incorrectly limited the number of items returned for non-paginated galleries. One other fix.
@@ -202,8 +216,8 @@ All of the MLA source code has been annotated with "DocBlocks", a special type o
 
 == Upgrade Notice ==
 
-= 1.71 =
-Searchable Category meta boxes for the Media/Edit Media screen. Support for the WordPress "Attachment Display Settings". Six fixes.
+= 1.80 =
+Full taxonomy meta box support in the Media Manager Modal Window. Checkbox-style meta box for flat taxonomies. Fourteen other enhancements, nine fixes.
 
 == Other Notes ==
 
@@ -215,7 +229,21 @@ In this section, scroll down to see highlights from the documentation, including
 
 Media Library Assistant includes many images drawn (with permission) from the [Crystal Project Icons](http://www.softicons.com/free-icons/system-icons/crystal-project-icons-by-everaldo-coelho), created by [Everaldo Coelho](http://www.everaldo.com), founder of [Yellowicon](http://www.yellowicon.com).
 
-== NEW! MLA Custom Field and IPTC/EXIF Mapping Actions and Filters (Hooks) ==
+== NEW! For the Media Manager Modal Window, Native support for "checkbox-style" and "tag hint-style" taxonomy meta boxes ==
+Now you can have all of the taxonomy management features you're used to in the Media Manager Modal Window; no more slugs and text boxes. Go to the Settings/Media Library Assistant General tab, scroll down to Media Manager Enhancements and check "Media Manager Categories meta boxes" box and/or "Media Manager Tags meta boxes" to add enhanced features in the ATTACHMENT DETAILS area.
+
+**IMPORTANT:** These features replace the interim support for the "Media Categories" plugin. If you use either of these new options, be sure to **deactivate the Media Categories plugin (by Eddie Moya)**.
+
+The checkbox-style meta box lets you select from a complete list of defined terms or the most popular terms. You can define new terms by clicking "+ Add New ..." and you can filter the list by clicking "? Search".
+
+The "tag hint-style" meta box lets you enter a partial value, then select from the "suggested" terms that match what you've entered so far. You can define new terms by entering a value and clicking "Add". You can click "Choose from the most used tags" to select terms from a tag-cloud display.
+
+== NEW! For flat taxonomies, e.g., "Tags" or "Att. Tags", a "checkbox-style" meta box is available. ==
+If you want a flat taxonomy to be displayed as a complete list of terms with checkboxes for selecting terms, go to the Settings/Media Library Assistant General tab, scroll down to Taxonomy Support and check the box in the "Checklist" column for that taxonomy. This will affect the Media/Edit Media screen and the Media Manager Modal Window ATTACHMENT DETAILS area.
+
+== NEW! For "checkbox-style" taxonomy meta boxes, click on "? Search" and type part or all of a keyword or phrase to filter the checkbox list for easier access to the term(s) you want. ==
+
+== MLA Custom Field and IPTC/EXIF Mapping Actions and Filters (Hooks) ==
 The Custom Field and IPTC/EXIF Mapping tools support a comprehensive set of filters and actions that give you complete control over rule execution and value creation from PHP code in your theme or in another plugin. An example of using the hooks from a simple, stand-alone plugin can be found in the "examples" directory.
 
 The example code documents each hook with comments in the filter/action function that intercepts each hook. There are hooks that run at the beginning and end of the overall mapping operation as well as hooks for each mapping rule. 
@@ -403,7 +431,7 @@ Conditional, choice and template elements can be nested as needed. For example, 
 
 `[+template: Terms: (([+terms:category+], [+terms:post_tag+])|[+ terms: category +]|[+terms:post_tag +]|none)+]`
 
-This template has a String, "Terms: " and a Conditional, "(([+terms: … none)". This Conditional separates the "Terms: " literal from the first alternative in the Choice. Within the Conditional is a Choice having four alternatives. The first alternative is a Conditional, which will be empty unless both categories and tags are present.  The second and third alternatives handle the cases where one of the two taxonomies has terms, and the final alternative is used when neither categories nor tags are present.
+This template has a String, "Terms: " and a Conditional, "(([+terms: ... none)". This Conditional separates the "Terms: " literal from the first alternative in the Choice. Within the Conditional is a Choice having four alternatives. The first alternative is a Conditional, which will be empty unless both categories and tags are present.  The second and third alternatives handle the cases where one of the two taxonomies has terms, and the final alternative is used when neither categories nor tags are present.
 
 == The MLA Text Widget ==
 

@@ -90,10 +90,40 @@
 [+bulk_right_column+]
           <fieldset class="inline-edit-col-right">
             <div class="inline-edit-col">
-              <label class="inline-edit-post-parent"> <span class="title">[+Parent ID+]</span> <span class="input-text-wrap">
-                <input type="text" name="post_parent" value="" />
+              <label> <span class="title">[+Title+]</span> <span class="input-text-wrap">
+                <input type="text" name="post_title" class="ptitle" value="" />
                 </span> </label>
+              <label> <span class="title">[+Caption+]</span> <span class="input-text-wrap">
+                <input type="text" name="post_excerpt" value="" />
+                </span> </label>
+              <label> <span class="title">[+Description+]</span> <span class="input-text-wrap">
+                <textarea class="widefat" name="post_content"></textarea>
+                </span> </label>
+              <label class="inline-edit-image-alt"> <span class="title">[+ALT Text+]</span> <span class="input-text-wrap">
+                <input type="text" name="image_alt" value="" />
+                </span> </label>
+              <div class="inline-edit-group">
+                <label class="inline-edit-post-parent alignleft"> <span class="title">[+Parent ID+]</span> <span class="input-text-wrap">
+                  <input type="text" name="post_parent" value="" />
+                  </span> </label>
 [+bulk_authors+]
+              </div>
+              <div class="inline-edit-group">
+							<label class="inline-edit-comments alignleft"> <span class="title">[+Comments+]</span> <span class="input-text-wrap">
+								<select name="comment_status">
+									<option selected="selected" value="-1">&mdash; [+No Change+] &mdash;</option>
+									<option value="open">[+Allow+]</option>
+									<option value="closed">[+Do not allow+]</option>
+								</select>
+								</span> </label>
+							<label class="inline-edit-pings alignright"> <span class="title">[+Pings+]</span> <span class="input-text-wrap">
+								<select name="ping_status">
+									<option selected="selected" value="-1">&mdash; [+No Change+] &mdash;</option>
+									<option value="open">[+Allow+]</option>
+									<option value="closed">[+Do not allow+]</option>
+								</select>
+								</span> </label>
+              </div>
 [+bulk_custom_fields+]
             </div>
           </fieldset>

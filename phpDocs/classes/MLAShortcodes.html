@@ -18,7 +18,10 @@
 <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse"><span class="icon-bar"></span><span class="icon-bar"></span><span class="icon-bar"></span></a><a class="brand" href="../index.html">Media Library Assistant</a><div class="nav-collapse"><ul class="nav">
 <li class="dropdown">
 <a href="#api" class="dropdown-toggle" data-toggle="dropdown">
-                                    API Documentation <b class="caret"></b></a><ul class="dropdown-menu"></ul>
+                                    API Documentation <b class="caret"></b></a><ul class="dropdown-menu">
+<li><a>Packages</a></li>
+<li><a href="../packages/Media%20Library%20Assistant.html"><i class="icon-folder-open"></i> Media Library Assistant</a></li>
+</ul>
 </li>
 <li class="dropdown" id="charts-menu">
 <a href="#charts" class="dropdown-toggle" data-toggle="dropdown">
@@ -203,12 +206,16 @@ from the return array. If 'include' is non-empty, 'exclude' is ignored.</p>
 
 <p>minimum - minimum number of attachments a term must have to be included.</p>
 
+<p>no_count - true to to suppress count of attachments per term else false</p>
+
 <p>number - maximum number of term objects to return. Terms are ordered by count,
 descending and then by term_id before this value is applied.</p>
 
 <p>orderby - 'count', 'id', 'name', 'none', 'random', 'slug'</p>
 
 <p>order - 'ASC', 'DESC'</p>
+
+<p>no_orderby - true to suppress ALL sorting clauses else false</p>
 
 <p>preserve_case - 'true', 'false' to make orderby case-sensitive.</p>
 
@@ -439,7 +446,7 @@ options to customize the hyperlink behind each term.</p></p>
 </div>
 <h3>Returns</h3>
 <div class="subelement response">
-<code>string</code>query specification with HTML escape sequences and line breaks removed</div>
+<code>string</code>parameter with brackets, braces, substitution parameters and templates processed</div>
 </div></div>
 </div>
 <a name="_sanitize_query_specification" id="_sanitize_query_specification"></a><div class="element clickable method private _sanitize_query_specification" data-toggle="collapse" data-target="._sanitize_query_specification .collapse">
@@ -568,7 +575,7 @@ any further logic required to translate those values is contained in the filter.
 <div class="row"><footer class="span12">
             Template is built using <a href="http://twitter.github.com/bootstrap/">Twitter Bootstrap 2</a> and icons provided by <a href="http://glyphicons.com/">Glyphicons</a>.<br>
             Documentation is powered by <a href="http://www.phpdoc.org/">phpDocumentor 2.0.0a8</a> and<br>
-            generated on 2014-02-11T20:56:42-08:00.<br></footer></div>
+            generated on 2014-03-27T17:01:48-07:00.<br></footer></div>
 </div>
 </body>
 </html>

@@ -11,6 +11,9 @@
 			[+Inline Edit+]
 			</th>
 		    <th scope="col" style="text-align:center">
+			[+Checklist+]
+			</th>
+		    <th scope="col" style="text-align:center">
 			[+List Filter+]
 			</th>
 		    <th scope="col" style="text-align:left">
@@ -32,6 +35,9 @@
         </td>
 		<td style="text-align:center;">
             <input type="checkbox" name="tax_quick_edit[[+key+]]" id="tax_quick_edit_[+key+]" [+quick_edit_checked+] value="checked" />
+        </td>
+		<td style="text-align:center;">
+            <input type="checkbox" name="tax_flat_checklist[[+key+]]" id="tax_flat_checklist_[+key+]" [+flat_checklist_checked+] [+flat_checklist_disabled+] value="[+flat_checklist_value+]" />
         </td>
 		<td style="text-align:center;">
             <input type="radio" name="tax_filter" id="tax_filter_[+key+]" [+filter_checked+] value="[+key+]" />

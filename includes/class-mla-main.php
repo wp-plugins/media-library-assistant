@@ -29,7 +29,7 @@ class MLA {
 	 *
 	 * @var	string
 	 */
-	const CURRENT_MLA_VERSION = '1.71';
+	const CURRENT_MLA_VERSION = '1.80';
 
 	/**
 	 * Slug for registering and enqueueing plugin style sheet
@@ -338,6 +338,8 @@ class MLA {
 	 * @return	void
 	 */
 	public static function mla_admin_menu_action( ) {
+		global $submenu;
+
 		if ( 'checked' != MLAOptions::mla_get_option( MLAOptions::MLA_SCREEN_DISPLAY_LIBRARY ) ) {
 			add_action( 'load-upload.php', 'MLA::mla_load_media_action' );
 		}
@@ -381,9 +383,7 @@ class MLA {
 		} else {
 			$menu_position = (integer) MLAOptions::mla_get_option( MLAOptions::MLA_SCREEN_ORDER );
 		}
-
-		if ( $menu_position ) {
-			global $submenu_file, $submenu;
+		if ( $menu_position && is_array( $submenu['upload.php'] ) ) {
 			foreach ( $submenu['upload.php'] as $menu_order => $menu_item ) {
 				if ( self::ADMIN_PAGE_SLUG == $menu_item[2] ) {
 					$submenu['upload.php'][$menu_position] = $menu_item;
@@ -682,6 +682,40 @@ class MLA {
 	}
 
 	/**
+	 * Process bulk edit area fields, which may contain a Content Template
+	 *
+	 * @since 1.80
+	 *
+	 * @param	integer	Current post ID
+	 * @param	string	Field value as entered
+	 *
+	 * @return	string	Empty, or new value for the field
+	 */
+	private static function _process_bulk_value( $post_id, $bulk_value ) {
+		$new_value = trim( $bulk_value );
+
+		if ( 'template:' == substr( $new_value, 0, 9 ) ) {
+			$data_value = array(
+				'data_source' => 'template',
+				'meta_name' => substr( $new_value, 9 ),
+				'keep_existing' => false,
+				'format' => 'raw',
+				'option' => 'text' );
+
+			$new_value =  MLAOptions::mla_get_data_source( $post_id, 'single_attachment_mapping', $data_value );
+			if ( ' ' == $new_value ) {
+				$new_value = '';
+			}
+		} // template
+		elseif ( ! empty( $new_value ) ) {
+			// preserve leading/trailing whitespace on non-empty entered values
+			return $bulk_value;
+		}
+
+		return $new_value;
+	}
+
+	/**
 	 * Render the "Assistant" subpage in the Media section, using the list_table package
 	 *
 	 * @since 0.1
@@ -708,12 +742,12 @@ class MLA {
 		$bulk_action = self::_current_bulk_action();
 
 		$page_title = MLAOptions::mla_get_option( MLAOptions::MLA_SCREEN_PAGE_TITLE );
-		echo "<div class=\"wrap\">\r\n";
-		echo "<div id=\"icon-upload\" class=\"icon32\"><br/></div>\r\n";
+		echo "<div class=\"wrap\">\n";
+		echo "<div id=\"icon-upload\" class=\"icon32\"><br/></div>\n";
 		echo "<h2>{$page_title}"; // trailing </h2> is action-specific
 
 		if ( !current_user_can( 'upload_files' ) ) {
-			echo " - Error</h2>\r\n";
+			echo " - Error</h2>\n";
 			wp_die( __( 'You do not have permission to manage attachments.', 'media-library-assistant' ) );
 		}
 
@@ -766,8 +800,41 @@ class MLA {
 
 							/*
 							 * Copy the edit form contents to $new_data
+							 * Trim text values for testing purposes only
 							 */
 							$new_data = array() ;
+							if ( isset( $_REQUEST['post_title'] ) ) {
+								$test_value = self::_process_bulk_value( $post_id, $_REQUEST['post_title'] );
+								if ( ! empty( $test_value ) ) {
+									$new_data['post_title'] = $test_value;
+								}
+							}
+
+							if ( isset( $_REQUEST['post_excerpt'] ) ) {
+								$test_value = self::_process_bulk_value( $post_id, $_REQUEST['post_excerpt'] );
+								if ( ! empty( $test_value ) ) {
+									$new_data['post_excerpt'] = $test_value;
+								}
+							}
+
+							if ( isset( $_REQUEST['post_content'] ) ) {
+								$test_value = self::_process_bulk_value( $post_id, $_REQUEST['post_content'] );
+								if ( ! empty( $test_value ) ) {
+									$new_data['post_content'] = $test_value;
+								}
+							}
+
+							/*
+							 * image_alt requires a separate key because some attachment types
+							 * should not get a value, e.g., text or PDF documents
+							 */
+							if ( isset( $_REQUEST['image_alt'] ) ) {
+								$test_value = self::_process_bulk_value( $post_id, $_REQUEST['image_alt'] );
+								if ( ! empty( $test_value ) ) {
+									$new_data['bulk_image_alt'] = $test_value;
+								}
+							}
+
 							if ( isset( $_REQUEST['post_parent'] ) ) {
 								if ( is_numeric( $_REQUEST['post_parent'] ) ) {
 									$new_data['post_parent'] = $_REQUEST['post_parent'];
@@ -777,6 +844,18 @@ class MLA {
 							if ( isset( $_REQUEST['post_author'] ) ) {
 								if ( -1 != $_REQUEST['post_author'] ) {
 										$new_data['post_author'] = $_REQUEST['post_author'];
+								}
+							}
+
+							if ( isset( $_REQUEST['comment_status'] ) ) {
+								if ( -1 != $_REQUEST['comment_status'] ) {
+										$new_data['comment_status'] = $_REQUEST['comment_status'];
+								}
+							}
+
+							if ( isset( $_REQUEST['ping_status'] ) ) {
+								if ( -1 != $_REQUEST['ping_status'] ) {
+										$new_data['ping_status'] = $_REQUEST['ping_status'];
 								}
 							}
 
@@ -816,6 +895,12 @@ class MLA {
 					$page_content['message'] .= $item_content['message'] . '<br>';
 				} // foreach cb_attachment
 
+				unset( $_REQUEST['post_title'] );
+				unset( $_REQUEST['post_excerpt'] );
+				unset( $_REQUEST['post_content'] );
+				unset( $_REQUEST['image_alt'] );
+				unset( $_REQUEST['comment_status'] );
+				unset( $_REQUEST['ping_status'] );
 				unset( $_REQUEST['post_parent'] );
 				unset( $_REQUEST['post_author'] );
 				unset( $_REQUEST['tax_input'] );
@@ -920,9 +1005,9 @@ class MLA {
 					$messages_class = 'mla_messages';
 				}
 
-				echo "  <div class=\"{$messages_class}\"><p>\r\n";
-				echo '    ' . $page_content['message'] . "\r\n";
-				echo "  </p></div>\r\n"; // id="message"
+				echo "  <div class=\"{$messages_class}\"><p>\n";
+				echo '    ' . $page_content['message'] . "\n";
+				echo "  </p></div>\n"; // id="message"
 			}
 
 			echo $page_content['body'];
@@ -931,11 +1016,15 @@ class MLA {
 			 * Display Attachments list
 			 */
 			if ( !empty( $_REQUEST['heading_suffix'] ) ) {
-				echo ' - ' . esc_html( $_REQUEST['heading_suffix'] ) . "</h2>\r\n";
-			} elseif ( !empty( $_REQUEST['s'] ) && !empty( $_REQUEST['mla_search_fields'] ) ) {
-				echo ' - search results for "' . esc_html( stripslashes( trim( $_REQUEST['s'] ) ) ) . "\"</h2>\r\n";
+				echo ' - ' . esc_html( $_REQUEST['heading_suffix'] ) . "</h2>\n";
+			} elseif ( !empty( $_REQUEST['s'] ) ) {
+				if ( empty( $_REQUEST['mla_search_fields'] ) ) {
+					echo ' - ' . __( 'post/parent results for', 'media-library-assistant' ) . ' "' . esc_html( stripslashes( trim( $_REQUEST['s'] ) ) ) . "\"</h2>\n";
+				} else {
+					echo ' - ' . __( 'search results for', 'media-library-assistant' ) . ' "' . esc_html( stripslashes( trim( $_REQUEST['s'] ) ) ) . "\"</h2>\n";
+				}
 			} else {
-				echo "</h2>\r\n";
+				echo "</h2>\n";
 			}
 
 			if ( !empty( $page_content['message'] ) ) {
@@ -945,26 +1034,57 @@ class MLA {
 					$messages_class = 'mla_messages';
 				}
 
-				echo "  <div class=\"{$messages_class}\"><p>\r\n";
-				echo '    ' . $page_content['message'] . "\r\n";
-				echo "  </p></div>\r\n"; // id="message"
+				echo "  <div class=\"{$messages_class}\"><p>\n";
+				echo '    ' . $page_content['message'] . "\n";
+				echo "  </p></div>\n"; // id="message"
 			}
 
 			/*
 			 * Optional - limit width of the views list
 			 */
-			$view_width = MLAOptions::mla_get_option( MLAOptions::MLA_TABLE_VIEWS_WIDTH );
-			if ( !empty( $view_width ) ) {
-				if ( is_numeric( $view_width ) ) {
-					$view_width .= 'px';
+			$option_value = MLAOptions::mla_get_option( MLAOptions::MLA_TABLE_VIEWS_WIDTH );
+			if ( !empty( $option_value ) ) {
+				if ( is_numeric( $option_value ) ) {
+					$option_value .= 'px';
 				}
 
-				echo "  <style type='text/css'>\r\n";
-				echo "    ul.subsubsub {\r\n";
-				echo "      width: {$view_width};\r\n";
-				echo "      max-width: {$view_width};\r\n";
-				echo "    }\r\n";
-				echo "  </style>\r\n";
+				echo "  <style type='text/css'>\n";
+				echo "    ul.subsubsub {\n";
+				echo "      width: {$option_value};\n";
+				echo "      max-width: {$option_value};\n";
+				echo "    }\n";
+				echo "  </style>\n";
+			}
+
+			/*
+			 * Optional - change the size of the thumbnail/icon images
+			 */
+			$option_value = MLAOptions::mla_get_option( MLAOptions::MLA_TABLE_ICON_SIZE );
+			if ( !empty( $option_value ) ) {
+				if ( is_numeric( $option_value ) ) {
+					$option_value .= 'px';
+				}
+				
+				if ( 'checked' == MLAOptions::mla_get_option( MLAOptions::MLA_ENABLE_MLA_ICONS ) ) {
+					$class = 'mla_media_thumbnail_64_64';
+				} else {
+					$class = 'mla_media_thumbnail_80_60';
+				}
+
+				echo "  <style type='text/css'>\n";
+				echo "  #icon.column-icon {\n";
+				echo "    width: {$option_value};\n";
+				echo "    max-width: {$option_value};\n";
+				echo "    height: {$option_value};\n";
+				echo "    max-height: {$option_value};\n";
+				echo "  }\n";
+				echo "  img.{$class} {\n";
+				echo "    width: {$option_value};\n";
+				echo "    max-width: {$option_value};\n";
+				echo "    height: {$option_value};\n";
+				echo "    max-height: {$option_value};\n";
+				echo "  }\n";
+				echo "  </style>\n";
 			}
 
 			//	Create an instance of our package class...
@@ -975,15 +1095,13 @@ class MLA {
 			$MLAListTable->views();
 
 			//	 Forms are NOT created automatically, so you need to wrap the table in one to use features like bulk actions
-//			echo '<form action="' . admin_url( 'upload.php' ) . '" method="get" id="mla-filter">' . "\r\n";
-			echo '<form action="' . admin_url( 'upload.php?page=' . self::ADMIN_PAGE_SLUG ) . '" method="post" id="mla-filter">' . "\r\n";
-//			echo '<form action="' . admin_url( 'upload.php?page=' . self::ADMIN_PAGE_SLUG ) . '" method="get" id="mla-filter">' . "\r\n";
+			echo '<form action="' . admin_url( 'upload.php?page=' . self::ADMIN_PAGE_SLUG ) . '" method="post" id="mla-filter">' . "\n";
 			/*
 			 * Compose the Search Media box
 			 */
-			if ( !empty( $_REQUEST['s'] ) && !empty( $_REQUEST['mla_search_fields'] ) ) {
+			if ( !empty( $_REQUEST['s'] ) ) {
 				$search_value = esc_attr( stripslashes( trim( $_REQUEST['s'] ) ) );
-				$search_fields = $_REQUEST['mla_search_fields'];
+				$search_fields = isset ( $_REQUEST['mla_search_fields'] ) ? $_REQUEST['mla_search_fields'] : array();
 				$search_connector = $_REQUEST['mla_search_connector'];
 			} else {
 				$search_value = '';
@@ -991,54 +1109,54 @@ class MLA {
 				$search_connector = 'AND';
 			}
 
-			echo '<p class="search-box">' . "\r\n";
-			echo '<label class="screen-reader-text" for="media-search-input">' . __( 'Search Media', 'media-library-assistant' ) . ':</label>' . "\r\n";
-			echo '<input type="text" size="45"  id="media-search-input" name="s" value="' . $search_value . '" />' . "\r\n";
-			echo '<input type="submit" name="mla-search-submit" id="search-submit" class="button" value="Search Media"  /><br>' . "\r\n";
+			echo '<p class="search-box">' . "\n";
+			echo '<label class="screen-reader-text" for="media-search-input">' . __( 'Search Media', 'media-library-assistant' ) . ':</label>' . "\n";
+			echo '<input type="text" size="45"  id="media-search-input" name="s" value="' . $search_value . '" />' . "\n";
+			echo '<input type="submit" name="mla-search-submit" id="search-submit" class="button" value="Search Media"  /><br>' . "\n";
 			if ( 'OR' == $search_connector ) {
-				echo '<input type="radio" name="mla_search_connector" value="AND" />&nbsp;' . __( 'and', 'media-library-assistant' ) . "&nbsp;\r\n";
-				echo '<input type="radio" name="mla_search_connector" checked="checked" value="OR" />&nbsp;' . __( 'or', 'media-library-assistant' ) . "&nbsp;\r\n";
+				echo '<input type="radio" name="mla_search_connector" value="AND" />&nbsp;' . __( 'and', 'media-library-assistant' ) . "&nbsp;\n";
+				echo '<input type="radio" name="mla_search_connector" checked="checked" value="OR" />&nbsp;' . __( 'or', 'media-library-assistant' ) . "&nbsp;\n";
 			} else {
-				echo '<input type="radio" name="mla_search_connector" checked="checked" value="AND" />&nbsp;' . __( 'and', 'media-library-assistant' ) . "&nbsp;\r\n";
-				echo '<input type="radio" name="mla_search_connector" value="OR" />&nbsp;' . __( 'or', 'media-library-assistant' ) . "&nbsp;\r\n";
+				echo '<input type="radio" name="mla_search_connector" checked="checked" value="AND" />&nbsp;' . __( 'and', 'media-library-assistant' ) . "&nbsp;\n";
+				echo '<input type="radio" name="mla_search_connector" value="OR" />&nbsp;' . __( 'or', 'media-library-assistant' ) . "&nbsp;\n";
 			}
 
 			if ( in_array( 'title', $search_fields ) ) {
-				echo '<input type="checkbox" name="mla_search_fields[]" id="search-title" checked="checked" value="title" />&nbsp;' . __( 'Title', 'media-library-assistant' ) . "&nbsp;\r\n";
+				echo '<input type="checkbox" name="mla_search_fields[]" id="search-title" checked="checked" value="title" />&nbsp;' . __( 'Title', 'media-library-assistant' ) . "&nbsp;\n";
 			} else {
-				echo '<input type="checkbox" name="mla_search_fields[]" id="search-title" value="title" />&nbsp;' . __( 'Title', 'media-library-assistant' ) . "&nbsp;\r\n";
+				echo '<input type="checkbox" name="mla_search_fields[]" id="search-title" value="title" />&nbsp;' . __( 'Title', 'media-library-assistant' ) . "&nbsp;\n";
 			}
 
 			if ( in_array( 'name', $search_fields ) ) {
-				echo '<input type="checkbox" name="mla_search_fields[]" id="search-name" checked="checked" value="name" />&nbsp;' . __( 'Name', 'media-library-assistant' ) . "&nbsp;\r\n";
+				echo '<input type="checkbox" name="mla_search_fields[]" id="search-name" checked="checked" value="name" />&nbsp;' . __( 'Name', 'media-library-assistant' ) . "&nbsp;\n";
 			} else {
-				echo '<input type="checkbox" name="mla_search_fields[]" id="search-name" value="name" />&nbsp;' . __( 'Name', 'media-library-assistant' ) . "&nbsp;\r\n";
+				echo '<input type="checkbox" name="mla_search_fields[]" id="search-name" value="name" />&nbsp;' . __( 'Name', 'media-library-assistant' ) . "&nbsp;\n";
 			}
 
 			if ( in_array( 'alt-text', $search_fields ) ) {
-				echo '<input type="checkbox" name="mla_search_fields[]" id="search-alt-text" checked="checked" value="alt-text" />&nbsp;' . __( 'ALT Text', 'media-library-assistant' ) . "&nbsp;\r\n";
+				echo '<input type="checkbox" name="mla_search_fields[]" id="search-alt-text" checked="checked" value="alt-text" />&nbsp;' . __( 'ALT Text', 'media-library-assistant' ) . "&nbsp;\n";
 			} else {
-				echo '<input type="checkbox" name="mla_search_fields[]" id="search-alt-text" value="alt-text" />&nbsp;' . __( 'ALT Text', 'media-library-assistant' ) . "&nbsp;\r\n";
+				echo '<input type="checkbox" name="mla_search_fields[]" id="search-alt-text" value="alt-text" />&nbsp;' . __( 'ALT Text', 'media-library-assistant' ) . "&nbsp;\n";
 			}
 
 			if ( in_array( 'excerpt', $search_fields ) ) {
-				echo '<input type="checkbox" name="mla_search_fields[]" id="search-excerpt" checked="checked" value="excerpt" />&nbsp;' . __( 'Caption', 'media-library-assistant' ) . "&nbsp;\r\n";
+				echo '<input type="checkbox" name="mla_search_fields[]" id="search-excerpt" checked="checked" value="excerpt" />&nbsp;' . __( 'Caption', 'media-library-assistant' ) . "&nbsp;\n";
 			} else {
-				echo '<input type="checkbox" name="mla_search_fields[]" id="search-excerpt" value="excerpt" />&nbsp;' . __( 'Caption', 'media-library-assistant' ) . "&nbsp;\r\n";
+				echo '<input type="checkbox" name="mla_search_fields[]" id="search-excerpt" value="excerpt" />&nbsp;' . __( 'Caption', 'media-library-assistant' ) . "&nbsp;\n";
 			}
 
 			if ( in_array( 'content', $search_fields ) ) {
-				echo '<input type="checkbox" name="mla_search_fields[]" id="search-content" checked="checked" value="content" />&nbsp;' . __( 'Description', 'media-library-assistant' ) . "&nbsp;\r\n";
+				echo '<input type="checkbox" name="mla_search_fields[]" id="search-content" checked="checked" value="content" />&nbsp;' . __( 'Description', 'media-library-assistant' ) . "&nbsp;\n";
 			} else {
-				echo '<input type="checkbox" name="mla_search_fields[]" id="search-content" value="content" />&nbsp;' . __( 'Description', 'media-library-assistant' ) . "&nbsp;\r\n";
+				echo '<input type="checkbox" name="mla_search_fields[]" id="search-content" value="content" />&nbsp;' . __( 'Description', 'media-library-assistant' ) . "&nbsp;\n";
 			}
 
-			echo '</p>' . "\r\n";
+			echo '</p>' . "\n";
 
 			/*
 			 * We also need to ensure that the form posts back to our current page and remember all the view arguments
 			 */
-			echo sprintf( '<input type="hidden" name="page" value="%1$s" />', $_REQUEST['page'] ) . "\r\n";
+			echo sprintf( '<input type="hidden" name="page" value="%1$s" />', $_REQUEST['page'] ) . "\n";
 
 			$view_arguments = MLA_List_Table::mla_submenu_arguments();
 			foreach ( $view_arguments as $key => $value ) {
@@ -1055,24 +1173,24 @@ class MLA {
 
 				if ( is_array( $value ) ) {
 					foreach ( $value as $element_key => $element_value )
-						echo sprintf( '<input type="hidden" name="%1$s[%2$s]" value="%3$s" />', $key, $element_key, esc_attr( $element_value ) ) . "\r\n";
+						echo sprintf( '<input type="hidden" name="%1$s[%2$s]" value="%3$s" />', $key, $element_key, esc_attr( $element_value ) ) . "\n";
 				} else {
-					echo sprintf( '<input type="hidden" name="%1$s" value="%2$s" />', $key, esc_attr( $value ) ) . "\r\n";
+					echo sprintf( '<input type="hidden" name="%1$s" value="%2$s" />', $key, esc_attr( $value ) ) . "\n";
 				}
 			}
 
 			//	 Now we can render the completed list table
 			$MLAListTable->display();
-			echo "</form><!-- id=mla-filter -->\r\n";
+			echo "</form><!-- id=mla-filter -->\n";
 
 			/*
 			 * Insert the hidden form and table for inline edits (quick & bulk)
 			 */
 			echo self::_build_inline_edit_form($MLAListTable);
 
-			echo "<div id=\"ajax-response\"></div>\r\n";
-			echo "<br class=\"clear\" />\r\n";
-			echo "</div><!-- class=wrap -->\r\n";
+			echo "<div id=\"ajax-response\"></div>\n";
+			echo "<br class=\"clear\" />\n";
+			echo "</div><!-- class=wrap -->\n";
 		} // display attachments list
 	}
 
@@ -1205,10 +1323,10 @@ class MLA {
 		}
 
 		if ( $authors = self::_authors_dropdown() ) {
-			$authors_dropdown  = '              <label class="inline-edit-author">' . "\r\n";
-			$authors_dropdown .= '                <span class="title">' . __( 'Author', 'media-library-assistant' ) . '</span>' . "\r\n";
-			$authors_dropdown .= $authors . "\r\n";
-			$authors_dropdown .= '              </label>' . "\r\n";
+			$authors_dropdown  = '              <label class="inline-edit-author">' . "\n";
+			$authors_dropdown .= '                <span class="title">' . __( 'Author', 'media-library-assistant' ) . '</span>' . "\n";
+			$authors_dropdown .= $authors . "\n";
+			$authors_dropdown .= '              </label>' . "\n";
 		} else {
 			$authors_dropdown = '';
 		}
@@ -1307,10 +1425,10 @@ class MLA {
 		} // count( $flat_taxonomies )
 
 		if ( $authors = self::_authors_dropdown( -1 ) ) {
-			$bulk_authors_dropdown  = '              <label class="inline-edit-author">' . "\r\n";
-			$bulk_authors_dropdown .= '                <span class="title">' . __( 'Author', 'media-library-assistant' ) . '</span>' . "\r\n";
-			$bulk_authors_dropdown .= $authors . "\r\n";
-			$bulk_authors_dropdown .= '              </label>' . "\r\n";
+			$bulk_authors_dropdown  = '              <label class="inline-edit-author alignright">' . "\n";
+			$bulk_authors_dropdown .= '                <span class="title">' . __( 'Author', 'media-library-assistant' ) . '</span>' . "\n";
+			$bulk_authors_dropdown .= $authors . "\n";
+			$bulk_authors_dropdown .= '              </label>' . "\n";
 		} else {
 			$bulk_authors_dropdown = '';
 		}
@@ -1344,6 +1462,11 @@ class MLA {
 			'bulk_middle_column' => $bulk_middle_column,
 			'bulk_right_column' => $bulk_right_column,
 			'bulk_authors' => $bulk_authors_dropdown,
+			'Comments' => __( 'Comments', 'media-library-assistant' ),
+			'Pings' => __( 'Pings', 'media-library-assistant' ),
+			'No Change' => __( 'No Change', 'media-library-assistant' ),
+			'Allow' => __( 'Allow', 'media-library-assistant' ),
+			'Do not allow' => __( 'Do not allow', 'media-library-assistant' ),
 			'bulk_custom_fields' => $bulk_custom_fields,
 			'Map IPTC/EXIF metadata' =>  __( 'Map IPTC/EXIF metadata', 'media-library-assistant' ),
 			'Map Custom Field metadata' =>  __( 'Map Custom Field Metadata', 'media-library-assistant' ),
@@ -1539,7 +1662,7 @@ class MLA {
 					$parent = '';
 				}
 
-				$features .= sprintf( '%1$s (%2$s %3$s), %4$s', /*$1%s*/ $parent, /*$2%s*/ $feature->post_type, /*$3%s*/ $feature_id, /*$4%s*/ $feature->post_title ) . "\r\n";
+				$features .= sprintf( '%1$s (%2$s %3$s), %4$s', /*$1%s*/ $parent, /*$2%s*/ $feature->post_type, /*$3%s*/ $feature_id, /*$4%s*/ $feature->post_title ) . "\n";
 			} // foreach $feature
 		} else {
 			$features = __( 'Disabled', 'media-library-assistant' );
@@ -1549,7 +1672,7 @@ class MLA {
 			$inserts = '';
 
 			foreach ( $post_data['mla_references']['inserts'] as $file => $insert_array ) {
-				$inserts .= $file . "\r\n";
+				$inserts .= $file . "\n";
 
 				foreach ( $insert_array as $insert ) {
 					if ( $insert->ID == $post_data['post_parent'] ) {
@@ -1558,7 +1681,7 @@ class MLA {
 						$parent = '  ';
 					}
 
-					$inserts .= sprintf( '%1$s (%2$s %3$s), %4$s', /*$1%s*/ $parent, /*$2%s*/ $insert->post_type, /*$3%s*/ $insert->ID, /*$4%s*/ $insert->post_title ) . "\r\n";
+					$inserts .= sprintf( '%1$s (%2$s %3$s), %4$s', /*$1%s*/ $parent, /*$2%s*/ $insert->post_type, /*$3%s*/ $insert->ID, /*$4%s*/ $insert->post_title ) . "\n";
 				} // foreach $insert
 			} // foreach $file
 		} else {
@@ -1575,7 +1698,7 @@ class MLA {
 					$parent = '';
 				}
 
-				$galleries .= sprintf( '%1$s (%2$s %3$s), %4$s', /*$1%s*/ $parent, /*$2%s*/ $gallery['post_type'], /*$3%s*/ $gallery_id, /*$4%s*/ $gallery['post_title'] ) . "\r\n";
+				$galleries .= sprintf( '%1$s (%2$s %3$s), %4$s', /*$1%s*/ $parent, /*$2%s*/ $gallery['post_type'], /*$3%s*/ $gallery_id, /*$4%s*/ $gallery['post_title'] ) . "\n";
 			} // foreach $gallery
 		} else {
 			$galleries = __( 'Disabled', 'media-library-assistant' );
@@ -1591,7 +1714,7 @@ class MLA {
 					$parent = '';
 				}
 
-				$mla_galleries .= sprintf( '%1$s (%2$s %3$s), %4$s', /*$1%s*/ $parent, /*$2%s*/ $gallery['post_type'], /*$3%s*/ $gallery_id, /*$4%s*/ $gallery['post_title'] ) . "\r\n";
+				$mla_galleries .= sprintf( '%1$s (%2$s %3$s), %4$s', /*$1%s*/ $parent, /*$2%s*/ $gallery['post_type'], /*$3%s*/ $gallery_id, /*$4%s*/ $gallery['post_title'] ) . "\n";
 			} // foreach $gallery
 		} else {
 			$mla_galleries = __( 'Disabled', 'media-library-assistant' );
@@ -1622,15 +1745,15 @@ class MLA {
 		 * Add the current view arguments
 		 */
 		if ( isset( $_REQUEST['detached'] ) ) {
-			$view_args = '<input type="hidden" name="detached" value="' . $_REQUEST['detached'] . "\" />\r\n";
+			$view_args = '<input type="hidden" name="detached" value="' . $_REQUEST['detached'] . "\" />\n";
 		} elseif ( isset( $_REQUEST['status'] ) ) {
-			$view_args = '<input type="hidden" name="status" value="' . $_REQUEST['status'] . "\" />\r\n";
+			$view_args = '<input type="hidden" name="status" value="' . $_REQUEST['status'] . "\" />\n";
 		} else {
 			$view_args = '';
 		}
 
 		if ( isset( $_REQUEST['paged'] ) ) {
-			$view_args .= sprintf( '<input type="hidden" name="paged" value="%1$s" />', $_REQUEST['paged'] ) . "\r\n";
+			$view_args .= sprintf( '<input type="hidden" name="paged" value="%1$s" />', $_REQUEST['paged'] ) . "\n";
 		}
 
 		$side_info_column = '';

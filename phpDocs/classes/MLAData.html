@@ -18,7 +18,10 @@
 <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse"><span class="icon-bar"></span><span class="icon-bar"></span><span class="icon-bar"></span></a><a class="brand" href="../index.html">Media Library Assistant</a><div class="nav-collapse"><ul class="nav">
 <li class="dropdown">
 <a href="#api" class="dropdown-toggle" data-toggle="dropdown">
-                                    API Documentation <b class="caret"></b></a><ul class="dropdown-menu"></ul>
+                                    API Documentation <b class="caret"></b></a><ul class="dropdown-menu">
+<li><a>Packages</a></li>
+<li><a href="../packages/Media%20Library%20Assistant.html"><i class="icon-folder-open"></i> Media Library Assistant</a></li>
+</ul>
 </li>
 <li class="dropdown" id="charts-menu">
 <a href="#charts" class="dropdown-toggle" data-toggle="dropdown">
@@ -74,10 +77,15 @@
 <li class="method public "><a href="#mla_pdf_metadata_value" title="mla_pdf_metadata_value :: Parse one PDF metadata field"><span class="description">Parse one PDF metadata field</span><pre>mla_pdf_metadata_value()</pre></a></li>
 <li class="method public "><a href="#mla_query_list_table_items" title="mla_query_list_table_items :: Retrieve attachment objects for list table display"><span class="description">Retrieve attachment objects for list table display</span><pre>mla_query_list_table_items()</pre></a></li>
 <li class="method public "><a href="#mla_query_media_modal_items" title="mla_query_media_modal_items :: Retrieve attachment objects for the WordPress Media Manager"><span class="description">Retrieve attachment objects for the WordPress Media Manager</span><pre>mla_query_media_modal_items()</pre></a></li>
+<li class="method public "><a href="#mla_query_posts_clauses_filter" title="mla_query_posts_clauses_filter :: Filters all clauses for shortcode queries, pre caching plugins"><span class="description">Filters all clauses for shortcode queries, pre caching plugins</span><pre>mla_query_posts_clauses_filter()</pre></a></li>
+<li class="method public "><a href="#mla_query_posts_clauses_request_filter" title="mla_query_posts_clauses_request_filter :: Filters all clauses for shortcode queries, post caching plugins"><span class="description">Filters all clauses for shortcode queries, post caching plugins</span><pre>mla_query_posts_clauses_request_filter()</pre></a></li>
 <li class="method public "><a href="#mla_query_posts_join_filter" title="mla_query_posts_join_filter :: Adds a JOIN clause, if required, to handle sorting/searching on custom fields or ALT Text"><span class="description">Adds a JOIN clause, if required, to handle sorting/searching on custom fields or ALT Text</span><pre>mla_query_posts_join_filter()</pre></a></li>
 <li class="method public "><a href="#mla_query_posts_orderby_filter" title="mla_query_posts_orderby_filter :: Adds a ORDERBY clause, if required"><span class="description">Adds a ORDERBY clause, if required</span><pre>mla_query_posts_orderby_filter()</pre></a></li>
 <li class="method public "><a href="#mla_query_posts_search_filter" title="mla_query_posts_search_filter :: Adds a keyword search to the WHERE clause, if required"><span class="description">Adds a keyword search to the WHERE clause, if required</span><pre>mla_query_posts_search_filter()</pre></a></li>
 <li class="method public "><a href="#mla_query_posts_where_filter" title="mla_query_posts_where_filter :: Adds a WHERE clause for detached items"><span class="description">Adds a WHERE clause for detached items</span><pre>mla_query_posts_where_filter()</pre></a></li>
+<li class="method public "><a href="#mla_query_relevanssi_admin_search_ok_filter" title="mla_query_relevanssi_admin_search_ok_filter :: Disable Relevanssi - A Better Search, v3.2 by Mikko Saari
+Defined as public because it's a filter."><span class="description">Disable Relevanssi - A Better Search, v3.2 by Mikko Saari
+Defined as public because it's a filter.</span><pre>mla_query_relevanssi_admin_search_ok_filter()</pre></a></li>
 <li class="method public "><a href="#mla_save_post_action" title="mla_save_post_action :: Invalidates $mla_galleries and $galleries arrays and cached values after post, page or attachment updates"><span class="description">Invalidates $mla_galleries and $galleries arrays and cached values after post, page or attachment updates</span><pre>mla_save_post_action()</pre></a></li>
 <li class="method public "><a href="#mla_search_terms_tidy" title="mla_search_terms_tidy :: Replaces a WordPress function deprecated in v3.7"><span class="description">Replaces a WordPress function deprecated in v3.7</span><pre>mla_search_terms_tidy()</pre></a></li>
 <li class="method public "><a href="#mla_update_item_postmeta" title='mla_update_item_postmeta :: Update custom field and "meta:" data for a single attachment'><span class="description">Update custom field and "meta:" data for a single attachment</span><pre>mla_update_item_postmeta()</pre></a></li>
@@ -648,6 +656,46 @@ Modeled after wp_edit_attachments_query in wp-admin/post.php</p></p>
 <code>array</code>attachment objects (posts)</div>
 </div></div>
 </div>
+<a name="mla_query_posts_clauses_filter" id="mla_query_posts_clauses_filter"></a><div class="element clickable method public mla_query_posts_clauses_filter" data-toggle="collapse" data-target=".mla_query_posts_clauses_filter .collapse">
+<h2>Filters all clauses for shortcode queries, pre caching plugins</h2>
+<pre>mla_query_posts_clauses_filter(array $pieces) : array</pre>
+<div class="labels"></div>
+<div class="row collapse"><div class="detail-description">
+<p class="long_description"><p>This is for debug purposes only.
+Defined as public because it's a filter.</p></p>
+<table class="table table-bordered"><tr>
+<th>since</th>
+<td>1.80</td>
+</tr></table>
+<h3>Parameters</h3>
+<div class="subelement argument">
+<h4>$pieces</h4>
+<code>array</code><p>query clauses before modification</p></div>
+<h3>Returns</h3>
+<div class="subelement response">
+<code>array</code>query clauses after modification (none)</div>
+</div></div>
+</div>
+<a name="mla_query_posts_clauses_request_filter" id="mla_query_posts_clauses_request_filter"></a><div class="element clickable method public mla_query_posts_clauses_request_filter" data-toggle="collapse" data-target=".mla_query_posts_clauses_request_filter .collapse">
+<h2>Filters all clauses for shortcode queries, post caching plugins</h2>
+<pre>mla_query_posts_clauses_request_filter(array $pieces) : array</pre>
+<div class="labels"></div>
+<div class="row collapse"><div class="detail-description">
+<p class="long_description"><p>This is for debug purposes only.
+Defined as public because it's a filter.</p></p>
+<table class="table table-bordered"><tr>
+<th>since</th>
+<td>1.80</td>
+</tr></table>
+<h3>Parameters</h3>
+<div class="subelement argument">
+<h4>$pieces</h4>
+<code>array</code><p>query clauses before modification</p></div>
+<h3>Returns</h3>
+<div class="subelement response">
+<code>array</code>query clauses after modification (none)</div>
+</div></div>
+</div>
 <a name="mla_query_posts_join_filter" id="mla_query_posts_join_filter"></a><div class="element clickable method public mla_query_posts_join_filter" data-toggle="collapse" data-target=".mla_query_posts_join_filter .collapse">
 <h2>Adds a JOIN clause, if required, to handle sorting/searching on custom fields or ALT Text</h2>
 <pre>mla_query_posts_join_filter(string $join_clause) : string</pre>
@@ -727,6 +775,26 @@ Defined as public because it's a filter.</p></p>
 <h3>Returns</h3>
 <div class="subelement response">
 <code>string</code>query clause after "detached" item modification</div>
+</div></div>
+</div>
+<a name="mla_query_relevanssi_admin_search_ok_filter" id="mla_query_relevanssi_admin_search_ok_filter"></a><div class="element clickable method public mla_query_relevanssi_admin_search_ok_filter" data-toggle="collapse" data-target=".mla_query_relevanssi_admin_search_ok_filter .collapse">
+<h2>Disable Relevanssi - A Better Search, v3.2 by Mikko Saari
+Defined as public because it's a filter.</h2>
+<pre>mla_query_relevanssi_admin_search_ok_filter(boolean $admin_search_ok) : boolean</pre>
+<div class="labels"></div>
+<div class="row collapse"><div class="detail-description">
+<p class="long_description"></p>
+<table class="table table-bordered"><tr>
+<th>since</th>
+<td>1.80</td>
+</tr></table>
+<h3>Parameters</h3>
+<div class="subelement argument">
+<h4>$admin_search_ok</h4>
+<code>boolean</code><p>Default setting</p></div>
+<h3>Returns</h3>
+<div class="subelement response">
+<code>boolean</code>Updated setting</div>
 </div></div>
 </div>
 <a name="mla_save_post_action" id="mla_save_post_action"></a><div class="element clickable method public mla_save_post_action" data-toggle="collapse" data-target=".mla_save_post_action .collapse">
@@ -1723,7 +1791,7 @@ ALT Text and custom field columns.</p></p>
 <div class="row"><footer class="span12">
             Template is built using <a href="http://twitter.github.com/bootstrap/">Twitter Bootstrap 2</a> and icons provided by <a href="http://glyphicons.com/">Glyphicons</a>.<br>
             Documentation is powered by <a href="http://www.phpdoc.org/">phpDocumentor 2.0.0a8</a> and<br>
-            generated on 2014-02-11T20:56:42-08:00.<br></footer></div>
+            generated on 2014-03-27T17:01:48-07:00.<br></footer></div>
 </div>
 </body>
 </html>

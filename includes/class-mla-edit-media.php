@@ -82,32 +82,53 @@ class MLAEdit {
 	 * @return	void	echoes the HTML markup for the label and value
 	 */
 	public static function mla_admin_init_action( ) {
-		static $mc_att_category_metabox = array();
-
-		/*
-		 * Enable the enhanced "Media Categories" searchable metaboxes for hiearchical taxonomies
-		 */
-		if ( class_exists( 'Media_Categories' ) &&
-			( ( 'checked' == MLAOptions::mla_get_option( MLAOptions::MLA_MEDIA_MODAL_DETAILS_CATEGORY_METABOX ) ) ||
-			  ( 'checked' == MLAOptions::mla_get_option( MLAOptions::MLA_MEDIA_MODAL_DETAILS_TAG_METABOX ) ) ) ) {
-			$taxonomies = get_taxonomies( array ( 'show_ui' => true ), 'objects' );
-
-			foreach ( $taxonomies as $key => $value ) {
-				if ( MLAOptions::mla_taxonomy_support( $key ) ) {
-					if ( $value->hierarchical ) {
-						if ( 'checked' == MLAOptions::mla_get_option( MLAOptions::MLA_MEDIA_MODAL_DETAILS_CATEGORY_METABOX ) ) {
-							$mc_att_category_metabox[] = new Media_Categories( $key );
-						}
-					} else { // hierarchical
-						if ( 'checked' == MLAOptions::mla_get_option( MLAOptions::MLA_MEDIA_MODAL_DETAILS_TAG_METABOX ) ) {
-							$mc_att_category_metabox[] = new Media_Categories( $key );
-						}
-					} // flat
-				} // is supported
-			} // foreach
-		} // class_exists
+//error_log( 'DEBUG: MLAEdit::mla_admin_init_action() $_REQUEST = ' . var_export( $_REQUEST, true ), 0 );
 
 		add_post_type_support( 'attachment', 'custom-fields' );
+
+		/*
+		 * If there's no action variable, we have nothing more to do
+		 */
+		if ( ! isset( $_POST['action'] ) ) {
+			return;
+		}
+
+		/*
+		 * For flat taxonomies that use the checklist meta box, substitute our own handler
+		 * for /wp-admin/includes/ajax-actions.php function _wp_ajax_add_hierarchical_term().
+		 */
+		if ( ( defined('DOING_AJAX') && DOING_AJAX ) && ( 'add-' == substr( $_POST['action'], 0, 4 ) ) ) {
+			$key = substr( $_POST['action'], 4 );
+			if ( MLAOptions::mla_taxonomy_support( $key, 'flat-checklist' ) ) {
+				self::_mla_ajax_add_flat_term( $key );
+				/* note: this function sends an Ajax response and then dies; no return */
+			}
+		}
+
+		/*
+		 * For flat taxonomies that use the checklist meta box, convert the term array
+		 * back into a string of slug values.
+		 */
+		if ( 'editpost' == $_POST['action']  ) {
+			if ( isset( $_POST['tax_input'] ) && is_array( $_POST['tax_input'] ) ) {
+				foreach( $_POST['tax_input'] as $key => $value ) {
+					if ( is_array( $value ) ) {
+						$tax = get_taxonomy( $key );
+						if ( $tax->hierarchical ) {
+							continue;
+						}
+
+						if ( false !== ( $bad_term = array_search( '0', $value ) ) ) { 
+							unset( $value[ $bad_term ] );
+						}
+
+						$comma = _x( ',', 'tag_delimiter', 'media-library-assistant' );
+						$_POST['tax_input'][ $key ] = implode( $comma, $value );
+						$_REQUEST['tax_input'][ $key ] = implode( $comma, $value );
+					} // array value
+				} // foreach tax_input
+			} // array tax_input
+		} // action editpost
 	}
 
 	/**
@@ -123,7 +144,7 @@ class MLAEdit {
 		if ( ( 'post.php' != $page_hook ) || ( ! isset( $_REQUEST['post'] ) ) || ( ! isset( $_REQUEST['action'] ) ) || ( 'edit' != $_REQUEST['action'] ) ) {
 			return;
 		}
-		
+
 		$post = get_post( $_REQUEST['post'] );
 		if ( 'attachment' != $post->post_type ) {
 			return;
@@ -219,61 +240,69 @@ class MLAEdit {
 		if ( 'attachment' != $post_type ) {
 			return;
 		}
-		
+
 		/*
-		 * Use the mla_hierarchical_meta_box callback function for MLA supported taxonomies
+		 * Use the mla_checklist_meta_box callback function for MLA supported taxonomies
 		 */
 		global $wp_meta_boxes;
 		$screen = convert_to_screen( 'attachment' );
 		$page = $screen->id;
-		$taxonomies = get_taxonomies( array ( 'show_ui' => true ), 'objects' );
 
-		foreach ( $taxonomies as $key => $value ) {
-			if ( MLAOptions::mla_taxonomy_support( $key ) ) {
-				if ( $value->hierarchical ) {
-					if ( 'checked' == MLAOptions::mla_get_option( MLAOptions::MLA_MEDIA_MODAL_DETAILS_CATEGORY_METABOX ) ) {
+		if ( 'checked' == MLAOptions::mla_get_option( MLAOptions::MLA_EDIT_MEDIA_SEARCH_TAXONOMY ) ) {
+			$taxonomies = get_taxonomies( array ( 'show_ui' => true ), 'objects' );
+			foreach ( $taxonomies as $key => $value ) {
+				if ( MLAOptions::mla_taxonomy_support( $key ) ) {
+					if ( $value->hierarchical ) {
 						foreach ( array_keys( $wp_meta_boxes[$page] ) as $a_context ) {
 							foreach ( array('high', 'sorted', 'core', 'default', 'low') as $a_priority ) {
 								if ( isset( $wp_meta_boxes[$page][$a_context][$a_priority][ $key . 'div' ] ) ) {
 									$box = &$wp_meta_boxes[$page][$a_context][$a_priority][ $key . 'div' ];
-
 									if ( 'post_categories_meta_box' == $box['callback'] ) {
-										$box['callback'] = 'MLAEdit::mla_hierarchical_meta_box';
+										$box['callback'] = 'MLAEdit::mla_checklist_meta_box';
 									}
 								} // isset $box
 							} // foreach priority
 						} // foreach context
-					}
-				} else { // hierarchical
-					if ( 'checked' == MLAOptions::mla_get_option( MLAOptions::MLA_MEDIA_MODAL_DETAILS_TAG_METABOX ) ) {
-						continue;
-					}
-				} // flat
-			} // is supported
-		} // foreach
+					} /* hierarchical */ elseif ( MLAOptions::mla_taxonomy_support( $key, 'flat-checklist' ) ) {
+						foreach ( array_keys( $wp_meta_boxes[$page] ) as $a_context ) {
+							foreach ( array('high', 'sorted', 'core', 'default', 'low') as $a_priority ) {
+								if ( isset( $wp_meta_boxes[$page][$a_context][$a_priority][ 'tagsdiv-' . $key ] ) ) {
+									$box = &$wp_meta_boxes[$page][$a_context][$a_priority][ 'tagsdiv-' . $key ];
+									if ( 'post_tags_meta_box' == $box['callback'] ) {
+										$box['callback'] = 'MLAEdit::mla_checklist_meta_box';
+									}
+								} // isset $box
+							} // foreach priority
+						} // foreach context
+					} // flat checklist
+				} // is supported
+			} // foreach
+		} // MLA_EDIT_MEDIA_SEARCH_TAXONOMY
 
-		add_meta_box( 'mla-parent-info', __( 'Parent Info', 'media-library-assistant' ), 'MLAEdit::mla_parent_info_handler', 'attachment', 'normal', 'core' );
-		add_meta_box( 'mla-menu-order', __( 'Menu Order', 'media-library-assistant' ), 'MLAEdit::mla_menu_order_handler', 'attachment', 'normal', 'core' );
+		if ( 'checked' == MLAOptions::mla_get_option( MLAOptions::MLA_EDIT_MEDIA_META_BOXES ) ) {
+			add_meta_box( 'mla-parent-info', __( 'Parent Info', 'media-library-assistant' ), 'MLAEdit::mla_parent_info_handler', 'attachment', 'normal', 'core' );
+			add_meta_box( 'mla-menu-order', __( 'Menu Order', 'media-library-assistant' ), 'MLAEdit::mla_menu_order_handler', 'attachment', 'normal', 'core' );
 
-		$image_metadata = get_metadata( 'post', $post->ID, '_wp_attachment_metadata', true );
-		if ( !empty( $image_metadata ) ) {
-			add_meta_box( 'mla-image-metadata', __( 'Attachment Metadata', 'media-library-assistant' ), 'MLAEdit::mla_image_metadata_handler', 'attachment', 'normal', 'core' );
-		}
+			$image_metadata = get_metadata( 'post', $post->ID, '_wp_attachment_metadata', true );
+			if ( !empty( $image_metadata ) ) {
+				add_meta_box( 'mla-image-metadata', __( 'Attachment Metadata', 'media-library-assistant' ), 'MLAEdit::mla_image_metadata_handler', 'attachment', 'normal', 'core' );
+			}
 
-		if ( MLAOptions::$process_featured_in ) {
-			add_meta_box( 'mla-featured-in', __( 'Featured in', 'media-library-assistant' ), 'MLAEdit::mla_featured_in_handler', 'attachment', 'normal', 'core' );
-		}
+			if ( MLAOptions::$process_featured_in ) {
+				add_meta_box( 'mla-featured-in', __( 'Featured in', 'media-library-assistant' ), 'MLAEdit::mla_featured_in_handler', 'attachment', 'normal', 'core' );
+			}
 
-		if ( MLAOptions::$process_inserted_in ) {
-			add_meta_box( 'mla-inserted-in', __( 'Inserted in', 'media-library-assistant' ), 'MLAEdit::mla_inserted_in_handler', 'attachment', 'normal', 'core' );
-		}
+			if ( MLAOptions::$process_inserted_in ) {
+				add_meta_box( 'mla-inserted-in', __( 'Inserted in', 'media-library-assistant' ), 'MLAEdit::mla_inserted_in_handler', 'attachment', 'normal', 'core' );
+			}
 
-		if ( MLAOptions::$process_gallery_in ) {
-			add_meta_box( 'mla-gallery-in', __( 'Gallery in', 'media-library-assistant' ), 'MLAEdit::mla_gallery_in_handler', 'attachment', 'normal', 'core' );
-		}
+			if ( MLAOptions::$process_gallery_in ) {
+				add_meta_box( 'mla-gallery-in', __( 'Gallery in', 'media-library-assistant' ), 'MLAEdit::mla_gallery_in_handler', 'attachment', 'normal', 'core' );
+			}
 
-		if ( MLAOptions::$process_mla_gallery_in ) {
-			add_meta_box( 'mla-mla-gallery-in', __( 'MLA Gallery in', 'media-library-assistant' ), 'MLAEdit::mla_mla_gallery_in_handler', 'attachment', 'normal', 'core' );
+			if ( MLAOptions::$process_mla_gallery_in ) {
+				add_meta_box( 'mla-mla-gallery-in', __( 'MLA Gallery in', 'media-library-assistant' ), 'MLAEdit::mla_mla_gallery_in_handler', 'attachment', 'normal', 'core' );
+			}
 		}
 	} // mla_add_meta_boxes_action
 
@@ -559,11 +588,72 @@ class MLAEdit {
 			MLAData::mla_update_single_item( $post_ID, $new_data );
 		}
 	} // mla_edit_attachment_action
-	
+
+	/**
+	 * Add flat taxonomy term from "checklist" meta box on both the Edit/Edit Media screen and
+	 * the Media Manager Modal WIndow
+	 *
+	 * Adapted from the WordPress post_categories_meta_box() in /wp-admin/includes/meta-boxes.php.
+	 *
+	 * @since 1.80
+	 *
+	 * @param string The taxonomy name, from $_POST['action']
+	 *
+	 * @return void Sends JSON response with updated HTML for the checklist
+	 */
+	private static function _mla_ajax_add_flat_term( $key ) {
+		$taxonomy = get_taxonomy( $key );
+		check_ajax_referer( $_POST['action'], '_ajax_nonce-add-' . $key, true );
+
+		if ( !current_user_can( $taxonomy->cap->edit_terms ) ) {
+			wp_die( -1 );
+		}
+
+		$new_names = explode( ',', $_POST[ 'new' . $key ] );
+		$new_terms_markup = '';
+		foreach( $new_names as $name ) {
+			if ( '' === sanitize_title( $name ) ) {
+				continue;
+			}
+
+			if ( ! $id = term_exists( $name, $key ) ) {
+				$id = wp_insert_term( $name, $key );
+			}
+
+			if ( is_wp_error( $id ) ) {
+				continue;
+			}
+
+			if ( is_array( $id ) ) {
+				$id = absint( $id['term_id'] );
+			} else {
+				continue;
+			}
+			$term = get_term( $id, $key );
+			$slug = $term->slug;
+			$name = $term->name;
+			$new_terms_markup .= "<li id='{$key}-{$id}'><label class='selectit'><input value='{$slug}' type='checkbox' name='tax_input[{$key}][]' id='in-{$key}-{$id}' checked='checked' />{$name}</label></li>\n";
+		} // foreach new_name
+
+		$input_new_parent_name = "new{$key}_parent";
+		$supplemental = "<input type='hidden' name='{$input_new_parent_name}' id='{$input_new_parent_name}' value='-1' />";	
+
+		$add = array(
+			'what' => $key,
+			'id' => $id,
+			'data' => $new_terms_markup,
+			'position' => -1,
+			'supplemental' => array( 'newcat_parent' => $supplemental )
+		);
+
+		$x = new WP_Ajax_Response( $add );
+		$x->send();
+	} // _mla_ajax_add_flat_term
+
 	/**
 	 * Display taxonomy "checklist" form fields
 	 *
-	 * Adapted from the WordPress post_categories_meta_box() in /wp-admin/includes/meta-boxes.php.
+	 * Adapted from /wp-admin/includes/ajax-actions.php function _wp_ajax_add_hierarchical_term().
 	 * Includes the "? Search" area to filter the term checklist by entering part
 	 * or all of a word/phrase in the term label.
 	 * Output to the Media/Edit Media screen and to the Media Manager Modal Window.
@@ -575,40 +665,59 @@ class MLAEdit {
 	 *
 	 * @return void Echoes HTML for the form fields
 	 */
-	public static function mla_hierarchical_meta_box( $post, $box ) {
+	public static function mla_checklist_meta_box( $target_post, $box ) {
+		global $post;
+
 		$defaults = array('taxonomy' => 'category', 'in_modal' => false );
-		$post_id = $post->ID;
-		
+		$post_id = $target_post->ID;
+
 		if ( !isset( $box['args'] ) || !is_array( $box['args'] ) ) {
 			$args = array();
 		} else {
 			$args = $box['args'];
 		}
-		
+
 		extract( wp_parse_args( $args, $defaults ), EXTR_SKIP );
 		$tax = get_taxonomy( $taxonomy );
 		$name = ( $taxonomy == 'category' ) ? 'post_category' : 'tax_input[' . $taxonomy . ']';
 
+		if ( ! $use_checklist = $tax->hierarchical ) {
+			$use_checklist =  MLAOptions::mla_taxonomy_support( $taxonomy, 'flat-checklist' );
+		}
+
+		/*
+		 * Id and Name attributes in the popup Modal Window must not conflict with
+		 * the underlying Edit Post/Page window, so we prefix with "mla-"/"mla_".
+		 */
 		if ( $in_modal ) {
-			$div_taxonomy_id = "taxonomy-{$taxonomy}";
-			$tabs_ul_id = "{$taxonomy}-tabs";
-			$tab_all_id = "{$taxonomy}-all";
-			$tab_all_ul_id = "{$taxonomy}checklist";
-			$tab_pop_id = "{$taxonomy}-pop";
-			$tab_pop_ul_id = "{$taxonomy}checklist-pop";
-			$input_terms_name = "attachments[{$post_id}][{$name}]";
-			$input_terms_id = "{$name}-id";
-			$div_adder_id = "{$taxonomy}-adder";
-			$link_adder_id = "{$taxonomy}-add-toggle";
-			$link_adder_p_id = "{$taxonomy}-add";
-			$div_search_id = "{$taxonomy}-searcher";
-			$link_search_id = "{$taxonomy}-search-toggle";
-			$link_search_p_id = "{$taxonomy}-search";
+			if ( empty( $post ) ) {
+				$post = $target_post; // for wp_popular_terms_checklist
+			}
+
+			$div_taxonomy_id = "mla-taxonomy-{$taxonomy}";
+			$tabs_ul_id = "mla-{$taxonomy}-tabs";
+			$tab_all_id = "mla-{$taxonomy}-all";
+			$tab_all_ul_id = "mla-{$taxonomy}-checklist";
+			$tab_pop_id = "mla-{$taxonomy}-pop";
+			$tab_pop_ul_id = "mla-{$taxonomy}-checklist-pop";
+			$input_terms_name = "mla_attachments[{$post_id}][{$name}][]";
+			$input_terms_id = "mla-{$name}-id";
+			$div_adder_id = "mla-{$taxonomy}-adder";
+			$div_adder_class = "mla-hidden-children";
+			$link_adder_id = "mla-{$taxonomy}-add-toggle";
+			$link_adder_p_id = "mla-{$taxonomy}-add";
+			$div_search_id = "mla-{$taxonomy}-searcher";
+			$div_search_class = "mla-hidden-children";
+			$link_search_id = "mla-{$taxonomy}-search-toggle";
+			$link_search_p_id = "mla-{$taxonomy}-search";
 			$input_new_name = "new{$taxonomy}";
-			$input_new_id = "new{$taxonomy}";
+			$input_new_id = "mla-new-{$taxonomy}";
 			$input_new_parent_name = "new{$taxonomy}_parent";
-			$input_new_submit_id = "{$taxonomy}-add-submit";
-			$span_ajax_id = "{$taxonomy}-ajax-response";
+			$input_new_submit_id = "mla-{$taxonomy}-add-submit";
+			$span_new_ajax_id = "mla-{$taxonomy}-ajax-response";
+			$input_search_name = "search-{$taxonomy}";
+			$input_search_id = "mla-search-{$taxonomy}";
+			$span_search_ajax_id = "mla-{$taxonomy}-search-ajax-response";
 		} else {
 			$div_taxonomy_id = "taxonomy-{$taxonomy}";
 			$tabs_ul_id = "{$taxonomy}-tabs";
@@ -619,42 +728,51 @@ class MLAEdit {
 			$input_terms_name = "{$name}[]";
 			$input_terms_id = "{$name}-id";
 			$div_adder_id = "{$taxonomy}-adder";
+			$div_adder_class = "wp-hidden-children";
 			$link_adder_id = "{$taxonomy}-add-toggle";
 			$link_adder_p_id = "{$taxonomy}-add";
 			$div_search_id = "{$taxonomy}-searcher";
+			$div_search_class = "wp-hidden-children";
 			$link_search_id = "{$taxonomy}-search-toggle";
 			$link_search_p_id = "{$taxonomy}-search";
 			$input_new_name = "new{$taxonomy}";
 			$input_new_id = "new{$taxonomy}";
 			$input_new_parent_name = "new{$taxonomy}_parent";
 			$input_new_submit_id = "{$taxonomy}-add-submit";
-			$span_ajax_id = "{$taxonomy}-ajax-response";
+			$span_new_ajax_id = "{$taxonomy}-ajax-response";
+			$input_search_name = "search-{$taxonomy}";
+			$input_search_id = "search-{$taxonomy}";
+			$span_search_ajax_id = "{$taxonomy}-search-ajax-response";
 		}
-		
-
 		?>
 		<div id="<?php echo $div_taxonomy_id; ?>" class="categorydiv">
 			<ul id="<?php echo $tabs_ul_id; ?>" class="category-tabs">
 				<li class="tabs"><a href="#<?php echo $tab_all_id; ?>"><?php echo $tax->labels->all_items; ?></a></li>
 				<li class="hide-if-no-js"><a href="#<?php echo $tab_pop_id; ?>"><?php _e( 'Most Used' ); ?></a></li>
 			</ul>
-	
+
 			<div id="<?php echo $tab_pop_id; ?>" class="tabs-panel" style="display: none;">
 				<ul id="<?php echo $tab_pop_ul_id; ?>" class="categorychecklist form-no-clear" >
 					<?php $popular_ids = wp_popular_terms_checklist($taxonomy); ?>
 				</ul>
 			</div>
-	
+
 			<div id="<?php echo $tab_all_id; ?>" class="tabs-panel">
 				<?php
-				echo "<input type='hidden' name='{$input_terms_name}' id='{$input_terms_id}' value='0' />"; // Allows for an empty term set to be sent. 0 is an invalid Term ID and will be ignored by empty() checks.
+				// Allows for an empty term set to be sent. 0 is an invalid Term ID and will be ignored by empty() checks.
+				echo "<input type='hidden' name='{$input_terms_name}' id='{$input_terms_id}' value='0' />";
 				?>
 				<ul id="<?php echo $tab_all_ul_id; ?>" data-wp-lists="list:<?php echo $taxonomy?>" class="categorychecklist form-no-clear">
+					<?php if ( $use_checklist ): ?>
 					<?php wp_terms_checklist($post->ID, array( 'taxonomy' => $taxonomy, 'popular_cats' => $popular_ids ) ) ?>
+					<?php else: ?>
+                    <?php $checklist_walker = new MLA_Checklist_Walker; ?>
+					<?php wp_terms_checklist($post->ID, array( 'taxonomy' => $taxonomy, 'popular_cats' => $popular_ids, 'walker' => $checklist_walker ) ) ?>
+					<?php endif; ?>
 				</ul>
 			</div>
 		<?php if ( current_user_can($tax->cap->edit_terms) ) : ?>
-				<div id="<?php echo $div_adder_id; ?>" class="wp-hidden-children">
+				<div id="<?php echo $div_adder_id; ?>" class="<?php echo $div_adder_class; ?>">
 					<h4>
 						<a id="<?php echo $link_adder_id; ?>" href="#<?php echo $link_adder_p_id; ?>" class="hide-if-no-js">
 							<?php
@@ -665,33 +783,100 @@ class MLAEdit {
 						&nbsp;&nbsp;
 						<a id="<?php echo $link_search_id; ?>" href="#<?php echo $link_search_p_id; ?>" class="hide-if-no-js">
 							<?php
-								echo __( '? Search', 'media-library-assistant' );
+								echo __( '?&nbsp;Search', 'media-library-assistant' );
 							?>
 						</a>
 					</h4>
 					<p id="<?php echo $link_adder_p_id; ?>" class="category-add wp-hidden-child">
 						<label class="screen-reader-text" for="<?php echo $input_new_name; ?>"><?php echo $tax->labels->add_new_item; ?></label>
 						<input type="text" name="<?php echo $input_new_name; ?>" id="<?php echo $input_new_id; ?>" class="form-required form-input-tip" value="<?php echo esc_attr( $tax->labels->new_item_name ); ?>" aria-required="true"/>
+
+						<?php if ( $use_checklist ): ?>
 						<label class="screen-reader-text" for="<?php echo $input_new_parent_name; ?>">
 							<?php echo $tax->labels->parent_item_colon; ?>
 						</label>
 						<?php wp_dropdown_categories( array( 'taxonomy' => $taxonomy, 'hide_empty' => 0, 'name' => $input_new_parent_name, 'orderby' => 'name', 'hierarchical' => 1, 'show_option_none' => '&mdash; ' . $tax->labels->parent_item . ' &mdash;' ) ); ?>
-						<input type="button" id="<?php echo $input_new_submit_id; ?>" data-wp-lists="add:<?php echo $taxonomy ?>checklist:<?php echo $taxonomy ?>-add" class="button category-add-submit" value="<?php echo esc_attr( $tax->labels->add_new_item ); ?>" />
+						<?php else:
+						echo "<input type='hidden' name='{$input_new_parent_name}' id='{$input_new_parent_name}' value='-1' />";	
+						endif; ?>
+						<input type="button" id="<?php echo $input_new_submit_id; ?>" data-wp-lists="add:<?php echo $tab_all_ul_id ?>:<?php echo $link_adder_p_id ?>" class="button category-add-submit mla-taxonomy-add-submit" value="<?php echo esc_attr( $tax->labels->add_new_item ); ?>" />
 						<?php wp_nonce_field( 'add-'.$taxonomy, '_ajax_nonce-add-'.$taxonomy, false ); ?>
-						<span id="<?php echo $span_ajax_id; ?>"></span>
+						<span id="<?php echo $span_new_ajax_id; ?>"></span>
 					</p>
 				</div>
-				<div id="<?php echo $div_search_id; ?>" class="wp-hidden-children">
+				<div id="<?php echo $div_search_id; ?>" class="<?php echo $div_search_class; ?>">
 					<p id="<?php echo $link_search_p_id; ?>" class="category-add wp-hidden-child">
-						<label class="screen-reader-text" for="search-<?php echo $taxonomy; ?>"><?php echo $tax->labels->search_items; ?></label>
-						<input type="text" name="search-<?php echo $taxonomy; ?>" id="search-<?php echo $taxonomy; ?>" class="form-required form-input-tip" value="<?php echo esc_attr( $tax->labels->search_items ); ?>" aria-required="true"/>
+						<label class="screen-reader-text" for="<?php echo $input_search_name; ?>"><?php echo $tax->labels->search_items; ?></label>
+						<input type="text" name="<?php echo $input_search_name; ?>" id="<?php echo $input_search_id; ?>" class="form-required form-input-tip" value="<?php echo esc_attr( $tax->labels->search_items ); ?>" aria-required="true"/>
 						<?php wp_nonce_field( 'search-'.$taxonomy, '_ajax_nonce-search-'.$taxonomy, false ); ?>
-						<span id="<?php echo $taxonomy; ?>-ajax-response"></span>
+						<span id="<?php echo $span_search_ajax_id; ?>"></span>
 					</p>
 				</div>
 			<?php endif; ?>
 		</div>
 		<?php
-	} // mla_hierarchical_meta_box
+	} // mla_checklist_meta_box
 } //Class MLAEdit
+
+/**
+ * Class MLA (Media Library Assistant) Checklist Walker replaces term_id with slug in checklist output
+ *
+ * This walker is used to build the meta boxes for flat taxonomies, e.g., Tags, Att. Tags.
+ * Class Walker_Category is defined in /wp-includes/category-template.php.
+ * Class Walker is defined in /wp-includes/class-wp-walker.php.
+ *
+ * @package Media Library Assistant
+ * @since 1.80
+ */
+class MLA_Checklist_Walker extends Walker_Category {
+	/**
+	 * Start the element output.
+	 *
+	 * @see Walker::start_el()
+	 *
+	 * @since 1.80
+	 *
+	 * @param string Passed by reference. Used to append additional content.
+	 * @param object Taxonomy data object.
+	 * @param int    Depth of category in reference to parents. Default 0.
+	 * @param array  An array of arguments. @see wp_list_categories()
+	 * @param int    ID of the current category.
+	 */
+	function start_el( &$output, $taxonomy_object, $depth = 0, $args = array(), $id = 0 ) {
+		extract($args);
+
+		if ( empty( $taxonomy ) ) {
+			$taxonomy = 'category';
+		}
+
+		if ( 'category' == $taxonomy ) {
+			$name = 'post_category';
+		} else {
+			$name = 'tax_input['.$taxonomy.']';
+		}
+
+		$class = in_array( $taxonomy_object->term_id, $popular_cats ) ? ' class="popular-category"' : '';
+        
+		/*
+		 * For flat taxonomies, <input> value is $taxonomy_object->slug instead of $taxonomy_object->term_id
+		 */
+		$output .= "\n<li id='{$taxonomy}-{$taxonomy_object->term_id}'$class>" . '<label class="selectit MLA"><input value="' . $taxonomy_object->slug . '" type="checkbox" name="'.$name.'[]" id="in-'.$taxonomy.'-' . $taxonomy_object->term_id . '"' . checked( in_array( $taxonomy_object->term_id, $selected_cats ), true, false ) . disabled( empty( $args['disabled'] ), false, false ) . ' /> ' . esc_html( apply_filters('the_category', $taxonomy_object->name )) . '</label>';
+	}
+
+	/**
+	 * Ends the element output, if needed.
+	 *
+	 * @see Walker::end_el()
+	 *
+	 * @since 1.80
+	 *
+	 * @param string $output   Passed by reference. Used to append additional content.
+	 * @param object $category The current term object.
+	 * @param int    $depth    Depth of the term in reference to parents. Default 0.
+	 * @param array  $args     An array of arguments. @see wp_terms_checklist()
+	 */
+	function end_el( &$output, $category, $depth = 0, $args = array() ) {
+		$output .= "</li>\n";
+	}
+}// Class MLA_Checklist_Walker
 ?>

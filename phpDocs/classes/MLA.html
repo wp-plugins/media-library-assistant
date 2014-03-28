@@ -18,7 +18,10 @@
 <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse"><span class="icon-bar"></span><span class="icon-bar"></span><span class="icon-bar"></span></a><a class="brand" href="../index.html">Media Library Assistant</a><div class="nav-collapse"><ul class="nav">
 <li class="dropdown">
 <a href="#api" class="dropdown-toggle" data-toggle="dropdown">
-                                    API Documentation <b class="caret"></b></a><ul class="dropdown-menu"></ul>
+                                    API Documentation <b class="caret"></b></a><ul class="dropdown-menu">
+<li><a>Packages</a></li>
+<li><a href="../packages/Media%20Library%20Assistant.html"><i class="icon-folder-open"></i> Media Library Assistant</a></li>
+</ul>
 </li>
 <li class="dropdown" id="charts-menu">
 <a href="#charts" class="dropdown-toggle" data-toggle="dropdown">
@@ -76,6 +79,7 @@
 <li class="method private "><a href="#_display_single_item" title="_display_single_item :: Display a single item sub page; prepare the form to
 change the meta data for a single attachment."><span class="description">Display a single item sub page; prepare the form to
 change the meta data for a single attachment.</span><pre>_display_single_item()</pre></a></li>
+<li class="method private "><a href="#_process_bulk_value" title="_process_bulk_value :: Process bulk edit area fields, which may contain a Content Template"><span class="description">Process bulk edit area fields, which may contain a Content Template</span><pre>_process_bulk_value()</pre></a></li>
 <li class="method private "><a href="#_restore_single_item" title="_restore_single_item :: Restore a single item from the Trash"><span class="description">Restore a single item from the Trash</span><pre>_restore_single_item()</pre></a></li>
 <li class="method private "><a href="#_trash_single_item" title="_trash_single_item :: Move a single item to Trash"><span class="description">Move a single item to Trash</span><pre>_trash_single_item()</pre></a></li>
 <li class="nav-header">
@@ -449,6 +453,28 @@ change the meta data for a single attachment.</h2>
 <code>array</code>message and/or HTML content</div>
 </div></div>
 </div>
+<a name="_process_bulk_value" id="_process_bulk_value"></a><div class="element clickable method private _process_bulk_value" data-toggle="collapse" data-target="._process_bulk_value .collapse">
+<h2>Process bulk edit area fields, which may contain a Content Template</h2>
+<pre>_process_bulk_value(integer $post_id, string $bulk_value) : string</pre>
+<div class="labels"></div>
+<div class="row collapse"><div class="detail-description">
+<p class="long_description"></p>
+<table class="table table-bordered"><tr>
+<th>since</th>
+<td>1.80</td>
+</tr></table>
+<h3>Parameters</h3>
+<div class="subelement argument">
+<h4>$post_id</h4>
+<code>integer</code><p>Current post ID</p></div>
+<div class="subelement argument">
+<h4>$bulk_value</h4>
+<code>string</code><p>Field value as entered</p></div>
+<h3>Returns</h3>
+<div class="subelement response">
+<code>string</code>Empty, or new value for the field</div>
+</div></div>
+</div>
 <a name="_restore_single_item" id="_restore_single_item"></a><div class="element clickable method private _restore_single_item" data-toggle="collapse" data-target="._restore_single_item .collapse">
 <h2>Restore a single item from the Trash</h2>
 <pre>_restore_single_item(array $post_id) : array</pre>
@@ -690,7 +716,7 @@ change the meta data for a single attachment.</h2>
 <div class="row"><footer class="span12">
             Template is built using <a href="http://twitter.github.com/bootstrap/">Twitter Bootstrap 2</a> and icons provided by <a href="http://glyphicons.com/">Glyphicons</a>.<br>
             Documentation is powered by <a href="http://www.phpdoc.org/">phpDocumentor 2.0.0a8</a> and<br>
-            generated on 2014-02-11T20:56:42-08:00.<br></footer></div>
+            generated on 2014-03-27T17:01:48-07:00.<br></footer></div>
 </div>
 </body>
 </html>

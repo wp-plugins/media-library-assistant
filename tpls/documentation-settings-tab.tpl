@@ -15,12 +15,13 @@
 <li><a href="#category_parameters">Category Parameters</a></li>
 <li><a href="#tag_parameters">Tag Parameters</a></li>
 <li><a href="#taxonomy_parameters_tax_operator">Taxonomy Parameters, "tax_operator"</a></li>
-<li><a href="#post_mime_type">Post MIME Type</a></li>
+<li><a href="#post_mime_type_parameter">Post MIME Type</a></li>
 <li><a href="#post_type_post_status">Post Type, Post Status</a></li>
 <li><a href="#pagination_parameters">Pagination Parameters</a></li>
 <li><a href="#time_parameters">Time Parameters</a></li>
 <li><a href="#custom_field_parameters">Custom Field Parameters</a></li>
 <li><a href="#search_keywords">Search Keywords</a></li>
+<li><a href="#cache_parameters">Caching Parameters</a></li>
 <li><a href="#debugging_output">Debugging Output</a></li>
 <li><a href="#mla_gallery_hooks">MLA Gallery Filters (Hooks)</a></li>
 </ul></div>
@@ -40,7 +41,7 @@
 </ul></div>
 <ul style="list-style-position:inside; list-style:disc; line-height: 18px; clear:both">
 <li>
-<a href="#mla_output"><strong>Support for Alternative Gallery Output, e.g., Pagination</strong></a>
+<a href="#mla_output_parameter"><strong>Support for Alternative Gallery Output, e.g., Pagination</strong></a>
 </li>
 <li>
 <a href="#alt_shortcode"><strong>Support for Other Gallery-generating Shortcodes</strong></a>
@@ -139,7 +140,7 @@ Two <code>[mla_gallery]</code> parameters provide a way to apply custom style an
 <table>
 <tr>
 <td style="padding-right: 10px; vertical-align: top; font-weight:bold">mla_style</td>
-<td>replaces the default style template for an <code>[mla_gallery]</code> shortcode. You can code "none" to suppress the addition of CSS inline styles entirely.</td>
+<td>replaces the default style template for an <code>[mla_gallery]</code> shortcode. You can code "none" to suppress the addition of CSS inline styles entirely, or code "theme" to let your theme use the <code>use_default_gallery_style</code> filter to make the decision.</td>
 </tr>
 <tr>
 <td style="padding-right: 10px; vertical-align: top; font-weight:bold">mla_markup</td>
@@ -171,7 +172,7 @@ For the "exact" value, the calculation is the same but the margin is ignored, so
 These parameters are only important if the gallery thumbnails are too large to fit within the width of the page on which they appear. For example, if you code <code>[mla_gallery size=full]</code>, the browser will automatically scale down large images to fit within the width attribute (in percent) of the ".gallery-item" style. The default 1.5% margin will ensure that the images do not overlap; you can increase it to add more space between the gallery items. You can also reduce the itemwidth parameter to increase the left and right space between the items.
 </p>
 <p>
-The default margin and width calculations try to make the total width of each row as close to 100% as possible, but never exceed 100% due to rounding errors. If you have more advanced style and format needs, you can define custom style and/or markup templates. You can also code <code>mla_style=none</code> to suppress inline styles entirely and use a separate stylesheet to control the format of the gallery.
+The default margin and width calculations try to make the total width of each row as close to 100% as possible, but never exceed 100% due to rounding errors. If you have more advanced style and format needs, you can define custom style and/or markup templates. You can code <code>mla_style=none</code> to suppress inline styles entirely and use a separate stylesheet to control the format of the gallery. You can also code <code>mla_style=theme</code>, if your theme supports it, to use the theme's stylesheet to control the format of the gallery.
 <a name="gallery_display_content"></a>
 </p>
 <h4>Gallery Display Content</h4>
@@ -428,7 +429,7 @@ Note that the "tag_id" parameter requires exactly one tag ID; multiple IDs are n
 </p>
 <h4>Taxonomy Parameters, "tax_operator"</h4>
 <p>
-The <code>[mla_gallery]</code> shortcode supports the simple "{tax} (string)" values (deprecated as of WordPress version 3.1) as well as the more powerful "<a href="http://codex.wordpress.org/Class_Reference/WP_Query#Taxonomy_Parameters" title="WordPress Codex Documentation for tax_query" target="_blank">tax_query</a>" value. Use these queries for your custom taxonomies (and for the MLA attachment_category and attachment_tag taxonomies); use the above Category and Tag parameters for the WordPress-provided taxonomies.
+The <code>[mla_gallery]</code> shortcode supports the simple "{tax} (string)" values (deprecated as of WordPress version 3.1) as well as the more powerful "<a href="http://codex.wordpress.org/Class_Reference/WP_Query#Taxonomy_Parameters" title="WordPress Codex Documentation for tax_query" target="_blank">tax_query</a>" value. Use these queries for your custom taxonomies (and for the MLA attachment_category and attachment_tag taxonomies); use the above Category and Tag parameters for the WordPress-provided taxonomies. If you do use a tax_query for Categories and Tags, the slug values are "category" and "post_tag". 
 </p>
 <p>
 For simple queries, enter the custom taxonomy name and the term(s) that must be matched, e.g.:
@@ -482,7 +483,7 @@ When embedding the shortcode in the body of a post, be very careful when coding 
 </p>
 <p>
 Remember to use <code>post_parent=current</code> if you want to restrict your query to items attached to the current post.
-<a name="post_mime_type"></a>
+<a name="post_mime_type_parameter"></a>
 </p>
 <h4>Post MIME Type</h4>
 <p>
@@ -524,6 +525,28 @@ Remember to use <code>post_parent=current</code> if you want to restrict your qu
 <h4>Search Keywords</h4>
 <p>
 The search parameter ("s=keyword") will perform a keyword search. A cursory inspection of the code in /wp-includes/query.php reveals that the search includes the "post_title" and "post_content" (Description) fields but not the "post_excerpt" (Caption) field. An SQL "LIKE" clause is composed and added to the search criteria. I haven't done much testing of this parameter.
+<a name="cache_parameters"></a>
+</p>
+<h4>Caching Parameters</h4>
+<p>
+For applications that have very large numbers of attachments and taxonomy terms, there are three caching parameters that may improve the performance of your <code>[mla_gallery]</code> shortcodes. All of them default to "true", but you can set them to "false" to avoid some database access.
+</p>
+<table>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">cache_results</td>
+<td>Post information cache.</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">update_post_meta_cache</td>
+<td>Post meta information cache.</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">update_post_term_cache</td>
+<td>Post term information cache.</td>
+</tr>
+</table>
+<p>
+In general you won't need these, since adding to the cache is the right thing to do, but they may be useful in specific circumstances. An example of such circumstances might be when using an <code>[mla_gallery]</code> to retrieve a simple list of thumbnails and links, but in which no other information about the items will be used and the taxonomy and meta data won't be needed. By not loading this information, you can save some time from the extra unnecessary SQL queries. 
 <a name="debugging_output"></a>
 </p>
 <h4>Debugging Output</h4>
@@ -546,6 +569,10 @@ The <code>[mla_gallery]</code> shortcode supports a comprehensive set of filters
 The example code documents each hook with comments in the filter/action function that intercepts each hook. Generally, each part of the gallery supports three hooks: 1) a "<strong>values</strong>" hook, which lets you record or update the substitution values for that gallery part, 2) a "<strong>template</strong>" hook, which lets you record/update the template used to generate the HTML markup, and 3) a "<strong>parse</strong>" hook which lets you modify or replace the markup generated for a gallery part. The current hooks are:
 </p>
 <table>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">mla_raw_gallery_attributes</td>
+<td>called at the beginning of the gallery, before the attributes pass through the logic that handles the 'mla_page_parameter' and "request:" prefix processing.</td>
+</tr>
 <tr>
 <td style="padding-right: 10px; vertical-align: top; font-weight:bold">mla_gallery_attributes,<br />mla_gallery_arguments</td>
 <td>called at the beginning of the gallery. You can record/modify shortcode parameter values before (attributes) or after (arguments) they are combined with all the defaults.</td>
@@ -817,6 +844,16 @@ The data selection parameters specify which taxonomy (or taxonomies) the terms a
 <tr>
 <td style="padding-right: 10px; vertical-align: top; font-weight:bold">taxonomy</td>
 <td>The taxonomy or taxonomies to retrieve terms from. Use the name/slug of each taxonomy, not the display name, e.g., 'post_tag', category', 'attachment_tag', or 'attachment_category'. You can specify multiple taxonomies as a comma-separated string or (if you are calling <code>MLAShortcodes::mla_tag_cloud()</code> function directly from your theme or plugin PHP code) as an array.</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">post_mime_type</td>
+<td>The MIME type(s) of the items to include in the term-specific counts. The default is "all", which avoids the additional database effort required to filter by MIME type. You can override the default to, for example, display PDF documents (<code>post_mime_type=application/pdf</code>) or all image MIME types (<code>post_mime_type=image</code>). You can select several MIME types with a comma-separated list, e.g., <code>post_mime_type='audio,video'</code>. Wildcard specifications are also supported. For example, <code>post_mime_type='*/mpeg'</code> to select audio and video mpeg formats or <code>post_mime_type='application/*ms*'</code> to select all Microsoft application formats (Word, Excel, etc.).</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">no_count</td>
+<td>The default, "false", computes a term-specific count of the number of attachments assigned to that term. If you have a large number of terms and/or attachments, this can take a long time.<br />
+&nbsp;<br />
+You can code "true" to omit the attachment-counting process. If you do that, the "minimum", "number" and "orderby=count" parameters are also ignored, since they require counting the attachments.</td>
 </tr>
 <tr>
 <td style="padding-right: 10px; vertical-align: top; font-weight:bold">include</td>
@@ -1318,7 +1355,7 @@ The example code documents each hook with comments in the filter/action function
 <td>for manipulating the "Close" part of the Markup template used in a "list" or "grid" cloud.</td>
 </tr>
 </table>
-<a name="mla_output"></a>
+<a name="mla_output_parameter"></a>
 &nbsp;
 <p>
 <a href="#backtotop">Go to Top</a>
@@ -1435,8 +1472,12 @@ Use the following parameters to specify the size of each gallery page and the cu
 <td>the highest page number you want to display; defaults to (total items / posts_per_page) if not specified, which is usually what you want. </td>
 </tr>
 <tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">mla_paginate_rows</td>
+<td>If you have some other way of computing the total number of items you want to paginate you can use <code>mla_paginate_rows</code>simplify your shortcode parameters and avoid redundant database access. If, for example, you want pagination controls for a gallery that you know has fifty items you can code <code>[mla_gallery mla_output=paginate_links mla_paginate_rows=50]</code> and then add any other page selection or gallery display content parameters you need.</td>
+</tr>
+<tr>
 <td style="padding-right: 10px; vertical-align: top; font-weight:bold">offset, paged</td>
-<td><strong>DO NOT USE THESE PARAMETERS; THEY WILL BREAK MLA PAGINATION</strong> </td>
+<td><strong>DO NOT USE THESE PARAMETERS; THEY WILL BREAK MLA PAGINATION</strong></td>
 </tr>
 </table>
 <p>For most applications, "posts_per_page" is the only parameter you need to specify. Make sure this parameter is that same for your main gallery shortcode and for the pagination shortcodes that go with it.</p>
@@ -1847,6 +1888,9 @@ In a template, substitution parameters are surrounded by opening ('[+') and clos
 <h4>Attachment-specific substitution parameters for the markup template Item part</h4>
 <p>
 These substitution parameters are only available in the "Item" part of the markup template, since they require an attachment for their data source.
+</p>
+<p>
+In addition to the parameters in the list below, you can use any of the <a href="#mla_custom_field_parameters">Data sources for custom field mapping</a> (except "None", "Metadata" and "Template"). For numeric data source parameters such as "file_size" you can add the ",commas" option to format the value for display purposes. If you need both the native format and the commas format, simply wrap the commas format in a content template, e.g., <code>[+template:([+width,commas+])+]</code>. The template will prevent the existing numeric width value from being over-written with the formatted value.
 </p>
 <table>
 <tr>

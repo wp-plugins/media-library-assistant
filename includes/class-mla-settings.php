@@ -90,7 +90,7 @@ class MLASettings {
 	private static function _version_upgrade( ) {
 		$current_version = MLAOptions::mla_get_option( MLAOptions::MLA_VERSION_OPTION );
 
-		if ( ((float)'.30') > ((float)$current_version) ) {
+		if ( version_compare( '.30', $current_version, '>' ) ) {
 			/*
 			 * Convert attachment_category and _tag to taxonomy_support;
 			 * change the default if either option is unchecked
@@ -118,7 +118,7 @@ class MLASettings {
 		MLAOptions::mla_delete_option( 'attachment_tag' );
 		} // version is less than .30
 
-		if ( ((float)'1.13') > ((float)$current_version) ) {
+		if ( version_compare( '1.13', $current_version, '>' ) ) {
 			/*
 			 * Add quick_edit and bulk_edit values to custom field mapping rules
 			 */
@@ -133,7 +133,7 @@ class MLASettings {
 			MLAOptions::mla_update_option( 'custom_field_mapping', $new_values );
 		} // version is less than 1.13
 
-		if ( ((float)'1.30') > ((float)$current_version) ) {
+		if ( version_compare( '1.30', $current_version, '>' ) ) {
 			/*
 			 * Add metadata values to custom field mapping rules
 			 */
@@ -149,7 +149,7 @@ class MLASettings {
 			MLAOptions::mla_update_option( 'custom_field_mapping', $new_values );
 		} // version is less than 1.30
 
-		if ( ((float)'1.40') > ((float)$current_version) ) {
+		if ( version_compare( '1.40', $current_version, '>' ) ) {
 			/*
 			 * Add metadata values to custom field mapping rules
 			 */
@@ -175,7 +175,7 @@ class MLASettings {
 			MLAOptions::mla_update_option( 'custom_field_mapping', $new_values );
 		} // version is less than 1.40
 
-		if ( ((float)'1.60') > ((float)$current_version) ) {
+		if ( version_compare( '1.60', $current_version, '>' ) ) {
 			/*
 			 * Add delimiters values to taxonomy mapping rules
 			 */
@@ -190,6 +190,13 @@ class MLASettings {
 			$option_value['taxonomy'] = $new_values;
 			MLAOptions::mla_update_option( 'iptc_exif_mapping', $option_value );
 		} // version is less than 1.60
+
+		if ( version_compare( '1.72', $current_version, '>' ) ) {
+			/*
+			 * Strip default descriptions from the options table
+			 */
+			MLAMime::mla_update_upload_mime();
+		} // version is less than 1.72
 
 		MLAOptions::mla_update_option( MLAOptions::MLA_VERSION_OPTION, MLA::CURRENT_MLA_VERSION );
 	}
@@ -977,7 +984,7 @@ class MLASettings {
 		 */
 		$shortcodes = array( 
 			// array("name" => "shortcode", "description" => "This shortcode...")
-			array( 'name' => 'mla_attachment_list', 'description' => __( 'renders a complete list of all attachments and references to them.', 'media-library-assistant' ) ),
+			// array( 'name' => 'mla_attachment_list', 'description' => __( 'renders a complete list of all attachments and references to them.', 'media-library-assistant' ) ),
 			array( 'name' => 'mla_gallery', 'description' => __( 'enhanced version of the WordPress [gallery] shortcode.', 'media-library-assistant' ) . sprintf( ' %1$s <a href="%2$s">%3$s</a>.',  __( 'For complete documentation', 'media-library-assistant' ), admin_url( 'options-general.php?page=' . self::MLA_SETTINGS_SLUG . '-documentation&amp;mla_tab=documentation' ), __( 'click here', 'media-library-assistant' ) ) ),
 			array( 'name' => 'mla_tag_cloud', 'description' => __( 'enhanced version of the WordPress Tag Cloud.', 'media-library-assistant' ) . sprintf( ' %1$s <a href="%2$s">%3$s</a>.',  __( 'For complete documentation', 'media-library-assistant' ), admin_url( 'options-general.php?page=' . self::MLA_SETTINGS_SLUG . '-documentation&amp;mla_tab=documentation' ), __( 'click here', 'media-library-assistant' ) ) )
 		);
@@ -1919,14 +1926,20 @@ class MLASettings {
 		);
 
 		/*
-		 * Build default template selection lists
+		 * Build default template selection lists; leave out the [mla_tag_cloud] templates
 		 */
 		MLAOptions::$mla_option_definitions['default_style']['options'][] = 'none';
 		MLAOptions::$mla_option_definitions['default_style']['texts'][] = '&mdash; ' . __( 'None', 'media-library-assistant' ) . ' &mdash;';
+		MLAOptions::$mla_option_definitions['default_style']['options'][] = 'theme';
+		MLAOptions::$mla_option_definitions['default_style']['texts'][] = '&mdash; ' . __( 'Theme', 'media-library-assistant' ) . ' &mdash;';
 
 		$templates = MLAOptions::mla_get_style_templates();
 		ksort($templates);
 		foreach ($templates as $key => $value ) {
+			if ( 'tag-cloud' == $key ) {
+				continue;
+			}
+
 			MLAOptions::$mla_option_definitions['default_style']['options'][] = $key;
 			MLAOptions::$mla_option_definitions['default_style']['texts'][] = $key;
 		}
@@ -1934,6 +1947,10 @@ class MLASettings {
 		$templates = MLAOptions::mla_get_markup_templates();
 		ksort($templates);
 		foreach ($templates as $key => $value ) {
+			if ( in_array( $key, array( 'tag-cloud', 'tag-cloud-dl', 'tag-cloud-ul' ) ) ) {
+				continue;
+			}
+
 			MLAOptions::$mla_option_definitions['default_markup']['options'][] = $key;
 			MLAOptions::$mla_option_definitions['default_markup']['texts'][] = $key;
 		}
