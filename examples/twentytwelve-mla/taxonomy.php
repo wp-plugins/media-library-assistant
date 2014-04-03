@@ -18,7 +18,7 @@ global $wp_query;
 
 $is_media_archive = in_array( $wp_query->query_vars['taxonomy'], array( 'attachment_category', 'attachment_tag' ) );
 if ( $is_media_archive ) {
-	if ( true || isset( $_REQUEST['use_mla_gallery'] ) ) {
+	if ( isset( $_REQUEST['use_mla_gallery'] ) ) {
 		$use_mla_gallery = true;
 	} else {
 		$args = array_merge( $wp_query->query_vars, array( 'post_type' => 'attachment', 'post_status' => 'inherit' ) );

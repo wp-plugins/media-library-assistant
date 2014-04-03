@@ -62,6 +62,9 @@
 </li>
 <li class="nav-header">
 <i class="icon-custom icon-function"></i> Functions</li>
+<li class="function  "><a href="#mla_after_setup_theme_action" title="mla_after_setup_theme_action :: Loads the text domain(s) for the mla-child-theme, from the WordPress language directory
+and/or from the theme's own directory."><span class="description">Loads the text domain(s) for the mla-child-theme, from the WordPress language directory
+and/or from the theme's own directory.</span><pre>mla_after_setup_theme_action</pre></a></li>
 <li class="function  "><a href="#mla_custom_terms_list" title="mla_custom_terms_list :: Generate a list of taxonomy- and term-specific links to the page of your choice,
 listing the terms assigned to a specific post or Media Library item."><span class="description">Generate a list of taxonomy- and term-specific links to the page of your choice,
 listing the terms assigned to a specific post or Media Library item.</span><pre>mla_custom_terms_list</pre></a></li>
@@ -69,6 +72,7 @@ listing the terms assigned to a specific post or Media Library item.</span><pre>
 <li class="function  "><a href="#mla_paginated_term_gallery" title="mla_paginated_term_gallery :: Generate a taxonomy- and term-specific [mla_gallery], limited by current_page and posts_per_page"><span class="description">Generate a taxonomy- and term-specific [mla_gallery], limited by current_page and posts_per_page</span><pre>mla_paginated_term_gallery</pre></a></li>
 <li class="function  "><a href="#mla_tag_gallery" title="mla_tag_gallery :: Generate a taxonomy- and term-specific [mla_gallery]"><span class="description">Generate a taxonomy- and term-specific [mla_gallery]</span><pre>mla_tag_gallery</pre></a></li>
 <li class="function  "><a href="#mla_taxonomy_terms_list" title="mla_taxonomy_terms_list :: Generate a list of taxonomy- and term-specific links to the page of your choice."><span class="description">Generate a list of taxonomy- and term-specific links to the page of your choice.</span><pre>mla_taxonomy_terms_list</pre></a></li>
+<li class="function  "><a href="#mla_wp_title_filter" title="mla_wp_title_filter :: Customize the &lt;title&gt; tag content for the Tag Gallery and Single Image pages"><span class="description">Customize the &lt;title&gt; tag content for the Tag Gallery and Single Image pages</span><pre>mla_wp_title_filter</pre></a></li>
 </ul>
 </div>
 <div class="span8 package-contents">
@@ -84,6 +88,13 @@ listing the terms assigned to a specific post or Media Library item.</span><pre>
 <div class="package-indent">
 <h3>
 <i class="icon-custom icon-function"></i> Functions</h3>
+<a name="mla_after_setup_theme_action" id="mla_after_setup_theme_action"></a><div class="element clickable function  mla_after_setup_theme_action" data-toggle="collapse" data-target=".mla_after_setup_theme_action .collapse">
+<h2>Loads the text domain(s) for the mla-child-theme, from the WordPress language directory
+and/or from the theme's own directory.</h2>
+<pre>mla_after_setup_theme_action() : void</pre>
+<div class="labels"></div>
+<div class="row collapse"><div class="detail-description"><p class="long_description"></p></div></div>
+</div>
 <a name="mla_custom_terms_list" id="mla_custom_terms_list"></a><div class="element clickable function  mla_custom_terms_list" data-toggle="collapse" data-target=".mla_custom_terms_list .collapse">
 <h2>Generate a list of taxonomy- and term-specific links to the page of your choice,
 listing the terms assigned to a specific post or Media Library item.</h2>
@@ -116,7 +127,7 @@ listing the terms assigned to a specific post or Media Library item.</h2>
 <h3>Parameters</h3>
 <div class="subelement argument">
 <h4>$attr</h4>
-<code>array</code><p>Attributes of the function: taxonomy, term, post_mime_type, posts_per_page, current_page</p></div>
+<code>array</code><p>Attributes of the function: page, taxonomy, term, post_mime_type, posts_per_page, current_page</p></div>
 <h3>Returns</h3>
 <div class="subelement response">
 <code>integer</code>number of posts matching taxonomy & term, before LIMIT. echoes HTML <h3>, <p> and <a> tags</div>
@@ -150,13 +161,35 @@ display an "accordian-style" list.</p></p>
 <code>string</code>HTML <h3>, <p> and <a> tags</div>
 </div></div>
 </div>
+<a name="mla_wp_title_filter" id="mla_wp_title_filter"></a><div class="element clickable function  mla_wp_title_filter" data-toggle="collapse" data-target=".mla_wp_title_filter .collapse">
+<h2>Customize the &lt;title&gt; tag content for the Tag Gallery and Single Image pages</h2>
+<pre>mla_wp_title_filter(string $title, string $sep, string $seplocation) : string</pre>
+<div class="labels"></div>
+<div class="row collapse"><div class="detail-description">
+<p class="long_description"></p>
+<h3>Parameters</h3>
+<div class="subelement argument">
+<h4>$title</h4>
+<code>string</code><p>The default page title</p></div>
+<div class="subelement argument">
+<h4>$sep</h4>
+<code>string</code><p>How to separate the various items within the page title</p></div>
+<div class="subelement argument">
+<h4>$seplocation</h4>
+<code>string</code><p>Optional. Direction to display title, 'right'.</p>
+</div>
+<h3>Returns</h3>
+<div class="subelement response">
+<code>string</code>updated title value</div>
+</div></div>
+</div>
 </div>
 </div>
 </div>
 <div class="row"><footer class="span12">
             Template is built using <a href="http://twitter.github.com/bootstrap/">Twitter Bootstrap 2</a> and icons provided by <a href="http://glyphicons.com/">Glyphicons</a>.<br>
             Documentation is powered by <a href="http://www.phpdoc.org/">phpDocumentor 2.0.0a8</a> and<br>
-            generated on 2014-03-27T17:01:48-07:00.<br></footer></div>
+            generated on 2014-04-02T22:02:17-07:00.<br></footer></div>
 </div>
 </body>
 </html>

@@ -2065,7 +2065,7 @@ class MLAData {
 	 * @param	int		The ID of the attachment post
 	 * @return	NULL|array NULL on failure else associative array
 	 */
-	function mla_get_attachment_by_id( $post_id ) {
+	public static function mla_get_attachment_by_id( $post_id ) {
 		global $post;
 		static $save_id = -1, $post_data;
 
@@ -4559,6 +4559,56 @@ class MLAData {
 	}
 
 	/**
+	 * Passes IPTC/EXIF parse errors between mla_IPTC_EXIF_error_handler
+	 * and mla_fetch_attachment_image_metadata
+	 *
+	 * @since 1.81
+	 *
+	 * @var	array
+	 */
+	private static $mla_IPTC_EXIF_errors = array();
+
+	/**
+	 * Intercept IPTC and EXIF parse errors
+	 * 
+	 * @since 1.81
+	 *
+	 * @param	int		the level of the error raised
+	 * @param	string	the error message
+	 * @param	string	the filename that the error was raised in
+	 * @param	int		the line number the error was raised at
+	 *
+	 * @return	boolean	true, to bypass PHP error handler
+	 */
+	public static function mla_IPTC_EXIF_error_handler( $type, $string, $file, $line ) {
+//error_log( 'mla_IPTC_EXIF_error_handler $type = ' . var_export( $type, true ), 0 );
+//error_log( 'mla_IPTC_EXIF_error_handler $string = ' . var_export( $string, true ), 0 );
+//error_log( 'mla_IPTC_EXIF_error_handler $file = ' . var_export( $file, true ), 0 );
+//error_log( 'mla_IPTC_EXIF_error_handler $line = ' . var_export( $line, true ), 0 );
+		
+		switch ( $type ) {
+			case E_ERROR:
+				$level = 'E_ERROR';
+				break;
+			case E_WARNING:
+				$level = 'E_WARNING';
+				break;
+			case E_NOTICE:
+				$level = 'E_NOTICE';
+				break;
+			default:
+				$level = 'OTHER';
+		}
+		
+		$path_info = pathinfo( $file );
+		$file_name = $path_info['basename'];
+		MLAData::$mla_IPTC_EXIF_errors[] = "{$level} ({$type}) - {$string} [{$file_name} : {$line}]";
+		
+	    /* Don't execute PHP internal error handler */
+    	return true;
+	}
+
+	/**
 	 * Fetch and filter IPTC and EXIF or PDF metadata for an image attachment
 	 * 
 	 * @since 0.90
@@ -4590,7 +4640,16 @@ class MLAData {
 
 			if ( is_callable( 'iptcparse' ) ) {
 				if ( !empty( $info['APP13'] ) ) {
+					//set_error_handler( 'MLAData::mla_IPTC_EXIF_error_handler' );
 					$iptc_values = iptcparse( $info['APP13'] );
+					//restore_error_handler();
+					
+					if ( ! empty( MLAData::$mla_IPTC_EXIF_errors ) ) {
+						$results['mla_iptc_errors'] = MLAData::$mla_IPTC_EXIF_errors;
+						MLAData::$mla_IPTC_EXIF_errors = array();
+						error_log( 'ERROR: $results[mla_iptc_errors] = ' . var_export( $results['mla_exif_errors'], true ), 0 );
+					}
+					
 					if ( ! is_array( $iptc_values ) ) {
 						$iptc_values = array();
 					}
@@ -4609,7 +4668,15 @@ class MLAData {
 			}
 
 			if ( is_callable( 'exif_read_data' ) && in_array( $size[2], array( IMAGETYPE_JPEG, IMAGETYPE_TIFF_II, IMAGETYPE_TIFF_MM ) ) ) {
+				//set_error_handler( 'MLAData::mla_IPTC_EXIF_error_handler' );
 				$results['mla_exif_metadata'] = $exif_data = exif_read_data( $path );
+				//restore_error_handler();
+				
+				if ( ! empty( MLAData::$mla_IPTC_EXIF_errors ) ) {
+					$results['mla_exif_errors'] = MLAData::$mla_IPTC_EXIF_errors;
+					MLAData::$mla_IPTC_EXIF_errors = array();
+					error_log( 'ERROR: $results[mla_exif_errors] = ' . var_export( $results['mla_exif_errors'], true ), 0 );
+				}
 			}
 		}
 

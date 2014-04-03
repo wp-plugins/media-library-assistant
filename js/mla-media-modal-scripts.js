@@ -410,6 +410,7 @@ var mla = {
 	settings: {},
 	initialHTML: {},
 	uploading: false,
+	cid: null,
 
 	// Utility functions
 	utility: {
@@ -699,46 +700,70 @@ var mla = {
 	 * We can extend the AttachmentCompat object because it's not instantiated until
 	 * the sidebar is created for a selected attachment.
 	 */
-	wp.media.view.AttachmentCompat = wp.media.view.AttachmentCompat.extend({
-		initialize: function() {
-			// Call the base method in the super class
-			wp.media.view.AttachmentCompat.__super__.initialize.apply( this, arguments );
-			
-			// Hook the 'ready' event when the sidebar has been rendered so we can add our enhancements
-			this.on( 'ready', function( event ) {
-//				console.log( 'view.AttachmentCompat Event: ', this.model.get('id') );
-				mla.utility.hookCompatTaxonomies( this.model.get('id'), this.el );
-			});
-		}
-	});
+	if ( mla.settings.enableDetailsCategory || mla.settings.enableDetailsTag ) {
+		wp.media.view.AttachmentCompat = wp.media.view.AttachmentCompat.extend({
+			initialize: function() {
+				// Call the base method in the super class
+				wp.media.view.AttachmentCompat.__super__.initialize.apply( this, arguments );
+				
+				// Hook the 'ready' event when the sidebar has been rendered so we can add our enhancements
+				this.on( 'ready', function( event ) {
+					//console.log( 'view.AttachmentCompat ready Event: ', this.model.get('id') );
+					mla.utility.hookCompatTaxonomies( this.model.get('id'), this.el );
+				});
+			}
+		});
+	}
 
 	/*
 	 * We can extend the model.Selection object because it's not instantiated until
 	 * the sidebar is created for a selected attachment.
 	 */
-	wp.media.model.Selection = wp.media.model.Selection.extend({
-		initialize: function() {
-			// Call the base method in the super class
-			wp.media.model.Selection.__super__.initialize.apply( this, arguments );
-			
-			// Hook the 'change:uploading' event so we can add our enhancements when it's done
-			this.on( 'change:uploading', function( model ) {
-//				console.log( 'model.Selection change:uploading Event: ', model.get('id') );
-				mla.uploading = true;
-			});
-
-			// Hook the 'change' event when the sidebar has been rendered so we can add our enhancements
-			this.on( 'change', function( model ) {
-//				console.log( 'model.Selection change Event: ', model.get('id') );
+	if ( mla.settings.enableDetailsCategory || mla.settings.enableDetailsTag ) {
+		wp.media.model.Selection = wp.media.model.Selection.extend({
+			initialize: function() {
+				// Call the base method in the super class
+				wp.media.model.Selection.__super__.initialize.apply( this, arguments );
 				
-				if ( mla.uploading ) {
-					mla.utility.hookCompatTaxonomies( model.get('id'), wp.media.frame.$el );
-					mla.uploading = false;
-				}
-			});
-		}
-	}); // */
-
+				// Hook the 'selection:reset' event so we can add our enhancements when it's done
+				this.on( 'selection:reset', function( model ) {
+					//console.log( 'model.Selection selection:reset Event: cid ', model.cid, ', id ', model.get('id') );
+					mla.cid = null;
+				});
+	
+				// Hook the 'selection:unsingle' event so we can add our enhancements when it's done
+				this.on( 'selection:unsingle', function( model ) {
+					//console.log( 'model.Selection selection:unsingle Event: cid ', model.cid, ', id ', model.get('id') );
+					mla.cid = null;
+				});
+	
+				// Hook the 'selection:single' event so we can add our enhancements when it's done
+				this.on( 'selection:single', function( model ) {
+					//console.log( 'model.Selection selection:single Event: cid ', model.cid, ', id ', model.get('id') );
+					mla.cid = model.cid;
+				});
+	
+				// Hook the 'change:uploading' event so we can add our enhancements when it's done
+				this.on( 'change:uploading', function( model ) {
+					//console.log( 'model.Selection change:uploading Event: cid ', model.cid, ', id ', model.get('id') );
+					mla.uploading = true;
+				});
+	
+				// Hook the 'change' event when the sidebar has been rendered so we can add our enhancements
+				this.on( 'change', function( model ) {
+					//console.log( 'model.Selection change Event: cid ', model.cid, ', id ', model.get('id') );
+					
+					if ( mla.uploading && mla.cid === model.cid ) {
+						var mediaFrame = wp.media.editor.get('content'),
+						compat = mediaFrame.content.get('compat');
+						mla.utility.hookCompatTaxonomies( model.get('id'), compat.sidebar.$el );
+						mla.uploading = false;
+					}
+				});
+			}
+		});
+	}
+	
 	/**
 	 * Install the "click to expand" handler for MLA Searchable Taxonomy Meta Boxes
 	 */

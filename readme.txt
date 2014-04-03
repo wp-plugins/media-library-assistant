@@ -4,7 +4,7 @@ Donate link: http://fairtradejudaica.org/make-a-difference/donate/
 Tags: attachment, attachments, documents, gallery, image, images, media, library, media library, tag cloud, media-tags, media tags, tags, media categories, categories, IPTC, EXIF, GPS, PDF, meta, metadata, photo, photos, photograph, photographs, photoblog, photo albums, lightroom, photoshop, MIME, mime-type, icon, upload, file extensions
 Requires at least: 3.3
 Tested up to: 3.9
-Stable tag: 1.80
+Stable tag: 1.81
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -125,6 +125,16 @@ All of the MLA source code has been annotated with "DocBlocks", a special type o
 
 == Changelog ==
 
+= 1.81 =
+* Important Fix: A **serious defect in the Media Libarary Modal Window has been corrected.** The defect caused drag & drop file uploading to fail under many circumstances.
+* New: For `[mla_tag_cloud]`, **the "ids" parameter has been added** to support item-specific term clouds, i.e., a cloud containing only those terms assigned to one (or more) items.
+* New: A **"single image with tag list"** page template has been added to the **Mla Child Theme** in the /examples directory.
+* Fix: A Load Text Domain function has been added to the /examples/twentytwelve-mla child theme.
+* Fix: If the Settings/Media Library Assistant General tab "Page Title" and/or "Menu Title" fields are empty, the default values are now used, including translated values if applicable.
+* Fix: Failure to load translation file from the /plugins/media-library-assistant/languages directory has been fixed. Note that the translation file must include the plugin slug, e.g., media-library-assistant-en_US.mo
+* Fix: PHP (5.4.x) Strict Standards warning for MLAData::mla_get_attachment_by_id() has been resolved.
+* Fix: For `[mla_gallery]`, `$wp_filter` debug display with `mla_debug=true` is more reliable.
+
 = 1.80 =
 * New: For the Media Manager Modal Window, **Native support for "checkbox-style" and "tag hint-style" taxonomy meta boxes** is available. See the [Other Notes section](http://wordpress.org/extend/plugins/media-library-assistant/other_notes/ "Click here, then scroll down") section for more details.
 * New: **For flat taxonomies**, e.g., "Tags" or "Att. Tags", **a "checkbox-style" meta box** is available. See the [Other Notes section](http://wordpress.org/extend/plugins/media-library-assistant/other_notes/ "Click here, then scroll down") section for more details.
@@ -216,8 +226,8 @@ All of the MLA source code has been annotated with "DocBlocks", a special type o
 
 == Upgrade Notice ==
 
-= 1.80 =
-Full taxonomy meta box support in the Media Manager Modal Window. Checkbox-style meta box for flat taxonomies. Fourteen other enhancements, nine fixes.
+= 1.81 =
+Corrects serious defect in Media Manager Modal Window file uploading. Adds item-specific tag clouds. One other enhancement, five other fixes.
 
 == Other Notes ==
 

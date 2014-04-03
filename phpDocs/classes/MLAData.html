@@ -59,6 +59,7 @@
 <i class="icon-custom icon-method"></i> Methods</li>
 <li class="method public "><a href="#_hex_dump" title="_hex_dump :: Format printable version of binary data"><span class="description">Format printable version of binary data</span><pre>_hex_dump()</pre></a></li>
 <li class="method public "><a href="#initialize" title="initialize :: Initialization function, similar to __construct()"><span class="description">Initialization function, similar to __construct()</span><pre>initialize()</pre></a></li>
+<li class="method public "><a href="#mla_IPTC_EXIF_error_handler" title="mla_IPTC_EXIF_error_handler :: Intercept IPTC and EXIF parse errors"><span class="description">Intercept IPTC and EXIF parse errors</span><pre>mla_IPTC_EXIF_error_handler()</pre></a></li>
 <li class="method public "><a href="#mla_count_list_table_items" title="mla_count_list_table_items :: Get the total number of attachment posts"><span class="description">Get the total number of attachment posts</span><pre>mla_count_list_table_items()</pre></a></li>
 <li class="method public "><a href="#mla_exif_metadata_value" title="mla_exif_metadata_value :: Parse one EXIF metadata field"><span class="description">Parse one EXIF metadata field</span><pre>mla_exif_metadata_value()</pre></a></li>
 <li class="method public "><a href="#mla_expand_field_level_parameters" title="mla_expand_field_level_parameters :: Analyze a template, expanding Field-level Markup Substitution Parameters"><span class="description">Analyze a template, expanding Field-level Markup Substitution Parameters</span><pre>mla_expand_field_level_parameters()</pre></a></li>
@@ -129,6 +130,9 @@ and meta data for a single attachment</span><pre>mla_update_single_item()</pre><
 <li class="property public "><a href="#%24mla_iptc_keys" title="$mla_iptc_keys :: IPTC Dataset friendly name/slug and identifiers"><span class="description">IPTC Dataset friendly name/slug and identifiers</span><pre>$mla_iptc_keys</pre></a></li>
 <li class="nav-header private">» Private</li>
 <li class="property private "><a href="#%24galleries" title="$galleries :: Objects containing [gallery] shortcodes"><span class="description">Objects containing [gallery] shortcodes</span><pre>$galleries</pre></a></li>
+<li class="property private "><a href="#%24mla_IPTC_EXIF_errors" title="$mla_IPTC_EXIF_errors :: Passes IPTC/EXIF parse errors between mla_IPTC_EXIF_error_handler
+and mla_fetch_attachment_image_metadata"><span class="description">Passes IPTC/EXIF parse errors between mla_IPTC_EXIF_error_handler
+and mla_fetch_attachment_image_metadata</span><pre>$mla_IPTC_EXIF_errors</pre></a></li>
 <li class="property private "><a href="#%24mla_alt_text_view" title="$mla_alt_text_view :: Provides a unique name for the ALT Text/custom field SQL View"><span class="description">Provides a unique name for the ALT Text/custom field SQL View</span><pre>$mla_alt_text_view</pre></a></li>
 <li class="property private "><a href="#%24mla_galleries" title="$mla_galleries :: Objects containing [mla_gallery] shortcodes"><span class="description">Objects containing [mla_gallery] shortcodes</span><pre>$mla_galleries</pre></a></li>
 <li class="property private "><a href="#%24mla_iptc_descriptions" title="$mla_iptc_descriptions :: IPTC Dataset descriptions"><span class="description">IPTC Dataset descriptions</span><pre>$mla_iptc_descriptions</pre></a></li>
@@ -211,6 +215,34 @@ Templates separate HTML markup from PHP code for easier maintenance and localiza
 <th>since</th>
 <td>0.1</td>
 </tr></table>
+</div></div>
+</div>
+<a name="mla_IPTC_EXIF_error_handler" id="mla_IPTC_EXIF_error_handler"></a><div class="element clickable method public mla_IPTC_EXIF_error_handler" data-toggle="collapse" data-target=".mla_IPTC_EXIF_error_handler .collapse">
+<h2>Intercept IPTC and EXIF parse errors</h2>
+<pre>mla_IPTC_EXIF_error_handler(int $type, string $string, string $file, int $line) : boolean</pre>
+<div class="labels"></div>
+<div class="row collapse"><div class="detail-description">
+<p class="long_description"></p>
+<table class="table table-bordered"><tr>
+<th>since</th>
+<td>1.81</td>
+</tr></table>
+<h3>Parameters</h3>
+<div class="subelement argument">
+<h4>$type</h4>
+<code>int</code><p>the level of the error raised</p></div>
+<div class="subelement argument">
+<h4>$string</h4>
+<code>string</code><p>the error message</p></div>
+<div class="subelement argument">
+<h4>$file</h4>
+<code>string</code><p>the filename that the error was raised in</p></div>
+<div class="subelement argument">
+<h4>$line</h4>
+<code>int</code><p>the line number the error was raised at</p></div>
+<h3>Returns</h3>
+<div class="subelement response">
+<code>boolean</code>true, to bypass PHP error handler</div>
 </div></div>
 </div>
 <a name="mla_count_list_table_items" id="mla_count_list_table_items"></a><div class="element clickable method public mla_count_list_table_items" data-toggle="collapse" data-target=".mla_count_list_table_items .collapse">
@@ -1637,6 +1669,19 @@ galleries[X]['results'] contains an array ( ID ) of post_ids for the objects in 
 </tr></table>
 </div></div>
 </div>
+<a name="%24mla_IPTC_EXIF_errors" id="$mla_IPTC_EXIF_errors"> </a><div class="element clickable property private $mla_IPTC_EXIF_errors" data-toggle="collapse" data-target=".$mla_IPTC_EXIF_errors .collapse">
+<h2>Passes IPTC/EXIF parse errors between mla_IPTC_EXIF_error_handler
+and mla_fetch_attachment_image_metadata</h2>
+<pre>$mla_IPTC_EXIF_errors : array</pre>
+<div class="labels"></div>
+<div class="row collapse"><div class="detail-description">
+<p class="long_description"></p>
+<table class="table table-bordered"><tr>
+<th>since</th>
+<td>1.81</td>
+</tr></table>
+</div></div>
+</div>
 <a name="%24mla_alt_text_view" id="$mla_alt_text_view"> </a><div class="element clickable property private $mla_alt_text_view" data-toggle="collapse" data-target=".$mla_alt_text_view .collapse">
 <h2>Provides a unique name for the ALT Text/custom field SQL View</h2>
 <pre>$mla_alt_text_view : array</pre>
@@ -1791,7 +1836,7 @@ ALT Text and custom field columns.</p></p>
 <div class="row"><footer class="span12">
             Template is built using <a href="http://twitter.github.com/bootstrap/">Twitter Bootstrap 2</a> and icons provided by <a href="http://glyphicons.com/">Glyphicons</a>.<br>
             Documentation is powered by <a href="http://www.phpdoc.org/">phpDocumentor 2.0.0a8</a> and<br>
-            generated on 2014-03-27T17:01:48-07:00.<br></footer></div>
+            generated on 2014-04-02T22:02:17-07:00.<br></footer></div>
 </div>
 </body>
 </html>

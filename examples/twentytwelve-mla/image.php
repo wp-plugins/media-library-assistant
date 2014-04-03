@@ -10,7 +10,6 @@
  * @version 1.00
  * @since MLA 1.80
  */
-
 get_header(); ?>
 
 	<div id="primary" class="site-content">

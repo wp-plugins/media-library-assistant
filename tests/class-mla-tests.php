@@ -32,6 +32,11 @@ class MLATest {
 	 */
 	public static function initialize() {
 		MLATest::$wordpress_3point5_plus = version_compare( get_bloginfo( 'version' ), '3.5', '>=' );
+		
+		/*
+		 * This is the earliest effective place to add E_STRICT to error_reporting
+		 */
+		//error_reporting( E_ALL | E_STRICT );
 	}
 
 	/**

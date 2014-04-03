@@ -2923,8 +2923,22 @@ class MLAShortcodes {
 
 		if ( self::$mla_debug ) {
 			global $wp_filter;
-			self::$mla_debug_messages .= '<p><strong>mla_debug $wp_filter[posts_where]</strong> = ' . var_export( $wp_filter['posts_where'], true ) . '</p>';
-			self::$mla_debug_messages .= '<p><strong>mla_debug $wp_filter[posts_orderby]</strong> = ' . var_export( $wp_filter['posts_orderby'], true ) . '</p>';
+			
+			foreach( $wp_filter['posts_where'] as $priority => $filters ) {
+				self::$mla_debug_messages .= '<p><strong>mla_debug $wp_filter[posts_where]</strong> priority = ' . var_export( $priority, true ) . '<br />';
+				foreach ( $filters as $name => $descriptor ) {
+					self::$mla_debug_messages .= 'filter name = ' . var_export( $name, true ) . '<br />';
+				}
+				self::$mla_debug_messages .= '</p>';
+			}
+
+			foreach( $wp_filter['posts_orderby'] as $priority => $filters ) {
+				self::$mla_debug_messages .= '<p><strong>mla_debug $wp_filter[posts_orderby]</strong> priority = ' . var_export( $priority, true ) . '<br />';
+				foreach ( $filters as $name => $descriptor ) {
+					self::$mla_debug_messages .= 'filter name = ' . var_export( $name, true ) . '<br />';
+				}
+				self::$mla_debug_messages .= '</p>';
+			}
 		}
 
 		/*
@@ -3091,6 +3105,7 @@ class MLAShortcodes {
 	private static $mla_get_terms_parameters = array(
 		'taxonomy' => 'post_tag',
 		'post_mime_type' => 'all',
+		'ids' => array(),
 		'fields' => 't.term_id, t.name, t.slug, t.term_group, tt.term_taxonomy_id, tt.taxonomy, tt.description, tt.parent, COUNT(p.ID) AS `count`',
 		'include' => '',
 		'exclude' => '',
@@ -3225,6 +3240,35 @@ class MLAShortcodes {
 
 		$query[] = 'WHERE ( tt.taxonomy IN (' . join( ',', $placeholders ) . ')';
 
+		/*
+		 * The "ids" parameter can build an item-specific cloud.
+		 * Compile a list of all the terms assigned to the items.
+		 */
+		if ( ! empty( $arguments['ids'] ) && empty( $arguments['include'] ) ) {
+			$ids = wp_parse_id_list( $arguments['ids'] );
+			$includes = array();
+			foreach ( $ids as $id ) {
+				foreach ($taxonomies as $taxonomy) {
+					$terms = get_the_terms( $id, $taxonomy );
+					if ( is_array( $terms ) ) {
+						foreach( $terms as $term ) {
+							$includes[ $term->term_id ] = $term->term_id;
+						} // terms
+					}
+				} // taxonomies
+			} // ids
+			
+			/*
+			 * If there are no terms we want an empty cloud
+			 */
+			if ( empty( $includes ) ) {
+				$arguments['include'] = (string) 0x7FFFFFFF;
+			} else {
+				ksort( $includes );
+				$arguments['include'] = implode( ',', $includes );
+			}
+		}
+		
 		/*
 		 * Add include/exclude and parent constraints to WHERE cluse
 		 */

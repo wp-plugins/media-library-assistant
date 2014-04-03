@@ -29,7 +29,7 @@ class MLA {
 	 *
 	 * @var	string
 	 */
-	const CURRENT_MLA_VERSION = '1.80';
+	const CURRENT_MLA_VERSION = '1.81';
 
 	/**
 	 * Slug for registering and enqueueing plugin style sheet
@@ -206,7 +206,7 @@ class MLA {
 		 * WP_LANG_DIR (e.g., /wp-content/languages) directory.
 		 */
 		load_textdomain( $text_domain, trailingslashit( WP_LANG_DIR ) . $text_domain . '/' . $text_domain . '-' . $locale . '.mo' );
-		load_plugin_textdomain( $text_domain, false, dirname( plugin_basename( __FILE__ ) ) . '/languages/' );
+		load_plugin_textdomain( $text_domain, false, MLA_PLUGIN_BASENAME . '/languages/' );
 
 		/*
 		 * Now we can localize values in other plugin components
@@ -345,7 +345,15 @@ class MLA {
 		}
 
 		$page_title = MLAOptions::mla_get_option( MLAOptions::MLA_SCREEN_PAGE_TITLE );
+		if ( empty( $page_title ) ) {
+			$page_title = MLAOptions::mla_get_option( MLAOptions::MLA_SCREEN_PAGE_TITLE, true );
+		}
+		
 		$menu_title = MLAOptions::mla_get_option( MLAOptions::MLA_SCREEN_MENU_TITLE );
+		if ( empty( $menu_title ) ) {
+			$menu_title = MLAOptions::mla_get_option( MLAOptions::MLA_SCREEN_MENU_TITLE, true );
+		}
+		
 		$hook = add_submenu_page( 'upload.php', $page_title, $menu_title, 'upload_files', self::ADMIN_PAGE_SLUG, 'MLA::mla_render_admin_page' );
 		add_action( 'load-' . $hook, 'MLA::mla_add_menu_options' );
 		add_action( 'load-' . $hook, 'MLA::mla_add_help_tab' );
@@ -742,6 +750,10 @@ class MLA {
 		$bulk_action = self::_current_bulk_action();
 
 		$page_title = MLAOptions::mla_get_option( MLAOptions::MLA_SCREEN_PAGE_TITLE );
+		if ( empty( $page_title ) ) {
+			$page_title = MLAOptions::mla_get_option( MLAOptions::MLA_SCREEN_PAGE_TITLE, true );
+		}
+		
 		echo "<div class=\"wrap\">\n";
 		echo "<div id=\"icon-upload\" class=\"icon32\"><br/></div>\n";
 		echo "<h2>{$page_title}"; // trailing </h2> is action-specific

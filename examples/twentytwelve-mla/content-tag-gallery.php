@@ -33,6 +33,7 @@ global $post;
 			<?php the_content(); ?>
 			<?php
 			$attr = array(
+				'page' => '/single-image/',
 				'taxonomy' => 'attachment_tag',
 				'term' => '',
 				'post_mime_type' => 'image',
@@ -64,13 +65,19 @@ global $post;
 			if ( ! empty( $_REQUEST['mla_paginate_current'] ) ) {
 				$attr['current_page'] = $_REQUEST['mla_paginate_current'];
 			}
-			
+
 			$count = mla_paginated_term_gallery( $attr ); // Child theme function
 			?>
+		<div class="pagination loop-pagination">
+			<?php echo do_shortcode( sprintf( '[mla_gallery mla_paginate_rows="%1$s" mla_output="previous_page,first" numberposts="%2$s" mla_link_class="prev page-numbers" mla_link_text="{Page {+current_page+} of {+last_page+}}"]', $count, $attr['posts_per_page'] ) ); ?>
+			<?php echo do_shortcode( sprintf( '[mla_gallery mla_paginate_rows="%1$s" mla_output="paginate_links,prev_next" numberposts="%2$s" mla_link_class="page-numbers" mla_prev_text="&#9668;" mla_next_text="&#9658;"]', $count, $attr['posts_per_page'] ) ); ?>
+		</div>
+		<!-- This alternative is basic Previous/Next pagination
 		<div class="pagination loop-pagination">
 			<?php echo do_shortcode( sprintf( '[mla_gallery mla_paginate_rows="%1$s" mla_output="previous_page" numberposts="%2$s" mla_link_class="prev page-numbers" mla_link_text="<span class=\'meta-nav\'>&#9668;</span> Previous"]', $count, $attr['posts_per_page'] ) ); ?>
 			<?php echo do_shortcode( sprintf( '[mla_gallery mla_paginate_rows="%1$s" mla_output="next_page" numberposts="%2$s" mla_link_class="next page-numbers" mla_link_text="Next <span class=\'meta-nav\'>&#9658;</span>"]', $count, $attr['posts_per_page'] ) ); ?>
 		</div>
+		This alternative is basic Previous/Next pagination -->
 			<?php //wp_link_pages( array( 'before' => '<div class="page-links">' . __( 'Pages:', 'twentytwelve' ), 'after' => '</div>' ) ); ?>
 		</div><!-- .entry-content -->
 		<footer class="entry-meta">

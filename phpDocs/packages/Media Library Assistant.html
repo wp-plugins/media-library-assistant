@@ -97,6 +97,7 @@ to ensure the plugin can run in the current WordPress envrionment.">MLATest</a><
 <i class="icon-custom icon-constant"></i> Constants</li>
 <li class="constant  "><a href="#MLA_BACKUP_DIR" title="MLA_BACKUP_DIR :: "><span class="description">MLA_BACKUP_DIR</span><pre>MLA_BACKUP_DIR</pre></a></li>
 <li class="constant  "><a href="#MLA_OPTION_PREFIX" title="MLA_OPTION_PREFIX :: Gives a unique prefix for plugin options; can be set in wp-config.php"><span class="description">Gives a unique prefix for plugin options; can be set in wp-config.php</span><pre>MLA_OPTION_PREFIX</pre></a></li>
+<li class="constant  "><a href="#MLA_PLUGIN_BASENAME" title="MLA_PLUGIN_BASENAME :: Provides the plugin's directory name, relative to the plugins directory, without leading or trailing slashes."><span class="description">Provides the plugin's directory name, relative to the plugins directory, without leading or trailing slashes.</span><pre>MLA_PLUGIN_BASENAME</pre></a></li>
 <li class="constant  "><a href="#MLA_PLUGIN_PATH" title="MLA_PLUGIN_PATH :: Provides path information to the plugin root in file system format, including the trailing slash."><span class="description">Provides path information to the plugin root in file system format, including the trailing slash.</span><pre>MLA_PLUGIN_PATH</pre></a></li>
 <li class="constant  "><a href="#MLA_PLUGIN_URL" title="MLA_PLUGIN_URL :: Provides path information to the plugin root in URL format."><span class="description">Provides path information to the plugin root in URL format.</span><pre>MLA_PLUGIN_URL</pre></a></li>
 </ul>
@@ -268,6 +269,12 @@ searchable database of exension/type associations for the "Uploads" admin settin
 <div class="labels"></div>
 <div class="row collapse"><div class="detail-description"><p class="long_description"></p></div></div>
 </div>
+<a name="MLA_PLUGIN_BASENAME" id="MLA_PLUGIN_BASENAME"> </a><div class="element clickable constant  MLA_PLUGIN_BASENAME" data-toggle="collapse" data-target=".MLA_PLUGIN_BASENAME .collapse">
+<h2>Provides the plugin's directory name, relative to the plugins directory, without leading or trailing slashes.</h2>
+<pre>MLA_PLUGIN_BASENAME </pre>
+<div class="labels"></div>
+<div class="row collapse"><div class="detail-description"><p class="long_description"></p></div></div>
+</div>
 <a name="MLA_PLUGIN_PATH" id="MLA_PLUGIN_PATH"> </a><div class="element clickable constant  MLA_PLUGIN_PATH" data-toggle="collapse" data-target=".MLA_PLUGIN_PATH .collapse">
 <h2>Provides path information to the plugin root in file system format, including the trailing slash.</h2>
 <pre>MLA_PLUGIN_PATH </pre>
@@ -309,6 +316,13 @@ searchable database of exension/type associations for the "Uploads" admin settin
 <div class="package-indent">
 <h3>
 <i class="icon-custom icon-function"></i> Functions</h3>
+<a name="mla_after_setup_theme_action" id="mla_after_setup_theme_action"></a><div class="element clickable function  mla_after_setup_theme_action" data-toggle="collapse" data-target=".mla_after_setup_theme_action .collapse">
+<h2>Loads the text domain(s) for the mla-child-theme, from the WordPress language directory
+and/or from the theme's own directory.</h2>
+<pre>mla_after_setup_theme_action() : void</pre>
+<div class="labels"></div>
+<div class="row collapse"><div class="detail-description"><p class="long_description"></p></div></div>
+</div>
 <a name="mla_custom_terms_list" id="mla_custom_terms_list"></a><div class="element clickable function  mla_custom_terms_list" data-toggle="collapse" data-target=".mla_custom_terms_list .collapse">
 <h2>Generate a list of taxonomy- and term-specific links to the page of your choice,
 listing the terms assigned to a specific post or Media Library item.</h2>
@@ -341,7 +355,7 @@ listing the terms assigned to a specific post or Media Library item.</h2>
 <h3>Parameters</h3>
 <div class="subelement argument">
 <h4>$attr</h4>
-<code>array</code><p>Attributes of the function: taxonomy, term, post_mime_type, posts_per_page, current_page</p></div>
+<code>array</code><p>Attributes of the function: page, taxonomy, term, post_mime_type, posts_per_page, current_page</p></div>
 <h3>Returns</h3>
 <div class="subelement response">
 <code>integer</code>number of posts matching taxonomy & term, before LIMIT. echoes HTML <h3>, <p> and <a> tags</div>
@@ -375,6 +389,28 @@ display an "accordian-style" list.</p></p>
 <code>string</code>HTML <h3>, <p> and <a> tags</div>
 </div></div>
 </div>
+<a name="mla_wp_title_filter" id="mla_wp_title_filter"></a><div class="element clickable function  mla_wp_title_filter" data-toggle="collapse" data-target=".mla_wp_title_filter .collapse">
+<h2>Customize the &lt;title&gt; tag content for the Tag Gallery and Single Image pages</h2>
+<pre>mla_wp_title_filter(string $title, string $sep, string $seplocation) : string</pre>
+<div class="labels"></div>
+<div class="row collapse"><div class="detail-description">
+<p class="long_description"></p>
+<h3>Parameters</h3>
+<div class="subelement argument">
+<h4>$title</h4>
+<code>string</code><p>The default page title</p></div>
+<div class="subelement argument">
+<h4>$sep</h4>
+<code>string</code><p>How to separate the various items within the page title</p></div>
+<div class="subelement argument">
+<h4>$seplocation</h4>
+<code>string</code><p>Optional. Direction to display title, 'right'.</p>
+</div>
+<h3>Returns</h3>
+<div class="subelement response">
+<code>string</code>updated title value</div>
+</div></div>
+</div>
 </div>
 </div>
 </div>
@@ -384,7 +420,7 @@ display an "accordian-style" list.</p></p>
 <div class="row"><footer class="span12">
             Template is built using <a href="http://twitter.github.com/bootstrap/">Twitter Bootstrap 2</a> and icons provided by <a href="http://glyphicons.com/">Glyphicons</a>.<br>
             Documentation is powered by <a href="http://www.phpdoc.org/">phpDocumentor 2.0.0a8</a> and<br>
-            generated on 2014-03-27T17:01:48-07:00.<br></footer></div>
+            generated on 2014-04-02T22:02:17-07:00.<br></footer></div>
 </div>
 </body>
 </html>

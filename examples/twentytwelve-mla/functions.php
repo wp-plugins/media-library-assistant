@@ -8,7 +8,7 @@
  *
  * @package Media Library Assistant
  * @subpackage MLA_Child_Theme
- * @version 1.00
+ * @version 1.01
  * @since MLA 1.80
  */
 
@@ -22,10 +22,68 @@ if ( ! is_admin() ) {
 	//remove_action( 'wp_head', 'feed_links_extra', 3 ); // Display the links to the extra feeds such as category feeds
 	//remove_action( 'wp_head', 'rsd_link' ); // Display the link to the Really Simple Discovery service endpoint, EditURI link
 	//remove_action( 'wp_head', 'wlwmanifest_link' ); // Display the link to the Windows Live Writer manifest file.
-	remove_action( 'wp_head', 'adjacent_posts_rel_link', 10, 0 ); // Display relational links for the posts adjacent to the current post.
+	remove_action( 'wp_head', 'adjacent_posts_rel_link', 10, 0 ); // Display relational links for the posts adjacent to the current post. OBSOLETE?
+	remove_action( 'wp_head', 'adjacent_posts_rel_link_wp_head', 10, 0 ); // Display relational links for the posts adjacent to the current post.
 	//remove_action( 'wp_head', 'wp_generator' ); // Display the XHTML generator that is generated on the wp_head hook, WP version
 	//remove_action( 'wp_head', 'rel_canonical' ); // Display the canonical link fo a singular page
 }
+
+/**
+ * Loads the text domain(s) for the mla-child-theme, from the WordPress language directory
+ * and/or from the theme's own directory.
+ *
+ * @return void 
+ */
+function mla_after_setup_theme_action() {
+	$domain = 'mla-child-theme';
+	
+	load_theme_textdomain( $domain, trailingslashit( WP_LANG_DIR ) . $domain );
+	load_theme_textdomain( $domain, get_stylesheet_directory() . '/languages' );
+
+	//the third call is made in the parent theme twentytwelve_setup() function
+	//load_theme_textdomain( $domain, get_template_directory() . '/languages' );
+}
+add_action( 'after_setup_theme', 'mla_after_setup_theme_action' );
+
+/**
+ * Customize the <title> tag content for the Tag Gallery and Single Image pages
+ *
+ * @param string The default page title
+ * @param string $sep How to separate the various items within the page title
+ * @param string $seplocation Optional. Direction to display title, 'right'.
+ *
+ * @return string updated title value
+ */
+function mla_wp_title_filter( $title, $sep, $seplocation ) {
+	$sep = " {$sep} ";
+	
+	if ( is_page() ) {
+		$page = single_post_title( '', false );
+		
+		/*
+		 * Match specific page titles and replace the default, page title,
+		 * with more interesting term or file information.
+		 */
+		if ( 'Tag Gallery' == $page ) {
+			$taxonomy = isset( $_REQUEST['my_taxonomy'] ) ? $_REQUEST['my_taxonomy'] : NULL;
+			$slug = isset( $_REQUEST['my_term'] ) ? $_REQUEST['my_term'] : NULL;
+			if ( $taxonomy && $slug ) {
+				$term = get_term_by( 'slug', $slug, $taxonomy );
+				return $term->name . $sep;
+			}
+		} elseif ( 'Single Image' == $page ) {
+			$post_id = isset( $_REQUEST['post_id'] ) ? $_REQUEST['post_id'] : 0;
+			if ( $post_id ) {
+				$file = get_attached_file( $post_id );
+				$pathinfo = pathinfo( $file );
+				return $pathinfo['basename'] . $sep;
+			}
+		}
+	} // is_page
+	
+	return $title;
+}
+add_filter( 'wp_title', 'mla_wp_title_filter', 10, 3 );
 
 /**
  * Generate a taxonomy- and term-specific [mla_gallery]
@@ -78,7 +136,7 @@ function mla_tag_gallery( $attr = NULL ) {
  *
  * This function uses $wpdb functions for efficiency.
  *
- * @param array Attributes of the function: taxonomy, term, post_mime_type, posts_per_page, current_page
+ * @param array Attributes of the function: page, taxonomy, term, post_mime_type, posts_per_page, current_page
  *
  * @return integer number of posts matching taxonomy & term, before LIMIT. echoes HTML <h3>, <p> and <a> tags
  */
@@ -98,6 +156,7 @@ function mla_paginated_term_gallery( $attr = NULL ) {
 	 * Create the PHP variables we need
 	 */
 	extract( shortcode_atts( array(
+		'page' => NULL,
 		'taxonomy' => 'attachment_tag',
 		'term' => '',
 		'post_mime_type' => 'all',
@@ -137,9 +196,10 @@ function mla_paginated_term_gallery( $attr = NULL ) {
 		$posts = implode( ',', $wpdb->get_col( 'SELECT p.ID FROM ' . $wpdb->posts . ' as p WHERE ( p.ID IN ( ' . $posts . ' )' . $mime_where . ') LIMIT ' . $offset . ', ' . $posts_per_page ) );
 	}
 
-		/* translators: 1: term name, 2: taxonomy label */
-		$output = '<h3>' . sprintf( __( 'Gallery for term "%1$s" in taxonomy "%2$s"', 'mla-child-theme' ), $term->name, $taxonomy->labels->name ) . '</h3>';
-	$output .= '<p>' . do_shortcode( sprintf( '[mla_gallery ids="%1$s" post_mime_type="%2$s" mla_paginate_current=1 mla_nolink_text="No items found" update_post_term_cache="false"]', $posts, $post_mime_type ) . "</p>\r\n" );
+	$href = empty( $page ) ? '{+link_url+}' : "{+site_url+}{$page}";
+	/* translators: 1: term name, 2: taxonomy label */
+	$output = '<h3>' . sprintf( __( 'Gallery for term "%1$s" in taxonomy "%2$s"', 'mla-child-theme' ), $term->name, $taxonomy->labels->name ) . '</h3>';
+	$output .= '<p>' . do_shortcode( sprintf( '[mla_gallery ids="%1$s" post_mime_type="%2$s" mla_paginate_current=1 mla_nolink_text="No items found" update_post_term_cache="false" mla_link_href="%3$s?post_id={+attachment_ID+}"]', $posts, $post_mime_type, $href ) . "</p>\r\n" );
 
 	echo $output;
 	return $count;
@@ -185,7 +245,7 @@ function mla_custom_terms_list( $ID, $attr = NULL ) {
 	/* translators: 1: taxonomy slug */
 	$output = '<h3>' . sprintf( __( 'Terms list for taxonomy: %1$s', 'mla-child-theme' ), $taxonomy ) . '</h3>';
 	/* translators: 1: term name */
-	$title = sprintf( __( 'Gallery for %1$s', 'mla-child-theme' ), $term->name );
+	$title = sprintf( __( 'Gallery for %1$s', 'mla-child-theme' ), $taxonomy );
 	foreach ( $terms as $term ) {
 		$output .= '<p>' . sprintf( '<a href=%1$s%2$s?my_taxonomy=%3$s&my_term=%4$s title="%5$s">%6$s</a>', $site_url, $page_path, $taxonomy, $term->slug, $title, $term->name ) . "</p>\n";
 	}// foreach term
