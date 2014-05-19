@@ -621,7 +621,18 @@ class MLA_List_Table extends WP_List_Table {
 		}
 
 		$inline_data .= '	<div class="post_parent">' . $item->post_parent . "</div>\r\n";
-		$inline_data .= '	<div class="post_parent_title">' . $item->parent_title . "</div>\r\n";
+
+		if ( $item->post_parent ) {
+			if ( isset( $item->parent_title ) ) {
+				$parent_title = $item->parent_title;
+			} else {
+				$parent_title = __( '(no title)', 'media-library-assistant' );
+			}
+		} else {
+			$parent_title = '';
+		}
+
+		$inline_data .= '	<div class="post_parent_title">' . $parent_title . "</div>\r\n";
 		$inline_data .= '	<div class="menu_order">' . $item->menu_order . "</div>\r\n";
 		$inline_data .= '	<div class="post_author">' . $item->post_author . "</div>\r\n";
 
