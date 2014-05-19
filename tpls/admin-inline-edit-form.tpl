@@ -54,18 +54,30 @@
               <label class="inline-edit-image-alt"> <span class="title">[+ALT Text+]</span> <span class="input-text-wrap">
                 <input type="text" name="image_alt" value="" />
                 </span> </label>
-              <label class="inline-edit-post-parent"> <span class="title">[+Parent ID+]</span> <span class="input-text-wrap">
-                <input type="text" name="post_parent" value="" />
-                </span> </label>
-              <label class="inline-edit-menu-order"> <span class="title">[+Menu Order+]</span> <span class="input-text-wrap">
-                <input type="text" name="menu_order" value="" />
-                </span> </label>
+              <div class="inline-edit-group">
+                <label class="inline-edit-post-parent alignleft"> <span class="title">[+Parent ID+]</span> <span class="input-text-wrap">
+                  <input type="text" name="post_parent" value="" />
+                  </span> </label>
+                <label class="inline-edit-post-parent-title"> <span class="">
+                  <input type="text" readonly="readonly" disabled="disabled" name="post_parent_title" value="" />
+                  </span> </label>
+                  <input id="inline-edit-post-set-parent" title="[+Select+]" class="button-primary parent" type="button" name="post_parent_set" value="[+Select+]" />
+              </div>
+              <div class="inline-edit-group">
+                <label class="inline-edit-menu-order alignleft"> <span class="title">[+Menu Order+]</span> <span class="input-text-wrap">
+                  <input type="text" name="menu_order" value="" />
+                  </span> </label>
 [+authors+]
-[+custom_fields+]
+              </div>
             </div>
           </fieldset>
 [+quick_middle_column+]
 [+quick_right_column+]
+          <fieldset class="inline-edit-col-right">
+            <div class="inline-edit-col">
+[+custom_fields+]
+            </div>
+          </fieldset>
           <p class="submit inline-edit-save">
 		  	<a accesskey="c" href="#inline-edit" title="[+Cancel+]" class="button-secondary cancel alignleft">[+Cancel+]</a>
 		  	<a accesskey="s" href="#inline-edit" title="[+Update+]" class="button-primary save alignright">[+Update+]</a>
@@ -141,3 +153,4 @@
     </tbody>
   </table>
 </form>
+[+set_parent_form+]

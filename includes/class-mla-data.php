@@ -926,17 +926,17 @@ class MLAData {
 
 					$text = '';
 					if ( is_wp_error( $record ) ) {
-						$text = implode( ',', $terms->get_error_messages() );
+						$text = implode( ',', $record->get_error_messages() );
 					} elseif ( ! empty( $record ) ) {
 						if ( is_scalar( $record ) ) {
-							$text = sanitize_text_field( (string) $record );
+							$text = ( 'raw' == $value['format'] ) ? (string) $record : sanitize_text_field( (string) $record );
 						} elseif ( is_array( $record ) ) {
 							if ( 'export' == $value['option'] ) {
-								$text = sanitize_text_field( var_export( $record, true ) );
+								$text = ( 'raw' == $value['format'] ) ? var_export( $record, true ) : sanitize_text_field( var_export( $record, true ) );
 							} else {
 								$text = '';
 								foreach ( $record as $term ) {
-									$term_name = sanitize_text_field( $term );
+									$term_name = ( 'raw' == $value['format'] ) ? $term : sanitize_text_field( $term );
 									$text .= strlen( $text ) ? ', ' . $term_name : $term_name;
 								}
 							}
@@ -1094,13 +1094,16 @@ class MLAData {
 				$tail = substr( $match, 2);
 			}
 
-			$match_count = preg_match( '/([^,]+)(,(text|single|export|array|multi|commas))\+\]/', $tail, $matches );
+			$match_count = preg_match( '/([^,]+)(,(text|single|export|array|multi|commas|raw))\+\]/', $tail, $matches );
 			if ( 1 == $match_count ) {
 				$result['value'] = $matches[1];
 
 				if ( 'commas' == $matches[3] ) {		
 					$result['option'] = 'text';
 					$result['format'] = 'commas';
+				} elseif ( 'raw' == $matches[3] ) {		
+					$result['option'] = 'text';
+					$result['format'] = 'raw';
 				} else {
 					$result['option'] = $matches[3];
 				}
@@ -4669,7 +4672,7 @@ class MLAData {
 
 			if ( is_callable( 'exif_read_data' ) && in_array( $size[2], array( IMAGETYPE_JPEG, IMAGETYPE_TIFF_II, IMAGETYPE_TIFF_MM ) ) ) {
 				//set_error_handler( 'MLAData::mla_IPTC_EXIF_error_handler' );
-				$results['mla_exif_metadata'] = $exif_data = exif_read_data( $path );
+				$results['mla_exif_metadata'] = $exif_data = @exif_read_data( $path );
 				//restore_error_handler();
 				
 				if ( ! empty( MLAData::$mla_IPTC_EXIF_errors ) ) {

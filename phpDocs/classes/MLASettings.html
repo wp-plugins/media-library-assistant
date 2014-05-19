@@ -118,6 +118,7 @@ without saving the settings to the mla_option</span><pre>_process_iptc_exif_taxo
 <li class="method private "><a href="#_save_view_settings" title="_save_view_settings :: Save View settings to the options table"><span class="description">Save View settings to the options table</span><pre>_save_view_settings()</pre></a></li>
 <li class="method private "><a href="#_update_option_row" title="_update_option_row :: Update or delete a single MLA option value"><span class="description">Update or delete a single MLA option value</span><pre>_update_option_row()</pre></a></li>
 <li class="method private "><a href="#_version_upgrade" title="_version_upgrade :: Database and option update check, for installing new versions"><span class="description">Database and option update check, for installing new versions</span><pre>_version_upgrade()</pre></a></li>
+<li class="method private "><a href="#mla_get_options_tablist" title="mla_get_options_tablist :: Localize $mla_option_definitions array"><span class="description">Localize $mla_option_definitions array</span><pre>mla_get_options_tablist()</pre></a></li>
 <li class="nav-header">
 <i class="icon-custom icon-property"></i> Properties</li>
 <li class="property public "><a href="#%24page_template_array" title="$page_template_array :: Template file for the Settings page(s) and parts"><span class="description">Template file for the Settings page(s) and parts</span><pre>$page_template_array</pre></a></li>
@@ -1062,6 +1063,26 @@ without saving the settings to the mla_option</h2>
 </tr></table>
 </div></div>
 </div>
+<a name="mla_get_options_tablist" id="mla_get_options_tablist"></a><div class="element clickable method private mla_get_options_tablist" data-toggle="collapse" data-target=".mla_get_options_tablist .collapse">
+<h2>Localize $mla_option_definitions array</h2>
+<pre>mla_get_options_tablist(string $tab) : array | false</pre>
+<div class="labels"></div>
+<div class="row collapse"><div class="detail-description">
+<p class="long_description"><p>Localization must be done at runtime, and these calls cannot be placed
+in the "public static" array definition itself.</p></p>
+<table class="table table-bordered"><tr>
+<th>since</th>
+<td>1.82</td>
+</tr></table>
+<h3>Parameters</h3>
+<div class="subelement argument">
+<h4>$tab</h4>
+<code>string</code><p>Tab slug, to retrieve a single entry</p></div>
+<h3>Returns</h3>
+<div class="subelement response">
+<code>array</code><code>false</code>The entire tablist ( $tab = NULL ), a single tab entry or false if not found/not allowed</div>
+</div></div>
+</div>
 <h3>
 <i class="icon-custom icon-property"></i> Properties</h3>
 <a name="%24page_template_array" id="$page_template_array"> </a><div class="element clickable property public $page_template_array" data-toggle="collapse" data-target=".$page_template_array .collapse">
@@ -1095,14 +1116,14 @@ Each tab is defined by an array with the following elements:</h2>
 <pre>$mla_tablist : array</pre>
 <div class="labels"></div>
 <div class="row collapse"><div class="detail-description">
-<p class="long_description"><p>The array must be populated at runtime in MLASettings::mla_localize_tablist(),
-because Localization calls cannot be placed in the "public static" array definition itself.</p>
-
-<p>array key => HTML id/name attribute and option database key (OMIT MLA_OPTION_PREFIX)</p>
+<p class="long_description"><p>array key => HTML id/name attribute and option database key (OMIT MLA_OPTION_PREFIX)</p>
 
 <p>title => tab label / heading text
 render => rendering function for tab messages and content. Usage:
-    $tab_content = <a href="">'render'</a>;</p></p>
+    $tab_content = <a href="">'render'</a>;</p>
+
+<p>The array must be populated at runtime in MLASettings::mla_localize_tablist(),
+because Localization calls cannot be placed in the "public static" array definition itself.</p></p>
 <table class="table table-bordered"><tr>
 <th>since</th>
 <td>0.80</td>
@@ -1172,7 +1193,7 @@ render => rendering function for tab messages and content. Usage:
 <div class="row"><footer class="span12">
             Template is built using <a href="http://twitter.github.com/bootstrap/">Twitter Bootstrap 2</a> and icons provided by <a href="http://glyphicons.com/">Glyphicons</a>.<br>
             Documentation is powered by <a href="http://www.phpdoc.org/">phpDocumentor 2.0.0a8</a> and<br>
-            generated on 2014-04-02T22:02:17-07:00.<br></footer></div>
+            generated on 2014-05-18T20:54:12-07:00.<br></footer></div>
 </div>
 </body>
 </html>

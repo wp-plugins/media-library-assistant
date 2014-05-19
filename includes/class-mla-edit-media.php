@@ -153,16 +153,32 @@ class MLAEdit {
 		/*
 		 * Register and queue the style sheet, if needed
 		 */
-		//wp_register_style( self::JAVASCRIPT_EDIT_MEDIA_STYLES, MLA_PLUGIN_URL . 'css/mla-edit-media-style.css', false, MLA::CURRENT_MLA_VERSION );
-		//wp_enqueue_style( self::JAVASCRIPT_EDIT_MEDIA_STYLES );
+		wp_register_style( self::JAVASCRIPT_EDIT_MEDIA_STYLES, MLA_PLUGIN_URL . 'css/mla-edit-media-style.css', false, MLA::CURRENT_MLA_VERSION );
+		wp_enqueue_style( self::JAVASCRIPT_EDIT_MEDIA_STYLES );
+
+		wp_register_style( self::JAVASCRIPT_EDIT_MEDIA_STYLES . '-set-parent', MLA_PLUGIN_URL . 'css/mla-style-set-parent.css', false, MLA::CURRENT_MLA_VERSION );
+		wp_enqueue_style( self::JAVASCRIPT_EDIT_MEDIA_STYLES . '-set-parent' );
 
 		$suffix = defined('SCRIPT_DEBUG') && SCRIPT_DEBUG ? '' : '.min';
 		wp_enqueue_script( self::JAVASCRIPT_EDIT_MEDIA_SLUG, MLA_PLUGIN_URL . "js/mla-edit-media-scripts{$suffix}.js", 
 			array( 'post', 'wp-lists', 'suggest', 'jquery' ), MLA::CURRENT_MLA_VERSION, false );
+
+		wp_enqueue_script( self::JAVASCRIPT_EDIT_MEDIA_SLUG . '-set-parent', MLA_PLUGIN_URL . "js/mla-set-parent-scripts{$suffix}.js", 
+			array( 'post', 'wp-lists', 'suggest', 'jquery', self::JAVASCRIPT_EDIT_MEDIA_SLUG ), MLA::CURRENT_MLA_VERSION, false );
+
 		$script_variables = array(
 			'comma' => _x( ',', 'tag_delimiter', 'media-library-assistant' ),
-			'Ajax_Url' => admin_url( 'admin-ajax.php' ) 
+			'Ajax_Url' => admin_url( 'admin-ajax.php' ),
+			'ajaxFailError' => __( 'An ajax.fail error has occurred. Please reload the page and try again.', 'media-library-assistant' ),
+			'ajaxDoneError' => __( 'An ajax.done error has occurred. Please reload the page and try again.', 'media-library-assistant' ),
 		);
+
+		if ( version_compare( get_bloginfo( 'version' ), '3.9', '>=' ) ) {
+			$script_variables['setParentDataType'] = 'json';
+		} else {
+			$script_variables['setParentDataType'] = 'xml';
+		}
+
 		wp_localize_script( self::JAVASCRIPT_EDIT_MEDIA_SLUG, self::JAVASCRIPT_EDIT_MEDIA_OBJECT, $script_variables );
 	}
 
@@ -391,8 +407,41 @@ class MLAEdit {
 			}
 		} // is_array
 
-		echo '<label class="screen-reader-text" for="mla_post_parent">' . __( 'Post Parent', 'media-library-assistant' ) . '</label><input name="mla_post_parent" type="text" size="4" id="mla_post_parent" value="' . $post->post_parent . "\" />\r\n";
-		echo '<label class="screen-reader-text" for="mla_parent_info">' . __( 'Parent Info', 'media-library-assistant' ) . '</label><input class="readonly" name="mla_parent_info" type="text" readonly="readonly" size="60" id="mla_parent_info" value="' . esc_attr( $parent_info ) . "\" />\r\n";
+		echo '<table><tr>';
+		echo '<td><label class="screen-reader-text" for="mla_post_parent">' . __( 'Post Parent', 'media-library-assistant' ) . '</label><input name="mla_post_parent" type="text" size="4" id="mla_post_parent" value="' . $post->post_parent . "\" /></td>\n";
+		echo '<td><label class="screen-reader-text" for="mla_parent_info">' . __( 'Parent Info', 'media-library-assistant' ) . '</label><input class="readonly" name="mla_parent_info" type="text" readonly="readonly" disabled="disabled" id="mla_parent_info" value="' . esc_attr( $parent_info ) . "\" /></td>\n";
+		echo '<td><label class="screen-reader-text" for="mla_parent_info">' . __( 'Select Parent', 'media-library-assistant' ) . '</label><input id="mla_set_parent" class="button-primary parent" type="button" name="post_parent_set" value="' . __( 'Select', 'media-library-assistant' ) . '" /></td>';
+		echo '</tr></table>';
+
+		$set_parent_template = MLAData::mla_load_template( 'admin-set-parent-form.tpl' );
+		if ( ! array( $set_parent_template ) ) {
+			/* translators: 1: function name 2: non-array value */
+			error_log( sprintf( _x( 'ERROR: %1$s non-array "%2$s"', 'error_log', 'media-library-assistant' ), 'MLA::_build_inline_edit_form', var_export( $set_parent_template, true ) ), 0 );
+			return '';
+		}
+
+		$query_args = array( 'post' => $post->ID, 'action' => 'edit' );
+		if ( isset( $_REQUEST['mla_source'] ) ) {
+			$query_args['mla_source'] = $_REQUEST['mla_source'];
+		}
+		
+		$page_values = array(
+			'Select Parent' => __( 'Select Parent', 'media-library-assistant' ),
+			'Search' => __( 'Search', 'media-library-assistant' ),
+			'For' => __( 'For', 'media-library-assistant' ),
+			'Unattached' => __( 'Unattached', 'media-library-assistant' ),
+			'mla_find_posts_nonce' => wp_nonce_field( 'find-posts', 'mla-set-parent-ajax-nonce', false ),
+		);
+		
+		ob_start();
+		submit_button( __( 'Cancel', 'media-library-assistant' ), 'button-secondary cancel alignleft', 'mla-set-parent-cancel', false );
+		$page_values['mla_set_parent_cancel'] = ob_get_clean();
+
+		ob_start();
+		submit_button( __( 'Update', 'media-library-assistant' ), 'button-primary alignright', 'mla-set-parent-submit', false );
+		$page_values['mla_set_parent_update'] = ob_get_clean();
+
+		echo MLAData::mla_parse_template( $set_parent_template['mla-set-parent-div'], $page_values );
 	}
 
 	/**

@@ -103,6 +103,7 @@ and the value is db column to sort by.</span><pre>get_sortable_columns()</pre></
 <li class="method public "><a href="#mla_manage_columns_filter" title="mla_manage_columns_filter :: Handler for filter 'manage_media_page_mla-menu_columns'"><span class="description">Handler for filter 'manage_media_page_mla-menu_columns'</span><pre>mla_manage_columns_filter()</pre></a></li>
 <li class="method public "><a href="#mla_manage_hidden_columns_filter" title="mla_manage_hidden_columns_filter :: Handler for filter 'get_user_option_managemedia_page_mla-menucolumnshidden'"><span class="description">Handler for filter 'get_user_option_managemedia_page_mla-menucolumnshidden'</span><pre>mla_manage_hidden_columns_filter()</pre></a></li>
 <li class="method public "><a href="#mla_submenu_arguments" title="mla_submenu_arguments :: Process $_REQUEST, building $submenu_arguments"><span class="description">Process $_REQUEST, building $submenu_arguments</span><pre>mla_submenu_arguments()</pre></a></li>
+<li class="method public "><a href="#mla_views_media_page_mla_menu_filter" title='mla_views_media_page_mla_menu_filter :: Handler for filter "views_{$this-&gt;screen-&gt;id}" in /admin/includes/class-wp-list-table.php'><span class="description">Handler for filter "views_{$this-&gt;screen-&gt;id}" in /admin/includes/class-wp-list-table.php</span><pre>mla_views_media_page_mla_menu_filter()</pre></a></li>
 <li class="method public "><a href="#pagination" title="pagination :: Display the pagination, adding view, search and filter arguments"><span class="description">Display the pagination, adding view, search and filter arguments</span><pre>pagination()</pre></a></li>
 <li class="method public "><a href="#prepare_items" title="prepare_items :: Prepares the list of items for displaying"><span class="description">Prepares the list of items for displaying</span><pre>prepare_items()</pre></a></li>
 <li class="method public "><a href="#print_column_headers" title="print_column_headers :: Print column headers, adding view, search and filter arguments"><span class="description">Print column headers, adding view, search and filter arguments</span><pre>print_column_headers()</pre></a></li>
@@ -877,6 +878,27 @@ is not created in time for the call from screen.php.</p></p>
 <code>array</code>non-empty view, search, filter and sort arguments</div>
 </div></div>
 </div>
+<a name="mla_views_media_page_mla_menu_filter" id="mla_views_media_page_mla_menu_filter"></a><div class="element clickable method public mla_views_media_page_mla_menu_filter" data-toggle="collapse" data-target=".mla_views_media_page_mla_menu_filter .collapse">
+<h2>Handler for filter "views_{$this-&gt;screen-&gt;id}" in /admin/includes/class-wp-list-table.php</h2>
+<pre>mla_views_media_page_mla_menu_filter(array $views) : array</pre>
+<div class="labels"></div>
+<div class="row collapse"><div class="detail-description">
+<p class="long_description"><p>Filter the list of available list table views. Set when the
+file is loaded because the list_table object isn't created in time
+to affect the "screen options" setup.</p></p>
+<table class="table table-bordered"><tr>
+<th>since</th>
+<td>1.82</td>
+</tr></table>
+<h3>Parameters</h3>
+<div class="subelement argument">
+<h4>$views</h4>
+<code>array</code><p>A list of available list table views</p></div>
+<h3>Returns</h3>
+<div class="subelement response">
+<code>array</code>Updated list of available list table views</div>
+</div></div>
+</div>
 <a name="pagination" id="pagination"></a><div class="element clickable method public pagination" data-toggle="collapse" data-target=".pagination .collapse">
 <h2>Display the pagination, adding view, search and filter arguments</h2>
 <pre>pagination(string $which) : void</pre>
@@ -1113,7 +1135,7 @@ MLA_List_Table::mla_admin_init_action.</p></p>
 <div class="row"><footer class="span12">
             Template is built using <a href="http://twitter.github.com/bootstrap/">Twitter Bootstrap 2</a> and icons provided by <a href="http://glyphicons.com/">Glyphicons</a>.<br>
             Documentation is powered by <a href="http://www.phpdoc.org/">phpDocumentor 2.0.0a8</a> and<br>
-            generated on 2014-04-02T22:02:17-07:00.<br></footer></div>
+            generated on 2014-05-18T20:54:12-07:00.<br></footer></div>
 </div>
 </body>
 </html>

@@ -1,0 +1,148 @@
+/*
+ * This stylesheet is used for the "Select Parent" popup window.
+ */
+
+#mla-set-parent-div {
+	background-color: #fff;
+	-webkit-box-shadow: 0 3px 6px rgba( 0, 0, 0, 0.3 );
+	box-shadow: 0 3px 6px rgba( 0, 0, 0, 0.3 );
+	width: 600px;
+	overflow: hidden;
+	margin-left: -300px;
+	position: fixed;
+	top: 30px;
+	bottom: 30px;
+	left: 50%;
+	z-index: 100105;
+}
+
+#mla-set-parent-div .spinner {
+	padding: 4px 10px 0;
+	vertical-align: top;
+	float: right;
+}
+
+#mla-set-parent-head-div {
+	background: #fcfcfc;
+	border-bottom: 1px solid #dfdfdf;
+	height: 36px;
+	font-size: 18px;
+	font-weight: 600;
+	line-height: 36px;
+	padding: 0 36px 0 16px;
+	position: absolute;
+	top: 0;
+	left: 0;
+	right: 0;
+}
+
+#mla-set-parent-inside-div {
+	overflow: auto;
+	padding: 16px;
+	background-color: #fff;
+	position: absolute;
+	top: 37px;
+	bottom: 45px;
+	overflow-y: scroll;
+	width: 100%;
+	-webkit-box-sizing: border-box;
+	-moz-box-sizing: border-box;
+	box-sizing: border-box;
+}
+
+#mla-set-parent-search-div {
+	padding-bottom: 16px;
+}
+
+#mla-set-parent-search-div .spinner {
+	float: none;
+	left: 125px;
+	position: absolute;
+	top: 18px;
+}
+
+#mla-set-parent-input,
+#mla-set-parent-search {
+	float: left;
+}
+
+#mla-set-parent-input {
+	width: 140px;
+	height: 28px;
+	margin: 0 4px 0 0;
+}
+
+#mla-set-parent-close-div {
+	width: 36px;
+	height: 36px;
+	position: absolute;
+	top: 0;
+	right: 0;
+	cursor: pointer;
+	text-align: center;
+	color: #666;
+}
+
+#mla-set-parent-close-div:hover {
+	color: #2ea2cc;
+}
+
+#mla-set-parent-close-div:before {
+	font: normal 20px/36px 'dashicons';
+	vertical-align: top;
+	speak: none;
+	-webkit-font-smoothing: antialiased;
+	-moz-osx-font-smoothing: grayscale;
+	content: '\f158';
+}
+
+#mla-set-parent-buttons-div {
+	padding: 8px 16px;
+	background: #fcfcfc;
+	border-top: 1px solid #dfdfdf;
+	position: absolute;
+	bottom: 0;
+	left: 0;
+	right: 0;
+}
+
+@media screen and ( max-width: 782px ) {
+	#mla-set-parent-inside-div {
+		bottom: 57px;
+	}
+}
+
+@media screen and ( max-width: 660px ) {
+
+	#mla-set-parent-head-div {
+		top: 0;
+		bottom: 0;
+		left: 0;
+		right: 0;
+		margin: 0;
+		width: 100%;
+	}
+
+}
+
+#mla-set-parent-overlay {
+	position: fixed;
+	top: 0;
+	left: 0;
+	right: 0;
+	bottom: 0;
+	background: #000;
+	opacity: 0.7;
+	filter: alpha(opacity=70);
+	z-index: 100100;
+}
+
+/* Styling */
+
+/* Specific Elements */
+
+#mla-set-parent-titles-div {
+	font-size: 12px;
+	line-height: 14px;
+	margin-bottom: 10px;
+}

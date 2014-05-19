@@ -5,7 +5,21 @@
  * This file contains styling attributes for the Media/Edit Media page, if any.
  */
 
-.mla-unused-class-name {
-	text-align: center;
+#mla_featured_in,
+#mla_inserted_in,
+#mla_gallery_in,
+#mla_mla_gallery_in,
+#mla_image_metadata {
+	width: 100%;
 }
 
+#mla_post_parent,
+#mla_parent_info {
+	width: 96%;
+}
+
+#mla_set_parent {
+	display:inline;
+	line-height: 16px;
+	margin: 1px;
+}

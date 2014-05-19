@@ -295,6 +295,24 @@ class MLA_List_Table extends WP_List_Table {
 	}
 
 	/**
+	 * Handler for filter "views_{$this->screen->id}" in /admin/includes/class-wp-list-table.php
+	 *
+	 * Filter the list of available list table views. Set when the
+	 * file is loaded because the list_table object isn't created in time
+	 * to affect the "screen options" setup.
+	 *
+	 * @since 1.82
+	 *
+	 * @param	array	A list of available list table views
+	 *
+	 * @return	array	Updated list of available list table views
+	 */
+	public static function mla_views_media_page_mla_menu_filter( $views ) {
+		$views = apply_filters( "views_upload", $views );
+		return $views;
+	}
+
+	/**
 	 * Builds the $default_columns array with translated source texts.
 	 *
 	 * Called from MLA:mla_plugins_loaded_action because the $default_columns information might be
@@ -499,11 +517,18 @@ class MLA_List_Table extends WP_List_Table {
 	 */
 	function column_icon( $item ) {
 		if ( 'checked' == MLAOptions::mla_get_option( MLAOptions::MLA_ENABLE_MLA_ICONS ) ) {
-			$thumb = wp_get_attachment_image( $item->ID, array( 64, 64 ), true, array( 'class' => 'mla_media_thumbnail_64_64' ) );
+			$dimensions = array( 64, 64 );
+			$thumb = wp_get_attachment_image( $item->ID, $dimensions, true, array( 'class' => 'mla_media_thumbnail_64_64' ) );
 		} else {
-			$thumb = wp_get_attachment_image( $item->ID, array( 80, 60 ), true, array( 'class' => 'mla_media_thumbnail_80_60' ) );
+			$dimensions = array( 80, 60 );
+			$thumb = wp_get_attachment_image( $item->ID, $dimensions, true, array( 'class' => 'mla_media_thumbnail_80_60' ) );
 		}
 
+		if ( in_array( $item->post_mime_type, array( 'image/svg+xml' ) ) ) {
+			$thumb = preg_replace( '/width=\"[^\"]*\"/', sprintf( 'width="%1$d"', $dimensions[1] ), $thumb );
+			$thumb = preg_replace( '/height=\"[^\"]*\"/', sprintf( 'height="%1$d"', $dimensions[0] ), $thumb );
+		}
+		
 		if ( $this->is_trash || ! current_user_can( 'edit_post', $item->ID ) ) {
 			return $thumb;
 		}
@@ -596,6 +621,7 @@ class MLA_List_Table extends WP_List_Table {
 		}
 
 		$inline_data .= '	<div class="post_parent">' . $item->post_parent . "</div>\r\n";
+		$inline_data .= '	<div class="post_parent_title">' . $item->parent_title . "</div>\r\n";
 		$inline_data .= '	<div class="menu_order">' . $item->menu_order . "</div>\r\n";
 		$inline_data .= '	<div class="post_author">' . $item->post_author . "</div>\r\n";
 
@@ -1093,28 +1119,33 @@ class MLA_List_Table extends WP_List_Table {
 	 * @return	string	HTML markup to be placed inside the column
 	 */
 	function column_attached_to( $item ) {
-		if ( isset( $item->parent_date ) ) {
-			$parent_date = $item->parent_date;
-		} else {
-			$parent_date = '';
-		}
-
 		if ( isset( $item->parent_title ) ) {
 			$parent_title = sprintf( '<a href="%1$s" title="' . __( 'Edit', 'media-library-assistant' ) . ' &#8220;%2$s&#8221;">%3$s</a>', esc_url( add_query_arg( array(
 				'post' => $item->post_parent,
 				'action' => 'edit'
 			), 'post.php' ) ), esc_attr( $item->parent_title ), esc_attr( $item->parent_title ) );
-		} else {
-			$parent_title = '(' . _x( 'Unattached', 'post_mime_types_singular', 'media-library-assistant' ) . ')';
-		}
 
-		if ( isset( $item->parent_type ) ) {
-			$parent_type = '(' . $item->parent_type . ' ' . (string) $item->post_parent . ')';
+			if ( isset( $item->parent_date ) ) {
+				$parent_date = $item->parent_date;
+			} else {
+				$parent_date = '';
+			}
+	
+			if ( isset( $item->parent_type ) ) {
+				$parent_type = '(' . $item->parent_type . ' ' . (string) $item->post_parent . ')';
+			} else {
+				$parent_type = '';
+			}
+	
+			$parent =  sprintf( '%1$s<br>%2$s<br>%3$s', /*%1$s*/ $parent_title, /*%2$s*/ mysql2date( __( 'Y/m/d', 'media-library-assistant' ), $parent_date ), /*%3$s*/ $parent_type ); // . "<br>\r\n";
 		} else {
-			$parent_type = '';
+			$parent = '(' . _x( 'Unattached', 'post_mime_types_singular', 'media-library-assistant' ) . ')';
 		}
+		
+//		$set_parent = sprintf( '<a class="hide-if-no-js" id="mla-child-%2$s" onclick="mla.setParent.open( \'%1$s\',\'%2$s\',\'%3$s\' ); return false;" href="#the-list">%4$s</a><br>', /*%1$s*/ $item->post_parent, /*%2$s*/ $item->ID, /*%3$s*/ esc_attr( $item->post_title ), __( 'Set Parent', 'media-library-assistant' ) );
+		$set_parent = sprintf( '<a class="hide-if-no-js" id="mla-child-%2$s" onclick="mla.inlineEditAttachment.tableParentOpen( \'%1$s\',\'%2$s\',\'%3$s\' ); return false;" href="#the-list">%4$s</a><br>', /*%1$s*/ $item->post_parent, /*%2$s*/ $item->ID, /*%3$s*/ esc_attr( $item->post_title ), __( 'Set Parent', 'media-library-assistant' ) );
 
-		return sprintf( '%1$s<br>%2$s<br>%3$s', /*%1$s*/ $parent_title, /*%2$s*/ mysql2date( __( 'Y/m/d', 'media-library-assistant' ), $parent_date ), /*%3$s*/ $parent_type ) . "<br>\r\n";
+		return $parent . "<br>\n" . $set_parent . "\n";
 	}
 
 	/**
@@ -1480,7 +1511,12 @@ class MLA_List_Table extends WP_List_Table {
 				}
 
 				if ( $link = self::_get_view( $value->slug, $current_view ) ) {
-					$view_links[ $value->slug ] = $link;
+					// WPML Media looks for "detached", not "unattached"
+					if ( 'unattached' == $value->slug ) {
+						$view_links[ 'detached' ] = $link;
+					} else {
+						$view_links[ $value->slug ] = $link;
+					}
 				}
 			}
 		}
@@ -1627,4 +1663,5 @@ add_action( 'admin_init', 'MLA_List_Table::mla_admin_init_action' );
  
 add_filter( 'get_user_option_managemedia_page_' . MLA::ADMIN_PAGE_SLUG . 'columnshidden', 'MLA_List_Table::mla_manage_hidden_columns_filter', 10, 3 );
 add_filter( 'manage_media_page_' . MLA::ADMIN_PAGE_SLUG . '_columns', 'MLA_List_Table::mla_manage_columns_filter', 10, 0 );
+add_filter( 'views_media_page_mla-menu', 'MLA_List_Table::mla_views_media_page_mla_menu_filter', 0x7FFFFFFF, 1 );
 ?>

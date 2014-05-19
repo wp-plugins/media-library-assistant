@@ -1473,7 +1473,7 @@ class MLAOptions {
 				 * Otherwise there's no way to turn them back on.
 				 */
 				if ( ! array_key_exists( 'attachment_category', $taxonomies ) ) {
-					$taxonomies['attachment_category'] = (object) array( 'labels' => (object) array( 'name' => __( 'Attachment Categories', 'media-library-assistant' ) ) );
+					$taxonomies['attachment_category'] = (object) array( 'labels' => (object) array( 'name' => __( 'Attachment Categories', 'media-library-assistant' ) ), 'hierarchical' => true );
 					if ( isset( $tax_support['attachment_category'] ) ) {
 						unset( $tax_support['attachment_category'] );
 					}
@@ -1488,7 +1488,7 @@ class MLAOptions {
 				}
 
 				if ( ! array_key_exists( 'attachment_tag', $taxonomies ) ) {
-					$taxonomies['attachment_tag'] = (object) array( 'labels' => (object) array( 'name' => __( 'Attachment Tags', 'media-library-assistant' ) ) );
+					$taxonomies['attachment_tag'] = (object) array( 'labels' => (object) array( 'name' => __( 'Attachment Tags', 'media-library-assistant' ) ), 'hierarchical' => false );
 
 					if ( isset( $tax_support['attachment_tag'] ) ) {
 						unset( $tax_support['attachment_tag'] );
@@ -3384,7 +3384,7 @@ class MLAOptions {
 								$new_terms[] = $term_object['term_id'];
 							} else {
 								$term_object = wp_insert_term( $new_term, $setting_key, array( 'parent' => $tax_parent ) );
-								if ( isset( $term_object['term_id'] ) ) {
+								if ( ( ! is_wp_error( $term_object ) ) && isset( $term_object['term_id'] ) ) {
 									$new_terms[] = $term_object['term_id'];
 								}
 							}
@@ -3679,6 +3679,19 @@ class MLAOptions {
 		$message_list = '';
 		$settings_changed = false;
 
+		/*
+		 * Remove rules for taxonomies that no longer exist
+		 */
+		$taxonomies = get_taxonomies( array ( 'show_ui' => true ), 'objects' );
+		foreach ( $current_values['taxonomy'] as $new_key => $new_value ) {
+			if ( ! isset( $taxonomies[ $new_key ] ) ) {
+				$settings_changed = true;
+				/* translators: 1: custom field name */
+				$message_list .= '<br>' . sprintf( __( 'Deleting rule for %1$s.', 'media-library-assistant' ), $new_key ) . "\r\n";
+				unset( $current_values['taxonomy'][ $new_key ] );
+			}
+		}
+
 		foreach ( $new_values['taxonomy'] as $new_key => $new_value ) {
 			if ( isset( $current_values['taxonomy'][ $new_key ] ) ) {
 				$old_values = $current_values['taxonomy'][ $new_key ];
@@ -3761,7 +3774,7 @@ class MLAOptions {
 		/*
 		 * Uncomment this for debugging.
 		 */
-		//$error_list .= $message_list;
+		// $error_list .= $message_list;
 
 		return array( 'message' => $error_list, 'values' => $current_values, 'changed' => $settings_changed );
 	} // _update_iptc_exif_taxonomy_mapping

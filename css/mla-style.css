@@ -144,8 +144,29 @@ textarea[readonly] {
 	width: 5em
 }
 
+.quick-edit-row-attachment fieldset.inline-edit-col-left label.inline-edit-post-author,
+.quick-edit-row-attachment fieldset.inline-edit-col-left label.inline-edit-post-parent-title {
+	display:inline;
+	padding-top: 2px;
+}
+
+.quick-edit-row-attachment fieldset.inline-edit-col-left input#inline-edit-post-set-parent {
+	display:inline;
+	line-height: 16px;
+	margin-top: 2px;
+}
+
+.quick-edit-row-attachment fieldset.inline-edit-col-left label.inline-edit-post-parent-title .input-text-wrap input[type=text] {
+	width: auto;
+}
+
+.quick-edit-row-attachment fieldset.inline-edit-col-left label.inline-edit-author span.title {
+	width:auto;
+	margin-right: 0.5em;
+}
+
 .quick-edit-row-attachment fieldset.inline-edit-col-left label.inline-edit-menu-order span.input-text-wrap {
-	width: 5em
+	width: 3em
 }
 
 .quick-edit-row-attachment fieldset.inline-edit-col-right label span.title,

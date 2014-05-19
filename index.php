@@ -6,7 +6,7 @@
  * will the rest of the plugin be loaded and run.
  *
  * @package Media Library Assistant
- * @version 1.81
+ * @version 1.82
  */
 
 /*
@@ -16,10 +16,10 @@ Description: Enhances the Media Library; powerful[mla_gallery], taxonomy support
 Author: David Lingren
 Text Domain: media-library-assistant
 Domain Path: /languages
-Version: 1.81
+Version: 1.82
 Author URI: http://fairtradejudaica.org/our-story/staff/
 
-Copyright 2011-2013 David Lingren
+Copyright 2011-2014 David Lingren
 
 	This program is free software; you can redistribute it and/or modify
 	it under the terms of the GNU General Public License as published by

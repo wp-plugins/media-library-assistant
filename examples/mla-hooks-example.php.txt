@@ -16,7 +16,7 @@ Plugin Name: MLA Gallery Hooks Example
 Plugin URI: http://fairtradejudaica.org/media-library-assistant-a-wordpress-plugin/
 Description: Provides an example of hooking the filters provided by the [mla_gallery] shortcode
 Author: David Lingren
-Version: 1.02
+Version: 1.03
 Author URI: http://fairtradejudaica.org/our-story/staff/
 
 Copyright 2013, 2014 David Lingren
@@ -134,7 +134,7 @@ class MLAGalleryHooksExample {
 		/*
 		 * Uncomment the error_log statements in any of the filters to see what's passed in
 		 */
-		error_log( 'MLAGalleryHooksExample::mla_gallery_raw_attributes_filter $shortcode_attributes = ' . var_export( $shortcode_attributes, true ), 0 );
+		//error_log( 'MLAGalleryHooksExample::mla_gallery_raw_attributes_filter $shortcode_attributes = ' . var_export( $shortcode_attributes, true ), 0 );
 		
 		/*
 		 * Note that the global $post; object is available here and in all later filters.
@@ -143,7 +143,7 @@ class MLAGalleryHooksExample {
 		 * have a substitute $post pbject with $post->ID == 0.
 		 */
 		global $post;
-		error_log( 'MLAGalleryHooksExample::mla_gallery_raw_attributes_filter $post->ID = ' . var_export( $post->ID, true ), 0 );
+		//error_log( 'MLAGalleryHooksExample::mla_gallery_raw_attributes_filter $post->ID = ' . var_export( $post->ID, true ), 0 );
 		
 		return $shortcode_attributes;
 	} // mla_gallery_raw_attributes_filter
@@ -602,12 +602,20 @@ class MLAGalleryHooksExample {
 	 */
 	public static function mla_gallery_item_values_filter( $item_values ) {
 		//error_log( 'MLAGalleryHooksExample::mla_gallery_item_values_filter $item_values = ' . var_export( $item_values, true ), 0 );
+
+		/*
+		 * We use a shortcode parameter of our own to apply our filters on a gallery-by-gallery basis,
+		 * leaving other [mla_gallery] instances untouched. If the "my_filter" parameter is not present,
+		 * we have nothing to do
+		 */		
+		if ( ! isset( self::$shortcode_attributes['my_filter'] ) ) {
+			return $item_values; // leave them unchanged
+		}
 		
 		/*
-		 * For this first example, we will reformat the 'date' value as d/m/Y. We use a shortcode parameter of our
-		 * own to do this on a gallery-by-gallery basis, leaving other [mla_gallery] instances untouched.
+		 * For this first example, we will reformat the 'date' value as d/m/Y.
 		 */
-		if ( isset( self::$shortcode_attributes['my_filter'] ) && 'format date' == self::$shortcode_attributes['my_filter'] ) {
+		if ( 'format date' == self::$shortcode_attributes['my_filter'] ) {
 
 			/*
 			 * Default format is YYYY-MM-DD HH:MM:SS (HH = 00 - 23), or 'Y-m-d H:i:s'
@@ -633,11 +641,85 @@ class MLAGalleryHooksExample {
 		}
 		
 		/*
-		 * For our example, we will add to the $item_values['caption'] value an unordered list
+		 * The second example adds a formatted file size element to the existing caption.
+		 */
+		if ( 'file size' == self::$shortcode_attributes['my_filter'] ) {
+
+			/*
+			 * Compose the file size in different formats.
+			 *
+			 * You can use MLAOptions::mla_get_data_source() to get anything available.
+			 */
+			$my_setting = array(
+				'data_source' => 'file_size',
+				'option' => 'raw'
+			);
+			$file_size = (float) MLAOptions::mla_get_data_source( $item_values['attachment_ID'], 'single_attachment_mapping', $my_setting, NULL );
+			
+			if ( 1048576 < $file_size ) {
+				$file_size = number_format( ($file_size/1048576), 3 ).' MB';
+			} elseif ( 10240 < $file_size ) {
+				$file_size = number_format( ($file_size/1024), 3 ).' KB';
+			} else {
+				$file_size = number_format( $file_size );
+			}
+	
+			/*
+			 * Compose a new caption, adding the file size.
+			 */
+			$item_values['caption'] = sprintf( '%1$s<br>Size: %2$s', $item_values['caption'], $file_size );
+	
+			return $item_values;
+		}
+		
+		/*
+		 * Our third example changes taxonomy terms into links to term-specific archive pages.
+		 */
+		if ( 'term gallery' == self::$shortcode_attributes['my_filter'] ) {
+			/*
+			 * Use the "my_href" parameter to link to a static page,
+			 * passing the taxanomy and term as query arguments.
+			 */
+			if ( isset( self::$shortcode_attributes['my_href'] ) ) {
+				$my_href = self::$shortcode_attributes['my_href'];
+			} else {
+				$my_href = '';
+			}
+			
+			/*
+			 * Collect non-empty term lists, convert to slugs,
+			 * make into links, replace $item_values
+			 */
+			foreach ($item_values as $key => $value ) {
+				if ( ( 'terms:' == substr( $key, 0, 6 ) ) && ( ! empty( $value ) ) ) {
+					$taxonomy = substr( $key, 6 );
+					$value = str_replace( '&#8217;', "'", $value );
+					$value = str_replace( '&rsquo;', "'", $value );
+					$terms = array_map( 'trim', explode( ',', $value ) );
+					$term_links = array();
+					foreach( $terms as $term_name ) {
+						$term_object = get_term_by( 'name', $term_name, $taxonomy );
+		
+						if ( empty( $my_href ) ) {
+							$term_links[] = sprintf( '<a href=%1$s/%2$s/%3$s>%4$s,</a>', get_site_url(), $taxonomy, $term_object->slug, esc_html( $term_name ) );
+						} else {
+							$term_links[] = sprintf( '<a href=%1$s/%2$s?my_taxonomy=%3$s&my_term=%4$s>%5$s</a>', get_site_url(),$my_href, $taxonomy, $term_object->slug, esc_html( $term_name ) );
+						}
+					}
+					
+					$item_values[ $key ] = implode( ' ', $term_links );
+				}
+			}
+		
+			return $item_values;
+		}
+		
+		/*
+		 * For our final example, we will add to the $item_values['caption'] value an unordered list
 		 * of the custom fields populated for each gallery item. We use a shortcode parameter of our
 		 * own to do this on a gallery-by-gallery basis, leaving other [mla_gallery] instances untouched.
 		 */
-		if ( ! isset( self::$shortcode_attributes['my_filter'] ) || 'all custom' != self::$shortcode_attributes['my_filter'] )
+		if ( 'all custom' != self::$shortcode_attributes['my_filter'] )
 			return $item_values; // leave them unchanged
 		
 		/*

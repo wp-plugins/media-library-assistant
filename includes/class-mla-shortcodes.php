@@ -511,7 +511,7 @@ class MLAShortcodes {
 		$style_template = $gallery_style = '';
 
 		if ( 'theme' == strtolower( $style_values['mla_style'] ) ) {
-			$use_mla_gallery_style = apply_filters( 'use_default_gallery_style', true );
+			$use_mla_gallery_style = apply_filters( 'use_default_gallery_style', ! $html5 );
 		} else {
 			$use_mla_gallery_style = ( 'none' != strtolower( $style_values['mla_style'] ) );
 		}
@@ -825,6 +825,20 @@ class MLAShortcodes {
 			$item_values['pagelink'] = wp_get_attachment_link($attachment->ID, $size, true, $show_icon, $link_text);
 			$item_values['filelink'] = wp_get_attachment_link($attachment->ID, $size, false, $show_icon, $link_text);
 
+			if ( in_array( $attachment->post_mime_type, array( 'image/svg+xml' ) ) ) {
+				$registered_dimensions = self::_registered_dimensions();
+				if ( isset( $registered_dimensions[ $size_class ] ) ) {
+					$dimensions = $registered_dimensions[ $size_class ];
+				} else {
+					$dimensions = $registered_dimensions['thumbnail'];
+				}
+				
+				$thumb = preg_replace( '/width=\"[^\"]*\"/', sprintf( 'width="%1$d"', $dimensions[1] ), $item_values['pagelink'] );
+				$item_values['pagelink'] = preg_replace( '/height=\"[^\"]*\"/', sprintf( 'height="%1$d"', $dimensions[0] ), $thumb );
+				$thumb = preg_replace( '/width=\"[^\"]*\"/', sprintf( 'width="%1$d"', $dimensions[1] ), $item_values['filelink'] );
+				$item_values['filelink'] = preg_replace( '/height=\"[^\"]*\"/', sprintf( 'height="%1$d"', $dimensions[0] ), $thumb );
+			}
+			
 			/*
 			 * Apply the Gallery Display Content parameters.
 			 * Note that $link_attributes and $rollover_text
@@ -1902,6 +1916,38 @@ class MLAShortcodes {
 		$attr['echo'] = false;
 			 
 		return self::mla_tag_cloud( $attr );
+	}
+
+	/**
+	 * Computes image dimensions for scalable graphics, e.g., SVG 
+	 *
+	 * @since 1.82
+	 *
+	 * @return array 
+	 */
+	private static function _registered_dimensions() {
+		global $_wp_additional_image_sizes;
+		
+		if ( 'checked' == MLAOptions::mla_get_option( MLAOptions::MLA_ENABLE_MLA_ICONS ) ) {
+			$sizes = array( 'icon' => array( 64, 64 ) );
+		} else {
+			$sizes = array( 'icon' => array( 60, 60 ) );
+		}
+		
+		foreach( get_intermediate_image_sizes() as $s ) {
+			$sizes[ $s ] = array( 0, 0 );
+
+			if( in_array( $s, array( 'thumbnail', 'medium', 'large' ) ) ) {
+				$sizes[ $s ][0] = get_option( $s . '_size_w' );
+				$sizes[ $s ][1] = get_option( $s . '_size_h' );
+			} else {
+				if( isset( $_wp_additional_image_sizes ) && isset( $_wp_additional_image_sizes[ $s ] ) ) {
+					$sizes[ $s ] = array( $_wp_additional_image_sizes[ $s ]['width'], $_wp_additional_image_sizes[ $s ]['height'], );
+				}
+			}
+		}
+ 
+		return $sizes;
 	}
 
 	/**

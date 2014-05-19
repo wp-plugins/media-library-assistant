@@ -64,12 +64,13 @@
 <li class="method public "><a href="#mla_admin_init_action" title="mla_admin_init_action :: Load the plugin's Ajax handler or process Edit Media update actions"><span class="description">Load the plugin's Ajax handler or process Edit Media update actions</span><pre>mla_admin_init_action()</pre></a></li>
 <li class="method public "><a href="#mla_admin_menu_action" title="mla_admin_menu_action :: Add the submenu pages"><span class="description">Add the submenu pages</span><pre>mla_admin_menu_action()</pre></a></li>
 <li class="method public "><a href="#mla_edit_tax_redirect" title="mla_edit_tax_redirect :: Redirect to the Edit Tags/Categories page"><span class="description">Redirect to the Edit Tags/Categories page</span><pre>mla_edit_tax_redirect()</pre></a></li>
-<li class="method public "><a href="#mla_inline_edit_action" title="mla_inline_edit_action :: Ajax handler for inline editing (quick and bulk edit)"><span class="description">Ajax handler for inline editing (quick and bulk edit)</span><pre>mla_inline_edit_action()</pre></a></li>
+<li class="method public "><a href="#mla_inline_edit_ajax_action" title="mla_inline_edit_ajax_action :: Ajax handler for inline editing (quick and bulk edit)"><span class="description">Ajax handler for inline editing (quick and bulk edit)</span><pre>mla_inline_edit_ajax_action()</pre></a></li>
 <li class="method public "><a href="#mla_load_media_action" title="mla_load_media_action :: Redirect to Media/Assistant if Media/Library is hidden"><span class="description">Redirect to Media/Assistant if Media/Library is hidden</span><pre>mla_load_media_action()</pre></a></li>
 <li class="method public "><a href="#mla_parent_file_filter" title="mla_parent_file_filter :: Cleanup menus for Edit Tags/Categories page"><span class="description">Cleanup menus for Edit Tags/Categories page</span><pre>mla_parent_file_filter()</pre></a></li>
 <li class="method public "><a href="#mla_plugins_loaded_action" title="mla_plugins_loaded_action :: Load a plugin text domain"><span class="description">Load a plugin text domain</span><pre>mla_plugins_loaded_action()</pre></a></li>
 <li class="method public "><a href="#mla_render_admin_page" title='mla_render_admin_page :: Render the "Assistant" subpage in the Media section, using the list_table package'><span class="description">Render the "Assistant" subpage in the Media section, using the list_table package</span><pre>mla_render_admin_page()</pre></a></li>
 <li class="method public "><a href="#mla_screen_options_show_screen_filter" title="mla_screen_options_show_screen_filter :: Only show screen options on the table-list screen"><span class="description">Only show screen options on the table-list screen</span><pre>mla_screen_options_show_screen_filter()</pre></a></li>
+<li class="method public "><a href="#mla_set_parent_ajax_action" title="mla_set_parent_ajax_action :: Ajax handler to set post_parent for a single attachment"><span class="description">Ajax handler to set post_parent for a single attachment</span><pre>mla_set_parent_ajax_action()</pre></a></li>
 <li class="method public "><a href="#mla_set_screen_option_filter" title='mla_set_screen_option_filter :: Save the "Entries per page" option set by this user'><span class="description">Save the "Entries per page" option set by this user</span><pre>mla_set_screen_option_filter()</pre></a></li>
 <li class="nav-header private">» Private</li>
 <li class="method private "><a href="#_authors_dropdown" title="_authors_dropdown :: Get the edit Authors dropdown box, if user has suitable permissions"><span class="description">Get the edit Authors dropdown box, if user has suitable permissions</span><pre>_authors_dropdown()</pre></a></li>
@@ -95,6 +96,7 @@ change the meta data for a single attachment.</span><pre>_display_single_item()<
 <li class="constant  "><a href="#JAVASCRIPT_SINGLE_EDIT_OBJECT" title="JAVASCRIPT_SINGLE_EDIT_OBJECT :: Object name for localizing JavaScript - edit single item page"><span class="description">Object name for localizing JavaScript - edit single item page</span><pre>JAVASCRIPT_SINGLE_EDIT_OBJECT</pre></a></li>
 <li class="constant  "><a href="#JAVASCRIPT_SINGLE_EDIT_SLUG" title="JAVASCRIPT_SINGLE_EDIT_SLUG :: Slug for localizing and enqueueing JavaScript - edit single item page"><span class="description">Slug for localizing and enqueueing JavaScript - edit single item page</span><pre>JAVASCRIPT_SINGLE_EDIT_SLUG</pre></a></li>
 <li class="constant  "><a href="#MLA_ADMIN_NONCE" title="MLA_ADMIN_NONCE :: Action name; uniquely identifies the nonce"><span class="description">Action name; uniquely identifies the nonce</span><pre>MLA_ADMIN_NONCE</pre></a></li>
+<li class="constant  "><a href="#MLA_ADMIN_SET_PARENT" title="MLA_ADMIN_SET_PARENT :: mla_admin_action value for setting an item's parent object"><span class="description">mla_admin_action value for setting an item's parent object</span><pre>MLA_ADMIN_SET_PARENT</pre></a></li>
 <li class="constant  "><a href="#MLA_ADMIN_SINGLE_CUSTOM_FIELD_MAP" title="MLA_ADMIN_SINGLE_CUSTOM_FIELD_MAP :: mla_admin_action value for mapping Custom Field metadata"><span class="description">mla_admin_action value for mapping Custom Field metadata</span><pre>MLA_ADMIN_SINGLE_CUSTOM_FIELD_MAP</pre></a></li>
 <li class="constant  "><a href="#MLA_ADMIN_SINGLE_DELETE" title="MLA_ADMIN_SINGLE_DELETE :: mla_admin_action value for permanently deleting a single item"><span class="description">mla_admin_action value for permanently deleting a single item</span><pre>MLA_ADMIN_SINGLE_DELETE</pre></a></li>
 <li class="constant  "><a href="#MLA_ADMIN_SINGLE_EDIT_DISPLAY" title="MLA_ADMIN_SINGLE_EDIT_DISPLAY :: mla_admin_action value for displaying a single item"><span class="description">mla_admin_action value for displaying a single item</span><pre>MLA_ADMIN_SINGLE_EDIT_DISPLAY</pre></a></li>
@@ -230,9 +232,9 @@ The filter is not required for WordPress 3.5 and later.</p></p>
 </tr></table>
 </div></div>
 </div>
-<a name="mla_inline_edit_action" id="mla_inline_edit_action"></a><div class="element clickable method public mla_inline_edit_action" data-toggle="collapse" data-target=".mla_inline_edit_action .collapse">
+<a name="mla_inline_edit_ajax_action" id="mla_inline_edit_ajax_action"></a><div class="element clickable method public mla_inline_edit_ajax_action" data-toggle="collapse" data-target=".mla_inline_edit_ajax_action .collapse">
 <h2>Ajax handler for inline editing (quick and bulk edit)</h2>
-<pre>mla_inline_edit_action() : void</pre>
+<pre>mla_inline_edit_ajax_action() : void</pre>
 <div class="labels"></div>
 <div class="row collapse"><div class="detail-description">
 <p class="long_description"><p>Adapted from wp_ajax_inline_save in /wp-admin/includes/ajax-actions.php</p></p>
@@ -326,6 +328,18 @@ Defined as public because it's an action.</p></p>
 <h3>Returns</h3>
 <div class="subelement response">
 <code>boolean</code>True to display "Screen Options", false to suppress them</div>
+</div></div>
+</div>
+<a name="mla_set_parent_ajax_action" id="mla_set_parent_ajax_action"></a><div class="element clickable method public mla_set_parent_ajax_action" data-toggle="collapse" data-target=".mla_set_parent_ajax_action .collapse">
+<h2>Ajax handler to set post_parent for a single attachment</h2>
+<pre>mla_set_parent_ajax_action() : void</pre>
+<div class="labels"></div>
+<div class="row collapse"><div class="detail-description">
+<p class="long_description"><p>Adapted from wp_ajax_inline_save in /wp-admin/includes/ajax-actions.php</p></p>
+<table class="table table-bordered"><tr>
+<th>since</th>
+<td>0.20</td>
+</tr></table>
 </div></div>
 </div>
 <a name="mla_set_screen_option_filter" id="mla_set_screen_option_filter"></a><div class="element clickable method public mla_set_screen_option_filter" data-toggle="collapse" data-target=".mla_set_screen_option_filter .collapse">
@@ -613,6 +627,18 @@ change the meta data for a single attachment.</h2>
 </tr></table>
 </div></div>
 </div>
+<a name="MLA_ADMIN_SET_PARENT" id="MLA_ADMIN_SET_PARENT"> </a><div class="element clickable constant  MLA_ADMIN_SET_PARENT" data-toggle="collapse" data-target=".MLA_ADMIN_SET_PARENT .collapse">
+<h2>mla_admin_action value for setting an item's parent object</h2>
+<pre>MLA_ADMIN_SET_PARENT : string</pre>
+<div class="labels"></div>
+<div class="row collapse"><div class="detail-description">
+<p class="long_description"></p>
+<table class="table table-bordered"><tr>
+<th>since</th>
+<td>1.82</td>
+</tr></table>
+</div></div>
+</div>
 <a name="MLA_ADMIN_SINGLE_CUSTOM_FIELD_MAP" id="MLA_ADMIN_SINGLE_CUSTOM_FIELD_MAP"> </a><div class="element clickable constant  MLA_ADMIN_SINGLE_CUSTOM_FIELD_MAP" data-toggle="collapse" data-target=".MLA_ADMIN_SINGLE_CUSTOM_FIELD_MAP .collapse">
 <h2>mla_admin_action value for mapping Custom Field metadata</h2>
 <pre>MLA_ADMIN_SINGLE_CUSTOM_FIELD_MAP : string</pre>
@@ -716,7 +742,7 @@ change the meta data for a single attachment.</h2>
 <div class="row"><footer class="span12">
             Template is built using <a href="http://twitter.github.com/bootstrap/">Twitter Bootstrap 2</a> and icons provided by <a href="http://glyphicons.com/">Glyphicons</a>.<br>
             Documentation is powered by <a href="http://www.phpdoc.org/">phpDocumentor 2.0.0a8</a> and<br>
-            generated on 2014-04-02T22:02:17-07:00.<br></footer></div>
+            generated on 2014-05-18T20:54:12-07:00.<br></footer></div>
 </div>
 </body>
 </html>

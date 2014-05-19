@@ -352,7 +352,7 @@ class MLASettings {
 			$tab = 'general';
 		 }
 
-		$tab = isset ( self::$mla_tablist[ $tab ] ) ? '-' . $tab : '-general';
+		$tab = self::mla_get_options_tablist( $tab ) ? '-' . $tab : '-general';
 		self::$current_page_hook = add_submenu_page( 'options-general.php', __( 'Media Library Assistant Settings', 'media-library-assistant' ), __( 'Media Library Assistant', 'media-library-assistant' ), 'manage_options', self::MLA_SETTINGS_SLUG . $tab, 'MLASettings::mla_render_settings_page' );
 		add_action( 'load-' . self::$current_page_hook, 'MLASettings::mla_add_menu_options_action' );
 		add_action( 'load-' . self::$current_page_hook, 'MLASettings::mla_add_help_tab_action' );
@@ -849,14 +849,14 @@ class MLASettings {
 	 * Definitions for Settings page tab ids, titles and handlers
 	 * Each tab is defined by an array with the following elements:
 	 *
-	 * The array must be populated at runtime in MLASettings::mla_localize_tablist(),
-	 * because Localization calls cannot be placed in the "public static" array definition itself.
-	 *
 	 * array key => HTML id/name attribute and option database key (OMIT MLA_OPTION_PREFIX)
 	 *
 	 * title => tab label / heading text
 	 * render => rendering function for tab messages and content. Usage:
 	 *     $tab_content = ['render']( );
+	 *
+	 * The array must be populated at runtime in MLASettings::mla_localize_tablist(),
+	 * because Localization calls cannot be placed in the "public static" array definition itself.
 	 *
 	 * @since 0.80
 	 *
@@ -887,6 +887,32 @@ class MLASettings {
 	}
 
 	/**
+	 * Localize $mla_option_definitions array
+	 *
+	 * Localization must be done at runtime, and these calls cannot be placed
+	 * in the "public static" array definition itself.
+	 *
+	 * @since 1.82
+	 *
+	 * @param	string	Tab slug, to retrieve a single entry
+	 *
+	 * @return	array|false	The entire tablist ( $tab = NULL ), a single tab entry or false if not found/not allowed
+	 */
+	private static function mla_get_options_tablist( $tab = NULL ) {
+		if ( is_string( $tab ) ) {
+			if ( isset( self::$mla_tablist[ $tab ] ) ) {
+				$results = self::$mla_tablist[ $tab ];
+			} else {
+				return false;
+			}
+		} else {
+			$results = self::$mla_tablist;
+		}
+		
+		return apply_filters( 'mla_get_options_tablist', $results, self::$mla_tablist, $tab );
+	}
+
+	/**
 	 * Compose the navigation tabs for the Settings subpage
 	 *
 	 * @since 0.80
@@ -899,7 +925,7 @@ class MLASettings {
 	private static function _compose_settings_tabs( $active_tab = 'general' ) {
 		$tablist_item = self::$page_template_array['tablist-item'];
 		$tabs = '';
-		foreach ( self::$mla_tablist as $key => $item ) {
+		foreach ( self::mla_get_options_tablist() as $key => $item ) {
 			$item_values = array(
 				'data-tab-id' => $key,
 				'nav-tab-active' => ( $active_tab == $key ) ? 'nav-tab-active' : '',
@@ -2517,13 +2543,14 @@ class MLASettings {
 		 * Load template array and initialize page-level values.
 		 */
 		self::$page_template_array = MLAData::mla_load_template( 'admin-display-settings-page.tpl' );
-		$current_tab = isset( $_REQUEST['mla_tab'] ) ? $_REQUEST['mla_tab']: 'general';
+		$current_tab_slug = isset( $_REQUEST['mla_tab'] ) ? $_REQUEST['mla_tab']: 'general';
+		$current_tab = self::mla_get_options_tablist( $current_tab_slug );
 		$page_values = array(
 //			'settingsURL' => admin_url('options-general.php'),
 			'donateURL' => MLA_PLUGIN_URL . 'images/DonateButton.jpg',
 			'version' => 'v' . MLA::CURRENT_MLA_VERSION,
 			'messages' => '',
-			'tablist' => self::_compose_settings_tabs( $current_tab ),
+			'tablist' => self::_compose_settings_tabs( $current_tab_slug ),
 			'tab_content' => '',
 			'Media Library Assistant' => __( 'Media Library Assistant', 'media-library-assistant' ),
 			'Settings' => __( 'Settings', 'media-library-assistant' )
@@ -2532,9 +2559,9 @@ class MLASettings {
 		/*
 		 * Compose tab content
 		 */
-		if ( array_key_exists( $current_tab, self::$mla_tablist ) ) {
-			if ( isset( self::$mla_tablist[ $current_tab ]['render'] ) ) {
-				$handler = self::$mla_tablist[ $current_tab ]['render'];
+		if ( $current_tab ) {
+			if ( isset( $current_tab['render'] ) ) {
+				$handler = $current_tab['render'];
 				$page_content = self::$handler(  );
 			} else {
 				$page_content = array( 'message' => __( 'ERROR: Cannot render content tab', 'media-library-assistant' ), 'body' => '' );

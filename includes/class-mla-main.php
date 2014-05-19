@@ -29,7 +29,7 @@ class MLA {
 	 *
 	 * @var	string
 	 */
-	const CURRENT_MLA_VERSION = '1.81';
+	const CURRENT_MLA_VERSION = '1.82';
 
 	/**
 	 * Slug for registering and enqueueing plugin style sheet
@@ -158,6 +158,15 @@ class MLA {
 	const MLA_ADMIN_SINGLE_MAP = 'single_item_map';
 
 	/**
+	 * mla_admin_action value for setting an item's parent object
+	 *
+	 * @since 1.82
+	 *
+	 * @var	string
+	 */
+	const MLA_ADMIN_SET_PARENT = 'set_parent';
+
+	/**
 	 * Holds screen ids to match help text to corresponding screen
 	 *
 	 * @since 0.1
@@ -227,11 +236,17 @@ class MLA {
 	 * @return	void
 	 */
 	public static function mla_admin_init_action() {
+//error_log( 'DEBUG: mla_admin_init_action $_REQUEST = ' . var_export( $_REQUEST, true ), 0 );
 		/*
 		 * Process row-level actions from the Edit Media screen
 		 */
 		if ( !empty( $_REQUEST['mla_admin_action'] ) ) {
-			check_admin_referer( self::MLA_ADMIN_NONCE );
+			if ( isset( $_REQUEST['mla-set-parent-ajax-nonce'] ) ) {
+				check_admin_referer( 'find-posts', 'mla-set-parent-ajax-nonce' );
+			} else {
+				check_admin_referer( self::MLA_ADMIN_NONCE );
+			}
+			
 
 			switch ( $_REQUEST['mla_admin_action'] ) {
 				case self::MLA_ADMIN_SINGLE_CUSTOM_FIELD_MAP:
@@ -257,7 +272,8 @@ class MLA {
 			} // switch ($_REQUEST['mla_admin_action'])
 		} // (!empty($_REQUEST['mla_admin_action'])
 
-		add_action( 'wp_ajax_' . self::JAVASCRIPT_INLINE_EDIT_SLUG, 'MLA::mla_inline_edit_action' );
+		add_action( 'wp_ajax_' . self::JAVASCRIPT_INLINE_EDIT_SLUG, 'MLA::mla_inline_edit_ajax_action' );
+		add_action( 'wp_ajax_' . self::JAVASCRIPT_INLINE_EDIT_SLUG . '-set-parent', 'MLA::mla_set_parent_ajax_action' );
 	}
 
 	/**
@@ -290,6 +306,9 @@ class MLA {
 		wp_register_style( self::STYLESHEET_SLUG, MLA_PLUGIN_URL . 'css/mla-style.css', false, self::CURRENT_MLA_VERSION );
 		wp_enqueue_style( self::STYLESHEET_SLUG );
 
+		wp_register_style( self::STYLESHEET_SLUG . '-set-parent', MLA_PLUGIN_URL . 'css/mla-style-set-parent.css', false, self::CURRENT_MLA_VERSION );
+		wp_enqueue_style( self::STYLESHEET_SLUG . '-set-parent' );
+
 		if ( isset( $_REQUEST['mla_admin_action'] ) && ( $_REQUEST['mla_admin_action'] == self::MLA_ADMIN_SINGLE_EDIT_DISPLAY ) ) {
 			wp_enqueue_script( self::JAVASCRIPT_SINGLE_EDIT_SLUG, MLA_PLUGIN_URL . "js/mla-single-edit-scripts{$suffix}.js", 
 				array( 'wp-lists', 'suggest', 'jquery' ), self::CURRENT_MLA_VERSION, false );
@@ -302,7 +321,10 @@ class MLA {
 			wp_enqueue_script( self::JAVASCRIPT_INLINE_EDIT_SLUG, MLA_PLUGIN_URL . "js/mla-inline-edit-scripts{$suffix}.js", 
 				array( 'wp-lists', 'suggest', 'jquery' ), self::CURRENT_MLA_VERSION, false );
 
-			$fields = array( 'post_title', 'post_name', 'post_excerpt', 'post_content', 'image_alt', 'post_parent', 'menu_order', 'post_author' );
+			wp_enqueue_script( self::JAVASCRIPT_INLINE_EDIT_SLUG . '-set-parent', MLA_PLUGIN_URL . "js/mla-set-parent-scripts{$suffix}.js", 
+				array( 'wp-lists', 'suggest', 'jquery', self::JAVASCRIPT_INLINE_EDIT_SLUG ), self::CURRENT_MLA_VERSION, false );
+
+			$fields = array( 'post_title', 'post_name', 'post_excerpt', 'post_content', 'image_alt', 'post_parent', 'post_parent_title', 'menu_order', 'post_author' );
 			$custom_fields = MLAOptions::mla_custom_field_support( 'quick_edit' );
 			$custom_fields = array_merge( $custom_fields, MLAOptions::mla_custom_field_support( 'bulk_edit' ) );
 			foreach ($custom_fields as $slug => $label ) {
@@ -311,6 +333,8 @@ class MLA {
 
 			$script_variables = array(
 				'fields' => $fields,
+				'ajaxFailError' => __( 'An ajax.fail error has occurred. Please reload the page and try again.', 'media-library-assistant' ),
+				'ajaxDoneError' => __( 'An ajax.done error has occurred. Please reload the page and try again.', 'media-library-assistant' ),
 				'error' => __( 'Error while saving the changes.', 'media-library-assistant' ),
 				'ntdeltitle' => __( 'Remove From Bulk Edit', 'media-library-assistant' ),
 				'notitle' => __( '(no title)', 'media-library-assistant' ),
@@ -318,6 +342,13 @@ class MLA {
 				'ajax_action' => self::JAVASCRIPT_INLINE_EDIT_SLUG,
 				'ajax_nonce' => wp_create_nonce( self::MLA_ADMIN_NONCE ) 
 			);
+
+			if ( version_compare( get_bloginfo( 'version' ), '3.9', '>=' ) ) {
+				$script_variables['setParentDataType'] = 'json';
+			} else {
+				$script_variables['setParentDataType'] = 'xml';
+			}
+
 			wp_localize_script( self::JAVASCRIPT_INLINE_EDIT_SLUG, self::JAVASCRIPT_INLINE_EDIT_OBJECT, $script_variables );
 		}
 	}
@@ -391,9 +422,12 @@ class MLA {
 		} else {
 			$menu_position = (integer) MLAOptions::mla_get_option( MLAOptions::MLA_SCREEN_ORDER );
 		}
+		
 		if ( $menu_position && is_array( $submenu['upload.php'] ) ) {
 			foreach ( $submenu['upload.php'] as $menu_order => $menu_item ) {
 				if ( self::ADMIN_PAGE_SLUG == $menu_item[2] ) {
+					// Replace "admin.php" with "upload.php"; support topic "Media/Library menu URLs mismatch"
+					$menu_item[2] = 'upload.php?page=' . self::ADMIN_PAGE_SLUG;
 					$submenu['upload.php'][$menu_position] = $menu_item;
 					unset( $submenu['upload.php'][$menu_order] );
 					ksort( $submenu['upload.php'] );
@@ -414,7 +448,7 @@ class MLA {
 	 */
 	public static function mla_load_media_action( ) {
 		if ( 'checked' != MLAOptions::mla_get_option( MLAOptions::MLA_SCREEN_DISPLAY_LIBRARY ) ) {
-			$query_args = '?page=mla-menu';
+			$query_args = '?page=' . self::ADMIN_PAGE_SLUG;
 
 			/*
 			 * Compose a message if returning from the Edit Media screen
@@ -643,7 +677,7 @@ class MLA {
 		 * Make sure the "Assistant" submenu line is bolded if it's the default
 		 */
 		if ( 'media_page_' . self::ADMIN_PAGE_SLUG == $hook_suffix ) {
-			$submenu_file = self::ADMIN_PAGE_SLUG;
+			$submenu_file = 'upload.php?page=' . self::ADMIN_PAGE_SLUG;
 		}
 
 		/*
@@ -651,14 +685,14 @@ class MLA {
 		 */
 		if ( 'checked' != MLAOptions::mla_get_option( MLAOptions::MLA_SCREEN_DISPLAY_LIBRARY ) &&
 		     'upload.php' == $parent_file && 'upload.php' == $submenu_file ) {
-			$submenu_file = self::ADMIN_PAGE_SLUG;
+			$submenu_file = 'upload.php?page=' . self::ADMIN_PAGE_SLUG;
 		}
 
 		/*
 		 * Make sure the "Assistant" submenu line is bolded when we go to the Edit Media page
 		 */
 		if ( isset( $_REQUEST['mla_source'] ) ) {
-			$submenu_file = self::ADMIN_PAGE_SLUG;
+			$submenu_file = 'upload.php?page=' . self::ADMIN_PAGE_SLUG;
 		}
 
 		/*
@@ -999,6 +1033,21 @@ class MLA {
 				case self::MLA_ADMIN_SINGLE_TRASH:
 					$page_content = self::_trash_single_item( $_REQUEST['mla_item_ID'] );
 					break;
+				case self::MLA_ADMIN_SET_PARENT:
+					$new_data = array( 'post_parent' => $_REQUEST['found_post_id'] );
+					
+					foreach( $_REQUEST['children'] as $child ) {
+						$item_content = MLAData::mla_update_single_item( $child, $new_data );
+						$page_content['message'] .= $item_content['message'] . '<br>';
+					}
+					
+					unset( $_REQUEST['parent'] );
+					unset( $_REQUEST['children'] );
+					unset( $_REQUEST['mla-set-parent-ajax-nonce'] );
+					unset( $_REQUEST['ps'] );
+					unset( $_REQUEST['found_post_id'] );
+					unset( $_REQUEST['mla-set-parent-submit'] );
+					break;
 				default:
 					$page_content = array(
 						/* translators: 1: bulk_action, e.g., single_item_delete, single_item_edit */
@@ -1207,6 +1256,42 @@ class MLA {
 	}
 
 	/**
+	 * Ajax handler to set post_parent for a single attachment
+	 *
+	 * Adapted from wp_ajax_inline_save in /wp-admin/includes/ajax-actions.php
+	 *
+	 * @since 0.20
+	 *
+	 * @return	void	echo HTML <td> innerHTML for updated call or error message, then die()
+	 */
+	public static function mla_set_parent_ajax_action() {
+		check_ajax_referer( self::MLA_ADMIN_NONCE, 'nonce' );
+
+		if ( empty( $_REQUEST['post_ID'] ) ) {
+			echo __( 'ERROR: No post ID found', 'media-library-assistant' );
+			die();
+		} else {
+			$post_id = $_REQUEST['post_ID'];
+		}
+
+		if ( ! current_user_can( 'edit_post', $post_id ) ) {
+			wp_die( __( 'You are not allowed to edit this Attachment.', 'media-library-assistant' ) );
+		}
+
+		$results = MLAData::mla_update_single_item( $post_id, $_REQUEST );
+		if ( false !== strpos( $results['message'], __( 'ERROR:', 'media-library-assistant' ) ) ) {
+			wp_die( $results['message'] );
+		}
+
+		$new_item = (object) MLAData::mla_get_attachment_by_id( $post_id );
+
+		//	Create an instance of our package class and echo the new HTML
+		$MLAListTable = new MLA_List_Table();
+		echo $MLAListTable->column_attached_to( $new_item );
+		die(); // this is required to return a proper result
+	}
+
+	/**
 	 * Ajax handler for inline editing (quick and bulk edit)
 	 *
 	 * Adapted from wp_ajax_inline_save in /wp-admin/includes/ajax-actions.php
@@ -1215,7 +1300,7 @@ class MLA {
 	 *
 	 * @return	void	echo HTML <tr> markup for updated row or error message, then die()
 	 */
-	public static function mla_inline_edit_action() {
+	public static function mla_inline_edit_ajax_action() {
 		set_current_screen( $_REQUEST['screen'] );
 
 		check_ajax_referer( self::MLA_ADMIN_NONCE, 'nonce' );
@@ -1454,6 +1539,40 @@ class MLA {
 			  $bulk_custom_fields .= MLAData::mla_parse_template( $page_template_array['custom_field'], $page_values );
 		}
 
+		$set_parent_template = MLAData::mla_load_template( 'admin-set-parent-form.tpl' );
+		if ( ! array( $set_parent_template ) ) {
+			/* translators: 1: function name 2: non-array value */
+			error_log( sprintf( _x( 'ERROR: %1$s non-array "%2$s"', 'error_log', 'media-library-assistant' ), 'MLA::_build_inline_edit_form', var_export( $set_parent_template, true ) ), 0 );
+			return '';
+		}
+
+		$page_values = array(
+			'Select Parent' => __( 'Select Parent', 'media-library-assistant' ),
+			'Search' => __( 'Search', 'media-library-assistant' ),
+			'For' => __( 'For', 'media-library-assistant' ),
+			'Unattached' => __( 'Unattached', 'media-library-assistant' ),
+			'mla_find_posts_nonce' => wp_nonce_field( 'find-posts', 'mla-set-parent-ajax-nonce', false ),
+		);
+		
+		ob_start();
+		submit_button( __( 'Cancel', 'media-library-assistant' ), 'button-secondary cancel alignleft', 'mla-set-parent-cancel', false );
+		$page_values['mla_set_parent_cancel'] = ob_get_clean();
+
+		ob_start();
+		submit_button( __( 'Update', 'media-library-assistant' ), 'button-primary alignright', 'mla-set-parent-submit', false );
+		$page_values['mla_set_parent_update'] = ob_get_clean();
+
+		$set_parent_div = MLAData::mla_parse_template( $set_parent_template['mla-set-parent-div'], $page_values );
+		
+		$page_values = array(
+			'mla_set_parent_url' => esc_url( add_query_arg( array_merge( MLA_List_Table::mla_submenu_arguments( false ), array( 'page' => MLA::ADMIN_PAGE_SLUG ) ), admin_url( 'upload.php' ) ) ),
+			'mla_set_parent_action' => self::MLA_ADMIN_SET_PARENT,
+			'wpnonce' => wp_nonce_field( self::MLA_ADMIN_NONCE, '_wpnonce', true, false ),
+			'mla_set_parent_div' => $set_parent_div,
+		);
+		
+		$set_parent_form = MLAData::mla_parse_template( $set_parent_template['mla-set-parent-form'], $page_values );
+
 		$page_values = array(
 			'colspan' => count( $MLAListTable->get_columns() ),
 			'Quick Edit' => __( 'Quick Edit', 'media-library-assistant' ),
@@ -1463,6 +1582,7 @@ class MLA {
 			'Description' => __( 'Description', 'media-library-assistant' ),
 			'ALT Text' => __( 'ALT Text', 'media-library-assistant' ),
 			'Parent ID' => __( 'Parent ID', 'media-library-assistant' ),
+			'Select' => __( 'Select', 'media-library-assistant' ),
 			'Menu Order' => __( 'Menu Order', 'media-library-assistant' ),
 			'authors' => $authors_dropdown,
 			'custom_fields' => $custom_fields,
@@ -1482,7 +1602,9 @@ class MLA {
 			'bulk_custom_fields' => $bulk_custom_fields,
 			'Map IPTC/EXIF metadata' =>  __( 'Map IPTC/EXIF metadata', 'media-library-assistant' ),
 			'Map Custom Field metadata' =>  __( 'Map Custom Field Metadata', 'media-library-assistant' ),
+			'set_parent_form' => $set_parent_form,
 		);
+		
 		$page_template = MLAData::mla_parse_template( $page_template_array['page'], $page_values );
 		return $page_template;
 	}

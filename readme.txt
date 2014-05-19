@@ -3,8 +3,8 @@ Contributors: dglingren
 Donate link: http://fairtradejudaica.org/make-a-difference/donate/
 Tags: attachment, attachments, documents, gallery, image, images, media, library, media library, tag cloud, media-tags, media tags, tags, media categories, categories, IPTC, EXIF, GPS, PDF, meta, metadata, photo, photos, photograph, photographs, photoblog, photo albums, lightroom, photoshop, MIME, mime-type, icon, upload, file extensions
 Requires at least: 3.3
-Tested up to: 3.9
-Stable tag: 1.81
+Tested up to: 3.9.1
+Stable tag: 1.82
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -60,19 +60,31 @@ This plugin was inspired by my work on the WordPress web site for our nonprofit,
 
 = How can I sort the Media/Assistant submenu table on values such as File Size? =
 
-You can add support for many attachment metadata values such as file size by visiting the Custom Fields tab on the Settings page. There you can define a rule that maps the data to a WordPress custom field and check the "MLA Column" box to make that field a sortable column in the Media/Assistant submenu table. You can also use the field in your `[mla_gallery]` shortcodes.
+You can add support for many attachment metadata values such as file size by visiting the Custom Fields tab on the Settings page. There you can define a rule that maps the data to a WordPress custom field and check the "MLA Column" box to make that field a sortable column in the Media/Assistant submenu table. You can also use the field in your `[mla_gallery]` shortcodes. For example, this shortcode displays a gallery of the ten largest images in the "general" category, with a custom caption:
+
+`
+[mla_gallery category="general" mla_caption="{+caption+}<br>{+custom:File Size+}" meta_key="File Size" orderby="meta_value" order="DESC" numberposts=10]
+`
 
 = How can I use Categories, Tags and custom taxonomies to select images for display in my posts and pages? =
 
-The powerful `[mla_gallery]` shortcode supports almost all of the query flexibility provided by the WP_Query class. You can find complete documentation in the Settings/Media Library Assistant Documentation tab.
+The powerful `[mla_gallery]` shortcode supports almost all of the query flexibility provided by the WP_Query class. You can find complete documentation in the Settings/Media Library Assistant Documentation tab. A simple example is in the preceding question. Here's an example that displays PDF documents with Att. Category "fauna" or Att. Tag "animal":
+
+`
+[mla_gallery post_mime_type="application/pdf" size=icon mla_caption="{+title+}" tax_query="array(array('taxonomy'=>'attachment_category','field'=>'slug','terms'=>'fauna'),array('taxonomy'=>'attachment_tag','field'=>'slug','terms'=>'animal'),'relation'=>'OR')"]
+`
 
 = Can I use `[mla_gallery]` for attachments other than images? =
 
-Yes! The `[mla_gallery]` shortcode supports all MIME types when you add the post_mime_type parameter to your query. You can build a gallery of your PDF documents, plain text files and other attachments. You can mix images and other MIME types in the same gallery, too.
+Yes! The `[mla_gallery]` shortcode supports all MIME types when you add the post_mime_type parameter to your query. You can build a gallery of your PDF documents, plain text files and other attachments. You can mix images and other MIME types in the same gallery, too. Here's an example that displays a gallery of PDF documents, using the Google File Viewer to show the first page of each document as a thumbnail:
+
+`
+[mla_gallery post_mime_type=application/pdf post_parent=all link=file mla_viewer=true columns=1 orderby=date order=desc]
+`
 
 = Can I attach an image to more than one post or page? =
 
-No; that's a structural limitation of the WordPress database. However, you can use Categories, Tags and custom taxonomies to organize your images and associate them with posts and pages in any way you like. The `[mla_gallery]` shortcode makes it easy.
+No; that's a structural limitation of the WordPress database. However, you can use Categories, Tags and custom taxonomies to organize your images and associate them with posts and pages in any way you like. The `[mla_gallery]` shortcode makes it easy. You can also use the `ids=` parameter to compose a gallery from a list of specific images.
 
 = Can the Assistant use the standard WordPress post Categories and Tags? =
 
@@ -86,6 +98,21 @@ No! The Assistant supplies pre-defined Att. Categories and Att. Tags; these are 
 
 Yes. Any custom taxonomy you register with the Attachment post type will appear in the Assistant UI. Use the Media Library Assistant Settings page to add support for your taxonomies to the Assistant UI.
 
+= Can I use Jetpack Tiled Gallery or a lightbox plugin to display my gallery? =
+You can use other gallery-generating shortcodes to give you the data selection power of [mla_gallery] and the formatting/display power of popular alternatives such as the WordPress.com Jetpack Carousel and Tiled Galleries modules. Any shortcode that accepts "ids=" or a similar parameter listing the attachment ID values for the gallery can be used. Here's an example of a Jetpack Tiled gallery for everything except vegetables:
+
+`
+[mla_gallery attachment_category=vegetable tax_operator="NOT IN" mla_alt_shortcode=gallery type="rectangular"]
+`
+
+Most lightbox plugins use HTML `class=` and/or `rel=` tags to activate their features. `[mla_gallery]` lets you add this tag information to your gallery output. Here's an example that opens PDF documents in a shadowbox using Easy Fancybox:
+
+`
+[mla_gallery post_mime_type=application/pdf post_parent=all link=file size=icon mla_caption='<a class="fancybox-iframe fancybox-pdf" href={+filelink_url+} target=_blank>{+title+}</a>' mla_link_attributes='class="fancybox-pdf fancybox-iframe"']
+`
+
+In the example, the `mla_caption=` parameter turns the document title into a link to the shadowbox display so you can click on the thumbnail image or the caption to activate the display.
+
 = Why don't the "Posts" counts in the taxonomy edit screens match the search results when you click on them? =
 
 This is a known WordPress problem with multiple support tickets already in Trac, e.g., 
@@ -97,7 +124,7 @@ For example, if you add Tags support to the Assistant and then assign tag values
 
 = How do I "unattach" an item? =
 
-Hover over the item you want to modify and click the "Edit" action. On the Edit Single Item page, set the ID portion of the Parent Info field to zero (0), then click "Update" to record your changes. If you change your mind, click "Cancel" to return to the main page without recording any changes.
+Hover over the item you want to modify and click the "Edit" or "Quick Edit" action. Set the ID portion of the Parent Info field to zero (0), then click "Update" to record your changes. If you change your mind, click "Cancel" to return to the main page without recording any changes. You can also click the "Select" button to bring up a list of posts//pages and select one to be the new parent for the item. The "Set Parent" link in the Media/Assistant submenu table also supports changing the parent and unattaching an item.
 
 = The Media/Assistant submenu seems sluggish; is there anything I can do to make it faster? =
 
@@ -124,6 +151,19 @@ All of the MLA source code has been annotated with "DocBlocks", a special type o
 9. The Media Manager popup modal window showing additional filters for date and taxonomy terms. Also shows the enhanced Search Media box and the **full-function taxonomy support in the ATTACHMENT DETAILS area**.
 
 == Changelog ==
+
+= 1.82 =
+* New: A **"Select Parent" popup window** has been added to the Media/Assistant submenu table "Attached To" column, the Quick Edit area and the Media/Edit Media "Parent Information" meta box. You can select a parent from a list of posts/pages, search for parent candidates by keyword(s), and select "(Unattached)" to set the post_parent ID to zero.
+* New: For `[mla_gallery]`, **SVG image files** are rendered appropriately for all registered image sizes. Note that browser support for SVG images is also required.
+* New: Thumbnail support for **SVG image files** in the Media/Assistant submenu table.
+* New: A new **mla_get_options_tablist filter** allows you to filter the tabs in the Settings/Media Linrary Assistant submenu. An example added to the added to the MLA Mapping Hooks Example plugin (in the /examples directory) shows how to use the filter to remove a tab from the submenu.
+* New: **Clickable term lists example** added to the MLA Gallery Hooks Example plugin in the /examples directory.
+* New: **Formatted file size example** added to the MLA Gallery Hooks Example plugin in the /examples directory.
+* New: A **"latest images"** page template has been added to the **Mla Child Theme** in the /examples directory.
+* New: For custom fields ( "custom:" prefix) in `[mla_gallery]` and `[mla_tag_cloud]`, the new ",raw" option lets you return HTML tags for display in the gallery/cloud results.
+* Fix: IPTC/EXIF mapping rules for taxonomies that no longer exist are now removed when you click "Save Changes" on the Settings/Media Library Assistant IPTC/EXIF tab. This resolves a PHP Fatal Error when the mapping rules are applied.
+* Fix: The default Media link when Media/Assistant is the default Media submenu has been changed from "admin.php" to "upload.php". This resolves a problem with the WP Document Revisions plugin and its filtering of Document post type attachments.
+* Fix: For `[mla_gallery]`, the `mla_style=theme` setting will default to "false" for themes that support HTML5.
 
 = 1.81 =
 * Important Fix: A **serious defect in the Media Libarary Modal Window has been corrected.** The defect caused drag & drop file uploading to fail under many circumstances.
@@ -226,8 +266,8 @@ All of the MLA source code has been annotated with "DocBlocks", a special type o
 
 == Upgrade Notice ==
 
-= 1.81 =
-Corrects serious defect in Media Manager Modal Window file uploading. Adds item-specific tag clouds. One other enhancement, five other fixes.
+= 1.82 =
+"Select Parent" popup window (Media/Edit Media, Attached to column, Quick Edit area), SVG support and several new filter examples. Five other enhancements, three other fixes.
 
 == Other Notes ==
 
