@@ -27,112 +27,20 @@ class MLAShortcodes {
 	}
 
 	/**
-	 * WordPress Shortcode; renders a complete list of all attachments and references to them
+	 * Obsolete; no longer supported
 	 *
 	 * @since 0.1
 	 *
 	 * @return	void	echoes HTML markup for the attachment list
 	 */
-	public static function mla_attachment_list_shortcode( /* $atts */ ) {
+	public static function mla_attachment_list_shortcode() {
 		global $wpdb;
-
-		/*	extract(shortcode_atts(array(
-		'item_type'=>'attachment',
-		'organize_by'=>'title',
-		), $atts)); */
 
 		/*
 		 * This shortcode is not documented and no longer supported.
 		 */
 		echo 'The [mla_attachment_list] shortcode is no longer supported.';
 		return;
-
-		/*
-		 * Process the where-used settings option
-		 */
-		if ('checked' == MLAOptions::mla_get_option( MLAOptions::MLA_EXCLUDE_REVISIONS ) ) {
-			$exclude_revisions = "(post_type <> 'revision') AND ";
-		} else {
-			$exclude_revisions = '';
-		}
-
-		$attachments = $wpdb->get_results(
-				"
-				SELECT ID, post_title, post_name, post_parent
-				FROM {$wpdb->posts}
-				WHERE {$exclude_revisions}post_type = 'attachment' 
-				"
-		);
-
-		foreach ( $attachments as $attachment ) {
-			$references = MLAData::mla_fetch_attachment_references( $attachment->ID, $attachment->post_parent );
-
-			echo '&nbsp;<br><h3>' . $attachment->ID . ', ' . esc_attr( $attachment->post_title ) . ', Parent: ' . $attachment->post_parent . '<br>' . esc_attr( $attachment->post_name ) . '<br>' . esc_html( $references['base_file'] ) . "</h3>\r\n";
-
-			/*
-			 * Look for the "Featured Image(s)"
-			 */
-			if ( empty( $references['features'] ) ) {
-				echo "&nbsp;&nbsp;&nbsp;&nbsp;not featured in any posts.<br>\r\n";
-			} else {
-				echo "&nbsp;&nbsp;&nbsp;&nbsp;Featured in<br>\r\n";
-				foreach ( $references['features'] as $feature_id => $feature ) {
-					echo '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;';
-
-					if ( $feature_id == $attachment->post_parent ) {
-						echo 'PARENT ';
-						$found_parent = true;
-					}
-
-					echo $feature_id . ' (' . $feature->post_type . '), ' . esc_attr( $feature->post_title ) . "<br>\r\n";
-				}
-			}
-
-			/*
-			 * Look for item(s) inserted in post_content
-			 */
-			if ( empty( $references['inserts'] ) ) {
-				echo "&nbsp;&nbsp;&nbsp;&nbsp;no inserts in any post_content.<br>\r\n";
-			} else {
-				foreach ( $references['inserts'] as $file => $inserts ) {
-					echo '&nbsp;&nbsp;&nbsp;&nbsp;' . $file . " inserted in<br>\r\n";
-					foreach ( $inserts as $insert ) {
-						echo '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;';
-
-						if ( $insert->ID == $attachment->post_parent ) {
-							echo 'PARENT ';
-							$found_parent = true;
-						}
-
-						echo $insert->ID . ' (' . $insert->post_type . '), ' . esc_attr( $insert->post_title ) . "<br>\r\n";
-					} // foreach $insert
-				} // foreach $file
-			}
-
-			$errors = '';
-
-			if ( !$references['found_reference'] ) {
-				$errors .= '(ORPHAN) ';
-			}
-
-			if ( $references['is_unattached'] ) {
-				$errors .= '(UNATTACHED) ';
-			} else {
-				if ( !$references['found_parent'] ) {
-					if ( isset( $references['parent_title'] ) ) {
-						$errors .= '(BAD PARENT) ';
-					} else {
-						$errors .= '(INVALID PARENT) ';
-					}
-				}
-			}
-
-			if ( !empty( $errors ) ) {
-				echo '&nbsp;&nbsp;&nbsp;&nbsp;' . $errors . "<br>\r\n";
-			}
-		} // foreach attachment
-
-		echo "<br>----- End of Report -----\r\n";
 	}
 
 	/**
@@ -2308,8 +2216,7 @@ class MLAShortcodes {
 	/**
 	 * WP_Query filter "parameters"
 	 *
-	 * This array defines parameters for the query's where and orderby filters,
-	 * mla_shortcode_query_posts_where_filter and mla_shortcode_query_posts_orderby_filter.
+	 * This array defines parameters for the query's join, where and orderby filters.
 	 * The parameters are set up in the mla_get_shortcode_attachments function, and
 	 * any further logic required to translate those values is contained in the filter.
 	 *
@@ -2651,7 +2558,7 @@ class MLAShortcodes {
 		/*
 		 * $query_arguments has been initialized in the taxonomy code above.
 		 */
-		$use_children = empty( $query_arguments );
+		$is_tax_query = ! ($use_children = empty( $query_arguments ));
 		foreach ($arguments as $key => $value ) {
 			/*
 			 * There are several "fallthru" cases in this switch statement that decide 
@@ -2672,6 +2579,7 @@ class MLAShortcodes {
 					break;
 				case 'current':
 					$value = $post_parent;
+					$use_children = true;
 					break;
 				case 'none':
 					self::$query_parameters['post_parent'] = 'none';
@@ -2896,6 +2804,8 @@ class MLAShortcodes {
 		/*
 		 * Decide whether to use a "get_children" style query
 		 */
+		self::$query_parameters['disable_tax_join'] = $is_tax_query && ! $use_children;
+		
 		if ( $use_children && ! isset( $query_arguments['post_parent'] ) ) {
 			if ( ! isset( $query_arguments['id'] ) ) {
 				$query_arguments['post_parent'] = $post_parent;
@@ -2964,8 +2874,9 @@ class MLAShortcodes {
 			add_filter( 'posts_clauses_request', 'MLAShortcodes::mla_shortcode_query_posts_clauses_request_filter', 0x7FFFFFFF, 1 );
 		}
 
-		add_filter( 'posts_orderby', 'MLAShortcodes::mla_shortcode_query_posts_orderby_filter', 0x7FFFFFFF, 1 );
+		add_filter( 'posts_join', 'MLAShortcodes::mla_shortcode_query_posts_join_filter', 0x7FFFFFFF, 1 );
 		add_filter( 'posts_where', 'MLAShortcodes::mla_shortcode_query_posts_where_filter', 0x7FFFFFFF, 1 );
+		add_filter( 'posts_orderby', 'MLAShortcodes::mla_shortcode_query_posts_orderby_filter', 0x7FFFFFFF, 1 );
 
 		if ( self::$mla_debug ) {
 			global $wp_filter;
@@ -3032,6 +2943,32 @@ class MLAShortcodes {
 
 		self::$mla_gallery_wp_query_object = NULL;
 		return $attachments;
+	}
+
+	/**
+	 * Filters the JOIN clause for shortcode queries
+	 * 
+	 * Defined as public because it's a filter.
+	 *
+	 * @since 1.8x
+	 *
+	 * @param	string	query clause before modification
+	 *
+	 * @return	string	query clause after item modification
+	 */
+	public static function mla_shortcode_query_posts_join_filter( $join_clause ) {
+		global $wpdb;
+
+		/*
+		 * Set for taxonomy queries unless post_parent=current. If true, we must disable
+		 * the LEFT JOIN clause that get_posts() adds to taxonomy queries.
+		 * We leave the clause in because the WHERE clauses refer to "p2.".
+		 */
+		if ( self::$query_parameters['disable_tax_join'] ) {
+			$join_clause = str_replace( " LEFT JOIN $wpdb->posts AS p2 ON ($wpdb->posts.post_parent = p2.ID) ", " LEFT JOIN $wpdb->posts AS p2 ON (p2.ID = p2.ID) ", $join_clause );
+		}
+
+		return $join_clause;
 	}
 
 	/**

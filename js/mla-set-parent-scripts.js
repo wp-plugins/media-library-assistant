@@ -56,6 +56,12 @@
 				$( '#mla-set-parent-titles' ).html( affectedTitles );
 			}
 
+			if ( mla.settings.useDashicons ) {
+				$( '#mla-set-parent-close-div' ).addClass("mla-set-parent-close-div-dashicons");
+			} else {
+				$( '#mla-set-parent-close-div' ).html( 'x' );
+			}
+			
 			$( '#mla-set-parent-div' ).show();
 
 			$( '#mla-set-parent-input ' ).focus().keyup( function( event ){

@@ -2537,7 +2537,7 @@ Contains a list of data elements you can map to the custom field. You can also s
 If you just want to add a custom field to the Media/Assistant submenu, the quick edit area and/or the bulk edit area you can bypass the mapping logic by leaving the Data Source value as "-- None (select a value) --".
 <br />&nbsp;<br />
 Most of the data elements are static, i.e., they do not change after the attachment is added to the Media Library.
-The parent/reference information (parent_type, parent_name, parent_issues, reference_issues) and the "where-used" information (featured in, inserted in, gallery in and MLA gallery in) is dynamic; it will change as you define galleries, insert images in posts, define featured images, etc. Because of the database processing required to update this information, <strong><em>parent, where-used and reference data are NOT automatically refreshed</em></strong>. If you use these elements, you must manually refresh them with the "map data" buttons on the Settings screen, the bulk edit area or the Edit Media screen.
+The parent/reference information (parent_type, parent_title, parent_issues, reference_issues) and the "where-used" information (featured in, inserted in, gallery in and MLA gallery in) is dynamic; it will change as you define galleries, insert images in posts, define featured images, etc. Because of the database processing required to update this information, <strong><em>parent, where-used and reference data are NOT automatically refreshed</em></strong>. If you use these elements, you must manually refresh them with the "map data" buttons on the Settings screen, the bulk edit area or the Edit Media screen.
 <br />&nbsp;<br />
 Several of the data elements are sourced from the WordPress "image_meta" array. The credit, caption, copyright and title elements are taken from the IPTC/EXIF metadata (if any), but they go through a number of filtering rules that are not easy to replicate with the MLA IPTC/EXIF processing rules. You may find these "image_meta" elements more useful than the raw IPTC/EXIF metadata.
 </dd>
@@ -2895,7 +2895,7 @@ There are two other ways you can perform custom field mapping for one or more ex
 </tr>
 <tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">parent_name</td>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">parent_title</td>
 <td>for "attached" (post_parent not zero) objects, post title of the parent object</td>
 </tr>
 <tr>

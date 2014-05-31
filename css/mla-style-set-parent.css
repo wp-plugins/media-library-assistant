@@ -80,6 +80,12 @@
 	right: 0;
 	cursor: pointer;
 	text-align: center;
+	vertical-align: middle;
+	font-style: normal;
+	font-variant: normal;
+	font-weight: bold;
+	font-size: 24px;
+	font-family: "Open Sans", sans-serif
 	color: #666;
 }
 
@@ -87,7 +93,8 @@
 	color: #2ea2cc;
 }
 
-#mla-set-parent-close-div:before {
+/* Added in JavaScript code */
+.mla-set-parent-close-div-dashicons:before {
 	font: normal 20px/36px 'dashicons';
 	vertical-align: top;
 	speak: none;

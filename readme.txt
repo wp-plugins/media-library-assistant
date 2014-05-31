@@ -4,7 +4,7 @@ Donate link: http://fairtradejudaica.org/make-a-difference/donate/
 Tags: attachment, attachments, documents, gallery, image, images, media, library, media library, tag cloud, media-tags, media tags, tags, media categories, categories, IPTC, EXIF, GPS, PDF, meta, metadata, photo, photos, photograph, photographs, photoblog, photo albums, lightroom, photoshop, MIME, mime-type, icon, upload, file extensions
 Requires at least: 3.3
 Tested up to: 3.9.1
-Stable tag: 1.82
+Stable tag: 1.83
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -152,6 +152,12 @@ All of the MLA source code has been annotated with "DocBlocks", a special type o
 
 == Changelog ==
 
+= 1.83 =
+* **Important Fix**: For the Media/Assistant submenu table, **Quick Edit, Bulk Edit, Screen Options and Help** functions have been restored.
+* Fix: For the **"Select Parent" popup window**, the "close icon" ("x") now appears in the upper-right corner of the popup in WordPress versions before 3.8.x
+* Fix: For `[mla_gallery]`, **tax_query no longer restricted to parent post/page.** The `post_parent="current"` parameter can be used to restore the restriction. 
+* Fix: In the Settings/Media Library Assistant Documentation tab "Data Sources for custom field mapping" section, `parent_name` has been corrected to `parent_title`.
+
 = 1.82 =
 * New: A **"Select Parent" popup window** has been added to the Media/Assistant submenu table "Attached To" column, the Quick Edit area and the Media/Edit Media "Parent Information" meta box. You can select a parent from a list of posts/pages, search for parent candidates by keyword(s), and select "(Unattached)" to set the post_parent ID to zero.
 * New: For `[mla_gallery]`, **SVG image files** are rendered appropriately for all registered image sizes. Note that browser support for SVG images is also required.
@@ -266,8 +272,8 @@ All of the MLA source code has been annotated with "DocBlocks", a special type o
 
 == Upgrade Notice ==
 
-= 1.82 =
-"Select Parent" popup window (Media/Edit Media, Attached to column, Quick Edit area), SVG support and several new filter examples. Five other enhancements, three other fixes.
+= 1.83 =
+Corrects serious defect, restoring Quick Edit, Bulk Edit, Screen Options and Help to Media/Assistant submenu. Three other fixes.
 
 == Other Notes ==
 

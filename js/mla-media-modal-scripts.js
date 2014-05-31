@@ -404,7 +404,7 @@
 	}; // one or more MLA options enabled
 }(jQuery));
 
-var mla = {
+var mlaModal = {
 	// Properties
 	strings: {},
 	settings: {},
@@ -429,17 +429,17 @@ var mla = {
 	/**
 	 * Localized settings and strings
 	 */
-	mla.strings = typeof wp.media.view.l10n.mla_strings === 'undefined' ? {} : wp.media.view.l10n.mla_strings;
+	mlaModal.strings = typeof wp.media.view.l10n.mla_strings === 'undefined' ? {} : wp.media.view.l10n.mla_strings;
 	//delete media.view.l10n.mla_strings;
 	
-	mla.settings = typeof wp.media.view.settings.mla_settings === 'undefined' ? {} : wp.media.view.settings.mla_settings;
+	mlaModal.settings = typeof wp.media.view.settings.mla_settings === 'undefined' ? {} : wp.media.view.settings.mla_settings;
 	//delete wp.media.view.settings.mla_settings;
 	
 	/**
 	 * return a sorted array with any duplicate, whitespace or values removed
 	 * Adapted from /wp-admin/js/post.js
 	 */
-	mla.utility.arrayCleanup = function ( arrayIn ) {
+	mlaModal.utility.arrayCleanup = function ( arrayIn ) {
 		var arrayOut = [], isString = ( 'string' === typeof arrayIn );
 		
 		if( isString ) {
@@ -468,7 +468,7 @@ var mla = {
 	 * Extract the taxonomy name from an HTML id attribute,
 	 * removing the 'mla-' and 'taxonomy-' prefixes.
 	 */
-	mla.utility.parseTaxonomyId = function ( id ) {
+	mlaModal.utility.parseTaxonomyId = function ( id ) {
 		var taxonomyParts = id.split( '-' );
 		
 		taxonomyParts.shift(); // 'mla-'
@@ -479,7 +479,7 @@ var mla = {
 	/**
 	 * Support functions for flat taxonomies, e.g. Tags, Att. Tags
 	 */
-	mla.tagBox = {
+	mlaModal.tagBox = {
 		/**
 		 * Remove duplicate commas and whitespace from a string containing a tag list
 		 */
@@ -556,7 +556,7 @@ var mla = {
 				// If tags editing isn't disabled, create the X button.
 				if ( ! disabled ) {
 					xbutton = $( '<a id="' + id + '-check-num-' + key + '" class="ntdelbutton">X</a>' );
-					xbutton.click( function(){ mla.tagBox.parseTags( this ); });
+					xbutton.click( function(){ mlaModal.tagBox.parseTags( this ); });
 					span.prepend( '&nbsp;' ).prepend( xbutton );
 				}
 	
@@ -580,7 +580,7 @@ var mla = {
 			tagsval = tags.val();
 			newtags = tagsval ? tagsval + comma + text : text;
 	
-			newtags = mla.utility.arrayCleanup( this.cleanTags( newtags ) );
+			newtags = mlaModal.utility.arrayCleanup( this.cleanTags( newtags ) );
 			tags.val( newtags );
 			this.quickClicks( tagsDiv );
 	
@@ -606,7 +606,7 @@ var mla = {
 	
 				r = $( '<p id="tagcloud-'+taxonomy+'" class="the-tagcloud">'+r+'</p>' );
 				$( 'a', r ).click( function(){
-					mla.tagBox.flushTags( $( this ).closest( '.mla-taxonomy-field' ).children( '.tagsdiv' ), this );
+					mlaModal.tagBox.flushTags( $( this ).closest( '.mla-taxonomy-field' ).children( '.tagsdiv' ), this );
 					return false;
 				});
 	
@@ -619,15 +619,15 @@ var mla = {
 			tagsDiv = $( '#mla-taxonomy-' + taxonomy, context );
 			ajaxTag = $( 'div.ajaxtag', tagsDiv );
 	
-			mla.tagBox.quickClicks( tagsDiv );
+			mlaModal.tagBox.quickClicks( tagsDiv );
 	
 			$( 'input.tagadd', ajaxTag ).click(function(){
-				mla.tagBox.flushTags( $(this).closest( '.tagsdiv' ) );
+				mlaModal.tagBox.flushTags( $(this).closest( '.tagsdiv' ) );
 			});
 	
 			$( 'input.newtag', ajaxTag ).keyup( function( e ){
 				if ( 13 == e.which ) {
-					mla.tagBox.flushTags( tagsDiv );
+					mlaModal.tagBox.flushTags( tagsDiv );
 					return false;
 				}
 			}).keypress( function( e ){
@@ -641,7 +641,7 @@ var mla = {
 	
 			// get the tag cloud on first click, then toggle visibility
 			tagsDiv.siblings( ':first' ).click( function(){
-				mla.tagBox.getCloud( $( 'a', this ).attr( 'id' ), taxonomy );
+				mlaModal.tagBox.getCloud( $( 'a', this ).attr( 'id' ), taxonomy );
 				$( 'a', this ).unbind().click( function(){
 					$( this ).siblings( '.the-tagcloud' ).toggle();
 					return false;
@@ -652,8 +652,8 @@ var mla = {
 			// Update the taxonomy terms, if changed, on the server when the mouse leaves the tagsdiv area
 			$( '.compat-field-' + taxonomy + ' td', context ).on( "mouseleave", function( event ) {
 				var query, tableData = this,
-					oldTerms = mla.utility.arrayCleanup( $( '.server-tags', tableData ).val() ),
-					termList = mla.utility.arrayCleanup( $( '.the-tags', tableData ).val() );
+					oldTerms = mlaModal.utility.arrayCleanup( $( '.server-tags', tableData ).val() ),
+					termList = mlaModal.utility.arrayCleanup( $( '.the-tags', tableData ).val() );
 				
 				if ( oldTerms === termList ) {
 					return;
@@ -670,7 +670,7 @@ var mla = {
 				};
 				query[ taxonomy ] = termList;
 				
-				wp.media.post( mla.settings.ajaxUpdateCompatAction, query ).done( function( results ) {
+				wp.media.post( mlaModal.settings.ajaxUpdateCompatAction, query ).done( function( results ) {
 						var taxonomy, list;
 					
 					for ( taxonomy in results ) {
@@ -694,13 +694,13 @@ var mla = {
 				return false;
 			});
 		}
-	}; // mla.tagBox
+	}; // mlaModal.tagBox
 
 	/*
 	 * We can extend the AttachmentCompat object because it's not instantiated until
 	 * the sidebar is created for a selected attachment.
 	 */
-	if ( mla.settings.enableDetailsCategory || mla.settings.enableDetailsTag ) {
+	if ( mlaModal.settings.enableDetailsCategory || mlaModal.settings.enableDetailsTag ) {
 		wp.media.view.AttachmentCompat = wp.media.view.AttachmentCompat.extend({
 			initialize: function() {
 				// Call the base method in the super class
@@ -709,7 +709,7 @@ var mla = {
 				// Hook the 'ready' event when the sidebar has been rendered so we can add our enhancements
 				this.on( 'ready', function( event ) {
 					//console.log( 'view.AttachmentCompat ready Event: ', this.model.get('id') );
-					mla.utility.hookCompatTaxonomies( this.model.get('id'), this.el );
+					mlaModal.utility.hookCompatTaxonomies( this.model.get('id'), this.el );
 				});
 			}
 		});
@@ -719,7 +719,7 @@ var mla = {
 	 * We can extend the model.Selection object because it's not instantiated until
 	 * the sidebar is created for a selected attachment.
 	 */
-	if ( mla.settings.enableDetailsCategory || mla.settings.enableDetailsTag ) {
+	if ( mlaModal.settings.enableDetailsCategory || mlaModal.settings.enableDetailsTag ) {
 		wp.media.model.Selection = wp.media.model.Selection.extend({
 			initialize: function() {
 				// Call the base method in the super class
@@ -728,36 +728,36 @@ var mla = {
 				// Hook the 'selection:reset' event so we can add our enhancements when it's done
 				this.on( 'selection:reset', function( model ) {
 					//console.log( 'model.Selection selection:reset Event: cid ', model.cid, ', id ', model.get('id') );
-					mla.cid = null;
+					mlaModal.cid = null;
 				});
 	
 				// Hook the 'selection:unsingle' event so we can add our enhancements when it's done
 				this.on( 'selection:unsingle', function( model ) {
 					//console.log( 'model.Selection selection:unsingle Event: cid ', model.cid, ', id ', model.get('id') );
-					mla.cid = null;
+					mlaModal.cid = null;
 				});
 	
 				// Hook the 'selection:single' event so we can add our enhancements when it's done
 				this.on( 'selection:single', function( model ) {
 					//console.log( 'model.Selection selection:single Event: cid ', model.cid, ', id ', model.get('id') );
-					mla.cid = model.cid;
+					mlaModal.cid = model.cid;
 				});
 	
 				// Hook the 'change:uploading' event so we can add our enhancements when it's done
 				this.on( 'change:uploading', function( model ) {
 					//console.log( 'model.Selection change:uploading Event: cid ', model.cid, ', id ', model.get('id') );
-					mla.uploading = true;
+					mlaModal.uploading = true;
 				});
 	
 				// Hook the 'change' event when the sidebar has been rendered so we can add our enhancements
 				this.on( 'change', function( model ) {
 					//console.log( 'model.Selection change Event: cid ', model.cid, ', id ', model.get('id') );
 					
-					if ( mla.uploading && mla.cid === model.cid ) {
+					if ( mlaModal.uploading && mlaModal.cid === model.cid ) {
 						var mediaFrame = wp.media.editor.get('content'),
 						compat = mediaFrame.content.get('compat');
-						mla.utility.hookCompatTaxonomies( model.get('id'), compat.sidebar.$el );
-						mla.uploading = false;
+						mlaModal.utility.hookCompatTaxonomies( model.get('id'), compat.sidebar.$el );
+						mlaModal.uploading = false;
 					}
 				});
 			}
@@ -767,30 +767,30 @@ var mla = {
 	/**
 	 * Install the "click to expand" handler for MLA Searchable Taxonomy Meta Boxes
 	 */
-	mla.utility.hookCompatTaxonomies = function( attachmentId, context ) {
+	mlaModal.utility.hookCompatTaxonomies = function( attachmentId, context ) {
 		var taxonomy;
 
 //		console.log( 'hookCompatTaxonomies attachmentId: ', attachmentId );
 //		console.log( 'hookCompatTaxonomies context: ', JSON.stringify( context ) );
 		
-		if ( mla.settings.enableDetailsCategory ) {
+		if ( mlaModal.settings.enableDetailsCategory ) {
 			$('.mla-taxonomy-field .categorydiv', context ).each( function(){
-				taxonomy = mla.utility.parseTaxonomyId( $(this).attr('id') );
+				taxonomy = mlaModal.utility.parseTaxonomyId( $(this).attr('id') );
 	
 				// Load the taxonomy checklists on first expansion
 				$( '.compat-field-' + taxonomy + ' th', context ).click( { id: attachmentId, currentTaxonomy: taxonomy, el: context }, function( event ) {
-					mla.utility.fillCompatTaxonomies( event.data );
+					mlaModal.utility.fillCompatTaxonomies( event.data );
 				});
 			});
 		} // enableDetailsCategory
 
-		if ( mla.settings.enableDetailsTag ) {
+		if ( mlaModal.settings.enableDetailsTag ) {
 			$('.mla-taxonomy-field .tagsdiv', context ).each( function(){
-				taxonomy = mla.utility.parseTaxonomyId( $(this).attr('id') );
+				taxonomy = mlaModal.utility.parseTaxonomyId( $(this).attr('id') );
 	
 				// Load the taxonomy checklists on first expansion
 				$( '.compat-field-' + taxonomy + ' th', context ).click( { id: attachmentId, currentTaxonomy: taxonomy, el: context }, function( event ) {
-					mla.utility.fillCompatTaxonomies( event.data );
+					mlaModal.utility.fillCompatTaxonomies( event.data );
 				});
 			});
 		} // enableDetailsTag
@@ -799,41 +799,41 @@ var mla = {
 	/**
 	 * Replace the "Loading..." placeholders with the MLA Searchable Taxonomy Meta Boxes
 	 */
-	mla.utility.fillCompatTaxonomies = function( data ) {
+	mlaModal.utility.fillCompatTaxonomies = function( data ) {
 		var context = data.el, query = [], taxonomy, fieldClass;
 		
-		if ( mla.settings.enableDetailsCategory ) {
+		if ( mlaModal.settings.enableDetailsCategory ) {
 			$('.mla-taxonomy-field .categorydiv', context ).each( function(){
-				taxonomy = mla.utility.parseTaxonomyId( $(this).attr('id') );
+				taxonomy = mlaModal.utility.parseTaxonomyId( $(this).attr('id') );
 				query[ query.length ] = taxonomy;
 				fieldClass = '.compat-field-' + taxonomy;
 
 				// Save the initial markup for when we change attachments
-				if ( "undefined" === typeof( mla.initialHTML[ taxonomy ] ) ) {
-					mla.initialHTML[ taxonomy ] = $( fieldClass, context ).html();
+				if ( "undefined" === typeof( mlaModal.initialHTML[ taxonomy ] ) ) {
+					mlaModal.initialHTML[ taxonomy ] = $( fieldClass, context ).html();
 				} else {
-					$( fieldClass, context ).html( mla.initialHTML[ taxonomy ] );
+					$( fieldClass, context ).html( mlaModal.initialHTML[ taxonomy ] );
 				}
 	
-				$( fieldClass + ' .categorydiv', context ).html( mla.strings.loadingText );
+				$( fieldClass + ' .categorydiv', context ).html( mlaModal.strings.loadingText );
 			});
-		} // mla.settings.enableDetailsCategory
+		} // mlaModal.settings.enableDetailsCategory
 
-		if ( mla.settings.enableDetailsTag ) {
+		if ( mlaModal.settings.enableDetailsTag ) {
 			$( '.mla-taxonomy-field .tagsdiv', context ).each( function(){
-				taxonomy = mla.utility.parseTaxonomyId( $(this).attr('id') );
+				taxonomy = mlaModal.utility.parseTaxonomyId( $(this).attr('id') );
 				query[ query.length ] = taxonomy;
 				fieldClass = '.compat-field-' + taxonomy;
 	
-				if ( "undefined" === typeof( mla.initialHTML[ taxonomy ] ) ) {
-					mla.initialHTML[ taxonomy ] = $( fieldClass, context ).html();
+				if ( "undefined" === typeof( mlaModal.initialHTML[ taxonomy ] ) ) {
+					mlaModal.initialHTML[ taxonomy ] = $( fieldClass, context ).html();
 				} else {
-					$( fieldClass, context ).html( mla.initialHTML[ taxonomy ] );
+					$( fieldClass, context ).html( mlaModal.initialHTML[ taxonomy ] );
 				}
 	
-				$( fieldClass + ' .tagsdiv', context ).html( mla.strings.loadingText );
+				$( fieldClass + ' .tagsdiv', context ).html( mlaModal.strings.loadingText );
 			});
-		} // mla.settings.enableDetailsTag
+		} // mlaModal.settings.enableDetailsTag
 
 
 		if ( query.length ) {
@@ -846,7 +846,7 @@ var mla = {
 			 * @param  {object} options The options passed to jQuery.ajax.
 			 * @return {$.promise}      A jQuery promise that represents the request.
 			 */
-			wp.media.post( mla.settings.ajaxFillCompatAction, {
+			wp.media.post( mlaModal.settings.ajaxFillCompatAction, {
 				// json: true,
 				id: data.id,
 				query: query,
@@ -860,7 +860,7 @@ var mla = {
 					$( fieldClass, context ).html( results[ taxonomy ] );
 				}
 	
-				mla.utility.supportCompatTaxonomies( data );
+				mlaModal.utility.supportCompatTaxonomies( data );
 				$( '.compat-field-' + data.currentTaxonomy + ' td', context ).show();
 			});
 		} // query.length
@@ -869,15 +869,15 @@ var mla = {
 	/**
 	 * Support the MLA Searchable Taxonomy Meta Boxes
 	 */
-	mla.utility.supportCompatTaxonomies = function( data ) {
+	mlaModal.utility.supportCompatTaxonomies = function( data ) {
 		var attachmentId = data.id, context = data.el;
 		
-		if ( mla.settings.enableDetailsCategory ) {
+		if ( mlaModal.settings.enableDetailsCategory ) {
 			$( '.mla-taxonomy-field .categorydiv', context ).each( function(){
 				var thisJQuery = $(this), catAddBefore, catAddAfter, taxonomy, settingName,
 					taxonomyIdPrefix, taxonomyNewIdSelector, taxonomySearchIdSelector, taxonomyTermsId;
 		
-				taxonomy = mla.utility.parseTaxonomyId( $(this).attr('id') );
+				taxonomy = mlaModal.utility.parseTaxonomyId( $(this).attr('id') );
 				settingName = taxonomy + '_tab';
 				taxonomyIdPrefix = '#mla-' + taxonomy;
 				taxonomyNewIdSelector = '#mla-new-' + taxonomy;
@@ -924,7 +924,7 @@ var mla = {
 					};
 					query[ taxonomy ] = termList;
 					
-					wp.media.post( mla.settings.ajaxUpdateCompatAction, 
+					wp.media.post( mlaModal.settings.ajaxUpdateCompatAction, 
 						query ).done( function( results ) {
 						var taxonomy, list;
 
@@ -1108,11 +1108,11 @@ var mla = {
 					return false;
 				});
 			}); // .categorydiv.each
-		} // mla.settings.enableDetailsCategory
+		} // mlaModal.settings.enableDetailsCategory
 		
-		if ( mla.settings.enableDetailsTag ) {
+		if ( mlaModal.settings.enableDetailsTag ) {
 			$('.mla-taxonomy-field .tagsdiv', context ).each( function(){
-				var taxonomy = mla.utility.parseTaxonomyId( $(this).attr('id') );
+				var taxonomy = mlaModal.utility.parseTaxonomyId( $(this).attr('id') );
 	
 				// Expand/collapse the meta box contents
 				$( '.compat-field-' + taxonomy + ' th', context ).click( function() {
@@ -1120,9 +1120,9 @@ var mla = {
 				});
 				
 				// Install support for flat taxonomies
-				mla.tagBox.init( attachmentId, taxonomy, context );
+				mlaModal.tagBox.init( attachmentId, taxonomy, context );
 			}); // .tagsdiv.each
-		} // mla.settings.enableDetailsTag
+		} // mlaModal.settings.enableDetailsTag
 	};
 	
 	/*
@@ -1138,14 +1138,14 @@ var mla = {
 	/**
 	 * Extend the WP AttachmentCompat object
 	 * /
-	mla.compat = {
+	mlaModal.compat = {
 		init: function() {
-			console.log( 'mla.compat.init' );
+			console.log( 'mlaModal.compat.init' );
 			
 			// Intercept the view.AttachmentCompat methods
 			var original = wp.media.view.AttachmentCompat.prototype;
-			console.log( 'mla.compat.init tagName: ', original.tagName );
-			console.log( 'mla.compat.init className: ', original.className );
+			console.log( 'mlaModal.compat.init tagName: ', original.tagName );
+			console.log( 'mlaModal.compat.init className: ', original.className );
 			
 			// Save the original methods
 			original.mla_old_initialize = original.initialize;
@@ -1155,34 +1155,34 @@ var mla = {
 			original.mla_old_save = original.save;
 			
 			original.initialize = function() {
-				console.log( 'mla.compat.initialize' );
+				console.log( 'mlaModal.compat.initialize' );
 				this.mla_old_initialize();
 			};
 			
 			original.dispose = function() {
-				console.log( 'mla.compat.dispose' );
+				console.log( 'mlaModal.compat.dispose' );
 				this.mla_old_dispose();
 				return this; // allow chaining
 			};
 			
 			original.render = function() {
-				console.log( 'mla.compat.render' );
+				console.log( 'mlaModal.compat.render' );
 				this.mla_old_render();
 				return this; // allow chaining
 			};
 			
 			original.preventDefault = function() {
-				console.log( 'mla.compat.preventDefault' );
+				console.log( 'mlaModal.compat.preventDefault' );
 				this.mla_old_preventDefault();
 			};
 			
 			// Note: Advanced Custom Fields (ACF) overrides this method and never calls the original!
 			original.save = function() {
-				console.log( 'mla.compat.save' );
+				console.log( 'mlaModal.compat.save' );
 				this.mla_old_save();
 			};
 		}
-	}; // mla.compat */
+	}; // mlaModal.compat */
 	
-//$( document ).ready( function(){ mla.compat.init(); } )
+//$( document ).ready( function(){ mlaModal.compat.init(); } )
 }( jQuery ) );

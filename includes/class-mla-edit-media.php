@@ -179,6 +179,12 @@ class MLAEdit {
 			$script_variables['setParentDataType'] = 'xml';
 		}
 
+		if ( version_compare( get_bloginfo( 'version' ), '3.8', '>=' ) ) {
+			$script_variables['useDashicons'] = true;
+		} else {
+			$script_variables['useDashicons'] = false;
+		}
+
 		wp_localize_script( self::JAVASCRIPT_EDIT_MEDIA_SLUG, self::JAVASCRIPT_EDIT_MEDIA_OBJECT, $script_variables );
 	}
 

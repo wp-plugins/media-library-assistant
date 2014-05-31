@@ -29,7 +29,7 @@ class MLA {
 	 *
 	 * @var	string
 	 */
-	const CURRENT_MLA_VERSION = '1.82';
+	const CURRENT_MLA_VERSION = '1.83';
 
 	/**
 	 * Slug for registering and enqueueing plugin style sheet
@@ -347,6 +347,12 @@ class MLA {
 				$script_variables['setParentDataType'] = 'json';
 			} else {
 				$script_variables['setParentDataType'] = 'xml';
+			}
+
+			if ( version_compare( get_bloginfo( 'version' ), '3.8', '>=' ) ) {
+				$script_variables['useDashicons'] = true;
+			} else {
+				$script_variables['useDashicons'] = false;
 			}
 
 			wp_localize_script( self::JAVASCRIPT_INLINE_EDIT_SLUG, self::JAVASCRIPT_INLINE_EDIT_OBJECT, $script_variables );
