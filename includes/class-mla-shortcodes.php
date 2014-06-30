@@ -730,6 +730,11 @@ class MLAShortcodes {
 				$link_text = false;
 			}
 
+			/*
+			 * As of WP 3.7, this function returns "<a href='$url'>$link_text</a>", where $link_text
+			 * can be an image thumbnail or a text link. The "title=" attribute was dropped.
+			 * The function is defined in /wp-includes/post-template.php.
+			 */
 			$item_values['pagelink'] = wp_get_attachment_link($attachment->ID, $size, true, $show_icon, $link_text);
 			$item_values['filelink'] = wp_get_attachment_link($attachment->ID, $size, false, $show_icon, $link_text);
 
@@ -740,22 +745,43 @@ class MLAShortcodes {
 				} else {
 					$dimensions = $registered_dimensions['thumbnail'];
 				}
-				
+
 				$thumb = preg_replace( '/width=\"[^\"]*\"/', sprintf( 'width="%1$d"', $dimensions[1] ), $item_values['pagelink'] );
 				$item_values['pagelink'] = preg_replace( '/height=\"[^\"]*\"/', sprintf( 'height="%1$d"', $dimensions[0] ), $thumb );
 				$thumb = preg_replace( '/width=\"[^\"]*\"/', sprintf( 'width="%1$d"', $dimensions[1] ), $item_values['filelink'] );
 				$item_values['filelink'] = preg_replace( '/height=\"[^\"]*\"/', sprintf( 'height="%1$d"', $dimensions[0] ), $thumb );
 			}
-			
+
 			/*
 			 * Apply the Gallery Display Content parameters.
 			 * Note that $link_attributes and $rollover_text
 			 * are used in the Google Viewer code below
 			 */
-			if ( ! empty( $arguments['mla_target'] ) ) {
-				$link_attributes = 'target="' . $arguments['mla_target'] . '" ';
+			$link_attributes = '';
+			if ( ! empty( $arguments['mla_rollover_text'] ) ) {
+				$rollover_text = esc_attr( self::_process_shortcode_parameter( $arguments['mla_rollover_text'], $item_values ) );
+
+				/*
+				 * The "title=" attribute was removed in WP 3.7+, but look for it anyway.
+				 * If it's not there, add the "title=" value to the link attributes.
+				 */
+				if ( false === strpos( $item_values['pagelink'], ' title=' ) ) {
+					$link_attributes .= 'title="' . $rollover_text . '" ';
+				}else {
+					/*
+					 * Replace single- and double-quote delimited values
+					 */
+					$item_values['pagelink'] = preg_replace('# title=\'([^\']*)\'#', " title='{$rollover_text}'", $item_values['pagelink'] );
+					$item_values['pagelink'] = preg_replace('# title=\"([^\"]*)\"#', " title=\"{$rollover_text}\"", $item_values['pagelink'] );
+					$item_values['filelink'] = preg_replace('# title=\'([^\']*)\'#', " title='{$rollover_text}'", $item_values['filelink'] );
+					$item_values['filelink'] = preg_replace('# title=\"([^\"]*)\"#', " title=\"{$rollover_text}\"", $item_values['filelink'] );
+				}
 			} else {
-				$link_attributes = '';
+				$rollover_text = $item_values['title'];
+			}
+
+			if ( ! empty( $arguments['mla_target'] ) ) {
+				$link_attributes .= 'target="' . $arguments['mla_target'] . '" ';
 			}
 
 			if ( ! empty( $arguments['mla_link_attributes'] ) ) {
@@ -769,20 +795,6 @@ class MLAShortcodes {
 			if ( ! empty( $link_attributes ) ) {
 				$item_values['pagelink'] = str_replace( '<a href=', '<a ' . $link_attributes . 'href=', $item_values['pagelink'] );
 				$item_values['filelink'] = str_replace( '<a href=', '<a ' . $link_attributes . 'href=', $item_values['filelink'] );
-			}
-
-			if ( ! empty( $arguments['mla_rollover_text'] ) ) {
-				$rollover_text = esc_attr( self::_process_shortcode_parameter( $arguments['mla_rollover_text'], $item_values ) );
-
-				/*
-				 * Replace single- and double-quote delimited values
-				 */
-				$item_values['pagelink'] = preg_replace('# title=\'([^\']*)\'#', " title='{$rollover_text}'", $item_values['pagelink'] );
-				$item_values['pagelink'] = preg_replace('# title=\"([^\"]*)\"#', " title=\"{$rollover_text}\"", $item_values['pagelink'] );
-				$item_values['filelink'] = preg_replace('# title=\'([^\']*)\'#', " title='{$rollover_text}'", $item_values['filelink'] );
-				$item_values['filelink'] = preg_replace('# title=\"([^\"]*)\"#', " title=\"{$rollover_text}\"", $item_values['filelink'] );
-			} else {
-				$rollover_text = $item_values['title'];
 			}
 
 			/*
@@ -1219,10 +1231,18 @@ class MLAShortcodes {
 		$is_pagination = in_array( $output_parameters[0], array( 'previous_link', 'current_link', 'next_link', 'previous_page', 'next_page', 'paginate_links' ) ); 
 
 		/*
-		 * Convert taxonomy list to an array
+		 * Convert lists to arrays
 		 */
 		if ( is_string( $arguments['taxonomy'] ) ) {
 			$arguments['taxonomy'] = explode( ',', $arguments['taxonomy'] );
+		}
+
+		if ( is_string( $arguments['post_type'] ) ) {
+			$arguments['post_type'] = explode( ',', $arguments['post_type'] );
+		}
+
+		if ( is_string( $arguments['post_status'] ) ) {
+			$arguments['post_status'] = explode( ',', $arguments['post_status'] );
 		}
 
 		$tags = self::mla_get_terms( $arguments );
@@ -1835,13 +1855,13 @@ class MLAShortcodes {
 	 */
 	private static function _registered_dimensions() {
 		global $_wp_additional_image_sizes;
-		
+
 		if ( 'checked' == MLAOptions::mla_get_option( MLAOptions::MLA_ENABLE_MLA_ICONS ) ) {
 			$sizes = array( 'icon' => array( 64, 64 ) );
 		} else {
 			$sizes = array( 'icon' => array( 60, 60 ) );
 		}
-		
+
 		foreach( get_intermediate_image_sizes() as $s ) {
 			$sizes[ $s ] = array( 0, 0 );
 
@@ -2364,7 +2384,7 @@ class MLAShortcodes {
 			'tag_slug__and' => array(),
 			'tag_slug__in' => array(),
 			// Taxonomy parameters are handled separately
-			// {tax_slug} => 'term' | array ( 'term, 'term, ... )
+			// {tax_slug} => 'term' | array ( 'term', 'term', ... )
 			// 'tax_query' => ''
 			'tax_operator' => '',
 			'tax_include_children' => true,
@@ -2531,8 +2551,9 @@ class MLAShortcodes {
 							return '<p>' . __( 'ERROR: Invalid mla_gallery', 'media-library-assistant' ) . ' tax_query = ' . var_export( $value, true ) . '</p>';
 						}
 					} // not array
-				}  // tax_query
-				elseif ( array_key_exists( $key, $taxonomies ) ) {
+				}  /* tax_query */ elseif ( 'category' == $key ) {
+					$arguments['category_name'] = $value;
+				}  /* category */ elseif ( array_key_exists( $key, $taxonomies ) ) {
 					$query_arguments[ $key ] = implode(',', array_filter( array_map( 'trim', explode( ',', $value ) ) ) );
 
 					if ( 'false' == strtolower( trim( $arguments['tax_include_children'] ) ) ) {
@@ -2805,7 +2826,7 @@ class MLAShortcodes {
 		 * Decide whether to use a "get_children" style query
 		 */
 		self::$query_parameters['disable_tax_join'] = $is_tax_query && ! $use_children;
-		
+
 		if ( $use_children && ! isset( $query_arguments['post_parent'] ) ) {
 			if ( ! isset( $query_arguments['id'] ) ) {
 				$query_arguments['post_parent'] = $post_parent;
@@ -2880,7 +2901,7 @@ class MLAShortcodes {
 
 		if ( self::$mla_debug ) {
 			global $wp_filter;
-			
+
 			foreach( $wp_filter['posts_where'] as $priority => $filters ) {
 				self::$mla_debug_messages .= '<p><strong>mla_debug $wp_filter[posts_where]</strong> priority = ' . var_export( $priority, true ) . '<br />';
 				foreach ( $filters as $name => $descriptor ) {
@@ -2950,7 +2971,7 @@ class MLAShortcodes {
 	 * 
 	 * Defined as public because it's a filter.
 	 *
-	 * @since 1.8x
+	 * @since 1.90
 	 *
 	 * @param	string	query clause before modification
 	 *
@@ -3088,6 +3109,8 @@ class MLAShortcodes {
 	private static $mla_get_terms_parameters = array(
 		'taxonomy' => 'post_tag',
 		'post_mime_type' => 'all',
+		'post_type' => 'attachment',
+		'post_status' => 'inherit',
 		'ids' => array(),
 		'fields' => 't.term_id, t.name, t.slug, t.term_group, tt.term_taxonomy_id, tt.taxonomy, tt.description, tt.parent, COUNT(p.ID) AS `count`',
 		'include' => '',
@@ -3095,11 +3118,12 @@ class MLAShortcodes {
 		'parent' => '',
 		'minimum' => 0,
 		'no_count' => false,
-		'number' => 45,
+		'number' => 0,
 		'orderby' => 'name',
 		'order' => 'ASC',
 		'no_orderby' => false,
 		'preserve_case' => false,
+		'pad_counts' => false,
 		'limit' => 0,
 		'offset' => 0
 	);
@@ -3112,7 +3136,15 @@ class MLAShortcodes {
 	 * an accurate count of attachments associated with each term.
 	 *
 	 * taxonomy - string containing one or more (comma-delimited) taxonomy names
-	 * or an array of taxonomy names.
+	 * or an array of taxonomy names. Default 'post_tag'.
+	 *
+	 * post_mime_type - MIME type(s) of the items to include in the term-specific counts. Default 'all'.
+	 *
+	 * post_type - The post type(s) of the items to include in the term-specific counts. The default is "attachment". 
+	 *
+	 * post_status - The post status value(s) of the items to include in the term-specific counts. The default is "inherit".
+	 *
+	 * ids - A comma-separated list of attachment ID values for an item-specific cloud.
 	 *
 	 * include - An array, comma- or space-delimited string of term ids to include
 	 * in the return array.
@@ -3122,24 +3154,26 @@ class MLAShortcodes {
 	 *
 	 * parent - term_id of the terms' immediate parent; 0 for top-level terms.
 	 *
-	 * minimum - minimum number of attachments a term must have to be included.
+	 * minimum - minimum number of attachments a term must have to be included. Default 0.
 	 *
-	 * no_count - true to to suppress count of attachments per term else false
+	 * no_count - 'true', 'false' (default) to suppress term-specific attachment-counting process.
 	 *
 	 * number - maximum number of term objects to return. Terms are ordered by count,
-	 * descending and then by term_id before this value is applied.
+	 * descending and then by term_id before this value is applied. Default 45.
 	 *
-	 * orderby - 'count', 'id', 'name', 'none', 'random', 'slug'
+	 * orderby - 'count', 'id', 'name' (default), 'none', 'random', 'slug'
 	 *
-	 * order - 'ASC', 'DESC'
+	 * order - 'ASC' (default), 'DESC'
 	 *
-	 * no_orderby - true to suppress ALL sorting clauses else false
+	 * no_orderby - 'true', 'false' (default) to suppress ALL sorting clauses else false.
 	 *
-	 * preserve_case - 'true', 'false' to make orderby case-sensitive.
+	 * preserve_case - 'true', 'false' (default) to make orderby case-sensitive.
 	 *
-	 * limit - final number of term objects to return, for pagination.
+	 * pad_counts - 'true', 'false' (default) to make orderby case-sensitive.
 	 *
-	 * offset - number of term objects to skip, for pagination.
+	 * limit - final number of term objects to return, for pagination. Default 0.
+	 *
+	 * offset - number of term objects to skip, for pagination. Default 0.
 	 *
 	 * @since 1.60
 	 *
@@ -3196,7 +3230,39 @@ class MLAShortcodes {
 		if ( ! $no_count ) {
 			$query[] = 'LEFT JOIN `' . $wpdb->term_relationships . '` AS tr ON tt.term_taxonomy_id = tr.term_taxonomy_id';
 			$query[] = 'LEFT JOIN `' . $wpdb->posts . '` AS p ON tr.object_id = p.ID';
-			$query[] = "AND p.post_type IN ('attachment') AND p.post_status IN ('inherit')";
+
+			/*
+			 * Add type and status constraints
+			 */
+			if ( is_array( $arguments['post_type'] ) ) {
+				$post_types = $arguments['post_type'];
+			} else {
+				$post_types = array( $arguments['post_type'] );
+			}
+
+			$placeholders = array();
+			foreach ( $post_types as $post_type ) {
+				$placeholders[] = '%s';
+				$query_parameters[] = $post_type;
+			}
+
+			$query[] = 'AND p.post_type IN (' . join( ',', $placeholders ) . ')';
+
+			if ( is_array( $arguments['post_status'] ) ) {
+				$post_stati = $arguments['post_status'];
+			} else {
+				$post_stati = array( $arguments['post_status'] );
+			}
+
+			$placeholders = array();
+			foreach ( $post_stati as $post_status ) {
+				if ( ( 'private' != $post_status ) || is_user_logged_in() ) {
+					$placeholders[] = '%s';
+					$query_parameters[] = $post_status;
+				}
+			}
+
+			$query[] = 'AND p.post_status IN (' . join( ',', $placeholders ) . ')';
 		}
 
 		/*
@@ -3240,7 +3306,7 @@ class MLAShortcodes {
 					}
 				} // taxonomies
 			} // ids
-			
+
 			/*
 			 * If there are no terms we want an empty cloud
 			 */
@@ -3251,7 +3317,7 @@ class MLAShortcodes {
 				$arguments['include'] = implode( ',', $includes );
 			}
 		}
-		
+
 		/*
 		 * Add include/exclude and parent constraints to WHERE cluse
 		 */
@@ -3270,14 +3336,14 @@ class MLAShortcodes {
 
 		if ( 'all' !== strtolower( $arguments['post_mime_type'] ) ) {
 			$where = str_replace( '%', '%%', wp_post_mime_type_where( $arguments['post_mime_type'], 'p' ) );
-			
+
 			if ( 0 == absint( $arguments['minimum'] ) ) {
 				$query[] = ' AND ( p.post_mime_type IS NULL OR ' . substr( $where, 6 );
 			} else {
 				$query[] = $where;
 			}
 		}
-		
+
 		$query[] = ' ) GROUP BY tt.term_taxonomy_id';
 
 		if ( 0 < absint( $arguments['minimum'] ) ) {
@@ -3398,9 +3464,96 @@ class MLAShortcodes {
 			self::$mla_debug_messages .= '<p><strong>' . __( 'mla_debug found_rows', 'media-library-assistant' ) . '</strong> = ' . var_export( $found_rows, true ) . '</p>';
 		}
 
+		if ( $arguments['pad_counts'] ) {
+			self::_pad_term_counts( $tags, reset( $taxonomies ), $post_types, $post_stati );
+		}
+
 		$tags['found_rows'] = $found_rows;
 		$tags = apply_filters( 'mla_get_terms_query_results', $tags );
+
 		return $tags;
+	} // mla_get_terms
+
+	/**
+	 * Add count of children to parent count.
+	 *
+	 * Recalculates term counts by including items from child terms. Assumes all
+	 * relevant children are already in the $terms argument.
+	 *
+	 * @since 1.90
+	 *
+	 * @param	array	Array of Term objects, by reference
+	 * @param	string	Term Context
+	 * @param	array	Qualifying post type value(s)
+	 * @param	array	Qualifying post status value(s)
+	 * @return	null	Will break from function if conditions are not met.
+	 */
+	private static function _pad_term_counts( &$terms, $taxonomy, $post_types = NULL, $post_stati = NULL ) {
+		global $wpdb;
+
+		// This function only works for hierarchical taxonomies like post categories.
+		if ( !is_taxonomy_hierarchical( $taxonomy ) ) {
+			return;
+		}
+
+		// WordPress "private" function, in /wp-includes/taxonomy.php
+		$term_hier = _get_term_hierarchy( $taxonomy );
+
+		if ( empty( $term_hier ) ) {
+			return;
+		}
+
+		$terms_by_id = array(); // key term_id, value = reference to term object
+		$term_ids = array(); // key term_taxonomy_id, value = term_id
+		$term_items = array(); // key term_id
+
+		foreach ( (array) $terms as $key => $term ) {
+			if ( is_integer( $key ) ) {
+				$terms_by_id[$term->term_id] = & $terms[$key];
+				$term_ids[$term->term_taxonomy_id] = $term->term_id;
+			}
+		}
+
+		if ( is_array( $post_stati ) ) {
+			$post_stati = esc_sql( $post_stati );
+		} else {
+			$post_stati = array( 'inherit' );
+		}
+
+		if ( is_array( $post_types ) ) {
+			$post_types = esc_sql( $post_types );
+		} else {
+			$tax_obj = get_taxonomy( $taxonomy );
+			$post_types = esc_sql( $tax_obj->object_type );
+		}
+
+		// Get the object and term ids and stick them in a lookup table
+		$results = $wpdb->get_results( "SELECT object_id, term_taxonomy_id FROM $wpdb->term_relationships INNER JOIN $wpdb->posts ON object_id = ID WHERE term_taxonomy_id IN (" . implode( ',', array_keys($term_ids) ) . ") AND post_type IN ('" . implode( "', '", $post_types ) . "') AND post_status in ( '" . implode( "', '", $post_stati ) . "' )" );
+		foreach ( $results as $row ) {
+			$id = $term_ids[ $row->term_taxonomy_id ];
+			$term_items[ $id ][ $row->object_id ] = isset( $term_items[ $id ][ $row->object_id ] ) ? ++$term_items[ $id ][ $row->object_id ] : 1;
+		}
+
+		// Touch every ancestor's lookup row for each post in each term
+		foreach ( $term_ids as $term_id ) {
+			$child = $term_id;
+			while ( !empty( $terms_by_id[ $child] ) && $parent = $terms_by_id[ $child ]->parent ) {
+				if ( !empty( $term_items[ $term_id ] ) ) {
+					foreach ( $term_items[ $term_id ] as $item_id => $touches ) {
+						$term_items[ $parent ][ $item_id ] = isset( $term_items[ $parent ][ $item_id ] ) ? ++$term_items[ $parent ][ $item_id ]: 1;
+					}
+				}
+
+				$child = $parent;
+			}
+		}
+
+		// Transfer the touched cells
+		foreach ( (array) $term_items as $id => $items ) {
+			if ( isset( $terms_by_id[ $id ] ) ) {
+				$terms_by_id[ $id ]->count = count( $items );
+			}
+		}
 	}
 } // Class MLAShortcodes
 ?>

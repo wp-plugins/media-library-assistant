@@ -34,12 +34,12 @@ class RandomFeaturedImage {
 	 * Select the approach: 1) (true) use the shortcode, 2) (false) parse the gallery
 	 */
 	const USE_SHORTCODE = false; //true;
-	
+
 	/**
 	 * Select the taxonomy, e.g., 'category', 'post_tag', 'attachment_category', 'attachment_tag'
 	 */
 	const TAXONOMY = 'category';
-	
+
 	/**
 	 * Initialization function, similar to __construct()
 	 *
@@ -87,7 +87,7 @@ class RandomFeaturedImage {
 		 */
 		if ( 'category' == self::TAXONOMY ) {
 			$default_category_id= get_option('default_category');
-			
+
 			foreach( $the_terms as $index => $term ) {
 				if ( $term->term_id == $default_category_id ) {
 					unset( $the_terms[ $index ] );
@@ -102,12 +102,12 @@ class RandomFeaturedImage {
 		if ( '' != get_the_post_thumbnail( $post_ID ) ) {
 			return;
 		}
-		
+
 		/*
 		 * Pick the term, e.g. the first value or perhaps a random value
 		 */
 		$chosen_name = $the_terms[0]->name;
-		
+
 		/*
 		 * Find the right [mla_gallery] parameter name for the taxonomy
 		 */
@@ -171,7 +171,7 @@ class RandomFeaturedImage {
 		if ( empty( $arguments['rfi_post_id'] ) ) {
 			return '';
 		}
-		
+
 		/*
 		 * Make sure we have exactly one image ID
 		 */

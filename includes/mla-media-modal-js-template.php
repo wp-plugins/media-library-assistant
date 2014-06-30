@@ -18,7 +18,7 @@ global $post;
     
     <input type="search" id="media-search-input" name="s[mla_search_value]" class="search" value="<?php echo $search_value ?>" placeholder="{{ data.searchBoxPlaceholder }}" size="22" />
 	<input type="submit" name="mla_search_submit" id="mla-search-submit" class="button search" value="<?php _e( 'Search', 'media-library-assistant' ); ?>"  /><br>
-    <ul class="mla-search-options">
+    <ul class="mla-search-options" style="{{ data.searchBoxControlsStyle }}">
         <li>
             <input type="radio" name="s[mla_search_connector]" value="AND" <?php echo ( 'OR' === $search_connector ) ? '' : 'checked'; ?> />
             <?php _e( 'and', 'media-library-assistant' ); ?>
@@ -35,11 +35,11 @@ global $post;
             <input type="checkbox" name="s[mla_search_name]" id="search-name" value="name" <?php echo ( in_array( 'name', $search_fields ) ) ? 'checked' : ''; ?> />
             <?php _e( 'Name', 'media-library-assistant' ); ?>
         </li>
-		<br>
         <li>
             <input type="checkbox" name="s[mla_search_alt_text]" id="search-alt-text" value="alt-text" <?php echo ( in_array( 'alt-text', $search_fields ) ) ? 'checked' : ''; ?> />
             <?php _e( 'ALT Text', 'media-library-assistant' ); ?>
         </li>
+		<br>
         <li>
             <input type="checkbox" name="s[mla_search_excerpt]" id="search-excerpt" value="excerpt" <?php echo ( in_array( 'excerpt', $search_fields ) ) ? 'checked' : ''; ?> />
             <?php _e( 'Caption', 'media-library-assistant' ); ?>
@@ -48,5 +48,12 @@ global $post;
             <input type="checkbox" name="s[mla_search_content]" id="search-content" value="content" <?php echo ( in_array( 'content', $search_fields ) ) ? 'checked' : ''; ?> />
             <?php _e( 'Description', 'media-library-assistant' ); ?>
         </li>
+        <li>
+            <input type="checkbox" name="s[mla_search_terms]" id="search-terms" value="terms" <?php echo ( in_array( 'terms', $search_fields ) ) ? 'checked' : ''; ?> />
+            <?php _e( 'Terms', 'media-library-assistant' ); ?>
+        </li>
     </ul>
+</script>
+<script type="text/html" id="tmpl-mla-terms-search-button">
+	<input type="button" name="mla_terms_search" id="mla-terms-search" class="button" value="<?php _e( 'Terms Search', 'media-library-assistant' ); ?>"  />
 </script>

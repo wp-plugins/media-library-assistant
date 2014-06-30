@@ -69,13 +69,13 @@ class MLAMappingHooksExample {
 		 */
 		add_filter( 'mla_upload_prefilter', 'MLAMappingHooksExample::mla_upload_prefilter_filter', 10, 2 );
 		add_filter( 'mla_upload_filter', 'MLAMappingHooksExample::mla_upload_filter_filter', 10, 2 );
-		
+
 		add_action( 'mla_add_attachment', 'MLAMappingHooksExample::mla_add_attachment_action', 10, 1 );
-		
+
 		add_filter( 'mla_update_attachment_metadata_options', 'MLAMappingHooksExample::mla_update_attachment_metadata_options_filter', 10, 3 );
 		add_filter( 'mla_update_attachment_metadata_prefilter', 'MLAMappingHooksExample::mla_update_attachment_metadata_prefilter_filter', 10, 3 );
 		add_filter( 'mla_update_attachment_metadata_postfilter', 'MLAMappingHooksExample::mla_update_attachment_metadata_postfilter_filter', 10, 3 );
-		
+
 		add_filter( 'mla_mapping_settings', 'MLAMappingHooksExample::mla_mapping_settings_filter', 10, 4 );
 		add_filter( 'mla_mapping_rule', 'MLAMappingHooksExample::mla_mapping_rule_filter', 10, 4 );
 		add_filter( 'mla_mapping_custom_value', 'MLAMappingHooksExample::mla_mapping_custom_value_filter', 10, 5 );
@@ -101,7 +101,7 @@ class MLAMappingHooksExample {
 	 */
 	private static $image_metadata = array();
 	private static $raw_metadata = array();
-	
+
 	/**
 	 * MLA Mapping Upload Prefilter
 	 *
@@ -125,13 +125,13 @@ class MLAMappingHooksExample {
 		 */
 		//error_log( 'MLAMappingHooksExample::mla_upload_prefilter_filter $file = ' . var_export( $file, true ), 0 );
 		//error_log( 'MLAMappingHooksExample::mla_upload_prefilter_filter $image_metadata = ' . var_export( $image_metadata, true ), 0 );
-		
+
 		/*
 		 * Save the information for use in the later filters
 		 */
 		self::$image_metadata = $image_metadata;
 		self::$image_metadata['preload_file'] = $file;
-		
+
 		/*
 		 * Save the EXIF, XMP, IPTC and COM data from JPEG files
 		 */
@@ -144,7 +144,7 @@ class MLAMappingHooksExample {
 
 		return $file;
 	} // mla_upload_prefilter_filter
-	
+
 	/**
 	 * MLA Mapping Upload Filter
 	 *
@@ -164,7 +164,7 @@ class MLAMappingHooksExample {
 	public static function mla_upload_filter_filter( $file, $id3_data ) {
 		//error_log( 'MLAMappingHooksExample::mla_upload_filter_filter $file = ' . var_export( $file, true ), 0 );
 		//error_log( 'MLAMappingHooksExample::mla_upload_filter_filter $id3_data = ' . var_export( $id3_data, true ), 0 );
-		
+
 		/*
 		 * Save the information for use in the later filters
 		 */
@@ -173,7 +173,7 @@ class MLAMappingHooksExample {
 
 		return $file;
 	} // mla_upload_filter_filter
-	
+
 	/**
 	 * MLA Add Attachment Action
 	 *
@@ -191,13 +191,13 @@ class MLAMappingHooksExample {
 	 */
 	public static function mla_add_attachment_action( $post_ID ) {
 		//error_log( 'MLAMappingHooksExample::mla_add_attachment_action $post_ID = ' . var_export( $post_ID, true ), 0 );
-		
+
 		/*
 		 * Save the information for use in the later filters
 		 */
 		self::$image_metadata['post_id'] = $post_ID;
 	} // mla_add_attachment_action
-	
+
 	/**
 	 * MLA Update Attachment Metadata Options
 	 *
@@ -223,10 +223,10 @@ class MLAMappingHooksExample {
 		//error_log( 'MLAMappingHooksExample::mla_update_attachment_metadata_options_filter $options = ' . var_export( $options, true ), 0 );
 		//error_log( 'MLAMappingHooksExample::mla_update_attachment_metadata_options_filter $data = ' . var_export( $data, true ), 0 );
 		//error_log( 'MLAMappingHooksExample::mla_update_attachment_metadata_options_filter $post_ID = ' . var_export( $post_ID, true ), 0 );
-		
+
 		return $options;
 	} // mla_update_attachment_metadata_prefilter_filter
-	
+
 	/**
 	 * MLA Update Attachment Metadata Prefilter
 	 *
@@ -250,7 +250,7 @@ class MLAMappingHooksExample {
 		//error_log( 'MLAMappingHooksExample::mla_update_attachment_metadata_prefilter_filter $data = ' . var_export( $data, true ), 0 );
 		//error_log( 'MLAMappingHooksExample::mla_update_attachment_metadata_prefilter_filter $post_ID = ' . var_export( $post_ID, true ), 0 );
 		//error_log( 'MLAMappingHooksExample::mla_update_attachment_metadata_prefilter_filter $options = ' . var_export( $options, true ), 0 );
-		
+
 		/*
 		 * If the metadata has been stripped, try to replace it
 		 * NOTE: Uncomment/comment the "self::" and "$data = " lines to activate/deactivate
@@ -262,10 +262,10 @@ class MLAMappingHooksExample {
 				//error_log( 'regenerated data = ' . var_export( $data, true ), 0 );
 
 		}
-		
+
 		return $data;
 	} // mla_update_attachment_metadata_prefilter_filter
-	
+
 	/**
 	 * MLA Update Attachment Metadata Postfilter
 	 *
@@ -288,7 +288,7 @@ class MLAMappingHooksExample {
 
 		return $data;
 	} // mla_update_attachment_metadata_postfilter_filter
-	
+
 	/**
 	 * MLA Mapping Settings Filter
 	 *
@@ -309,7 +309,7 @@ class MLAMappingHooksExample {
 		//error_log( 'MLAMappingHooksExample::mla_mapping_settings_filter $post_ID = ' . var_export( $post_ID, true ), 0 );
 		//error_log( 'MLAMappingHooksExample::mla_mapping_settings_filter $category = ' . var_export( $category, true ), 0 );
 		//error_log( 'MLAMappingHooksExample::mla_mapping_settings_filter $attachment_metadata = ' . var_export( $attachment_metadata, true ), 0 );
-		
+
 		/*
 		 * $category gives the context in which the rule is applied:
 		 *		'custom_field_mapping' - mapping custom fields for ALL attachments
@@ -369,7 +369,7 @@ class MLAMappingHooksExample {
 		 */
 		return $settings;
 	} // mla_mapping_settings_filter
-	
+
 	/**
 	 * MLA Mapping Rule Filter
 	 *
@@ -398,7 +398,7 @@ class MLAMappingHooksExample {
 		 */
 		return $setting_value;
 	} // mla_mapping_rule_filter
-	
+
 	/**
 	 * MLA Mapping Custom Field Value Filter
 	 *
@@ -523,7 +523,7 @@ class MLAMappingHooksExample {
 		 */
 		return $exif_value;
 	} // mla_mapping_exif_value_filter
-	
+
 	/**
 	 * MLA Mapping Updates Filter
 	 *
@@ -578,7 +578,7 @@ class MLAMappingHooksExample {
 		 * Return an updated $mla_tablist ( $tab = NULL ), an updated single element or false
 		 */
 		return $results;
-		
+
 		/*
 		 * Comment out the above return statement to fall through to this example,
 		 * which removes the "Uploads" tab from the Settings/Media Library Assistant submenu
@@ -588,7 +588,7 @@ class MLAMappingHooksExample {
 		} elseif ( 'upload' == $tab ) {
 			$results = false;
 		}
-		
+
 		return $results;
 	} // mla_get_options_tablist_filter
 
@@ -625,22 +625,22 @@ class MLAMappingHooksExample {
 		$file_length = strlen( $file_contents );
 		$file_offset = 0;
 		$section_array = array();
-		
+
 		while ( $file_offset < $file_length ) {
 			$section_value = array();
-			
+
 			// Find a marker
 			for ( $i = 0; $i < 7; $i++ ) {
 				if ( 0xFF != ord( $file_contents[ $file_offset + $i ] ) ) {
 					break;
 				}
 			}
-			
+
 			$section_value['marker'] = $marker = ord( $file_contents[ $file_offset + $i ] );
-			
+
 			if ( $marker >= self::SOF0 && $marker <= self::COM ) {
 				$section_value['offset'] = $file_offset + ( $i - 1);
-				
+
 				if ( ( self::SOI == $marker ) || ( self::EOI == $marker ) ) {
 					$file_offset = $file_offset + ( $i + 1 );
 				} elseif ( self::SOS == $marker ) {
@@ -671,7 +671,7 @@ class MLAMappingHooksExample {
 					$section_value['offset'] = $file_offset + $i;
 				}
 				$file_offset = $file_offset + ( $i + 1 );
-				
+
 				while ( $file_offset < $file_length ) {
 					if ( 0xFF == ord( $file_contents[ $file_offset ] ) ) {
 						break;
@@ -685,7 +685,7 @@ class MLAMappingHooksExample {
 			$section_array[] = $section_value;
 			//error_log( 'MLAMappingHooksExample::_enumerate_jpeg_sections $section_value = ' . var_export( $section_value, true ), 0 );
 		} // while offset < length
-		
+
 		return $section_array;
 	} // _enumerate_jpeg_sections
 
@@ -777,25 +777,25 @@ class MLAMappingHooksExample {
 			//error_log( 'MLAMappingHooksExample::_replace_jpeg_metadata $APP0_section = ' . var_export( $APP0_section, true ), 0 );
 			//error_log( 'MLAMappingHooksExample::_replace_jpeg_metadata $COM_section = ' . var_export( $COM_section, true ), 0 );
 			//error_log( 'MLAMappingHooksExample::_replace_jpeg_metadata $destination_sections = ' . var_export( $destination_sections, true ), 0 );
-			
+
 			if ( ( NULL == $SOI_section ) || ( NULL == $APP0_section ) ) {
 				return;
 			}
-			
+
 			@unlink( $temp_path );
 			$temp_handle = @fopen( $temp_path, 'wb' );
 			if ( false === $temp_handle ) {
 				//error_log( 'MLAMappingHooksExample::_replace_jpeg_metadata fopen error = ' . var_export( error_get_last(), true ), 0 );
 				return;
 			}
-			
+
 			if ( false === @fwrite( $temp_handle, $SOI_section ) ) {
 				//error_log( 'MLAMappingHooksExample::_replace_jpeg_metadata fwrite SOI error = ' . var_export( error_get_last(), true ), 0 );
 				@fclose( $temp_handle );
 				@unlink( $temp_path );
 				return;
 			}
-			
+
 			if ( false === @fwrite( $temp_handle, $APP0_section ) ) {
 				//error_log( 'MLAMappingHooksExample::_replace_jpeg_metadata fwrite APP0 error = ' . var_export( error_get_last(), true ), 0 );
 				@fclose( $temp_handle );
@@ -811,7 +811,7 @@ class MLAMappingHooksExample {
 					return;
 				}
 			}
-			
+
 			foreach ( $metadata as $section ) {
 				if ( false === @fwrite( $temp_handle, $section['content'] ) ) {
 					//error_log( 'MLAMappingHooksExample::_replace_jpeg_metadata fwrite metadata marker = ' . var_export( $section['marker'], true ), 0 );
@@ -821,7 +821,7 @@ class MLAMappingHooksExample {
 					return;
 				}
 			}
-			
+
 			foreach ( $destination_sections as $section ) {
 				if ( false === @fwrite( $temp_handle, substr( $file_contents, $section['offset'], $section['length'] ) ) ) {
 					//error_log( 'MLAMappingHooksExample::_replace_jpeg_metadata fwrite destination_sections marker = ' . var_export( $section['marker'], true ), 0 );
@@ -831,12 +831,12 @@ class MLAMappingHooksExample {
 					return;
 				}
 			}
-			
+
 			if ( false === @fclose( $temp_handle ) ) {
 				error_log( 'ERROR: MLAMappingHooksExample::_replace_jpeg_metadata fclose = ' . var_export( error_get_last(), true ), 0 );
 				return;
 			}
-			
+
 			if ( false === @unlink( $path ) ) {
 				error_log( 'ERROR: MLAMappingHooksExample::_replace_jpeg_metadata unlink = ' . var_export( error_get_last(), true ), 0 );
 				return;

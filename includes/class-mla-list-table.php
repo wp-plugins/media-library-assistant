@@ -307,9 +307,75 @@ class MLA_List_Table extends WP_List_Table {
 	 *
 	 * @return	array	Updated list of available list table views
 	 */
-	public static function mla_views_media_page_mla_menu_filter( $views ) {
+	public function mla_views_media_page_mla_menu_filter( $views ) {
 		$views = apply_filters( "views_upload", $views );
 		return $views;
+	}
+
+	/**
+	 * Handler for filter "wpml-media_view-upload-count" in /plugins/wpml-media/inc/wpml-media.class.php
+	 *
+	 * Computes the number of attachments that satisfy a meta_query specification.
+	 * The count is automatically made language-specific by WPML filters.
+	 *
+	 * @since 1.90
+	 *
+	 * @param	NULL	default return value if not replacing count
+	 * @param	string	key/slug value for the selected view
+	 * @param	string	HTML <a></a> tag for the link to the selected view
+	 * @param	string	language code, e.g., 'en', 'es'
+	 *
+	 * @return	mixed	NULL to allow SQL query or replacement count value
+	 */
+	public function mla_wpml_media_view_upload_count_filter( $count, $key, $view, $lang ) {
+		// extract the base URL and query parameters
+		$href_count = preg_match( '/(href=["\'])([\s\S]+?)\?([\s\S]+?)(["\'])/', $view, $href_matches );	
+		if ( $href_count ) {
+			wp_parse_str( $href_matches[3], $href_args );
+
+			if ( isset( $href_args['meta_query'] ) ) {
+				$meta_view = self::_get_view( $key, '' );
+				// extract the count value
+				$href_count = preg_match( '/class="count">\(([^\)]*)\)/', $meta_view, $href_matches );	
+				if ( $href_count ) {
+					$count = array( $href_matches[1] );
+				}
+			}
+		}
+
+		return $count;
+	}
+
+	/**
+	 * Handler for filter "wpml-media_view-upload-page-count" in /plugins/wpml-media/inc/wpml-media.class.php
+	 *
+	 * Computes the number of language-specific attachments that satisfy a meta_query specification.
+	 * The count is made language-specific by WPML filters when the current_language is set.
+	 *
+	 * @since 1.90
+	 *
+	 * @param	NULL	default return value if not replacing count
+	 * @param	string	language code, e.g., 'en', 'es'
+	 *
+	 * @return	mixed	NULL to allow SQL query or replacement count value
+	 */
+	public function mla_wpml_media_view_upload_page_count_filter( $count, $lang ) {
+		global $sitepress;
+
+		if ( isset( $_GET['meta_slug'] ) ) {
+			$save_lang = $sitepress->get_current_language();
+			$sitepress->switch_lang( $lang['code'] );
+			$meta_view = self::_get_view( $_GET['meta_slug'], '' );
+			$sitepress->switch_lang( $save_lang );
+
+			// extract the count value
+			$href_count = preg_match( '/class="count">\(([^\)]*)\)/', $meta_view, $href_matches );	
+			if ( $href_count ) {
+				$count = array( $href_matches[1] );
+			}
+		}
+
+		return $count;
 	}
 
 	/**
@@ -389,6 +455,8 @@ class MLA_List_Table extends WP_List_Table {
 	 * @return	void
 	 */
 	function __construct( ) {
+		global $sitepress;
+
 		$this->detached = isset( $_REQUEST['detached'] );
 		$this->is_trash = isset( $_REQUEST['status'] ) && $_REQUEST['status'] == 'trash';
 
@@ -406,9 +474,15 @@ class MLA_List_Table extends WP_List_Table {
 		 * NOTE: There is one add_action call at the end of this source file.
 		 * NOTE: There are two add_filter calls at the end of this source file.
 		 *
-		 * Filters are added when the source file is loaded because the MLA_List_Table
+		 * They are added when the source file is loaded because the MLA_List_Table
 		 * object is created too late to be useful.
 		 */
+
+		if ( is_object( $sitepress ) ) {		 
+			add_filter( 'views_media_page_mla-menu', array( $this, 'mla_views_media_page_mla_menu_filter' ), 10, 1 );
+			add_filter( 'wpml-media_view-upload-count', array( $this, 'mla_wpml_media_view_upload_count_filter' ), 10, 4 );
+			add_filter( 'wpml-media_view-upload-page-count', array( $this, 'mla_wpml_media_view_upload_page_count_filter' ), 10, 2 );
+		}
 	}
 
 	/**
@@ -528,7 +602,7 @@ class MLA_List_Table extends WP_List_Table {
 			$thumb = preg_replace( '/width=\"[^\"]*\"/', sprintf( 'width="%1$d"', $dimensions[1] ), $thumb );
 			$thumb = preg_replace( '/height=\"[^\"]*\"/', sprintf( 'height="%1$d"', $dimensions[0] ), $thumb );
 		}
-		
+
 		if ( $this->is_trash || ! current_user_can( 'edit_post', $item->ID ) ) {
 			return $thumb;
 		}
@@ -1141,20 +1215,19 @@ class MLA_List_Table extends WP_List_Table {
 			} else {
 				$parent_date = '';
 			}
-	
+
 			if ( isset( $item->parent_type ) ) {
 				$parent_type = '(' . $item->parent_type . ' ' . (string) $item->post_parent . ')';
 			} else {
 				$parent_type = '';
 			}
-	
+
 			$parent =  sprintf( '%1$s<br>%2$s<br>%3$s', /*%1$s*/ $parent_title, /*%2$s*/ mysql2date( __( 'Y/m/d', 'media-library-assistant' ), $parent_date ), /*%3$s*/ $parent_type ); // . "<br>\r\n";
 		} else {
 			$parent = '(' . _x( 'Unattached', 'post_mime_types_singular', 'media-library-assistant' ) . ')';
 		}
-		
-//		$set_parent = sprintf( '<a class="hide-if-no-js" id="mla-child-%2$s" onclick="mla.setParent.open( \'%1$s\',\'%2$s\',\'%3$s\' ); return false;" href="#the-list">%4$s</a><br>', /*%1$s*/ $item->post_parent, /*%2$s*/ $item->ID, /*%3$s*/ esc_attr( $item->post_title ), __( 'Set Parent', 'media-library-assistant' ) );
-		$set_parent = sprintf( '<a class="hide-if-no-js" id="mla-child-%2$s" onclick="mla.inlineEditAttachment.tableParentOpen( \'%1$s\',\'%2$s\',\'%3$s\' ); return false;" href="#the-list">%4$s</a><br>', /*%1$s*/ $item->post_parent, /*%2$s*/ $item->ID, /*%3$s*/ esc_attr( $item->post_title ), __( 'Set Parent', 'media-library-assistant' ) );
+
+		$set_parent = sprintf( '<a class="hide-if-no-js" id="mla-child-%2$s" onclick="mla.inlineEditAttachment.tableParentOpen( \'%1$s\',\'%2$s\',\'%3$s\' ); return false;" href="#the-list">%4$s</a><br>', /*%1$s*/ $item->post_parent, /*%2$s*/ $item->ID, /*%3$s*/ esc_attr( $item->post_title ), /*%4$s*/ __( 'Set Parent', 'media-library-assistant' ) );
 
 		return $parent . "<br>\n" . $set_parent . "\n";
 	}
@@ -1202,8 +1275,14 @@ class MLA_List_Table extends WP_List_Table {
 		 */
 		if ( !empty( $_REQUEST['s'] ) ) {
 			$submenu_arguments['s'] = $_REQUEST['s'];
-			$submenu_arguments['mla_search_connector'] = $_REQUEST['mla_search_connector'];
-			$submenu_arguments['mla_search_fields'] = isset ( $_REQUEST['mla_search_fields'] ) ? $_REQUEST['mla_search_fields'] : array();
+
+			if ( isset( $_REQUEST['mla_search_connector'] ) ) {
+				$submenu_arguments['mla_search_connector'] = $_REQUEST['mla_search_connector'];
+			}
+
+			if ( isset( $_REQUEST['mla_search_fields'] ) ) {
+				$submenu_arguments['mla_search_fields'] = $_REQUEST['mla_search_fields'];
+			}
 		}
 
 		/*
@@ -1470,6 +1549,7 @@ class MLA_List_Table extends WP_List_Table {
 			if ( isset( $query['post_mime_type'] ) ) {
 				$query['post_mime_type'] = urlencode( $query['post_mime_type'] );
 			} else {
+				$query['meta_slug'] = $view_slug;
 				$query['meta_query'] = urlencode( serialize( $query['meta_query'] ) );
 			}
 
@@ -1584,6 +1664,10 @@ class MLA_List_Table extends WP_List_Table {
 			submit_button( __( 'Filter', 'media-library-assistant' ), 'secondary', 'mla_filter', false, array(
 				 'id' => 'post-query-submit' 
 			) );
+
+			submit_button( __( 'Terms Search', 'media-library-assistant' ), 'secondary', 'mla_filter', false, array(
+				 'id' => 'mla-terms-search-open', 'onclick' => 'mlaTaxonomy.termsSearch.open()' 
+			) );
 		}
 
 		if ( self::mla_submenu_arguments( true ) != self::mla_submenu_arguments( false ) ) {
@@ -1667,12 +1751,11 @@ class MLA_List_Table extends WP_List_Table {
 } // class MLA_List_Table
 
 /*
- * Filters are added here, when the source file is loaded, because the MLA_List_Table
- * object is created too late to be useful.
+ * Some actions and filters are added here, when the source file is loaded, because the
+ * MLA_List_Table object is created too late to be useful.
  */
 add_action( 'admin_init', 'MLA_List_Table::mla_admin_init_action' );
  
 add_filter( 'get_user_option_managemedia_page_' . MLA::ADMIN_PAGE_SLUG . 'columnshidden', 'MLA_List_Table::mla_manage_hidden_columns_filter', 10, 3 );
 add_filter( 'manage_media_page_' . MLA::ADMIN_PAGE_SLUG . '_columns', 'MLA_List_Table::mla_manage_columns_filter', 10, 0 );
-add_filter( 'views_media_page_mla-menu', 'MLA_List_Table::mla_views_media_page_mla_menu_filter', 0x7FFFFFFF, 1 );
 ?>

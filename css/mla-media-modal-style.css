@@ -34,7 +34,8 @@
  * Attachment Browser Dropdowns
  */
 .media-frame select.attachment-months,
-.media-frame select.attachment-terms {
+.media-frame select.attachment-terms,
+.media-frame input#mla-terms-search {
 	margin-top: 11px;
 	margin-right: 10px;
 }

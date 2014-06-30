@@ -96,7 +96,7 @@ inlineEditView = {
 
 		fields = mla_inline_edit_view_vars.fields;
 		checkboxes = mla_inline_edit_view_vars.checkboxes;
-		
+
 		// add the new blank row
 		editRow = $('#inline-edit').clone(true);
 		$('td', editRow).attr('colspan', $('.widefat:first thead th:visible').length);

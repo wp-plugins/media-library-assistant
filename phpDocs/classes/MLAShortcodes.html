@@ -70,6 +70,7 @@
 <li class="method public "><a href="#mla_tag_cloud" title="mla_tag_cloud :: The MLA Tag Cloud support function."><span class="description">The MLA Tag Cloud support function.</span><pre>mla_tag_cloud()</pre></a></li>
 <li class="method public "><a href="#mla_tag_cloud_shortcode" title="mla_tag_cloud_shortcode :: The MLA Tag Cloud shortcode."><span class="description">The MLA Tag Cloud shortcode.</span><pre>mla_tag_cloud_shortcode()</pre></a></li>
 <li class="nav-header private">» Private</li>
+<li class="method private "><a href="#_pad_term_counts" title="_pad_term_counts :: Add count of children to parent count."><span class="description">Add count of children to parent count.</span><pre>_pad_term_counts()</pre></a></li>
 <li class="method private "><a href="#_paginate_links" title="_paginate_links :: Handles pagnation output types 'previous_page', 'next_page', and 'paginate_links'"><span class="description">Handles pagnation output types 'previous_page', 'next_page', and 'paginate_links'</span><pre>_paginate_links()</pre></a></li>
 <li class="method private "><a href="#_process_pagination_output_types" title="_process_pagination_output_types :: Handles pagnation output types 'previous_page', 'next_page', and 'paginate_links'"><span class="description">Handles pagnation output types 'previous_page', 'next_page', and 'paginate_links'</span><pre>_process_pagination_output_types()</pre></a></li>
 <li class="method private "><a href="#_process_shortcode_parameter" title="_process_shortcode_parameter :: Handles brace/bracket escaping and parses template for a shortcode parameter"><span class="description">Handles brace/bracket escaping and parses template for a shortcode parameter</span><pre>_process_shortcode_parameter()</pre></a></li>
@@ -196,7 +197,15 @@ Enhancements include many additional selection parameters and full taxonomy supp
 an accurate count of attachments associated with each term.</p>
 
 <p>taxonomy - string containing one or more (comma-delimited) taxonomy names
-or an array of taxonomy names.</p>
+or an array of taxonomy names. Default 'post_tag'.</p>
+
+<p>post_mime_type - MIME type(s) of the items to include in the term-specific counts. Default 'all'.</p>
+
+<p>post_type - The post type(s) of the items to include in the term-specific counts. The default is "attachment".</p>
+
+<p>post_status - The post status value(s) of the items to include in the term-specific counts. The default is "inherit".</p>
+
+<p>ids - A comma-separated list of attachment ID values for an item-specific cloud.</p>
 
 <p>include - An array, comma- or space-delimited string of term ids to include
 in the return array.</p>
@@ -206,24 +215,26 @@ from the return array. If 'include' is non-empty, 'exclude' is ignored.</p>
 
 <p>parent - term_id of the terms' immediate parent; 0 for top-level terms.</p>
 
-<p>minimum - minimum number of attachments a term must have to be included.</p>
+<p>minimum - minimum number of attachments a term must have to be included. Default 0.</p>
 
-<p>no_count - true to to suppress count of attachments per term else false</p>
+<p>no_count - 'true', 'false' (default) to suppress term-specific attachment-counting process.</p>
 
 <p>number - maximum number of term objects to return. Terms are ordered by count,
-descending and then by term_id before this value is applied.</p>
+descending and then by term_id before this value is applied. Default 45.</p>
 
-<p>orderby - 'count', 'id', 'name', 'none', 'random', 'slug'</p>
+<p>orderby - 'count', 'id', 'name' (default), 'none', 'random', 'slug'</p>
 
-<p>order - 'ASC', 'DESC'</p>
+<p>order - 'ASC' (default), 'DESC'</p>
 
-<p>no_orderby - true to suppress ALL sorting clauses else false</p>
+<p>no_orderby - 'true', 'false' (default) to suppress ALL sorting clauses else false.</p>
 
-<p>preserve_case - 'true', 'false' to make orderby case-sensitive.</p>
+<p>preserve_case - 'true', 'false' (default) to make orderby case-sensitive.</p>
 
-<p>limit - final number of term objects to return, for pagination.</p>
+<p>pad_counts - 'true', 'false' (default) to make orderby case-sensitive.</p>
 
-<p>offset - number of term objects to skip, for pagination.</p></p>
+<p>limit - final number of term objects to return, for pagination. Default 0.</p>
+
+<p>offset - number of term objects to skip, for pagination. Default 0.</p></p>
 <table class="table table-bordered"><tr>
 <th>since</th>
 <td>1.60</td>
@@ -285,7 +296,7 @@ Defined as public because it's a filter.</p></p>
 <p class="long_description"><p>Defined as public because it's a filter.</p></p>
 <table class="table table-bordered"><tr>
 <th>since</th>
-<td>1.8x</td>
+<td>1.90</td>
 </tr></table>
 <h3>Parameters</h3>
 <div class="subelement argument">
@@ -375,6 +386,37 @@ options to customize the hyperlink behind each term.</p></p>
 <h3>Returns</h3>
 <div class="subelement response">
 <code>string</code>HTML content to display the tag cloud.</div>
+</div></div>
+</div>
+<a name="_pad_term_counts" id="_pad_term_counts"></a><div class="element clickable method private _pad_term_counts" data-toggle="collapse" data-target="._pad_term_counts .collapse">
+<h2>Add count of children to parent count.</h2>
+<pre>_pad_term_counts(array $terms, string $taxonomy, array $post_types, array $post_stati) : null</pre>
+<div class="labels"></div>
+<div class="row collapse"><div class="detail-description">
+<p class="long_description"><p>Recalculates term counts by including items from child terms. Assumes all
+relevant children are already in the $terms argument.</p></p>
+<table class="table table-bordered"><tr>
+<th>since</th>
+<td>1.90</td>
+</tr></table>
+<h3>Parameters</h3>
+<div class="subelement argument">
+<h4>$terms</h4>
+<code>array</code><p>Array of Term objects, by reference</p></div>
+<div class="subelement argument">
+<h4>$taxonomy</h4>
+<code>string</code><p>Term Context</p></div>
+<div class="subelement argument">
+<h4>$post_types</h4>
+<code>array</code><p>Qualifying post type value(s)</p>
+</div>
+<div class="subelement argument">
+<h4>$post_stati</h4>
+<code>array</code><p>Qualifying post status value(s)</p>
+</div>
+<h3>Returns</h3>
+<div class="subelement response">
+<code>null</code>Will break from function if conditions are not met.</div>
 </div></div>
 </div>
 <a name="_paginate_links" id="_paginate_links"></a><div class="element clickable method private _paginate_links" data-toggle="collapse" data-target="._paginate_links .collapse">
@@ -609,7 +651,7 @@ any further logic required to translate those values is contained in the filter.
 <div class="row"><footer class="span12">
             Template is built using <a href="http://twitter.github.com/bootstrap/">Twitter Bootstrap 2</a> and icons provided by <a href="http://glyphicons.com/">Glyphicons</a>.<br>
             Documentation is powered by <a href="http://www.phpdoc.org/">phpDocumentor 2.0.0a8</a> and<br>
-            generated on 2014-05-30T12:08:31-07:00.<br></footer></div>
+            generated on 2014-06-27T14:50:12-07:00.<br></footer></div>
 </div>
 </body>
 </html>

@@ -182,7 +182,7 @@ function array_unique_noempty(a) {
 jQuery(document).ready( function($) {
 //	alert('jQuery(document).ready(function($)');
 //	console.log('jQuery(document).ready(function($)');
-	
+
 	// multi-taxonomies
 	$('#side-info-column').children('div.postbox').each(function(){
 		if ( this.id.indexOf('tagsdiv-') === 0 ) {
@@ -190,7 +190,7 @@ jQuery(document).ready( function($) {
 			return false;
 		}
 	});
-	
+
 	// categories
 	$('.categorydiv').each( function(){
 		var this_id = $(this).attr('id'), noSyncChecks = false, syncChecks, catAddAfter, taxonomyParts, taxonomy, settingName;

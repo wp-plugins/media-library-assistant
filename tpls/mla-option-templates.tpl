@@ -14,6 +14,9 @@
 			[+Checklist+]
 			</th>
 		    <th scope="col" style="text-align:center">
+			[+Term Search+]
+			</th>
+		    <th scope="col" style="text-align:center">
 			[+List Filter+]
 			</th>
 		    <th scope="col" style="text-align:left">
@@ -40,6 +43,9 @@
             <input type="checkbox" name="tax_flat_checklist[[+key+]]" id="tax_flat_checklist_[+key+]" [+flat_checklist_checked+] [+flat_checklist_disabled+] value="[+flat_checklist_value+]" />
         </td>
 		<td style="text-align:center;">
+            <input type="checkbox" name="tax_term_search[[+key+]]" id="tax_term_search[+key+]" [+term_search_checked+] value="checked" />
+        </td>
+		<td style="text-align:center;">
             <input type="radio" name="tax_filter" id="tax_filter_[+key+]" [+filter_checked+] value="[+key+]" />
         </td>
 		<td>
@@ -47,6 +53,34 @@
         </td>
 		</tr>
 
+<!-- template="search-table" -->
+        <tr valign="top">
+		  <td>&nbsp;</td>
+          <td style="text-align:left;">
+            <table class="searchtable">
+              <tbody>
+                <tr>
+                  <td style="text-align:left;">
+                    <input name="search_connector" id="search-and" type="radio" [+and_checked+] value="AND" />
+                    [+AND+]&nbsp;&nbsp;
+                    <input name="search_connector" id="search-or" type="radio" [+or_checked+] value="OR" />
+                    [+OR+]
+				  </td>
+                </tr>
+                <tr>
+                  <td style="text-align:left;">
+                    <input name="search_fields[]" id="search-title" type="checkbox" [+title_checked+] value="title" />[+Title+]&nbsp;&nbsp;&nbsp;&nbsp;
+                    <input name="search_fields[]" id="search-name" type="checkbox" [+name_checked+] value="name" />[+Name+]&nbsp;&nbsp;&nbsp;&nbsp;
+                    <input name="search_fields[]" id="search-alt-text" type="checkbox" [+alt_text_checked+] value="alt-text" />[+ALT Text+]&nbsp;&nbsp;&nbsp;&nbsp;
+                    <input name="search_fields[]" id="search-excerpt" type="checkbox" [+excerpt_checked+] value="excerpt" />[+Caption+]&nbsp;&nbsp;&nbsp;&nbsp;
+                    <input name="search_fields[]" id="search-content" type="checkbox" [+content_checked+] value="content" />[+Description+]&nbsp;&nbsp;&nbsp;&nbsp;
+                    <input name="search_fields[]" id="search-terms" type="checkbox" [+terms_checked+] value="terms" />[+Terms+]
+                </tr>
+              </tbody>
+            </table>
+            <div style="font-size:8pt;padding-bottom:10px;">[+help+]</div>
+          </td>
+        </tr>
 <!-- template="custom-field-table" -->
         <tr valign="top">
 		<td colspan="2" style="text-align:left;">

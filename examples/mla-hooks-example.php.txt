@@ -1,22 +1,26 @@
 <?php
 /**
- * Provides an example of hooking the filters provided by the [mla_gallery] shortcode
+ * Provides examples of hooking the filters provided by the [mla_gallery] shortcode:
  *
- * In this example, the gallery "caption" is modified to list all of the custom fields
- * populated for each of the items in the gallery. The example documents ALL the filters
- * available in the [mla_gallery] shortcode and illustrates some of the other techniques
- * you can use to customize the gallery display.
+ *  - In the "mla_gallery_query_arguments_filter" function are two examples of custom
+ *    SQL queries that replace the usual get_posts/WP_Query results.
+ *
+ *  - In the "mla_gallery_item_values_filter" filter are four examples that modify the 
+ *    attachment-specific data elements used to compose the gallery display.
+ *
+ * The example plugin documents ALL the filters available in the [mla_gallery] shortcode
+ * and illustrates some of the techniques you can use to customize the gallery display.
  *
  * @package MLA Gallery Hooks Example
- * @version 1.03
+ * @version 1.04
  */
 
 /*
 Plugin Name: MLA Gallery Hooks Example
 Plugin URI: http://fairtradejudaica.org/media-library-assistant-a-wordpress-plugin/
-Description: Provides an example of hooking the filters provided by the [mla_gallery] shortcode
+Description: Provides examples of hooking the filters provided by the [mla_gallery] shortcode
 Author: David Lingren
-Version: 1.03
+Version: 1.04
 Author URI: http://fairtradejudaica.org/our-story/staff/
 
 Copyright 2013, 2014 David Lingren
@@ -76,17 +80,17 @@ class MLAGalleryHooksExample {
 		add_filter( 'mla_gallery_query_arguments', 'MLAGalleryHooksExample::mla_gallery_query_arguments_filter', 10, 1 );
 		add_action( 'mla_gallery_wp_query_object', 'MLAGalleryHooksExample::mla_gallery_wp_query_object_action', 10, 1 );
 		add_filter( 'mla_gallery_final_content', 'MLAGalleryHooksExample::mla_gallery_final_content_filter', 10, 1 );
-		
+
 		add_filter( 'use_mla_gallery_style', 'MLAGalleryHooksExample::use_mla_gallery_style_filter', 10, 2 );
-		
+
 		add_filter( 'mla_gallery_style_values', 'MLAGalleryHooksExample::mla_gallery_style_values_filter', 10, 1 );
 		add_filter( 'mla_gallery_style_template', 'MLAGalleryHooksExample::mla_gallery_style_template_filter', 10, 1 );
 		add_filter( 'mla_gallery_style_parse', 'MLAGalleryHooksExample::mla_gallery_style_parse_filter', 10, 3 );
-		
+
 		add_filter( 'mla_gallery_open_values', 'MLAGalleryHooksExample::mla_gallery_open_values_filter', 10, 1 );
 		add_filter( 'mla_gallery_open_template', 'MLAGalleryHooksExample::mla_gallery_open_template_filter', 10, 1 );
 		add_filter( 'mla_gallery_open_parse', 'MLAGalleryHooksExample::mla_gallery_open_parse_filter', 10, 3 );
-		
+
 		add_filter( 'mla_gallery_style', 'MLAGalleryHooksExample::mla_gallery_style_filter', 10, 5 );
 
 		add_filter( 'mla_gallery_row_open_values', 'MLAGalleryHooksExample::mla_gallery_row_open_values_filter', 10, 1 );
@@ -114,7 +118,7 @@ class MLAGalleryHooksExample {
 	 * @var	array
 	 */
 	private static $shortcode_attributes = array();
-	
+
 	/**
 	 * MLA Gallery Raw (Display) Attributes
 	 *
@@ -135,16 +139,16 @@ class MLAGalleryHooksExample {
 		 * Uncomment the error_log statements in any of the filters to see what's passed in
 		 */
 		//error_log( 'MLAGalleryHooksExample::mla_gallery_raw_attributes_filter $shortcode_attributes = ' . var_export( $shortcode_attributes, true ), 0 );
-		
+
 		/*
 		 * Note that the global $post; object is available here and in all later filters.
 		 * It contains the post/page on which the [mla_gallery] appears.
 		 * Some [mla_gallery] invocations are not associated with a post/page; these will
-		 * have a substitute $post pbject with $post->ID == 0.
+		 * have a substitute $post object with $post->ID == 0.
 		 */
 		global $post;
 		//error_log( 'MLAGalleryHooksExample::mla_gallery_raw_attributes_filter $post->ID = ' . var_export( $post->ID, true ), 0 );
-		
+
 		return $shortcode_attributes;
 	} // mla_gallery_raw_attributes_filter
 
@@ -168,7 +172,7 @@ class MLAGalleryHooksExample {
 		 * Uncomment the error_log statements in any of the filters to see what's passed in
 		 */
 		//error_log( 'MLAGalleryHooksExample::mla_gallery_attributes_filter $shortcode_attributes = ' . var_export( $shortcode_attributes, true ), 0 );
-		
+
 		/*
 		 * Save the attributes for use in the later filters
 		 */
@@ -185,7 +189,7 @@ class MLAGalleryHooksExample {
 	 * @var	NULL|string
 	 */
 	private static $shortcode_content = NULL;
-	
+
 	/**
 	 * MLA Gallery Enclosed Content, initial filter
 	 *
@@ -203,7 +207,7 @@ class MLAGalleryHooksExample {
 	public static function mla_gallery_initial_content_filter( $shortcode_content, $shortcode_attributes ) {
 		//error_log( 'MLAGalleryHooksExample::mla_gallery_initial_content_filter $shortcode_content = ' . var_export( $shortcode_content, true ), 0 );
 		//error_log( 'MLAGalleryHooksExample::mla_gallery_initial_content_filter $shortcode_attributes = ' . var_export( $shortcode_attributes, true ), 0 );
-		
+
 		/*
 		 * Save the attributes for use in the later filters
 		 */
@@ -220,7 +224,7 @@ class MLAGalleryHooksExample {
 	 * @var	array
 	 */
 	private static $all_display_parameters = array();
-	
+
 	/**
 	 * MLA Gallery (Display) Arguments
 	 *
@@ -239,7 +243,7 @@ class MLAGalleryHooksExample {
 	 */
 	public static function mla_gallery_arguments_filter( $all_display_parameters ) {
 		//error_log( 'MLAGalleryHooksExample::mla_gallery_arguments_filter $all_display_parameters = ' . var_export( $all_display_parameters, true ), 0 );
-		
+
 		self::$all_display_parameters = $all_display_parameters;
 		return $all_display_parameters;
 	} // mla_gallery_arguments_filter
@@ -252,7 +256,7 @@ class MLAGalleryHooksExample {
 	 * @var	array
 	 */
 	private static $query_attributes = array();
-	
+
 	/**
 	 * MLA Gallery Query Attributes
 	 *
@@ -271,7 +275,7 @@ class MLAGalleryHooksExample {
 	 */
 	public static function mla_gallery_query_attributes_filter( $query_attributes ) {
 		//error_log( 'MLAGalleryHooksExample::mla_gallery_query_attributes_filter $query_attributes = ' . var_export( $query_attributes, true ), 0 );
-		
+
 		self::$query_attributes = $query_attributes;
 		return $query_attributes;
 	} // mla_gallery_query_attributes_filter
@@ -284,7 +288,7 @@ class MLAGalleryHooksExample {
 	 * @var	array
 	 */
 	private static $all_query_parameters = array();
-	
+
 	/**
 	 * MLA Gallery Query Arguments
 	 *
@@ -299,8 +303,192 @@ class MLAGalleryHooksExample {
 	 */
 	public static function mla_gallery_query_arguments_filter( $all_query_parameters ) {
 		//error_log( 'MLAGalleryHooksExample::mla_gallery_query_arguments_filter $all_query_parameters = ' . var_export( $all_query_parameters, true ), 0 );
-		
+
 		self::$all_query_parameters = $all_query_parameters;
+
+		/*
+		 * This example executes a custom SQL query that cannot be done with the usual WordPress WP_Query
+		 * arguments. The query results are fed back to the [mla_gallery] shortcode as a list of attachments
+		 * using the "include" parameter.
+		 *
+		 * We use a shortcode parameter of our own to apply this filter on a gallery-by-gallery basis,
+		 * leaving other [mla_gallery] instances untouched. If the "my_custom_sql" parameter is not present,
+		 * we have nothing to do. If the parameter IS present, extract taxonomy, parent and post type values,
+		 * then build a custom query that connects them with "OR" (WordPress would use "AND").
+		 */		
+		if ( isset( self::$shortcode_attributes['my_custom_sql'] ) ) {
+			global $wpdb;
+
+			// Make sure $my_query_vars is an array, even if it's empty
+			$my_query_vars = self::$shortcode_attributes['my_custom_sql'];
+			if ( empty( $my_query_vars ) ) {
+				$my_query_vars = array();
+			} elseif ( is_string( $my_query_vars ) ) {
+				$my_query_vars = shortcode_parse_atts( $my_query_vars );
+			}
+
+			// Start with empty parameter values
+			$ttids = array();
+			$post_parents = array();
+			$parent_types = array();
+
+			// Find taxonomy argument, if present, and collect terms
+			$taxonomies = get_taxonomies( array( 'object_type' => array( 'attachment' ) ), 'names' );
+			foreach( $taxonomies as $taxonomy ) {
+				if ( empty( $my_query_vars[ $taxonomy ] ) ) {
+					continue;
+				}
+
+				// Found the taxonomy; collect the terms
+				$include_children =  isset( $my_query_vars['include_children'] ) && 'true' == strtolower( trim( $my_query_vars['include_children'] ) );
+
+				// Allow for multiple term slug values
+				$terms = array();
+				$slugs = explode( ',', $my_query_vars[ $taxonomy ] );
+				foreach ( $slugs as $slug ) {
+					$args = array( 'slug' => $slug, 'hide_empty' => false );
+					$terms = array_merge( $terms, get_terms( $taxonomy, $args ) );
+				}
+
+				foreach( $terms as $term ) {
+					// Index by ttid to remove duplicates
+					$ttids[ $term->term_taxonomy_id ] = $term->term_taxonomy_id;
+
+					if ( $include_children ) {
+						$args = array( 'child_of' => $term->term_id, 'hide_empty' => false );
+						$children = get_terms( 'attachment_category', $args );
+						foreach( $children as $child ) {
+							$ttids[] = $child->term_taxonomy_id;
+						}
+					} // include_children
+				} // $term
+
+				break;
+			}
+
+			if ( isset( $my_query_vars['post_parent'] ) ) {
+				// Allow for multiple parent values
+				$post_parents = explode( ',', $my_query_vars['post_parent'] );
+			}
+
+			if ( isset( $my_query_vars['parent_type'] ) ) {
+				// Allow for multiple parent values
+				$parent_types = explode( ',', $my_query_vars['parent_type'] );
+			}
+
+			// Build an array of SQL clauses
+			$query = array();
+			$query_parameters = array();
+
+			$query[] = "SELECT p.ID FROM {$wpdb->posts} AS p";
+
+			if ( ! empty( $parent_types ) ) {
+				$query[] = "LEFT JOIN {$wpdb->posts} as p2";
+				$query[] = "ON (p.post_parent = p2.ID)";
+			}
+
+			if ( ! empty( $ttids ) ) {
+				$query[] = "LEFT JOIN {$wpdb->term_relationships} as tr";
+				$query[] = "ON (p.ID = tr.object_id)";
+			}
+
+			// Start with a WHERE clause that doesn't match anything, since OR is the connector				
+			$query[] = 'WHERE ( ( 1=0 )';
+
+			if ( ! empty( $post_parents ) ) {
+				$placeholders = array();
+				foreach ( $post_parents as $post_parent ) {
+					$placeholders[] = '%s';
+					$query_parameters[] = $post_parent;
+				}
+
+				$query[] = 'OR ( p.post_parent IN (' . join( ',', $placeholders ) . ') )';
+			}
+
+			if ( ! empty( $parent_types ) ) {
+				$placeholders = array();
+				foreach ( $parent_types as $parent_type ) {
+					$placeholders[] = '%s';
+					$query_parameters[] = $parent_type;
+				}
+
+				$query[] = 'OR ( p2.post_type IN (' . join( ',', $placeholders ) . ') )';
+			}
+
+			if ( ! empty( $ttids ) ) {
+				$placeholders = array();
+				foreach ( $ttids as $ttid ) {
+					$placeholders[] = '%s';
+					$query_parameters[] = $ttid;
+				}
+
+				$query[] = 'OR ( tr.term_taxonomy_id IN (' . join( ',', $placeholders ) . ') )';
+			}
+
+			// Close the WHERE clause
+			$query[] = ')';
+
+			$query[] = "AND (p.post_mime_type LIKE 'image/%%')";
+			$query[] = "AND p.post_type = 'attachment'";
+			$query[] = "AND p.post_status = 'inherit'";
+			$query[] = "GROUP BY p.ID";
+			// ORDER BY clause would go here, if needed
+
+			/*
+			 * Add pagination to our query, then remove it from the query
+			 * that WordPress will process after we're done.
+			 */
+			$paged = $all_query_parameters['paged'];
+			if ( empty( $paged ) ) {
+				$paged = 1;
+			} elseif ( 'current' == strtolower( $paged ) ) {
+				/*
+				 * Note: The query variable 'page' holds the pagenumber for a single paginated
+				 * Post or Page that includes the <!--nextpage--> Quicktag in the post content. 
+				 */
+				if ( get_query_var( 'page' ) ) {
+					$paged = get_query_var( 'page' );
+				} else {
+					$paged = ( get_query_var('paged') ) ? get_query_var('paged') : 1;
+				}
+			} elseif ( is_numeric( $paged ) ) {
+				$paged = absint( $paged );
+			} elseif ( '' === $paged ) {
+				$paged = 1;
+			}
+
+			$limit = absint( ! empty( $all_query_parameters['posts_per_page'] ) ? $all_query_parameters['posts_per_page'] : $all_query_parameters['numberposts'] );
+			$offset = $limit * ( $paged - 1);
+			if ( 0 < $offset && 0 < $limit ) {
+				$query[] = 'LIMIT %d, %d';
+				$query_parameters[] = $offset;
+				$query_parameters[] = $limit;
+			} elseif ( 0 < $limit ) {
+				$query[] = 'LIMIT %d';
+				$query_parameters[] = $limit;
+			} elseif ( 0 < $offset ) {
+				$query[] = 'LIMIT %d, %d';
+				$query_parameters[] = $offset;
+				$query_parameters[] = 0x7FFFFFFF; // big number!
+			}
+
+			$all_query_parameters['paged'] = NULL;
+			$all_query_parameters['posts_per_page'] = 0;
+			$all_query_parameters['numberposts'] = 0;
+
+			$query =  join(' ', $query);
+			$ids = $wpdb->get_results( $wpdb->prepare( $query, $query_parameters ) );
+			if ( is_array( $ids ) ) {
+				$includes = array();
+				foreach ( $ids as $id ) {
+					$includes[] = $id->ID;
+				}
+				$all_query_parameters['include'] = implode( ',', $includes );
+			} else {
+				$all_query_parameters['include'] = '1'; // return no images
+			}
+		} // parameter "my_custom_sql" is present
+
 		return $all_query_parameters;
 	} // mla_gallery_query_arguments_filter
 
@@ -312,7 +500,7 @@ class MLAGalleryHooksExample {
 	 * @var	array
 	 */
 	private static $wp_query_properties = array();
-	
+
 	/**
 	 * MLA Gallery WP Query Object
 	 *
@@ -328,14 +516,14 @@ class MLAGalleryHooksExample {
 	 */
 	public static function mla_gallery_wp_query_object_action( $query_arguments ) {
 		//error_log( 'MLAGalleryHooksExample::mla_gallery_wp_query_object_action $query_arguments = ' . var_export( $query_arguments, true ), 0 );
-		
+
 		self::$wp_query_properties = array();
 		self::$wp_query_properties ['request'] = MLAShortcodes::$mla_gallery_wp_query_object->request;
 		self::$wp_query_properties ['query_vars'] = MLAShortcodes::$mla_gallery_wp_query_object->query_vars;
 		self::$wp_query_properties ['post_count'] = MLAShortcodes::$mla_gallery_wp_query_object->post_count;
 
 		//error_log( 'MLAGalleryHooksExample::mla_gallery_wp_query_object_action self::$wp_query_properties = ' . var_export( self::$wp_query_properties, true ), 0 );
-		
+
 		/*
 		 * Unlike Filters, Actions never return anything
 		 */
@@ -379,7 +567,7 @@ class MLAGalleryHooksExample {
 	public static function use_mla_gallery_style_filter( $use_style_template, $style_template_name ) {
 		//error_log( 'MLAGalleryHooksExample::use_mla_gallery_style_filter $use_style_template = ' . var_export( $use_style_template, true ), 0 );
 		//error_log( 'MLAGalleryHooksExample::use_mla_gallery_style_filter $style_template_name = ' . var_export( $style_template_name, true ), 0 );
-		
+
 		/*
 		 * Filters must return the first argument passed in, unchanged or updated
 		 */
@@ -402,20 +590,20 @@ class MLAGalleryHooksExample {
 	 */
 	public static function mla_gallery_style_values_filter( $style_values ) {
 		//error_log( 'MLAGalleryHooksExample::mla_gallery_style_values_filter $style_values = ' . var_export( $style_values, true ), 0 );
-		
+
 		/*
 		 * You also have access to the PHP Super Globals, e.g., $_REQUEST, $_SERVER
 		 */
 		//error_log( 'MLAGalleryHooksExample::mla_gallery_style_values_filter $_REQUEST = ' . var_export( $_REQUEST, true ), 0 );
 		//error_log( 'MLAGalleryHooksExample::mla_gallery_style_values_filter $_SERVER[ REQUEST_URI ] = ' . var_export( $_SERVER['REQUEST_URI'], true ), 0 );
-		
+
 		/*
 		 * You can use the WordPress globals like $wp_query, $wpdb and $table_prefix as well.
 		 * Note that $wp_query contains values for the post/page query, NOT the [mla_gallery] query.
 		 */
 		global $wp_query;
 		//error_log( 'MLAGalleryHooksExample::mla_gallery_style_values_filter $wp_query->query = ' . var_export( $wp_query->query, true ), 0 );
-		
+
 		return $style_values;
 	} // mla_gallery_style_values_filter
 
@@ -435,7 +623,7 @@ class MLAGalleryHooksExample {
 	 */
 	public static function mla_gallery_style_template_filter( $style_template ) {
 		//error_log( 'MLAGalleryHooksExample::mla_gallery_style_template_filter $style_template = ' . var_export( $style_template, true ), 0 );
-		
+
 		return $style_template;
 	} // mla_gallery_style_template_filter
 
@@ -460,10 +648,10 @@ class MLAGalleryHooksExample {
 		//error_log( 'MLAGalleryHooksExample::mla_gallery_style_parse_filter $html_markup = ' . var_export( $html_markup, true ), 0 );
 		//error_log( 'MLAGalleryHooksExample::mla_gallery_style_parse_filter $style_template = ' . var_export( $style_template, true ), 0 );
 		//error_log( 'MLAGalleryHooksExample::mla_gallery_style_parse_filter $style_values = ' . var_export( $style_values, true ), 0 );
-		
+
 		return $html_markup;
 	} // mla_gallery_style_parse_filter
-	
+
 	/**
 	 * MLA Gallery Open Values
 	 *
@@ -478,7 +666,7 @@ class MLAGalleryHooksExample {
 	 */
 	public static function mla_gallery_open_values_filter( $markup_values ) {
 		//error_log( 'MLAGalleryHooksExample::mla_gallery_open_values_filter $markup_values = ' . var_export( $markup_values, true ), 0 );
-		
+
 		return $markup_values;
 	} // mla_gallery_open_values_filter
 
@@ -493,7 +681,7 @@ class MLAGalleryHooksExample {
 	 */
 	public static function mla_gallery_open_template_filter( $open_template ) {
 		//error_log( 'MLAGalleryHooksExample::mla_gallery_open_template_filter $open_template = ' . var_export( $open_template, true ), 0 );
-		
+
 		return $open_template;
 	} // mla_gallery_open_template_filter
 
@@ -512,10 +700,10 @@ class MLAGalleryHooksExample {
 		//error_log( 'MLAGalleryHooksExample::mla_gallery_open_parse_filter $html_markup = ' . var_export( $html_markup, true ), 0 );
 		//error_log( 'MLAGalleryHooksExample::mla_gallery_open_parse_filter $open_template = ' . var_export( $open_template, true ), 0 );
 		//error_log( 'MLAGalleryHooksExample::mla_gallery_open_parse_filter $markup_values = ' . var_export( $markup_values, true ), 0 );
-		
+
 		return $html_markup;
 	} // mla_gallery_open_parse_filter
-	
+
 	/**
 	 * MLA Gallery Style
 	 *
@@ -538,10 +726,10 @@ class MLAGalleryHooksExample {
 		//error_log( 'MLAGalleryHooksExample::mla_gallery_style_filter $open_values = ' . var_export( $open_values, true ), 0 );
 		//error_log( 'MLAGalleryHooksExample::mla_gallery_style_filter $style_template = ' . var_export( $style_template, true ), 0 );
 		//error_log( 'MLAGalleryHooksExample::mla_gallery_style_filter $open_template = ' . var_export( $open_template, true ), 0 );
-		
+
 		return $html_markup;
 	} // mla_gallery_style_filter
-	
+
 	/**
 	 * MLA Gallery Row Open Values
 	 *
@@ -553,7 +741,7 @@ class MLAGalleryHooksExample {
 	 */
 	public static function mla_gallery_row_open_values_filter( $markup_values ) {
 		//error_log( 'MLAGalleryHooksExample::mla_gallery_row_open_values_filter $markup_values = ' . var_export( $markup_values, true ), 0 );
-		
+
 		return $markup_values;
 	} // mla_gallery_row_open_values_filter
 
@@ -568,7 +756,7 @@ class MLAGalleryHooksExample {
 	 */
 	public static function mla_gallery_row_open_template_filter( $row_open_template ) {
 		//error_log( 'MLAGalleryHooksExample::mla_gallery_row_open_template_filter $row_open_template = ' . var_export( $row_open_template, true ), 0 );
-		
+
 		return $row_open_template;
 	} // mla_gallery_row_open_template_filter
 
@@ -587,10 +775,10 @@ class MLAGalleryHooksExample {
 		//error_log( 'MLAGalleryHooksExample::mla_gallery_row_open_parse_filter $html_markup = ' . var_export( $html_markup, true ), 0 );
 		//error_log( 'MLAGalleryHooksExample::mla_gallery_row_open_parse_filter $row_open_template = ' . var_export( $row_open_template, true ), 0 );
 		//error_log( 'MLAGalleryHooksExample::mla_gallery_row_open_parse_filter $markup_values = ' . var_export( $markup_values, true ), 0 );
-		
+
 		return $html_markup;
 	} // mla_gallery_row_open_parse_filter
-	
+
 	/**
 	 * MLA Gallery Item Values
 	 *
@@ -606,12 +794,12 @@ class MLAGalleryHooksExample {
 		/*
 		 * We use a shortcode parameter of our own to apply our filters on a gallery-by-gallery basis,
 		 * leaving other [mla_gallery] instances untouched. If the "my_filter" parameter is not present,
-		 * we have nothing to do
+		 * we have nothing to do.
 		 */		
 		if ( ! isset( self::$shortcode_attributes['my_filter'] ) ) {
 			return $item_values; // leave them unchanged
 		}
-		
+
 		/*
 		 * For this first example, we will reformat the 'date' value as d/m/Y.
 		 */
@@ -623,7 +811,7 @@ class MLAGalleryHooksExample {
 			 */
 			$old_date = $item_values['date'];
 			$timestamp = mktime( substr( $old_date, 11, 2 ), substr( $old_date, 14, 2 ), substr( $old_date, 17, 2 ), substr( $old_date, 5, 2 ), substr( $old_date, 8, 2 ), substr( $old_date, 0, 4 ) );
-	
+
 			/*
 			 * Update the $item_values and pass them back from the filter.
 			 * We must also update the caption because it was composed before this filter is called.
@@ -639,7 +827,7 @@ class MLAGalleryHooksExample {
 
 			return $item_values;
 		}
-		
+
 		/*
 		 * The second example adds a formatted file size element to the existing caption.
 		 */
@@ -655,7 +843,7 @@ class MLAGalleryHooksExample {
 				'option' => 'raw'
 			);
 			$file_size = (float) MLAOptions::mla_get_data_source( $item_values['attachment_ID'], 'single_attachment_mapping', $my_setting, NULL );
-			
+
 			if ( 1048576 < $file_size ) {
 				$file_size = number_format( ($file_size/1048576), 3 ).' MB';
 			} elseif ( 10240 < $file_size ) {
@@ -663,15 +851,15 @@ class MLAGalleryHooksExample {
 			} else {
 				$file_size = number_format( $file_size );
 			}
-	
+
 			/*
 			 * Compose a new caption, adding the file size.
 			 */
 			$item_values['caption'] = sprintf( '%1$s<br>Size: %2$s', $item_values['caption'], $file_size );
-	
+
 			return $item_values;
 		}
-		
+
 		/*
 		 * Our third example changes taxonomy terms into links to term-specific archive pages.
 		 */
@@ -685,7 +873,7 @@ class MLAGalleryHooksExample {
 			} else {
 				$my_href = '';
 			}
-			
+
 			/*
 			 * Collect non-empty term lists, convert to slugs,
 			 * make into links, replace $item_values
@@ -699,21 +887,21 @@ class MLAGalleryHooksExample {
 					$term_links = array();
 					foreach( $terms as $term_name ) {
 						$term_object = get_term_by( 'name', $term_name, $taxonomy );
-		
+
 						if ( empty( $my_href ) ) {
 							$term_links[] = sprintf( '<a href=%1$s/%2$s/%3$s>%4$s,</a>', get_site_url(), $taxonomy, $term_object->slug, esc_html( $term_name ) );
 						} else {
 							$term_links[] = sprintf( '<a href=%1$s/%2$s?my_taxonomy=%3$s&my_term=%4$s>%5$s</a>', get_site_url(),$my_href, $taxonomy, $term_object->slug, esc_html( $term_name ) );
 						}
 					}
-					
+
 					$item_values[ $key ] = implode( ' ', $term_links );
 				}
 			}
-		
+
 			return $item_values;
 		}
-		
+
 		/*
 		 * For our final example, we will add to the $item_values['caption'] value an unordered list
 		 * of the custom fields populated for each gallery item. We use a shortcode parameter of our
@@ -721,14 +909,14 @@ class MLAGalleryHooksExample {
 		 */
 		if ( 'all custom' != self::$shortcode_attributes['my_filter'] )
 			return $item_values; // leave them unchanged
-		
+
 		/*
 		 * Preserve the existing caption, if present
 		 */
 		$my_caption = '';
 		if ( ! empty( $item_values['caption'] ) )
 			$my_caption .= $item_values['caption'] . "<br />\r\n";
-		
+
 		/*
 		 * Retrieve the custom fields for this item, if any,
 		 * and extract the values we are interested in.
@@ -736,12 +924,12 @@ class MLAGalleryHooksExample {
 		$custom_fields = array();
 		$post_meta = get_metadata( 'post', $item_values['attachment_ID'] );
 		//error_log( 'MLAGalleryHooksExample::mla_gallery_item_values_filter $post_meta = ' . var_export( $post_meta, true ), 0 );
-		
+
 		if ( is_array( $post_meta ) ) {
 			foreach ( $post_meta as $post_meta_key => $post_meta_value ) {
 				if ( empty( $post_meta_key ) )
 					continue;
-				
+
 				/*
 				 * WordPress stores several of its own values as custom fields, which we will skip.
 				 * Some of the values you might find useful are:
@@ -749,7 +937,7 @@ class MLAGalleryHooksExample {
 				 */
 				if ( '_' == $post_meta_key{0} )
 						continue;
-				
+
 				/*
 				 * At this point, every value is an array; one element per instance of the key.
 				 * We'll test anyway, just to be sure, then convert single-instance values to a scalar.
@@ -768,13 +956,13 @@ class MLAGalleryHooksExample {
 			} // foreach $post_meta
 		}
 		//error_log( 'MLAGalleryHooksExample::mla_gallery_item_values_filter $custom_fields = ' . var_export( $custom_fields, true ), 0 );
-		
+
 		/*
 		 * Don't alter the caption if there are no custom fields to display
 		 */
 		if ( empty( $custom_fields ) )
 			return $item_values;
-			
+
 		/*
 		 * Add the definition list to the caption
 		 */
@@ -784,7 +972,7 @@ class MLAGalleryHooksExample {
 			$my_caption .= "<dd class=\"value\">{$value}</dd>\r\n";
 		} // foreach custom field
 		$my_caption .= "</dl>";
-		
+
 		/*
 		 * Update the $item_values and pass them back from the filter.
 		 */
@@ -803,7 +991,7 @@ class MLAGalleryHooksExample {
 	 */
 	public static function mla_gallery_item_template_filter( $item_template ) {
 		//error_log( 'MLAGalleryHooksExample::mla_gallery_item_template_filter $item_template = ' . var_export( $item_template, true ), 0 );
-		
+
 		return $item_template;
 	} // mla_gallery_item_template_filter
 
@@ -822,10 +1010,10 @@ class MLAGalleryHooksExample {
 		//error_log( 'MLAGalleryHooksExample::mla_gallery_item_parse_filter $html_markup = ' . var_export( $html_markup, true ), 0 );
 		//error_log( 'MLAGalleryHooksExample::mla_gallery_item_parse_filter $item_template = ' . var_export( $item_template, true ), 0 );
 		//error_log( 'MLAGalleryHooksExample::mla_gallery_item_parse_filter $item_values = ' . var_export( $item_values, true ), 0 );
-		
+
 		return $html_markup;
 	} // mla_gallery_item_parse_filter
-	
+
 	/**
 	 * MLA Gallery Row Close Values
 	 *
@@ -837,7 +1025,7 @@ class MLAGalleryHooksExample {
 	 */
 	public static function mla_gallery_row_close_values_filter( $markup_values ) {
 		//error_log( 'MLAGalleryHooksExample::mla_gallery_row_close_values_filter $markup_values = ' . var_export( $markup_values, true ), 0 );
-		
+
 		return $markup_values;
 	} // mla_gallery_row_close_values_filter
 
@@ -852,7 +1040,7 @@ class MLAGalleryHooksExample {
 	 */
 	public static function mla_gallery_row_close_template_filter( $row_close_template ) {
 		//error_log( 'MLAGalleryHooksExample::mla_gallery_row_close_template_filter $row_close_template = ' . var_export( $row_close_template, true ), 0 );
-		
+
 		return $row_close_template;
 	} // mla_gallery_row_close_template_filter
 
@@ -871,10 +1059,10 @@ class MLAGalleryHooksExample {
 		//error_log( 'MLAGalleryHooksExample::mla_gallery_row_close_parse_filter $html_markup = ' . var_export( $html_markup, true ), 0 );
 		//error_log( 'MLAGalleryHooksExample::mla_gallery_row_close_parse_filter $row_close_template = ' . var_export( $row_close_template, true ), 0 );
 		//error_log( 'MLAGalleryHooksExample::mla_gallery_row_close_parse_filter $markup_values = ' . var_export( $markup_values, true ), 0 );
-		
+
 		return $html_markup;
 	} // mla_gallery_row_close_parse_filter
-	
+
 	/**
 	 * MLA Gallery Close Values
 	 *
@@ -886,7 +1074,7 @@ class MLAGalleryHooksExample {
 	 */
 	public static function mla_gallery_close_values_filter( $markup_values ) {
 		//error_log( 'MLAGalleryHooksExample::mla_gallery_close_values_filter $markup_values = ' . var_export( $markup_values, true ), 0 );
-		
+
 		return $markup_values;
 	} // mla_gallery_close_values_filter
 
@@ -901,7 +1089,7 @@ class MLAGalleryHooksExample {
 	 */
 	public static function mla_gallery_close_template_filter( $close_template ) {
 		//error_log( 'MLAGalleryHooksExample::mla_gallery_close_template_filter $close_template = ' . var_export( $close_template, true ), 0 );
-		
+
 		return $close_template;
 	} // mla_gallery_close_template_filter
 
@@ -920,10 +1108,10 @@ class MLAGalleryHooksExample {
 		//error_log( 'MLAGalleryHooksExample::mla_gallery_close_parse_filter $html_markup = ' . var_export( $html_markup, true ), 0 );
 		//error_log( 'MLAGalleryHooksExample::mla_gallery_close_parse_filter $close_template = ' . var_export( $close_template, true ), 0 );
 		//error_log( 'MLAGalleryHooksExample::mla_gallery_close_parse_filter $markup_values = ' . var_export( $markup_values, true ), 0 );
-		
+
 		return $html_markup;
 	} // mla_gallery_close_parse_filter
-	
+
 } // Class MLAGalleryHooksExample
 
 /*

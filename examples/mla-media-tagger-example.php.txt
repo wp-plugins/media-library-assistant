@@ -113,7 +113,7 @@ class MLAMediaTaggerExample {
 		$debug_data['post_ID'] = var_export( $post_ID, true );
 		$debug_data['setting_value'] = var_export( $setting_value, true );
 		$debug_data['category'] = var_export( $category, true );
-		
+
 		/*
 		 * Look for the rule we're handling and just return any other rules.
 		 *
@@ -124,10 +124,10 @@ class MLAMediaTaggerExample {
 			//update_post_meta( $post_ID, 'Media Tagger', var_export( $debug_data, true ) );
 			return $setting_value;
 		}
-		
+
 		global $wpdb; // The WordPress class of functions for all database manipulations.
 		static $all_term_slugs = NULL;
-		
+
 		/*
 		 * Build $all_term_slugs once per page load for "Map all attachments" efficiency
 		 */
@@ -137,7 +137,7 @@ class MLAMediaTaggerExample {
 			);
 			//error_log( 'MLAMediaTaggerExample::mla_mapping_rule_filter custom_field_mapping $term_values = ' . var_export( $term_values, true ), 0 );
 			//$debug_data['term_values'] = var_export( $term_values, true );
-	
+
 			$all_term_slugs = array();
 			foreach ( $term_values as $value ) {
 				$all_term_slugs[ $value->term_taxonomy_id ]['taxonomy'] = $value->taxonomy;
@@ -146,7 +146,7 @@ class MLAMediaTaggerExample {
 			//error_log( 'MLAMediaTaggerExample::mla_mapping_rule_filter custom_field_mapping $all_term_slugs = ' . var_export( $all_term_slugs, true ), 0 );
 			//$debug_data['all_term_slugs'] = var_export( $all_term_slugs, true );
 		}
-		
+
 		/*
 		 * 1. Select the term_taxonomy_id(s) from the mediatagger table
 		 * for the post_ID (passed to the MLA filter).
@@ -157,7 +157,7 @@ class MLAMediaTaggerExample {
 		) );
 		//error_log( 'MLAMediaTaggerExample::mla_mapping_rule_filter get_col $term_taxonomy_ids = ' . var_export( $term_taxonomy_ids, true ), 0 );
 		$debug_data['term_taxonomy_ids'] = var_export( $term_taxonomy_ids, true );
-		
+
 		if ( empty( $term_taxonomy_ids ) ) {
 			//error_log( 'MLAMediaTaggerExample::mla_mapping_rule_filter empty $term_taxonomy_ids', 0 );
 			//update_post_meta( $post_ID, 'Media Tagger', var_export( $debug_data, true ) );
@@ -188,21 +188,21 @@ class MLAMediaTaggerExample {
 				//update_post_meta( $post_ID, 'Media Tagger', var_export( $debug_data, true ) );
 				return $setting_value;
 			}
-	
+
 			$term_ids = array();
 			foreach ( $term_taxonomy_values as $value ) {
 				$term_ids[ $value->term_id ] = $value->term_id;
 			}
 			//error_log( 'MLAMediaTaggerExample::mla_mapping_rule_filter $term_ids = ' . var_export( $term_ids, true ), 0 );
 			$debug_data['term_ids'] = var_export( $term_ids, true );
-		
+
 			$term_values = $wpdb->get_results(	sprintf(
 				"SELECT t.term_id, t.slug FROM " . $wpdb->terms . " as t WHERE t.term_id IN ( %s )",
 				implode( ',', $term_ids )
 			) );
 			//error_log( 'MLAMediaTaggerExample::mla_mapping_rule_filter get_results $term_values = ' . var_export( $term_values, true ), 0 );
 			$debug_data['term_values'] = var_export( $term_values, true );
-	
+
 			$term_slugs = array();
 			foreach ( $term_values as $value ) {
 				$term_slugs[ $value->term_id ] = $value->slug;
@@ -222,7 +222,7 @@ class MLAMediaTaggerExample {
 		}
 		//error_log( 'MLAMediaTaggerExample::mla_mapping_rule_filter $new_terms = ' . var_export( $new_terms, true ), 0 );
 		$debug_data['new_terms'] = var_export( $new_terms, true );
-		
+
 		/*
 		 * 3. Use wp_set_object_terms() to assign the taxonomy and term_id value(s)
 		 * to the post_ID. You can either replace any existing terms or append the new terms.
@@ -236,13 +236,13 @@ class MLAMediaTaggerExample {
 			// 'post_tag' => 'attachment_tag',
 			// 'category' => 'attachment_category'
 		);
-		
+
 		$term_arrays = array ();
 		foreach ( $new_terms as $key => $value ) {
 			if ( isset( $taxonomy_change[ $key ] ) ) {
 				$key = $taxonomy_change[ $key ];
 			}
-			
+
 			$term_arrays[ $key ] = $value;
 		}
 		//error_log( "MLAMediaTaggerExample::mla_mapping_rule_filter {$post_ID} term_arrays = " . var_export( $term_arrays, true ), 0 );
@@ -269,7 +269,7 @@ class MLAMediaTaggerExample {
 		 * Uncomment this line to write debugging information into the 'Media Tagger' custom field
 		 */
 		//update_post_meta( $post_ID, 'Media Tagger', var_export( $debug_data, true ) );
-		
+
 		/*
 		 * $setting_value is an array containing a mapping rule; see above
 		 * To stop this rule's evaluation and mapping, return NULL

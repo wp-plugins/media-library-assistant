@@ -80,6 +80,7 @@
 <li class="method public "><a href="#mla_query_media_modal_items" title="mla_query_media_modal_items :: Retrieve attachment objects for the WordPress Media Manager"><span class="description">Retrieve attachment objects for the WordPress Media Manager</span><pre>mla_query_media_modal_items()</pre></a></li>
 <li class="method public "><a href="#mla_query_posts_clauses_filter" title="mla_query_posts_clauses_filter :: Filters all clauses for shortcode queries, pre caching plugins"><span class="description">Filters all clauses for shortcode queries, pre caching plugins</span><pre>mla_query_posts_clauses_filter()</pre></a></li>
 <li class="method public "><a href="#mla_query_posts_clauses_request_filter" title="mla_query_posts_clauses_request_filter :: Filters all clauses for shortcode queries, post caching plugins"><span class="description">Filters all clauses for shortcode queries, post caching plugins</span><pre>mla_query_posts_clauses_request_filter()</pre></a></li>
+<li class="method public "><a href="#mla_query_posts_groupby_filter" title="mla_query_posts_groupby_filter :: Adds a GROUPBY clause, if required"><span class="description">Adds a GROUPBY clause, if required</span><pre>mla_query_posts_groupby_filter()</pre></a></li>
 <li class="method public "><a href="#mla_query_posts_join_filter" title="mla_query_posts_join_filter :: Adds a JOIN clause, if required, to handle sorting/searching on custom fields or ALT Text"><span class="description">Adds a JOIN clause, if required, to handle sorting/searching on custom fields or ALT Text</span><pre>mla_query_posts_join_filter()</pre></a></li>
 <li class="method public "><a href="#mla_query_posts_orderby_filter" title="mla_query_posts_orderby_filter :: Adds a ORDERBY clause, if required"><span class="description">Adds a ORDERBY clause, if required</span><pre>mla_query_posts_orderby_filter()</pre></a></li>
 <li class="method public "><a href="#mla_query_posts_search_filter" title="mla_query_posts_search_filter :: Adds a keyword search to the WHERE clause, if required"><span class="description">Adds a keyword search to the WHERE clause, if required</span><pre>mla_query_posts_search_filter()</pre></a></li>
@@ -726,6 +727,26 @@ Defined as public because it's a filter.</p></p>
 <h3>Returns</h3>
 <div class="subelement response">
 <code>array</code>query clauses after modification (none)</div>
+</div></div>
+</div>
+<a name="mla_query_posts_groupby_filter" id="mla_query_posts_groupby_filter"></a><div class="element clickable method public mla_query_posts_groupby_filter" data-toggle="collapse" data-target=".mla_query_posts_groupby_filter .collapse">
+<h2>Adds a GROUPBY clause, if required</h2>
+<pre>mla_query_posts_groupby_filter(string $groupby_clause) : string</pre>
+<div class="labels"></div>
+<div class="row collapse"><div class="detail-description">
+<p class="long_description"><p>Taxonomy text queries require a GROUPBY clause.
+Defined as public because it's a filter.</p></p>
+<table class="table table-bordered"><tr>
+<th>since</th>
+<td>1.90</td>
+</tr></table>
+<h3>Parameters</h3>
+<div class="subelement argument">
+<h4>$groupby_clause</h4>
+<code>string</code><p>query clause before modification</p></div>
+<h3>Returns</h3>
+<div class="subelement response">
+<code>string</code>updated query clause</div>
 </div></div>
 </div>
 <a name="mla_query_posts_join_filter" id="mla_query_posts_join_filter"></a><div class="element clickable method public mla_query_posts_join_filter" data-toggle="collapse" data-target=".mla_query_posts_join_filter .collapse">
@@ -1836,7 +1857,7 @@ ALT Text and custom field columns.</p></p>
 <div class="row"><footer class="span12">
             Template is built using <a href="http://twitter.github.com/bootstrap/">Twitter Bootstrap 2</a> and icons provided by <a href="http://glyphicons.com/">Glyphicons</a>.<br>
             Documentation is powered by <a href="http://www.phpdoc.org/">phpDocumentor 2.0.0a8</a> and<br>
-            generated on 2014-05-30T12:08:31-07:00.<br></footer></div>
+            generated on 2014-06-27T14:50:12-07:00.<br></footer></div>
 </div>
 </body>
 </html>

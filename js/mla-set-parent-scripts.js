@@ -13,19 +13,56 @@
 				if ( ! $( '#mla-set-parent-response-div input[type="radio"]:checked' ).length )
 					event.preventDefault();
 			});
-			
+
 			// Send setParent parent keywords for filtering
-			$( '#mla-set-parent-search' ).click( mla.setParent.send );
+			$( '#mla-set-parent-search' ).click( function ( event ) {
+				$( '#mla-set-parent-paged' ).val( 1 );
+				mla.setParent.send();
+			});
+
 			$( '#mla-set-parent-search-div :input' ).keypress( function( event ) {
 				if ( 13 == event.which ) {
 					mla.setParent.send();
 					return false;
 				}
 			});
-			
+
+			// Send post type(s) for filtering
+			$( '#mla-set-parent-post-type' ).change( function ( event ) {
+				$( '#mla-set-parent-paged' ).val( 1 );
+				mla.setParent.send();
+			});
+
+			// Pagination controls
+			$( '#mla-set-parent-previous' ).click( function ( event ) {
+				var paged = + $( '#mla-set-parent-paged' ).val();
+
+				if ( paged > 1 ) {
+					$( '#mla-set-parent-paged' ).val( paged - 1 );
+				} else {
+					$( '#mla-set-parent-paged' ).val( 1 );
+				}
+
+				mla.setParent.send();
+			});
+
+			$( '#mla-set-parent-next' ).click( function ( event ) {
+				var count = + $( '#mla-set-parent-count' ).val(),
+					paged = + $( '#mla-set-parent-paged' ).val(),
+					found = + $( '#mla-set-parent-found' ).val();
+
+				if ( found < count ) {
+					$( '#mla-set-parent-paged' ).val( 1 );
+				} else {
+					$( '#mla-set-parent-paged' ).val( paged + 1 );
+				}
+
+				mla.setParent.send();
+			});
+
 			// Close the setParent pop-up
 			$( '#mla-set-parent-close-div' ).click( mla.setParent.close );
-			
+
 			$( '#mla-set-parent-cancel' ).click( function ( event ) {
 				event.preventDefault();
 				return mla.setParent.close();
@@ -61,7 +98,7 @@
 			} else {
 				$( '#mla-set-parent-close-div' ).html( 'x' );
 			}
-			
+
 			$( '#mla-set-parent-div' ).show();
 
 			$( '#mla-set-parent-input ' ).focus().keyup( function( event ){
@@ -77,6 +114,8 @@
 		},
 
 		close: function() {
+			$( '#mla-set-parent-input' ).val('');
+			$( '#mla-set-parent-post-type' ).val('all');
 			$( '#mla-set-parent-response-div' ).html('');
 			$( '#mla-set-parent-div' ).hide();
 			$( '#mla-set-parent-overlay' ).hide();
@@ -90,8 +129,11 @@
 
 		send: function() {
 			var post = {
-					ps: $( '#mla-set-parent-input' ).val(),
-					action: 'find_posts',
+					mla_set_parent_search_text: $( '#mla-set-parent-input' ).val(),
+					mla_set_parent_post_type: $( '#mla-set-parent-post-type' ).val(),
+					mla_set_parent_count: $( '#mla-set-parent-count' ).val(),
+					mla_set_parent_paged: $( '#mla-set-parent-paged' ).val(),
+					action: 'mla_find_posts',
 					_ajax_nonce: $('#mla-set-parent-ajax-nonce').val()
 				},
 				spinner = $( '#mla-set-parent-search-div .spinner' ),
@@ -107,13 +149,13 @@
 				spinner.hide();
 			}).done( function( response ) {
 				var responseData = 'no response.data', id = 0;
-				
+
 				if ( 'xml' === mla.settings.setParentDataType ) {
 					if ( 'string' === typeof( response ) ) {
 						response = { 'success': false, data: response };
 					} else {
 						ajaxResponse = wpAjax.parseAjaxResponse( response );
-						
+
 						if ( ajaxResponse.errors ) {
 							response = { 'success': false, data: wpAjax.broken };
 						} else {
@@ -121,12 +163,12 @@
 						}
 					}
 				}
-				
+
 				if ( ! response.success ) {
 					if ( response.responseData ) {
 						responseData = response.data;
 					}
-						
+
 					$( '#mla-set-parent-response-div' ).text( mla.settings.ajaxDoneError + ' (' + responseData + ')' );
 				} else {
 					/*
@@ -134,7 +176,7 @@
 					 */
 					$( '#mla-set-parent-response-div' ).html( response.data );
 					$( '#mla-set-parent-response-div table tbody tr:eq(0)' ).before( $( '#found-0-row' ).clone() );
-					
+
 					/*
 					 * See if we can "check" the current parent
 					 */

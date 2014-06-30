@@ -76,15 +76,15 @@ class MLATagCloudHooksExample {
 		add_filter( 'mla_tag_cloud_scale', 'MLATagCloudHooksExample::mla_tag_cloud_scale_filter', 10, 4 );
 
 		add_filter( 'use_mla_tag_cloud_style', 'MLATagCloudHooksExample::use_mla_tag_cloud_style_filter', 10, 2 );
-		
+
 		add_filter( 'mla_tag_cloud_style_values', 'MLATagCloudHooksExample::mla_tag_cloud_style_values_filter', 10, 1 );
 		add_filter( 'mla_tag_cloud_style_template', 'MLATagCloudHooksExample::mla_tag_cloud_style_template_filter', 10, 1 );
 		add_filter( 'mla_tag_cloud_style_parse', 'MLATagCloudHooksExample::mla_tag_cloud_style_parse_filter', 10, 3 );
-		
+
 		add_filter( 'mla_tag_cloud_open_values', 'MLATagCloudHooksExample::mla_tag_cloud_open_values_filter', 10, 1 );
 		add_filter( 'mla_tag_cloud_open_template', 'MLATagCloudHooksExample::mla_tag_cloud_open_template_filter', 10, 1 );
 		add_filter( 'mla_tag_cloud_open_parse', 'MLATagCloudHooksExample::mla_tag_cloud_open_parse_filter', 10, 3 );
-		
+
 		add_filter( 'mla_tag_cloud_row_open_values', 'MLATagCloudHooksExample::mla_tag_cloud_row_open_values_filter', 10, 1 );
 		add_filter( 'mla_tag_cloud_row_open_template', 'MLATagCloudHooksExample::mla_tag_cloud_row_open_template_filter', 10, 1 );
 		add_filter( 'mla_tag_cloud_row_open_parse', 'MLATagCloudHooksExample::mla_tag_cloud_row_open_parse_filter', 10, 3 );
@@ -110,7 +110,7 @@ class MLATagCloudHooksExample {
 	 * @var	array
 	 */
 	private static $shortcode_attributes = array();
-	
+
 	/**
 	 * MLA Tag Cloud (Display) Attributes
 	 *
@@ -132,7 +132,7 @@ class MLATagCloudHooksExample {
 		 * Uncomment the error_log statements in any of the filters to see what's passed in
 		 */
 		//error_log( 'MLATagCloudHooksExample::mla_tag_cloud_attributes_filter $shortcode_attributes = ' . var_export( $shortcode_attributes, true ), 0 );
-		
+
 		/*
 		 * Save the attributes for use in the later filters
 		 */
@@ -152,7 +152,7 @@ class MLATagCloudHooksExample {
 	 * @var	array
 	 */
 	private static $all_display_parameters = array();
-	
+
 	/**
 	 * MLA Tag Cloud (Display) Arguments
 	 *
@@ -172,7 +172,7 @@ class MLATagCloudHooksExample {
 	 */
 	public static function mla_tag_cloud_arguments_filter( $all_display_parameters ) {
 		//error_log( 'MLATagCloudHooksExample::mla_tag_cloud_arguments_filter $all_display_parameters = ' . var_export( $all_display_parameters, true ), 0 );
-		
+
 		self::$all_display_parameters = $all_display_parameters;
 		return $all_display_parameters;
 	} // mla_tag_cloud_arguments_filter
@@ -185,7 +185,7 @@ class MLATagCloudHooksExample {
 	 * @var	array
 	 */
 	private static $query_attributes = array();
-	
+
 	/**
 	 * MLA Tag Cloud Query Attributes
 	 *
@@ -205,7 +205,7 @@ class MLATagCloudHooksExample {
 	 */
 	public static function mla_get_terms_query_attributes_filter( $query_attributes ) {
 		//error_log( 'MLATagCloudHooksExample::mla_get_terms_query_attributes_filter $query_attributes = ' . var_export( $query_attributes, true ), 0 );
-		
+
 		self::$query_attributes = $query_attributes;
 		return $query_attributes;
 	} // mla_get_terms_query_attributes_filter
@@ -218,7 +218,7 @@ class MLATagCloudHooksExample {
 	 * @var	array
 	 */
 	private static $all_query_parameters = array();
-	
+
 	/**
 	 * MLA Tag Cloud Query Arguments
 	 *
@@ -234,7 +234,7 @@ class MLATagCloudHooksExample {
 	 */
 	public static function mla_get_terms_query_arguments_filter( $all_query_parameters ) {
 		//error_log( 'MLATagCloudHooksExample::mla_get_terms_query_arguments_filter $all_query_parameters = ' . var_export( $all_query_parameters, true ), 0 );
-		
+
 		self::$all_query_parameters = $all_query_parameters;
 		return $all_query_parameters;
 	} // mla_get_terms_query_arguments_filter
@@ -253,7 +253,7 @@ class MLATagCloudHooksExample {
 	 */
 	public static function mla_get_terms_query_results_filter( $tag_objects ) {
 		//error_log( 'MLATagCloudHooksExample::mla_get_terms_query_results_filter $tag_objects = ' . var_export( $tag_objects, true ), 0 );
-		
+
 		return $tag_objects;
 	} // mla_get_terms_query_results_filter
 
@@ -301,7 +301,7 @@ class MLATagCloudHooksExample {
 	public static function use_mla_tag_cloud_style_filter( $use_style_template, $style_template_name ) {
 		//error_log( 'MLATagCloudHooksExample::use_mla_tag_cloud_style_filter $use_style_template = ' . var_export( $use_style_template, true ), 0 );
 		//error_log( 'MLATagCloudHooksExample::use_mla_tag_cloud_style_filter $style_template_name = ' . var_export( $style_template_name, true ), 0 );
-		
+
 		return $use_style_template;
 	} // use_mla_tag_cloud_style_filter
 
@@ -321,20 +321,20 @@ class MLATagCloudHooksExample {
 	 */
 	public static function mla_tag_cloud_style_values_filter( $style_values ) {
 		//error_log( 'MLATagCloudHooksExample::mla_tag_cloud_style_values_filter $style_values = ' . var_export( $style_values, true ), 0 );
-		
+
 		/*
 		 * You also have access to the PHP Super Globals, e.g., $_REQUEST, $_SERVER
 		 */
 		//error_log( 'MLATagCloudHooksExample::mla_tag_cloud_style_values_filter $_REQUEST = ' . var_export( $_REQUEST, true ), 0 );
 		//error_log( 'MLATagCloudHooksExample::mla_tag_cloud_style_values_filter $_SERVER[ REQUEST_URI ] = ' . var_export( $_SERVER['REQUEST_URI'], true ), 0 );
-		
+
 		/*
 		 * You can use the WordPress globals like $wp_query, $wpdb and $table_prefix as well.
 		 * Note that $wp_query contains values for the post/page query, NOT the [mla_tag_cloud] query.
 		 */
 		global $wp_query;
 		//error_log( 'MLATagCloudHooksExample::mla_tag_cloud_style_values_filter $wp_query->query = ' . var_export( $wp_query->query, true ), 0 );
-		
+
 		return $style_values;
 	} // mla_tag_cloud_style_values_filter
 
@@ -354,7 +354,7 @@ class MLATagCloudHooksExample {
 	 */
 	public static function mla_tag_cloud_style_template_filter( $style_template ) {
 		//error_log( 'MLATagCloudHooksExample::mla_tag_cloud_style_template_filter $style_template = ' . var_export( $style_template, true ), 0 );
-		
+
 		return $style_template;
 	} // mla_tag_cloud_style_template_filter
 
@@ -379,10 +379,10 @@ class MLATagCloudHooksExample {
 		//error_log( 'MLATagCloudHooksExample::mla_tag_cloud_style_parse_filter $html_markup = ' . var_export( $html_markup, true ), 0 );
 		//error_log( 'MLATagCloudHooksExample::mla_tag_cloud_style_parse_filter $style_template = ' . var_export( $style_template, true ), 0 );
 		//error_log( 'MLATagCloudHooksExample::mla_tag_cloud_style_parse_filter $style_values = ' . var_export( $style_values, true ), 0 );
-		
+
 		return $html_markup;
 	} // mla_tag_cloud_style_parse_filter
-	
+
 	/**
 	 * MLA Tag Cloud Open Values
 	 *
@@ -397,7 +397,7 @@ class MLATagCloudHooksExample {
 	 */
 	public static function mla_tag_cloud_open_values_filter( $markup_values ) {
 		//error_log( 'MLATagCloudHooksExample::mla_tag_cloud_open_values_filter $markup_values = ' . var_export( $markup_values, true ), 0 );
-		
+
 		return $markup_values;
 	} // mla_tag_cloud_open_values_filter
 
@@ -412,7 +412,7 @@ class MLATagCloudHooksExample {
 	 */
 	public static function mla_tag_cloud_open_template_filter( $open_template ) {
 		//error_log( 'MLATagCloudHooksExample::mla_tag_cloud_open_template_filter $open_template = ' . var_export( $open_template, true ), 0 );
-		
+
 		return $open_template;
 	} // mla_tag_cloud_open_template_filter
 
@@ -431,10 +431,10 @@ class MLATagCloudHooksExample {
 		//error_log( 'MLATagCloudHooksExample::mla_tag_cloud_open_parse_filter $html_markup = ' . var_export( $html_markup, true ), 0 );
 		//error_log( 'MLATagCloudHooksExample::mla_tag_cloud_open_parse_filter $open_template = ' . var_export( $open_template, true ), 0 );
 		//error_log( 'MLATagCloudHooksExample::mla_tag_cloud_open_parse_filter $markup_values = ' . var_export( $markup_values, true ), 0 );
-		
+
 		return $html_markup;
 	} // mla_tag_cloud_open_parse_filter
-	
+
 	/**
 	 * MLA Tag Cloud Style
 	 *
@@ -457,10 +457,10 @@ class MLATagCloudHooksExample {
 		//error_log( 'MLATagCloudHooksExample::mla_tag_cloud_style_filter $open_values = ' . var_export( $open_values, true ), 0 );
 		//error_log( 'MLATagCloudHooksExample::mla_tag_cloud_style_filter $style_template = ' . var_export( $style_template, true ), 0 );
 		//error_log( 'MLATagCloudHooksExample::mla_tag_cloud_style_filter $open_template = ' . var_export( $open_template, true ), 0 );
-		
+
 		return $html_markup;
 	} // mla_tag_cloud_style_filter
-	
+
 	/**
 	 * MLA Tag Cloud Row Open Values
 	 *
@@ -472,7 +472,7 @@ class MLATagCloudHooksExample {
 	 */
 	public static function mla_tag_cloud_row_open_values_filter( $markup_values ) {
 		//error_log( 'MLATagCloudHooksExample::mla_tag_cloud_row_open_values_filter $markup_values = ' . var_export( $markup_values, true ), 0 );
-		
+
 		return $markup_values;
 	} // mla_tag_cloud_row_open_values_filter
 
@@ -487,7 +487,7 @@ class MLATagCloudHooksExample {
 	 */
 	public static function mla_tag_cloud_row_open_template_filter( $row_open_template ) {
 		//error_log( 'MLATagCloudHooksExample::mla_tag_cloud_row_open_template_filter $row_open_template = ' . var_export( $row_open_template, true ), 0 );
-		
+
 		return $row_open_template;
 	} // mla_tag_cloud_row_open_template_filter
 
@@ -506,10 +506,10 @@ class MLATagCloudHooksExample {
 		//error_log( 'MLATagCloudHooksExample::mla_tag_cloud_row_open_parse_filter $html_markup = ' . var_export( $html_markup, true ), 0 );
 		//error_log( 'MLATagCloudHooksExample::mla_tag_cloud_row_open_parse_filter $row_open_template = ' . var_export( $row_open_template, true ), 0 );
 		//error_log( 'MLATagCloudHooksExample::mla_tag_cloud_row_open_parse_filter $markup_values = ' . var_export( $markup_values, true ), 0 );
-		
+
 		return $html_markup;
 	} // mla_tag_cloud_row_open_parse_filter
-	
+
 	/**
 	 * MLA Tag Cloud Item Values
 	 *
@@ -521,7 +521,7 @@ class MLATagCloudHooksExample {
 	 */
 	public static function mla_tag_cloud_item_values_filter( $item_values ) {
 		//error_log( 'MLATagCloudHooksExample::mla_tag_cloud_item_values_filter $item_values = ' . var_export( $item_values, true ), 0 );
-		
+
 		/*
 		 * For this example, we will color the "heat map" of cloud item size values. We use a shortcode parameter of our
 		 * own to do this on a gallery-by-gallery basis, leaving other [mla_tag_cloud] instances untouched.
@@ -556,7 +556,7 @@ class MLATagCloudHooksExample {
 			$item_values['viewlink'] = str_replace( $old_style, $new_style, $item_values['viewlink'] );
 			$item_values['thelink'] = str_replace( $old_style, $new_style, $item_values['thelink'] );
 		}
-		
+
 		return $item_values;
 	} // mla_tag_cloud_item_values_filter
 
@@ -571,7 +571,7 @@ class MLATagCloudHooksExample {
 	 */
 	public static function mla_tag_cloud_item_template_filter( $item_template ) {
 		//error_log( 'MLATagCloudHooksExample::mla_tag_cloud_item_template_filter $item_template = ' . var_export( $item_template, true ), 0 );
-		
+
 		return $item_template;
 	} // mla_tag_cloud_item_template_filter
 
@@ -590,10 +590,10 @@ class MLATagCloudHooksExample {
 		//error_log( 'MLATagCloudHooksExample::mla_tag_cloud_item_parse_filter $html_markup = ' . var_export( $html_markup, true ), 0 );
 		//error_log( 'MLATagCloudHooksExample::mla_tag_cloud_item_parse_filter $item_template = ' . var_export( $item_template, true ), 0 );
 		//error_log( 'MLATagCloudHooksExample::mla_tag_cloud_item_parse_filter $item_values = ' . var_export( $item_values, true ), 0 );
-		
+
 		return $html_markup;
 	} // mla_tag_cloud_item_parse_filter
-	
+
 	/**
 	 * MLA Tag Cloud Row Close Values
 	 *
@@ -605,7 +605,7 @@ class MLATagCloudHooksExample {
 	 */
 	public static function mla_tag_cloud_row_close_values_filter( $markup_values ) {
 		//error_log( 'MLATagCloudHooksExample::mla_tag_cloud_row_close_values_filter $markup_values = ' . var_export( $markup_values, true ), 0 );
-		
+
 		return $markup_values;
 	} // mla_tag_cloud_row_close_values_filter
 
@@ -620,7 +620,7 @@ class MLATagCloudHooksExample {
 	 */
 	public static function mla_tag_cloud_row_close_template_filter( $row_close_template ) {
 		//error_log( 'MLATagCloudHooksExample::mla_tag_cloud_row_close_template_filter $row_close_template = ' . var_export( $row_close_template, true ), 0 );
-		
+
 		return $row_close_template;
 	} // mla_tag_cloud_row_close_template_filter
 
@@ -639,10 +639,10 @@ class MLATagCloudHooksExample {
 		//error_log( 'MLATagCloudHooksExample::mla_tag_cloud_row_close_parse_filter $html_markup = ' . var_export( $html_markup, true ), 0 );
 		//error_log( 'MLATagCloudHooksExample::mla_tag_cloud_row_close_parse_filter $row_close_template = ' . var_export( $row_close_template, true ), 0 );
 		//error_log( 'MLATagCloudHooksExample::mla_tag_cloud_row_close_parse_filter $markup_values = ' . var_export( $markup_values, true ), 0 );
-		
+
 		return $html_markup;
 	} // mla_tag_cloud_row_close_parse_filter
-	
+
 	/**
 	 * MLA Tag Cloud Close Values
 	 *
@@ -654,7 +654,7 @@ class MLATagCloudHooksExample {
 	 */
 	public static function mla_tag_cloud_close_values_filter( $markup_values ) {
 		//error_log( 'MLATagCloudHooksExample::mla_tag_cloud_close_values_filter $markup_values = ' . var_export( $markup_values, true ), 0 );
-		
+
 		return $markup_values;
 	} // mla_tag_cloud_close_values_filter
 
@@ -669,7 +669,7 @@ class MLATagCloudHooksExample {
 	 */
 	public static function mla_tag_cloud_close_template_filter( $close_template ) {
 		//error_log( 'MLATagCloudHooksExample::mla_tag_cloud_close_template_filter $close_template = ' . var_export( $close_template, true ), 0 );
-		
+
 		return $close_template;
 	} // mla_tag_cloud_close_template_filter
 
@@ -688,10 +688,10 @@ class MLATagCloudHooksExample {
 		//error_log( 'MLATagCloudHooksExample::mla_tag_cloud_close_parse_filter $html_markup = ' . var_export( $html_markup, true ), 0 );
 		//error_log( 'MLATagCloudHooksExample::mla_tag_cloud_close_parse_filter $close_template = ' . var_export( $close_template, true ), 0 );
 		//error_log( 'MLATagCloudHooksExample::mla_tag_cloud_close_parse_filter $markup_values = ' . var_export( $markup_values, true ), 0 );
-		
+
 		return $html_markup;
 	} // mla_tag_cloud_close_parse_filter
-	
+
 } // Class MLATagCloudHooksExample
 
 /*

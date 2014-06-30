@@ -107,6 +107,16 @@ class MLAOptions {
 	const MLA_TAXONOMY_FILTER_INCLUDE_CHILDREN = 'taxonomy_filter_include_children';
 
 	/**
+	 * Provides a unique name for the display Search Media controls option
+	 */
+	const MLA_SEARCH_MEDIA_FILTER_SHOW_CONTROLS = 'search_media_filter_show_controls';
+
+	/**
+	 * Provides a unique name for the display Search Media controls option
+	 */
+	const MLA_SEARCH_MEDIA_FILTER_DEFAULTS = 'search_media_filter_defaults';
+
+	/**
 	 * Provides a "size" attribute value for the EXIF/Template Value field
 	 */
 	const MLA_EXIF_SIZE = 30;
@@ -153,9 +163,19 @@ class MLAOptions {
 	const MLA_MEDIA_MODAL_TERMS = 'media_modal_terms';
 
 	/**
+	 * Provides a unique name for the Media Manager toolbar Taxonomy "Terms Search" option
+	 */
+	const MLA_MEDIA_MODAL_TERMS_SEARCH = 'media_modal_terms_search';
+
+	/**
 	 * Provides a unique name for the Media Manager toolbar Search Box option
 	 */
 	const MLA_MEDIA_MODAL_SEARCHBOX = 'media_modal_searchbox';
+
+	/**
+	 * Provides a unique name for the Media Manager toolbar Search Box Controls option
+	 */
+	const MLA_MEDIA_MODAL_SEARCHBOX_CONTROLS = 'media_modal_searchbox_controls';
 
 	/**
 	 * Provides a unique name for the Media Manager Attachment Details searchable taxonomy option
@@ -476,8 +496,16 @@ class MLAOptions {
 
 			self::MLA_TAXONOMY_SUPPORT =>
 				array('tab' => 'general',
-					'help' => __( 'Check the "Support" box to add the taxonomy to the Assistant and the Edit Media screen.<br>Check the "Inline Edit" box to display the taxonomy in the Quick Edit and Bulk Edit areas.<br>Check the "Checklist" box to enable the checklist-style meta box for a flat taxonomy.<br>You must also check the <strong>"Enable enhanced checklist taxonomies"</strong> box below to enable this feature.<br>Use the "List Filter" option to select the taxonomy on which to filter the Assistant table listing.', 'media-library-assistant' ),
-					'std' =>  array (
+					'help' => __( 'Check the "Support" box to add the taxonomy to the Assistant and the Edit Media screen.', 'media-library-assistant' ) . '<br>' .
+						__( 'Check the "Inline Edit" box to display the taxonomy in the Quick Edit and Bulk Edit areas.', 'media-library-assistant' ) . '<br>' .
+						__( 'Check the "Checklist" box to enable the checklist-style meta box for a flat taxonomy.', 'media-library-assistant' ) . '<br>' .
+						__( 'You must also check the <strong>"Enable enhanced checklist taxonomies"</strong> box below to enable this feature.', 'media-library-assistant' ) . '<br>' .
+						__( 'Check the "Term Search" box to add the taxonomy to the "Search Media/Terms" list.', 'media-library-assistant' ) . 
+						sprintf( ' %1$s <a href="%2$s">%3$s</a>.',  __( 'For complete documentation', 'media-library-assistant' ), admin_url( 'options-general.php?page=' . MLASettings::MLA_SETTINGS_SLUG . '-documentation&amp;mla_tab=documentation#terms_search' ), __( 'click here', 'media-library-assistant' ) )
+ . '<br>' .
+						__( 'Check the "Inline Edit" box to display the taxonomy in the Quick Edit and Bulk Edit areas.', 'media-library-assistant' ) . '<br>' .
+						__( 'Use the "List Filter" option to select the taxonomy on which to filter the Assistant table listing.', 'media-library-assistant' ),
+ 					'std' =>  array (
 						'tax_support' => array (
 							'attachment_category' => 'checked',
 							'attachment_tag' => 'checked',
@@ -487,6 +515,10 @@ class MLAOptions {
 							'attachment_tag' => 'checked',
 						),
 						'tax_flat_checklist' => array(),
+						'tax_term_search' => array (
+							'attachment_category' => 'checked',
+							'attachment_tag' => 'checked',
+						),
 						'tax_filter' => 'attachment_category'
 						), 
 					'type' => 'custom',
@@ -595,6 +627,31 @@ class MLAOptions {
 					'std' => 'checked',
 					'help' => __( 'Check/uncheck this option to include/exclude children for hierarchical taxonomies.', 'media-library-assistant' )),
 
+			'search_media_subheader' =>
+				array('tab' => 'general',
+					'name' => __( 'Search Media Defaults', 'media-library-assistant' ),
+					'type' => 'subheader'),
+
+			self::MLA_SEARCH_MEDIA_FILTER_SHOW_CONTROLS =>
+				array('tab' => 'general',
+					'name' => __( 'Display Search Controls', 'media-library-assistant' ),
+					'type' => 'checkbox',
+					'std' => 'checked',
+					'help' => __( 'Check/uncheck this option to display/hide the and/or connector and search fields controls.', 'media-library-assistant' )),
+
+			self::MLA_SEARCH_MEDIA_FILTER_DEFAULTS =>
+				array('tab' => 'general',
+					'help' => __( 'Use these controls to set defaults for the and/or connector and search fields controls.<br>These defaults will be used for the Search Media boxes on both the Media/Assistant submenu<br>and the Media Manager Modal Window.', 'media-library-assistant' ),
+					'std' =>  array (
+						'search_connector' => 'AND',
+						'search_fields' => array ( 'title', 'content' ),
+						), 
+					'type' => 'custom',
+					'render' => 'mla_search_option_handler',
+					'update' => 'mla_search_option_handler',
+					'delete' => 'mla_search_option_handler',
+					'reset' => 'mla_search_option_handler'),
+
 			'edit_media_header' =>
 				array('tab' => 'general',
 					'name' => __( 'Media/Edit Media Enhancements', 'media-library-assistant' ),
@@ -647,12 +704,26 @@ class MLAOptions {
 					'std' => 'checked',
 					'help' => __( 'Check this option to filter by taxonomy terms.', 'media-library-assistant' )),
 
+			self::MLA_MEDIA_MODAL_TERMS_SEARCH =>
+				array('tab' => 'general',
+					'name' => __( 'Media Manager Terms Search popup', 'media-library-assistant' ),
+					'type' => 'checkbox',
+					'std' => 'checked',
+					'help' => __( 'Check this option to enable the "Terms Search" popup window.', 'media-library-assistant' )),
+
 			self::MLA_MEDIA_MODAL_SEARCHBOX =>
 				array('tab' => 'general',
 					'name' => __( 'Media Manager Enhanced Search Media box', 'media-library-assistant' ),
 					'type' => 'checkbox',
 					'std' => 'checked',
 					'help' => __( 'Check this option to enable search box enhancements.', 'media-library-assistant' )),
+
+			self::MLA_MEDIA_MODAL_SEARCHBOX_CONTROLS =>
+				array('tab' => 'general',
+					'name' => __( 'Media Manager Enhanced Search Media Controls', 'media-library-assistant' ),
+					'type' => 'checkbox',
+					'std' => 'checked',
+					'help' => __( 'Check/uncheck this option to display/hide the and/or connector and search fields controls.', 'media-library-assistant' )),
 
 			self::MLA_MEDIA_MODAL_DETAILS_CATEGORY_METABOX =>
 				array('tab' => 'general',
@@ -967,7 +1038,7 @@ class MLAOptions {
 					'name' => __( 'Enable View and Post MIME Type Support', 'media-library-assistant' ),
 					'type' => 'checkbox',
 					'std' => 'checked',
-					'help' => __( 'Check/uncheck this option to enable/disable Post MIME Type Support, then click <strong>Save Changes</strong> to record the new setting.', 'media-library-assistant' )),
+					'help' => __( 'Check/uncheck this option to enable/disable Post MIME Type Support, then click <strong>Save Changes</strong> to record the new setting.', 'media-library-assistant' ) ),
 
 			self::MLA_POST_MIME_TYPES =>
 				array('tab' => '',
@@ -1303,83 +1374,124 @@ class MLAOptions {
 	 * @param	string	Optional. 'support' (default), 'quick-edit' or 'filter'
 	 *
 	 * @return	boolean|string
-	 *			true if the taxonomy is supported in this way else false
-	 *			string if $tax_name is '' and $support_type is 'filter', returns the taxonomy to filter by
+	 *			true if the taxonomy is supported in this way else false.
+	 *			string if $tax_name is '' and $support_type is 'filter', returns the taxonomy to filter by.
 	 */
 	public static function mla_taxonomy_support($tax_name, $support_type = 'support') {
 		$tax_options =  MLAOptions::mla_get_option( self::MLA_TAXONOMY_SUPPORT );
+
 		switch ( $support_type ) {
 			case 'support': 
-				$tax_support = isset( $tax_options['tax_support'] ) ? $tax_options['tax_support'] : array();
-				$is_supported = array_key_exists( $tax_name, $tax_support );
-
 				if ( !empty( $_REQUEST['mla-general-options-save'] ) ) {
-					$is_supported = isset( $_REQUEST['tax_support'][ $tax_name ] );
+					return isset( $_REQUEST['tax_support'][ $tax_name ] );
 				} elseif ( !empty( $_REQUEST['mla-general-options-reset'] ) ) {
-					switch ( $tax_name ) {
-						case 'attachment_category':
-						case 'attachment_tag':
-							$is_supported = true;
-							break;
-						default:
-							$is_supported = false;
-					}
+					return array_key_exists( $tax_name, self::$mla_option_definitions[ self::MLA_TAXONOMY_SUPPORT ]['std']['tax_support'] );
 				}
 
-				return $is_supported;
+				$tax_support = isset( $tax_options['tax_support'] ) ? $tax_options['tax_support'] : self::$mla_option_definitions[ self::MLA_TAXONOMY_SUPPORT ]['std']['tax_support'];
+				return array_key_exists( $tax_name, $tax_support );
 			case 'quick-edit':
-				$tax_quick_edit = isset( $tax_options['tax_quick_edit'] ) ? $tax_options['tax_quick_edit'] : array();
-				$is_supported = array_key_exists( $tax_name, $tax_quick_edit );
-
 				if ( !empty( $_REQUEST['mla-general-options-save'] ) ) {
-					$is_supported = isset( $_REQUEST['tax_quick_edit'][ $tax_name ] );
+					return isset( $_REQUEST['tax_quick_edit'][ $tax_name ] );
 				} elseif ( !empty( $_REQUEST['mla-general-options-reset'] ) ) {
-					switch ( $tax_name ) {
-						case 'attachment_category':
-						case 'attachment_tag':
-							$is_supported = true;
-							break;
-						default:
-							$is_supported = false;
-					}
+					return array_key_exists( $tax_name, self::$mla_option_definitions[ self::MLA_TAXONOMY_SUPPORT ]['std']['tax_quick_edit'] );
 				}
 
-				return $is_supported;
+				$tax_quick_edit = isset( $tax_options['tax_quick_edit'] ) ? $tax_options['tax_quick_edit'] : self::$mla_option_definitions[ self::MLA_TAXONOMY_SUPPORT ]['std']['tax_quick_edit'];
+				return array_key_exists( $tax_name, $tax_quick_edit );
 			case 'flat-checklist':
-				$tax_flat_checklist = isset( $tax_options['tax_flat_checklist'] ) ? $tax_options['tax_flat_checklist'] : array();
-				$is_supported = array_key_exists( $tax_name, $tax_flat_checklist );
-
 				if ( !empty( $_REQUEST['mla-general-options-save'] ) ) {
-					$is_supported = isset( $_REQUEST['tax_flat_checklist'][ $tax_name ] );
+					return isset( $_REQUEST['tax_flat_checklist'][ $tax_name ] );
 				} elseif ( !empty( $_REQUEST['mla-general-options-reset'] ) ) {
-					$is_supported = false;
+					return array_key_exists( $tax_name, self::$mla_option_definitions[ self::MLA_TAXONOMY_SUPPORT ]['std']['tax_flat_checklist'] );
 				}
 
-				return $is_supported;
+				$tax_flat_checklist = isset( $tax_options['tax_flat_checklist'] ) ? $tax_options['tax_flat_checklist'] : self::$mla_option_definitions[ self::MLA_TAXONOMY_SUPPORT ]['std']['tax_flat_checklist'];
+				return array_key_exists( $tax_name, $tax_flat_checklist );
+			case 'term-search':
+				if ( !empty( $_REQUEST['mla-general-options-save'] ) ) {
+					return isset( $_REQUEST['tax_term_search'][ $tax_name ] );
+				} elseif ( !empty( $_REQUEST['mla-general-options-reset'] ) ) {
+					return array_key_exists( $tax_name, self::$mla_option_definitions[ self::MLA_TAXONOMY_SUPPORT ]['std']['tax_term_search'] );
+				}
+
+				$tax_term_search = isset( $tax_options['tax_term_search'] ) ? $tax_options['tax_term_search'] : self::$mla_option_definitions[ self::MLA_TAXONOMY_SUPPORT ]['std']['tax_term_search'];
+				return array_key_exists( $tax_name, $tax_term_search );
 			case 'filter':
-				$tax_filter = isset( $tax_options['tax_filter'] ) ? $tax_options['tax_filter'] : '';
+				$tax_filter = isset( $tax_options['tax_filter'] ) ? $tax_options['tax_filter'] : self::$mla_option_definitions[ self::MLA_TAXONOMY_SUPPORT ]['std']['tax_filter'];
 				if ( '' == $tax_name ) {
 					return $tax_filter;
 				}
 
-				$is_supported = ( $tax_name == $tax_filter );
-
 				if ( !empty( $_REQUEST['mla-general-options-save'] ) ) {
 					$tax_filter = isset( $_REQUEST['tax_filter'] ) ? $_REQUEST['tax_filter'] : '';
-					$is_supported = ( $tax_name == $tax_filter );
+					return ( $tax_name == $tax_filter );
 				} elseif ( !empty( $_REQUEST['mla-general-options-reset'] ) ) {
-					if ( 'attachment_category' == $tax_name ) {
-						$is_supported = true;
-					} else {
-						$is_supported = false;
-					}
+					return array_key_exists( $tax_name, self::$mla_option_definitions[ self::MLA_TAXONOMY_SUPPORT ]['std']['tax_filter'] );
 				}
 
-				return $is_supported;
+				return ( $tax_name == $tax_filter );
 			default:
 				return false;
 		} // $support_type
 	} // mla_taxonomy_support
+
+	/**
+	 * Returns an array of taxonomy names assigned to $support_type
+ 	 *
+	 * @since 1.90
+	 *
+	 * @param	string	Optional. 'support' (default), 'quick-edit', 'flat-checklist', 'term-search' or 'filter'
+	 *
+	 * @return	array	taxonomies assigned to $support_type; can be empty.
+	 */
+	public static function mla_supported_taxonomies($support_type = 'support') {
+		$tax_options =  MLAOptions::mla_get_option( self::MLA_TAXONOMY_SUPPORT );
+		switch ( $support_type ) {
+			case 'support': 
+				if ( !empty( $_REQUEST['mla-general-options-save'] ) ) {
+					return isset( $_REQUEST['tax_support'] ) ? array_keys( $_REQUEST['tax_support'] ) : array();
+				} elseif ( !empty( $_REQUEST['mla-general-options-reset'] ) ) {
+					return array_keys( self::$mla_option_definitions[ self::MLA_TAXONOMY_SUPPORT ]['std']['tax_support'] );
+				}
+
+				return array_keys( isset( $tax_options['tax_support'] ) ? $tax_options['tax_support'] : self::$mla_option_definitions[ self::MLA_TAXONOMY_SUPPORT ]['std']['tax_support'] );
+			case 'quick-edit':
+				if ( !empty( $_REQUEST['mla-general-options-save'] ) ) {
+					return isset( $_REQUEST['tax_quick_edit'] ) ? array_keys( $_REQUEST['tax_quick_edit'] ) : array();
+				} elseif ( !empty( $_REQUEST['mla-general-options-reset'] ) ) {
+					return array_keys( self::$mla_option_definitions[ self::MLA_TAXONOMY_SUPPORT ]['std']['tax_quick_edit'] );
+				}
+
+				return array_keys( isset( $tax_options['tax_quick_edit'] ) ? $tax_options['tax_quick_edit'] : self::$mla_option_definitions[ self::MLA_TAXONOMY_SUPPORT ]['std']['tax_quick_edit'] );
+			case 'flat-checklist':
+				if ( !empty( $_REQUEST['mla-general-options-save'] ) ) {
+					return isset( $_REQUEST['tax_flat_checklist'] ) ? array_keys( $_REQUEST['tax_flat_checklist'] ) : array();
+				} elseif ( !empty( $_REQUEST['mla-general-options-reset'] ) ) {
+					return array_keys( self::$mla_option_definitions[ self::MLA_TAXONOMY_SUPPORT ]['std']['tax_flat_checklist'] );
+				}
+
+				return array_keys( isset( $tax_options['tax_flat_checklist'] ) ? $tax_options['tax_flat_checklist'] : self::$mla_option_definitions[ self::MLA_TAXONOMY_SUPPORT ]['std']['tax_quick_edit'] );
+			case 'term-search':
+				if ( !empty( $_REQUEST['mla-general-options-save'] ) ) {
+					return isset( $_REQUEST['tax_term_search'] ) ? array_keys( $_REQUEST['tax_term_search'] ) : array();
+				} elseif ( !empty( $_REQUEST['mla-general-options-reset'] ) ) {
+					return array_keys( self::$mla_option_definitions[ self::MLA_TAXONOMY_SUPPORT ]['std']['tax_term_search'] );
+				}
+
+				return array_keys( isset( $tax_options['tax_term_search'] ) ? $tax_options['tax_term_search'] : self::$mla_option_definitions[ self::MLA_TAXONOMY_SUPPORT ]['std']['tax_term_search'] );
+			case 'filter':
+				if ( !empty( $_REQUEST['mla-general-options-save'] ) ) {
+					return isset( $_REQUEST['tax_filter'] ) ? (array) $_REQUEST['tax_filter'] : array();
+				} elseif ( !empty( $_REQUEST['mla-general-options-reset'] ) ) {
+					return (array) self::$mla_option_definitions[ self::MLA_TAXONOMY_SUPPORT ]['std']['tax_filter'];
+				}
+
+				return (array) isset( $tax_options['tax_filter'] ) ? $tax_options['tax_filter'] : self::$mla_option_definitions[ self::MLA_TAXONOMY_SUPPORT ]['std']['tax_filter'];
+			default:
+				return array();
+		} // $support_type
+	} // mla_supported_taxonomies
 
 	/**
 	 * Render and manage Attachment Display Settings options; alignment, link type and size
@@ -1452,7 +1564,7 @@ class MLAOptions {
 	 * @uses $mla_option_templates contains taxonomy-row and taxonomy-table templates
 	 *
 	 * @param	string 	'render', 'update', 'delete', or 'reset'
-	 * @param	string 	option name, e.g., 'taxonomy_support'
+	 * @param	string 	option name, e.g., 'tax_support', or 'tax_flat_checklist'
 	 * @param	array 	option parameters
 	 * @param	array 	Optional. null (default) for 'render' else option data, e.g., $_REQUEST
 	 *
@@ -1463,10 +1575,11 @@ class MLAOptions {
 			case 'render':
 				$taxonomies = get_taxonomies( array ( 'show_ui' => true ), 'objects' );
 				$current_values = self::mla_get_option( $key );
-				$tax_support = isset( $current_values['tax_support'] ) ? $current_values['tax_support'] : array();
-				$tax_quick_edit = isset( $current_values['tax_quick_edit'] ) ? $current_values['tax_quick_edit'] : array();
-				$tax_flat_checklist = isset( $current_values['tax_flat_checklist'] ) ? $current_values['tax_flat_checklist'] : array();
-				$tax_filter = isset( $current_values['tax_filter'] ) ? $current_values['tax_filter'] : '';
+				$tax_support = isset( $current_values['tax_support'] ) ? $current_values['tax_support'] : self::$mla_option_definitions[ self::MLA_TAXONOMY_SUPPORT ]['std']['tax_support'];
+				$tax_quick_edit = isset( $current_values['tax_quick_edit'] ) ? $current_values['tax_quick_edit'] : self::$mla_option_definitions[ self::MLA_TAXONOMY_SUPPORT ]['std']['tax_quick_edit'];
+				$tax_flat_checklist = isset( $current_values['tax_flat_checklist'] ) ? $current_values['tax_flat_checklist'] : self::$mla_option_definitions[ self::MLA_TAXONOMY_SUPPORT ]['std']['tax_flat_checklist'];
+				$tax_term_search = isset( $current_values['tax_term_search'] ) ? $current_values['tax_term_search'] : self::$mla_option_definitions[ self::MLA_TAXONOMY_SUPPORT ]['std']['tax_term_search'];
+				$tax_filter = isset( $current_values['tax_filter'] ) ? $current_values['tax_filter'] : self::$mla_option_definitions[ self::MLA_TAXONOMY_SUPPORT ]['std']['tax_filter'];
 
 				/*
 				 * Always display our own taxonomies, even if not registered.
@@ -1513,6 +1626,7 @@ class MLAOptions {
 						'support_checked' => array_key_exists( $tax_name, $tax_support ) ? 'checked=checked' : '',
 						'quick_edit_checked' => array_key_exists( $tax_name, $tax_quick_edit ) ? 'checked=checked' : '',
 						'flat_checklist_checked' => array_key_exists( $tax_name, $tax_flat_checklist ) ? 'checked=checked' : '',
+						'term_search_checked' => array_key_exists( $tax_name, $tax_term_search ) ? 'checked=checked' : '',
 						'flat_checklist_disabled' => '',
 						'flat_checklist_value' => 'checked',
 						'filter_checked' => ( $tax_name == $tax_filter ) ? 'checked=checked' : ''
@@ -1531,6 +1645,7 @@ class MLAOptions {
 					'Support' => __( 'Support', 'media-library-assistant' ),
 					'Inline Edit' => __( 'Inline Edit', 'media-library-assistant' ),
 					'Checklist' => __( 'Checklist', 'media-library-assistant' ),
+					'Term Search' => __( 'Term Search', 'media-library-assistant' ),
 					'List Filter' => __( 'List Filter', 'media-library-assistant' ),
 					'Taxonomy' => __( 'Taxonomy', 'media-library-assistant' ),
 					'taxonomy_rows' => $row,
@@ -1540,10 +1655,11 @@ class MLAOptions {
 				return MLAData::mla_parse_template( self::$mla_option_templates['taxonomy-table'], $option_values );
 			case 'update':
 			case 'delete':
-				$tax_support = isset( $args['tax_support'] ) ? $args['tax_support'] : array();
-				$tax_quick_edit = isset( $args['tax_quick_edit'] ) ? $args['tax_quick_edit'] : array();
-				$tax_flat_checklist = isset( $args['tax_flat_checklist'] ) ? $args['tax_flat_checklist'] : array();
-				$tax_filter = isset( $args['tax_filter'] ) ? $args['tax_filter'] : '';
+				$tax_support = isset( $args['tax_support'] ) ? $args['tax_support'] : self::$mla_option_definitions[ self::MLA_TAXONOMY_SUPPORT ]['std']['tax_support'];
+				$tax_quick_edit = isset( $args['tax_quick_edit'] ) ? $args['tax_quick_edit'] : self::$mla_option_definitions[ self::MLA_TAXONOMY_SUPPORT ]['std']['tax_quick_edit'];
+				$tax_flat_checklist = isset( $args['tax_flat_checklist'] ) ? $args['tax_flat_checklist'] : self::$mla_option_definitions[ self::MLA_TAXONOMY_SUPPORT ]['std']['tax_flat_checklist'];
+				$tax_term_search = isset( $args['tax_term_search'] ) ? $args['tax_term_search'] : self::$mla_option_definitions[ self::MLA_TAXONOMY_SUPPORT ]['std']['tax_term_search'];
+				$tax_filter = isset( $args['tax_filter'] ) ? $args['tax_filter'] : self::$mla_option_definitions[ self::MLA_TAXONOMY_SUPPORT ]['std']['tax_filter'];
 
 				$msg = '';
 
@@ -1571,10 +1687,19 @@ class MLAOptions {
 					}
 				}
 
+				foreach ( $tax_term_search as $tax_name => $tax_value ) {
+					if ( !array_key_exists( $tax_name, $tax_support ) ) {
+						/* translators: 1: taxonomy name */
+						$msg .= '<br>' . sprintf( __( 'Term Search ignored; %1$s not supported.', 'media-library-assistant' ), $tax_name ) . "\r\n";
+						unset( $tax_term_search[ $tax_name ] );
+					}
+				}
+
 				$value = array (
 					'tax_support' => $tax_support,
 					'tax_quick_edit' => $tax_quick_edit,
 					'tax_flat_checklist' => $tax_flat_checklist,
+					'tax_term_search' => $tax_term_search,
 					'tax_filter' => $tax_filter
 					);
 
@@ -1596,6 +1721,81 @@ class MLAOptions {
 		}
 	} // mla_taxonomy_option_handler
 
+	/**
+	 * Render and manage Search box options, e.g., connector and search fields
+ 	 *
+	 * @since 1.90
+	 * @uses $mla_option_templates contains search-table template
+	 *
+	 * @param	string 	'render', 'update', 'delete', or 'reset'
+	 * @param	string 	option name; 'search_connector' or 'search_fields'
+	 * @param	array 	option parameters
+	 * @param	array 	Optional. null (default) for 'render' else option data, e.g., $_REQUEST
+	 *
+	 * @return	string	HTML table row markup for 'render' else message(s) reflecting the results of the operation.
+	 */
+	public static function mla_search_option_handler( $action, $key, $value, $args = null ) {
+		switch ( $action ) {
+			case 'render':
+				$current_values = self::mla_get_option( $key );
+				$search_connector = isset( $current_values['search_connector'] ) ? $current_values['search_connector'] : self::$mla_option_definitions[ self::MLA_SEARCH_MEDIA_FILTER_DEFAULTS ]['std']['search_connector'];
+				$search_fields = isset( $current_values['search_fields'] ) ? $current_values['search_fields'] : self::$mla_option_definitions[ self::MLA_SEARCH_MEDIA_FILTER_DEFAULTS ]['std']['search_fields'];
+
+				$option_values = array (
+					'and_checked' => ( 'AND' == $search_connector ) ? 'checked="checked"' : '',
+					'AND' => __( 'and', 'media-library-assistant' ),
+					'or_checked' => ( 'OR' == $search_connector ) ? 'checked="checked"' : '',
+					'OR' => __( 'or', 'media-library-assistant' ),
+					'title_checked' => ( in_array( 'title', $search_fields ) ) ? 'checked="checked"' : '',
+					'Title' => __( 'Title', 'media-library-assistant' ),
+
+					'name_checked' => ( in_array( 'name', $search_fields ) ) ? 'checked="checked"' : '',
+					'Name' => __( 'Name', 'media-library-assistant' ),
+
+					'alt_text_checked' => ( in_array( 'alt-text', $search_fields ) ) ? 'checked="checked"' : '',
+					'ALT Text' => __( 'ALT Text', 'media-library-assistant' ),
+
+					'excerpt_checked' => ( in_array( 'excerpt', $search_fields ) ) ? 'checked="checked"' : '',
+					'Caption' => __( 'Caption', 'media-library-assistant' ),
+
+					'content_checked' => ( in_array( 'content', $search_fields ) ) ? 'checked="checked"' : '',
+					'Description' => __( 'Description', 'media-library-assistant' ),
+
+					'terms_checked' => ( in_array( 'terms', $search_fields ) ) ? 'checked="checked"' : '',
+					'Terms' => __( 'Terms', 'media-library-assistant' ),
+					'help' => self::$mla_option_definitions[ self::MLA_SEARCH_MEDIA_FILTER_DEFAULTS ]['help']
+				);
+
+				return MLAData::mla_parse_template( self::$mla_option_templates['search-table'], $option_values );
+			case 'update':
+			case 'delete':
+				$search_connector = isset( $args['search_connector'] ) ? $args['search_connector'] : self::$mla_option_definitions[ self::MLA_SEARCH_MEDIA_FILTER_DEFAULTS ]['std']['search_connector'];
+				$search_fields = isset( $args['search_fields'] ) ? $args['search_fields'] : self::$mla_option_definitions[ self::MLA_SEARCH_MEDIA_FILTER_DEFAULTS ]['std']['search_fields'];
+
+				$msg = '';
+
+				$value = array (
+					'search_connector' => $search_connector,
+					'search_fields' => $search_fields,
+					);
+
+				self::mla_update_option( $key, $value );
+
+				if ( empty( $msg ) ) {
+					/* translators: 1: option name, e.g., taxonomy_support */
+					$msg .= '<br>' . sprintf( __( 'Update custom %1$s', 'media-library-assistant' ), $key ) . "\r\n";
+				}
+
+				return $msg;
+			case 'reset':
+				self::mla_delete_option( $key );
+				/* translators: 1: option name, e.g., taxonomy_support */
+				return '<br>' . sprintf( __( 'Reset custom %1$s', 'media-library-assistant' ), $key ) . "\r\n";
+			default:
+				/* translators: 1: option name 2: action, e.g., update, delete, reset */
+				return '<br>' . sprintf( __( 'ERROR: Custom %1$s unknown action "%2$s"', 'media-library-assistant' ), $key, $action ) . "\r\n";
+		}
+	} // mla_search_option_handler
 	/**
 	 * Examine or alter the filename before the file is made permanent
  	 *
@@ -1937,22 +2137,31 @@ class MLAOptions {
 
 		if ( NULL == $post_info ) {
 			if ( 'custom_field_mapping' == $category ) {
-				$post_info = $wpdb->get_results( "SELECT ID, post_date, post_parent, post_mime_type FROM {$wpdb->posts} WHERE post_type = 'attachment'", OBJECT_K );
+				$post_info = $wpdb->get_results( "SELECT * FROM {$wpdb->posts} WHERE post_type = 'attachment'", OBJECT_K );
 			} else {
-				$post_info = $wpdb->get_results( "SELECT ID, post_date, post_parent, post_mime_type FROM {$wpdb->posts} WHERE ID = '{$post_id}'", OBJECT_K );
+				$post_info = $wpdb->get_results( "SELECT * FROM {$wpdb->posts} WHERE ID = '{$post_id}'", OBJECT_K );
 			}
 		}
 
-		switch ( $data_source ) {
-			case 'post_date':
-				return isset( $post_info[ $post_id ]->post_date ) ? $post_info[ $post_id ]->post_date : '';
-			case 'post_parent':
-				return isset( $post_info[ $post_id ]->post_parent ) ? $post_info[ $post_id ]->post_parent : 0;
-			case 'post_mime_type':
-				return isset( $post_info[ $post_id ]->post_mime_type ) ? $post_info[ $post_id ]->post_mime_type : 0;
-			default:
-				return false;
+		if ( property_exists( $post_info[$post_id], $data_source ) ) {
+			$post_array = (array) $post_info[$post_id];
+			$value = $post_array[ $data_source ];
+		} else {
+			return false;
 		}
+
+		switch ( $data_source ) {
+			case 'post_id':
+			case 'post_author':
+			case 'post_parent':
+			case 'menu_order':
+			case 'comment_count':
+				return ( NULL !== $value ) ? $value : 0;
+			default:
+				return ( NULL !== $value ) ? $value : '';
+		}
+
+		return false;
 	} // _evaluate_post_information
 
 	/**
@@ -2148,6 +2357,10 @@ class MLAOptions {
 					$default_option = 'text';
 				}
 
+				/*
+				 * Go through the template and expand the non-prefixed elements
+				 * as Data Sources
+				 */
 				$item_values = array();
 				$placeholders = MLAData::mla_get_template_placeholders( $data_value['meta_name'], $default_option );
 				foreach ( $placeholders as $key => $placeholder ) {
@@ -2159,6 +2372,9 @@ class MLAOptions {
 					} // Data Source
 				} // foreach placeholder
 
+				/*
+				 * Now expand the template using the above Data Source values
+				 */
 				$template = '[+template:' . $data_value['meta_name'] . '+]';
 				$item_values = MLAData::mla_expand_field_level_parameters( $template, NULL, $item_values, $post_id, $data_value['keep_existing'], $default_option );
 
@@ -2168,7 +2384,35 @@ class MLAOptions {
 				} else {
 					$result = MLAData::mla_parse_template( $template, $item_values );
 				}
-
+				break;
+			case 'parent':
+				$data_source = 'post_parent';
+				/* fallthru */
+			case 'post_id':
+			case 'post_author':
+			case 'post_parent':
+			case 'menu_order':
+			case 'comment_count':
+				$result = absint( self::_evaluate_post_information( $post_id, $category, $data_source ) );
+				break;
+			case 'mime_type': 
+				$data_source = 'post_mime_type';
+				/* fallthru */
+			case 'post_date':
+			case 'post_date_gmt':
+			case 'post_content':
+			case 'post_title':
+			case 'post_excerpt':
+			case 'post_status':
+			case 'comment_status':
+			case 'ping_status':  
+			case 'post_name':
+			case 'post_modified':
+			case 'post_modified_gmt':
+			case 'post_content_filtered':
+			case 'guid':
+			case 'post_mime_type': 
+				$result = self::_evaluate_post_information( $post_id, $category, $data_source );
 				break;
 			case 'absolute_path':
 			case 'absolute_file_name':
@@ -2203,9 +2447,6 @@ class MLAOptions {
 				break;
 			case 'upload_date':
 				$result = self::_evaluate_post_information( $post_id, $category, 'post_date' );
-				break;
-			case 'mime_type':
-				$result = self::_evaluate_post_information( $post_id, $category, 'post_mime_type' );
 				break;
 			case 'dimensions':
 				$result = $file_info['width'] . 'x' . $file_info['height'];
@@ -2301,9 +2542,6 @@ class MLAOptions {
 				if ( 'x' == $result ) {
 					$result = '';
 				}
-				break;
-			case 'parent':
-				$result = absint( self::_evaluate_post_information( $post_id, $category, 'post_parent' ) );
 				break;
 			case 'parent_date':
 			case 'parent_type':
@@ -2433,23 +2671,23 @@ class MLAOptions {
 		} // switch $data_source
 
 		switch( $data_value['format'] ) {
+			case 'raw':
+				return $result;
 			case 'commas':
 				if ( is_numeric( $result ) ) {
 					$result = str_pad( number_format( (float)$result ), 15, ' ', STR_PAD_LEFT );
 				}
 				break;
 			default:
-				// no change
+				/*
+				 * Make some numeric values sortable as strings, make all value non-empty
+				 */
+				if ( in_array( $data_source, array( 'file_size', 'pixels', 'width', 'height' ) ) ) {
+					$result = str_pad( $result, 15, ' ', STR_PAD_LEFT );
+				} elseif ( empty( $result ) ) {
+					$result = ' ';
+				}
 		} // format
-
-		/*
-		 * Make numeric values sortable as strings, make all value non-empty
-		 */
-		if ( 'raw' != $data_value['format'] && in_array( $data_source, array( 'file_size', 'pixels', 'width', 'height' ) ) ) {
-			$result = str_pad( $result, 15, ' ', STR_PAD_LEFT );
-		} elseif ( empty( $result ) ) {
-			$result =  ' ';
-		}
 
 		return $result;
 	} // _evaluate_data_source
@@ -2600,6 +2838,28 @@ class MLAOptions {
 	 * @var	array
 	 */
 	private static $custom_field_data_sources = array (
+		'post_id',
+		'post_author',
+		'post_date',
+		'post_date_gmt',
+		'post_content',
+		'post_title',
+		'post_excerpt',
+		'post_status',
+		'comment_status',
+		'ping_status',  
+		'post_name',
+		'post_modified',
+		'post_modified_gmt',
+		'post_content_filtered',
+		'parent',
+		'post_parent',
+		'guid',
+		'menu_order',
+		'mime_type',
+		'post_mime_type', 
+		'comment_count',
+
 		'absolute_path',
 		'absolute_file_name',
 		'base_file',
@@ -2609,7 +2869,7 @@ class MLAOptions {
 		'extension',
 		'file_size',
 		'upload_date',
-		'mime_type',
+
 		'dimensions',
 		'pixels',
 		'width',
@@ -2625,7 +2885,7 @@ class MLAOptions {
 		'size_bytes[size]',
 		'size_pixels[size]',
 		'size_dimensions[size]',
-		'parent',
+
 		'parent_date',
 		'parent_type',
 		'parent_title',
@@ -2639,6 +2899,7 @@ class MLAOptions {
 		'gallery_in_title',
 		'mla_gallery_in',
 		'mla_gallery_in_title',
+
 		'aperture',
 		'credit',
 		'camera',

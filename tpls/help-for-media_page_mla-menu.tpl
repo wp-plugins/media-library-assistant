@@ -27,24 +27,36 @@
 <!-- template="mla-search-media" -->
 <!-- title="Search Media" order="6" -->
 <p>The &#8220;Search Media&#8221; box supports a keyword search of several attachment fields; enter words and/or phrases in the box, separated by spaces. Click the Search Media button for a case-insensitive "SQL LIKE" search. Each keyword in the search phrase is matched independently, so the order of search words does not have to match the order in the text. For example, searching on "friend" and "best" will match "Best Friend". If you put quotes around a search phrase then word order is required for a match (and spaces between words must match as well). You can also match on partial words, e.g., "rien" will match "friend".</p>
-<p>Once you&#8217;ve entered the terms you want, use the options below the box to tailor your search. You can pick the connector used between search terms; "or" means any of the terms will match, "and" means all of the terms must match. Use the checkboxes to extend your search to more fields in the database.</p>
-<p>If you enter a numeric value (only) in the search box, it is interpreted as a search by attachment ID or parent ID (post_parent). You can search for a numeric value in the text fields, e.g., title, by putting quotes around the value.</p>
+<p>Once you&#8217;ve entered the terms you want, use the options below the box to tailor your search. You can pick the connector used between search terms; "or" means any of the terms will match, "and" means all of the terms must match. Use the checkboxes to extend your search to more fields in the database. The "Terms" checkbox will extend the search to the name field of the taxonomies you set on the Settings/Media Library Assistant General tab.</p>
+<p>If you enter a numeric value (only) in the search box, it is interpreted as a search by attachment ID or parent ID (post_parent). This is in addition to the normal search in the text fields, e.g., title.</p>
+<!-- template="mla-terms-search" -->
+<!-- title="Terms Search" order="7" -->
+<p>The &#8220;Terms Search&#8221; features let you filter the Media/Assistant submenu table and the Media Manager Modal Window by matching one or more phrases in the Name field of taxonomy terms. There are two ways to access this feature:
+</p>
+<ol>
+<li>Check the "Terms" box under the "Search Media" button on the Media/Assistant submenu table or the Media Manager toolbar. The phrase(s) you enter in the search box will match taxonomy term names as well as any other search fields you have checked.</li>
+<li>Click the "Terms Search" button beside the terms filter dropdown. This will bring up the "Search Terms" popup window with several additional controls to refine your search. They are described in the Settings/Media Library Assistant <a href="[+settingsURL+]?page=mla-settings-menu-documentation&mla_tab=documentation#terms_search" target="_blank">Documentation tab</a>.</li>
+</ol>
+<p>You can select which taxonomies participate in the search by entering your choice(s) in the Settings/Media Library Assistant General tab.</p>
 <!-- template="mla-bulk-actions" -->
-<!-- title="Bulk Actions" order="7" -->
+<!-- title="Bulk Actions" order="8" -->
 <p>The &#8220;Bulk Actions&#8221; dropdown list works with the check box column to let you make changes to many items at once. Click the check box in the column title row to select all items on the page, or click the check box in a row to select items individually.</p>
 <p>Once you&#8217;ve selected the items you want, pick an action from the dropdown list and click Apply to perform the action on the selected items. The available actions will vary depending on the file type/status view you have picked.</p>
 <p>If you have enabled Trash support (define MEDIA_TRASH in wp-config.php) you can use bulk actions to move items to and from the Trash or delete them permamently.</p>
 <p>When using Bulk Edit, you can change the metadata (author, parent, taxonomy terms) for all selected attachments at once. To remove an attachment from the grouping, just click the x next to its name in the left column of the Bulk Edit area.</p>
 <p>Bulk Edit support for taxonomy terms allows you to <strong>add, remove or completely replace</strong> terms for the selected attachments. Below each taxonomy edit box are three radio buttons that let you select the action you&#8217;d like to perform.</p>
-<p>The taxonomies that appear in the Bulk Edit area can be a subset of the taxonomies supported on the single item edit screen. You can select which taxonomies appear by entering your choice(s) on the Media Libray Assistant Settings screen.</p>
+<p>The taxonomies that appear in the Bulk Edit area can be a subset of the taxonomies supported on the single item edit screen. You can select which taxonomies appear by entering your choice(s) in the Settings/Media Library Assistant General tab.</p>
 <!-- template="mla-available-actions" -->
-<!-- title="Available Actions" order="8" -->
+<!-- title="Available Actions" order="9" -->
 <p>Hovering over a row reveals action links such as Edit, Quick Edit, Move to Trash and Delete Permanently. Clicking Edit displays a simple screen to edit that individual file&#8217;s metadata. Clicking Move to Trash will assign the file to the Trash pile but will not affect pages or posts to which it is attached. Clicking Delete Permanently will delete the file from the media library (as well as from any posts to which it is currently attached). Clicking Quick Edit displays an inline form to edit the file's metadata without leaving the menu screen.</p>
 <p>The taxonomies that appear in the Quick Edit area can be a subset of the taxonomies supported on the single item edit screen. You can select which taxonomies appear by entering your choice(s) on the Media Libray Assistant Settings screen.</p>
 <!-- template="mla-attaching-files" -->
-<!-- title="Attaching Files" order="9" -->
-<p>If a media file has not been attached to any post, you will see (unattached) in the Attached To column. You can click on the Edit or Quick Edit action to attach the file by assigning a value to the Parent ID field.</p>
+<!-- title="Attaching Files" order="10" -->
+<p>If a media file has not been attached to any post, you will see (unattached) in the Attached To column. You can click on "Set Parent" in the "Attached to" column, or click the Edit or Quick Edit action to attach the file by assigning a value to the Parent ID field. The "Select Parent" popup window makes it easy to find the right home for your attachment.</p>
+<p>You can find more information about the Select Parent popup window in the Settings/Media Library Assistant <a href="[+settingsURL+]?page=mla-settings-menu-documentation&mla_tab=documentation#select_parent" target="_blank">Documentation tab</a>.
 <!-- template="sidebar" -->
 <p><strong>For more information:</strong></p>
-<p><a href="http://codex.wordpress.org/Media_Library_Screen" target="_blank">Documentation on Media Library</a></p>
-<p><a href="http://wordpress.org/support/" target="_blank">Support Forums</a></p>
+<p><a href="[+settingsURL+]?page=mla-settings-menu-documentation&mla_tab=documentation#terms_search" target="_blank">MLA Documentation for Terms Search</a></p>
+<p><a href="[+settingsURL+]?page=mla-settings-menu-documentation&mla_tab=documentation#select_parent" target="_blank">MLA Documentation for the Select Parent popup window</a></p>
+<p><a href="http://codex.wordpress.org/Media_Library_Screen" target="_blank">Codex documentation on Media Library</a></p>
+<p><a href="http://wordpress.org/support/plugin/media-library-assistant" target="_blank">MLA Support Forum</a></p>

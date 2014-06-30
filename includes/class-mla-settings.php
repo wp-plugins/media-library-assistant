@@ -908,7 +908,7 @@ class MLASettings {
 		} else {
 			$results = self::$mla_tablist;
 		}
-		
+
 		return apply_filters( 'mla_get_options_tablist', $results, self::$mla_tablist, $tab );
 	}
 
@@ -1011,8 +1011,8 @@ class MLASettings {
 		$shortcodes = array( 
 			// array("name" => "shortcode", "description" => "This shortcode...")
 			// array( 'name' => 'mla_attachment_list', 'description' => __( 'renders a complete list of all attachments and references to them.', 'media-library-assistant' ) ),
-			array( 'name' => 'mla_gallery', 'description' => __( 'enhanced version of the WordPress [gallery] shortcode.', 'media-library-assistant' ) . sprintf( ' %1$s <a href="%2$s">%3$s</a>.',  __( 'For complete documentation', 'media-library-assistant' ), admin_url( 'options-general.php?page=' . self::MLA_SETTINGS_SLUG . '-documentation&amp;mla_tab=documentation' ), __( 'click here', 'media-library-assistant' ) ) ),
-			array( 'name' => 'mla_tag_cloud', 'description' => __( 'enhanced version of the WordPress Tag Cloud.', 'media-library-assistant' ) . sprintf( ' %1$s <a href="%2$s">%3$s</a>.',  __( 'For complete documentation', 'media-library-assistant' ), admin_url( 'options-general.php?page=' . self::MLA_SETTINGS_SLUG . '-documentation&amp;mla_tab=documentation' ), __( 'click here', 'media-library-assistant' ) ) )
+			array( 'name' => 'mla_gallery', 'description' => __( 'enhanced version of the WordPress [gallery] shortcode.', 'media-library-assistant' ) . sprintf( ' %1$s <a href="%2$s">%3$s</a>.',  __( 'For complete documentation', 'media-library-assistant' ), admin_url( 'options-general.php?page=' . self::MLA_SETTINGS_SLUG . '-documentation&amp;mla_tab=documentation#mla_gallery' ), __( 'click here', 'media-library-assistant' ) ) ),
+			array( 'name' => 'mla_tag_cloud', 'description' => __( 'enhanced version of the WordPress Tag Cloud.', 'media-library-assistant' ) . sprintf( ' %1$s <a href="%2$s">%3$s</a>.',  __( 'For complete documentation', 'media-library-assistant' ), admin_url( 'options-general.php?page=' . self::MLA_SETTINGS_SLUG . '-documentation&amp;mla_tab=documentation#mla_tag_cloud' ), __( 'click here', 'media-library-assistant' ) ) )
 		);
 
 		$shortcode_list = '';
@@ -3326,6 +3326,33 @@ class MLASettings {
 							/* translators: 1: reference type, e.g., Gallery in */
 							$message_list .= "<br>" . sprintf( _x( '%1$s - references updated.', 'message_list', 'media-library-assistant' ), __( 'MLA Gallery in', 'media-library-assistant' ) ) . "\r\n";
 							$_REQUEST[ MLA_OPTION_PREFIX . $key ] = 'cached';
+						}
+						break;
+					case MLAOptions::MLA_TAXONOMY_SUPPORT:
+						/*
+						 * Replace missing "checkbox" arguments with empty arrays,
+						 * denoting that all of the boxes are unchecked.
+						 */
+						if ( ! isset( $_REQUEST['tax_support'] ) ) {
+							$_REQUEST['tax_support'] = array();
+						}
+						if ( ! isset( $_REQUEST['tax_quick_edit'] ) ) {
+							$_REQUEST['tax_quick_edit'] = array();
+						}
+						if ( ! isset( $_REQUEST['tax_flat_checklist'] ) ) {
+							$_REQUEST['tax_flat_checklist'] = array();
+						}
+						if ( ! isset( $_REQUEST['tax_term_search'] ) ) {
+							$_REQUEST['tax_term_search'] = array();
+						}
+						break;
+					case MLAOptions::MLA_SEARCH_MEDIA_FILTER_DEFAULTS:
+						/*
+						 * Replace missing "checkbox" arguments with empty arrays,
+						 * denoting that all of the boxes are unchecked.
+						 */
+						if ( ! isset( $_REQUEST['search_fields'] ) ) {
+							$_REQUEST['search_fields'] = array();
 						}
 						break;
 					default:

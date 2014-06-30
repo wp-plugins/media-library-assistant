@@ -41,6 +41,15 @@ class MLAModal {
 	const JAVASCRIPT_MEDIA_MODAL_OBJECT = 'mla_media_modal_vars';
 
 	/**
+	 * Object name for localizing JavaScript - Terms Search popup
+	 *
+	 * @since 1.90
+	 *
+	 * @var	string
+	 */
+	const JAVASCRIPT_TERMS_SEARCH_OBJECT = 'mla_terms_search_vars';
+
+	/**
 	 * Slug for the "query attachments" action - Add Media and related dialogs
 	 *
 	 * @since 1.80
@@ -288,7 +297,7 @@ class MLAModal {
 	 *
 	 * @param	string	HTML markup for taxonomy terms dropdown <select> tag
 	 *
-	 * @return	array	( value => label ) pairs
+	 * @return	array	( 'class' => $class_array, 'value' => $value_array, 'text' => $text_array )
 	 */
 	private static function _terms_options( $markup ) {
 		$match_count = preg_match_all( "#\<option(( class=\"([^\"]+)\" )|( ))value=((\'([^\']+)\')|(\"([^\"]+)\"))([^\>]*)\>([^\<]*)\<.*#", $markup, $matches );
@@ -325,25 +334,33 @@ class MLAModal {
 	 * @var	array
 	 */
 	private static $mla_media_modal_settings = array(
-			'ajaxQueryAttachmentsAction' => self::JAVASCRIPT_QUERY_ATTACHMENTS_ACTION,
 			'ajaxFillCompatAction' => self::JAVASCRIPT_FILL_COMPAT_ACTION,
+			'ajaxNonce' => '',
+			'ajaxQueryAttachmentsAction' => self::JAVASCRIPT_QUERY_ATTACHMENTS_ACTION,
 			'ajaxUpdateCompatAction' => self::JAVASCRIPT_UPDATE_COMPAT_ACTION,
-			'ajaxFillCompatNonce' => '',
-			'ajaxUpdateCompatNonce' => '',
-			'enableMimeTypes' => false,
-			'enableMonthsDropdown' => false,
-			'enableTermsDropdown' => false,
-			'enableSearchBox' => false,
+//			'ajaxFillCompatNonce' => '',
+//			'ajaxUpdateCompatNonce' => '',
 			'enableDetailsCategory' => false,
 			'enableDetailsTag' => false,
+			'enableMimeTypes' => false,
+			'enableMonthsDropdown' => false,
+			'enableSearchBox' => false,
+			'enableSearchBoxControls' => false,
+			'enableTermsDropdown' => false,
+			'enableTermsSearch' => false,
+			'filterMonth' => 0,
+			'filterTerm' => 0,
 			'mimeTypes' => '',
 			'months' => '',
-			'termsClass' => array(),
-			'termsValue' => array(),
-			'termsText' => array(),
-			'searchValue' => '',
+			'searchClicks' => 0,
+			'searchConnector' => 'AND',
 			'searchFields' => array( 'title', 'content' ),
-			'searchConnector' => 'AND'
+			'searchValue' => '',
+			'termsClass' => array(),
+			'termsIndent' => '&nbsp;',
+			'termsTaxonomy' => '',
+			'termsText' => array(),
+			'termsValue' => array(),
 			);
 
 	/**
@@ -363,26 +380,36 @@ class MLAModal {
 		self::$mla_media_modal_settings['mimeTypes']['detached'] = MLAOptions::$mla_option_definitions[ MLAOptions::MLA_POST_MIME_TYPES ]['std']['unattached']['plural'];
 		self::$mla_media_modal_settings['months'] = self::_months_dropdown('attachment');
 
+		self::$mla_media_modal_settings['termsTaxonomy'] =  MLAOptions::mla_taxonomy_support('', 'filter');
 		$terms_options = self::_terms_options( MLA_List_Table::mla_get_taxonomy_filter_dropdown() );
 		self::$mla_media_modal_settings['termsClass'] = $terms_options['class'];
 		self::$mla_media_modal_settings['termsValue'] = $terms_options['value'];
 		self::$mla_media_modal_settings['termsText'] = $terms_options['text'];
 
-		self::$mla_media_modal_settings['enableMimeTypes'] = ( 'checked' == MLAOptions::mla_get_option( MLAOptions::MLA_MEDIA_MODAL_MIMETYPES ) );
-		self::$mla_media_modal_settings['enableMonthsDropdown'] = ( 'checked' == MLAOptions::mla_get_option( MLAOptions::MLA_MEDIA_MODAL_MONTHS ) );
-		self::$mla_media_modal_settings['enableTermsDropdown'] = ( 'checked' == MLAOptions::mla_get_option( MLAOptions::MLA_MEDIA_MODAL_TERMS ) );
-		self::$mla_media_modal_settings['enableSearchBox'] = ( 'checked' == MLAOptions::mla_get_option( MLAOptions::MLA_MEDIA_MODAL_SEARCHBOX ) );
+		$current_version = get_bloginfo( 'version' );
+		if ( version_compare( $current_version, '3.9', '<' ) && version_compare( $current_version, '3.6', '>=' ) ) {
+			self::$mla_media_modal_settings['termsIndent'] = '-';
+		}
+
 		self::$mla_media_modal_settings['enableDetailsCategory'] = ( 'checked' == MLAOptions::mla_get_option( MLAOptions::MLA_MEDIA_MODAL_DETAILS_CATEGORY_METABOX ) );
 		self::$mla_media_modal_settings['enableDetailsTag'] = ( 'checked' == MLAOptions::mla_get_option( MLAOptions::MLA_MEDIA_MODAL_DETAILS_TAG_METABOX ) );
+		self::$mla_media_modal_settings['enableMimeTypes'] = ( 'checked' == MLAOptions::mla_get_option( MLAOptions::MLA_MEDIA_MODAL_MIMETYPES ) );
+		self::$mla_media_modal_settings['enableMonthsDropdown'] = ( 'checked' == MLAOptions::mla_get_option( MLAOptions::MLA_MEDIA_MODAL_MONTHS ) );
+		self::$mla_media_modal_settings['enableSearchBox'] = ( 'checked' == MLAOptions::mla_get_option( MLAOptions::MLA_MEDIA_MODAL_SEARCHBOX ) );
+		self::$mla_media_modal_settings['enableSearchBoxControls'] = ( 'checked' == MLAOptions::mla_get_option( MLAOptions::MLA_MEDIA_MODAL_SEARCHBOX_CONTROLS ) );
+		self::$mla_media_modal_settings['enableTermsDropdown'] = ( 'checked' == MLAOptions::mla_get_option( MLAOptions::MLA_MEDIA_MODAL_TERMS ) );
+		self::$mla_media_modal_settings['enableTermsSearch'] = ( 'checked' == MLAOptions::mla_get_option( MLAOptions::MLA_MEDIA_MODAL_TERMS_SEARCH ) );
 
 		/*
 		 * These will be passed back to the server in the query['s'] field.
 		 */ 
-		self::$mla_media_modal_settings['filterMonth'] = 0;
-		self::$mla_media_modal_settings['filterTerm'] = 0;
-		self::$mla_media_modal_settings['searchConnector'] = 'AND';
-		self::$mla_media_modal_settings['searchFields'] = array( 'title', 'content' );
-		self::$mla_media_modal_settings['searchValue'] = '';
+		self::$mla_media_modal_settings['filterMonth'] = 0; // mla_filter_month
+		self::$mla_media_modal_settings['filterTerm'] = 0; // mla_filter_term
+		self::$mla_media_modal_settings['searchClicks'] = 0; // mla_search_clicks, to force transmission
+		self::$mla_media_modal_settings['searchConnector'] = 'AND'; // mla_search_connector
+		self::$mla_media_modal_settings['searchFields'] = array( 'title', 'content' ); // mla_search_fields
+		self::$mla_media_modal_settings['searchValue'] = ''; // mla_search_value
+		self::$mla_media_modal_settings['termsSearch'] = ''; // mla_terms_search
 
 		$settings = array_merge( $settings, array( 'mla_settings' => self::$mla_media_modal_settings ) );
 		return $settings;
@@ -402,7 +429,8 @@ class MLAModal {
 	public static function mla_media_view_strings_filter( $strings, $post ) {
 		$mla_strings = array(
 			'searchBoxPlaceholder' => __( 'Search Box', 'media-library-assistant' ),
-			'loadingText' => __( 'Loading...', 'media-library-assistant' )
+			'loadingText' => __( 'Loading...', 'media-library-assistant' ),
+			'searchBoxControlsStyle' => ( 'checked' == MLAOptions::mla_get_option( MLAOptions::MLA_MEDIA_MODAL_SEARCHBOX_CONTROLS ) ) ? 'display: inline;' : 'display: none;',
 			);
 
 		$strings = array_merge( $strings, array( 'mla_strings' => $mla_strings ) );
@@ -420,11 +448,14 @@ class MLAModal {
 	public static function mla_wp_enqueue_media_action( ) {
 		$suffix = defined('SCRIPT_DEBUG') && SCRIPT_DEBUG ? '' : '.min';
 
-		// replaced by inline styles for now
 		wp_register_style( self::JAVASCRIPT_MEDIA_MODAL_STYLES, MLA_PLUGIN_URL . 'css/mla-media-modal-style.css', false, MLA::CURRENT_MLA_VERSION );
 		wp_enqueue_style( self::JAVASCRIPT_MEDIA_MODAL_STYLES );
 
 		wp_enqueue_script( self::JAVASCRIPT_MEDIA_MODAL_SLUG, MLA_PLUGIN_URL . "js/mla-media-modal-scripts{$suffix}.js", array( 'media-views' ), MLA::CURRENT_MLA_VERSION, false );
+
+		if ( 'checked' == MLAOptions::mla_get_option( MLAOptions::MLA_MEDIA_MODAL_TERMS_SEARCH ) ) {
+			MLAModal::mla_add_terms_search_scripts();
+		}
 	} // mla_wp_enqueue_media_action
 
 	/**
@@ -437,21 +468,10 @@ class MLAModal {
 	 */
 	public static function mla_print_media_templates_action( ) {
 		/*
-		 * Adjust the toolbar styles based on which controls are present
-		 */
-		if ( self::$mla_media_modal_settings['enableSearchBox'] ) {
-			if ( self::$mla_media_modal_settings['enableMonthsDropdown'] && self::$mla_media_modal_settings['enableTermsDropdown'] ) {
-				$height = '120px';
-			} else {
-				$height = '80px';
-			}
-		} else {
-			$height = '50px';
-		}
-
-		/*
 		 * Compose the Search Media box
 		 */
+		$search_defaults = MLAOptions::mla_get_option( MLAOptions::MLA_SEARCH_MEDIA_FILTER_DEFAULTS );
+
 		if ( isset( $_REQUEST['query']['mla_search_value'] ) ) {
 			$search_value = esc_attr( stripslashes( trim( $_REQUEST['query']['mla_search_value'] ) ) );
 		} else {
@@ -461,13 +481,13 @@ class MLAModal {
 		if ( isset( $_REQUEST['query']['mla_search_fields'] ) ) {
 			$search_fields = $_REQUEST['query']['mla_search_fields'];
 		} else {
-			$search_fields = array ( 'title', 'content' );
+			$search_fields = $search_defaults['search_fields'];
 		}
 
 		if ( isset( $_REQUEST['query']['mla_search_connector'] ) ) {
 			$search_connector = $_REQUEST['query']['mla_search_connector'];
 		} else {
-			$search_connector = 'AND';
+			$search_connector = $search_defaults['search_connector'];
 		}
 
 		// Include mla javascript templates
@@ -795,7 +815,6 @@ class MLAModal {
 	 */
 	public static function mla_update_compat_fields_action() {
 		global $post;
-
 		if ( empty( $_REQUEST['id'] ) || ! $id = absint( $_REQUEST['id'] ) ) {
 			wp_send_json_error();
 		}
@@ -842,13 +861,16 @@ class MLAModal {
 					}
 
 					$list = array();
+					$object_terms = array();
 					foreach ( $terms as $term ) {
 						$list[] = $term->name;
+						$object_terms[ $term->term_id ] = $term->name;
 					} // foreach $term
 
 					sort( $list );
 					$hidden_list = join( ',', $list );
 
+					$results[$key]["object-terms"] = $object_terms;
 					$results[$key]["mla-attachments-{$id}-{$key}"] = "\t\t<input name='attachments[{$id}][{$key}]' class='the-tags' id='mla-attachments-{$id}-{$key}' type='hidden' value='{$hidden_list}'>\n";
 					$results[$key]["mla-tags-{$id}-{$key}"] = "\t\t<input name='mla_tags[{$id}][{$key}]' class='server-tags' id='mla-tags-{$id}-{$key}' type='hidden' value='{$hidden_list}'>\n";
 				}
@@ -878,7 +900,8 @@ class MLAModal {
 		$query = isset( $_REQUEST['query'] ) ? (array) $_REQUEST['query'] : array();
 		$query = array_intersect_key( $query, array_flip( array(
 			'order', 'orderby', 'posts_per_page', 'paged', 'post_mime_type',
-			'post_parent', 'post__in', 'post__not_in', 'mla_filter_month', 'mla_filter_term',
+			'post_parent', 'post__in', 'post__not_in',
+			'mla_filter_month', 'mla_filter_term', 'mla_terms_search',
 			'mla_search_value', 's', 'mla_search_fields', 'mla_search_connector'
 		) ) );
 
@@ -964,6 +987,140 @@ class MLAModal {
 		$posts = array_filter( $posts );
 
 		wp_send_json_success( $posts );
+	}
+
+	/**
+	 * Add the styles and scripts for the "Search Terms" popup modal window,
+	 * but only once per page load
+	 *
+	 * @since 1.90
+	 *
+	 * @return	void
+	 */
+	public static function mla_add_terms_search_scripts() {
+		static $add_the_scripts = true;
+
+		$suffix = defined('SCRIPT_DEBUG') && SCRIPT_DEBUG ? '' : '.min';
+
+		if ( $add_the_scripts ) {
+			wp_register_style( MLA::STYLESHEET_SLUG . '-terms-search', MLA_PLUGIN_URL . 'css/mla-style-terms-search.css', false, MLA::CURRENT_MLA_VERSION );
+			wp_enqueue_style( MLA::STYLESHEET_SLUG . '-terms-search' );
+
+			wp_enqueue_script( MLA::JAVASCRIPT_INLINE_EDIT_SLUG . '-terms-search', MLA_PLUGIN_URL . "js/mla-terms-search-scripts{$suffix}.js", 
+				array( 'jquery' ), MLA::CURRENT_MLA_VERSION, false );
+
+			$script_variables = array(
+			);
+
+			if ( version_compare( get_bloginfo( 'version' ), '3.8', '>=' ) ) {
+				$script_variables['useDashicons'] = true;
+			} else {
+				$script_variables['useDashicons'] = false;
+			}
+
+			wp_localize_script( MLA::JAVASCRIPT_INLINE_EDIT_SLUG . '-terms-search', self::JAVASCRIPT_TERMS_SEARCH_OBJECT, $script_variables );
+
+			/*
+			 * Insert the hidden form for the Search Terms popup window
+			 */
+			MLAModal::mla_add_terms_search_form();
+
+			$add_the_scripts = false;
+		}
+	}
+
+	/**
+	 * Add the hidden form for the "Search Terms" popup modal window,
+	 * but only once per page load
+	 *
+	 * @since 1.90
+	 *
+	 * @return	void
+	 */
+	public static function mla_add_terms_search_form() {
+		static $add_the_form = true;
+
+		if ( $add_the_form ) {
+			add_action( 'admin_footer', 'MLAModal::mla_echo_terms_search_form' );
+			$add_the_form = false;
+		}
+	}
+
+	/**
+	 * Echo the hidden form for the "Search Terms" popup modal window
+	 *
+	 * @since 1.90
+	 *
+	 * @return	void	Echos the HTML <form> markup for hidden form
+	 */
+	public static function mla_echo_terms_search_form() {
+		echo MLAModal::mla_terms_search_form();
+	}
+
+	/**
+	 * Build the hidden form for the "Search Terms" popup modal window
+	 *
+	 * @since 1.90
+	 *
+	 * @return	string	HTML <form> markup for hidden form
+	 */
+	public static function mla_terms_search_form() {
+		$page_template_array = MLAData::mla_load_template( 'admin-terms-search-form.tpl' );
+		if ( ! array( $page_template_array ) ) {
+			/* translators: 1: function name 2: non-array value */
+			error_log( sprintf( _x( 'ERROR: %1$s non-array "%2$s"', 'error_log', 'media-library-assistant' ), 'MLA::_build_terms_search_form', var_export( $page_template_array, true ) ), 0 );
+			return '';
+		}
+
+		$taxonomies = array();
+		foreach( get_object_taxonomies( 'attachment', 'objects' ) as $taxonomy ) {
+			if ( MLAOptions::mla_taxonomy_support( $taxonomy->name, 'support' ) ) {
+				$taxonomies[] = $taxonomy;
+			}
+		}
+
+		if( empty( $taxonomies ) ) {
+			$page_values = array(
+				'Search Terms' => __( 'Search Terms', 'media-library-assistant' ),
+				'message' => __( 'There are no taxonomies to search', 'media-library-assistant' ),
+			);
+			$terms_search_tpl = MLAData::mla_parse_template( $page_template_array['mla-terms-search-empty-div'], $page_values );
+		} else {
+			$taxonomy_list = '';
+			foreach ( $taxonomies as $taxonomy ) {
+				$page_values = array(
+					'taxonomy_checked' => MLAOptions::mla_taxonomy_support( $taxonomy->name, 'term-search' ) ? 'checked="checked"' : '',
+					'taxonomy_slug' => $taxonomy->name,
+					'taxonomy_label' => esc_attr( $taxonomy->label ),
+				);
+				$taxonomy_list .= MLAData::mla_parse_template( $page_template_array['mla-terms-search-taxonomy'], $page_values );
+			}
+
+			$page_values = array(
+				'Search Terms' => __( 'Search Terms', 'media-library-assistant' ),
+				'Search' => __( 'Search', 'media-library-assistant' ),
+				'phrases_and_checked' => 'checked="checked"',
+				'All phrases' => __( 'All phrases', 'media-library-assistant' ),
+				'phrases_or_checked' => '',
+				'Any phrase' => __( 'Any phrase', 'media-library-assistant' ),
+				'terms_and_checked' => '',
+				'All terms' => __( 'All terms', 'media-library-assistant' ),
+				'terms_or_checked' => 'checked="checked"',
+				'Any term' => __( 'Any term', 'media-library-assistant' ),
+				'mla_terms_search_taxonomies' => $taxonomy_list,
+			);
+			$terms_search_tpl = MLAData::mla_parse_template( $page_template_array['mla-terms-search-div'], $page_values );
+		}
+
+		$page_values = array(
+			'mla_terms_search_url' =>  esc_url( add_query_arg( array_merge( MLA_List_Table::mla_submenu_arguments( false ), array( 'page' => MLA::ADMIN_PAGE_SLUG ) ), admin_url( 'upload.php' ) ) ),
+			'mla_terms_search_action' => MLA::MLA_ADMIN_terms_search,
+			'wpnonce' => wp_nonce_field( MLA::MLA_ADMIN_NONCE, '_wpnonce', true, false ),
+			'mla_terms_search_div' => $terms_search_tpl,
+		);
+		$terms_search_tpl = MLAData::mla_parse_template( $page_template_array['mla-terms-search-form'], $page_values );
+
+		return $terms_search_tpl;
 	}
 } //Class MLAModal
 ?>

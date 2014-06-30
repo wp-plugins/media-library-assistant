@@ -58,14 +58,22 @@
 <li class="nav-header">
 <i class="icon-custom icon-method"></i> Methods</li>
 <li class="method public "><a href="#initialize" title="initialize :: Initialization function, similar to __construct()"><span class="description">Initialization function, similar to __construct()</span><pre>initialize()</pre></a></li>
+<li class="method public "><a href="#mla_add_terms_search_form" title='mla_add_terms_search_form :: Add the hidden form for the "Search Terms" popup modal window,
+but only once per page load'><span class="description">Add the hidden form for the "Search Terms" popup modal window,
+but only once per page load</span><pre>mla_add_terms_search_form()</pre></a></li>
+<li class="method public "><a href="#mla_add_terms_search_scripts" title='mla_add_terms_search_scripts :: Add the styles and scripts for the "Search Terms" popup modal window,
+but only once per page load'><span class="description">Add the styles and scripts for the "Search Terms" popup modal window,
+but only once per page load</span><pre>mla_add_terms_search_scripts()</pre></a></li>
 <li class="method public "><a href="#mla_admin_init_action" title="mla_admin_init_action :: Adjust ajax handler for Media Manager queries"><span class="description">Adjust ajax handler for Media Manager queries</span><pre>mla_admin_init_action()</pre></a></li>
 <li class="method public "><a href="#mla_attachment_fields_to_edit_filter" title="mla_attachment_fields_to_edit_filter :: Add/change custom fields to the Edit Media screen and Modal Window"><span class="description">Add/change custom fields to the Edit Media screen and Modal Window</span><pre>mla_attachment_fields_to_edit_filter()</pre></a></li>
+<li class="method public "><a href="#mla_echo_terms_search_form" title='mla_echo_terms_search_form :: Echo the hidden form for the "Search Terms" popup modal window'><span class="description">Echo the hidden form for the "Search Terms" popup modal window</span><pre>mla_echo_terms_search_form()</pre></a></li>
 <li class="method public "><a href="#mla_fill_compat_fields_action" title='mla_fill_compat_fields_action :: Ajax handler for Media Manager "fill compat-attachment-fields" queries'><span class="description">Ajax handler for Media Manager "fill compat-attachment-fields" queries</span><pre>mla_fill_compat_fields_action()</pre></a></li>
 <li class="method public "><a href="#mla_get_media_item_args_filter" title="mla_get_media_item_args_filter :: Saves the get_media_item_args array for the attachment_fields_to_edit filter"><span class="description">Saves the get_media_item_args array for the attachment_fields_to_edit filter</span><pre>mla_get_media_item_args_filter()</pre></a></li>
 <li class="method public "><a href="#mla_media_view_settings_filter" title="mla_media_view_settings_filter :: Adds settings values to be passed to the Media Manager in /wp-includes/js/media-views.js."><span class="description">Adds settings values to be passed to the Media Manager in /wp-includes/js/media-views.js.</span><pre>mla_media_view_settings_filter()</pre></a></li>
 <li class="method public "><a href="#mla_media_view_strings_filter" title="mla_media_view_strings_filter :: Adds strings values to be passed to the Media Manager in /wp-includes/js/media-views.js."><span class="description">Adds strings values to be passed to the Media Manager in /wp-includes/js/media-views.js.</span><pre>mla_media_view_strings_filter()</pre></a></li>
 <li class="method public "><a href="#mla_print_media_templates_action" title="mla_print_media_templates_action :: Prints the templates used in the MLA Media Manager enhancements."><span class="description">Prints the templates used in the MLA Media Manager enhancements.</span><pre>mla_print_media_templates_action()</pre></a></li>
 <li class="method public "><a href="#mla_query_attachments_action" title='mla_query_attachments_action :: Ajax handler for Media Manager "Query Attachments" queries'><span class="description">Ajax handler for Media Manager "Query Attachments" queries</span><pre>mla_query_attachments_action()</pre></a></li>
+<li class="method public "><a href="#mla_terms_search_form" title='mla_terms_search_form :: Build the hidden form for the "Search Terms" popup modal window'><span class="description">Build the hidden form for the "Search Terms" popup modal window</span><pre>mla_terms_search_form()</pre></a></li>
 <li class="method public "><a href="#mla_update_compat_fields_action" title='mla_update_compat_fields_action :: Ajax handler for Media Manager "update compat-attachment-fields" queries'><span class="description">Ajax handler for Media Manager "update compat-attachment-fields" queries</span><pre>mla_update_compat_fields_action()</pre></a></li>
 <li class="method public "><a href="#mla_wp_enqueue_media_action" title="mla_wp_enqueue_media_action :: Enqueues the mla-media-modal-scripts.js file, adding it to the Media Manager scripts."><span class="description">Enqueues the mla-media-modal-scripts.js file, adding it to the Media Manager scripts.</span><pre>mla_wp_enqueue_media_action()</pre></a></li>
 <li class="nav-header private">» Private</li>
@@ -85,6 +93,7 @@ and mla_print_media_templates_action</span><pre>$mla_media_modal_settings</pre><
 <li class="constant  "><a href="#JAVASCRIPT_MEDIA_MODAL_SLUG" title="JAVASCRIPT_MEDIA_MODAL_SLUG :: Slug for localizing and enqueueing JavaScript - Add Media and related dialogs"><span class="description">Slug for localizing and enqueueing JavaScript - Add Media and related dialogs</span><pre>JAVASCRIPT_MEDIA_MODAL_SLUG</pre></a></li>
 <li class="constant  "><a href="#JAVASCRIPT_MEDIA_MODAL_STYLES" title="JAVASCRIPT_MEDIA_MODAL_STYLES :: Slug for localizing and enqueueing CSS - Add Media and related dialogs"><span class="description">Slug for localizing and enqueueing CSS - Add Media and related dialogs</span><pre>JAVASCRIPT_MEDIA_MODAL_STYLES</pre></a></li>
 <li class="constant  "><a href="#JAVASCRIPT_QUERY_ATTACHMENTS_ACTION" title='JAVASCRIPT_QUERY_ATTACHMENTS_ACTION :: Slug for the "query attachments" action - Add Media and related dialogs'><span class="description">Slug for the "query attachments" action - Add Media and related dialogs</span><pre>JAVASCRIPT_QUERY_ATTACHMENTS_ACTION</pre></a></li>
+<li class="constant  "><a href="#JAVASCRIPT_TERMS_SEARCH_OBJECT" title="JAVASCRIPT_TERMS_SEARCH_OBJECT :: Object name for localizing JavaScript - Terms Search popup"><span class="description">Object name for localizing JavaScript - Terms Search popup</span><pre>JAVASCRIPT_TERMS_SEARCH_OBJECT</pre></a></li>
 <li class="constant  "><a href="#JAVASCRIPT_UPDATE_COMPAT_ACTION" title='JAVASCRIPT_UPDATE_COMPAT_ACTION :: Slug for the "update compat-attachment-fields" action - Add Media and related dialogs'><span class="description">Slug for the "update compat-attachment-fields" action - Add Media and related dialogs</span><pre>JAVASCRIPT_UPDATE_COMPAT_ACTION</pre></a></li>
 </ul>
 </div>
@@ -123,6 +132,32 @@ and mla_print_media_templates_action</span><pre>$mla_media_modal_settings</pre><
 <table class="table table-bordered"><tr>
 <th>since</th>
 <td>1.20</td>
+</tr></table>
+</div></div>
+</div>
+<a name="mla_add_terms_search_form" id="mla_add_terms_search_form"></a><div class="element clickable method public mla_add_terms_search_form" data-toggle="collapse" data-target=".mla_add_terms_search_form .collapse">
+<h2>Add the hidden form for the "Search Terms" popup modal window,
+but only once per page load</h2>
+<pre>mla_add_terms_search_form() : void</pre>
+<div class="labels"></div>
+<div class="row collapse"><div class="detail-description">
+<p class="long_description"></p>
+<table class="table table-bordered"><tr>
+<th>since</th>
+<td>1.90</td>
+</tr></table>
+</div></div>
+</div>
+<a name="mla_add_terms_search_scripts" id="mla_add_terms_search_scripts"></a><div class="element clickable method public mla_add_terms_search_scripts" data-toggle="collapse" data-target=".mla_add_terms_search_scripts .collapse">
+<h2>Add the styles and scripts for the "Search Terms" popup modal window,
+but only once per page load</h2>
+<pre>mla_add_terms_search_scripts() : void</pre>
+<div class="labels"></div>
+<div class="row collapse"><div class="detail-description">
+<p class="long_description"></p>
+<table class="table table-bordered"><tr>
+<th>since</th>
+<td>1.90</td>
 </tr></table>
 </div></div>
 </div>
@@ -165,6 +200,18 @@ Declared public because it is a filter.</p></p>
 <h3>Returns</h3>
 <div class="subelement response">
 <code>array</code>updated descriptors for the "compat-attachment-fields"</div>
+</div></div>
+</div>
+<a name="mla_echo_terms_search_form" id="mla_echo_terms_search_form"></a><div class="element clickable method public mla_echo_terms_search_form" data-toggle="collapse" data-target=".mla_echo_terms_search_form .collapse">
+<h2>Echo the hidden form for the "Search Terms" popup modal window</h2>
+<pre>mla_echo_terms_search_form() : void</pre>
+<div class="labels"></div>
+<div class="row collapse"><div class="detail-description">
+<p class="long_description"></p>
+<table class="table table-bordered"><tr>
+<th>since</th>
+<td>1.90</td>
+</tr></table>
 </div></div>
 </div>
 <a name="mla_fill_compat_fields_action" id="mla_fill_compat_fields_action"></a><div class="element clickable method public mla_fill_compat_fields_action" data-toggle="collapse" data-target=".mla_fill_compat_fields_action .collapse">
@@ -269,6 +316,21 @@ Declared public because it is a filter.</p></p>
 </tr></table>
 </div></div>
 </div>
+<a name="mla_terms_search_form" id="mla_terms_search_form"></a><div class="element clickable method public mla_terms_search_form" data-toggle="collapse" data-target=".mla_terms_search_form .collapse">
+<h2>Build the hidden form for the "Search Terms" popup modal window</h2>
+<pre>mla_terms_search_form() : string</pre>
+<div class="labels"></div>
+<div class="row collapse"><div class="detail-description">
+<p class="long_description"></p>
+<table class="table table-bordered"><tr>
+<th>since</th>
+<td>1.90</td>
+</tr></table>
+<h3>Returns</h3>
+<div class="subelement response">
+<code>string</code>HTML <form> markup for hidden form</div>
+</div></div>
+</div>
 <a name="mla_update_compat_fields_action" id="mla_update_compat_fields_action"></a><div class="element clickable method public mla_update_compat_fields_action" data-toggle="collapse" data-target=".mla_update_compat_fields_action .collapse">
 <h2>Ajax handler for Media Manager "update compat-attachment-fields" queries</h2>
 <pre>mla_update_compat_fields_action() : void</pre>
@@ -330,7 +392,7 @@ Declared public because it is a filter.</p></p>
 </div>
 <h3>Returns</h3>
 <div class="subelement response">
-<code>array</code>( value => label ) pairs</div>
+<code>array</code>( 'class' => $class_array, 'value' => $value_array, 'text' => $text_array )</div>
 </div></div>
 </div>
 <h3>
@@ -422,6 +484,18 @@ and mla_print_media_templates_action</h2>
 </tr></table>
 </div></div>
 </div>
+<a name="JAVASCRIPT_TERMS_SEARCH_OBJECT" id="JAVASCRIPT_TERMS_SEARCH_OBJECT"> </a><div class="element clickable constant  JAVASCRIPT_TERMS_SEARCH_OBJECT" data-toggle="collapse" data-target=".JAVASCRIPT_TERMS_SEARCH_OBJECT .collapse">
+<h2>Object name for localizing JavaScript - Terms Search popup</h2>
+<pre>JAVASCRIPT_TERMS_SEARCH_OBJECT : string</pre>
+<div class="labels"></div>
+<div class="row collapse"><div class="detail-description">
+<p class="long_description"></p>
+<table class="table table-bordered"><tr>
+<th>since</th>
+<td>1.90</td>
+</tr></table>
+</div></div>
+</div>
 <a name="JAVASCRIPT_UPDATE_COMPAT_ACTION" id="JAVASCRIPT_UPDATE_COMPAT_ACTION"> </a><div class="element clickable constant  JAVASCRIPT_UPDATE_COMPAT_ACTION" data-toggle="collapse" data-target=".JAVASCRIPT_UPDATE_COMPAT_ACTION .collapse">
 <h2>Slug for the "update compat-attachment-fields" action - Add Media and related dialogs</h2>
 <pre>JAVASCRIPT_UPDATE_COMPAT_ACTION : string</pre>
@@ -441,7 +515,7 @@ and mla_print_media_templates_action</h2>
 <div class="row"><footer class="span12">
             Template is built using <a href="http://twitter.github.com/bootstrap/">Twitter Bootstrap 2</a> and icons provided by <a href="http://glyphicons.com/">Glyphicons</a>.<br>
             Documentation is powered by <a href="http://www.phpdoc.org/">phpDocumentor 2.0.0a8</a> and<br>
-            generated on 2014-05-30T12:08:31-07:00.<br></footer></div>
+            generated on 2014-06-27T14:50:12-07:00.<br></footer></div>
 </div>
 </body>
 </html>

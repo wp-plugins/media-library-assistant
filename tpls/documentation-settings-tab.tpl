@@ -72,6 +72,12 @@
 <a href="#mla_text_widget"><strong>The MLA Text Widget</strong></a>
 </li>
 <li>
+<a href="#terms_search"><strong>Terms Search - filtering on taxonomy term names</strong></a>
+</li>
+<li>
+<a href="#select_parent"><strong>Select Parent Popup Window</strong></a>
+</li>
+<li>
 <a href="#mla_views"><strong>Library Views/Post MIME Type Processing</strong></a>
 </li>
 <li>
@@ -416,7 +422,32 @@ You can query by author's id or the "user_nicename" value (not the "display_name
 </p>
 <h4>Category Parameters</h4>
 <p>
-The Category parameters search in the WordPress core &quot;Categories&quot; taxonomy. Remember to use <code>post_parent=current</code> if you want to restrict your query to items attached to the current post.
+The Category parameters search in the WordPress core &quot;Categories&quot; taxonomy. Remember to use <code>post_parent=current</code> if you want to restrict your query to items attached to the current post. Category parameters supported by WP_Query are:
+</p>
+<table>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">cat (int)</td>
+<td>use category id.</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">category,<br />category_name&nbsp;(string)</td>
+<td>use category slug (NOT name). As a convenience, MLA allows "category" as a synonym for "category_name".</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">category__and (array)</td>
+<td>use category id.</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold; font-style:italic">category__in (array)</td>
+<td>use category id.</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">category__not_in (array)</td>
+<td>use category id.</td>
+</tr>
+</table>
+<p>
+More information and examples can be found on the <a href="http://codex.wordpress.org/Class_Reference/WP_Query#Category_Parameters" title="WordPress Codex page" target="_blank">WordPress Codex WP_Query Class Reference</a> page.
 <a name="tag_parameters"></a>
 </p>
 <h4>Tag Parameters</h4>
@@ -424,6 +455,7 @@ The Category parameters search in the WordPress core &quot;Categories&quot; taxo
 The Tag parameters search in the WordPress core &quot;Tags&quot; taxonomy. Remember to use <code>post_parent=current</code> if you want to restrict your query to items attached to the current post.
 </p>
 <p>
+More information and examples can be found on the <a href="http://codex.wordpress.org/Class_Reference/WP_Query#Tag_Parameters" title="WordPress Codex page" target="_blank">WordPress Codex WP_Query Class Reference</a> page.
 Note that the "tag_id" parameter requires exactly one tag ID; multiple IDs are not allowed. You can use the "tag__in" parameter to query for multiple values.
 <a name="taxonomy_parameters_tax_operator"></a>
 </p>
@@ -843,11 +875,19 @@ The data selection parameters specify which taxonomy (or taxonomies) the terms a
 <table>
 <tr>
 <td style="padding-right: 10px; vertical-align: top; font-weight:bold">taxonomy</td>
-<td>The taxonomy or taxonomies to retrieve terms from. Use the name/slug of each taxonomy, not the display name, e.g., 'post_tag', category', 'attachment_tag', or 'attachment_category'. You can specify multiple taxonomies as a comma-separated string or (if you are calling <code>MLAShortcodes::mla_tag_cloud()</code> function directly from your theme or plugin PHP code) as an array.</td>
+<td>The taxonomy or taxonomies to retrieve terms from; default "post_tag". Use the name/slug of each taxonomy, not the display name, e.g., 'post_tag', 'category', 'attachment_tag', or 'attachment_category'. You can specify multiple taxonomies as a comma-separated string or (if you are calling <code>MLAShortcodes::mla_tag_cloud()</code> function directly from your theme or plugin PHP code) as an array.</td>
 </tr>
 <tr>
 <td style="padding-right: 10px; vertical-align: top; font-weight:bold">post_mime_type</td>
 <td>The MIME type(s) of the items to include in the term-specific counts. The default is "all", which avoids the additional database effort required to filter by MIME type. You can override the default to, for example, display PDF documents (<code>post_mime_type=application/pdf</code>) or all image MIME types (<code>post_mime_type=image</code>). You can select several MIME types with a comma-separated list, e.g., <code>post_mime_type='audio,video'</code>. Wildcard specifications are also supported. For example, <code>post_mime_type='*/mpeg'</code> to select audio and video mpeg formats or <code>post_mime_type='application/*ms*'</code> to select all Microsoft application formats (Word, Excel, etc.).</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">post_type</td>
+<td>The <a href="http://codex.wordpress.org/Post_Types" title="WordPress Codex &quot;Post Types&quot; page" target="_blank">post type(s)</a> of the items to include in the term-specific counts. The default is "attachment". You can override the default if you want to count other types for which the taxonomy is registered, e.g., "post" to count Posts in the "category" and "post_tag" taxonomies. The <a href="http://codex.wordpress.org/Post_Types" title="WordPress Codex &quot;Post Types&quot; page" target="_blank">Codex Page</a> documents other post type values. Make sure your "post_status" and "post_type" values are consistant, e.g., use <code>post_type="attachment,post" post_status="inherit,publish"</code> together.</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">post_status</td>
+<td>The <a href="http://codex.wordpress.org/Post_Status" title="WordPress Codex &quot;Post Status&quot; page" target="_blank">post status value(s)</a> of the items to include in the term-specific counts. The default is "inherit", which counts attachments (Media Library Items). You can override the default if you want to count other values, e.g., "publish" to count published Posts in the "category" and "post_tag" taxonomies. If you code "private" and the user is not logged in, "private" will be removed. The <a href="http://codex.wordpress.org/Post_Status" title="WordPress Codex &quot;Post Status&quot; page" target="_blank">Codex page</a> documents other post status values.</td>
 </tr>
 <tr>
 <td style="padding-right: 10px; vertical-align: top; font-weight:bold">ids</td>
@@ -857,7 +897,8 @@ The data selection parameters specify which taxonomy (or taxonomies) the terms a
 <td style="padding-right: 10px; vertical-align: top; font-weight:bold">no_count</td>
 <td>The default, "false", computes a term-specific count of the number of attachments assigned to that term. If you have a large number of terms and/or attachments, this can take a long time.<br />
 &nbsp;<br />
-You can code "true" to omit the attachment-counting process. If you do that, the "minimum", "number" and "orderby=count" parameters are also ignored, since they require counting the attachments.</td>
+You can code "true" to omit the attachment-counting process. If you do that, the "post_mime_type", "post_type", "post_status", "minimum", "number" and "orderby=count" parameters are also ignored, since they require counting the attachments.<br />
+&nbsp;</td>
 </tr>
 <tr>
 <td style="padding-right: 10px; vertical-align: top; font-weight:bold">include</td>
@@ -890,6 +931,13 @@ You can code "true" to omit the attachment-counting process. If you do that, the
 <tr>
 <td style="padding-right: 10px; vertical-align: top; font-weight:bold">preserve_case</td>
 <td>Preserve upper- and lower-case distinctions when sorting by name. The default, "false", specifies a case-insensitive sort order.</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">pad_counts</td>
+<td>True to include the count of all children in their parents' count. The default, "false", does not include children in their parents' count.<br />
+&nbsp;<br />
+The "pad_counts" parameter is only applied to the first (or only) taxonomy you specify, and that taxonomy must be hierarchical to see any difference in the counts.<br />
+&nbsp;</td>
 </tr>
 <tr>
 <td style="padding-right: 10px; vertical-align: top; font-weight:bold">limit</td>
@@ -2360,6 +2408,106 @@ To open and edit the MLA Text Widget:
 </p>
 <p>
 To add an <code>[mla_gallery]</code> or <code>[mla_tag_cloud]</code> shortcode to your widget, simply enter the shortcode name and parameters just as you would in the body of a post or page. Aside from the usually more limited area devoted to displaying the widget content, there are no differences in the way shortcodes are processed in the MLA Widget. Also, there is nothing special about the two MLA shortcodes; <strong>any</strong> shortcode can be added to the MLA Widget.
+<a name="terms_search"></a>
+</p>
+<p>
+<a href="#backtotop">Go to Top</a>
+</p>
+<h3>Terms Search - filtering on taxonomy term names</h3>
+<p>
+The "Terms Search" features let you filter the Media/Assistant submenu table and the Media Manager Modal Window by matching one or more phrases in the Name field of taxonomy terms. There are two ways to access this feature:
+</p>
+<ol>
+<li>Check the "Terms" box under the "Search Media" button on the Media/Assistant submenu table or the Media Manager toolbar. The phrase(s) you enter in the search box will match taxonomy term names as well as any other search fields you have checked.</li>
+<li>Click the "Terms Search" button beside the terms filter dropdown. This will bring up the "Search Terms" popup window with several additional controls to refine your search. They are described below.</li>
+</ol>
+<h4>Entering words and phrases</h4>
+<p>
+You can enter one or more words/phrases in the Search Media or Search Terms text box, separated by spaces. A multi-word phrase is created by surrounding two or more words with double quotes ( " ). For example:
+</p>
+<ul class="mla_settings">
+<li>' man bites dog ' is three separate one-word phrases</li>
+<li>' man "bites dog" ' is a one-word phrase (man) and a two-word phrase (bites dog)</li>
+<li>' "man bites dog" ' is one three-word phrase</li>
+</ul>
+<p>
+The first example would match each word separately. The second would match "man" and "bites dog" separately, with exactly one space between "bites" and "dog". The search is further defined by the connector used between multiple phrases:
+</p>
+<ul class="mla_settings">
+<li>'and'/'All phrases' - all of the phrases must appear in the search field/term name.</li>
+<li>'or'/'Any phrase' - any one (or more) of the phrases must appear in the search field/term name.</li>
+</ul>
+<p>
+For example, if you choose the default 'and'/'All phrases' connector and enter 'man "bites dog"' in the text box:
+</p>
+<ul class="mla_settings">
+<li>'man that bites dog' will match, but 'man that dog bites' will not match.</li>
+<li>'dog bites man' will not match.</li>
+<li>'man bites man with dog' will not match.</li>
+</ul>
+<p>
+If, however you remove the quotes and enter 'man bites dog' all of the above examples will match, because all three of the phrases appear somewhere in the text. On the other hand 'man bites man' would not match because "dog" does not appear in the text.
+</p>
+<p>
+If you choose the 'or'/'Any phrase' connector and enter 'man "bites dog"' in the text box:
+</p>
+<ul class="mla_settings">
+<li>'man that bites dog' will match.</li>
+<li>'man that dog bites' will match because "man" is present.</li>
+<li>'dog bites man' will match because "man" is present.</li>
+<li>'dog bites another dog' will not match.</li>
+</ul>
+<h4>Entering multiple terms</h4>
+<p>
+The Search Terms popup window has an additional capability and another control to refine it. The additional capability lets you search for multiple terms and the control sets the connector between terms. For example, consider two taxonomies, each with several terms:
+</p>
+<ul class="mla_settings">
+<li>Att. Categories, containing "big animal", "small animal" and "other being"</li>
+<li>Att. Tags, containing "male", "female", "cat" and "dog"</li>
+</ul>
+<p>
+If you choose 'All phrases' and 'Any term' (the defaults) and enter 'big dog' there are no matches because none of the terms contain both 'big' and 'dog'. If you choose 'Any phrase' and 'Any term' you will get items assigned to the 'big animal' Att. Category or the 'dog' Att. Tag. If you choose 'Any phrase' and 'All terms' you will get only the items assigned to both the 'big animal' Att. Category <strong>and</strong> the 'dog' Att. Tag.
+</p>
+<p>
+If you enter 'big,dog', separating the two phrases with a comma, the search results will change. Terms will be matched against "big" and "dog" separately. The 'All phrases'/Any phrase' choice will not matter because both of the phrases contain just one word. Choose 'All terms' and you will get any items assigned to 'big animal' <strong>and</strong> to 'dog'. Choose 'Any term' and you will get all of the 'big animal' matches and all of the 'dog' matches; that includes small dogs and big cats.
+</p>
+<h4>Selecting taxonomies</h4>
+<p>
+By default, the Att. Categories and Att. Tags taxonomies are included in the terms search. In the Taxonomy Support section of the Settings/Media Library Assistant General tab you can use the checkboxes in the Terms Search column to add or remove any of the supported taxonomies from the search process.
+</p>
+<p>
+In the Search Terms popup window you will find a list of all supported taxonomies, with checkboxes reflecting their participation in the search process. You can add or remove taxonomies from the process on a search-by-search basis.
+<a name="select_parent"></a>
+</p>
+<p>
+<a href="#backtotop">Go to Top</a>
+</p>
+<h3>Select Parent Popup Window</h3>
+<p>
+The "Select Parent" popup window lets you find the parent post/page/custom post type for one or more attachments. You can access the popup window in four ways:
+</p>
+<ol>
+<li>Click the "Set Parent" link in the "Attached to" column of the Media/Assistant submenu table.</li>
+<li>Click the "Select" button in the Media/Assistant submenu table Quick Edit area.</li>
+<li>Click the "Select" button in the Media/Assistant submenu table Bulk Edit area.</li>
+<li>Click the "Select" button in the Media/Edit Media submenu "Parent Info" meta box.</li>
+</ol>
+<p>
+In all cases the Select Parent popup window will appear and will be filled with up to 50 parent candidates. If the current parent is in the list its radio button will be selected. You can select a new parent, including "(unattached)", by clicking anywhere in the row of the candidate you want.
+</p>
+<p>
+If you don't see the candidate you want you have three ways of updating the list:
+</p>
+<ol>
+<li>Enter one or more keywords in the text box at the top of the window and click "Search". The word(s) you enter will filter the list by searching the Title and Content fields for matches.</li>
+<li>Select a post type from the dropdown list at the top of the window. The list will be filtered to show candidates from the post type you choose.</li>
+<li>Click the "next page" (" &raquo; ") button in the Media/Assistant submenu table Bulk Edit area. The list will move to the next page of up to 50 additional candidates. You can click the "previous page" (" &laquo; ") button to move back towards the top of the list.</li>
+</ol>
+<p>
+Once you have chosen a new parent, click the "Update" button at the lower right of the window to save your choice. You will be returned to your starting point with the new value filled in. Changes made in the "Attached to" column are immediate; changes to the Quick Edit, Bulk Edit and Parent Info meta box are made later, when you click the "Update" button in those areas to save all your changes.
+</p>
+<p>
+If you change your mind you can close the window without making a change by clicking the "X" in the upper-right corner of the window or the "Cancel" button in the lower-left corner of the window.
 <a name="mla_views"></a>
 </p>
 <p>
@@ -2782,12 +2930,88 @@ There are two other ways you can perform custom field mapping for one or more ex
 <td>nothing, i.e., no change to existing value (if any). Use this source if you just want to add a custom field to the Media/Assistant submenu and/or the inline edit areas.</td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">-- Metadata (see below) --</td>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">--&nbsp;Metadata&nbsp;(see&nbsp;below)&nbsp;--</td>
 <td>WordPress attachment metadata, from the <em>_wp_attachment_metadata</em> array. Enter the field you want in the text box below the dropdown list. More coding guidelines are given below this table in the "Custom field mapping for metadata fields" section.</td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">-- Template (see below) --</td>
-<td>A Content Template; enter the template text (without the "template:" prefix) in the text box below the dropdown list. More coding guidelines are given below this table in the "Custom field mapping for Content Templates" section.</td>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">--&nbsp;Template&nbsp;(see&nbsp;below)&nbsp;--</td>
+<td style="padding-bottom: 2em;">A Content Template; enter the template text (without the "template:" prefix) in the text box below the dropdown list. More coding guidelines are given below this table in the "Custom field mapping for Content Templates" section.</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">post_id</td>
+<td>the value stored in the attachment's "posts" database row.</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">post_author</td>
+<td>the value stored in the attachment's "posts" database row.</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">post_date</td>
+<td>the value stored in the attachment's "posts" database row.</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">post_date_gmt</td>
+<td>the value stored in the attachment's "posts" database row.</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">post_content</td>
+<td>the value stored in the attachment's "posts" database row.</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">post_title</td>
+<td>the value stored in the attachment's "posts" database row.</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">post_excerpt</td>
+<td>the value stored in the attachment's "posts" database row.</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">post_status</td>
+<td>the value stored in the attachment's "posts" database row.</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">comment_status</td>
+<td>the value stored in the attachment's "posts" database row.</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">ping_status</td>
+<td>the value stored in the attachment's "posts" database row.</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">post_name</td>
+<td>the value stored in the attachment's "posts" database row.</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">post_modified</td>
+<td>the value stored in the attachment's "posts" database row.</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">post_modified_gmt</td>
+<td>the value stored in the attachment's "posts" database row.</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">post_content_filtered</td>
+<td>the value stored in the attachment's "posts" database row.</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">parent,<br />post_parent</td>
+<td style="vertical-align: top">the value stored in the attachment's "posts" database row.</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">guid</td>
+<td>the value stored in the attachment's "posts" database row.</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">menu_order</td>
+<td>the value stored in the attachment's "posts" database row.</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">mime_type,<br />post_mime_type</td>
+<td style="vertical-align: top">the value stored in the attachment's "posts" database row.</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">comment_count</td>
+<td style="padding-bottom: 2em;">the value stored in the attachment's "posts" database row.</td>
 </tr>
 <tr>
 <td style="padding-right: 10px; vertical-align: top; font-weight:bold">absolute_path</td>
@@ -2823,7 +3047,7 @@ There are two other ways you can perform custom field mapping for one or more ex
 </tr>
 <tr>
 <td style="padding-right: 10px; vertical-align: top; font-weight:bold">upload_date</td>
-<td>date and time attachment was added to the Media Library</td>
+<td style="padding-bottom: 2em;">date and time attachment was added to the Media Library</td>
 </tr>
 <tr>
 <td style="padding-right: 10px; vertical-align: top; font-weight:bold">dimensions</td>
@@ -2883,7 +3107,7 @@ There are two other ways you can perform custom field mapping for one or more ex
 <tr>
 <tr>
 <td style="width: 12em; padding-right: 10px; vertical-align: top; font-weight:bold">size_dimensions[size]</td>
-<td>image dimensions for a specific thumbnail version, e.g., size_dimensions[medium] = "300x225"; set to empty string if the specified size does not exist. There will be a [size] choice for every thumbnail version registered with WordPress for the site.</td>
+<td style="padding-bottom: 2em;">image dimensions for a specific thumbnail version, e.g., size_dimensions[medium] = "300x225"; set to empty string if the specified size does not exist. There will be a [size] choice for every thumbnail version registered with WordPress for the site.</td>
 </tr>
 <tr>
 <td style="padding-right: 10px; vertical-align: top; font-weight:bold">parent_date</td>
@@ -2937,7 +3161,7 @@ There are two other ways you can perform custom field mapping for one or more ex
 </tr>
 <tr>
 <td style="padding-right: 10px; vertical-align: top; font-weight:bold">mla_gallery_in_title</td>
-<td>the title of each post/page where this item appears in an <code>[mla_gallery]</code> shortcode</td>
+<td style="padding-bottom: 2em;">the title of each post/page where this item appears in an <code>[mla_gallery]</code> shortcode</td>
 </tr>
 <tr>
 <td style="padding-right: 10px; vertical-align: top; font-weight:bold">aperture</td>

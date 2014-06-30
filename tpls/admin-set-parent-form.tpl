@@ -1,3 +1,11 @@
+<!-- template="post-type-select-option" -->
+                <option [+selected+] value="[+value+]">[+text+]</option>
+
+<!-- template="post-type-select" -->
+            <select name="mla_set_parent_post_type" id="mla-set-parent-post-type">
+[+options+]
+            </select>
+
 <!-- template="mla-set-parent-div" -->
 	<div id="mla-set-parent-div" style="display: none;">
 		<input name="parent" id="mla-set-parent-parent" type="hidden" value="">
@@ -9,14 +17,37 @@
 		<div id="mla-set-parent-inside-div">
 			<div id="mla-set-parent-search-div">
 				<label class="screen-reader-text" for="mla-set-parent-input">[+Search+]</label>
-				<input name="ps" id="mla-set-parent-input" type="text" value="">
+				<input name="mla_set_parent_search_text" id="mla-set-parent-input" type="text" value="">
 				<span class="spinner"></span>
 				<input class="button" id="mla-set-parent-search" type="button" value="[+Search+]">
+				&nbsp;[+post_type_dropdown+]
 				<div class="clear"></div>
 			</div>
-			<div id="mla-set-parent-titles-div"> [+For+]: <span id="mla-set-parent-titles"></span> </div>
+			<div id="mla-set-parent-titles-div">
+				<div id="mla-set-parent-current-title-div">
+				[+For+]: <span id="mla-set-parent-titles"></span>
+				</div>
+				<div id="mla-set-parent-pagination-div">
+					<input class="button" id="mla-set-parent-previous" type="button" value="[+Previous+]">
+					<input class="button" id="mla-set-parent-next" type="button" value="[+Next+]">
+				</div>
+			</div>
 			<div class="clear"></div>
-			<div id="mla-set-parent-response-div"></div>
+			<div id="mla-set-parent-response-div">
+				<input name="mla_set_parent_count" id="mla-set-parent-count" type="hidden" value="[+count+]">
+				<input name="mla_set_parent_paged" id="mla-set-parent-paged" type="hidden" value="[+paged+]">
+				<input name="mla_set_parent_found" id="mla-set-parent-found" type="hidden" value="[+found+]">
+				<table class="widefat">
+					<thead><tr>
+						<th class="found-radio"><br /></th>
+						<th>[+Title+]</th>
+						<th class="no-break">[+Type+]</th>
+						<th class="no-break">[+Date+]</th>
+						<th class="no-break">[+Status+]</th>
+					</tr></thead>
+					<tbody></tbody>
+				</table>
+			</div>
 		</div>
 		<div id="mla-set-parent-buttons-div">
 			[+mla_set_parent_cancel+]

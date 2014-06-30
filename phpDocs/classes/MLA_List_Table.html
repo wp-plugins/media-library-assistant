@@ -104,6 +104,8 @@ and the value is db column to sort by.</span><pre>get_sortable_columns()</pre></
 <li class="method public "><a href="#mla_manage_hidden_columns_filter" title="mla_manage_hidden_columns_filter :: Handler for filter 'get_user_option_managemedia_page_mla-menucolumnshidden'"><span class="description">Handler for filter 'get_user_option_managemedia_page_mla-menucolumnshidden'</span><pre>mla_manage_hidden_columns_filter()</pre></a></li>
 <li class="method public "><a href="#mla_submenu_arguments" title="mla_submenu_arguments :: Process $_REQUEST, building $submenu_arguments"><span class="description">Process $_REQUEST, building $submenu_arguments</span><pre>mla_submenu_arguments()</pre></a></li>
 <li class="method public "><a href="#mla_views_media_page_mla_menu_filter" title='mla_views_media_page_mla_menu_filter :: Handler for filter "views_{$this-&gt;screen-&gt;id}" in /admin/includes/class-wp-list-table.php'><span class="description">Handler for filter "views_{$this-&gt;screen-&gt;id}" in /admin/includes/class-wp-list-table.php</span><pre>mla_views_media_page_mla_menu_filter()</pre></a></li>
+<li class="method public "><a href="#mla_wpml_media_view_upload_count_filter" title='mla_wpml_media_view_upload_count_filter :: Handler for filter "wpml-media_view-upload-count" in /plugins/wpml-media/inc/wpml-media.class.php'><span class="description">Handler for filter "wpml-media_view-upload-count" in /plugins/wpml-media/inc/wpml-media.class.php</span><pre>mla_wpml_media_view_upload_count_filter()</pre></a></li>
+<li class="method public "><a href="#mla_wpml_media_view_upload_page_count_filter" title='mla_wpml_media_view_upload_page_count_filter :: Handler for filter "wpml-media_view-upload-page-count" in /plugins/wpml-media/inc/wpml-media.class.php'><span class="description">Handler for filter "wpml-media_view-upload-page-count" in /plugins/wpml-media/inc/wpml-media.class.php</span><pre>mla_wpml_media_view_upload_page_count_filter()</pre></a></li>
 <li class="method public "><a href="#pagination" title="pagination :: Display the pagination, adding view, search and filter arguments"><span class="description">Display the pagination, adding view, search and filter arguments</span><pre>pagination()</pre></a></li>
 <li class="method public "><a href="#prepare_items" title="prepare_items :: Prepares the list of items for displaying"><span class="description">Prepares the list of items for displaying</span><pre>prepare_items()</pre></a></li>
 <li class="method public "><a href="#print_column_headers" title="print_column_headers :: Print column headers, adding view, search and filter arguments"><span class="description">Print column headers, adding view, search and filter arguments</span><pre>print_column_headers()</pre></a></li>
@@ -899,6 +901,62 @@ to affect the "screen options" setup.</p></p>
 <code>array</code>Updated list of available list table views</div>
 </div></div>
 </div>
+<a name="mla_wpml_media_view_upload_count_filter" id="mla_wpml_media_view_upload_count_filter"></a><div class="element clickable method public mla_wpml_media_view_upload_count_filter" data-toggle="collapse" data-target=".mla_wpml_media_view_upload_count_filter .collapse">
+<h2>Handler for filter "wpml-media_view-upload-count" in /plugins/wpml-media/inc/wpml-media.class.php</h2>
+<pre>mla_wpml_media_view_upload_count_filter(NULL $count, string $key, string $view, string $lang) : mixed</pre>
+<div class="labels"></div>
+<div class="row collapse"><div class="detail-description">
+<p class="long_description"><p>Computes the number of attachments that satisfy a meta_query specification.
+The count is automatically made language-specific by WPML filters.</p></p>
+<table class="table table-bordered"><tr>
+<th>since</th>
+<td>1.90</td>
+</tr></table>
+<h3>Parameters</h3>
+<div class="subelement argument">
+<h4>$count</h4>
+<code>NULL</code><p>default return value if not replacing count</p></div>
+<div class="subelement argument">
+<h4>$key</h4>
+<code>string</code><p>key/slug value for the selected view</p>
+</div>
+<div class="subelement argument">
+<h4>$view</h4>
+<code>string</code><p>HTML <a></a> tag for the link to the selected view</p>
+</div>
+<div class="subelement argument">
+<h4>$lang</h4>
+<code>string</code><p>language code, e.g., 'en', 'es'</p>
+</div>
+<h3>Returns</h3>
+<div class="subelement response">
+<code>mixed</code>NULL to allow SQL query or replacement count value</div>
+</div></div>
+</div>
+<a name="mla_wpml_media_view_upload_page_count_filter" id="mla_wpml_media_view_upload_page_count_filter"></a><div class="element clickable method public mla_wpml_media_view_upload_page_count_filter" data-toggle="collapse" data-target=".mla_wpml_media_view_upload_page_count_filter .collapse">
+<h2>Handler for filter "wpml-media_view-upload-page-count" in /plugins/wpml-media/inc/wpml-media.class.php</h2>
+<pre>mla_wpml_media_view_upload_page_count_filter(NULL $count, string $lang) : mixed</pre>
+<div class="labels"></div>
+<div class="row collapse"><div class="detail-description">
+<p class="long_description"><p>Computes the number of language-specific attachments that satisfy a meta_query specification.
+The count is made language-specific by WPML filters when the current_language is set.</p></p>
+<table class="table table-bordered"><tr>
+<th>since</th>
+<td>1.90</td>
+</tr></table>
+<h3>Parameters</h3>
+<div class="subelement argument">
+<h4>$count</h4>
+<code>NULL</code><p>default return value if not replacing count</p></div>
+<div class="subelement argument">
+<h4>$lang</h4>
+<code>string</code><p>language code, e.g., 'en', 'es'</p>
+</div>
+<h3>Returns</h3>
+<div class="subelement response">
+<code>mixed</code>NULL to allow SQL query or replacement count value</div>
+</div></div>
+</div>
 <a name="pagination" id="pagination"></a><div class="element clickable method public pagination" data-toggle="collapse" data-target=".pagination .collapse">
 <h2>Display the pagination, adding view, search and filter arguments</h2>
 <pre>pagination(string $which) : void</pre>
@@ -1135,7 +1193,7 @@ MLA_List_Table::mla_admin_init_action.</p></p>
 <div class="row"><footer class="span12">
             Template is built using <a href="http://twitter.github.com/bootstrap/">Twitter Bootstrap 2</a> and icons provided by <a href="http://glyphicons.com/">Glyphicons</a>.<br>
             Documentation is powered by <a href="http://www.phpdoc.org/">phpDocumentor 2.0.0a8</a> and<br>
-            generated on 2014-05-30T12:08:31-07:00.<br></footer></div>
+            generated on 2014-06-27T14:50:12-07:00.<br></footer></div>
 </div>
 </body>
 </html>

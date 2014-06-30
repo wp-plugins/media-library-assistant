@@ -118,6 +118,7 @@
                 <label class="inline-edit-post-parent alignleft"> <span class="title">[+Parent ID+]</span> <span class="input-text-wrap">
                   <input type="text" name="post_parent" value="" />
                   </span> </label>
+                  <input id="bulk-edit-set-parent" title="[+Select+]" class="button-primary parent" type="button" name="post_parent_set" value="[+Select+]" />
 [+bulk_authors+]
               </div>
               <div class="inline-edit-group">

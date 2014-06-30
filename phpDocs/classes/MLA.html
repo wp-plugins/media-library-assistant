@@ -64,6 +64,7 @@
 <li class="method public "><a href="#mla_admin_init_action" title="mla_admin_init_action :: Load the plugin's Ajax handler or process Edit Media update actions"><span class="description">Load the plugin's Ajax handler or process Edit Media update actions</span><pre>mla_admin_init_action()</pre></a></li>
 <li class="method public "><a href="#mla_admin_menu_action" title="mla_admin_menu_action :: Add the submenu pages"><span class="description">Add the submenu pages</span><pre>mla_admin_menu_action()</pre></a></li>
 <li class="method public "><a href="#mla_edit_tax_redirect" title="mla_edit_tax_redirect :: Redirect to the Edit Tags/Categories page"><span class="description">Redirect to the Edit Tags/Categories page</span><pre>mla_edit_tax_redirect()</pre></a></li>
+<li class="method public "><a href="#mla_find_posts_ajax_action" title='mla_find_posts_ajax_action :: Ajax handler to fetch candidates for the "Set Parent" popup window'><span class="description">Ajax handler to fetch candidates for the "Set Parent" popup window</span><pre>mla_find_posts_ajax_action()</pre></a></li>
 <li class="method public "><a href="#mla_inline_edit_ajax_action" title="mla_inline_edit_ajax_action :: Ajax handler for inline editing (quick and bulk edit)"><span class="description">Ajax handler for inline editing (quick and bulk edit)</span><pre>mla_inline_edit_ajax_action()</pre></a></li>
 <li class="method public "><a href="#mla_load_media_action" title="mla_load_media_action :: Redirect to Media/Assistant if Media/Library is hidden"><span class="description">Redirect to Media/Assistant if Media/Library is hidden</span><pre>mla_load_media_action()</pre></a></li>
 <li class="method public "><a href="#mla_parent_file_filter" title="mla_parent_file_filter :: Cleanup menus for Edit Tags/Categories page"><span class="description">Cleanup menus for Edit Tags/Categories page</span><pre>mla_parent_file_filter()</pre></a></li>
@@ -71,10 +72,12 @@
 <li class="method public "><a href="#mla_render_admin_page" title='mla_render_admin_page :: Render the "Assistant" subpage in the Media section, using the list_table package'><span class="description">Render the "Assistant" subpage in the Media section, using the list_table package</span><pre>mla_render_admin_page()</pre></a></li>
 <li class="method public "><a href="#mla_screen_options_show_screen_filter" title="mla_screen_options_show_screen_filter :: Only show screen options on the table-list screen"><span class="description">Only show screen options on the table-list screen</span><pre>mla_screen_options_show_screen_filter()</pre></a></li>
 <li class="method public "><a href="#mla_set_parent_ajax_action" title="mla_set_parent_ajax_action :: Ajax handler to set post_parent for a single attachment"><span class="description">Ajax handler to set post_parent for a single attachment</span><pre>mla_set_parent_ajax_action()</pre></a></li>
+<li class="method public "><a href="#mla_set_parent_form" title='mla_set_parent_form :: Build the hidden form for the "Set Parent" popup modal window'><span class="description">Build the hidden form for the "Set Parent" popup modal window</span><pre>mla_set_parent_form()</pre></a></li>
 <li class="method public "><a href="#mla_set_screen_option_filter" title='mla_set_screen_option_filter :: Save the "Entries per page" option set by this user'><span class="description">Save the "Entries per page" option set by this user</span><pre>mla_set_screen_option_filter()</pre></a></li>
 <li class="nav-header private">» Private</li>
 <li class="method private "><a href="#_authors_dropdown" title="_authors_dropdown :: Get the edit Authors dropdown box, if user has suitable permissions"><span class="description">Get the edit Authors dropdown box, if user has suitable permissions</span><pre>_authors_dropdown()</pre></a></li>
 <li class="method private "><a href="#_build_inline_edit_form" title="_build_inline_edit_form :: Build the hidden row templates for inline editing (quick and bulk edit)"><span class="description">Build the hidden row templates for inline editing (quick and bulk edit)</span><pre>_build_inline_edit_form()</pre></a></li>
+<li class="method private "><a href="#_compose_post_type_select" title="_compose_post_type_select :: Compose a Post Type Options list with current selection"><span class="description">Compose a Post Type Options list with current selection</span><pre>_compose_post_type_select()</pre></a></li>
 <li class="method private "><a href="#_current_bulk_action" title="_current_bulk_action :: Get the current action selected from the bulk actions dropdown"><span class="description">Get the current action selected from the bulk actions dropdown</span><pre>_current_bulk_action()</pre></a></li>
 <li class="method private "><a href="#_delete_single_item" title="_delete_single_item :: Delete a single item permanently"><span class="description">Delete a single item permanently</span><pre>_delete_single_item()</pre></a></li>
 <li class="method private "><a href="#_display_single_item" title="_display_single_item :: Display a single item sub page; prepare the form to
@@ -104,6 +107,7 @@ change the meta data for a single attachment.</span><pre>_display_single_item()<
 <li class="constant  "><a href="#MLA_ADMIN_SINGLE_MAP" title="MLA_ADMIN_SINGLE_MAP :: mla_admin_action value for mapping IPTC/EXIF metadata"><span class="description">mla_admin_action value for mapping IPTC/EXIF metadata</span><pre>MLA_ADMIN_SINGLE_MAP</pre></a></li>
 <li class="constant  "><a href="#MLA_ADMIN_SINGLE_RESTORE" title="MLA_ADMIN_SINGLE_RESTORE :: mla_admin_action value for restoring a single item from the trash"><span class="description">mla_admin_action value for restoring a single item from the trash</span><pre>MLA_ADMIN_SINGLE_RESTORE</pre></a></li>
 <li class="constant  "><a href="#MLA_ADMIN_SINGLE_TRASH" title="MLA_ADMIN_SINGLE_TRASH :: mla_admin_action value for moving a single item to the trash"><span class="description">mla_admin_action value for moving a single item to the trash</span><pre>MLA_ADMIN_SINGLE_TRASH</pre></a></li>
+<li class="constant  "><a href="#MLA_ADMIN_terms_search" title="MLA_ADMIN_terms_search :: mla_admin_action value for searching taxonomy terms"><span class="description">mla_admin_action value for searching taxonomy terms</span><pre>MLA_ADMIN_terms_search</pre></a></li>
 <li class="constant  "><a href="#STYLESHEET_SLUG" title="STYLESHEET_SLUG :: Slug for registering and enqueueing plugin style sheet"><span class="description">Slug for registering and enqueueing plugin style sheet</span><pre>STYLESHEET_SLUG</pre></a></li>
 </ul>
 </div>
@@ -232,6 +236,19 @@ The filter is not required for WordPress 3.5 and later.</p></p>
 </tr></table>
 </div></div>
 </div>
+<a name="mla_find_posts_ajax_action" id="mla_find_posts_ajax_action"></a><div class="element clickable method public mla_find_posts_ajax_action" data-toggle="collapse" data-target=".mla_find_posts_ajax_action .collapse">
+<h2>Ajax handler to fetch candidates for the "Set Parent" popup window</h2>
+<pre>mla_find_posts_ajax_action() : void</pre>
+<div class="labels"></div>
+<div class="row collapse"><div class="detail-description">
+<p class="long_description"><p>Adapted from wp_ajax_find_posts in /wp-admin/includes/ajax-actions.php.
+Adds filters for post type and pagination.</p></p>
+<table class="table table-bordered"><tr>
+<th>since</th>
+<td>1.90</td>
+</tr></table>
+</div></div>
+</div>
 <a name="mla_inline_edit_ajax_action" id="mla_inline_edit_ajax_action"></a><div class="element clickable method public mla_inline_edit_ajax_action" data-toggle="collapse" data-target=".mla_inline_edit_ajax_action .collapse">
 <h2>Ajax handler for inline editing (quick and bulk edit)</h2>
 <pre>mla_inline_edit_ajax_action() : void</pre>
@@ -342,6 +359,26 @@ Defined as public because it's an action.</p></p>
 </tr></table>
 </div></div>
 </div>
+<a name="mla_set_parent_form" id="mla_set_parent_form"></a><div class="element clickable method public mla_set_parent_form" data-toggle="collapse" data-target=".mla_set_parent_form .collapse">
+<h2>Build the hidden form for the "Set Parent" popup modal window</h2>
+<pre>mla_set_parent_form(boolean $return_form) : string</pre>
+<div class="labels"></div>
+<div class="row collapse"><div class="detail-description">
+<p class="long_description"></p>
+<table class="table table-bordered"><tr>
+<th>since</th>
+<td>1.90</td>
+</tr></table>
+<h3>Parameters</h3>
+<div class="subelement argument">
+<h4>$return_form</h4>
+<code>boolean</code><p>true to return complete form, false to return mla-set-parent-div</p>
+</div>
+<h3>Returns</h3>
+<div class="subelement response">
+<code>string</code>HTML <form> markup for hidden form</div>
+</div></div>
+</div>
 <a name="mla_set_screen_option_filter" id="mla_set_screen_option_filter"></a><div class="element clickable method public mla_set_screen_option_filter" data-toggle="collapse" data-target=".mla_set_screen_option_filter .collapse">
 <h2>Save the "Entries per page" option set by this user</h2>
 <pre>mla_set_screen_option_filter(mixed $status, string $option, string $value) : string | void</pre>
@@ -411,6 +448,35 @@ Defined as public because it's an action.</p></p>
 <h3>Returns</h3>
 <div class="subelement response">
 <code>string</code>HTML <form> markup for hidden rows</div>
+</div></div>
+</div>
+<a name="_compose_post_type_select" id="_compose_post_type_select"></a><div class="element clickable method private _compose_post_type_select" data-toggle="collapse" data-target="._compose_post_type_select .collapse">
+<h2>Compose a Post Type Options list with current selection</h2>
+<pre>_compose_post_type_select(array $templates, string $selection) : string</pre>
+<div class="labels"></div>
+<div class="row collapse"><div class="detail-description">
+<p class="long_description"></p>
+<table class="table table-bordered">
+<tr>
+<th>since</th>
+<td>1.90</td>
+</tr>
+<tr>
+<th>uses</th>
+<td>\global\$mla_option_templates</td>
+</tr>
+</table>
+<h3>Parameters</h3>
+<div class="subelement argument">
+<h4>$templates</h4>
+<code>array</code><p>template parts</p></div>
+<div class="subelement argument">
+<h4>$selection</h4>
+<code>string</code><p>current selection or 'all' (default)</p>
+</div>
+<h3>Returns</h3>
+<div class="subelement response">
+<code>string</code>HTML markup with select field options</div>
 </div></div>
 </div>
 <a name="_current_bulk_action" id="_current_bulk_action"></a><div class="element clickable method private _current_bulk_action" data-toggle="collapse" data-target="._current_bulk_action .collapse">
@@ -723,6 +789,18 @@ change the meta data for a single attachment.</h2>
 </tr></table>
 </div></div>
 </div>
+<a name="MLA_ADMIN_terms_search" id="MLA_ADMIN_terms_search"> </a><div class="element clickable constant  MLA_ADMIN_terms_search" data-toggle="collapse" data-target=".MLA_ADMIN_terms_search .collapse">
+<h2>mla_admin_action value for searching taxonomy terms</h2>
+<pre>MLA_ADMIN_terms_search : string</pre>
+<div class="labels"></div>
+<div class="row collapse"><div class="detail-description">
+<p class="long_description"></p>
+<table class="table table-bordered"><tr>
+<th>since</th>
+<td>1.90</td>
+</tr></table>
+</div></div>
+</div>
 <a name="STYLESHEET_SLUG" id="STYLESHEET_SLUG"> </a><div class="element clickable constant  STYLESHEET_SLUG" data-toggle="collapse" data-target=".STYLESHEET_SLUG .collapse">
 <h2>Slug for registering and enqueueing plugin style sheet</h2>
 <pre>STYLESHEET_SLUG : string</pre>
@@ -742,7 +820,7 @@ change the meta data for a single attachment.</h2>
 <div class="row"><footer class="span12">
             Template is built using <a href="http://twitter.github.com/bootstrap/">Twitter Bootstrap 2</a> and icons provided by <a href="http://glyphicons.com/">Glyphicons</a>.<br>
             Documentation is powered by <a href="http://www.phpdoc.org/">phpDocumentor 2.0.0a8</a> and<br>
-            generated on 2014-05-30T12:08:31-07:00.<br></footer></div>
+            generated on 2014-06-27T14:50:12-07:00.<br></footer></div>
 </div>
 </body>
 </html>
