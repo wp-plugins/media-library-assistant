@@ -59,6 +59,10 @@
 	right: 312px;
 }
 
+.attachments-browser .no-media {
+	margin-top: 135px;
+}
+
 .media-modal .attachments {
 	right: 312px;
 	top: 120px;

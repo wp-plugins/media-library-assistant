@@ -144,25 +144,11 @@
 			$.ajax( ajaxurl, {
 				type: 'POST',
 				data: post,
-				dataType: mla.settings.setParentDataType
+				dataType: 'json'
 			}).always( function() {
 				spinner.hide();
 			}).done( function( response ) {
 				var responseData = 'no response.data', id = 0;
-
-				if ( 'xml' === mla.settings.setParentDataType ) {
-					if ( 'string' === typeof( response ) ) {
-						response = { 'success': false, data: response };
-					} else {
-						ajaxResponse = wpAjax.parseAjaxResponse( response );
-
-						if ( ajaxResponse.errors ) {
-							response = { 'success': false, data: wpAjax.broken };
-						} else {
-							response = { 'success': true, data: ajaxResponse.responses[0].data };
-						}
-					}
-				}
 
 				if ( ! response.success ) {
 					if ( response.responseData ) {

@@ -669,7 +669,9 @@ class MLAOptions {
 					'name' => __( 'Enable Edit Media additional meta boxes', 'media-library-assistant' ),
 					'type' => 'checkbox',
 					'std' => 'checked',
-					'help' => __( 'Check this option to add "Parent Info", "Menu Order", "Attachment Metadata" and four "where-used" meta boxes to the Edit Media screen.', 'media-library-assistant' )),
+					'help' => __( 'Check this option to add "Parent Info", "Menu Order", "Attachment Metadata" and four "where-used" meta boxes to the Edit Media screen.', 'media-library-assistant' ) . '<br>&nbsp;&nbsp;' .
+						__( 'You can also use Filters to customize the meta boxes.', 'media-library-assistant' ) . 
+						sprintf( ' %1$s <a href="%2$s">%3$s</a>.',  __( 'For complete documentation', 'media-library-assistant' ), admin_url( 'options-general.php?page=' . MLASettings::MLA_SETTINGS_SLUG . '-documentation&amp;mla_tab=documentation#mla_edit_meta_boxes' ), __( 'click here', 'media-library-assistant' )  ) ),
 
 			'media_modal_header' =>
 				array('tab' => 'general',
@@ -1806,10 +1808,24 @@ class MLAOptions {
 	 * @return	array	updated file parameters
 	 */
 	public static function mla_wp_handle_upload_prefilter_filter( $file ) {
-		$image_metadata =  MLAData::mla_fetch_attachment_image_metadata( 0, $file['tmp_name'] );
-		$image_metadata['mla_exif_metadata']['FileName'] = $file['name'];
-		$image_metadata['wp_image_metadata'] = wp_read_image_metadata( $file['tmp_name'] );
-		$file = apply_filters( 'mla_upload_prefilter', $file, $image_metadata );
+		/*
+		 * This filter requires file access and processing, so only do the work
+		 * if someone has hooked it.
+		 */
+		if ( has_filter( 'mla_upload_prefilter' ) ) {
+			/* 
+			 * The image.php file is not loaded for "front end" uploads
+			 */
+			if ( !function_exists( 'wp_read_image_metadata' ) ) {
+				require_once( ABSPATH . 'wp-admin/includes/image.php' );
+			}
+	
+			$image_metadata =  MLAData::mla_fetch_attachment_image_metadata( 0, $file['tmp_name'] );
+			$image_metadata['mla_exif_metadata']['FileName'] = $file['name'];
+			$image_metadata['wp_image_metadata'] = wp_read_image_metadata( $file['tmp_name'] );
+			$file = apply_filters( 'mla_upload_prefilter', $file, $image_metadata );
+		}
+		
 		return $file;
  	} // mla_wp_handle_upload_prefilter_filter
 
@@ -1823,13 +1839,23 @@ class MLAOptions {
 	 * @return	array	updated file parameters
 	 */
 	public static function mla_wp_handle_upload_filter( $file ) {
-		if ( ! class_exists( 'getID3' ) ) {
-			require( ABSPATH . WPINC . '/ID3/getid3.php' );
+		/*
+		 * This filter requires file access and processing, so only do the work
+		 * if someone has hooked it.
+		 */
+		if ( has_filter( 'mla_upload_prefilter' ) ) {
+			/* 
+			 * The getid3.php file is not loaded for "front end" uploads
+			 */
+			if ( ! class_exists( 'getID3' ) ) {
+				require( ABSPATH . WPINC . '/ID3/getid3.php' );
+			}
+	
+			$id3 = new getID3();
+			$id3_data = $id3->analyze( $file['file'] );
+			$file = apply_filters( 'mla_upload_filter', $file, $id3_data );
 		}
-
-		$id3 = new getID3();
-		$id3_data = $id3->analyze( $file['file'] );
-		$file = apply_filters( 'mla_upload_filter', $file, $id3_data );
+		
 		return $file;
  	} // mla_wp_handle_upload_filter
 
@@ -1905,7 +1931,7 @@ class MLAOptions {
 	 * @param	array	Attachment metadata for just-inserted attachment
 	 * @param	integer	ID of just-inserted attachment
 	 *
-	 * @return	void
+	 * @return	array	Updated attachment metadata
 	 */
 	public static function mla_update_attachment_metadata_filter( $data, $post_id ) {
 		$options = array ();
@@ -1921,6 +1947,10 @@ class MLAOptions {
 		$data = apply_filters( 'mla_update_attachment_metadata_prefilter', $data, $post_id, $options );
 
 		if ( $options['is_upload'] ) {
+			if ( $options['enable_iptc_exif_mapping'] || $options['enable_custom_field_mapping'] ) {
+				do_action( 'mla_begin_mapping', 'create_metadata', $post_id );
+			}
+			
 			if ( $options['enable_iptc_exif_mapping'] ) {
 				$item = get_post( $post_id );
 				$updates = MLAOptions::mla_evaluate_iptc_exif_mapping( $item, 'iptc_exif_mapping', NULL, $data );
@@ -1939,7 +1969,15 @@ class MLAOptions {
 					$item_content = MLAData::mla_update_single_item( $post_id, $updates );
 				}
 			}
+
+			if ( $options['enable_iptc_exif_mapping'] || $options['enable_custom_field_mapping'] ) {
+				do_action( 'mla_end_mapping' );
+			}
 		} else {
+			if ( $options['enable_iptc_exif_update'] || $options['enable_custom_field_update'] ) {
+				do_action( 'mla_begin_mapping', 'update_metadata', $post_id );
+			}
+			
 			if ( $options['enable_iptc_exif_update'] ) {
 				$item = get_post( $post_id );
 				$updates = MLAOptions::mla_evaluate_iptc_exif_mapping( $item, 'iptc_exif_mapping', NULL, $data );
@@ -1957,6 +1995,10 @@ class MLAOptions {
 				if ( !empty( $updates ) ) {
 					$item_content = MLAData::mla_update_single_item( $post_id, $updates );
 				}
+			}
+
+			if ( $options['enable_iptc_exif_update'] || $options['enable_custom_field_update'] ) {
+				do_action( 'mla_end_mapping' );
 			}
 		}
 
@@ -2134,7 +2176,14 @@ class MLAOptions {
 	private static function _evaluate_post_information( $post_id, $category, $data_source ) {
 		global $wpdb;
 		static $post_info = NULL;
-
+		
+		/*
+		 * Check for $post_id match
+		 */
+		if ( 'single_attachment_mapping' == $category && ! isset( $post_info[$post_id] ) ) {
+			$post_info = NULL;
+		}
+		
 		if ( NULL == $post_info ) {
 			if ( 'custom_field_mapping' == $category ) {
 				$post_info = $wpdb->get_results( "SELECT * FROM {$wpdb->posts} WHERE post_type = 'attachment'", OBJECT_K );

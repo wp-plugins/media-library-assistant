@@ -29,7 +29,7 @@ class MLA {
 	 *
 	 * @var	string
 	 */
-	const CURRENT_MLA_VERSION = '1.90';
+	const CURRENT_MLA_VERSION = '1.91';
 
 	/**
 	 * Slug for registering and enqueueing plugin style sheet
@@ -259,7 +259,9 @@ class MLA {
 
 			switch ( $_REQUEST['mla_admin_action'] ) {
 				case self::MLA_ADMIN_SINGLE_CUSTOM_FIELD_MAP:
+					do_action( 'mla_begin_mapping', 'single_custom', $_REQUEST['mla_item_ID'] );
 					$updates = MLAOptions::mla_evaluate_custom_field_mapping( $_REQUEST['mla_item_ID'], 'single_attachment_mapping' );
+					do_action( 'mla_end_mapping' );
 
 					if ( !empty( $updates ) ) {
 						$item_content = MLAData::mla_update_single_item( $_REQUEST['mla_item_ID'], $updates );
@@ -270,7 +272,9 @@ class MLA {
 					exit;
 				case self::MLA_ADMIN_SINGLE_MAP:
 					$item = get_post( $_REQUEST['mla_item_ID'] );
+					do_action( 'mla_begin_mapping', 'single_iptc_exif', $_REQUEST['mla_item_ID'] );
 					$updates = MLAOptions::mla_evaluate_iptc_exif_mapping( $item, 'iptc_exif_mapping' );
+					do_action( 'mla_end_mapping' );
 					$page_content = MLAData::mla_update_single_item( $_REQUEST['mla_item_ID'], $updates );
 
 					$view_args = isset( $_REQUEST['mla_source'] ) ? array( 'mla_source' => $_REQUEST['mla_source']) : array();
@@ -356,13 +360,6 @@ class MLA {
 				'ajax_nonce' => wp_create_nonce( self::MLA_ADMIN_NONCE ) 
 			);
 
-			if ( version_compare( get_bloginfo( 'version' ), '3.9', '>=' ) ) {
-				$script_variables['setParentDataType'] = 'json';
-			} else {
-//				$script_variables['setParentDataType'] = 'xml';
-				$script_variables['setParentDataType'] = 'json';
-			}
-
 			wp_localize_script( self::JAVASCRIPT_INLINE_EDIT_SLUG, self::JAVASCRIPT_INLINE_EDIT_OBJECT, $script_variables );
 		}
 	}
@@ -440,7 +437,6 @@ class MLA {
 		if ( $menu_position && is_array( $submenu['upload.php'] ) ) {
 			foreach ( $submenu['upload.php'] as $menu_order => $menu_item ) {
 				if ( self::ADMIN_PAGE_SLUG == $menu_item[2] ) {
-					// Replace "admin.php" with "upload.php"; support topic "Media/Library menu URLs mismatch"
 					$menu_item[2] = 'upload.php?page=' . self::ADMIN_PAGE_SLUG;
 					$submenu['upload.php'][$menu_position] = $menu_item;
 					unset( $submenu['upload.php'][$menu_order] );
@@ -843,6 +839,12 @@ class MLA {
 		if ( $bulk_action && ( $bulk_action != 'none' ) ) {
 
 			if ( isset( $_REQUEST['cb_attachment'] ) ) {
+				if ( !empty( $_REQUEST['bulk_custom_field_map'] ) ) {
+					do_action( 'mla_begin_mapping', 'bulk_custom', NULL );
+				} elseif ( !empty( $_REQUEST['bulk_map'] ) ) {
+					do_action( 'mla_begin_mapping', 'bulk_iptc_exif', NULL );
+				}
+
 				foreach ( $_REQUEST['cb_attachment'] as $index => $post_id ) {
 					switch ( $bulk_action ) {
 						case 'delete':
@@ -959,6 +961,10 @@ class MLA {
 					$page_content['message'] .= $item_content['message'] . '<br>';
 				} // foreach cb_attachment
 
+				if ( !empty( $_REQUEST['bulk_custom_field_map'] ) || !empty( $_REQUEST['bulk_map'] ) ) {
+					do_action( 'mla_end_mapping' );
+				}
+
 				unset( $_REQUEST['post_title'] );
 				unset( $_REQUEST['post_excerpt'] );
 				unset( $_REQUEST['post_content'] );
@@ -1038,7 +1044,9 @@ class MLA {
 						$page_content = MLAData::mla_update_single_item( $_REQUEST['mla_item_ID'], $_REQUEST['attachments'][ $_REQUEST['mla_item_ID'] ], $_REQUEST['tax_input'] );
 					} elseif ( !empty( $_REQUEST['map-iptc-exif'] ) ) {
 						$item = get_post( $_REQUEST['mla_item_ID'] );
+						do_action( 'mla_begin_mapping', 'single_iptc_exif', $_REQUEST['mla_item_ID'] );
 						$updates = MLAOptions::mla_evaluate_iptc_exif_mapping( $item, 'iptc_exif_mapping' );
+						do_action( 'mla_end_mapping' );
 						$page_content = MLAData::mla_update_single_item( $_REQUEST['mla_item_ID'], $updates );
 					} else {
 						$page_content = array(
@@ -1193,9 +1201,16 @@ class MLA {
 			//	Fetch, prepare, sort, and filter our data...
 			$MLAListTable->prepare_items();
 			$MLAListTable->views();
+			
+			$view_arguments = MLA_List_Table::mla_submenu_arguments();
+			if ( isset( $view_arguments['lang'] ) ) {
+				$form_url = 'upload.php?page=' . self::ADMIN_PAGE_SLUG . '&lang=' . $view_arguments['lang'];
+			} else {
+				$form_url = 'upload.php?page=' . self::ADMIN_PAGE_SLUG;
+			}
 
 			//	 Forms are NOT created automatically, so you need to wrap the table in one to use features like bulk actions
-			echo '<form action="' . admin_url( 'upload.php?page=' . self::ADMIN_PAGE_SLUG ) . '" method="post" id="mla-filter">' . "\n";
+			echo '<form action="' . admin_url( $form_url ) . '" method="post" id="mla-filter">' . "\n";
 			/*
 			 * Include the Search Media box
 			 */
@@ -1206,7 +1221,6 @@ class MLA {
 			 */
 			echo sprintf( '<input type="hidden" name="page" value="%1$s" />', $_REQUEST['page'] ) . "\n";
 
-			$view_arguments = MLA_List_Table::mla_submenu_arguments();
 			foreach ( $view_arguments as $key => $value ) {
 				if ( 'meta_query' == $key ) {
 					$value = stripslashes( $_REQUEST['meta_query'] );
@@ -1214,8 +1228,9 @@ class MLA {
 
 				/*
 				 * Search box elements are already set up in the above "search-box"
+				 * 'lang' has already been added to the form action attribute
 				 */
-				if ( in_array( $key, array( 's', 'mla_search_connector', 'mla_search_fields' ) ) ) {
+				if ( in_array( $key, array( 's', 'mla_search_connector', 'mla_search_fields', 'lang' ) ) ) {
 					continue;
 				}
 
@@ -1362,7 +1377,7 @@ class MLA {
 
 		//	Create an instance of our package class and echo the new HTML
 		$MLAListTable = new MLA_List_Table();
-		echo $MLAListTable->column_attached_to( $new_item );
+		$MLAListTable->single_row( $new_item );
 		die(); // this is required to return a proper result
 	}
 

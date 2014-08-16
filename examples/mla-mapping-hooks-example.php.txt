@@ -1,19 +1,23 @@
 <?php
 /**
- * Provides an example of the filters provided by the IPTC/EXIF and Custom Field mapping features
+ * Provides two examples of the filters provided by the IPTC/EXIF and Custom Field mapping features
  *
- * In this example...
+ * - A custom field mapping rule is used to trigger export to an XML file.
+ * - The Title and ALT Text values are cleaned up, replacing dashes, underscores and periods with spaces.
+ *
+ * All of the action takes place in the "mla_mapping_updates" filter,
+ * a supporting function "_export_this_item" and the "mla_end_mapping" action.
  *
  * @package MLA Mapping Hooks Example
- * @version 1.02
+ * @version 1.01
  */
 
 /*
 Plugin Name: MLA Mapping Hooks Example
 Plugin URI: http://fairtradejudaica.org/media-library-assistant-a-wordpress-plugin/
-Description: Provides an example of the filters provided by the IPTC/EXIF and Custom Field mapping features.
+Description: Provides an example of the filters provided by the IPTC/EXIF and Custom Field mapping features
 Author: David Lingren
-Version: 1.02
+Version: 1.01
 Author URI: http://fairtradejudaica.org/our-story/staff/
 
 Copyright 2014 David Lingren
@@ -76,12 +80,14 @@ class MLAMappingHooksExample {
 		add_filter( 'mla_update_attachment_metadata_prefilter', 'MLAMappingHooksExample::mla_update_attachment_metadata_prefilter_filter', 10, 3 );
 		add_filter( 'mla_update_attachment_metadata_postfilter', 'MLAMappingHooksExample::mla_update_attachment_metadata_postfilter_filter', 10, 3 );
 
+		add_action( 'mla_begin_mapping', 'MLAMappingHooksExample::mla_begin_mapping_action', 10, 2 );
 		add_filter( 'mla_mapping_settings', 'MLAMappingHooksExample::mla_mapping_settings_filter', 10, 4 );
 		add_filter( 'mla_mapping_rule', 'MLAMappingHooksExample::mla_mapping_rule_filter', 10, 4 );
 		add_filter( 'mla_mapping_custom_value', 'MLAMappingHooksExample::mla_mapping_custom_value_filter', 10, 5 );
 		add_filter( 'mla_mapping_iptc_value', 'MLAMappingHooksExample::mla_mapping_iptc_value_filter', 10, 5 );
 		add_filter( 'mla_mapping_exif_value', 'MLAMappingHooksExample::mla_mapping_exif_value_filter', 10, 5 );
 		add_filter( 'mla_mapping_updates', 'MLAMappingHooksExample::mla_mapping_updates_filter', 10, 5 );
+		add_action( 'mla_end_mapping', 'MLAMappingHooksExample::mla_end_mapping_action', 10, 0 );
 
 		add_filter( 'mla_get_options_tablist', 'MLAMappingHooksExample::mla_get_options_tablist_filter', 10, 3 );
 	}
@@ -100,7 +106,6 @@ class MLAMappingHooksExample {
 	 * @var	array
 	 */
 	private static $image_metadata = array();
-	private static $raw_metadata = array();
 
 	/**
 	 * MLA Mapping Upload Prefilter
@@ -131,16 +136,6 @@ class MLAMappingHooksExample {
 		 */
 		self::$image_metadata = $image_metadata;
 		self::$image_metadata['preload_file'] = $file;
-
-		/*
-		 * Save the EXIF, XMP, IPTC and COM data from JPEG files
-		 */
-		if ( 'image/jpeg' == $file['type'] ) {
-			self::$raw_metadata = self::_extract_jpeg_metadata( $file['tmp_name'] );
-			//error_log( 'MLAMappingHooksExample::mla_upload_prefilter_filter $raw_metadata = ' . var_export( self::$raw_metadata, true ), 0 );
-		} else {
-			self::$raw_metadata = array();
-		}
 
 		return $file;
 	} // mla_upload_prefilter_filter
@@ -189,13 +184,13 @@ class MLAMappingHooksExample {
 	 *
 	 * @return	void
 	 */
-	public static function mla_add_attachment_action( $post_ID ) {
-		//error_log( 'MLAMappingHooksExample::mla_add_attachment_action $post_ID = ' . var_export( $post_ID, true ), 0 );
+	public static function mla_add_attachment_action( $post_id ) {
+		//error_log( 'MLAMappingHooksExample::mla_add_attachment_action $post_id = ' . var_export( $post_id, true ), 0 );
 
 		/*
 		 * Save the information for use in the later filters
 		 */
-		self::$image_metadata['post_id'] = $post_ID;
+		self::$image_metadata['post_id'] = $post_id;
 	} // mla_add_attachment_action
 
 	/**
@@ -219,10 +214,10 @@ class MLAMappingHooksExample {
 	 *
 	 * @return	array	updated processing options
 	 */
-	public static function mla_update_attachment_metadata_options_filter( $options, $data, $post_ID ) {
+	public static function mla_update_attachment_metadata_options_filter( $options, $data, $post_id ) {
 		//error_log( 'MLAMappingHooksExample::mla_update_attachment_metadata_options_filter $options = ' . var_export( $options, true ), 0 );
 		//error_log( 'MLAMappingHooksExample::mla_update_attachment_metadata_options_filter $data = ' . var_export( $data, true ), 0 );
-		//error_log( 'MLAMappingHooksExample::mla_update_attachment_metadata_options_filter $post_ID = ' . var_export( $post_ID, true ), 0 );
+		//error_log( 'MLAMappingHooksExample::mla_update_attachment_metadata_options_filter $post_id = ' . var_export( $post_id, true ), 0 );
 
 		return $options;
 	} // mla_update_attachment_metadata_prefilter_filter
@@ -246,22 +241,10 @@ class MLAMappingHooksExample {
 	 *
 	 * @return	array	updated attachment metadata
 	 */
-	public static function mla_update_attachment_metadata_prefilter_filter( $data, $post_ID, $options ) {
+	public static function mla_update_attachment_metadata_prefilter_filter( $data, $post_id, $options ) {
 		//error_log( 'MLAMappingHooksExample::mla_update_attachment_metadata_prefilter_filter $data = ' . var_export( $data, true ), 0 );
-		//error_log( 'MLAMappingHooksExample::mla_update_attachment_metadata_prefilter_filter $post_ID = ' . var_export( $post_ID, true ), 0 );
+		//error_log( 'MLAMappingHooksExample::mla_update_attachment_metadata_prefilter_filter $post_id = ' . var_export( $post_id, true ), 0 );
 		//error_log( 'MLAMappingHooksExample::mla_update_attachment_metadata_prefilter_filter $options = ' . var_export( $options, true ), 0 );
-
-		/*
-		 * If the metadata has been stripped, try to replace it
-		 * NOTE: Uncomment/comment the "self::" and "$data = " lines to activate/deactivate
-		 */
-		if ( isset( $data['image_meta']['created_timestamp'] ) 
-			&& empty( $data['image_meta']['created_timestamp'] ) ) {
-				//self::_replace_jpeg_metadata( self::$image_metadata['postload_file']['file'], self::$raw_metadata );
-				//$data = wp_generate_attachment_metadata( $post_ID, self::$image_metadata['postload_file']['file'] );
-				//error_log( 'regenerated data = ' . var_export( $data, true ), 0 );
-
-		}
 
 		return $data;
 	} // mla_update_attachment_metadata_prefilter_filter
@@ -281,13 +264,34 @@ class MLAMappingHooksExample {
 	 *
 	 * @return	array	updated attachment metadata
 	 */
-	public static function mla_update_attachment_metadata_postfilter_filter( $data, $post_ID, $options ) {
+	public static function mla_update_attachment_metadata_postfilter_filter( $data, $post_id, $options ) {
 		//error_log( 'MLAMappingHooksExample::mla_update_attachment_metadata_postfilter_filter $data = ' . var_export( $data, true ), 0 );
-		//error_log( 'MLAMappingHooksExample::mla_update_attachment_metadata_postfilter_filter $post_ID = ' . var_export( $post_ID, true ), 0 );
+		//error_log( 'MLAMappingHooksExample::mla_update_attachment_metadata_postfilter_filter $post_id = ' . var_export( $post_id, true ), 0 );
 		//error_log( 'MLAMappingHooksExample::mla_update_attachment_metadata_postfilter_filter $options = ' . var_export( $options, true ), 0 );
 
 		return $data;
 	} // mla_update_attachment_metadata_postfilter_filter
+
+	/**
+	 * MLA Begin Mapping Action
+	 *
+	 * This action is called once, before any mapping rules are executed for any item(s).
+	 *
+	 * @since 1.01
+	 *
+	 * @param	string 	what kind of mapping action is starting:
+	 *					single_custom, single_iptc_exif, bulk_custom, bulk_iptc_exif,
+	 *					create_metadata, update_metadata, custom_fields, custom_rule,
+	 *					iptc_exif_standard, iptc_exif_taxonomy, iptc_exif_custom,
+	 *					iptc_exif_custom_rule
+	 * @param	mixed	Attachment ID or NULL, depending on scope
+	 *
+	 * @return	void	updated mapping rules
+	 */
+	public static function mla_begin_mapping_action( $source, $post_id = NULL ) {
+		//error_log( 'MLAMappingHooksExample::mla_begin_mapping_action $source = ' . var_export( $source, true ), 0 );
+		//error_log( 'MLAMappingHooksExample::mla_begin_mapping_action $post_id = ' . var_export( $post_id, true ), 0 );
+	} // mla_begin_mapping_action
 
 	/**
 	 * MLA Mapping Settings Filter
@@ -304,9 +308,9 @@ class MLAMappingHooksExample {
 	 *
 	 * @return	array	updated mapping rules
 	 */
-	public static function mla_mapping_settings_filter( $settings, $post_ID, $category, $attachment_metadata ) {
+	public static function mla_mapping_settings_filter( $settings, $post_id, $category, $attachment_metadata ) {
 		//error_log( 'MLAMappingHooksExample::mla_mapping_settings_filter $settings = ' . var_export( $settings, true ), 0 );
-		//error_log( 'MLAMappingHooksExample::mla_mapping_settings_filter $post_ID = ' . var_export( $post_ID, true ), 0 );
+		//error_log( 'MLAMappingHooksExample::mla_mapping_settings_filter $post_id = ' . var_export( $post_id, true ), 0 );
 		//error_log( 'MLAMappingHooksExample::mla_mapping_settings_filter $category = ' . var_export( $category, true ), 0 );
 		//error_log( 'MLAMappingHooksExample::mla_mapping_settings_filter $attachment_metadata = ' . var_export( $attachment_metadata, true ), 0 );
 
@@ -386,9 +390,9 @@ class MLAMappingHooksExample {
 	 *
 	 * @return	array	updated custom_field_mapping rule
 	 */
-	public static function mla_mapping_rule_filter( $setting_value, $post_ID, $category, $attachment_metadata ) {
+	public static function mla_mapping_rule_filter( $setting_value, $post_id, $category, $attachment_metadata ) {
 		//error_log( 'MLAMappingHooksExample::mla_mapping_rule_filter $setting_value = ' . var_export( $setting_value, true ), 0 );
-		//error_log( 'MLAMappingHooksExample::mla_mapping_rule_filter $post_ID = ' . var_export( $post_ID, true ), 0 );
+		//error_log( 'MLAMappingHooksExample::mla_mapping_rule_filter $post_id = ' . var_export( $post_id, true ), 0 );
 		//error_log( 'MLAMappingHooksExample::mla_mapping_rule_filter $category = ' . var_export( $category, true ), 0 );
 		//error_log( 'MLAMappingHooksExample::mla_mapping_rule_filter $attachment_metadata = ' . var_export( $attachment_metadata, true ), 0 );
 
@@ -418,7 +422,7 @@ class MLAMappingHooksExample {
 	public static function mla_mapping_custom_value_filter( $new_text, $setting_value, $post_id, $category, $attachment_metadata ) {
 		//error_log( 'MLAMappingHooksExample::mla_mapping_custom_value_filter $new_text = ' . var_export( $new_text, true ), 0 );
 		//error_log( 'MLAMappingHooksExample::mla_mapping_custom_value_filter $setting_value = ' . var_export( $setting_value, true ), 0 );
-		//error_log( 'MLAMappingHooksExample::mla_mapping_custom_value_filter $post_ID = ' . var_export( $post_ID, true ), 0 );
+		//error_log( 'MLAMappingHooksExample::mla_mapping_custom_value_filter $post_id = ' . var_export( $post_id, true ), 0 );
 		//error_log( 'MLAMappingHooksExample::mla_mapping_custom_value_filter $category = ' . var_export( $category, true ), 0 );
 		//error_log( 'MLAMappingHooksExample::mla_mapping_custom_value_filter $attachment_metadata = ' . var_export( $attachment_metadata, true ), 0 );
 
@@ -459,7 +463,7 @@ class MLAMappingHooksExample {
 	public static function mla_mapping_iptc_value_filter( $iptc_value, $setting_value, $post_id, $category, $attachment_metadata ) {
 		//error_log( 'MLAMappingHooksExample::mla_mapping_iptc_value_filter $iptc_value = ' . var_export( $iptc_value, true ), 0 );
 		//error_log( 'MLAMappingHooksExample::mla_mapping_iptc_value_filter $setting_value = ' . var_export( $setting_value, true ), 0 );
-		//error_log( 'MLAMappingHooksExample::mla_mapping_iptc_value_filter $post_ID = ' . var_export( $post_ID, true ), 0 );
+		//error_log( 'MLAMappingHooksExample::mla_mapping_iptc_value_filter $post_id = ' . var_export( $post_id, true ), 0 );
 		//error_log( 'MLAMappingHooksExample::mla_mapping_iptc_value_filter $category = ' . var_export( $category, true ), 0 );
 		//error_log( 'MLAMappingHooksExample::mla_mapping_iptc_value_filter $attachment_metadata = ' . var_export( $attachment_metadata, true ), 0 );
 
@@ -501,7 +505,7 @@ class MLAMappingHooksExample {
 	public static function mla_mapping_exif_value_filter( $exif_value, $setting_value, $post_id, $category, $attachment_metadata ) {
 		//error_log( 'MLAMappingHooksExample::mla_mapping_exif_value_filter $exif_value = ' . var_export( $exif_value, true ), 0 );
 		//error_log( 'MLAMappingHooksExample::mla_mapping_exif_value_filter $setting_value = ' . var_export( $setting_value, true ), 0 );
-		//error_log( 'MLAMappingHooksExample::mla_mapping_exif_value_filter $post_ID = ' . var_export( $post_ID, true ), 0 );
+		//error_log( 'MLAMappingHooksExample::mla_mapping_exif_value_filter $post_id = ' . var_export( $post_id, true ), 0 );
 		//error_log( 'MLAMappingHooksExample::mla_mapping_exif_value_filter $category = ' . var_export( $category, true ), 0 );
 		//error_log( 'MLAMappingHooksExample::mla_mapping_exif_value_filter $attachment_metadata = ' . var_export( $attachment_metadata, true ), 0 );
 
@@ -541,12 +545,69 @@ class MLAMappingHooksExample {
 	 *
 	 * @return	array	updated attachment's updates
 	 */
-	public static function mla_mapping_updates_filter( $updates, $post_ID, $category, $settings, $attachment_metadata ) {
+	public static function mla_mapping_updates_filter( $updates, $post_id, $category, $settings, $attachment_metadata ) {
 		//error_log( 'MLAMappingHooksExample::mla_mapping_updates_filter $updates = ' . var_export( $updates, true ), 0 );
-		//error_log( 'MLAMappingHooksExample::mla_mapping_updates_filter $post_ID = ' . var_export( $post_ID, true ), 0 );
+		//error_log( 'MLAMappingHooksExample::mla_mapping_updates_filter $post_id = ' . var_export( $post_id, true ), 0 );
 		//error_log( 'MLAMappingHooksExample::mla_mapping_updates_filter $category = ' . var_export( $category, true ), 0 );
 		//error_log( 'MLAMappingHooksExample::mla_mapping_updates_filter $settings = ' . var_export( $settings, true ), 0 );
 		//error_log( 'MLAMappingHooksExample::mla_mapping_updates_filter $attachment_metadata = ' . var_export( $attachment_metadata, true ), 0 );
+
+		/*
+		 * Look for the "file export" rule; call the export function if there's a match.
+		 * Remove the space between "*" and "/" in the next line to activate this code.
+		 */
+		foreach ($settings as $key => $setting ) {
+			if ( 'export' == sanitize_title( $key ) && 'none' == $setting['data_source'] && false !== strpos( $setting['meta_name'], '.xml' ) ) {
+				self::_export_this_item( $post_id, $setting['meta_name'] );
+			}
+		} // */
+
+		/*
+		 * To stop this rule's updates, return an empty array, i.e., return array();
+		 */
+		return $updates;
+
+		/*
+		 * Comment out the above return statement to fall through to this example,
+		 * which spruces up the post Title and copies the Title to the ALT Text.
+		 */
+
+		/*
+		 * If $updates[ 'post_title' ] is set, some mapping rule
+		 * has been set up, so we respect the result. If not,
+		 * use whatever the current Title value is.
+		 */
+		if ( isset( $updates[ 'post_title' ] ) ) {
+			$old_value = $updates[ 'post_title' ];
+		} else {
+			$post = get_post( $post_id );
+			$old_value = $post->post_title;
+		}
+
+		/*
+		 * Clean up the Title value. If the cleanup has changed the value,
+		 * put the new value in the $updates array.
+		 */
+		$new_title = str_replace( array( '-', '_', '.' ), ' ', $old_value );
+		if ( $old_value != $new_title ) {
+			$updates[ 'post_title' ] = $new_title;
+		}
+
+		// Only replace ALT Text if Image Metadata is present
+		$old_value = get_metadata( 'post', $post_id, '_wp_attachment_metadata', true );
+		if ( ! empty( $old_value ) ) {
+			// Find the current ALT Text value
+			if ( isset( $updates[ 'image_alt' ] ) ) {
+				$old_value = $updates[ 'image_alt' ];
+			} else {
+				$old_value = get_metadata( 'post', $post_id, '_wp_attachment_image_alt', true );
+			}
+
+			// Replace the ALT Text value with the clean Title
+			if ( $old_value != $new_title ) {
+				$updates[ 'image_alt' ] = $new_title;
+			}
+		}
 
 		/*
 		 * To stop this rule's updates, return an empty array, i.e., return array();
@@ -555,19 +616,132 @@ class MLAMappingHooksExample {
 	} // mla_mapping_updates_filter
 
 	/**
-	 * MLA Mapping Updates Filter
+	 * Share the file handle between _export_this_item and mla_end_mapping_action
 	 *
-	 * This filter is called AFTER all mapping rules are applied.
-	 * You can add, change or remove updates for the attachment's
-	 * standard fields, taxonomies and/or custom fields.
+	 * @since 1.01
 	 *
-	 * @since 1.02
+	 * @var	integer	Export file handle
+	 */
+	private static $file_handle = NULL;
+
+	/**
+	 * Export data for one or more items to an XML file
+	 *
+	 * This function is called from the mla_mapping_updates_filter(),
+	 * just above, when the "export" rule is defined. It writes information
+	 * about the item and its tags to an XML file.
+	 *
+	 * @since 1.01
+	 *
+	 * @param	integer	The ID value of the current item/attachment
+	 * @param	string	The name of the output file, e.g., "data.xml"
+	 *
+	 * @return	void
+	 */
+	private static function _export_this_item( $post_id, $file ) {
+		static $filename = NULL;
+
+		// create/open the file on first call
+		if ( NULL == $filename ) {
+			$filename = MLA_BACKUP_DIR . $file;
+
+			// Make sure the directory exists and is writable
+			if ( ! file_exists( MLA_BACKUP_DIR ) && ! @mkdir( MLA_BACKUP_DIR ) ) {
+				return; // Does not exist and cannot create it
+			} elseif ( ! is_writable( MLA_BACKUP_DIR ) && ! @chmod( MLA_BACKUP_DIR , '0777') ) {
+				return; // Is not writable and cannot make it so
+			}
+
+			// Every directory should have an empty index.php file for security
+			if ( ! file_exists( MLA_BACKUP_DIR . 'index.php') ) {
+				@touch( MLA_BACKUP_DIR . 'index.php');
+			}
+
+			// Open the file for write access	
+			self::$file_handle = @fopen( $filename, 'w' );
+			if ( ! self::$file_handle ) {
+				self::$file_handle = NULL;
+				return; // Cannot open a writable file
+			}
+
+			// Write the file header
+			if ( false === @fwrite( self::$file_handle, "<items>\n" ) ) {
+				@fclose( self::$file_handle );
+				self::$file_handle = NULL;
+				return;
+			}
+		} // First call
+
+		if ( NULL == self::$file_handle ) {
+			return; // Don't have a writable file
+		}
+
+		/*
+		 * Get the post information and assigned terms. You can use any taxonomy (slug) you want:
+		 * Categories -> category					Tags -> post_tag
+		 * Att. Categories -> attachment_category	Att. Tags -> attachment_tag
+		 */
+		$post = get_post( $post_id );
+		$terms = wp_get_post_terms( $post_id, 'post_tag' );
+
+		// Compose the item, line by line
+		$item = array();
+		$item[] = "\t<item>";
+		$item[] = "\t\t<id>" . absint( $post_id ) . '</id>';
+		$item[] = "\t\t<title>" . $post->post_title . '</title>';
+		$item[] = "\t\t<url>" . get_attachment_link( $post_id ) . '</url>';
+		//$item[] = "\t\t<file>" . wp_get_attachment_url( $post_id ) . '</file>';
+		$item[] = "\t\t<post_date>" . $post->post_date . '</post_date>';
+
+		foreach( $terms as $term ) {
+			$item[] = "\t\t<tag>" . $term->name . '</tag>';
+		}
+
+		$item[] = "\t</item>";
+
+		// Write the item to the file
+		$item = implode( "\n", $item );
+		if ( false === @fwrite( self::$file_handle, $item ) ) {
+			@fclose( self::$file_handle );
+			self::$file_handle = NULL;
+			return;
+		}
+	} // _export_this_item
+
+	/**
+	 * MLA End Mapping Action
+	 *
+	 * This action is called once, after all mapping rules are executed for all item(s).
+	 *
+	 * @since 1.01
+	 *
+	 * @return	void
+	 */
+	public static function mla_end_mapping_action() {
+		//error_log( 'MLAMappingHooksExample::mla_end_mapping_action', 0 );
+
+		// If the Export file is open, write the trailer and close it
+		if ( NULL !== self::$file_handle ) {
+			@fwrite( self::$file_handle, "</items>\n" );
+			@fclose( self::$file_handle );
+			self::$file_handle = NULL;
+			//error_log( 'MLAMappingHooksExample::mla_end_mapping_action Export file closed', 0 );
+		}
+	} // mla_end_mapping_action
+
+	/**
+	 * MLA Settings Tab List Filter
+	 *
+	 * This filter is before the Settings/Media Library Assistant screen is displayed.
+	 * You can remove one or more tabs from the default list to prevent their display and use.
+	 *
+	 * @since 1.00
 	 *
 	 * @param	array|false	The entire tablist ( $tab = NULL ), a single tab entry or false if not found/not allowed.
 	 * @param	array		The entire tablist
 	 * @param	string|NULL	tab slug for single-element return or NULL to return entire tablist
 	 *
-	 * @return	array	updated attachment's updates
+	 * @return	array	updated tablist
 	 */
 	public static function mla_get_options_tablist_filter( $results, $mla_tablist, $tab ) {
 		//error_log( 'MLAMappingHooksExample::mla_get_options_tablist_filter $results = ' . var_export( $results, true ), 0 );
@@ -580,274 +754,14 @@ class MLAMappingHooksExample {
 		return $results;
 
 		/*
-		 * Comment out the above return statement to fall through to this example,
-		 * which removes the "Uploads" tab from the Settings/Media Library Assistant submenu
+		 * Comment out the above return statement to fall through to the example, which removes the "Uploads" tab.
 		 */
 		if ( NULL == $tab ) {
 			unset( $results['upload'] );
-		} elseif ( 'upload' == $tab ) {
-			$results = false;
 		}
 
 		return $results;
 	} // mla_get_options_tablist_filter
-
-	/*
-	 * Selected JPEG Section Markers
-	 */
-	const SOF0	= 0xC0; // Baseline Encoding
-	const SOI	= 0xD8; // Start of image
-	const EOI	= 0xD9; // End of image
-	const SOS	= 0xDA; // Start of scan (image data)
-	const APP0	= 0xE0; // Application segment 0 JFIF Header
-	const APP1	= 0xE1; // Application segment 1 EXIF/XMP
-	const APP2	= 0xE2; // Application segment 2 EXIF Flashpix extensions
-	const APP13	= 0xED; // Application segment 13 IPTC
-	const COM	= 0xFE; // Comment
-
-	/**
-	 * Enumerate the sections of a JPEG file
- 	 *
-	 * Returns an array of section descriptors, indexed by the section order, i.e., 0, 1, 2 ...
-	 *
-	 * Each array element is an array, containing:
-	 *		marker => section marker, e.g., 0xD8, 0xE0, 0xED
-	 *		offset => offset in the file of the "0xFF" marker introducing the section
-	 *		length => number of bytes in the section, including the "0xFF", marker byte and length field (if applicable)
-	 *
-	 * @since 1.01
-	 *
-	 * @param	string	File Contents
-	 *
-	 * @return	array	section list ( index => array( 'marker', 'offset', 'length' )
-	 */
-	private static function _enumerate_jpeg_sections( &$file_contents ) {
-		$file_length = strlen( $file_contents );
-		$file_offset = 0;
-		$section_array = array();
-
-		while ( $file_offset < $file_length ) {
-			$section_value = array();
-
-			// Find a marker
-			for ( $i = 0; $i < 7; $i++ ) {
-				if ( 0xFF != ord( $file_contents[ $file_offset + $i ] ) ) {
-					break;
-				}
-			}
-
-			$section_value['marker'] = $marker = ord( $file_contents[ $file_offset + $i ] );
-
-			if ( $marker >= self::SOF0 && $marker <= self::COM ) {
-				$section_value['offset'] = $file_offset + ( $i - 1);
-
-				if ( ( self::SOI == $marker ) || ( self::EOI == $marker ) ) {
-					$file_offset = $file_offset + ( $i + 1 );
-				} elseif ( self::SOS == $marker ) {
-					// Start of Scan precedes image data; skip to end of file/image
-					$file_offset = $file_length - 2;
-
-					// Scan backwards for End of Image marker
-					while ( ( 0xFF != ord( $file_contents[ $file_offset ] ) ) || ( self::EOI != ord( $file_contents[ $file_offset + 1 ] ) ) ) {
-						$file_offset--;
-						if ( $file_offset == $start_of_image ) {
-							// Give up - no End of Image marker
-							$file_offset = $file_length;
-							break;
-						}
-					}
-				} else {
-					// Big Endian length
-					$length = 256 * ord( $file_contents[ $file_offset + ++$i ] );
-					$length += ord( $file_contents[ $file_offset + ++$i ] );
-					$file_offset = $section_value['offset'] + 2 + $length;
-				}
-			}
-			else {
-				// No marker or invalid marker
-				if ( 0 < $i ) {
-					$section_value['offset'] = $file_offset + ( $i - 1 );
-				} else {
-					$section_value['offset'] = $file_offset + $i;
-				}
-				$file_offset = $file_offset + ( $i + 1 );
-
-				while ( $file_offset < $file_length ) {
-					if ( 0xFF == ord( $file_contents[ $file_offset ] ) ) {
-						break;
-					} else {
-						$file_offset++;
-					}
-				}
-			} // invalid marker
-
-			$section_value['length'] = $file_offset - $section_value['offset'];
-			$section_array[] = $section_value;
-			//error_log( 'MLAMappingHooksExample::_enumerate_jpeg_sections $section_value = ' . var_export( $section_value, true ), 0 );
-		} // while offset < length
-
-		return $section_array;
-	} // _enumerate_jpeg_sections
-
-	/**
-	 * Extract IPTC, EXIF/XMP and Comment data from a JPEG file
- 	 *
-	 * Returns an array of section content, indexed by the section order
-	 *
-	 * Each array element is an array, containing:
-	 *		marker => section marker, e.g., 0xD8, 0xE0, 0xED
-	 *		content => data bytes in the section
-	 *
-	 * @since 1.01
-	 *
-	 * @param	string	Absolute path to the file
-	 *
-	 * @return	array	section list ( index => array( 'marker', 'content' )
-	 */
-	private static function _extract_jpeg_metadata( $path ) {
-		$metadata = array();
-		$file_contents = file_get_contents( $path, true );
-		 if ( $file_contents ) {
-			 $sections = self::_enumerate_jpeg_sections( $file_contents );
-			 foreach( $sections as $section ) {
-				 if ( in_array( $section['marker'], array( self::APP1, self::APP2, self::APP13, self::COM ) ) ) {
-					$metadata[] = array( 'marker' => $section['marker'],
-					 	'content' => substr( $file_contents, $section['offset'], $section['length'] )
-					);
-				 } // found metadata
-			 } // foreach section
-		 }
-		 
-		return $metadata;
-	} // _extract_jpeg_metadata
-
-	/**
-	 * Add/replace IPTC, EXIF/XMP and Comment data in a JPEG file
- 	 *
-	 * @since 1.01
-	 *
-	 * @param	string	Absolute path to the destination file
-	 * @param	array	Metadata sections from _extract_jpeg_metadata
-	 *
-	 * @return	void
-	 */
-	private static function _replace_jpeg_metadata( $path, $metadata ) {
-		//error_log( 'MLAMappingHooksExample::_replace_jpeg_metadata $path = ' . var_export( $path, true ), 0 );
-		//error_log( 'MLAMappingHooksExample::_replace_jpeg_metadata $marker = ' . var_export( $metadata[0]['marker'], true ), 0 );
-
-		$pathinfo = pathinfo( $path );
-		$temp_path = $pathinfo['dirname'] . '/' . $pathinfo['filename'] . '-MLA' . $pathinfo['extension'];
-		//error_log( 'MLAMappingHooksExample::_replace_jpeg_metadata $temp_path = ' . var_export( $temp_path, true ), 0 );
-
-		/*
-		 * Default to the old COM section if the destination file lacks one
-		 */
-		$COM_section = NULL;
-		foreach ( $metadata as $section ) {
-			if ( self::COM == $section['marker'] ) {
-				$COM_section = $section['content'];
-			}
-		}
-
-		/*
-		 * Strip the destination "APP1, APP2, APP13" sections.
-		 * Separate out the SOI, APP0 and COM sections.
-		 */
-		$SOI_section = NULL;
-		$APP0_section = NULL;
-		$destination_sections = array ();
-		$file_contents = file_get_contents( $path, true );
-		 if ( $file_contents ) {
-			 $destination_sections = self::_enumerate_jpeg_sections( $file_contents );
-			foreach ( $destination_sections as $index => $value ) {
-				if ( self::SOI == $value['marker'] ) {
-					$SOI_section = substr( $file_contents, $value['offset'], $value['length'] );
-					unset( $destination_sections[ $index ] );
-				} elseif  ( self::APP0 == $value['marker'] ) {
-					$APP0_section = substr( $file_contents, $value['offset'], $value['length'] );
-					unset( $destination_sections[ $index ] );
-				} elseif  ( self::COM == $value['marker'] ) {
-					$COM_section = substr( $file_contents, $value['offset'], $value['length'] );
-					unset( $destination_sections[ $index ] );
-				} elseif ( ( self::APP1 == $value['marker'] ) || ( self::APP2 == $value['marker'] ) || ( self::APP13 == $value['marker'] ) ) {
-					unset( $destination_sections[ $index ] );
-				}
-			}
-			//error_log( 'MLAMappingHooksExample::_replace_jpeg_metadata $SOI_section = ' . var_export( $SOI_section, true ), 0 );
-			//error_log( 'MLAMappingHooksExample::_replace_jpeg_metadata $APP0_section = ' . var_export( $APP0_section, true ), 0 );
-			//error_log( 'MLAMappingHooksExample::_replace_jpeg_metadata $COM_section = ' . var_export( $COM_section, true ), 0 );
-			//error_log( 'MLAMappingHooksExample::_replace_jpeg_metadata $destination_sections = ' . var_export( $destination_sections, true ), 0 );
-
-			if ( ( NULL == $SOI_section ) || ( NULL == $APP0_section ) ) {
-				return;
-			}
-
-			@unlink( $temp_path );
-			$temp_handle = @fopen( $temp_path, 'wb' );
-			if ( false === $temp_handle ) {
-				//error_log( 'MLAMappingHooksExample::_replace_jpeg_metadata fopen error = ' . var_export( error_get_last(), true ), 0 );
-				return;
-			}
-
-			if ( false === @fwrite( $temp_handle, $SOI_section ) ) {
-				//error_log( 'MLAMappingHooksExample::_replace_jpeg_metadata fwrite SOI error = ' . var_export( error_get_last(), true ), 0 );
-				@fclose( $temp_handle );
-				@unlink( $temp_path );
-				return;
-			}
-
-			if ( false === @fwrite( $temp_handle, $APP0_section ) ) {
-				//error_log( 'MLAMappingHooksExample::_replace_jpeg_metadata fwrite APP0 error = ' . var_export( error_get_last(), true ), 0 );
-				@fclose( $temp_handle );
-				@unlink( $temp_path );
-				return;
-			}
-
-			if ( ! empty( $COM_section ) ) {
-				if ( false === @fwrite( $temp_handle, $COM_section ) ) {
-					//error_log( 'MLAMappingHooksExample::_replace_jpeg_metadata fwrite COM error = ' . var_export( error_get_last(), true ), 0 );
-					@fclose( $temp_handle );
-					@unlink( $temp_path );
-					return;
-				}
-			}
-
-			foreach ( $metadata as $section ) {
-				if ( false === @fwrite( $temp_handle, $section['content'] ) ) {
-					//error_log( 'MLAMappingHooksExample::_replace_jpeg_metadata fwrite metadata marker = ' . var_export( $section['marker'], true ), 0 );
-					//error_log( 'MLAMappingHooksExample::_replace_jpeg_metadata fwrite metadata error = ' . var_export( error_get_last(), true ), 0 );
-					@fclose( $temp_handle );
-					@unlink( $temp_path );
-					return;
-				}
-			}
-
-			foreach ( $destination_sections as $section ) {
-				if ( false === @fwrite( $temp_handle, substr( $file_contents, $section['offset'], $section['length'] ) ) ) {
-					//error_log( 'MLAMappingHooksExample::_replace_jpeg_metadata fwrite destination_sections marker = ' . var_export( $section['marker'], true ), 0 );
-					//error_log( 'MLAMappingHooksExample::_replace_jpeg_metadata fwrite destination_sections error = ' . var_export( error_get_last(), true ), 0 );
-					@fclose( $temp_handle );
-					@unlink( $temp_path );
-					return;
-				}
-			}
-
-			if ( false === @fclose( $temp_handle ) ) {
-				error_log( 'ERROR: MLAMappingHooksExample::_replace_jpeg_metadata fclose = ' . var_export( error_get_last(), true ), 0 );
-				return;
-			}
-
-			if ( false === @unlink( $path ) ) {
-				error_log( 'ERROR: MLAMappingHooksExample::_replace_jpeg_metadata unlink = ' . var_export( error_get_last(), true ), 0 );
-				return;
-			}
-
-			if ( false === @rename( $temp_path, $path ) ) {
-				error_log( 'ERROR: MLAMappingHooksExample::_replace_jpeg_metadata rename = ' . var_export( error_get_last(), true ), 0 );
-				return;
-			}
-		 } // if $file_contents
-	} // _replace_jpeg_metadata
 } //MLAMappingHooksExample
 
 /*

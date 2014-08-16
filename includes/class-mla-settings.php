@@ -51,6 +51,10 @@ class MLASettings {
 
 	/**
 	 * Provides a unique name for the settings page
+	 *
+	 * @since 0.1
+	 *
+	 * @var	string
 	 */
 	const MLA_SETTINGS_SLUG = 'mla-settings-menu';
 
@@ -2934,6 +2938,7 @@ class MLASettings {
 		global $wpdb;
 
 		if ( NULL == $settings ) {
+			$source = 'custom_fields';
 			$settings = ( isset( $_REQUEST['custom_field_mapping'] ) ) ? $_REQUEST['custom_field_mapping'] : array();
 			if ( isset( $settings[ MLAOptions::MLA_NEW_CUSTOM_FIELD ] ) ) {
 				unset( $settings[ MLAOptions::MLA_NEW_CUSTOM_FIELD ] );
@@ -2941,6 +2946,8 @@ class MLASettings {
 			if ( isset( $settings[ MLAOptions::MLA_NEW_CUSTOM_RULE ] ) ) {
 				unset( $settings[ MLAOptions::MLA_NEW_CUSTOM_RULE ] );
 			}
+		} else {
+			$source = 'custom_rule';
 		}
 
 		if ( empty( $settings ) ) {
@@ -2954,6 +2961,7 @@ class MLASettings {
 		$update_count = 0;
 		$post_ids = $wpdb->get_col( "SELECT ID FROM {$wpdb->posts} WHERE `post_type` = 'attachment'" );
 
+		do_action( 'mla_begin_mapping', $source, NULL );
 		foreach ( $post_ids as $key => $post_id ) {
 			$updates = MLAOptions::mla_evaluate_custom_field_mapping( (integer) $post_id, 'custom_field_mapping', $settings );
 
@@ -2965,6 +2973,7 @@ class MLASettings {
 				}
 			}
 		} // foreach post
+		do_action( 'mla_end_mapping' );
 
 		if ( $update_count ) {
 			/* translators: 1: field type 2: examined count 3: updated count */
@@ -3079,6 +3088,7 @@ class MLASettings {
 			);
 		}
 
+		do_action( 'mla_begin_mapping', 'iptc_exif_standard', NULL );
 		foreach ( $posts as $key => $post ) {
 			$updates = MLAOptions::mla_evaluate_iptc_exif_mapping( $post, 'iptc_exif_standard_mapping', $_REQUEST['iptc_exif_mapping'] );
 
@@ -3090,6 +3100,7 @@ class MLASettings {
 				}
 			}
 		} // foreach post
+		do_action( 'mla_end_mapping' );
 
 		if ( $update_count ) {
 			/* translators: 1: field type 2: examined count 3: updated count */
@@ -3137,6 +3148,7 @@ class MLASettings {
 			);
 		}
 
+		do_action( 'mla_begin_mapping', 'iptc_exif_taxonomy', NULL );
 		foreach ( $posts as $key => $post ) {
 			$updates = MLAOptions::mla_evaluate_iptc_exif_mapping( $post, 'iptc_exif_taxonomy_mapping', $_REQUEST['iptc_exif_mapping'] );
 
@@ -3148,6 +3160,7 @@ class MLASettings {
 				}
 			}
 		} // foreach post
+		do_action( 'mla_end_mapping' );
 
 		if ( $update_count ) {
 			/* translators: 1: field type 2: examined count 3: updated count */
@@ -3177,6 +3190,7 @@ class MLASettings {
 	 */
 	private static function _process_iptc_exif_custom( $settings = NULL ) {
 		if ( NULL == $settings ) {
+			$source = 'iptc_exif_custom';
 			$settings = ( isset( $_REQUEST['iptc_exif_mapping'] ) ) ? $_REQUEST['iptc_exif_mapping'] : array();
 			if ( isset( $settings['custom'][ MLAOptions::MLA_NEW_CUSTOM_FIELD ] ) ) {
 				unset( $settings['custom'][ MLAOptions::MLA_NEW_CUSTOM_FIELD ] );
@@ -3184,8 +3198,10 @@ class MLASettings {
 			if ( isset( $settings['custom'][ MLAOptions::MLA_NEW_CUSTOM_RULE ] ) ) {
 				unset( $settings['custom'][ MLAOptions::MLA_NEW_CUSTOM_RULE ] );
 			}
+		} else {
+			$source = 'iptc_exif_custom_rule';
 		}
-
+		
 		if ( empty( $settings['custom'] ) ) {
 			return array(
 				/* translators: 1: field type */
@@ -3207,6 +3223,7 @@ class MLASettings {
 			);
 		}
 
+		do_action( 'mla_begin_mapping', $source, NULL );
 		foreach ( $posts as $key => $post ) {
 			$updates = MLAOptions::mla_evaluate_iptc_exif_mapping( $post, 'iptc_exif_custom_mapping', $settings );
 
@@ -3218,6 +3235,7 @@ class MLASettings {
 				}
 			}
 		} // foreach post
+		do_action( 'mla_end_mapping' );
 
 		if ( $update_count ) {
 			/* translators: 1: field type 2: examined count 3: updated count */
@@ -3522,14 +3540,14 @@ class MLASettings {
 			@ touch( MLA_BACKUP_DIR . 'index.php');
 		}
 
-		$file_pointer = @fopen( $filename, 'w' );
-		if ( ! $file_pointer ) {
+		$file_handle = @fopen( $filename, 'w' );
+		if ( ! $file_handle ) {
 			/* translators: 1: backup file name */
 			$page_content['message'] = sprintf( __( 'ERROR: The settings file ( %1$s ) could not be opened.', 'media-library-assistant' ), $filename );
 			return $page_content;
 			}
 
-		if (false === @fwrite($file_pointer, $settings)) {
+		if (false === @fwrite($file_handle, $settings)) {
 			$error_info = error_get_last();
 			/* translators: 1: PHP error information */
 			error_log( sprintf( _x( 'ERROR: _export_settings $error_info = "%1$s".', 'error_log', 'media-library-assistant' ), var_export( $error_info, true ) ), 0 );
@@ -3544,7 +3562,7 @@ class MLASettings {
 			$page_content['message'] = sprintf( __( 'ERROR: Writing the settings file ( %1$s ) "%2$s".', 'media-library-assistant' ), $filename, $php_errormsg );
 		}
 
-		fclose($file_pointer);
+		fclose($file_handle);
 
 		/* translators: 1: number of option settings */
 		$page_content['message'] = sprintf( __( 'Settings exported; %1$s settings recorded.', 'media-library-assistant' ), $stored_count );

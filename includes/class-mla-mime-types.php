@@ -1786,6 +1786,12 @@ class MLAMime {
 			$mla_mime_types = preg_split('/[\r\n]+/', $template_array['mla-mime-types'] );
 			foreach ( $mla_mime_types as $mla_type ) {
 				$array = explode(',', $mla_type );
+
+				/* Anthony Martin debug * /
+				if ( 4 > count( $array ) ) {
+					trigger_error( sprintf( 'mla-default-mime-types.tpl $array = "%1$s".', var_export( $array, true ) ), E_USER_WARNING );
+				} // */
+
 				$key = strtolower( $array[0] );
 				self::$mla_upload_mime_descriptions[ $key ] = $array[4];
 				self::$mla_upload_mime_templates[ $key ] = array(

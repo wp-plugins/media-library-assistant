@@ -38,6 +38,7 @@ if ( $post_id ) {
 	$query = new WP_Query( array( 'p' => $post_id, 'post_type' => 'attachment', 'post_status' => 'inherit', 'orderby' => 'none', 'update_post_term_cache' => false ) );
 } else {
 	echo '<h1>ERROR: No Post ID</h1>';
+	the_content( __( 'Continue reading <span class="meta-nav">&rarr;</span>', 'twentytwelve' ) );
 	return;
 }
 
@@ -46,6 +47,7 @@ if ( $query->have_posts() ) {
 	$query->the_post(); // simulate "the loop"
 } else {
 	echo '<h1>ERROR: No Attachment Object</h1>';
+	the_content( __( 'Continue reading <span class="meta-nav">&rarr;</span>', 'twentytwelve' ) );
 	return;
 }
 ?>

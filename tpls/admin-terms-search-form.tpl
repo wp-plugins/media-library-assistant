@@ -34,7 +34,7 @@
 				<div id="mla-terms-search-radio-phrases-div">
 					<ul class="mla-terms-search-options">
 						<li>
-							<input name="mla_terms_search[radio_phrases]" id="mla-terms-search-radio-phrases-and" type="radio"value="AND" [+phrases_and_checked+] />
+							<input name="mla_terms_search[radio_phrases]" id="mla-terms-search-radio-phrases-and" type="radio" value="AND" [+phrases_and_checked+] />
 							[+All phrases+]
 						</li>
 						<li>
@@ -46,7 +46,7 @@
 				<div id="mla-terms-search-radio-terms-div">
 					<ul class="mla-terms-search-options">
 						<li>
-							<input name="mla_terms_search[radio_terms]" id="mla-terms-search-radio-terms-and" type="radio"value="AND" [+terms_and_checked+] />
+							<input name="mla_terms_search[radio_terms]" id="mla-terms-search-radio-terms-and" type="radio" value="AND" [+terms_and_checked+] />
 							[+All terms+]
 						</li>
 						<li>

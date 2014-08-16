@@ -2069,14 +2069,14 @@ class MLAShortcodes {
 			$posts_per_page = absint( get_option('posts_per_page') );
 		}
 
-			if ( 0 < $posts_per_page ) {
-				$max_page = floor( $found_rows / $posts_per_page );
-				if ( $max_page < ( $found_rows / $posts_per_page ) ) {
-					$max_page++;
-				}
-			} else {
-				$max_page = 1;
+		if ( 0 < $posts_per_page ) {
+			$max_page = floor( $found_rows / $posts_per_page );
+			if ( $max_page < ( $found_rows / $posts_per_page ) ) {
+				$max_page++;
 			}
+		} else {
+			$max_page = 1;
+		}
 
 		if ( isset( $arguments['mla_paginate_total'] )  && $max_page > absint( $arguments['mla_paginate_total'] ) ) {
 			$max_page = absint( $arguments['mla_paginate_total'] );
@@ -2872,8 +2872,10 @@ class MLAShortcodes {
 			$incposts = wp_parse_id_list( $query_arguments['include'] );
 			$query_arguments['posts_per_page'] = count($incposts);  // only the number of posts included
 			$query_arguments['post__in'] = $incposts;
+			unset( $query_arguments['include'] );
 		} elseif ( ! empty($query_arguments['exclude']) ) {
 			$query_arguments['post__not_in'] = wp_parse_id_list( $query_arguments['exclude'] );
+			unset( $query_arguments['exclude'] );
 		}
 
 		$query_arguments['ignore_sticky_posts'] = true;
@@ -3464,7 +3466,7 @@ class MLAShortcodes {
 			self::$mla_debug_messages .= '<p><strong>' . __( 'mla_debug found_rows', 'media-library-assistant' ) . '</strong> = ' . var_export( $found_rows, true ) . '</p>';
 		}
 
-		if ( $arguments['pad_counts'] ) {
+		if ( 'true' == strtolower( trim( $arguments['pad_counts'] ) ) ) {
 			self::_pad_term_counts( $tags, reset( $taxonomies ), $post_types, $post_stati );
 		}
 

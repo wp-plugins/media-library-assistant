@@ -5,7 +5,7 @@
  * @package Media Library Assistant
  * @since 1.20
  */
-
+ 
 /**
  * Class MLA (Media Library Assistant) Modal contains enhancements for the WordPress 3.5+ Media Manager
  *
@@ -97,7 +97,19 @@ class MLAModal {
 		 *
  		 * Finally wp_enqueue_media() contains:
 		 * do_action( 'wp_enqueue_media' );
+		 *
+		 * For each media item found by "query_attachments", these filters are called:
+		 *
+		 * In /wp-admin/includes/media.php, functions get_media_item() and get_compat_media_markup()
+		 * contain "apply_filters( 'get_media_item_args', $args );", documented as:
+		 * "Filter the arguments used to retrieve an image for the edit image form."
+		 *
+		 * In /wp-admin/includes/media.php, functions get_attachment_fields_to_edit()
+		 * and get_compat_media_markup() contain
+		 * "$form_fields = apply_filters( 'attachment_fields_to_edit', $form_fields, $post );",
+		 * documented as: "Filter the attachment fields to edit."
 		 */
+
 		if ( MLATest::$wordpress_3point5_plus && ( 'checked' == MLAOptions::mla_get_option( MLAOptions::MLA_MEDIA_MODAL_TOOLBAR ) ) ) {
 			add_filter( 'get_media_item_args', 'MLAModal::mla_get_media_item_args_filter', 10, 1 );
 			add_filter( 'attachment_fields_to_edit', 'MLAModal::mla_attachment_fields_to_edit_filter', 0x7FFFFFFF, 2 );
@@ -158,11 +170,11 @@ class MLAModal {
 	 */
 	public static function mla_attachment_fields_to_edit_filter( $form_fields, $post ) {
 		/*
-		 * This logic is only required for the Media Manager Modal Window.
+		 * This logic is only required for the MLA-enhanced Media Manager Modal Window.
 		 * For the non-Modal Media/Edit Media screen, the MLAEdit::mla_add_meta_boxes_action
 		 * function changes the default meta box to the MLA searchable meta box.
 		 */
-		if ( isset( self::$media_item_args['in_modal'] ) && self::$media_item_args['in_modal'] ) {
+		if ( self::$mla_query_attachments ) {
 			foreach ( get_taxonomies( array ( 'show_ui' => true ), 'objects' ) as $key => $value ) {
 				if ( MLAOptions::mla_taxonomy_support( $key ) ) {
 					if ( isset( $form_fields[ $key ] ) ) {
@@ -334,12 +346,10 @@ class MLAModal {
 	 * @var	array
 	 */
 	private static $mla_media_modal_settings = array(
-			'ajaxFillCompatAction' => self::JAVASCRIPT_FILL_COMPAT_ACTION,
 			'ajaxNonce' => '',
+			'ajaxFillCompatAction' => self::JAVASCRIPT_FILL_COMPAT_ACTION,
 			'ajaxQueryAttachmentsAction' => self::JAVASCRIPT_QUERY_ATTACHMENTS_ACTION,
 			'ajaxUpdateCompatAction' => self::JAVASCRIPT_UPDATE_COMPAT_ACTION,
-//			'ajaxFillCompatNonce' => '',
-//			'ajaxUpdateCompatNonce' => '',
 			'enableDetailsCategory' => false,
 			'enableDetailsTag' => false,
 			'enableMimeTypes' => false,
@@ -348,14 +358,17 @@ class MLAModal {
 			'enableSearchBoxControls' => false,
 			'enableTermsDropdown' => false,
 			'enableTermsSearch' => false,
-			'filterMonth' => 0,
-			'filterTerm' => 0,
+			// NULL values replaced by filtered initial values in mla_media_view_settings_filter
+			'filterMime' => NULL,
+			'filterMonth' => NULL,
+			'filterTerm' => NULL,
+			'searchConnector' => NULL,
+			'searchFields' => NULL,
+			'searchValue' => NULL,
+			//'termsSearch' => NULL,
+			'searchClicks' => 0,
 			'mimeTypes' => '',
 			'months' => '',
-			'searchClicks' => 0,
-			'searchConnector' => 'AND',
-			'searchFields' => array( 'title', 'content' ),
-			'searchValue' => '',
 			'termsClass' => array(),
 			'termsIndent' => '&nbsp;',
 			'termsTaxonomy' => '',
@@ -375,6 +388,17 @@ class MLAModal {
 	 * @return	array	updated $settings array
 	 */
 	public static function mla_media_view_settings_filter( $settings, $post ) {
+		$screen = get_current_screen();
+		
+		/*
+		 * WordPress 4.0 adds the "grid view" to the Media/Library screen, and we don't want
+		 * to add our functionality to that screen.
+		 */
+		if ( 'upload' == $screen->base ) {
+		//if ( 'edit' != $screen->parent_base ) {
+			return $settings;
+		}
+		
 		self::$mla_media_modal_settings['ajaxNonce'] = wp_create_nonce( MLA::MLA_ADMIN_NONCE );
 		self::$mla_media_modal_settings['mimeTypes'] = MLAMime::mla_pluck_table_views();
 		self::$mla_media_modal_settings['mimeTypes']['detached'] = MLAOptions::$mla_option_definitions[ MLAOptions::MLA_POST_MIME_TYPES ]['std']['unattached']['plural'];
@@ -401,15 +425,33 @@ class MLAModal {
 		self::$mla_media_modal_settings['enableTermsSearch'] = ( 'checked' == MLAOptions::mla_get_option( MLAOptions::MLA_MEDIA_MODAL_TERMS_SEARCH ) );
 
 		/*
-		 * These will be passed back to the server in the query['s'] field.
+		 * Set and filter the initial values for toolbar controls
+		 */
+		$search_defaults = MLAOptions::mla_get_option( MLAOptions::MLA_SEARCH_MEDIA_FILTER_DEFAULTS );
+		$initial_values = array(
+			'filterMime' => 'all',
+			'filterMonth' => 0,
+			'filterTerm' => 0,
+			'searchConnector' => $search_defaults['search_connector'],
+			'searchFields' => $search_defaults['search_fields'],
+			'searchValue' => '',
+			//'termsSearch' => ''
+		);
+
+		$initial_values = apply_filters( 'mla_media_modal_initial_filters', $initial_values );
+		
+		/*
+		 * Except for filterMime/post_mime_type, these will be passed
+		 * back to the server in the query['s'] field.
 		 */ 
-		self::$mla_media_modal_settings['filterMonth'] = 0; // mla_filter_month
-		self::$mla_media_modal_settings['filterTerm'] = 0; // mla_filter_term
+		self::$mla_media_modal_settings['filterMime'] = $initial_values['filterMime']; // post_mime_type 'image'; // 
+		self::$mla_media_modal_settings['filterMonth'] = $initial_values['filterMonth']; // mla_filter_month '201404'; // 
+		self::$mla_media_modal_settings['filterTerm'] = $initial_values['filterTerm']; // mla_filter_term '175'; //
+		self::$mla_media_modal_settings['searchConnector'] = $initial_values['searchConnector']; // mla_search_connector 'OR'; //
+		self::$mla_media_modal_settings['searchFields'] = $initial_values['searchFields']; // mla_search_fields array( 'excerpt', 'title', 'content' ); //
+		self::$mla_media_modal_settings['searchValue'] = $initial_values['searchValue']; // mla_search_value 'col'; //
+		//self::$mla_media_modal_settings['termsSearch'] = $initial_values['termsSearch']; // mla_terms_search
 		self::$mla_media_modal_settings['searchClicks'] = 0; // mla_search_clicks, to force transmission
-		self::$mla_media_modal_settings['searchConnector'] = 'AND'; // mla_search_connector
-		self::$mla_media_modal_settings['searchFields'] = array( 'title', 'content' ); // mla_search_fields
-		self::$mla_media_modal_settings['searchValue'] = ''; // mla_search_value
-		self::$mla_media_modal_settings['termsSearch'] = ''; // mla_terms_search
 
 		$settings = array_merge( $settings, array( 'mla_settings' => self::$mla_media_modal_settings ) );
 		return $settings;
@@ -427,6 +469,17 @@ class MLAModal {
 	 * @return	array	updated $strings array
 	 */
 	public static function mla_media_view_strings_filter( $strings, $post ) {
+		$screen = get_current_screen();
+		
+		/*
+		 * WordPress 4.0 adds the "grid view" to the Media/Library screen, and we don't want
+		 * to add our functionality to that screen.
+		 */
+		if ( 'upload' == $screen->base ) {
+		//if ( 'edit' != $screen->parent_base ) {
+			return $strings;
+		}
+		
 		$mla_strings = array(
 			'searchBoxPlaceholder' => __( 'Search Box', 'media-library-assistant' ),
 			'loadingText' => __( 'Loading...', 'media-library-assistant' ),
@@ -446,6 +499,17 @@ class MLAModal {
 	 * @return	void
 	 */
 	public static function mla_wp_enqueue_media_action( ) {
+		$screen = get_current_screen();
+		
+		/*
+		 * WordPress 4.0 adds the "grid view" to the Media/Library screen, and we don't want
+		 * to add our functionality to that screen.
+		 */
+		if ( 'upload' == $screen->base ) {
+		//if ( 'edit' != $screen->parent_base ) {
+			return;
+		}
+		
 		$suffix = defined('SCRIPT_DEBUG') && SCRIPT_DEBUG ? '' : '.min';
 
 		wp_register_style( self::JAVASCRIPT_MEDIA_MODAL_STYLES, MLA_PLUGIN_URL . 'css/mla-media-modal-style.css', false, MLA::CURRENT_MLA_VERSION );
@@ -467,27 +531,40 @@ class MLAModal {
 	 * @return	void	echoes HTML script tags for the templates
 	 */
 	public static function mla_print_media_templates_action( ) {
+		$screen = get_current_screen();
+		//cause_an_error();
+		//$cause_notice = $screen->bad_property;
+		//trigger_error( 'mla_print_media_templates_action', E_USER_WARNING );
+		//error_log( 'xdebug_get_function_stack = ' . var_export( xdebug_get_function_stack(), true), 0 );		
+
+		/*
+		 * WordPress 4.0 adds the "grid view" to the Media/Library screen, and we don't want
+		 * to add our functionality to that screen.
+		 */
+		if ( 'upload' == $screen->base ) {
+		//if ( 'edit' != $screen->parent_base ) {
+			return;
+		}
+		
 		/*
 		 * Compose the Search Media box
 		 */
-		$search_defaults = MLAOptions::mla_get_option( MLAOptions::MLA_SEARCH_MEDIA_FILTER_DEFAULTS );
-
 		if ( isset( $_REQUEST['query']['mla_search_value'] ) ) {
 			$search_value = esc_attr( stripslashes( trim( $_REQUEST['query']['mla_search_value'] ) ) );
 		} else {
-			$search_value = '';
+			$search_value = self::$mla_media_modal_settings['searchValue'];
 		}
 
 		if ( isset( $_REQUEST['query']['mla_search_fields'] ) ) {
 			$search_fields = $_REQUEST['query']['mla_search_fields'];
 		} else {
-			$search_fields = $search_defaults['search_fields'];
+			$search_fields = self::$mla_media_modal_settings['searchFields'];
 		}
 
 		if ( isset( $_REQUEST['query']['mla_search_connector'] ) ) {
 			$search_connector = $_REQUEST['query']['mla_search_connector'];
 		} else {
-			$search_connector = $search_defaults['search_connector'];
+			$search_connector = self::$mla_media_modal_settings['searchConnector'];
 		}
 
 		// Include mla javascript templates
@@ -534,8 +611,6 @@ class MLAModal {
 		} // foreach taxonomy 
 
 		if ( ( defined('WP_ADMIN') && WP_ADMIN ) && ( defined('DOING_AJAX') && DOING_AJAX ) ) {
-//error_log( 'DEBUG: mla_admin_init_action Ajax $_REQUEST = ' . var_export( $_REQUEST, true ), 0 );
-
 			/*
 			 * If there's no action variable, we have nothing to do
 			 */
@@ -881,6 +956,19 @@ class MLAModal {
 	} // mla_update_compat_fields_action
 
 	/**
+	 * Executing mla_query_attachments_action
+	 *
+	 * Informs mla_attachment_fields_to_edit_filter() that MLA enhancements
+	 * be added to the compatible fields. Keeps our enhancements out of the
+	 * WP 4.0 Media Grid display.
+	 *
+	 * @since 1.91
+	 *
+	 * @var	boolean true if performing MLA enhanced query attachments else false.
+	 */
+	private static $mla_query_attachments = false;
+
+	/**
 	 * Ajax handler for Media Manager "Query Attachments" queries 
 	 *
 	 * Adapted from wp_ajax_query_attachments in /wp-admin/includes/ajax-actions.php
@@ -983,7 +1071,9 @@ class MLAModal {
 		}
 
 		$query = MLAData::mla_query_media_modal_items( $query, $offset, $count );
+		self::$mla_query_attachments = true;
 		$posts = array_map( 'wp_prepare_attachment_for_js', $query->posts );
+		self::$mla_query_attachments = false;
 		$posts = array_filter( $posts );
 
 		wp_send_json_success( $posts );

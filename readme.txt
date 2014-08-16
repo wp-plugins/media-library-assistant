@@ -3,8 +3,8 @@ Contributors: dglingren
 Donate link: http://fairtradejudaica.org/make-a-difference/donate/
 Tags: attachment, attachments, documents, gallery, image, images, media, library, media library, tag cloud, media-tags, media tags, tags, media categories, categories, IPTC, EXIF, GPS, PDF, meta, metadata, photo, photos, photograph, photographs, photoblog, photo albums, lightroom, photoshop, MIME, mime-type, icon, upload, file extensions
 Requires at least: 3.3
-Tested up to: 3.9.1
-Stable tag: 1.90
+Tested up to: 4.0
+Stable tag: 1.91
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -152,6 +152,23 @@ All of the MLA source code has been annotated with "DocBlocks", a special type o
 
 == Changelog ==
 
+= 1.91 =
+
+* New: Fourteen filters have been added to the "Edit Media additional meta boxes". You can customize which meta boxes appear and replace their contents. An example plugin has been added to demonstrate their use. See the [Other Notes section](http://wordpress.org/extend/plugins/media-library-assistant/other_notes/ "Click here, then scroll down") section or the Settings/Media Library Assistant Documentation tab for more information.
+* New: A new hook, `mla_media_modal_initial_filters` has been added to the "Media Manager Enhancement filters (Hooks)".
+* New: A new "MLA Media Modal Hooks Example" plugin has been created in `/examples/mla-media-modal-hooks-example.php.txt`.
+* New: Two new examples have been added to the MLA Gallery Hooks example plugin.
+* New: A new "MLA Tax Query Example" plugin has been created in `/examples/mla-tax-query-example.php.txt`.
+* New: Two new hooks, `mla_begin_mapping` and `mla_end_mapping` have been added to the "MLA Custom Field and IPTC/EXIF Mapping Actions and Filters (Hooks)".
+* New: A new "MLA Meta Box Hooks Example" plugin has been created in `/examples/mla-metabox-hooks-example.php.txt`.
+* New: A new, simplified MLA Mapping Hooks example plugin has been created. The older, more complex example is provided as a separate example plugin, `/examples/mla-metadata-mapping-hooks-example.php.txt`.
+* Fix: On the Media/Assistant submenu table, the "Set Parent" links now refresh the entire table row, properly updating all of the affected columns and the Quick Edit data.
+* Fix: A defect that affected certain "front end" file uploads, e.g., changing an avatar in BuddyPress, has been corrected.
+* Fix: All `like_escape()` calls have been changed to `$wpdb->esc_like()` for WordPress 4.0 and later.
+* Fix: A defect in multi-word or quoted Search Media box content on the Media/Assistant submenu table has been fixed.
+* Fix: A defect in WPML support on the Media/Assistant submenu table has been fixed.
+* Fix: A defect in using fields in the "posts" database table as "Data sources for custom field mapping" has been fixed.
+
 = 1.90 =
 
 * New: On the Media/Assistant submenu and Media Manager Modal Window, a **new "Terms Search" popup filter** lets you filter the display by terms whose name contains the keywords and phrases entered in the search box. See the [Other Notes section](http://wordpress.org/extend/plugins/media-library-assistant/other_notes/ "Click here, then scroll down") section for more details.
@@ -173,61 +190,11 @@ All of the MLA source code has been annotated with "DocBlocks", a special type o
 * Fix: For `[mla_gallery]`, the `mla_rollover_text=` parameter has been restored. WordPress 3.7 removed the `title=` attribute from its attachment links, which disabled `mla_rollover_text=` as well.
 * Fix: For `[mla_tag_cloud]`, the `number` parameter default is now zero, agreeing with the Documentation.
 
-= 1.83 =
-* **Important Fix**: For the Media/Assistant submenu table, **Quick Edit, Bulk Edit, Screen Options and Help** functions have been restored.
-* Fix: For the **"Select Parent" popup window**, the "close icon" ("x") now appears in the upper-right corner of the popup in WordPress versions before 3.8.x
-* Fix: For `[mla_gallery]`, **tax_query no longer restricted to parent post/page.** The `post_parent="current"` parameter can be used to restore the restriction. 
-* Fix: In the Settings/Media Library Assistant Documentation tab "Data Sources for custom field mapping" section, `parent_name` has been corrected to `parent_title`.
-
-= 1.82 =
-* New: A **"Select Parent" popup window** has been added to the Media/Assistant submenu table "Attached To" column, the Quick Edit area and the Media/Edit Media "Parent Information" meta box. You can select a parent from a list of posts/pages, search for parent candidates by keyword(s), and select "(Unattached)" to set the post_parent ID to zero. See the [Other Notes section](http://wordpress.org/extend/plugins/media-library-assistant/other_notes/ "Click here, then scroll down") section for more details.
-* New: For `[mla_gallery]`, **SVG image files** are rendered appropriately for all registered image sizes. Note that browser support for SVG images is also required.
-* New: Thumbnail support for **SVG image files** in the Media/Assistant submenu table.
-* New: A new **mla_get_options_tablist filter** allows you to filter the tabs in the Settings/Media Linrary Assistant submenu. An example added to the added to the MLA Mapping Hooks Example plugin (in the /examples directory) shows how to use the filter to remove a tab from the submenu.
-* New: **Clickable term lists example** added to the MLA Gallery Hooks Example plugin in the /examples directory.
-* New: **Formatted file size example** added to the MLA Gallery Hooks Example plugin in the /examples directory.
-* New: A **"latest images"** page template has been added to the **Mla Child Theme** in the /examples directory.
-* New: For custom fields ( "custom:" prefix) in `[mla_gallery]` and `[mla_tag_cloud]`, the new ",raw" option lets you return HTML tags for display in the gallery/cloud results.
-* Fix: IPTC/EXIF mapping rules for taxonomies that no longer exist are now removed when you click "Save Changes" on the Settings/Media Library Assistant IPTC/EXIF tab. This resolves a PHP Fatal Error when the mapping rules are applied.
-* Fix: The default Media link when Media/Assistant is the default Media submenu has been changed from "admin.php" to "upload.php". This resolves a problem with the WP Document Revisions plugin and its filtering of Document post type attachments.
-* Fix: For `[mla_gallery]`, the `mla_style=theme` setting will default to "false" for themes that support HTML5.
-
-= 1.81 =
-* Important Fix: A **serious defect in the Media Libarary Modal Window has been corrected.** The defect caused drag & drop file uploading to fail under many circumstances.
-* New: For `[mla_tag_cloud]`, **the "ids" parameter has been added** to support item-specific term clouds, i.e., a cloud containing only those terms assigned to one (or more) items.
-* New: A **"single image with tag list"** page template has been added to the **Mla Child Theme** in the /examples directory.
-* Fix: A Load Text Domain function has been added to the /examples/twentytwelve-mla child theme.
-* Fix: If the Settings/Media Library Assistant General tab "Page Title" and/or "Menu Title" fields are empty, the default values are now used, including translated values if applicable.
-* Fix: Failure to load translation file from the /plugins/media-library-assistant/languages directory has been fixed. Note that the translation file must include the plugin slug, e.g., media-library-assistant-en_US.mo
-* Fix: PHP (5.4.x) Strict Standards warning for MLAData::mla_get_attachment_by_id() has been resolved.
-* Fix: For `[mla_gallery]`, `$wp_filter` debug display with `mla_debug=true` is more reliable.
-
-= 1.80 =
-* New: For the Media Manager Modal Window, **Native support for "checkbox-style" and "tag hint-style" taxonomy meta boxes** is available. See the [Other Notes section](http://wordpress.org/extend/plugins/media-library-assistant/other_notes/ "Click here, then scroll down") section for more details.
-* New: **For flat taxonomies**, e.g., "Tags" or "Att. Tags", **a "checkbox-style" meta box** is available. See the [Other Notes section](http://wordpress.org/extend/plugins/media-library-assistant/other_notes/ "Click here, then scroll down") section for more details.
-* New: An option (General tab) is provided to **disable term-specific counts** in the Attachments column of the taxonomy edit screens.
-* New: An option (General tab) is provided to **suppress the MLA-specific metaboxes on the Media/Edit Media screen**. This removes the "Parent Info", "Menu Order", "Attachment Metadata"  and the four "where-used" meta boxes.
-* New: Bulk edit area now includes **Title, Caption, Description, ALT Text, Comments and Pings** fields. Text fields may contain a Content Template, allowing conditional replacement of the field value.
-* New: **A numeric value in the Media/Assistant search box** will do a text-based search in addition to the post or parent ID search. This eliminates the requirement to add quotes to the value to force a text-based search. You can still add quotes to avoid the parent/post ID part of the search, or avoid the text-based search by unchecking all of the search field boxes.
-* New: A new option, **Icon Size**, sets the thumbnail/icon size on the Media/Assistant submenu table. Find it in the Table Defaults section of the Settings/Media Library Assistant General tab.
-* New: More debugging information displayed/logged when Media/Assistant search box begins with ">|<" or <|>".
-* New: For `[mla_gallery]`, the **Data sources for custom field mapping** are now available as Attachment-specific substitution parameters. A new "commas" option allows better formatting of numeric data source values.
-* New: For `[mla_gallery]`, **mla_gallery_raw_attributes filter** allows access to the shortcode parameters before they pass through the logic to handle `mla_page_parameter` and "request:" prefix processing. The `mla-hooks-example.php.txt` example has been updated as well.
-* New: For `[mla_gallery]`, **mla_paginate_rows** allows you to avoid redundant database queries just to create pagination controls, if you have some other way of knowing how many items a gallery contains.
-* New: For `[mla_gallery]`, **WP_Query caching parameters** allow you to avoid additional database queries just to fill the post, metadata and/or term cache if your application does not require them.
-* New: For `[mla_tag_cloud]`, **post_mime_type** allows you to filter the tag cloud counts by MIME type so they will match the results delivered by `[mla_gallery]` and other gallery shortcodes.
-* New: For `[mla_tag_cloud]`, a new `no_count` parameter enables or disables the computation of term-specific attachment counts.
-* New: For `[mla_gallery]`, the **HTML5 figure, div and figcaption** tags are used for themes that register support for HTML5.
-* New: For `[mla_gallery]`, a new `mla_style` setting ("theme") lets the theme control use of the MLA style template by hooking the `use_default_gallery_style` filter.
-* Fix: The term-specific counts computation in the Attachments column of the taxonomy edit screens is significantly more efficient.
-* Fix: Removed an intermittant PHP Warning message for logged-in users without the "upload_files" capability.
-* Fix: The `[mla_tag_cloud]` templates are no longer offered in the default `[mla_gallery]` template dropdown list.
-* Fix: Default descriptions for `mla_upload_mime` option values are no longer stored in the options table, saving space.
-* Fix: **Support for the "Media Categories" plugin (by Eddie Moya) is no longer required and has been removed.**
-* Fix: The where-used term **"BAD PARENT"** has been replaced with the less severe **"UNUSED"** to more clearly indicate that the item has a valid parent but is not used for anything in the parent post/page.
-* Fix: The **"Inserted in" reporting with the "Base" option** setting explicitly tests for all registered intermediate sizes, giving more precise results.
-* Fix: Peaceful co-existance with **Relevanssi - A Better Search, v3.2+ by Mikko Saari**, using a filter provided by that plugin to disable interference with the Media/Assistant submenu search box and the `[mla_gallery]` shortcode.
-* Fix: Removed support for the ancient, bug-ridden and unused `[mla_attachment_list]` shortcode.
+= 1.80 - 1.83 =
+* 1.83: Corrects serious defect, restoring Quick Edit, Bulk Edit and Screen Options to Media/Assistant submenu. Three other fixes.
+* 1.82: "Select Parent" popup window (Media/Edit Media, Attached to column, Quick Edit area), SVG support and several new filter examples. Five other enhancements, three other fixes.
+* 1.81: Corrects serious defect in Media Manager Modal Window file uploading. Adds item-specific tag clouds. One other enhancement, five other fixes.
+* 1.80: Full taxonomy meta box support in the Media Manager Modal Window. Checkbox-style meta box for flat taxonomies. Fourteen other enhancements, nine fixes.
 
 = 1.70 - 1.71 =
 * 1.71: Searchable Category meta boxes for the Media/Edit Media screen. Support for the WordPress "Attachment Display Settings". Six fixes.
@@ -276,8 +243,8 @@ All of the MLA source code has been annotated with "DocBlocks", a special type o
 
 == Upgrade Notice ==
 
-= 1.90 =
-New "Terms Search" popup window and Search Media "Terms" checkbox. Post Type filter and pagination for "Select Parent" popup. Ten other enhancements, five fixes.
+= 1.91 =
+WordPress 4.0 support! New "Edit Media meta box" and "Media Modal Initial Values" filters and example plugins. Four other enhancements, six fixes.
 
 == Other Notes ==
 
@@ -289,7 +256,38 @@ In this section, scroll down to see highlights from the documentation, including
 
 Media Library Assistant includes many images drawn (with permission) from the [Crystal Project Icons](http://www.softicons.com/free-icons/system-icons/crystal-project-icons-by-everaldo-coelho), created by [Everaldo Coelho](http://www.everaldo.com), founder of [Yellowicon](http://www.yellowicon.com).
 
-<h4>NEW! Terms Search</h4>
+<h4>NEW! Hooks for the Edit Media additional meta boxes</h4>
+Media Library Assistant adds support for the "Custom Fields" meta box to the Media/Edit Media screen. MLA also adds several meta boxes to this screen with more information about the item and where it is  used on your site. You can enable/disable the additional meta boxes with an option on the Settings/Media LIbrary Assistant General tab.
+
+You can also make individual changes in which meta boxes are displayed and in their content by using one or more of the filters MLA provides. An example of using the hooks from a simple, stand-alone plugin can be found at /media-library-assistant/examples/mla-metabox-hooks-example.php.txt. To run the example:
+
+1. Edit the code to, for example, uncomment the <code>error_log()</code> calls so you can see what is passed to the hooks you are interested in.
+1. Remove the ".txt" extension and save the "mla-metabox-example.php" file in your plugins directory. You can give the plugin and its file any (unique) name you like.
+1. Go to the Plugins/Installed Plugins screen and activate the "MLA Meta Box Hooks Example" plugin.
+1. Make any changes or additions you want to in the example plugin source code. For example, you can modify the <code>mla_inserted_in_metabox</code> example to display a simplified version of the "Inserted in" information.
+1. View the Media/Edit Media screen for an item to see the effect of your changes.
+
+The example code documents each hook with comments in the filter function that intercepts the hook. Generally, each meta box filter lets you change the size of the text box (if appropriate) and the content that appears in the box. There is also a second filter for each meta box that lets you replace <strong>all</strong> of the HTML content for most boxes; use these with caution. The current hooks are: 
+
+* <strong>mla_edit_media_support</strong> - suppress the addition of Custom Fields to the Edit Media screen. To suppress Custom Fields, return an empty array, i.e., <code>return array();</code>
+
+* <strong>mla_edit_media_meta_boxes</strong> - record the original list of meta box slugs. You can also remove elements from the array to suppress one or more meta boxes. To suppress a box, remove it from the array, e.g., <code>unset( $active_boxes['mla-menu-order'] );</code>
+
+* <strong>mla_parent_info_meta_box</strong> - modify the text portion of the "Parent Info" meta box.
+
+* <strong>mla_menu_order_meta_box</strong> - modify the "Menu Order" meta box.
+
+* <strong>mla_image_metadata_meta_box</strong> - modify the rows, columns and content of the "Attachment Metadata" meta box.<br><strong>mla_image_metadata_meta_box_html</strong>
+
+* <strong>mla_featured_in_meta_box</strong> - modify the rows, columns and content of the "Featured in" meta box.<br><strong>mla_featured_in_meta_box_html</strong>
+
+* <strong>mla_inserted_in_meta_box</strong> - modify the rows, columns and content of the "Inserted in" meta box.<br><strong>mla_inserted_in_meta_box_html</strong>
+
+* <strong>mla_gallery_in_meta_box</strong> - modify the rows, columns and content of the "Gallery in" meta box.<br><strong>mla_gallery_in_meta_box_html</strong>
+
+* <strong>mla_mla_gallery_in_meta_box</strong> - modify the rows, columns and content of the "MLA Gallery in" meta box.<br><strong>mla_mla_gallery_in_meta_box_html</strong>
+
+<h4>Terms Search</h4>
 The "Terms Search" features let you filter the Media/Assistant submenu table and the Media Manager Modal Window by matching one or more phrases in the Name field of taxonomy terms. There are two ways to access this feature:
 
 <ol>
@@ -352,7 +350,7 @@ By default, the Att. Categories and Att. Tags taxonomies are included in the ter
 
 In the Search Terms popup window you will find a list of all supported taxonomies, with checkboxes reflecting their participation in the search process. You can add or remove taxonomies from the process on a search-by-search basis.
 
-<h4>NEW! Select Parent Popup Window</h4>
+<h4>Select Parent Popup Window</h4>
 The "Select Parent" popup window lets you find the parent post/page/custom post type for one or more attachments. You can access the popup window in four ways:
 
 <ol>

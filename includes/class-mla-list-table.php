@@ -607,7 +607,27 @@ class MLA_List_Table extends WP_List_Table {
 			return $thumb;
 		}
 
-		return sprintf( '<a href="%1$s" title="' . __( 'Edit', 'media-library-assistant' ) . ' &#8220;%2$s&#8221;">%3$s</a>', get_edit_post_link( $item->ID, true ), esc_attr( $item->post_title ), $thumb ); 
+		/*
+		 * Use the WordPress Edit Media screen for 3.5 and later
+		 */
+		$view_args = self::mla_submenu_arguments();
+		if ( MLATest::$wordpress_3point5_plus ) {
+			if ( isset( $view_args['lang'] ) ) {
+				$edit_url = 'post.php?post=' . $item->ID . '&action=edit&mla_source=edit&lang=' . $view_args['lang'];
+			} else {
+				$edit_url = 'post.php?post=' . $item->ID . '&action=edit&mla_source=edit';
+			}
+		} else {
+			if ( isset( $view_args['lang'] ) ) {
+				$view_args = array( 'lang' => $view_args['lang'] );
+			} else {
+				$view_args = array();
+			}
+			
+			$edit_url = '<a href="' . add_query_arg( $view_args, wp_nonce_url( '?mla_admin_action=' . MLA::MLA_ADMIN_SINGLE_EDIT_DISPLAY, MLA::MLA_ADMIN_NONCE ) ) . '" title="' . __( 'Edit this item', 'media-library-assistant' ) . '">' . __( 'Edit', 'media-library-assistant' ) . '</a>';
+		}
+		
+		return sprintf( '<a href="%1$s" title="' . __( 'Edit', 'media-library-assistant' ) . ' &#8220;%2$s&#8221;">%3$s</a>', admin_url( $edit_url ), esc_attr( $item->post_title ), $thumb ); 
 		}
 
 	/**
@@ -630,7 +650,7 @@ class MLA_List_Table extends WP_List_Table {
 			 */
 			$view_args = array_merge( array( 'page' => MLA::ADMIN_PAGE_SLUG, 'mla_item_ID' => $item->ID ),
 				self::mla_submenu_arguments() );
-
+				
 			if ( isset( $_REQUEST['paged'] ) ) {
 				$view_args['paged'] = $_REQUEST['paged'];
 			}
@@ -643,10 +663,17 @@ class MLA_List_Table extends WP_List_Table {
 					 * Use the WordPress Edit Media screen for 3.5 and later
 					 */
 					if ( MLATest::$wordpress_3point5_plus ) {
-						$actions['edit'] = '<a href="' . admin_url( 'post.php' ) . '?post=' . $item->ID . '&action=edit&mla_source=edit" title="' . __( 'Edit this item', 'media-library-assistant' ) . '">' . __( 'Edit', 'media-library-assistant' ) . '</a>';
+						if ( isset( $view_args['lang'] ) ) {
+							$edit_url = 'post.php?post=' . $item->ID . '&action=edit&mla_source=edit&lang=' . $view_args['lang'];
+						} else {
+							$edit_url = 'post.php?post=' . $item->ID . '&action=edit&mla_source=edit';
+						}
+
+						$actions['edit'] = '<a href="' . admin_url( $edit_url ) . '" title="' . __( 'Edit this item', 'media-library-assistant' ) . '">' . __( 'Edit', 'media-library-assistant' ) . '</a>';
 					} else {
 						$actions['edit'] = '<a href="' . add_query_arg( $view_args, wp_nonce_url( '?mla_admin_action=' . MLA::MLA_ADMIN_SINGLE_EDIT_DISPLAY, MLA::MLA_ADMIN_NONCE ) ) . '" title="' . __( 'Edit this item', 'media-library-assistant' ) . '">' . __( 'Edit', 'media-library-assistant' ) . '</a>';
 					}
+					
 					$actions['inline hide-if-no-js'] = '<a class="editinline" href="#" title="' . __( 'Edit this item inline', 'media-library-assistant' ) . '">' . __( 'Quick Edit', 'media-library-assistant' ) . '</a>';
 				}
 			} // edit_post
@@ -1242,13 +1269,23 @@ class MLA_List_Table extends WP_List_Table {
 	 * @return	array	non-empty view, search, filter and sort arguments
 	 */
 	public static function mla_submenu_arguments( $include_filters = true ) {
+		global $sitepress;
 		static $submenu_arguments = NULL, $has_filters = NULL;
 
 		if ( is_array( $submenu_arguments ) && ( $has_filters == $include_filters ) ) {
 			return $submenu_arguments;
-		} else {
-			$submenu_arguments = array();
-			$has_filters = $include_filters;
+		}
+
+		$submenu_arguments = array();
+		$has_filters = $include_filters;
+		
+		/*
+		 * WPML arguments
+		 */
+		if ( isset( $_REQUEST['lang'] ) ) {
+			$submenu_arguments['lang'] = $_REQUEST['lang'];
+		} elseif ( is_object( $sitepress ) ) {		 
+			$submenu_arguments['lang'] = $sitepress->get_current_language();
 		}
 
 		/*
@@ -1274,7 +1311,7 @@ class MLA_List_Table extends WP_List_Table {
 		 * Search box arguments
 		 */
 		if ( !empty( $_REQUEST['s'] ) ) {
-			$submenu_arguments['s'] = $_REQUEST['s'];
+			$submenu_arguments['s'] = urlencode( stripslashes( $_REQUEST['s'] ) );
 
 			if ( isset( $_REQUEST['mla_search_connector'] ) ) {
 				$submenu_arguments['mla_search_connector'] = $_REQUEST['mla_search_connector'];

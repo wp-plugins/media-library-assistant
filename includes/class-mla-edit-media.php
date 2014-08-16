@@ -84,7 +84,7 @@ class MLAEdit {
 	public static function mla_admin_init_action( ) {
 //error_log( 'DEBUG: MLAEdit::mla_admin_init_action() $_REQUEST = ' . var_export( $_REQUEST, true ), 0 );
 
-		add_post_type_support( 'attachment', 'custom-fields' );
+		add_post_type_support( 'attachment', apply_filters( 'mla_edit_media_support', array( 'custom-fields' ) ) );
 
 		/*
 		 * If there's no action variable, we have nothing more to do
@@ -173,13 +173,6 @@ class MLAEdit {
 			'ajaxDoneError' => __( 'An ajax.done error has occurred. Please reload the page and try again.', 'media-library-assistant' ),
 		);
 
-		if ( version_compare( get_bloginfo( 'version' ), '3.9', '>=' ) ) {
-			$script_variables['setParentDataType'] = 'json';
-		} else {
-//			$script_variables['setParentDataType'] = 'xml';
-			$script_variables['setParentDataType'] = 'json';
-		}
-
 		if ( version_compare( get_bloginfo( 'version' ), '3.8', '>=' ) ) {
 			$script_variables['useDashicons'] = true;
 		} else {
@@ -221,10 +214,10 @@ class MLAEdit {
 
 		/* translators: date_i18n format for last modified date and time */
 		$date = date_i18n( __( 'M j, Y @ G:i', 'media-library-assistant' ), strtotime( $post->post_modified ) );
-		echo '<div class="misc-pub-section curtime">' . "\r\n";
-		echo '<span id="timestamp">' . sprintf(__( 'Last modified', 'media-library-assistant' ) . ": <b>%1\$s</b></span>\r\n", $date);
-		echo "</div><!-- .misc-pub-section -->\r\n";
-		echo '<div class="misc-pub-section mla-links">' . "\r\n";
+		echo '<div class="misc-pub-section curtime">' . "\n";
+		echo '<span id="timestamp">' . sprintf(__( 'Last modified', 'media-library-assistant' ) . ": <b>%1\$s</b></span>\n", $date);
+		echo "</div><!-- .misc-pub-section -->\n";
+		echo '<div class="misc-pub-section mla-links">' . "\n";
 
 		$view_args = array( 'page' => MLA::ADMIN_PAGE_SLUG, 'mla_item_ID' => $post->ID );
 		if ( isset( $_REQUEST['mla_source'] ) ) {
@@ -237,8 +230,8 @@ class MLAEdit {
 
 		echo '<a href="' . add_query_arg( $view_args, wp_nonce_url( 'upload.php?mla_admin_action=' . MLA::MLA_ADMIN_SINGLE_MAP, MLA::MLA_ADMIN_NONCE ) ) . '" title="' . __( 'Map IPTC/EXIF metadata for this item', 'media-library-assistant' ) . '">' . __( 'Map IPTC/EXIF Metadata', 'media-library-assistant' ) . '</a>';
 
-		echo "</span>\r\n";
-		echo "</div><!-- .misc-pub-section -->\r\n";
+		echo "</span>\n";
+		echo "</div><!-- .misc-pub-section -->\n";
 	} // mla_attachment_submitbox_action
 
 	/**
@@ -303,27 +296,37 @@ class MLAEdit {
 		} // MLA_EDIT_MEDIA_SEARCH_TAXONOMY
 
 		if ( 'checked' == MLAOptions::mla_get_option( MLAOptions::MLA_EDIT_MEDIA_META_BOXES ) ) {
-			add_meta_box( 'mla-parent-info', __( 'Parent Info', 'media-library-assistant' ), 'MLAEdit::mla_parent_info_handler', 'attachment', 'normal', 'core' );
-			add_meta_box( 'mla-menu-order', __( 'Menu Order', 'media-library-assistant' ), 'MLAEdit::mla_menu_order_handler', 'attachment', 'normal', 'core' );
+			$active_boxes = apply_filters( 'mla_edit_media_meta_boxes', array( 
+			'mla-parent-info' => 'mla-parent-info', 'mla-menu-order' => 'mla-menu-order', 'mla-image-metadata' => 'mla-image-metadata', 'mla-featured-in' => 'mla-featured-in', 'mla-inserted-in' => 'mla-inserted-in', 'mla-gallery-in' => 'mla-gallery-in', 'mla-mla-gallery-in' => 'mla-mla-gallery-in' ) );
 
-			$image_metadata = get_metadata( 'post', $post->ID, '_wp_attachment_metadata', true );
-			if ( !empty( $image_metadata ) ) {
-				add_meta_box( 'mla-image-metadata', __( 'Attachment Metadata', 'media-library-assistant' ), 'MLAEdit::mla_image_metadata_handler', 'attachment', 'normal', 'core' );
+			if ( isset( $active_boxes['mla-parent-info'] ) ) {
+				add_meta_box( 'mla-parent-info', __( 'Parent Info', 'media-library-assistant' ), 'MLAEdit::mla_parent_info_handler', 'attachment', 'normal', 'core' );
+			}
+			
+			if ( isset( $active_boxes['mla-menu-order'] ) ) {
+				add_meta_box( 'mla-menu-order', __( 'Menu Order', 'media-library-assistant' ), 'MLAEdit::mla_menu_order_handler', 'attachment', 'normal', 'core' );
 			}
 
-			if ( MLAOptions::$process_featured_in ) {
+			if ( isset( $active_boxes['mla-image-metadata'] ) ) {
+				$image_metadata = get_metadata( 'post', $post->ID, '_wp_attachment_metadata', true );
+				if ( !empty( $image_metadata ) ) {
+					add_meta_box( 'mla-image-metadata', __( 'Attachment Metadata', 'media-library-assistant' ), 'MLAEdit::mla_image_metadata_handler', 'attachment', 'normal', 'core' );
+				}
+			}
+
+			if ( isset( $active_boxes['mla-featured-in'] ) && MLAOptions::$process_featured_in ) {
 				add_meta_box( 'mla-featured-in', __( 'Featured in', 'media-library-assistant' ), 'MLAEdit::mla_featured_in_handler', 'attachment', 'normal', 'core' );
 			}
 
-			if ( MLAOptions::$process_inserted_in ) {
+			if ( isset( $active_boxes['mla-inserted-in'] ) && MLAOptions::$process_inserted_in ) {
 				add_meta_box( 'mla-inserted-in', __( 'Inserted in', 'media-library-assistant' ), 'MLAEdit::mla_inserted_in_handler', 'attachment', 'normal', 'core' );
 			}
 
-			if ( MLAOptions::$process_gallery_in ) {
+			if ( isset( $active_boxes['mla-gallery-in'] ) && MLAOptions::$process_gallery_in ) {
 				add_meta_box( 'mla-gallery-in', __( 'Gallery in', 'media-library-assistant' ), 'MLAEdit::mla_gallery_in_handler', 'attachment', 'normal', 'core' );
 			}
 
-			if ( MLAOptions::$process_mla_gallery_in ) {
+			if ( isset( $active_boxes['mla-mla-gallery-in'] ) && MLAOptions::$process_mla_gallery_in ) {
 				add_meta_box( 'mla-mla-gallery-in', __( 'MLA Gallery in', 'media-library-assistant' ), 'MLAEdit::mla_mla_gallery_in_handler', 'attachment', 'normal', 'core' );
 			}
 		}
@@ -412,7 +415,11 @@ class MLAEdit {
 			} else {
 				$parent_info = sprintf( '(%1$s) %2$s %3$s', self::$mla_references['parent_type'], self::$mla_references['parent_title'], self::$mla_references['parent_errors'] );
 			}
-		} // is_array
+		} else {
+			$parent_info = '';
+		}
+
+		$parent_info = apply_filters( 'mla_parent_info_meta_box', $parent_info, self::$mla_references, $post );
 
 		echo '<table><tr>';
 		echo '<td><label class="screen-reader-text" for="mla_post_parent">' . __( 'Post Parent', 'media-library-assistant' ) . '</label><input name="mla_post_parent" type="text" size="4" id="mla_post_parent" value="' . $post->post_parent . "\" /></td>\n";
@@ -435,7 +442,9 @@ class MLAEdit {
 	 */
 	public static function mla_menu_order_handler( $post ) {
 
-		echo '<label class="screen-reader-text" for="mla_menu_order">' . __( 'Menu Order', 'media-library-assistant' ) . '</label><input name="mla_menu_order" type="text" size="4" id="mla_menu_order" value="' . $post->menu_order . "\" />\r\n";
+		$menu_order = apply_filters( 'mla_menu_order_meta_box', $post->menu_order, $post );
+
+		echo '<label class="screen-reader-text" for="mla_menu_order">' . __( 'Menu Order', 'media-library-assistant' ) . '</label><input name="mla_menu_order" type="text" size="4" id="mla_menu_order" value="' . esc_attr( $menu_order ) . "\" />\n";
 	}
 
 	/**
@@ -457,7 +466,10 @@ class MLAEdit {
 			$value = '';
 		}
 
-		echo '<label class="screen-reader-text" for="mla_image_metadata">' . __( 'Attachment Metadata', 'media-library-assistant' ) . '</label><textarea class="readonly" id="mla_image_metadata" rows="5" cols="80" readonly="readonly" name="mla_image_metadata" >' . esc_textarea( $value ) . "</textarea>\r\n";
+		$value = apply_filters( 'mla_image_metadata_meta_box', array( 'value' => $value, 'rows' => 5, 'cols' => 80 ), $metadata, $post );
+
+		$html =  '<label class="screen-reader-text" for="mla_image_metadata">' . __( 'Attachment Metadata', 'media-library-assistant' ) . '</label><textarea class="readonly" id="mla_image_metadata" rows="' . absint( $value['rows'] ) . '" cols="' . absint( $value['cols'] ) . '" readonly="readonly" name="mla_image_metadata" >' . esc_textarea( $value['value'] ) . "</textarea>\n";
+		echo apply_filters( 'mla_image_metadata_meta_box_html', $html, $value, $metadata, $post );
 	}
 
 	/**
@@ -475,9 +487,8 @@ class MLAEdit {
 			self::$mla_references = MLAData::mla_fetch_attachment_references( $post->ID, $post->post_parent );
 		}
 
+		$features = '';
 		if ( is_array( self::$mla_references ) ) {
-			$features = '';
-
 			foreach ( self::$mla_references['features'] as $feature_id => $feature ) {
 				if ( $feature_id == $post->post_parent ) {
 					$parent = __( 'PARENT', 'media-library-assistant' ) . ' ';
@@ -485,11 +496,15 @@ class MLAEdit {
 					$parent = '';
 				}
 
-				$features .= sprintf( '%1$s (%2$s %3$s), %4$s', /*$1%s*/ $parent, /*$2%s*/ $feature->post_type, /*$3%s*/ $feature_id, /*$4%s*/ $feature->post_title ) . "\r\n";
+				$features .= sprintf( '%1$s (%2$s %3$s), %4$s', /*$1%s*/ $parent, /*$2%s*/ $feature->post_type, /*$3%s*/ $feature_id, /*$4%s*/ $feature->post_title ) . "\n";
 			} // foreach $feature
 		}
 
-		echo '<label class="screen-reader-text" for="mla_featured_in">' . __( 'Featured in', 'media-library-assistant' ) . '</label><textarea class="readonly" id="mla_featured_in" rows="5" cols="80" readonly="readonly" name="mla_featured_in" >' . esc_textarea( $features ) . "</textarea>\r\n";
+		$features = apply_filters( 'mla_featured_in_meta_box', array( 'features' => $features, 'rows' => 5, 'cols' => 80 ), self::$mla_references, $post );
+
+		$html = '<label class="screen-reader-text" for="mla_featured_in">' . __( 'Featured in', 'media-library-assistant' ) . '</label><textarea class="readonly" id="mla_featured_in" rows="' . absint( $features['rows'] ) . '" cols="' . absint( $features['cols'] ) . '" readonly="readonly" name="mla_featured_in" >' . esc_textarea( $features['features'] ) . "</textarea>\n";
+
+		echo apply_filters( 'mla_featured_in_meta_box_html', $html, $features, self::$mla_references, $post );
 	}
 
 	/**
@@ -507,11 +522,10 @@ class MLAEdit {
 			self::$mla_references = MLAData::mla_fetch_attachment_references( $post->ID, $post->post_parent );
 		}
 
+		$inserts = '';
 		if ( is_array( self::$mla_references ) ) {
-			$inserts = '';
-
 			foreach ( self::$mla_references['inserts'] as $file => $insert_array ) {
-				$inserts .= $file . "\r\n";
+				$inserts .= $file . "\n";
 
 				foreach ( $insert_array as $insert ) {
 					if ( $insert->ID == $post->post_parent ) {
@@ -520,12 +534,16 @@ class MLAEdit {
 						$parent = '  ';
 					}
 
-					$inserts .= sprintf( '%1$s (%2$s %3$s), %4$s', /*$1%s*/ $parent, /*$2%s*/ $insert->post_type, /*$3%s*/ $insert->ID, /*$4%s*/ $insert->post_title ) . "\r\n";
+					$inserts .= sprintf( '%1$s (%2$s %3$s), %4$s', /*$1%s*/ $parent, /*$2%s*/ $insert->post_type, /*$3%s*/ $insert->ID, /*$4%s*/ $insert->post_title ) . "\n";
 				} // foreach $insert
 			} // foreach $file
 		} // is_array
 
-		echo '<label class="screen-reader-text" for="mla_inserted_in">' . __( 'Inserted in', 'media-library-assistant' ) . '</label><textarea class="readonly" id="mla_inserted_in" rows="5" cols="80" readonly="readonly" name="mla_inserted_in" >' . esc_textarea( $inserts ) . "</textarea>\r\n";
+		$inserts = apply_filters( 'mla_inserted_in_meta_box', array( 'inserts' => $inserts, 'rows' => 5, 'cols' => 80 ), self::$mla_references, $post );
+
+		$html = '<label class="screen-reader-text" for="mla_inserted_in">' . __( 'Inserted in', 'media-library-assistant' ) . '</label><textarea class="readonly" id="mla_inserted_in" rows="' . absint( $inserts['rows'] ) . '" cols="' . absint( $inserts['cols'] ) . '" readonly="readonly" name="mla_inserted_in" >' . esc_textarea( $inserts['inserts'] ) . "</textarea>\n";
+
+		echo apply_filters( 'mla_inserted_in_meta_box_html', $html, $inserts, self::$mla_references, $post );
 	}
 
 	/**
@@ -544,7 +562,6 @@ class MLAEdit {
 		}
 
 		$galleries = '';
-
 		if ( is_array( self::$mla_references ) ) {
 			foreach ( self::$mla_references['galleries'] as $gallery_id => $gallery ) {
 				if ( $gallery_id == $post->post_parent ) {
@@ -553,15 +570,19 @@ class MLAEdit {
 					$parent = '';
 				}
 
-				$galleries .= sprintf( '%1$s (%2$s %3$s), %4$s', /*$1%s*/ $parent, /*$2%s*/ $gallery['post_type'], /*$3%s*/ $gallery_id, /*$4%s*/ $gallery['post_title'] ) . "\r\n";
+				$galleries .= sprintf( '%1$s (%2$s %3$s), %4$s', /*$1%s*/ $parent, /*$2%s*/ $gallery['post_type'], /*$3%s*/ $gallery_id, /*$4%s*/ $gallery['post_title'] ) . "\n";
 			} // foreach $feature
 		}
 
-		echo '<label class="screen-reader-text" for="mla_gallery_in">' . __( 'Gallery in', 'media-library-assistant' ) . '</label><textarea class="readonly" id="mla_gallery_in" rows="5" cols="80" readonly="readonly" name="mla_gallery_in" >' . esc_textarea( $galleries ) . "</textarea>\r\n";
+		$galleries = apply_filters( 'mla_gallery_in_meta_box', array( 'galleries' => $galleries, 'rows' => 5, 'cols' => 80 ), self::$mla_references, $post );
+
+		$html = '<label class="screen-reader-text" for="mla_gallery_in">' . __( 'Gallery in', 'media-library-assistant' ) . '</label><textarea class="readonly" id="mla_gallery_in" rows="' . absint( $galleries['rows'] ) . '" cols="' . absint( $galleries['cols'] ) . '" readonly="readonly" name="mla_gallery_in" >' . esc_textarea( $galleries['galleries'] ) . "</textarea>\n";
+
+		echo apply_filters( 'mla_gallery_in_meta_box_html', $html, $galleries, self::$mla_references, $post );
 	}
 
 	/**
-	 * Renders the Gallery in meta box on the Edit Media page.
+	 * Renders the MLA Gallery in meta box on the Edit Media page.
 	 * Declared public because it is a callback function.
 	 *
 	 * @since 0.80
@@ -576,7 +597,6 @@ class MLAEdit {
 		}
 
 		$galleries = '';
-
 		if ( is_array( self::$mla_references ) ) {
 			foreach ( self::$mla_references['mla_galleries'] as $gallery_id => $gallery ) {
 				if ( $gallery_id == $post->post_parent ) {
@@ -585,11 +605,15 @@ class MLAEdit {
 					$parent = '';
 				}
 
-				$galleries .= sprintf( '%1$s (%2$s %3$s), %4$s', /*$1%s*/ $parent, /*$2%s*/ $gallery['post_type'], /*$3%s*/ $gallery_id, /*$4%s*/ $gallery['post_title'] ) . "\r\n";
+				$galleries .= sprintf( '%1$s (%2$s %3$s), %4$s', /*$1%s*/ $parent, /*$2%s*/ $gallery['post_type'], /*$3%s*/ $gallery_id, /*$4%s*/ $gallery['post_title'] ) . "\n";
 			} // foreach $feature
 		}
 
-		echo '<label class="screen-reader-text" for="mla_mla_gallery_in">' . __( 'MLA Gallery in', 'media-library-assistant' ) . '</label><textarea class="readonly" id="mla_mla_gallery_in" rows="5" cols="80" readonly="readonly" name="mla_mla_gallery_in" >' . esc_textarea( $galleries ) . "</textarea>\r\n";
+		$galleries = apply_filters( 'mla_mla_gallery_in_meta_box', array( 'galleries' => $galleries, 'rows' => 5, 'cols' => 80 ), self::$mla_references, $post );
+
+		$html = '<label class="screen-reader-text" for="mla_mla_gallery_in">' . __( 'MLA Gallery in', 'media-library-assistant' ) . '</label><textarea class="readonly" id="mla_mla_gallery_in" rows="' . absint( $galleries['rows'] ) . '" cols="' . absint( $galleries['cols'] ) . '" readonly="readonly" name="mla_mla_gallery_in" >' . esc_textarea( $galleries['galleries'] ) . "</textarea>\n";
+
+		echo apply_filters( 'mla_mla_gallery_in_meta_box_html', $html, $galleries, self::$mla_references, $post );
 	}
 
 	/**

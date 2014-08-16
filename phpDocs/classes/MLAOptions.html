@@ -755,7 +755,7 @@ settings are being updated or reset.</h2>
 </div>
 <a name="mla_update_attachment_metadata_filter" id="mla_update_attachment_metadata_filter"></a><div class="element clickable method public mla_update_attachment_metadata_filter" data-toggle="collapse" data-target=".mla_update_attachment_metadata_filter .collapse">
 <h2>Perform IPTC/EXIF and Custom Field mapping on just-inserted attachment</h2>
-<pre>mla_update_attachment_metadata_filter(array $data, integer $post_id) : void</pre>
+<pre>mla_update_attachment_metadata_filter(array $data, integer $post_id) : array</pre>
 <div class="labels"></div>
 <div class="row collapse"><div class="detail-description">
 <p class="long_description"><p>This filter tests the $add_attachment_id variable set by the mla_add_attachment_action
@@ -773,6 +773,9 @@ to ensure that mapping is only performed for new additions, not metadata updates
 <h4>$post_id</h4>
 <code>integer</code><p>ID of just-inserted attachment</p>
 </div>
+<h3>Returns</h3>
+<div class="subelement response">
+<code>array</code>Updated attachment metadata</div>
 </div></div>
 </div>
 <a name="mla_update_option" id="mla_update_option"></a><div class="element clickable method public mla_update_option" data-toggle="collapse" data-target=".mla_update_option .collapse">
@@ -1576,7 +1579,7 @@ also controls the ATTACHMENT DETAILS enhancements</h2>
 <div class="row"><footer class="span12">
             Template is built using <a href="http://twitter.github.com/bootstrap/">Twitter Bootstrap 2</a> and icons provided by <a href="http://glyphicons.com/">Glyphicons</a>.<br>
             Documentation is powered by <a href="http://www.phpdoc.org/">phpDocumentor 2.0.0a8</a> and<br>
-            generated on 2014-06-27T14:50:12-07:00.<br></footer></div>
+            generated on 2014-08-15T15:57:32-07:00.<br></footer></div>
 </div>
 </body>
 </html>

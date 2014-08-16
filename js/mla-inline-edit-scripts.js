@@ -345,19 +345,16 @@ var mla = {
 
 				$.post( ajaxurl, params,
 					function( response ) {
-						var tableCell = $( '#attachment-' + postId + " td.attached_to" ).clone( true );
-
 						if ( response ) {
 							if ( -1 == response.indexOf( 'tableParentOpen(' ) ) {
 								response = response.replace( /<.[^<>]*?>/g, '' );
 							}
-
-							tableCell.html( response );
 						} else {
-							tableCell.html( mla.settings.ajaxFailError );
+							response = mla.settings.ajaxFailError;
 						}
 
-						$( '#attachment-' + postId + " td.attached_to" ).replaceWith( tableCell );
+						$( '#attachment-' + postId ).before( response ).remove();
+						$( '#attachment-' + postId ).hide().fadeIn();
 					}
 				, 'html');
 			} else {

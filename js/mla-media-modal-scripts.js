@@ -89,15 +89,11 @@ var mlaModal = {
 		if ( _.isObject( action ) ) {
 			options = action;
 		} else {
-			//console.log('wp.media.ajax action: ', JSON.stringify( action ) );
 			options = options || {};
 			options.data = _.extend( options.data || {}, { action: action });
 		}
 
-		//console.log('wp.media.ajax original options: ', JSON.stringify( options ) );
-
 		if ( 'query-attachments' == options.data.action ) {
-
 			stype = typeof options.data.query.s;
 			if ( 'object' == stype )
 				s = options.data.query.s;
@@ -105,6 +101,11 @@ var mlaModal = {
 					s = { 'mla_search_value': options.data.query.s };
 				else
 					s = {};
+
+			if ( 'undefined' != typeof options.data.query.post_mime_type )
+				mlaModal.settings.filterMime = options.data.query.post_mime_type;
+			else
+				mlaModal.settings.filterMime = 'all';
 
 			if ( 'undefined' != typeof s.mla_filter_month )
 				mlaModal.settings.filterMonth = s.mla_filter_month;
@@ -131,7 +132,6 @@ var mlaModal = {
 			options.data.query.s = searchValues;
 		}
 
-		//console.log('media.ajax final options: ', JSON.stringify( options ) );
 		return mlaModal.utility.originalMediaAjax.call(this, options );
 	}; // wp.media.ajax
 
@@ -187,6 +187,8 @@ var mlaModal = {
 				};
 
 				this.filters = filters;
+				if ( ( mlaModal.settings.filterMime != 'all' ) && ( 'undefined' !== typeof filters[ mlaModal.settings.filterMime ] ) )
+					this.model.set( filters[ mlaModal.settings.filterMime ].props, { silent: false } );
 			},
 
 			change: function() {
@@ -218,6 +220,9 @@ var mlaModal = {
 				});
 
 				this.filters = filters;
+				if ( ( mlaModal.settings.filterMonth > 0 ) && ( 'undefined' !== typeof filters[ mlaModal.settings.filterMonth ] ) )
+				if ( mlaModal.settings.filterMonth > 0 )
+					this.model.set( filters[ mlaModal.settings.filterMonth ].props, { silent: false } );
 			},
 
 			select: function() {
@@ -277,6 +282,10 @@ var mlaModal = {
 				});
 
 				this.filters = filters;
+				// need to translate from termsValue to the index value
+				index = _.indexOf( mlaModal.settings.termsValue, mlaModal.settings.filterTerm );
+				if ( index > 0 )
+					this.model.set( filters[ index ].props, { silent: false } );
 			},
 
 			select: function() {
@@ -349,7 +358,6 @@ var mlaModal = {
 					$( '#mla-terms-search-form' ).submit( function( e ){
 						var inputs, inputIndex, termsSearch = { phrases: '', taxonomies: [] };
 
-						//console.log( 'mla-terms-search-form.submit' );
 						e.preventDefault();
 
 						inputs = $( '#mla-terms-search-form' ).serializeArray();
@@ -370,10 +378,8 @@ var mlaModal = {
 							};
 						}
 
-						//console.log( 'mla-terms-search-submit.click termsSearch = ' + JSON.stringify( termsSearch ) );
 						mlaModal.settings.termsSearch = termsSearch
 						$( '#mla-search-submit' ).click();
-						//console.log( 'mla-terms-search-submit.click return false ' );
 						return false;
 					});
 
@@ -483,6 +489,11 @@ var mlaModal = {
 		}); // wp.media.view.MlaSearch
 	}; // mlaModal.settings.enableSearchBox
 
+/*	for debug : trace every event triggered in the wp.media.frame * /
+function mediaFrameOn( eventName ) {
+	console.log('wp.media.frame Event: ', eventName);
+} // */
+	
 	/**
 	 * Add/replace media-toolbar controls with our own
 	 */
@@ -490,6 +501,11 @@ var mlaModal = {
 		wp.media.view.AttachmentsBrowser = wp.media.view.AttachmentsBrowser.extend({
 			createToolbar: function() {
 				var filters;
+
+/*	for debug : trace every event triggered in the wp.media.frame * /
+wp.media.frame.off( 'all', mediaFrameOn );
+wp.media.frame.on( 'all', mediaFrameOn );
+// */
 
 				// Apply the original method to create the toolbar
 				wp.media.view.AttachmentsBrowser.__super__.createToolbar.apply( this, arguments );
@@ -543,7 +559,6 @@ var mlaModal = {
 
 			updateFilters: function( taxonomy, selectMarkup ) {
 				var newOptions = {};
-//console.log( 'updateFilters ( ' + taxonomy + ' ) = ' + JSON.stringify( selectMarkup ) );
 
 				if ( this.options.search && mlaModal.settings.enableTermsDropdown && mlaModal.settings.termsTaxonomy == taxonomy ) {
 					newOptions = mlaModal.utility.parseTermsOptions( selectMarkup );
@@ -637,9 +652,7 @@ var mlaModal = {
 
 		// Test the contents and skip the first match, the "no parent" placeholder
 		results = regEx.exec( selectMarkup );
-//console.log( 'parseTermsOptions placeholder = ' + JSON.stringify( results ) );
 		while ( null !== ( results = regEx.exec( selectMarkup ) ) ) {
-//console.log( 'parseTermsOptions results = ' + JSON.stringify( results ) );
 			termsOptions['termsClass'][termsCount] = results[3];
 			termsOptions['termsValue'][termsCount] = ( 'undefined' === typeof results[6] ) ? results[9] : results[7];
 			termsOptions['termsText'][termsCount++] = results[11].replace( '\&nbsp;', mlaModal.settings.termsIndent );
@@ -926,7 +939,6 @@ var mlaModal = {
 
 				// Hook the 'ready' event when the sidebar has been rendered so we can add our enhancements
 				this.on( 'ready', function( event ) {
-					//console.log( 'view.AttachmentCompat ready Event: ', this.model.get('id') );
 					mlaModal.utility.hookCompatTaxonomies( this.model.get('id'), this.el );
 				});
 			}
@@ -945,32 +957,26 @@ var mlaModal = {
 
 				// Hook the 'selection:reset' event so we can add our enhancements when it's done
 				this.on( 'selection:reset', function( model ) {
-					//console.log( 'model.Selection selection:reset Event: cid ', model.cid, ', id ', model.get('id') );
 					mlaModal.cid = null;
 				});
 
 				// Hook the 'selection:unsingle' event so we can add our enhancements when it's done
 				this.on( 'selection:unsingle', function( model ) {
-					//console.log( 'model.Selection selection:unsingle Event: cid ', model.cid, ', id ', model.get('id') );
 					mlaModal.cid = null;
 				});
 
 				// Hook the 'selection:single' event so we can add our enhancements when it's done
 				this.on( 'selection:single', function( model ) {
-					//console.log( 'model.Selection selection:single Event: cid ', model.cid, ', id ', model.get('id') );
 					mlaModal.cid = model.cid;
 				});
 
 				// Hook the 'change:uploading' event so we can add our enhancements when it's done
 				this.on( 'change:uploading', function( model ) {
-					//console.log( 'model.Selection change:uploading Event: cid ', model.cid, ', id ', model.get('id') );
 					mlaModal.uploading = true;
 				});
 
 				// Hook the 'change' event when the sidebar has been rendered so we can add our enhancements
 				this.on( 'change', function( model ) {
-					//console.log( 'model.Selection change Event: cid ', model.cid, ', id ', model.get('id') );
-
 					if ( mlaModal.uploading && mlaModal.cid === model.cid ) {
 						var mediaFrame = wp.media.editor.get('content'),
 						compat = mediaFrame.content.get('compat');
@@ -987,9 +993,6 @@ var mlaModal = {
 	 */
 	mlaModal.utility.hookCompatTaxonomies = function( attachmentId, context ) {
 		var taxonomy;
-
-//		console.log( 'hookCompatTaxonomies attachmentId: ', attachmentId );
-//		console.log( 'hookCompatTaxonomies context: ', JSON.stringify( context ) );
 
 		if ( mlaModal.settings.enableDetailsCategory ) {
 			$('.mla-taxonomy-field .categorydiv', context ).each( function(){

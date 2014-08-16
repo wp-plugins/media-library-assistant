@@ -78,6 +78,12 @@
 <a href="#select_parent"><strong>Select Parent Popup Window</strong></a>
 </li>
 <li>
+<a href="#mla_edit_meta_boxes"><strong>Edit Media additional meta boxes (and Hooks)</strong></a>
+</li>
+<li>
+<a href="#mla_media_modal_filters"><strong>Media Manager Enhancement filters (Hooks)</strong></a>
+</li>
+<li>
 <a href="#mla_views"><strong>Library Views/Post MIME Type Processing</strong></a>
 </li>
 <li>
@@ -1352,14 +1358,14 @@ The "smallest=12" and "largest=12" parameters make "font-size" the same for all 
 The <code>[mla_tag_cloud]</code> shortcode supports a comprehensive set of filters that give you complete control over cloud composition from PHP code in your theme or in another plugin. An example of using the hooks from a simple, stand-alone plugin can be found here: <a title="View the Tag Cloud Hooks Example source code" href="[+examples_url+]mla-cloud-hooks-example.php.txt" target="_blank" style="font-size:14px; font-weight:bold">mla-cloud-hooks-example.php.txt</a>. To run the example:
 <ol>
 <li>Edit the code to, for example, uncomment the <code>error_log()</code> calls so you can see what is passed to the hooks you are interested in.</li>
-<li>Remove the ".txt" extension and save the "mla-cloud-hooks-example.php" file in your plugins directory. You can give the plugin and it file any (unique) name you like.</li>
+<li>Remove the ".txt" extension and save the "mla-cloud-hooks-example.php" file in your plugins directory. You can give the plugin and its file any (unique) name you like.</li>
 <li>Go to the Plugins/Installed Plugins screen and activate the "MLA Tag Cloud Hooks Example" plugin.</li>
 <li>Create a new <code>[mla_tag_cloud]</code> shortcode or modify an existing shortcode, adding the <code>my_filter="color cloud"</code> parameter to activate the example output.</li>
 <li>View the post or page on which the modified shortcode appears to see a tag cloud with a range of colors applied to the terms.</li>
 </ol>
 </p>
 <p>
-The example code documents each hook with comments in the filter/action function that intercepts each hook. Generally, each part of the gallery supports three hooks: 1) a "<strong>values</strong>" hook, which lets you record or update the substitution values for that gallery part, 2) a "<strong>template</strong>" hook, which lets you record/update the template used to generate the HTML markup, and 3) a "<strong>parse</strong>" hook which lets you modify or replace the markup generated for a gallery part. The current hooks are:
+The example code documents each hook with comments in the filter/action function that intercepts the hook. Generally, each part of the gallery supports three hooks: 1) a "<strong>values</strong>" hook, which lets you record or update the substitution values for that gallery part, 2) a "<strong>template</strong>" hook, which lets you record/update the template used to generate the HTML markup, and 3) a "<strong>parse</strong>" hook which lets you modify or replace the markup generated for a gallery part. The current hooks are:
 </p>
 <table>
 <tr>
@@ -1518,6 +1524,10 @@ Use the following parameters to specify the size of each gallery page and the cu
 <tr>
 <td style="padding-right: 10px; vertical-align: top; font-weight:bold">mla_paginate_current</td>
 <td>the "current" gallery page; defaults to one (1) if not specified. MLA will usually manage this for you, adding it to the hyperlinks for the previous and next gallery pages. MLA will look for this parameter in the HTML $_REQUEST array if it is not coded in the gallery shortcode.</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">mla_page_parameter</td>
+<td>the name of the parameter containing the current page number; default "mla_paginate_current". You can change the name if you need multiple paginated galleries on one post/page. If you use this parameter, make sure you add it to the gallery shortcode and all pagination shortcodes for that gallery, and use the same unique value in all shortcodes for the specific gallery.</td>
 </tr>
 <tr>
 <td style="padding-right: 10px; vertical-align: top; font-weight:bold">mla_paginate_total</td>
@@ -2508,7 +2518,83 @@ Once you have chosen a new parent, click the "Update" button at the lower right 
 </p>
 <p>
 If you change your mind you can close the window without making a change by clicking the "X" in the upper-right corner of the window or the "Cancel" button in the lower-left corner of the window.
+<a name="mla_media_modal_filters"></a>
+</p>
+<p>
+<a href="#backtotop">Go to Top</a>
+</p>
+<h3>Media Manager Enhancement filters (Hooks)</h3>
+<p>
+Media Library Assistant adds several controls to the toolbar in the Media Manager Modal Window; more MIME type filters, year/month filter, taxonomy term filter and an enhanced Search media box. You can change the initial values set for these controls when the Modal Window opens using a filter that MLA provides.An example of using the hooks from a simple, stand-alone plugin can be found here: <a title="View the Meta Box Hooks Example source code" href="[+examples_url+]mla-media-modal-hooks-example.php.txt" target="_blank" style="font-size:14px; font-weight:bold">mla-media-modal-hooks-example.php.txt</a>. To run the example:
+<ol>
+<li>Remove the ".txt" extension and save the "mla-media-modal-hooks-example.php" file in your plugins directory. You can give the plugin and its file any (unique) name you like.</li>
+<li>Go to the Plugins/Installed Plugins screen and activate the "MLA Media Modal Hooks Example" plugin.</li>
+<li>Make any changes or additions you want to in the example plugin source code. For example, you can uncomment the <code>$initial_values</code> assignments and setting a new initial value for one or more controls.</li>
+<li>Click the "Add Media" button for a post or page to see the effect of your changes.</li>
+</ol>
+<a name="mla_edit_meta_boxes"></a>
+</p>
+<p>
+<a href="#backtotop">Go to Top</a>
+</p>
+<h3>Edit Media additional meta boxes (and Hooks)</h3>
+<p>
+Media Library Assistant adds support for the "Custom Fields" meta box to the Media/Edit Media screen. MLA also adds several meta boxes to this screen with more information about the item and where it is  used on your site. You can enable/disable the additional meta boxes with an option on the Settings/Media LIbrary Assistant General tab.
+</p>
+<p>
+You can also make individual changes in which meta boxes are displayed and in their content by using one or more of the filters MLA provides. An example of using the hooks from a simple, stand-alone plugin can be found here: <a title="View the Meta Box Hooks Example source code" href="[+examples_url+]mla-metabox-hooks-example.php.txt" target="_blank" style="font-size:14px; font-weight:bold">mla-metabox-example.php.txt</a>. To run the example:
+<ol>
+<li>Edit the code to, for example, uncomment the <code>error_log()</code> calls so you can see what is passed to the hooks you are interested in.</li>
+<li>Remove the ".txt" extension and save the "mla-metabox-example.php" file in your plugins directory. You can give the plugin and its file any (unique) name you like.</li>
+<li>Go to the Plugins/Installed Plugins screen and activate the "MLA Meta Box Hooks Example" plugin.</li>
+<li>Make any changes or additions you want to in the example plugin source code. For example, you can modify the <code>mla_inserted_in_metabox</code> example to display a simplified version of the "Inserted in" information.</li>
+<li>View the Media/Edit Media screen for an item to see the effect of your changes.</li>
+</ol>
+</p>
+<p>
+The example code documents each hook with comments in the filter function that intercepts the hook. Generally, each meta box filter lets you change the size of the text box (if appropriate) and the content that appears in the box. There is also a second filter for each meta box that lets you replace <strong>all</strong> of the HTML content for most boxes; use these with caution. The current hooks are:
+</p>
+<table>
+<tr>
+<td style="padding 0 0 2em 1em; vertical-align: top; font-weight:bold">mla_edit_media_support</td>
+<td>suppress the addition of Custom Fields to the Edit Media screen. To suppress Custom Fields, return an empty array, i.e., <code>return array();</code></td>
+</tr>
+<tr>
+<td style="padding 0 0 2em 1em; vertical-align: top; font-weight:bold">mla_edit_media_meta_boxes</td>
+<td style="vertical-align: top">record the original list of meta box slugs. You can also remove elements from the array to suppress one or more meta boxes. To suppress a box, remove it from the array, e.g., <code>unset( $active_boxes['mla-menu-order'] );</code></td>
+</tr>
+<tr>
+<td style="padding 0 0 2em 1em; vertical-align: top; font-weight:bold">mla_parent_info_meta_box</td>
+<td style="vertical-align: top">modify the text portion of the "Parent Info" meta box.</td>
+</tr>
+<tr>
+<td style="padding 0 0 2em 1em; vertical-align: top; font-weight:bold">mla_menu_order_meta_box</td>
+<td style="vertical-align: top">modify the "Menu Order" meta box.</td>
+</tr>
+<tr>
+<td style="padding 0 0 2em 1em; vertical-align: top; font-weight:bold">mla_image_metadata_meta_box<br />mla_image_metadata_meta_box_html</td>
+<td style="vertical-align: top">modify the rows, columns and content of the "Attachment Metadata" meta box.</td>
+</tr>
+<tr>
+<td style="padding 0 0 2em 1em; vertical-align: top; font-weight:bold">mla_featured_in_meta_box<br />mla_featured_in_meta_box_html</td>
+<td style="vertical-align: top">modify the rows, columns and content of the "Featured in" meta box.</td>
+</tr>
+<tr>
+<td style="padding 0 0 2em 1em; vertical-align: top; font-weight:bold">mla_inserted_in_meta_box<br />mla_inserted_in_meta_box_html</td>
+<td style="vertical-align: top">modify the rows, columns and content of the "Inserted in" meta box.</td>
+</tr>
+<tr>
+<td style="padding 0 0 2em 1em; vertical-align: top; font-weight:bold">mla_gallery_in_meta_box<br />mla_gallery_in_meta_box_html</td>
+<td style="vertical-align: top">modify the rows, columns and content of the "Gallery in" meta box.</td>
+</tr>
+<tr>
+<td style="padding 0 0 2em 1em; vertical-align: top; font-weight:bold">mla_mla_gallery_in_meta_box<br />mla_mla_gallery_in_meta_box_html</td>
+<td style="vertical-align: top">modify the rows, columns and content of the "MLA Gallery in" meta box.</td>
+</tr>
+</table>
+<p>
 <a name="mla_views"></a>
+&nbsp;
 </p>
 <p>
 <a href="#backtotop">Go to Top</a>
@@ -3729,8 +3815,12 @@ The current mapping hooks are:
 </p>
 <table>
 <tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">mla_begin_mapping</td>
+<td>called once, before mapping rules for any/all attachment(s) are executed.</td>
+</tr>
+<tr>
 <td style="padding-right: 10px; vertical-align: top; font-weight:bold">mla_mapping_settings</td>
-<td>called before any mapping rules are executed. You can add, change or delete rules from the settings/rules array.</td>
+<td>called once for each attachment, before any mapping rules are executed. You can add, change or delete rules from the settings/rules array.</td>
 </tr>
 <tr>
 <td style="padding-right: 10px; vertical-align: top; font-weight:bold">mla_mapping_rule</td>
@@ -3752,9 +3842,13 @@ The current mapping hooks are:
 <td style="padding-right: 10px; vertical-align: top; font-weight:bold">mla_mapping_updates</td>
 <td>called AFTER all mapping rules are applied. You can add, change or remove updates for the attachment's standard fields, taxonomies and/or custom fields.</td>
 </tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">mla_end_mapping</td>
+<td>called once, after mapping rules for any/all attachment(s) are executed. This is a good place to close files, perform cleanup, etc.</td>
+</tr>
 </table>
 <p>
-The current insert attachment/update attachment metadata hooks are:
+A second example plugin, <a title="View the Mapping Hooks Example source code" href="[+examples_url+]mla-metadata-mapping-hooks-example.php.txt" target="_blank" style="font-size:14px; font-weight:bold">mla-metadata-mapping-hooks-example.php.txt</a>, illustrates the metadata hooks. The current insert attachment/update attachment metadata hooks are:
 </p>
 <table>
 <tr>
@@ -3803,6 +3897,15 @@ plugins that alter the attachment file.
 wp_update_attachment_metadata() processing. The postfilter gives you
 an opportunity to record or update the metadata after the mapping.
 </td>
+</tr>
+</table>
+<p>
+The current Settings/Media Library Assistant tab list hook is:
+</p>
+<table>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">mla_get_options_tablist</td>
+<td>gives you an opportunity to remove one or more tabs from the list that appears on the Settings/Media Library Assistant screen.</td>
 </tr>
 </table>
 <p>

@@ -31,9 +31,9 @@ if ( 'checked' == MLAOptions::mla_get_option( MLAOptions::MLA_SEARCH_MEDIA_FILTE
 }
 ?>
 <p class="search-box">
-<label class="screen-reader-text" for="media-search-input">' <?php _e( 'Search Media', 'media-library-assistant' ); ?>:</label>
+<label class="screen-reader-text" for="media-search-input"><?php _e( 'Search Media', 'media-library-assistant' ); ?></label>
 <input name="s" id="media-search-input" type="text" size="45" value="<?php echo $search_value ?>" />
-<input name="mla-search-submit" class="button" id="search-submit" type="submit" value="Search Media" /><br />
+<input name="mla-search-submit" class="button" id="search-submit" type="submit" value="<?php _e( 'Search Media', 'media-library-assistant' ); ?>" /><br />
 <span <?php echo $controls_style ?>>
 <input name="mla_search_connector" type="radio" <?php echo ( 'OR' === $search_connector ) ? '' : 'checked="checked"'; ?> value="AND" /><?php _e( 'and', 'media-library-assistant' ); ?>
 

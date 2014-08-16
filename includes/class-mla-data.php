@@ -1854,34 +1854,42 @@ class MLAData {
 			} else {
 				$tax_terms = array();
 				$tax_counts = array();
+				$wp_4dot0_plus = version_compare( get_bloginfo('version'), '3.10', '>=' ); // during beta
+//				$wp_4dot0_plus = version_compare( get_bloginfo('version'), '4.0', '>=' ); // after release
 				foreach ( $terms_search as $term ) {
-					$term = esc_sql( like_escape( $term ) );
+					if ( $wp_4dot0_plus ) {
+						$term = $percent . $wpdb->esc_like( $term ) . $percent;
+						$term = $wpdb->prepare( '%s', $term );
+					} else {
+						$term = "'" . $percent . esc_sql( like_escape( $term ) ) . $percent . "'";
+					}
+
 					$inner_connector = '';
 					$inner_clause = '';
 
 					if ( in_array( 'content', $fields ) ) {
-					  $inner_clause .= "{$inner_connector}({$wpdb->posts}.post_content LIKE '{$percent}{$term}{$percent}')";
+					  $inner_clause .= "{$inner_connector}({$wpdb->posts}.post_content LIKE {$term})";
 					  $inner_connector = ' OR ';
 					}
 
 					if ( in_array( 'title', $fields ) ) {
-					  $inner_clause .= "{$inner_connector}({$wpdb->posts}.post_title LIKE '{$percent}{$term}{$percent}')";
+					  $inner_clause .= "{$inner_connector}({$wpdb->posts}.post_title LIKE {$term})";
 					  $inner_connector = ' OR ';
 					}
 
 					if ( in_array( 'excerpt', $fields ) ) {
-					  $inner_clause .= "{$inner_connector}({$wpdb->posts}.post_excerpt LIKE '{$percent}{$term}{$percent}')";
+					  $inner_clause .= "{$inner_connector}({$wpdb->posts}.post_excerpt LIKE {$term})";
 					  $inner_connector = ' OR ';
 					}
 
 					if ( in_array( 'alt-text', $fields ) ) {
 					  $view_name = self::$mla_alt_text_view;
-					  $inner_clause .= "{$inner_connector}({$view_name}.meta_value LIKE '{$percent}{$term}{$percent}')";
+					  $inner_clause .= "{$inner_connector}({$view_name}.meta_value LIKE {$term})";
 					  $inner_connector = ' OR ';
 					}
 
 					if ( in_array( 'name', $fields ) ) {
-					  $inner_clause .= "{$inner_connector}({$wpdb->posts}.post_name LIKE '{$percent}{$term}{$percent}')";
+					  $inner_clause .= "{$inner_connector}({$wpdb->posts}.post_name LIKE {$term})";
 					}
 
 					if ( ! empty($inner_clause) ) {
@@ -2643,7 +2651,7 @@ class MLAData {
 		$references['base_file'] = get_post_meta( $ID, '_wp_attached_file', true );
 		$pathinfo = pathinfo($references['base_file']);
 		$references['file'] = $pathinfo['basename'];
-		if ( '.' == $pathinfo['dirname'] ) {
+		if ( ( ! isset( $pathinfo['dirname'] ) ) || '.' == $pathinfo['dirname'] ) {
 			$references['path'] = '/';
 		} else {
 			$references['path'] = $pathinfo['dirname'] . '/';
@@ -2719,32 +2727,27 @@ class MLAData {
 				$inserted_in_option = MLAOptions::mla_get_option( MLAOptions::MLA_INSERTED_IN_TUNING );
 			}
 
+			$wp_4dot0_plus = version_compare( get_bloginfo('version'), '3.10', '>=' ); // during beta
+//			$wp_4dot0_plus = version_compare( get_bloginfo('version'), '4.0', '>=' ); // after release
 			if ( 'base' == $inserted_in_option ) {
-				$like1 = like_escape( $references['path'] . $pathinfo['filename'] ) . '.' . like_escape( $pathinfo['extension'] );
-				$like2 = like_escape( $references['path'] . $pathinfo['filename'] ) . '-%.' . like_escape( $pathinfo['extension'] );
-/*				$inserts = $wpdb->get_results(
-					$wpdb->prepare(
-						"SELECT ID, post_type, post_title FROM {$wpdb->posts}
-						WHERE {$exclude_revisions} ((CONVERT(`post_content` USING utf8 ) LIKE %s) OR 
-						(CONVERT(`post_content` USING utf8 ) LIKE %s))", "%{$like1}%", "%{$like2}%"
-					)
-				); */
-
-/*				$inserts = $wpdb->get_results(
-					$wpdb->prepare(
-						"SELECT ID, post_type, post_title, CONVERT(`post_content` USING utf8 ) AS POST_CONTENT FROM {$wpdb->posts}
-						WHERE {$exclude_revisions} ( ( POST_CONTENT LIKE %s) OR 
-						( POST_CONTENT LIKE %s) )", "%{$like1}%", "%{$like2}%"
-					)
-				); */
-
 				$query_parameters = array();
 				$query = array();
-				$query[] = "SELECT ID, post_type, post_title, CONVERT(`post_content` USING utf8 ) AS POST_CONTENT FROM {$wpdb->posts} WHERE {$exclude_revisions} ( 1=0";
+				$query[] = "SELECT ID, post_type, post_title, CONVERT(`post_content` USING utf8 ) AS POST_CONTENT FROM {$wpdb->posts} WHERE {$exclude_revisions} ( %s=%s";
+				$query_parameters[] = '1'; // for empty file name array
+				$query_parameters[] = '0'; // for empty file name array
 
 				foreach ( $references['files'] as $file => $file_data ) {
+					if ( empty( $file ) ) {
+						continue;
+					}
+					
 					$query[] = 'OR ( POST_CONTENT LIKE %s)';
-					$query_parameters[] = '%' . like_escape( $file ) . '%';
+					
+					if ( $wp_4dot0_plus ) {
+						$query_parameters[] = '%' . $wpdb->esc_like( $file ) . '%';
+					} else {
+						$query_parameters[] = '%' . like_escape( $file ) . '%';
+					}
 				}
 
 				$query[] = ')';
@@ -2758,7 +2761,8 @@ class MLAData {
 					$references['found_reference'] = true;
 					$references['inserts'][ $pathinfo['filename'] ] = $inserts;
 
-					foreach ( $inserts as $insert ) {
+					foreach ( $inserts as $index => $insert ) {
+						unset( $references['inserts'][ $pathinfo['filename'] ][ $index ]->POST_CONTENT );
 						if ( $insert->ID == $parent ) {
 							$references['found_parent'] = true;
 						}
@@ -2766,7 +2770,16 @@ class MLAData {
 				} // ! empty
 			} else { // process base names
 				foreach ( $references['files'] as $file => $file_data ) {
-					$like = like_escape( $file );
+					if ( empty( $file ) ) {
+						continue;
+					}
+					
+					if ( $wp_4dot0_plus ) {
+						$like = $wpdb->esc_like( $file );
+					} else {
+						$like = like_escape( $file );
+					}
+		
 					$inserts = $wpdb->get_results(
 						$wpdb->prepare(
 							"SELECT ID, post_type, post_title FROM {$wpdb->posts}
@@ -2986,7 +2999,14 @@ class MLAData {
 			$exclude_revisions = '';
 		}
 
-		$like = like_escape( $shortcode );
+		$wp_4dot0_plus = version_compare( get_bloginfo('version'), '3.10', '>=' ); // during beta
+//		$wp_4dot0_plus = version_compare( get_bloginfo('version'), '4.0', '>=' ); // after release
+		if ( $wp_4dot0_plus ) {
+			$like = $wpdb->esc_like( $shortcode );
+		} else {
+			$like = like_escape( $shortcode );
+		}
+		
 		$results = $wpdb->get_results(
 			$wpdb->prepare(
 				"

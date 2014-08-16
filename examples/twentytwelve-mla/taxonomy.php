@@ -21,6 +21,7 @@ if ( $is_media_archive ) {
 	if ( isset( $_REQUEST['use_mla_gallery'] ) ) {
 		$use_mla_gallery = true;
 	} else {
+		$use_mla_gallery = false;
 		$args = array_merge( $wp_query->query_vars, array( 'post_type' => 'attachment', 'post_status' => 'inherit' ) );
 		query_posts( $args );
 	}
@@ -30,7 +31,9 @@ if ( $is_media_archive ) {
 	<section id="primary" class="site-content">
 		<div id="content" role="main">
 
-		<?php if ( have_posts() ) : ?>
+		<?php if ( $use_mla_gallery ) : ?>
+			<?php get_template_part( 'content', 'mla-gallery' ); ?>
+		<?php elseif ( have_posts() ) : ?>
 			<header class="archive-header">
 				<h1 class="archive-title"><?php
 					if ( is_day() ) :
