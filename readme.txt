@@ -3,8 +3,8 @@ Contributors: dglingren
 Donate link: http://fairtradejudaica.org/make-a-difference/donate/
 Tags: attachment, attachments, documents, gallery, image, images, media, library, media library, tag cloud, media-tags, media tags, tags, media categories, categories, IPTC, EXIF, GPS, PDF, meta, metadata, photo, photos, photograph, photographs, photoblog, photo albums, lightroom, photoshop, MIME, mime-type, icon, upload, file extensions
 Requires at least: 3.3
-Tested up to: 4.0
-Stable tag: 1.91
+Tested up to: 3.9.2
+Stable tag: 1.92
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -148,9 +148,14 @@ All of the MLA source code has been annotated with "DocBlocks", a special type o
 6. The Settings page MLA Gallery tab, where you can add custom style and markup templates for `[mla_gallery]` shortcode output.
 7. The Settings page IPTC &amp; EXIF Processing Options screen, where you can map image metadata to standard fields (e.g. caption), taxonomy terms and custom fields.
 8. The Settings page Custom Field Processing Options screen, where you can map attachment metadata to custom fields for display in [mla_gallery] shortcodes and as sortable, searchable columns in the Media/Assistant submenu.
-9. The Media Manager popup modal window showing additional filters for date and taxonomy terms. Also shows the enhanced Search Media box and the **full-function taxonomy support in the ATTACHMENT DETAILS area**.
+9. The Media Manager popup modal window showing additional filters for date and taxonomy terms. Also shows the enhanced Search Media box and the full-function taxonomy support in the ATTACHMENT DETAILS area.
 
 == Changelog ==
+
+= 1.92 =
+* Fix: PHP "Fatal error: Call to undefined function get_current_screen ()" has been fixed.
+* Fix: Enhanced taxonomy support for drag & drop file uploads has been restored.
+* Fix: JavaScript "undefined or null object" reference when all Media Manager toolbar enhancements are disabled has been fixed.
 
 = 1.91 =
 
@@ -243,8 +248,8 @@ All of the MLA source code has been annotated with "DocBlocks", a special type o
 
 == Upgrade Notice ==
 
-= 1.91 =
-WordPress 4.0 support! New "Edit Media meta box" and "Media Modal Initial Values" filters and example plugins. Four other enhancements, six fixes.
+= 1.92 =
+Three bug fixes, one serious.
 
 == Other Notes ==
 

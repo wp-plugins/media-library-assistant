@@ -174,7 +174,8 @@ class MLAModal {
 		 * For the non-Modal Media/Edit Media screen, the MLAEdit::mla_add_meta_boxes_action
 		 * function changes the default meta box to the MLA searchable meta box.
 		 */
-		if ( self::$mla_query_attachments ) {
+//		if ( self::$mla_query_attachments ) {
+		if ( isset( self::$media_item_args['in_modal'] ) && self::$media_item_args['in_modal'] ) {
 			foreach ( get_taxonomies( array ( 'show_ui' => true ), 'objects' ) as $key => $value ) {
 				if ( MLAOptions::mla_taxonomy_support( $key ) ) {
 					if ( isset( $form_fields[ $key ] ) ) {
@@ -346,6 +347,7 @@ class MLAModal {
 	 * @var	array
 	 */
 	private static $mla_media_modal_settings = array(
+			'comma' => ',',
 			'ajaxNonce' => '',
 			'ajaxFillCompatAction' => self::JAVASCRIPT_FILL_COMPAT_ACTION,
 			'ajaxQueryAttachmentsAction' => self::JAVASCRIPT_QUERY_ATTACHMENTS_ACTION,
@@ -388,17 +390,20 @@ class MLAModal {
 	 * @return	array	updated $settings array
 	 */
 	public static function mla_media_view_settings_filter( $settings, $post ) {
-		$screen = get_current_screen();
-		
-		/*
-		 * WordPress 4.0 adds the "grid view" to the Media/Library screen, and we don't want
-		 * to add our functionality to that screen.
-		 */
-		if ( 'upload' == $screen->base ) {
-		//if ( 'edit' != $screen->parent_base ) {
-			return $settings;
+		if ( function_exists( 'get_current_screen' ) ) {
+			$screen = get_current_screen();
+			
+			/*
+			 * WordPress 4.0 adds the "grid view" to the Media/Library screen, and we don't want
+			 * to add our functionality to that screen.
+			 */
+			if ( 'upload' == $screen->base ) {
+			//if ( 'edit' != $screen->parent_base ) {
+				return $settings;
+			}
 		}
 		
+		self::$mla_media_modal_settings['comma'] = _x( ',', 'tag delimiter' );
 		self::$mla_media_modal_settings['ajaxNonce'] = wp_create_nonce( MLA::MLA_ADMIN_NONCE );
 		self::$mla_media_modal_settings['mimeTypes'] = MLAMime::mla_pluck_table_views();
 		self::$mla_media_modal_settings['mimeTypes']['detached'] = MLAOptions::$mla_option_definitions[ MLAOptions::MLA_POST_MIME_TYPES ]['std']['unattached']['plural'];
@@ -469,17 +474,19 @@ class MLAModal {
 	 * @return	array	updated $strings array
 	 */
 	public static function mla_media_view_strings_filter( $strings, $post ) {
-		$screen = get_current_screen();
-		
-		/*
-		 * WordPress 4.0 adds the "grid view" to the Media/Library screen, and we don't want
-		 * to add our functionality to that screen.
-		 */
-		if ( 'upload' == $screen->base ) {
-		//if ( 'edit' != $screen->parent_base ) {
-			return $strings;
+		if ( function_exists( 'get_current_screen' ) ) {
+			$screen = get_current_screen();
+			
+			/*
+			 * WordPress 4.0 adds the "grid view" to the Media/Library screen, and we don't want
+			 * to add our functionality to that screen.
+			 */
+			if ( 'upload' == $screen->base ) {
+			//if ( 'edit' != $screen->parent_base ) {
+				return $strings;
+			}
 		}
-		
+			
 		$mla_strings = array(
 			'searchBoxPlaceholder' => __( 'Search Box', 'media-library-assistant' ),
 			'loadingText' => __( 'Loading...', 'media-library-assistant' ),
@@ -499,17 +506,19 @@ class MLAModal {
 	 * @return	void
 	 */
 	public static function mla_wp_enqueue_media_action( ) {
-		$screen = get_current_screen();
-		
-		/*
-		 * WordPress 4.0 adds the "grid view" to the Media/Library screen, and we don't want
-		 * to add our functionality to that screen.
-		 */
-		if ( 'upload' == $screen->base ) {
-		//if ( 'edit' != $screen->parent_base ) {
-			return;
+		if ( function_exists( 'get_current_screen' ) ) {
+			$screen = get_current_screen();
+			
+			/*
+			 * WordPress 4.0 adds the "grid view" to the Media/Library screen, and we don't want
+			 * to add our functionality to that screen.
+			 */
+			if ( 'upload' == $screen->base ) {
+			//if ( 'edit' != $screen->parent_base ) {
+				return;
+			}
 		}
-		
+
 		$suffix = defined('SCRIPT_DEBUG') && SCRIPT_DEBUG ? '' : '.min';
 
 		wp_register_style( self::JAVASCRIPT_MEDIA_MODAL_STYLES, MLA_PLUGIN_URL . 'css/mla-media-modal-style.css', false, MLA::CURRENT_MLA_VERSION );
@@ -531,21 +540,23 @@ class MLAModal {
 	 * @return	void	echoes HTML script tags for the templates
 	 */
 	public static function mla_print_media_templates_action( ) {
-		$screen = get_current_screen();
-		//cause_an_error();
-		//$cause_notice = $screen->bad_property;
-		//trigger_error( 'mla_print_media_templates_action', E_USER_WARNING );
-		//error_log( 'xdebug_get_function_stack = ' . var_export( xdebug_get_function_stack(), true), 0 );		
-
-		/*
-		 * WordPress 4.0 adds the "grid view" to the Media/Library screen, and we don't want
-		 * to add our functionality to that screen.
-		 */
-		if ( 'upload' == $screen->base ) {
-		//if ( 'edit' != $screen->parent_base ) {
-			return;
+		if ( function_exists( 'get_current_screen' ) ) {
+			$screen = get_current_screen();
+			//cause_an_error();
+			//$cause_notice = $screen->bad_property;
+			//trigger_error( 'mla_print_media_templates_action', E_USER_WARNING );
+			//error_log( 'xdebug_get_function_stack = ' . var_export( xdebug_get_function_stack(), true), 0 );		
+	
+			/*
+			 * WordPress 4.0 adds the "grid view" to the Media/Library screen, and we don't want
+			 * to add our functionality to that screen.
+			 */
+			if ( 'upload' == $screen->base ) {
+			//if ( 'edit' != $screen->parent_base ) {
+				return;
+			}
 		}
-		
+
 		/*
 		 * Compose the Search Media box
 		 */

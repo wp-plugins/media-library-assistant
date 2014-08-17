@@ -669,7 +669,7 @@ wp.media.frame.on( 'all', mediaFrameOn );
 		var arrayOut = [], isString = ( 'string' === typeof arrayIn );
 
 		if( isString ) {
-			arrayIn = arrayIn.split( postL10n.comma );
+			arrayIn = arrayIn.split( mlaModal.settings.comma );
 		}
 
 		jQuery.each( arrayIn, function( key, val ) {
@@ -684,7 +684,7 @@ wp.media.frame.on( 'all', mediaFrameOn );
 		arrayOut.sort();
 
 		if( isString ) {
-			arrayOut = arrayOut.join( postL10n.comma );
+			arrayOut = arrayOut.join( mlaModal.settings.comma );
 		}
 
 		return arrayOut;
@@ -710,7 +710,7 @@ wp.media.frame.on( 'all', mediaFrameOn );
 		 * Remove duplicate commas and whitespace from a string containing a tag list
 		 */
 		cleanTags : function( tags ) {
-			var comma = postL10n.comma;
+			var comma = mlaModal.settings.comma;
 			if ( ',' !== comma ) {
 				tags = tags.replace( new RegExp( comma, 'g' ), ',' );
 			}
@@ -730,7 +730,7 @@ wp.media.frame.on( 'all', mediaFrameOn );
 		parseTags : function( el ) {
 			var id = el.id, num = id.split( '-check-num-' )[1],
 				tagsDiv = $( el ).closest( '.tagsdiv' ),
-				thetags = tagsDiv.find( '.the-tags' ), comma = postL10n.comma,
+				thetags = tagsDiv.find( '.the-tags' ), comma = mlaModal.settings.comma,
 				current_tags = thetags.val().split( comma ), new_tags = [];
 
 			delete current_tags[ num ];
@@ -764,7 +764,7 @@ wp.media.frame.on( 'all', mediaFrameOn );
 
 			disabled = thetags.prop( 'disabled' );
 
-			current_tags = thetags.val().split( postL10n.comma );
+			current_tags = thetags.val().split( mlaModal.settings.comma );
 			tagchecklist.empty();
 
 			$.each( current_tags, function( key, val ) {
@@ -798,7 +798,7 @@ wp.media.frame.on( 'all', mediaFrameOn );
 			var tagsval, newtags, text,
 				tags = $( '.the-tags', tagsDiv ),
 				newtag = $( 'input.newtag', tagsDiv ),
-				comma = postL10n.comma;
+				comma = mlaModal.settings.comma;
 
 			a = a || false;
 
@@ -862,7 +862,7 @@ wp.media.frame.on( 'all', mediaFrameOn );
 					return false;
 				}
 			}).each( function(){
-				$( this ).suggest( ajaxurl + '?action=ajax-tag-search&tax=' + taxonomy, { delay: 500, resultsClass: 'mla_ac_results', selectClass: 'mla_ac_over', matchClass: 'mla_ac_match', minchars: 2, multiple: true, multipleSep: postL10n.comma + ' ' } );
+				$( this ).suggest( ajaxurl + '?action=ajax-tag-search&tax=' + taxonomy, { delay: 500, resultsClass: 'mla_ac_results', selectClass: 'mla_ac_over', matchClass: 'mla_ac_match', minchars: 2, multiple: true, multipleSep: mlaModal.settings.comma + ' ' } );
 			});
 
 			// get the tag cloud on first click, then toggle visibility
@@ -901,7 +901,10 @@ wp.media.frame.on( 'all', mediaFrameOn );
 
 					for ( taxonomy in results ) {
 						if ( 'object' === typeof( results[ taxonomy][ 'object-terms' ] ) ) {
-							mlaModal.utility.mlaAttachmentsBrowser.updateFilters( taxonomy, results[ taxonomy][ 'object-terms' ] );
+							if ( null !== mlaModal.utility.mlaAttachmentsBrowser ) {
+								mlaModal.utility.mlaAttachmentsBrowser.updateFilters( taxonomy, results[ taxonomy][ 'object-terms' ] );
+							}
+							
 							delete results[ taxonomy][ 'object-terms' ];
 						}
 
@@ -1238,7 +1241,9 @@ wp.media.frame.on( 'all', mediaFrameOn );
 					if ( 'undefined' != s.parsed.responses[0] && ( sup = s.parsed.responses[0].supplemental.newcat_parent ) ) {
 						drop.before( sup );
 						drop.remove();
-						mlaModal.utility.mlaAttachmentsBrowser.updateFilters( taxonomy, sup );
+						if ( null !== mlaModal.utility.mlaAttachmentsBrowser ) {
+							mlaModal.utility.mlaAttachmentsBrowser.updateFilters( taxonomy, sup );
+						}
 					}
 				};
 
