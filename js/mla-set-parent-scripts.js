@@ -1,5 +1,7 @@
 /* global ajaxurl, mla  */
 
+var jQuery;
+
 ( function( $ ) {
 	/**
 	 * setParent displays a popup modal window with a post/page list
@@ -15,12 +17,12 @@
 			});
 
 			// Send setParent parent keywords for filtering
-			$( '#mla-set-parent-search' ).click( function ( event ) {
+			$( '#mla-set-parent-search' ).click( function () {
 				$( '#mla-set-parent-paged' ).val( 1 );
 				mla.setParent.send();
 			});
 
-			$( '#mla-set-parent-search-div :input' ).keypress( function( event ) {
+			$( '#mla-set-parent-search-div :input' ).keypress( function() {
 				if ( 13 == event.which ) {
 					mla.setParent.send();
 					return false;
@@ -28,13 +30,13 @@
 			});
 
 			// Send post type(s) for filtering
-			$( '#mla-set-parent-post-type' ).change( function ( event ) {
+			$( '#mla-set-parent-post-type' ).change( function () {
 				$( '#mla-set-parent-paged' ).val( 1 );
 				mla.setParent.send();
 			});
 
 			// Pagination controls
-			$( '#mla-set-parent-previous' ).click( function ( event ) {
+			$( '#mla-set-parent-previous' ).click( function () {
 				var paged = + $( '#mla-set-parent-paged' ).val();
 
 				if ( paged > 1 ) {
@@ -46,7 +48,7 @@
 				mla.setParent.send();
 			});
 
-			$( '#mla-set-parent-next' ).click( function ( event ) {
+			$( '#mla-set-parent-next' ).click( function () {
 				var count = + $( '#mla-set-parent-count' ).val(),
 					paged = + $( '#mla-set-parent-paged' ).val(),
 					found = + $( '#mla-set-parent-found' ).val();
@@ -136,8 +138,7 @@
 					action: 'mla_find_posts',
 					_ajax_nonce: $('#mla-set-parent-ajax-nonce').val()
 				},
-				spinner = $( '#mla-set-parent-search-div .spinner' ),
-				ajaxResponse = null;
+				spinner = $( '#mla-set-parent-search-div .spinner' );
 
 			spinner.show();
 
@@ -167,7 +168,7 @@
 					 * See if we can "check" the current parent
 					 */
 					id = $( '#mla-set-parent-parent' ).val();
-					$( '#mla-set-parent-response-div #found-' + id ).each(function( index, element ){
+					$( '#mla-set-parent-response-div #found-' + id ).each(function(){
 						$( this ).prop( 'checked', true );
 					});
 				}

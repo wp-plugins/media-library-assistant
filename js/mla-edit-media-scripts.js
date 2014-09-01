@@ -1,15 +1,17 @@
-var mla = {
-	// Properties
-	settings: {},
-
-	// Utility functions
-	utility: {
-	},
-
-	// Components
-	setParent: null,
-	mlaEditAttachment: null
-};
+var jQuery,
+	mla_edit_media_vars,
+	mla = {
+		// Properties
+		settings: {},
+	
+		// Utility functions
+		utility: {
+		},
+	
+		// Components
+		setParent: null,
+		mlaEditAttachment: null
+	};
 
 ( function( $ ) {
 	/**
@@ -56,7 +58,7 @@ var mla = {
 				} );
 
 				$( '#search-' + taxonomy ).keyup( function( event ){
-					var searchValue, matchingTerms, matchingTermsPopular;
+					var searchValue, termList, termListPopular, matchingTerms, matchingTermsPopular;
 
 					if( 13 === event.keyCode ) {
 						event.preventDefault();
@@ -64,9 +66,9 @@ var mla = {
 						return;
 					}
 
-					searchValue = $( '#search-' + taxonomy ).val(),
-						termList = $( '#' + taxonomy + 'checklist li' );
-						termListPopular = $( '#' + taxonomy + 'checklist-pop li' );
+					searchValue = $( '#search-' + taxonomy ).val();
+					termList = $( '#' + taxonomy + 'checklist li' );
+					termListPopular = $( '#' + taxonomy + 'checklist-pop li' );
 
 					if ( 0 < searchValue.length ) {
 						termList.hide();
@@ -122,12 +124,12 @@ var mla = {
 			 */
 			$( '#mla-set-parent-submit' ).on( 'click', function( event ){
 				event.preventDefault();
-				mla.mlaEditAttachment.setParentSave( postId );
+				mla.mlaEditAttachment.setParentSave();
 				return false;
 			});
 		},
 
-		setParentSave : function( postId ) {
+		setParentSave : function() {
 			var foundRow = $( '#mla-set-parent-response-div input:checked' ).closest( 'tr' ),
 				parentId, parentTitle, newParent, newTitle;
 
@@ -143,7 +145,7 @@ var mla = {
 
 			$( '#mla-set-parent-submit' ).off( 'click' );
 		}
-	} // mla.mlaEditAttachment
+	}; // mla.mlaEditAttachment
 
 	$( document ).ready( function(){ mla.mlaEditAttachment.init(); } );
 })( jQuery );

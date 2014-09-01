@@ -1858,38 +1858,38 @@ class MLAData {
 //				$wp_4dot0_plus = version_compare( get_bloginfo('version'), '4.0', '>=' ); // after release
 				foreach ( $terms_search as $term ) {
 					if ( $wp_4dot0_plus ) {
-						$term = $percent . $wpdb->esc_like( $term ) . $percent;
-						$term = $wpdb->prepare( '%s', $term );
+						$sql_term = $percent . $wpdb->esc_like( $term ) . $percent;
+						$sql_term = $wpdb->prepare( '%s', $sql_term );
 					} else {
-						$term = "'" . $percent . esc_sql( like_escape( $term ) ) . $percent . "'";
+						$sql_term = "'" . $percent . esc_sql( like_escape( $term ) ) . $percent . "'";
 					}
 
 					$inner_connector = '';
 					$inner_clause = '';
 
 					if ( in_array( 'content', $fields ) ) {
-					  $inner_clause .= "{$inner_connector}({$wpdb->posts}.post_content LIKE {$term})";
+					  $inner_clause .= "{$inner_connector}({$wpdb->posts}.post_content LIKE {$sql_term})";
 					  $inner_connector = ' OR ';
 					}
 
 					if ( in_array( 'title', $fields ) ) {
-					  $inner_clause .= "{$inner_connector}({$wpdb->posts}.post_title LIKE {$term})";
+					  $inner_clause .= "{$inner_connector}({$wpdb->posts}.post_title LIKE {$sql_term})";
 					  $inner_connector = ' OR ';
 					}
 
 					if ( in_array( 'excerpt', $fields ) ) {
-					  $inner_clause .= "{$inner_connector}({$wpdb->posts}.post_excerpt LIKE {$term})";
+					  $inner_clause .= "{$inner_connector}({$wpdb->posts}.post_excerpt LIKE {$sql_term})";
 					  $inner_connector = ' OR ';
 					}
 
 					if ( in_array( 'alt-text', $fields ) ) {
 					  $view_name = self::$mla_alt_text_view;
-					  $inner_clause .= "{$inner_connector}({$view_name}.meta_value LIKE {$term})";
+					  $inner_clause .= "{$inner_connector}({$view_name}.meta_value LIKE {$sql_term})";
 					  $inner_connector = ' OR ';
 					}
 
 					if ( in_array( 'name', $fields ) ) {
-					  $inner_clause .= "{$inner_connector}({$wpdb->posts}.post_name LIKE {$term})";
+					  $inner_clause .= "{$inner_connector}({$wpdb->posts}.post_name LIKE {$sql_term})";
 					}
 
 					if ( ! empty($inner_clause) ) {
@@ -1936,7 +1936,15 @@ class MLAData {
 						} // foreach taxonomy
 					} // AND connector
 
-					if ( ! empty( $tax_terms ) ) {
+					if ( empty( $tax_terms ) ) {
+						/*
+						 * If "Terms" is the only field and no terms are present,
+						 * the search must fail.
+						 */
+						if ( array( 'terms' ) == $fields ) {
+							$tax_clause = '1=0';
+						}
+					} else {
 						self::$query_parameters['tax_terms'] = $tax_terms;
 						$tax_index = 0;
 						$inner_connector = '';

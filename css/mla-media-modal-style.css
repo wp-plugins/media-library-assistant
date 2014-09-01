@@ -3,7 +3,8 @@
  * CSS Document
  *
  * This file contains styling attributes for the Media Manager Modal Window,
- * adapted from /wp-admin/css/edit.css and given unique names to avoid conflicts.
+ * as well as the WordPress 4.0 Media Grid.
+ * Adapted from /wp-admin/css/edit.css and given unique names to avoid conflicts.
  */
 
 .media-toolbar {
@@ -31,18 +32,24 @@
 .mla-search-options > li:last-child { margin-right: 0; }
 
 /**
- * Attachment Browser Dropdowns
- */
-.media-frame select.attachment-months,
-.media-frame select.attachment-terms,
-.media-frame input#mla-terms-search {
+ * Media Toolbar Controls
+*/
+.mode-grid.media-frame .media-toolbar .select-mode-toggle-button,
+.mode-grid.media-frame .media-toolbar input#mla-terms-search {
+	vertical-align:middle;
+}
+
+.mode-grid.media-frame .media-toolbar input#media-search-input,
+.mode-grid.media-frame .media-toolbar input#mla-search-submit {
 	margin-top: 11px;
-	margin-right: 10px;
+	position: static;
+	width:auto
 }
 
 /**
  * Hide "Media Categories" meta box
  */
+.attachment-compat .compat-item .compat-field-MLA-has-disabled-this-instance_metabox,
 .media-sidebar .compat-item .compat-field-MLA-has-disabled-this-instance_metabox {
 	display: none;
 }
@@ -51,9 +58,9 @@
  * Checkbox-style taxonomy meta box
  */
 
-.media-modal.mla-expanded .media-toolbar { right: 612px; }
-.media-modal.mla-expanded .attachments { right: 612px; }
-.media-modal.mla-expanded .media-sidebar { 6px; min-width: 600px; }
+/* .media-modal.mla-expanded .media-toolbar { right: 612px; } */
+/* .media-modal.mla-expanded .attachments { right: 612px; } */
+/* .media-modal.mla-expanded .media-sidebar { 6px; min-width: 600px; } */
 
 .media-modal .media-toolbar {
 	right: 312px;
@@ -78,16 +85,19 @@
 	display: none;
 }
 
+.attachment-compat .compat-item .mla-taxonomy-row .mla-taxonomy-field div.categorydiv,
 .media-sidebar .compat-item .mla-taxonomy-row .mla-taxonomy-field div.categorydiv {
 	margin-top: 0px;
 	padding-top: 6px;
 }
 
+.attachment-compat .compat-item .mla-taxonomy-row .mla-taxonomy-field div.tagsdiv,
 .media-sidebar .compat-item .mla-taxonomy-row .mla-taxonomy-field div.tagsdiv {
 	margin-top: 0px;
 	padding-top: 6px;
 }
 
+.attachment-compat .compat-item .mla-taxonomy-row td.field div.tabs-panel,
 .media-sidebar .compat-item .mla-taxonomy-row td.field div.tabs-panel {
 	min-height: 200px;
 	max-height: 200px;
@@ -102,25 +112,35 @@
  * Flat taxonomy meta box, from /wp-admin/css/edit.css "13.0 - Tags"
  */
 
+.attachment-compat .compat-item .mla-taxonomy-row .mla-taxonomy-field div.ajaxtag .newtag,
 .media-sidebar .compat-item .mla-taxonomy-row .mla-taxonomy-field div.ajaxtag .newtag {
 	position: relative;
 }
 
+.attachment-compat .compat-item .mla-taxonomy-row .mla-taxonomy-field div.tagsdiv .newtag,
 .media-sidebar .compat-item .mla-taxonomy-row .mla-taxonomy-field div.tagsdiv .newtag {
 	margin-right: 4px;
 	width: 200px;
 }
 
+.attachment-compat .compat-item .mla-taxonomy-row .mla-taxonomy-field div.tagsdiv .tagadd,
 .media-sidebar .compat-item .mla-taxonomy-row .mla-taxonomy-field div.tagsdiv .tagadd {
 	width: auto;
 }
 
+.edit-attachment-frame input.mla-taxonomy-add-submit,
 .media-frame input.mla-taxonomy-add-submit {
 	font-size: 13px;
 	line-height: 16px;
 	height: 26px;
 	padding: 4px;
 	width: auto;
+}
+
+/* ntdelbutton in media grid */
+.edit-attachment-frame .tagchecklist span a {
+	position:static;
+	margin-left: 0px
 }
 
 /*

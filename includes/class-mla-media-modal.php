@@ -85,8 +85,8 @@ class MLAModal {
 	 */
 	public static function initialize() {
 		/*
-		 * WordPress 3.5's new Media Manager is supported on the server by
-		 * /wp-includes/media.php function wp_enqueue_media(), which contains:
+		 * WordPress 3.5's Media Manager and 4.0's Media Grid are supported on the server
+		 * by /wp-includes/media.php function wp_enqueue_media(), which contains:
 		 *
 		 * $settings = apply_filters( 'media_view_settings', $settings, $post );
 		 * $strings  = apply_filters( 'media_view_strings',  $strings,  $post );
@@ -110,7 +110,7 @@ class MLAModal {
 		 * documented as: "Filter the attachment fields to edit."
 		 */
 
-		if ( MLATest::$wordpress_3point5_plus && ( 'checked' == MLAOptions::mla_get_option( MLAOptions::MLA_MEDIA_MODAL_TOOLBAR ) ) ) {
+		if ( MLATest::$wordpress_3point5_plus && ( ( 'checked' == MLAOptions::mla_get_option( MLAOptions::MLA_MEDIA_MODAL_TOOLBAR ) ) || ( 'checked' == MLAOptions::mla_get_option( MLAOptions::MLA_MEDIA_GRID_TOOLBAR ) ) ) ) {
 			add_filter( 'get_media_item_args', 'MLAModal::mla_get_media_item_args_filter', 10, 1 );
 			add_filter( 'attachment_fields_to_edit', 'MLAModal::mla_attachment_fields_to_edit_filter', 0x7FFFFFFF, 2 );
 
@@ -169,12 +169,13 @@ class MLAModal {
 	 * @return	array	updated descriptors for the "compat-attachment-fields"
 	 */
 	public static function mla_attachment_fields_to_edit_filter( $form_fields, $post ) {
+		$id = $post->ID;
+
 		/*
 		 * This logic is only required for the MLA-enhanced Media Manager Modal Window.
 		 * For the non-Modal Media/Edit Media screen, the MLAEdit::mla_add_meta_boxes_action
 		 * function changes the default meta box to the MLA searchable meta box.
 		 */
-//		if ( self::$mla_query_attachments ) {
 		if ( isset( self::$media_item_args['in_modal'] ) && self::$media_item_args['in_modal'] ) {
 			foreach ( get_taxonomies( array ( 'show_ui' => true ), 'objects' ) as $key => $value ) {
 				if ( MLAOptions::mla_taxonomy_support( $key ) ) {
@@ -237,7 +238,7 @@ class MLAModal {
 					$list = join( ',', $list );
 					$class = ( $value->hierarchical ) ? 'categorydiv' : 'tagsdiv';
 
-					$row  = "\t\t<tr class='compat-field-{$key} mla-taxonomy-row'>\n";
+					$row  = "\t\t<tr class='compat-field-{$key} mla-taxonomy-row' style='display: none'>\n";
 					$row .= "\t\t<th class='label' valign='top' scope='row'>\n";
 					$row .= "\t\t<label for='mla-attachments-{$post_id}-{$key}'>\n";
 					$row .= "\t\t<span title='" . __( 'Click to toggle', 'media-library-assistant' ) . "' class='alignleft'>{$label}</span><br class='clear'>\n";
@@ -251,7 +252,8 @@ class MLAModal {
 					$row .= "\t\t</div>\n";
 					$row .= "\t\t</td>\n";
 					$row .= "\t\t</tr>\n";
-					$form_fields[ $key ] = array( 'tr' => $row );
+					//$form_fields[ $key ] = array( 'tr' => $row );
+					$form_fields[ 'mla-' . $key ] = array( 'tr' => $row );
 				} // is supported
 			} // foreach
 		} // in_modal
@@ -347,6 +349,8 @@ class MLAModal {
 	 * @var	array
 	 */
 	private static $mla_media_modal_settings = array(
+			'screen' => 'modal',
+			'state' => 'initial',
 			'comma' => ',',
 			'ajaxNonce' => '',
 			'ajaxFillCompatAction' => self::JAVASCRIPT_FILL_COMPAT_ACTION,
@@ -360,15 +364,18 @@ class MLAModal {
 			'enableSearchBoxControls' => false,
 			'enableTermsDropdown' => false,
 			'enableTermsSearch' => false,
-			// NULL values replaced by filtered initial values in mla_media_view_settings_filter
-			'filterMime' => NULL,
-			'filterMonth' => NULL,
-			'filterTerm' => NULL,
-			'searchConnector' => NULL,
-			'searchFields' => NULL,
-			'searchValue' => NULL,
-			//'termsSearch' => NULL,
-			'searchClicks' => 0,
+			'enableTermsAutofill' => false,
+			'query' => array( 'initial' => array (
+				// NULL values replaced by filtered initial values in mla_media_view_settings_filter
+				'filterMime' => NULL,
+				'filterMonth' => NULL,
+				'filterTerm' => NULL,
+				'searchConnector' => NULL,
+				'searchFields' => NULL,
+				'searchValue' => NULL,
+				//'termsSearch' => NULL,
+				'searchClicks' => 0,
+			) ),			
 			'mimeTypes' => '',
 			'months' => '',
 			'termsClass' => array(),
@@ -390,23 +397,28 @@ class MLAModal {
 	 * @return	array	updated $settings array
 	 */
 	public static function mla_media_view_settings_filter( $settings, $post ) {
+		/*
+		 * If we know what screen we're on we can test our enabling options
+		 */
 		if ( function_exists( 'get_current_screen' ) ) {
 			$screen = get_current_screen();
 			
-			/*
-			 * WordPress 4.0 adds the "grid view" to the Media/Library screen, and we don't want
-			 * to add our functionality to that screen.
-			 */
 			if ( 'upload' == $screen->base ) {
-			//if ( 'edit' != $screen->parent_base ) {
-				return $settings;
+				self::$mla_media_modal_settings['screen'] = 'grid';
+			} else {
+				self::$mla_media_modal_settings['screen'] = 'modal';
 			}
 		}
-		
+
 		self::$mla_media_modal_settings['comma'] = _x( ',', 'tag delimiter' );
 		self::$mla_media_modal_settings['ajaxNonce'] = wp_create_nonce( MLA::MLA_ADMIN_NONCE );
 		self::$mla_media_modal_settings['mimeTypes'] = MLAMime::mla_pluck_table_views();
 		self::$mla_media_modal_settings['mimeTypes']['detached'] = MLAOptions::$mla_option_definitions[ MLAOptions::MLA_POST_MIME_TYPES ]['std']['unattached']['plural'];
+
+		if ( EMPTY_TRASH_DAYS && MEDIA_TRASH ) {
+			self::$mla_media_modal_settings['mimeTypes']['trash'] = MLAOptions::$mla_option_definitions[ MLAOptions::MLA_POST_MIME_TYPES ]['std']['trash']['plural'];
+		}
+		
 		self::$mla_media_modal_settings['months'] = self::_months_dropdown('attachment');
 
 		self::$mla_media_modal_settings['termsTaxonomy'] =  MLAOptions::mla_taxonomy_support('', 'filter');
@@ -420,6 +432,8 @@ class MLAModal {
 			self::$mla_media_modal_settings['termsIndent'] = '-';
 		}
 
+		self::$mla_media_modal_settings['enableMediaGrid'] = ( 'checked' == MLAOptions::mla_get_option( MLAOptions::MLA_MEDIA_GRID_TOOLBAR ) );
+		self::$mla_media_modal_settings['enableMediaModal'] = ( 'checked' == MLAOptions::mla_get_option( MLAOptions::MLA_MEDIA_MODAL_TOOLBAR ) );
 		self::$mla_media_modal_settings['enableDetailsCategory'] = ( 'checked' == MLAOptions::mla_get_option( MLAOptions::MLA_MEDIA_MODAL_DETAILS_CATEGORY_METABOX ) );
 		self::$mla_media_modal_settings['enableDetailsTag'] = ( 'checked' == MLAOptions::mla_get_option( MLAOptions::MLA_MEDIA_MODAL_DETAILS_TAG_METABOX ) );
 		self::$mla_media_modal_settings['enableMimeTypes'] = ( 'checked' == MLAOptions::mla_get_option( MLAOptions::MLA_MEDIA_MODAL_MIMETYPES ) );
@@ -428,6 +442,32 @@ class MLAModal {
 		self::$mla_media_modal_settings['enableSearchBoxControls'] = ( 'checked' == MLAOptions::mla_get_option( MLAOptions::MLA_MEDIA_MODAL_SEARCHBOX_CONTROLS ) );
 		self::$mla_media_modal_settings['enableTermsDropdown'] = ( 'checked' == MLAOptions::mla_get_option( MLAOptions::MLA_MEDIA_MODAL_TERMS ) );
 		self::$mla_media_modal_settings['enableTermsSearch'] = ( 'checked' == MLAOptions::mla_get_option( MLAOptions::MLA_MEDIA_MODAL_TERMS_SEARCH ) );
+		self::$mla_media_modal_settings['enableTermsAutofill'] = ( 'checked' == MLAOptions::mla_get_option( MLAOptions::MLA_MEDIA_MODAL_DETAILS_AUTOFILL ) );
+
+		/*
+		 * Compile a list of the enhanced taxonomies
+		 */
+		self::$mla_media_modal_settings['enhancedTaxonomies'] = array();
+		foreach ( get_taxonomies( array ( 'show_ui' => true ), 'objects' ) as $key => $value ) {
+			if ( MLAOptions::mla_taxonomy_support( $key ) ) {
+				if ( ! $use_checklist = $value->hierarchical ) {
+					$use_checklist =  MLAOptions::mla_taxonomy_support( $key, 'flat-checklist' );
+				}
+
+				/*
+				 * Make sure the appropriate MMMW Enhancement option has been checked
+				 */
+				if ( $use_checklist ) {
+					if ( 'checked' === MLAOptions::mla_get_option( MLAOptions::MLA_MEDIA_MODAL_DETAILS_CATEGORY_METABOX ) ) {
+						self::$mla_media_modal_settings['enhancedTaxonomies'][] = $key;
+					}
+				} else {
+					if ( 'checked' === MLAOptions::mla_get_option( MLAOptions::MLA_MEDIA_MODAL_DETAILS_TAG_METABOX ) ) {
+						self::$mla_media_modal_settings['enhancedTaxonomies'][] = $key;
+					}
+				}
+			} // taxonomy_support
+		} // each taxonomy
 
 		/*
 		 * Set and filter the initial values for toolbar controls
@@ -449,14 +489,14 @@ class MLAModal {
 		 * Except for filterMime/post_mime_type, these will be passed
 		 * back to the server in the query['s'] field.
 		 */ 
-		self::$mla_media_modal_settings['filterMime'] = $initial_values['filterMime']; // post_mime_type 'image'; // 
-		self::$mla_media_modal_settings['filterMonth'] = $initial_values['filterMonth']; // mla_filter_month '201404'; // 
-		self::$mla_media_modal_settings['filterTerm'] = $initial_values['filterTerm']; // mla_filter_term '175'; //
-		self::$mla_media_modal_settings['searchConnector'] = $initial_values['searchConnector']; // mla_search_connector 'OR'; //
-		self::$mla_media_modal_settings['searchFields'] = $initial_values['searchFields']; // mla_search_fields array( 'excerpt', 'title', 'content' ); //
-		self::$mla_media_modal_settings['searchValue'] = $initial_values['searchValue']; // mla_search_value 'col'; //
-		//self::$mla_media_modal_settings['termsSearch'] = $initial_values['termsSearch']; // mla_terms_search
-		self::$mla_media_modal_settings['searchClicks'] = 0; // mla_search_clicks, to force transmission
+		self::$mla_media_modal_settings['query']['initial']['filterMime'] = $initial_values['filterMime']; // post_mime_type 'image'; // 
+		self::$mla_media_modal_settings['query']['initial']['filterMonth'] = $initial_values['filterMonth']; // mla_filter_month '201404'; // 
+		self::$mla_media_modal_settings['query']['initial']['filterTerm'] = $initial_values['filterTerm']; // mla_filter_term '175'; //
+		self::$mla_media_modal_settings['query']['initial']['searchConnector'] = $initial_values['searchConnector']; // mla_search_connector 'OR'; //
+		self::$mla_media_modal_settings['query']['initial']['searchFields'] = $initial_values['searchFields']; // mla_search_fields array( 'excerpt', 'title', 'content' ); //
+		self::$mla_media_modal_settings['query']['initial']['searchValue'] = $initial_values['searchValue']; // mla_search_value 'col'; //
+		//self::$mla_media_modal_settings['query']['initial']['termsSearch'] = $initial_values['termsSearch']; // mla_terms_search
+		self::$mla_media_modal_settings['query']['initial']['searchClicks'] = 0; // mla_search_clicks, to force transmission
 
 		$settings = array_merge( $settings, array( 'mla_settings' => self::$mla_media_modal_settings ) );
 		return $settings;
@@ -474,19 +514,6 @@ class MLAModal {
 	 * @return	array	updated $strings array
 	 */
 	public static function mla_media_view_strings_filter( $strings, $post ) {
-		if ( function_exists( 'get_current_screen' ) ) {
-			$screen = get_current_screen();
-			
-			/*
-			 * WordPress 4.0 adds the "grid view" to the Media/Library screen, and we don't want
-			 * to add our functionality to that screen.
-			 */
-			if ( 'upload' == $screen->base ) {
-			//if ( 'edit' != $screen->parent_base ) {
-				return $strings;
-			}
-		}
-			
 		$mla_strings = array(
 			'searchBoxPlaceholder' => __( 'Search Box', 'media-library-assistant' ),
 			'loadingText' => __( 'Loading...', 'media-library-assistant' ),
@@ -506,15 +533,17 @@ class MLAModal {
 	 * @return	void
 	 */
 	public static function mla_wp_enqueue_media_action( ) {
+		/*
+		 * If we know what screen we're on we can test our enabling options
+		 */
 		if ( function_exists( 'get_current_screen' ) ) {
 			$screen = get_current_screen();
 			
-			/*
-			 * WordPress 4.0 adds the "grid view" to the Media/Library screen, and we don't want
-			 * to add our functionality to that screen.
-			 */
 			if ( 'upload' == $screen->base ) {
-			//if ( 'edit' != $screen->parent_base ) {
+				if ( 'checked' != MLAOptions::mla_get_option( MLAOptions::MLA_MEDIA_GRID_TOOLBAR ) ) {
+					return;
+				}
+			} elseif ( 'checked' != MLAOptions::mla_get_option( MLAOptions::MLA_MEDIA_MODAL_TOOLBAR ) ) {
 				return;
 			}
 		}
@@ -524,7 +553,7 @@ class MLAModal {
 		wp_register_style( self::JAVASCRIPT_MEDIA_MODAL_STYLES, MLA_PLUGIN_URL . 'css/mla-media-modal-style.css', false, MLA::CURRENT_MLA_VERSION );
 		wp_enqueue_style( self::JAVASCRIPT_MEDIA_MODAL_STYLES );
 
-		wp_enqueue_script( self::JAVASCRIPT_MEDIA_MODAL_SLUG, MLA_PLUGIN_URL . "js/mla-media-modal-scripts{$suffix}.js", array( 'media-views' ), MLA::CURRENT_MLA_VERSION, false );
+		wp_enqueue_script( self::JAVASCRIPT_MEDIA_MODAL_SLUG, MLA_PLUGIN_URL . "js/mla-media-modal-scripts{$suffix}.js", array( 'media-views', 'wp-lists', 'suggest' ), MLA::CURRENT_MLA_VERSION, false );
 
 		if ( 'checked' == MLAOptions::mla_get_option( MLAOptions::MLA_MEDIA_MODAL_TERMS_SEARCH ) ) {
 			MLAModal::mla_add_terms_search_scripts();
@@ -540,43 +569,41 @@ class MLAModal {
 	 * @return	void	echoes HTML script tags for the templates
 	 */
 	public static function mla_print_media_templates_action( ) {
+		/*
+		 * If we know what screen we're on we can test our enabling options
+		 */
 		if ( function_exists( 'get_current_screen' ) ) {
 			$screen = get_current_screen();
-			//cause_an_error();
-			//$cause_notice = $screen->bad_property;
-			//trigger_error( 'mla_print_media_templates_action', E_USER_WARNING );
-			//error_log( 'xdebug_get_function_stack = ' . var_export( xdebug_get_function_stack(), true), 0 );		
-	
-			/*
-			 * WordPress 4.0 adds the "grid view" to the Media/Library screen, and we don't want
-			 * to add our functionality to that screen.
-			 */
+			
 			if ( 'upload' == $screen->base ) {
-			//if ( 'edit' != $screen->parent_base ) {
+				if ( 'checked' != MLAOptions::mla_get_option( MLAOptions::MLA_MEDIA_GRID_TOOLBAR ) ) {
+					return;
+				}
+			} elseif ( 'checked' != MLAOptions::mla_get_option( MLAOptions::MLA_MEDIA_MODAL_TOOLBAR ) ) {
 				return;
 			}
 		}
 
 		/*
 		 * Compose the Search Media box
-		 */
+		 * /
 		if ( isset( $_REQUEST['query']['mla_search_value'] ) ) {
 			$search_value = esc_attr( stripslashes( trim( $_REQUEST['query']['mla_search_value'] ) ) );
 		} else {
-			$search_value = self::$mla_media_modal_settings['searchValue'];
+			$search_value = self::$mla_media_modal_settings['query']['initial']['searchValue'];
 		}
 
 		if ( isset( $_REQUEST['query']['mla_search_fields'] ) ) {
 			$search_fields = $_REQUEST['query']['mla_search_fields'];
 		} else {
-			$search_fields = self::$mla_media_modal_settings['searchFields'];
+			$search_fields = self::$mla_media_modal_settings['query']['initial']['searchFields'];
 		}
 
 		if ( isset( $_REQUEST['query']['mla_search_connector'] ) ) {
 			$search_connector = $_REQUEST['query']['mla_search_connector'];
 		} else {
-			$search_connector = self::$mla_media_modal_settings['searchConnector'];
-		}
+			$search_connector = self::$mla_media_modal_settings['query']['initial']['searchConnector'];
+		} // */
 
 		// Include mla javascript templates
 		require_once MLA_PLUGIN_PATH . '/includes/mla-media-modal-js-template.php';
@@ -622,6 +649,12 @@ class MLAModal {
 		} // foreach taxonomy 
 
 		if ( ( defined('WP_ADMIN') && WP_ADMIN ) && ( defined('DOING_AJAX') && DOING_AJAX ) ) {
+//error_log( 'DEBUG: mla_admin_init_action $_POST = ' . var_export( $_POST, true ), 0 );
+//cause_an_error();
+//$cause_notice = $screen->bad_property;
+//trigger_error( 'mla_print_media_templates_action', E_USER_WARNING );
+//error_log( 'DEBUG: xdebug_get_function_stack = ' . var_export( xdebug_get_function_stack(), true), 0 );		
+	
 			/*
 			 * If there's no action variable, we have nothing to do
 			 */
@@ -920,6 +953,7 @@ class MLAModal {
 				}
 
 				wp_set_object_terms( $id, $terms, $key, false );
+				delete_transient( MLA_OPTION_PREFIX . 't_term_counts_' . $key );
 
 				if ( $use_checklist ) {
 					if ( empty( $post ) ) {
@@ -967,19 +1001,6 @@ class MLAModal {
 	} // mla_update_compat_fields_action
 
 	/**
-	 * Executing mla_query_attachments_action
-	 *
-	 * Informs mla_attachment_fields_to_edit_filter() that MLA enhancements
-	 * be added to the compatible fields. Keeps our enhancements out of the
-	 * WP 4.0 Media Grid display.
-	 *
-	 * @since 1.91
-	 *
-	 * @var	boolean true if performing MLA enhanced query attachments else false.
-	 */
-	private static $mla_query_attachments = false;
-
-	/**
 	 * Ajax handler for Media Manager "Query Attachments" queries 
 	 *
 	 * Adapted from wp_ajax_query_attachments in /wp-admin/includes/ajax-actions.php
@@ -1007,6 +1028,9 @@ class MLAModal {
 		if ( isset( $query['post_mime_type'] ) ) {
 			if ( 'detached' == $query['post_mime_type'] ) {
 				$query['detached'] = '1';
+				unset( $query['post_mime_type'] );
+			} elseif ( 'trash' == $query['post_mime_type'] ) {
+				$query['status'] = 'trash';
 				unset( $query['post_mime_type'] );
 			} else {
 				$view = $query['post_mime_type'];
@@ -1076,15 +1100,16 @@ class MLAModal {
 		}
 
 		$query['post_type'] = 'attachment';
-		$query['post_status'] = 'inherit';
-		if ( current_user_can( get_post_type_object( 'attachment' )->cap->read_private_posts ) ) {
-			$query['post_status'] .= ',private';
+		
+		if ( empty( $query['status'] ) ) {
+			$query['post_status'] = 'inherit';
+			if ( current_user_can( get_post_type_object( 'attachment' )->cap->read_private_posts ) ) {
+				$query['post_status'] .= ',private';
+			}
 		}
-
+		
 		$query = MLAData::mla_query_media_modal_items( $query, $offset, $count );
-		self::$mla_query_attachments = true;
 		$posts = array_map( 'wp_prepare_attachment_for_js', $query->posts );
-		self::$mla_query_attachments = false;
 		$posts = array_filter( $posts );
 
 		wp_send_json_success( $posts );

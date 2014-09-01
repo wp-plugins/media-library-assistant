@@ -1,17 +1,19 @@
 /* global ajaxurl */
 
-var mla = {
-	// Properties
-	settings: {},
-
-	// Utility functions
-	utility: {
-	},
-
-	// Components
-	setParent: null,
-	inlineEditAttachment: null
-};
+var jQuery,
+	mla_inline_edit_vars,
+	mla = {
+		// Properties
+		settings: {},
+	
+		// Utility functions
+		utility: {
+		},
+	
+		// Components
+		setParent: null,
+		inlineEditAttachment: null
+	};
 
 ( function( $ ) {
 	/**
@@ -88,7 +90,7 @@ var mla = {
 			});
 
 			// Filter button (dates, categories) in top nav bar
-			$('#post-query-submit').mousedown(function(e){
+			$('#post-query-submit').mousedown(function(){
 				t.revert();
 				$('select[name^="action"]').val('-1');
 			});
@@ -96,7 +98,12 @@ var mla = {
 
 		toggle : function(el){
 			var t = this;
-			$(t.what+t.getId(el)).css('display') == 'none' ? t.revert() : t.edit(el);
+
+			if ( 'none' == $( t.what + t.getId( el ) ).css('display') ) {
+				t.revert();
+			} else {
+				t.edit( el );
+			}
 		},
 
 		setBulk : function(){
@@ -107,7 +114,7 @@ var mla = {
 			$('table.widefat tbody').prepend( $('#bulk-edit') );
 			$('#bulk-edit').addClass('inline-editor').show();
 
-			$('tbody th.check-column input[type="checkbox"]').each(function(i){
+			$('tbody th.check-column input[type="checkbox"]').each(function(){
 				if ( $(this).prop('checked') ) {
 					c = false;
 					var id = $(this).val(), theTitle;
@@ -169,13 +176,13 @@ var mla = {
 				$(':input[name="' + fields[fIndex] + '"]', editRow).val( $('.'+fields[fIndex], rowData).text() );
 			}
 
-			if ( $('.image_alt', rowData).length == 0) {
+			if ( $('.image_alt', rowData).length === 0) {
 				$('label.inline-edit-image-alt', editRow).hide();
 			}
 
 			// hierarchical taxonomies
 			$('.mla_category', rowData).each(function(){
-				var term_ids = $(this).text();
+				var term_ids = $(this).text(), taxname;
 
 				if ( term_ids ) {
 					taxname = $(this).attr('id').replace('_'+id, '');
@@ -216,7 +223,7 @@ var mla = {
 			params = {
 				action: mla.settings.ajax_action,
 				nonce: mla.settings.ajax_nonce,
-				post_type: typenow,
+				post_type: 'attachment',
 				post_ID: id,
 				edit_date: 'true',
 				post_status: page
@@ -242,8 +249,8 @@ var mla = {
 					} else {
 						$( '#edit-' + id + ' .inline-edit-save .error' ).html( mla.settings.error ).show();
 					}
-				}
-			, 'html');
+				}, 'html');
+			
 			return false;
 		},
 
@@ -355,8 +362,7 @@ var mla = {
 
 						$( '#attachment-' + postId ).before( response ).remove();
 						$( '#attachment-' + postId ).hide().fadeIn();
-					}
-				, 'html');
+					}, 'html');
 			} else {
 				tableCell.html( mla.settings.error );
 				$( '#attachment-' + postId + " td.attached_to" ).replaceWith( tableCell );

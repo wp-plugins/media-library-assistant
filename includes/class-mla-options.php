@@ -142,6 +142,12 @@ class MLAOptions {
 	const MLA_EDIT_MEDIA_META_BOXES = 'edit_media_meta_boxes';
 
 	/**
+	 * Provides a unique name for the Media Grid toolbar option, which
+	 * also controls the ATTACHMENT DETAILS enhancements
+	 */
+	const MLA_MEDIA_GRID_TOOLBAR = 'media_grid_toolbar';
+
+	/**
 	 * Provides a unique name for the Media Manager toolbar option, which
 	 * also controls the ATTACHMENT DETAILS enhancements
 	 */
@@ -188,6 +194,11 @@ class MLAOptions {
 	 * This option is for flat taxonomies, e.g., "Att. Tags".
 	 */
 	const MLA_MEDIA_MODAL_DETAILS_TAG_METABOX = 'media_modal_details_tag_metabox';
+
+	/**
+	 * Provides a unique name for the Media Manager Attachment Details auto-fill option
+	 */
+	const MLA_MEDIA_MODAL_DETAILS_AUTOFILL = 'media_modal_details_autofill';
 
 	/**
 	 * Provides a unique name for the Media Manager orderby option
@@ -675,15 +686,22 @@ class MLAOptions {
 
 			'media_modal_header' =>
 				array('tab' => 'general',
-					'name' => __( 'Media Manager Enhancements', 'media-library-assistant' ),
+					'name' => __( 'Media Manager/Media Grid Enhancements', 'media-library-assistant' ),
 					'type' => 'header'),
+
+			self::MLA_MEDIA_GRID_TOOLBAR =>
+				array('tab' => 'general',
+					'name' => __( 'Enable Media Grid Enhancements', 'media-library-assistant' ),
+					'type' => 'checkbox',
+					'std' => 'checked',
+					'help' => __( 'Check/uncheck this option to enable/disable Media Library Grid View Enhancements.', 'media-library-assistant' )),
 
 			self::MLA_MEDIA_MODAL_TOOLBAR =>
 				array('tab' => 'general',
 					'name' => __( 'Enable Media Manager Enhancements', 'media-library-assistant' ),
 					'type' => 'checkbox',
 					'std' => 'checked',
-					'help' => __( 'Check/uncheck this option to enable/disable Media Manager Enhancements.', 'media-library-assistant' )),
+					'help' => __( 'Check/uncheck this option to enable/disable Media Manager Modal Window Enhancements.', 'media-library-assistant' )),
 
 			self::MLA_MEDIA_MODAL_MIMETYPES =>
 				array('tab' => 'general',
@@ -740,6 +758,13 @@ class MLAOptions {
 					'type' => 'checkbox',
 					'std' => 'checked',
 					'help' => __( 'Check this option to enable MLA-enhanced meta boxes in the "ATTACHMENT DETAILS" pane.<br>&nbsp;&nbsp;This option is for <strong>flat taxonomies</strong>, e.g., "Tags" or "Att. Tags", that do not use the "checklist-style" meta box.', 'media-library-assistant' )),
+
+			self::MLA_MEDIA_MODAL_DETAILS_AUTOFILL =>
+				array('tab' => 'general',
+					'name' => __( 'Media Manager auto-fill meta boxes', 'media-library-assistant' ),
+					'type' => 'checkbox',
+					'std' => '',
+					'help' => __( 'Check this option to automatically fill MLA-enhanced meta boxes in the "ATTACHMENT DETAILS" pane<br>&nbsp;&nbsp;when the item is selected.', 'media-library-assistant' )),
 
 			self::MLA_MEDIA_MODAL_ORDERBY =>
 				array('tab' => '',

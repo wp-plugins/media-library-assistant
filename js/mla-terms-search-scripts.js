@@ -1,16 +1,18 @@
 /* global ajaxurl */
 
-var mlaTaxonomy = {
-	// Properties
-	settings: {},
-
-	// Utility functions
-	utility: {
-	},
-
-	// Components
-	termsSearch: null
-};
+var jQuery, wpAjax,
+	mla_terms_search_vars,
+	mlaTaxonomy = {
+		// Properties
+		settings: {},
+	
+		// Utility functions
+		utility: {
+		},
+	
+		// Components
+		termsSearch: null
+	};
 
 ( function( $ ) {
 	/**
@@ -30,7 +32,7 @@ var mlaTaxonomy = {
 				event.preventDefault();
 			});
 
-			$( '#mla-terms-search-submit' ).click( function( event ) {
+			$( '#mla-terms-search-submit' ).click( function() {
 				// $( '#mla-terms-search-search-div .spinner' ).show();
 				mlaTaxonomy.termsSearch.close();
 			});
@@ -133,7 +135,7 @@ var mlaTaxonomy = {
 					 * See if we can "check" the current parent
 					 */
 					id = $( '#mla-terms-search-parent' ).val();
-					$( '#mla-terms-search-response-div #found-' + id ).each(function( index, element ){
+					$( '#mla-terms-search-response-div #found-' + id ).each(function(){
 						$( this ).prop( 'checked', true );
 					});
 				}

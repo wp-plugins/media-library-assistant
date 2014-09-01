@@ -3,8 +3,8 @@ Contributors: dglingren
 Donate link: http://fairtradejudaica.org/make-a-difference/donate/
 Tags: attachment, attachments, documents, gallery, image, images, media, library, media library, tag cloud, media-tags, media tags, tags, media categories, categories, IPTC, EXIF, GPS, PDF, meta, metadata, photo, photos, photograph, photographs, photoblog, photo albums, lightroom, photoshop, MIME, mime-type, icon, upload, file extensions
 Requires at least: 3.3
-Tested up to: 3.9.2
-Stable tag: 1.92
+Tested up to: 4.0
+Stable tag: 1.93
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -152,6 +152,16 @@ All of the MLA source code has been annotated with "DocBlocks", a special type o
 
 == Changelog ==
 
+= 1.93 =
+
+* New: MLA enhancements have been added to the new WordPress 4.0 Media/Library Media Grid submenu. An option has been added to the Settings/Media Library Assistant General tab to disable them if they are not wanted.
+* New: An option has been added to the Settings/Media Library Assistant General tab to automatically populate taxonomy metaboxes in the Media Manager Details pane when the item is selected. The option is disabled by default.
+* New: A new mla-simple-mapping-hooks-example.php.txt example plugin has been added to the /media-library-assistant/examples directory.
+* Fix: Completed WordPress 4.0 compatibility work.
+* Fix: Media Manager toolbar controls for different modes, e.g., Insert Media, Set Featured Image, are now separated so each mode retains its own settings.
+* Fix: Media Manager MLA enhanced toolbar controls for MIME type, date and terms now work when the enhanced Search Media control is disabled.
+* Fix: The buddypress-hooks-example.php.txt example plugin now handles cover art for the most recent rtMedia releases.
+
 = 1.92 =
 * Fix: PHP "Fatal error: Call to undefined function get_current_screen ()" has been fixed.
 * Fix: Enhanced taxonomy support for drag & drop file uploads has been restored.
@@ -248,8 +258,8 @@ All of the MLA source code has been annotated with "DocBlocks", a special type o
 
 == Upgrade Notice ==
 
-= 1.92 =
-Three bug fixes, one serious.
+= 1.93 =
+WordPress 4.0 Media Grid enhancements (optional) and compatibility fixes. New auto-fill option for Media Manager taxonomy meta boxes. One other enhancement, three other fixes.
 
 == Other Notes ==
 
