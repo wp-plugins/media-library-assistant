@@ -152,6 +152,12 @@ All of the MLA source code has been annotated with "DocBlocks", a special type o
 
 == Changelog ==
 
+= 1.9x =
+
+* New: An example that shows how to replace the  wp_list_categories() item count with an accurate, padded count of the attachments assigned to each term has been added to the /media-library-assistant/examples/twentytwelve-mla directory. The example comprises the "page-tosca30-dropdown.php" and "content-tosca30-dropdown.php" files.
+* Fix: A defect in the Media Manager/Media Grid enhancements has been corrected. The defect caused changes to the Title, Caption, ALT Text and Description fields in the Attachment Details pane to be ignored.
+* Fix: The number of "where-used" SQL queries required to compose the Media/Assistant submenu table has been reduced significantly. For example, the table with 100 items has been reduced from 282 queries to 67, and a table with 621 items has been reduced from 2,722 queries to 241.
+
 = 1.93 =
 
 * New: MLA enhancements have been added to the new WordPress 4.0 Media/Library Media Grid submenu. An option has been added to the Settings/Media Library Assistant General tab to disable them if they are not wanted.

@@ -1141,7 +1141,7 @@ wp.media.frame.on( 'all', mediaFrameOn );
 						hookCompat = true;
 					} else {
 						// filter out trivial changes
-						changed = model.changed;
+						changed = _.clone( model.changed );
 						delete changed.title;
 						delete changed.caption;
 						delete changed.alt;

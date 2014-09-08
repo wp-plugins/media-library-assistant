@@ -1189,12 +1189,12 @@ class MLAData {
 			foreach ( $meta_data as $meta_key => $meta_value ) {
 				$attachments[ $index ]->$meta_key = $meta_value;
 			}
-			/*
-			 * Add references
-			 */
-			$references = self::mla_fetch_attachment_references( $attachment->ID, $attachment->post_parent );
-			$attachments[ $index ]->mla_references = $references;
 		}
+
+		/*
+		 * Add references
+		 */
+		self::mla_attachment_array_fetch_references( $attachments );
 
 		return $attachments;
 	}
@@ -1854,8 +1854,7 @@ class MLAData {
 			} else {
 				$tax_terms = array();
 				$tax_counts = array();
-				$wp_4dot0_plus = version_compare( get_bloginfo('version'), '3.10', '>=' ); // during beta
-//				$wp_4dot0_plus = version_compare( get_bloginfo('version'), '4.0', '>=' ); // after release
+				$wp_4dot0_plus = version_compare( get_bloginfo('version'), '4.0', '>=' );
 				foreach ( $terms_search as $term ) {
 					if ( $wp_4dot0_plus ) {
 						$sql_term = $percent . $wpdb->esc_like( $term ) . $percent;
@@ -2735,8 +2734,7 @@ class MLAData {
 				$inserted_in_option = MLAOptions::mla_get_option( MLAOptions::MLA_INSERTED_IN_TUNING );
 			}
 
-			$wp_4dot0_plus = version_compare( get_bloginfo('version'), '3.10', '>=' ); // during beta
-//			$wp_4dot0_plus = version_compare( get_bloginfo('version'), '4.0', '>=' ); // after release
+			$wp_4dot0_plus = version_compare( get_bloginfo('version'), '4.0', '>=' );
 			if ( 'base' == $inserted_in_option ) {
 				$query_parameters = array();
 				$query = array();
@@ -2886,6 +2884,347 @@ class MLAData {
 	}
 
 	/**
+	 * Add Featured Image and inserted image/link references to an array of attachments
+	 * 
+	 * Searches all post and page content to see if the attachmenta are used 
+	 * as a Featured Image or inserted in the post as an image or link.
+	 *
+	 * @since 1.9x
+	 *
+	 * @param	array	WP_Post objects, passed by reference
+	 *
+	 * @return	void	updates WP_Post objects with new mla_references property
+	 */
+	public static function mla_attachment_array_fetch_references( &$attachments ) {
+		global $wpdb;
+
+		/*
+		 * See element definitions above
+		 */
+		$initial_references = array(
+			'tested_reference' => false,
+			'found_reference' => false,
+			'found_parent' => false,
+			'is_unattached' => true,
+			'base_file' => '',
+			'path' => '',
+			'file' => '',
+			'files' => array(),
+			'features' => array(),
+			'inserts' => array(),
+			'mla_galleries' => array(),
+			'galleries' => array(),
+			'parent_type' => '',
+			'parent_title' => '',
+			'parent_errors' => ''
+		);
+
+		/*
+		 * Collect the raw data for where-used analysis
+		 */
+		$attachment_ids = array();
+		$files = array();
+		foreach ( $attachments as $index => $attachment ) {
+			$attachment_ids[ $index ] = $attachment->ID;
+			$references = array();
+			if ( isset( $attachment->mla_wp_attached_file ) )  {
+				$references['base_file'] = $attachment->mla_wp_attached_file;
+				$references['files'][ $references['base_file'] ] = array( 'file' => $references['base_file'] );
+			} else {
+				$references['base_file'] = '';
+			}
+			
+			$pathinfo = pathinfo($references['base_file']);
+			$references['file'] = $pathinfo['basename'];
+			if ( ( ! isset( $pathinfo['dirname'] ) ) || '.' == $pathinfo['dirname'] ) {
+				$references['path'] = '/';
+			} else {
+				$references['path'] = $pathinfo['dirname'] . '/';
+			}
+	
+			if ( isset( $attachment->mla_wp_attachment_metadata ) )  {
+				$attachment_metadata = $attachment->mla_wp_attachment_metadata;
+			} else {
+				$attachment_metadata = '';
+			}
+			
+			$sizes = isset( $attachment_metadata['sizes'] ) ? $attachment_metadata['sizes'] : NULL;
+			if ( ! empty( $sizes ) ) {
+				/* Using the path and name as the array key ensures each name is added only once */
+				foreach ( $sizes as $size ) {
+					$references['files'][ $references['path'] . $size['file'] ] = $size;
+				}
+			}
+			
+			$files[ $index ] = $references;
+		}
+	
+		if ('checked' == MLAOptions::mla_get_option( MLAOptions::MLA_EXCLUDE_REVISIONS ) ) {
+			$exclude_revisions = " AND (p.post_type <> 'revision')";
+		} else {
+			$exclude_revisions = '';
+		}
+		
+		$features = array();
+		if ( MLAOptions::$process_featured_in ) {
+			$attachment_ids = implode( ',', $attachment_ids );
+			$results = $wpdb->get_results( 
+					"
+					SELECT m.meta_value, p.ID, p.post_type, p.post_title
+					FROM {$wpdb->postmeta} AS m INNER JOIN {$wpdb->posts} AS p ON m.post_id = p.ID
+					WHERE ( m.meta_key = '_thumbnail_id' )
+					AND ( m.meta_value IN ( {$attachment_ids} ) ){$exclude_revisions}
+					"
+			);
+			
+			foreach ( $results as $result ) {
+				$features[ $result->meta_value ][ $result->ID ] = (object) array( 'post_title' => $result->post_title, 'post_type' => $result->post_type );
+			}
+		} // $process_featured_in
+
+		if ( ! empty( $exclude_revisions ) ) {
+			$exclude_revisions = " AND (post_type <> 'revision')";
+		}
+
+		$inserted_in_option = MLAOptions::mla_get_option( MLAOptions::MLA_INSERTED_IN_TUNING );
+		if ( MLAOptions::$process_inserted_in ) {
+			$wp_4dot0_plus = version_compare( get_bloginfo('version'), '4.0', '>=' );
+			$query_parameters = array();
+			$query = array();
+			$query[] = "SELECT ID, post_type, post_title, CONVERT(`post_content` USING utf8 ) AS POST_CONTENT FROM {$wpdb->posts} WHERE ( %s=%s";
+			// for empty file name array
+			$query_parameters[] = '1';
+			$query_parameters[] = '0';
+
+			foreach ( $files as $file ) {
+				foreach ( $file['files'] as $base_name => $file_data ) {
+					$query[] = 'OR ( POST_CONTENT LIKE %s)';
+
+					if ( $wp_4dot0_plus ) {
+						$query_parameters[] = '%' . $wpdb->esc_like( $base_name ) . '%';
+					} else {
+						$query_parameters[] = '%' . like_escape( $base_name ) . '%';
+					}
+				}
+			}
+
+			$query[] = "){$exclude_revisions}";
+			$query =  join(' ', $query);
+
+			$results = $wpdb->get_results(
+				$wpdb->prepare( $query, $query_parameters )
+			);
+
+			/*
+			 * Match each post with inserts back to the attachments
+			 */
+			$inserts = array();
+			if ( ! empty( $results ) ) {
+				foreach ( $files as $index => $file ) {
+					foreach ( $file['files'] as $base_name => $file_data ) {
+						foreach ( $results as $result ) {
+							if ( false !== strpos( $result->POST_CONTENT, $base_name ) ) {
+								$insert = clone $result;
+								unset( $insert->POST_CONTENT);
+								$insert->file_name = $file_data['file'];
+								$inserts[ $index ][] = $insert;
+							}
+						} // foreach post with inserts
+					} // foreach base_name
+				} // foreach attachment
+			} // results
+		} // process_inserted_in
+		
+		if ( MLAOptions::$process_mla_gallery_in ) {
+			$have_mla_galleries = self::_build_mla_galleries( MLAOptions::MLA_MLA_GALLERY_IN_TUNING, self::$mla_galleries, '[mla_gallery', $exclude_revisions );
+		} else {
+			$have_mla_galleries = false;
+		}
+
+		if ( MLAOptions::$process_gallery_in ) {
+			$have_galleries = self::_build_mla_galleries( MLAOptions::MLA_GALLERY_IN_TUNING, self::$galleries, '[gallery', $exclude_revisions );
+		} else {
+			$have_mla_galleries = false;
+		}
+
+		foreach ( $attachments as $attachment_index => $attachment ) {
+			$references = $initial_references;
+			
+			/*
+			 * Fill in Parent data
+			 */
+			if ( ( (int) $attachment->post_parent ) === 0 ) {
+				$references['is_unattached'] = true;
+			} else {
+				$references['is_unattached'] = false;
+				
+				if ( isset( $attachment->parent_type ) ) {
+					$references['parent_type'] =  $attachment->parent_type;
+				}
+		
+				if ( isset( $attachment->parent_title ) )  {
+					$references['parent_title'] =  $attachment->parent_title;
+				}
+			}
+	
+			if ( isset( $attachment->mla_wp_attached_file ) )  {
+				$references['base_file'] = $attachment->mla_wp_attached_file;
+				$references['files'][ $references['base_file'] ] = $references['base_file'];
+			} else {
+				$references['base_file'] = '';
+			}
+			
+			$pathinfo = pathinfo($references['base_file']);
+			$references['file'] = $pathinfo['basename'];
+			if ( ( ! isset( $pathinfo['dirname'] ) ) || '.' == $pathinfo['dirname'] ) {
+				$references['path'] = '/';
+			} else {
+				$references['path'] = $pathinfo['dirname'] . '/';
+			}
+	
+			if ( isset( $attachment->mla_wp_attachment_metadata ) )  {
+				$attachment_metadata = $attachment->mla_wp_attachment_metadata;
+			} else {
+				$attachment_metadata = '';
+			}
+			
+			$sizes = isset( $attachment_metadata['sizes'] ) ? $attachment_metadata['sizes'] : NULL;
+			if ( ! empty( $sizes ) ) {
+				/* Using the path and name as the array key ensures each name is added only once */
+				foreach ( $sizes as $size ) {
+					$references['files'][ $references['path'] . $size['file'] ] = $size;
+				}
+			}
+	
+			/*
+			 * Accumulate reference test types, e.g.,  0 = no tests, 4 = all tests
+			 */
+			$reference_tests = 0;
+	
+			/*
+			 * Look for the "Featured Image(s)", if enabled
+			 */
+			if ( MLAOptions::$process_featured_in ) {
+				$reference_tests++;
+				if ( isset( $features[ $attachment->ID ] ) ) {
+					foreach ( $features[ $attachment->ID ] as $id => $feature ) {
+						$references['found_reference'] = true;
+						$references['features'][ $id ] = $feature;
+	
+						if ( $id == $attachment->post_parent ) {
+							$references['found_parent'] = true;
+						}
+					} // foreach $feature
+				}
+			} // $process_featured_in
+	
+			/*
+			 * Look for item(s) inserted in post_content
+			 */
+			if ( MLAOptions::$process_inserted_in ) {
+				$reference_tests++;
+
+				if ( isset( $inserts[ $attachment_index ] ) ) {
+					foreach( $inserts[ $attachment_index ] as $insert ) {
+						$ref_insert = clone $insert;
+						unset( $ref_insert->file_name );
+						
+						if ( 'base' == $inserted_in_option ) {
+							$ref_key = pathinfo( $references['base_file'], PATHINFO_FILENAME );
+						} else {
+							$ref_key = $insert->file_name;
+						}
+						
+						$references['inserts'][ $ref_key ][ $insert->ID ] = $ref_insert;
+					} // each insert
+					
+//error_log( 'mla_attachment_array_fetch_references $attachment_index = ' . var_export( $attachment_index, true ), 0 );
+//error_log( 'mla_attachment_array_fetch_references inserts = ' . var_export( $inserts[ $attachment_index ], true ), 0 );
+				} else {
+					$references['inserts'] = array();
+				}
+//error_log( 'mla_attachment_array_fetch_references $references[inserts] = ' . var_export( $references['inserts'], true ), 0 );
+			} // $process_inserted_in
+	
+			/*
+			 * Look for [mla_gallery] references
+			 */
+			if ( MLAOptions::$process_mla_gallery_in ) {
+				$reference_tests++;
+				if ( self::_build_mla_galleries( MLAOptions::MLA_MLA_GALLERY_IN_TUNING, self::$mla_galleries, '[mla_gallery', $exclude_revisions ) ) {
+					$galleries = self::_search_mla_galleries( self::$mla_galleries, $attachment->ID );
+					if ( ! empty( $galleries ) ) {
+						$references['found_reference'] = true;
+						$references['mla_galleries'] = $galleries;
+	
+						foreach ( $galleries as $post_id => $gallery ) {
+							if ( $post_id == $attachment->post_parent ) {
+								$references['found_parent'] = true;
+							}
+						} // foreach $gallery
+					} else { // ! empty
+						$references['mla_galleries'] = array();
+					}
+				}
+			} // $process_mla_gallery_in
+	
+			/*
+			 * Look for [gallery] references
+			 */
+			if ( MLAOptions::$process_gallery_in ) {
+				$reference_tests++;
+				if ( self::_build_mla_galleries( MLAOptions::MLA_GALLERY_IN_TUNING, self::$galleries, '[gallery', $exclude_revisions ) ) {
+					$galleries = self::_search_mla_galleries( self::$galleries, $ID );
+					if ( ! empty( $galleries ) ) {
+						$references['found_reference'] = true;
+						$references['galleries'] = $galleries;
+	
+						foreach ( $galleries as $post_id => $gallery ) {
+							if ( $post_id == $attachment->post_parent ) {
+								$references['found_parent'] = true;
+							}
+						} // foreach $gallery
+					} else { // ! empty
+						$references['galleries'] = array();
+					}
+				}
+			} // $process_gallery_in
+	
+			/*
+			 * Evaluate and summarize reference tests
+			 */
+			$errors = '';
+			if ( 0 == $reference_tests ) {
+				$references['tested_reference'] = false;
+				$errors .= '(' . __( 'NO REFERENCE TESTS', 'media-library-assistant' ) . ')';
+			} else {
+				$references['tested_reference'] = true;
+				$suffix = ( 4 == $reference_tests ) ? '' : '?';
+	
+				if ( !$references['found_reference'] ) {
+					$errors .= '(' . sprintf( __( 'ORPHAN', 'media-library-assistant' ) . '%1$s) ', $suffix );
+				}
+	
+				if ( !$references['found_parent'] && ! empty( $references['parent_title'] ) ) {
+					$errors .= '(' . sprintf( __( 'UNUSED', 'media-library-assistant' ) . '%1$s) ', $suffix );
+				}
+			}
+	
+			if ( $references['is_unattached'] ) {
+				$errors .= '(' . __( 'UNATTACHED', 'media-library-assistant' ) . ')';
+			} elseif ( empty( $references['parent_title'] ) )  {
+				$errors .= '(' . __( 'INVALID PARENT', 'media-library-assistant' ) . ')';
+			}
+	
+			$references['parent_errors'] = trim( $errors );
+//error_log( 'mla_attachment_array_fetch_references $attachment_index = ' . var_export( $attachment_index, true ), 0 );
+//error_log( 'mla_attachment_array_fetch_references $attachments[ $attachment_index ] = ' . var_export( $attachments[ $attachment_index ], true ), 0 );
+//error_log( 'mla_attachment_array_fetch_references $references = ' . var_export( $references, true ), 0 );
+			$attachments[ $attachment_index ]->mla_references = $references;
+		} // foreach $attachment
+	}
+
+	/**
 	 * Objects containing [gallery] shortcodes
 	 *
 	 * This array contains all of the objects containing one or more [gallery] shortcodes
@@ -3007,8 +3346,7 @@ class MLAData {
 			$exclude_revisions = '';
 		}
 
-		$wp_4dot0_plus = version_compare( get_bloginfo('version'), '3.10', '>=' ); // during beta
-//		$wp_4dot0_plus = version_compare( get_bloginfo('version'), '4.0', '>=' ); // after release
+		$wp_4dot0_plus = version_compare( get_bloginfo('version'), '4.0', '>=' );
 		if ( $wp_4dot0_plus ) {
 			$like = $wpdb->esc_like( $shortcode );
 		} else {
@@ -3053,7 +3391,7 @@ class MLAData {
 						$galleries_array[ $result_id ]['galleries'][ $instance ]['query'] = trim( rtrim( $matches[1][$index], '/' ) );
 						$galleries_array[ $result_id ]['galleries'][ $instance ]['results'] = array();
 						$post = $result; // set global variable for mla_gallery_shortcode
-						$attachments = MLAShortcodes::mla_get_shortcode_attachments( $result_id, $galleries_array[ $result_id ]['galleries'][ $instance ]['query'] . ' where_used_query=this-is-a-where-used-query' );
+						$attachments = MLAShortcodes::mla_get_shortcode_attachments( $result_id, $galleries_array[ $result_id ]['galleries'][ $instance ]['query'] . ' cache_results=false update_post_meta_cache=false update_post_term_cache=false where_used_query=this-is-a-where-used-query' );
 
 						if ( is_string( $attachments ) ) {
 							/* translators: 1: post_type, 2: post_title, 3: post ID, 4: query string, 5: error message */
