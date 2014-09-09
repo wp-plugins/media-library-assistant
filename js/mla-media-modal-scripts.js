@@ -1108,9 +1108,35 @@ wp.media.frame.on( 'all', mediaFrameOn );
 	 */
 	if ( mlaModal.settings.enableDetailsCategory || mlaModal.settings.enableDetailsTag ) {
 		wp.media.model.Selection = wp.media.model.Selection.extend({
+/*	for debug : trace every event triggered in the wp.media.model.Selection * /
+			selectionEvent: function( eventName, eventModel, eventContext, eventFlags ) {
+				var attributes = null, id = 0, cid = 'none';
+				
+				if ( 'undefined' != typeof eventModel.cid ) {
+					cid = eventModel.cid;
+				}
+
+				if ( 'undefined' != typeof eventModel.id ) {
+					id = eventModel.id;
+				}
+
+				if ( 'undefined' != typeof eventModel.attributes ) {
+					attributes = _.clone( eventModel.attributes );
+					delete( attributes.file );
+					console.log('selectionEvent ', eventName, '( ', cid, ', ', id, ' ) eventModel.attributes: ', JSON.stringify( attributes ) );
+				} else {
+					console.log('selectionEvent ', eventName, '( ', cid, ', ', id, ' )' );
+				}
+			}, // */
+
 			initialize: function() {
 				// Call the base method in the super class
 				wp.media.model.Selection.__super__.initialize.apply( this, arguments );
+
+/*	for debug : trace every event triggered in the wp.media.model.Selection * /
+this.stopListening( this );
+this.listenTo( this, 'all', this.selectionEvent );
+// */
 
 				// Hook the 'selection:reset' event so we can add our enhancements when it's done
 				this.on( 'selection:reset', function( /* model */ ) {
@@ -1140,22 +1166,23 @@ wp.media.frame.on( 'all', mediaFrameOn );
 						mlaModal.uploading = false;
 						hookCompat = true;
 					} else {
-						// filter out trivial changes
-						changed = _.clone( model.changed );
-						delete changed.title;
-						delete changed.caption;
-						delete changed.alt;
-						delete changed.description;
-						
-						if ( ! _.isEmpty( changed ) ) {
-							hookCompat = true;
+						// ignore changes during upload
+						if ( false === model.attributes.uploading ) {
+							// filter out trivial changes
+							changed = _.clone( model.changed );
+							delete changed.title;
+							delete changed.caption;
+							delete changed.alt;
+							delete changed.description;
+							
+							if ( ! _.isEmpty( changed ) ) {
+								hookCompat = true;
+							}
 						}
 					}
 
 					if ( true === hookCompat ) {
-						mediaFrame = wp.media.editor.get('content');
-						compat = mediaFrame.content.get('compat');
-						mlaModal.utility.hookCompatTaxonomies( model.get('id'), compat.sidebar.$el );
+						mlaModal.utility.hookCompatTaxonomies( model.get('id'), wp.media.frame.$el );
 					}
 				});
 			}
