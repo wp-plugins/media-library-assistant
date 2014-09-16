@@ -5,7 +5,7 @@
  * In this example, a term slug within a hiearchical taxonomy (default "galleries" in
  * "attachment_category") is given. Each immediate child term is used to select one image
  * assigned to that term, and the selected images are displayed in a gallery. The links 
- * for each galery item go to a separate page that displays a gallery of all images assigned
+ * for each gallery item go to a separate page that displays a gallery of all images assigned
  * to the term.
  *
  * This example plugin uses three of the many filters available in the [mla_gallery] shortcode

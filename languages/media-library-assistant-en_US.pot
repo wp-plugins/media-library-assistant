@@ -1,8 +1,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: Media Library Assistant\n"
-"POT-Creation-Date: 2014-08-25 16:35-0800\n"
-"PO-Revision-Date: 2014-08-25 16:35-0800\n"
+"POT-Creation-Date: 2014-09-16 16:47-0800\n"
+"PO-Revision-Date: 2014-09-16 16:47-0800\n"
 "Last-Translator: David Lingren <david@fairtradejudaica.org>\n"
 "Language-Team: David Lingren <david@fairtradejudaica.org>\n"
 "Language: en_US\n"
@@ -140,206 +140,207 @@ msgid "DEBUG: _execute_list_table_query SQL_request = \"%1$s\"."
 msgstr ""
 
 #. translators: 1: search filter details
-#: includes/class-mla-data.php:1984
+#: includes/class-mla-data.php:1983
 #, php-format
 msgid "mla_query_posts_search_filter not numeric, = \"%1$s\"."
 msgstr ""
 
 #. translators: 1: search filter details
-#: includes/class-mla-data.php:1987
+#: includes/class-mla-data.php:1986
 #, php-format
 msgctxt "error_log"
 msgid "DEBUG: mla_query_posts_search_filter not numeric, = \"%1$s\"."
 msgstr ""
 
 #. translators: 1: where filter details
-#: includes/class-mla-data.php:2049
+#: includes/class-mla-data.php:2048
 #, php-format
 msgid "mla_query_posts_where_filter = \"%1$s\"."
 msgstr ""
 
 #. translators: 1: where filter details
-#: includes/class-mla-data.php:2052
+#: includes/class-mla-data.php:2051
 #, php-format
 msgctxt "error_log"
 msgid "DEBUG: mla_query_posts_where_filter = \"%1$s\"."
 msgstr ""
 
 #. translators: 1: join filter details
-#: includes/class-mla-data.php:2103
+#: includes/class-mla-data.php:2102
 #, php-format
 msgid "mla_query_posts_join_filter = \"%1$s\"."
 msgstr ""
 
 #. translators: 1: join filter details
-#: includes/class-mla-data.php:2106
+#: includes/class-mla-data.php:2105
 #, php-format
 msgctxt "error_log"
 msgid "DEBUG: mla_query_posts_join_filter = \"%1$s\"."
 msgstr ""
 
 #. translators: 1: orderby details details
-#: includes/class-mla-data.php:2205
+#: includes/class-mla-data.php:2204
 #, php-format
 msgid "mla_query_posts_orderby_filter = \"%1$s\"."
 msgstr ""
 
 #. translators: 1: orderby details details
-#: includes/class-mla-data.php:2208
+#: includes/class-mla-data.php:2207
 #, php-format
 msgctxt "error_log"
 msgid "DEBUG: mla_query_posts_orderby_filter = \"%1$s\"."
 msgstr ""
 
 #. translators: 1: SQL clauses
-#: includes/class-mla-data.php:2244
+#: includes/class-mla-data.php:2243
 #, php-format
 msgid "mla_query_posts_clauses_filter = \"%1$s\"."
 msgstr ""
 
 #. translators: 1: SQL clauses
-#: includes/class-mla-data.php:2247
+#: includes/class-mla-data.php:2246
 #, php-format
 msgctxt "error_log"
 msgid "DEBUG: mla_query_posts_clauses_filter = \"%1$s\"."
 msgstr ""
 
 #. translators: 1: SQL clauses
-#: includes/class-mla-data.php:2268
+#: includes/class-mla-data.php:2267
 #, php-format
 msgid "mla_query_posts_clauses_request_filter = \"%1$s\"."
 msgstr ""
 
 #. translators: 1: SQL clauses
-#: includes/class-mla-data.php:2271
+#: includes/class-mla-data.php:2270
 #, php-format
 msgctxt "error_log"
 msgid "DEBUG: mla_query_posts_clauses_request_filter = \"%1$s\"."
 msgstr ""
 
 #. translators: 1: post ID
-#: includes/class-mla-data.php:2303
+#: includes/class-mla-data.php:2302
 #, php-format
 msgctxt "error_log"
 msgid "ERROR: mla_get_attachment_by_id(%1$d) not found."
 msgstr ""
 
 #. translators: 1: post ID 2: post_type
-#: includes/class-mla-data.php:2309
+#: includes/class-mla-data.php:2308
 #, php-format
 msgctxt "error_log"
 msgid "ERROR: mla_get_attachment_by_id(%1$d) wrong post_type \"%2$s\"."
 msgstr ""
 
-#: includes/class-mla-data.php:2862 includes/class-mla-list-table.php:830
+#: includes/class-mla-data.php:2860 includes/class-mla-data.php:3199
+#: includes/class-mla-list-table.php:830
 msgid "NO REFERENCE TESTS"
 msgstr ""
 
-#: includes/class-mla-data.php:2868 includes/class-mla-options.php:2641
-#: includes/class-mla-options.php:2642
+#: includes/class-mla-data.php:2866 includes/class-mla-data.php:3205
+#: includes/class-mla-options.php:2641 includes/class-mla-options.php:2642
 msgid "ORPHAN"
 msgstr ""
 
-#: includes/class-mla-data.php:2872
+#: includes/class-mla-data.php:2870 includes/class-mla-data.php:3209
 msgid "UNUSED"
 msgstr ""
 
-#: includes/class-mla-data.php:2877
+#: includes/class-mla-data.php:2875 includes/class-mla-data.php:3214
 msgid "UNATTACHED"
 msgstr ""
 
-#: includes/class-mla-data.php:2879
+#: includes/class-mla-data.php:2877 includes/class-mla-data.php:3216
 msgid "INVALID PARENT"
 msgstr ""
 
 #. translators: 1: post_type, 2: post_title, 3: post ID, 4: query string, 5: error message
-#: includes/class-mla-data.php:3060
+#: includes/class-mla-data.php:3398
 #, php-format
 msgid "(%1$s) %2$s (ID %3$d) query \"%4$s\" failed, returning \"%5$s\""
 msgstr ""
 
 #. translators: 1: index
-#: includes/class-mla-data.php:3306
+#: includes/class-mla-data.php:3644
 #, php-format
 msgctxt "error_log"
 msgid "ERROR: _build_pdf_indirect_objects bad value at $index = \"%1$d\"."
 msgstr ""
 
 #. translators: 1: source offset 2: nest level
-#: includes/class-mla-data.php:3631
+#: includes/class-mla-data.php:3969
 #, php-format
 msgctxt "error_log"
 msgid "ERROR: _parse_pdf_dictionary offset = %1$d, nest = %2$d."
 msgstr ""
 
 #. translators: 1: dictionary excerpt
-#: includes/class-mla-data.php:3633
+#: includes/class-mla-data.php:3971
 #, php-format
 msgctxt "error_log"
 msgid "ERROR: _parse_pdf_dictionary no end delimiter dump = %1$s."
 msgstr ""
 
 #. translators: 1: entry name 2: value excerpt
-#: includes/class-mla-data.php:3679
+#: includes/class-mla-data.php:4017
 #, php-format
 msgctxt "error_log"
 msgid "ERROR: _parse_pdf_dictionary bad value [ %1$s ] dump = %2$s"
 msgstr ""
 
-#: includes/class-mla-data.php:3793
+#: includes/class-mla-data.php:4131
 msgctxt "error_log"
 msgid "ERROR: _parse_xmp_metadata xml_parse_into_struct failed."
 msgstr ""
 
-#: includes/class-mla-data.php:3796
+#: includes/class-mla-data.php:4134
 msgctxt "error_log"
 msgid "ERROR: _parse_xmp_metadata set option failed."
 msgstr ""
 
 #. translators: 1: path and file
-#: includes/class-mla-data.php:4153
+#: includes/class-mla-data.php:4491
 #, php-format
 msgctxt "error_log"
 msgid "ERROR: File \"%1$s\", startxref not found."
 msgstr ""
 
 #. translators: 1: meta_key
-#: includes/class-mla-data.php:5070
+#: includes/class-mla-data.php:5408
 #, php-format
 msgid "Deleting meta:%1$s"
 msgstr ""
 
 #. translators: 1: meta_key
-#: includes/class-mla-data.php:5073
+#: includes/class-mla-data.php:5411
 #, php-format
 msgid "ERROR: meta:%1$s not found"
 msgstr ""
 
 #. translators: 1: meta_key 2: meta_value
-#: includes/class-mla-data.php:5082
+#: includes/class-mla-data.php:5420
 #, php-format
 msgid "Adding meta:%1$s = %2$s"
 msgstr ""
 
 #. translators: 1: meta_key
-#: includes/class-mla-data.php:5086
+#: includes/class-mla-data.php:5424
 #, php-format
 msgid "ERROR: Adding meta:%1$s; not found"
 msgstr ""
 
 #. translators: 1: meta_key
-#: includes/class-mla-data.php:5093
+#: includes/class-mla-data.php:5431
 #, php-format
 msgid "Deleting Null meta:%1$s"
 msgstr ""
 
 #. translators: 1: element name 2: old_value 3: new_value
-#: includes/class-mla-data.php:5103 includes/class-mla-data.php:5254
-#: includes/class-mla-data.php:5315 includes/class-mla-data.php:5341
-#: includes/class-mla-data.php:5375 includes/class-mla-data.php:5388
-#: includes/class-mla-data.php:5397 includes/class-mla-data.php:5408
-#: includes/class-mla-data.php:5419 includes/class-mla-data.php:5432
-#: includes/class-mla-data.php:5441 includes/class-mla-data.php:5450
+#: includes/class-mla-data.php:5441 includes/class-mla-data.php:5592
+#: includes/class-mla-data.php:5653 includes/class-mla-data.php:5679
+#: includes/class-mla-data.php:5713 includes/class-mla-data.php:5726
+#: includes/class-mla-data.php:5735 includes/class-mla-data.php:5746
+#: includes/class-mla-data.php:5757 includes/class-mla-data.php:5770
+#: includes/class-mla-data.php:5779 includes/class-mla-data.php:5788
 #: includes/class-mla-mime-types.php:1052
 #: includes/class-mla-mime-types.php:2125
 #, php-format
@@ -347,46 +348,46 @@ msgid "Changing %1$s from \"%2$s\" to \"%3$s\""
 msgstr ""
 
 #. translators: 1: meta_key
-#: includes/class-mla-data.php:5108
+#: includes/class-mla-data.php:5446
 #, php-format
 msgid "ERROR: Changing meta:%1$s; not found"
 msgstr ""
 
 #. translators: 1: meta_key
-#: includes/class-mla-data.php:5168
+#: includes/class-mla-data.php:5506
 #, php-format
 msgid "Deleting %1$s"
 msgstr ""
 
 #. translators: 1: meta_key 2: new_value
-#: includes/class-mla-data.php:5179
+#: includes/class-mla-data.php:5517
 #, php-format
 msgid "Adding %1$s = [%2$s]"
 msgstr ""
 
 #. translators: 1: meta_key 2: meta_value
-#: includes/class-mla-data.php:5185
+#: includes/class-mla-data.php:5523
 #, php-format
 msgid "Adding %1$s = %2$s"
 msgstr ""
 
 #. translators: 1: meta_key
-#: includes/class-mla-data.php:5209
+#: includes/class-mla-data.php:5547
 #, php-format
 msgid "Deleting old %1$s values"
 msgstr ""
 
 #. translators: 1: meta_key 2: old_value 3: new_value 4: update count
-#: includes/class-mla-data.php:5239
+#: includes/class-mla-data.php:5577
 #, php-format
 msgid "Changing %1$s from \"%2$s\" to \"%3$s\"; %4$d updates"
 msgstr ""
 
-#: includes/class-mla-data.php:5297 includes/class-mla-main.php:1892
+#: includes/class-mla-data.php:5635 includes/class-mla-main.php:1892
 msgid "ERROR: Could not retrieve Attachment."
 msgstr ""
 
-#: includes/class-mla-data.php:5315 includes/class-mla-main.php:1305
+#: includes/class-mla-data.php:5653 includes/class-mla-main.php:1305
 #: includes/class-mla-main.php:1549 includes/class-mla-main.php:1739
 #: includes/class-mla-main.php:2110 includes/class-mla-objects.php:275
 #: includes/class-mla-options.php:1017 includes/class-mla-options.php:1777
@@ -396,29 +397,29 @@ msgid "Title"
 msgstr ""
 
 #. translators: 1: old_value
-#: includes/class-mla-data.php:5338
+#: includes/class-mla-data.php:5676
 #, php-format
 msgid "ERROR: Could not change Name/Slug \"%1$s\"; name already exists"
 msgstr ""
 
-#: includes/class-mla-data.php:5341 includes/class-mla-main.php:1740
+#: includes/class-mla-data.php:5679 includes/class-mla-main.php:1740
 #: includes/class-mla-main.php:2113 includes/class-mla-options.php:1024
 msgid "Name/Slug"
 msgstr ""
 
 #. translators: 1: old_value
-#: includes/class-mla-data.php:5367
+#: includes/class-mla-data.php:5705
 #, php-format
 msgid "Deleting ALT Text, was \"%1$s\""
 msgstr ""
 
 #. translators: 1: old_value
-#: includes/class-mla-data.php:5370
+#: includes/class-mla-data.php:5708
 #, php-format
 msgid "ERROR: Could not delete ALT Text, remains \"%1$s\""
 msgstr ""
 
-#: includes/class-mla-data.php:5375 includes/class-mla-list-table.php:1069
+#: includes/class-mla-data.php:5713 includes/class-mla-list-table.php:1069
 #: includes/class-mla-main.php:1743 includes/class-mla-main.php:2116
 #: includes/class-mla-options.php:1031 includes/class-mla-options.php:1783
 #: includes/mla-main-search-box-template.php:44
@@ -427,12 +428,12 @@ msgid "ALT Text"
 msgstr ""
 
 #. translators: 1: old_value 2: new_value
-#: includes/class-mla-data.php:5378
+#: includes/class-mla-data.php:5716
 #, php-format
 msgid "ERROR: Could not change ALT Text from \"%1$s\" to \"%2$s\""
 msgstr ""
 
-#: includes/class-mla-data.php:5388 includes/class-mla-main.php:1741
+#: includes/class-mla-data.php:5726 includes/class-mla-main.php:1741
 #: includes/class-mla-main.php:2119 includes/class-mla-options.php:1038
 #: includes/class-mla-options.php:1786
 #: includes/mla-main-search-box-template.php:45
@@ -440,7 +441,7 @@ msgstr ""
 msgid "Caption"
 msgstr ""
 
-#: includes/class-mla-data.php:5397 includes/class-mla-main.php:1742
+#: includes/class-mla-data.php:5735 includes/class-mla-main.php:1742
 #: includes/class-mla-main.php:2121 includes/class-mla-options.php:1045
 #: includes/class-mla-options.php:1789 includes/class-mla-settings.php:1158
 #: includes/class-mla-settings.php:1415 includes/class-mla-settings.php:1514
@@ -450,80 +451,80 @@ msgstr ""
 msgid "Description"
 msgstr ""
 
-#: includes/class-mla-data.php:5408 includes/class-mla-list-table.php:804
+#: includes/class-mla-data.php:5746 includes/class-mla-list-table.php:804
 #: includes/class-mla-list-table.php:896 includes/class-mla-options.php:4099
 #: includes/class-mla-options.php:4439
 msgid "Parent"
 msgstr ""
 
-#: includes/class-mla-data.php:5419 includes/class-mla-edit-media.php:307
+#: includes/class-mla-data.php:5757 includes/class-mla-edit-media.php:307
 #: includes/class-mla-edit-media.php:447 includes/class-mla-main.php:1746
 #: includes/class-mla-main.php:2127 includes/class-mla-settings.php:1156
 #: includes/class-mla-settings.php:1413
 msgid "Menu Order"
 msgstr ""
 
-#: includes/class-mla-data.php:5432 includes/class-mla-list-table.php:1218
+#: includes/class-mla-data.php:5770 includes/class-mla-list-table.php:1218
 #: includes/class-mla-main.php:1616 includes/class-mla-main.php:1718
 #: includes/class-mla-main.php:1941
 msgid "Author"
 msgstr ""
 
-#: includes/class-mla-data.php:5441 includes/class-mla-main.php:1757
+#: includes/class-mla-data.php:5779 includes/class-mla-main.php:1757
 msgid "Comments"
 msgstr ""
 
-#: includes/class-mla-data.php:5450 includes/class-mla-main.php:1758
+#: includes/class-mla-data.php:5788 includes/class-mla-main.php:1758
 msgid "Pings"
 msgstr ""
 
-#: includes/class-mla-data.php:5484
+#: includes/class-mla-data.php:5822
 msgid "Adding"
 msgstr ""
 
-#: includes/class-mla-data.php:5488
+#: includes/class-mla-data.php:5826
 msgid "Removing"
 msgstr ""
 
-#: includes/class-mla-data.php:5493
+#: includes/class-mla-data.php:5831
 msgid "Replacing"
 msgstr ""
 
-#: includes/class-mla-data.php:5497
+#: includes/class-mla-data.php:5835
 msgid "Ignoring"
 msgstr ""
 
 #. translators: 1: action_name, 2: taxonomy
-#: includes/class-mla-data.php:5509
+#: includes/class-mla-data.php:5847
 #, php-format
 msgid "%1$s \"%2$s\" terms"
 msgstr ""
 
 #. translators: 1: taxonomy
-#: includes/class-mla-data.php:5513
+#: includes/class-mla-data.php:5851
 #, php-format
 msgid "You cannot assign \"%1$s\" terms"
 msgstr ""
 
 #. translators: 1: post ID
-#: includes/class-mla-data.php:5525
+#: includes/class-mla-data.php:5863
 #, php-format
 msgid "Item %1$d, no changes detected."
 msgstr ""
 
 #. translators: 1: post ID
-#: includes/class-mla-data.php:5537
+#: includes/class-mla-data.php:5875
 #, php-format
 msgid "Item %1$d updated."
 msgstr ""
 
 #. translators: 1: post ID
-#: includes/class-mla-data.php:5551
+#: includes/class-mla-data.php:5889
 #, php-format
 msgid "ERROR: Item %1$d update failed."
 msgstr ""
 
-#: includes/class-mla-data.php:5574 includes/class-mla-edit-media.php:125
+#: includes/class-mla-data.php:5912 includes/class-mla-edit-media.php:125
 #: includes/class-mla-edit-media.php:170 includes/class-mla-main.php:330
 #: includes/class-mla-main.php:358 includes/class-mla-main.php:1444
 #: includes/class-mla-settings.php:311 includes/class-mla-settings.php:329
@@ -1007,8 +1008,8 @@ msgstr ""
 #: includes/class-mla-settings.php:1224 includes/class-mla-settings.php:1301
 #: includes/class-mla-settings.php:1690 includes/class-mla-settings.php:1769
 #: includes/class-mla-settings.php:2320 includes/class-mla-settings.php:2443
-#: includes/class-mla-settings.php:2578 includes/class-mla-shortcodes.php:1261
-#: includes/class-mla-shortcodes.php:1335
+#: includes/class-mla-settings.php:2578 includes/class-mla-shortcodes.php:1288
+#: includes/class-mla-shortcodes.php:1362
 msgid "ERROR:"
 msgstr ""
 
@@ -3889,116 +3890,116 @@ msgstr ""
 msgid "Settings imported; %1$s updated, %2$s unchanged."
 msgstr ""
 
-#: includes/class-mla-shortcodes.php:163
-#: includes/class-mla-shortcodes.php:1086
-#: includes/class-mla-shortcodes.php:1955
-#: includes/class-mla-shortcodes.php:2220
+#: includes/class-mla-shortcodes.php:190
+#: includes/class-mla-shortcodes.php:1113
+#: includes/class-mla-shortcodes.php:1982
+#: includes/class-mla-shortcodes.php:2247
 msgid "Previous"
 msgstr ""
 
-#: includes/class-mla-shortcodes.php:164
-#: includes/class-mla-shortcodes.php:1087
-#: includes/class-mla-shortcodes.php:2002
-#: includes/class-mla-shortcodes.php:2226
+#: includes/class-mla-shortcodes.php:191
+#: includes/class-mla-shortcodes.php:1114
+#: includes/class-mla-shortcodes.php:2029
+#: includes/class-mla-shortcodes.php:2253
 msgid "Next"
 msgstr ""
 
-#: includes/class-mla-shortcodes.php:245
+#: includes/class-mla-shortcodes.php:272
 msgid "mla_debug empty gallery"
 msgstr ""
 
-#: includes/class-mla-shortcodes.php:309
+#: includes/class-mla-shortcodes.php:336
 msgid ""
 "<strong>Photonic-enhanced [mla_gallery]</strong> type must be "
 "<strong>default</strong>, query = "
 msgstr ""
 
-#: includes/class-mla-shortcodes.php:625
+#: includes/class-mla-shortcodes.php:652
 msgid "unattached"
 msgstr ""
 
-#: includes/class-mla-shortcodes.php:646
+#: includes/class-mla-shortcodes.php:673
 msgid "unknown"
 msgstr ""
 
-#: includes/class-mla-shortcodes.php:1184
+#: includes/class-mla-shortcodes.php:1211
 msgid "mla_debug attributes"
 msgstr ""
 
-#: includes/class-mla-shortcodes.php:1185
+#: includes/class-mla-shortcodes.php:1212
 msgid "mla_debug arguments"
 msgstr ""
 
-#: includes/class-mla-shortcodes.php:1277
+#: includes/class-mla-shortcodes.php:1304
 msgid "mla_debug empty cloud"
 msgstr ""
 
-#: includes/class-mla-shortcodes.php:2551
-#: includes/class-mla-shortcodes.php:2802
+#: includes/class-mla-shortcodes.php:2578
+#: includes/class-mla-shortcodes.php:2829
 msgid "ERROR: Invalid mla_gallery"
 msgstr ""
 
-#: includes/class-mla-shortcodes.php:2961
+#: includes/class-mla-shortcodes.php:2988
 msgid "mla_debug query"
 msgstr ""
 
-#: includes/class-mla-shortcodes.php:2962
+#: includes/class-mla-shortcodes.php:2989
 msgid "mla_debug request"
 msgstr ""
 
-#: includes/class-mla-shortcodes.php:2963
+#: includes/class-mla-shortcodes.php:2990
 msgid "mla_debug query_vars"
 msgstr ""
 
-#: includes/class-mla-shortcodes.php:2964
+#: includes/class-mla-shortcodes.php:2991
 msgid "mla_debug post_count"
 msgstr ""
 
-#: includes/class-mla-shortcodes.php:3016
+#: includes/class-mla-shortcodes.php:3043
 msgid "mla_debug WHERE filter"
 msgstr ""
 
-#: includes/class-mla-shortcodes.php:3035
+#: includes/class-mla-shortcodes.php:3062
 msgid "mla_debug modified WHERE filter"
 msgstr ""
 
-#: includes/class-mla-shortcodes.php:3058
+#: includes/class-mla-shortcodes.php:3085
 msgid "mla_debug ORDER BY filter, incoming"
 msgstr ""
 
-#: includes/class-mla-shortcodes.php:3058
+#: includes/class-mla-shortcodes.php:3085
 msgid "Replacement ORDER BY clause"
 msgstr ""
 
-#: includes/class-mla-shortcodes.php:3081
+#: includes/class-mla-shortcodes.php:3108
 msgid "mla_debug posts_clauses filter"
 msgstr ""
 
-#: includes/class-mla-shortcodes.php:3099
+#: includes/class-mla-shortcodes.php:3126
 msgid "mla_debug posts_clauses_request filter"
 msgstr ""
 
-#: includes/class-mla-shortcodes.php:3281
+#: includes/class-mla-shortcodes.php:3310
 msgid "Invalid taxonomy"
 msgstr ""
 
-#: includes/class-mla-shortcodes.php:3462
+#: includes/class-mla-shortcodes.php:3491
 msgid "mla_debug query arguments"
 msgstr ""
 
-#: includes/class-mla-shortcodes.php:3463
+#: includes/class-mla-shortcodes.php:3492
 msgid "mla_debug last_query"
 msgstr ""
 
-#: includes/class-mla-shortcodes.php:3464
+#: includes/class-mla-shortcodes.php:3493
 msgid "mla_debug last_error"
 msgstr ""
 
-#: includes/class-mla-shortcodes.php:3465
+#: includes/class-mla-shortcodes.php:3494
 msgid "mla_debug num_rows"
 msgstr ""
 
-#: includes/class-mla-shortcodes.php:3466
+#: includes/class-mla-shortcodes.php:3495
 msgid "mla_debug found_rows"
 msgstr ""
 
@@ -4111,10 +4112,10 @@ msgstr ""
 msgid "Search Media"
 msgstr ""
 
-#: includes/mla-plugin-loader.php:34
+#: includes/mla-plugin-loader.php:36
 msgid "The Media Library Assistant cannot load."
 msgstr ""
 
-#: includes/mla-plugin-loader.php:36
+#: includes/mla-plugin-loader.php:38
 msgid "You must resolve these conflicts before this plugin can safely load."
 msgstr ""

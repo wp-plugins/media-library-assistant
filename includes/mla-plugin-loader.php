@@ -9,6 +9,8 @@
  * @since 0.20
  */
 
+defined( 'ABSPATH' ) or die();
+
 if (!defined('MLA_OPTION_PREFIX')) {
 	/**
 	 * Gives a unique prefix for plugin options; can be set in wp-config.php

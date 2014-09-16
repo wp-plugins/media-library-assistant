@@ -897,7 +897,7 @@ The data selection parameters specify which taxonomy (or taxonomies) the terms a
 </tr>
 <tr>
 <td style="padding-right: 10px; vertical-align: top; font-weight:bold">ids</td>
-<td>A comma-separated list of attachment ID values for an item-specific cloud. Only those terms assigned to the attachment(s) in the list will be included. You can have one or more IDs, and you can include assigned terms from one or more taxonomies. Do not use the "include" parameter if you use the "ids" parameter.</td>
+<td>A comma-separated list of <strong>attachment ID</strong> values for an item-specific cloud. Only those terms assigned to the attachment(s) in the list will be included. You can have one or more IDs, and you can include assigned terms from one or more taxonomies. Do not use the "include" parameter if you use the "ids" parameter.</td>
 </tr>
 <tr>
 <td style="padding-right: 10px; vertical-align: top; font-weight:bold">no_count</td>
@@ -916,7 +916,7 @@ You can code "true" to omit the attachment-counting process. If you do that, the
 </tr>
 <tr>
 <td style="padding-right: 10px; vertical-align: top; font-weight:bold">parent</td>
-<td>Get direct children of this term (only terms whose explicit parent is this value). If 0 is passed, only top-level terms are returned.</td>
+<td>Get direct children of this term id (only terms whose explicit parent is this value). If 0 is passed, only top-level terms are returned.</td>
 </tr>
 <tr>
 <td style="padding-right: 10px; vertical-align: top; font-weight:bold">minimum</td>

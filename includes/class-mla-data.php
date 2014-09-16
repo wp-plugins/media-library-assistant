@@ -5877,7 +5877,7 @@ class MLAData {
 				 * Uncomment this for debugging.
 				 */
 				// $final_message .= '<br>' . $message;
-				// error_log( 'DEBUG: mla_update_single_item message = ' . var_export( $message, true ), 0 );
+				//error_log( 'DEBUG: mla_update_single_item message = ' . var_export( $message, true ), 0 );
 
 				return array(
 					'message' => $final_message,

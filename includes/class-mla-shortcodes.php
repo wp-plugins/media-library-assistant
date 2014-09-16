@@ -24,6 +24,33 @@ class MLAShortcodes {
 		add_shortcode( 'mla_attachment_list', 'MLAShortcodes::mla_attachment_list_shortcode' );
 		add_shortcode( 'mla_gallery', 'MLAShortcodes::mla_gallery_shortcode' );
 		add_shortcode( 'mla_tag_cloud', 'MLAShortcodes::mla_tag_cloud_shortcode' );
+
+		/*
+		 * Avoid wptexturize defect
+		 */
+		if ( version_compare( get_bloginfo('version'), '4.0', '>=' ) ) {
+			add_filter( 'no_texturize_shortcodes', 'MLAShortcodes::mla_no_texturize_shortcodes_filter', 10, 1 );
+		}
+	}
+
+	/**
+	 * Prevents wptexturizing of the [mla_gallery] shortcode, avoiding a bug in WP 4.0.
+	 * 
+	 * Defined as public because it's a filter.
+	 *
+	 * @since 1.94
+	 *
+	 * @param	array	list of "do not texturize" shortcodes
+	 *
+	 * @return	array	updated list of "do not texturize" shortcodes
+	 */
+	public static function mla_no_texturize_shortcodes_filter( $no_texturize_shortcodes ) {
+		if ( ! in_array( 'mla_gallery', $no_texturize_shortcodes ) ) {
+			$no_texturize_shortcodes[] = 'mla_gallery';
+			$no_texturize_shortcodes[] = 'mla_tag_cloud';
+		}
+		
+		return $no_texturize_shortcodes;
 	}
 
 	/**
@@ -2826,7 +2853,6 @@ class MLAShortcodes {
 		 * Decide whether to use a "get_children" style query
 		 */
 		self::$query_parameters['disable_tax_join'] = $is_tax_query && ! $use_children;
-
 		if ( $use_children && ! isset( $query_arguments['post_parent'] ) ) {
 			if ( ! isset( $query_arguments['id'] ) ) {
 				$query_arguments['post_parent'] = $post_parent;
@@ -2951,6 +2977,7 @@ class MLAShortcodes {
 			remove_filter( 'relevanssi_admin_search_ok', 'MLAData::mla_query_relevanssi_admin_search_ok_filter' );
 		}
 
+		remove_filter( 'posts_join', 'MLAShortcodes::mla_shortcode_query_posts_join_filter', 0x7FFFFFFF );
 		remove_filter( 'posts_where', 'MLAShortcodes::mla_shortcode_query_posts_where_filter', 0x7FFFFFFF );
 		remove_filter( 'posts_orderby', 'MLAShortcodes::mla_shortcode_query_posts_orderby_filter', 0x7FFFFFFF );
 
@@ -3134,7 +3161,7 @@ class MLAShortcodes {
 	/**
 	 * Retrieve the terms in one or more taxonomies.
 	 *
-	 * Alternative to WordPress get_terms() function that provides
+	 * Alternative to WordPress /wp-includes/taxonomy.php function get_terms() that provides
 	 * an accurate count of attachments associated with each term.
 	 *
 	 * taxonomy - string containing one or more (comma-delimited) taxonomy names
@@ -3142,9 +3169,11 @@ class MLAShortcodes {
 	 *
 	 * post_mime_type - MIME type(s) of the items to include in the term-specific counts. Default 'all'.
 	 *
-	 * post_type - The post type(s) of the items to include in the term-specific counts. The default is "attachment". 
+	 * post_type - The post type(s) of the items to include in the term-specific counts.
+	 * The default is "attachment". 
 	 *
-	 * post_status - The post status value(s) of the items to include in the term-specific counts. The default is "inherit".
+	 * post_status - The post status value(s) of the items to include in the term-specific counts.
+	 * The default is "inherit".
 	 *
 	 * ids - A comma-separated list of attachment ID values for an item-specific cloud.
 	 *
@@ -3161,7 +3190,7 @@ class MLAShortcodes {
 	 * no_count - 'true', 'false' (default) to suppress term-specific attachment-counting process.
 	 *
 	 * number - maximum number of term objects to return. Terms are ordered by count,
-	 * descending and then by term_id before this value is applied. Default 45.
+	 * descending and then by term_id before this value is applied. Default 0.
 	 *
 	 * orderby - 'count', 'id', 'name' (default), 'none', 'random', 'slug'
 	 *
@@ -3171,7 +3200,7 @@ class MLAShortcodes {
 	 *
 	 * preserve_case - 'true', 'false' (default) to make orderby case-sensitive.
 	 *
-	 * pad_counts - 'true', 'false' (default) to make orderby case-sensitive.
+	 * pad_counts - 'true', 'false' (default) to to include the count of all children in their parents' count.
 	 *
 	 * limit - final number of term objects to return, for pagination. Default 0.
 	 *
