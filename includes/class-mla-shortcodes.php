@@ -579,7 +579,8 @@ class MLAShortcodes {
 		}
 
 		/*
-		 * For "previous_link", "current_link" and "next_link", discard all of the $attachments except the appropriate choice
+		 * For "previous_link", "current_link" and "next_link",
+		 * discard all of the $attachments except the appropriate choice
 		 */
 		if ( ! $is_gallery ) {
 			$link_type = $output_parameters[0];
@@ -2197,6 +2198,18 @@ class MLAShortcodes {
 		$markup_values['http_host'] = $_SERVER['HTTP_HOST'];
 		$markup_values['request_uri'] = add_query_arg( array(  $mla_page_parameter  => $new_page ), $_SERVER['REQUEST_URI'] );	
 		$markup_values['new_url'] = set_url_scheme( $markup_values['scheme'] . $markup_values['http_host'] . $markup_values['request_uri'] );
+
+		/*
+		 * Expand pagination-specific Gallery Display Content parameters,
+		 * which can contain request: and query: arguments.
+		 */
+		$pagination_arguments = array( 'mla_nolink_text', 'mla_link_class', 'mla_rollover_text', 'mla_link_attributes', 'mla_link_href', 'mla_link_text', 'mla_prev_text', 'mla_next_text' );
+		
+		foreach( $pagination_arguments as $value ) {
+			$new_text .= str_replace( '{+', '[+', str_replace( '+}', '+]', $arguments[ $value ] ) );
+		}
+
+		$markup_values = MLAData::mla_expand_field_level_parameters( $new_text, $attr, $markup_values );
 
 		/*
 		 * Build the new link, applying Gallery Display Content parameters

@@ -1062,12 +1062,18 @@ class MLA_List_Table extends WP_List_Table {
 	 */
 	function column_alt_text( $item ) {
 		if ( isset( $item->mla_wp_attachment_image_alt ) ) {
+			if ( is_array( $item->mla_wp_attachment_image_alt ) ) {
+				$alt_text = $item->mla_wp_attachment_image_alt[0];
+			} else {
+				$alt_text = $item->mla_wp_attachment_image_alt;
+			}
+			
 			return sprintf( '<a href="%1$s" title="' . __( 'Filter by', 'media-library-assistant' ) . ' &#8220;%2$s&#8221;">%3$s</a>', esc_url( add_query_arg( array_merge( self::mla_submenu_arguments( false ), array(
 				'page' => MLA::ADMIN_PAGE_SLUG,
 				'mla-metakey' => '_wp_attachment_image_alt',
-				'mla-metavalue' => urlencode( $item->mla_wp_attachment_image_alt ),
-				'heading_suffix' => urlencode( __( 'ALT Text', 'media-library-assistant' ) . ': ' . $item->mla_wp_attachment_image_alt ) 
-			) ), 'upload.php' ) ), esc_html( $item->mla_wp_attachment_image_alt ), esc_html( $item->mla_wp_attachment_image_alt ) );
+				'mla-metavalue' => urlencode( $alt_text ),
+				'heading_suffix' => urlencode( __( 'ALT Text', 'media-library-assistant' ) . ': ' . $alt_text ) 
+			) ), 'upload.php' ) ), esc_html( $alt_text ), esc_html( $alt_text ) );
 		}
 
 		return '';

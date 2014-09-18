@@ -156,8 +156,9 @@ All of the MLA source code has been annotated with "DocBlocks", a special type o
 
 * New: An example that shows how to replace the  wp_list_categories() item count with an accurate, padded count of the attachments assigned to each term has been added to the /media-library-assistant/examples/twentytwelve-mla directory. The example comprises the "page-tosca30-dropdown.php" and "content-tosca30-dropdown.php" files.
 * Fix: A shortcode-processing defect in WordPress 4.0 is avoided by adding a "no_texturize_shortcodes" filter to the `[mla_gallery]` and `[mla_tag_cloud]` shortcodes.
+* Fix: For the `[mla_gallery]` shortcode, a defect in expanding `request:` and `query:` arguments in pagination parameters has been fixed.
 * Fix: A defect in the Media Manager/Media Grid enhancements has been corrected. The defect caused changes to the Title, Caption, ALT Text and Description fields in the Attachment Details pane to be ignored.
-* Fix: The number of "where-used" SQL queries required to compose the Media/Assistant submenu table has been reduced significantly. For example, the table with 100 items has been reduced from 282 queries to 67, and a table with 621 items has been reduced from 2,722 queries to 241.
+* Fix: The number of "where-used" SQL queries required to compose the Media/Assistant submenu table has been reduced significantly. For example, a table with 100 items has been reduced from 282 queries to 67, and a table with 621 items has been reduced from 2,722 queries to 241.
 * Fix: An occasional PHP notice in the `posts_join` filter has been removed.
 
 = 1.93 =
