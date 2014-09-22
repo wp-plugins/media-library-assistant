@@ -1132,6 +1132,8 @@ class MLAShortcodes {
 
 			'echo' => false,
 			'link' => 'view',
+			'current_item' => '',
+			'current_item_class' => 'mla_current_item',
 
 			'itemtag' => 'ul',
 			'termtag' => 'li',
@@ -1203,6 +1205,13 @@ class MLAShortcodes {
 		 */
 		if ( isset( $arguments[ $mla_page_parameter ] ) ) {
 			$arguments['offset'] = $arguments['limit'] * ( $arguments[ $mla_page_parameter ] - 1);
+		}
+		
+		/*
+		 * Clean up the current_item to separate term_id from slug
+		 */
+		if ( ! empty( $arguments['current_item'] ) && ctype_digit( $arguments['current_item'] ) ) {
+			$arguments['current_item'] = absint( $arguments['current_item'] );
 		}
 
 		$arguments = apply_filters( 'mla_tag_cloud_arguments', $arguments );
@@ -1447,6 +1456,7 @@ class MLAShortcodes {
 			'mla_markup' => $arguments['mla_markup'],
 			'instance' => $instance,
 			'taxonomy' => implode( '-', $arguments['taxonomy'] ),
+			'current_item' => $arguments['current_item'],
 			'itemtag' => tag_escape( $arguments['itemtag'] ),
 			'termtag' => tag_escape( $arguments['termtag'] ),
 			'captiontag' => tag_escape( $arguments['captiontag'] ),
@@ -1665,6 +1675,7 @@ class MLAShortcodes {
 			$item_values['term_group'] = $tag->term_group;
 			$item_values['term_taxonomy_id'] = $tag->term_taxonomy_id;
 			$item_values['taxonomy'] = wptexturize( $tag->taxonomy );
+			$item_values['current_item_class'] = '';
 			$item_values['description'] = wptexturize( $tag->description );
 			$item_values['parent'] = $tag->parent;
 			$item_values['count'] = isset ( $tag->count ) ? $tag->count : 0; 
@@ -1674,8 +1685,20 @@ class MLAShortcodes {
 			$item_values['editlink_url'] = $tag->edit_link;
 			$item_values['termlink_url'] = $tag->term_link;
 			// Added in the code below:
-			// 'caption', 'link_attributes', 'rollover_text', 'link_style', 'link_text', 'editlink', 'termlink', 'thelink'
+			// 'caption', 'link_attributes', 'current_item_class', 'rollover_text', 'link_style', 'link_text', 'editlink', 'termlink', 'thelink'
 
+			if ( ! empty( $arguments['current_item'] ) ) {
+				if ( is_integer( $arguments['current_item'] ) ) {
+					if ( $arguments['current_item'] == $tag->term_id ) {
+						$item_values['current_item_class'] = $arguments['current_item_class'];
+					}
+				} else {
+					if ( $arguments['current_item'] == $tag->slug ) {
+						$item_values['current_item_class'] = $arguments['current_item_class'];
+					}
+				}
+			}
+			
 			/*
 			 * Add item_specific field-level substitution parameters
 			 */
@@ -2311,80 +2334,104 @@ class MLAShortcodes {
 	 *
 	 * @since 1.20
 	 *
-	 * @param array Validated query parameters
+	 * @param array Validated query parameters; 'order', 'orderby', 'meta_key', 'post__in'.
+	 * @param string Optional. Database table prefix; can be empty. Default taken from $wpdb->posts.
+	 * @param array Optional. Field names (keys) and database column equivalents (values). Defaults from [mla_gallery].
+	 * @param array Optional. Field names (values) that require a BINARY prefix to preserve case order. Default array()
 	 * @return string|bool Returns the orderby clause if present, false otherwise.
 	 */
-	private static function _validate_sql_orderby( $query_parameters ){
+	private static function _validate_sql_orderby( $query_parameters, $table_prefix = NULL, $allowed_keys = NULL, $binary_keys = array() ){
 		global $wpdb;
 
 		$results = array ();
 		$order = isset( $query_parameters['order'] ) ? ' ' . $query_parameters['order'] : '';
 		$orderby = isset( $query_parameters['orderby'] ) ? $query_parameters['orderby'] : '';
 		$meta_key = isset( $query_parameters['meta_key'] ) ? $query_parameters['meta_key'] : '';
-		$post__in = isset( $query_parameters['post__in'] ) ? implode(',', array_map( 'absint', $query_parameters['post__in'] )) : '';
+		
+		if ( is_null( $table_prefix ) ) {
+			$table_prefix = $wpdb->posts . '.';
+		}
+
+		if ( is_null( $allowed_keys ) ) {
+			$allowed_keys = array(
+				'empty_orderby_default' => 'post_date',
+				'explicit_orderby_field' => 'post__in',
+				'ID' => 'ID',
+				'author' => 'post_author',
+				'date' => 'post_date',
+				'description' => 'post_content',
+				'content' => 'post_content',
+				'title' => 'post_title',
+				'caption' => 'post_excerpt',
+				'excerpt' => 'post_excerpt',
+				'slug' => 'post_name',
+				'name' => 'post_name',
+				'modified' => 'post_modified',
+				'parent' => 'post_parent',
+				'menu_order' => 'menu_order',
+				'mime_type' => 'post_mime_type',
+				'comment_count' => 'post_content',
+				'rand' => 'RAND()',
+			);
+		}
 
 		if ( empty( $orderby ) ) {
-			$orderby = "$wpdb->posts.post_date " . $order;
+			if ( ! empty( $allowed_keys['empty_orderby_default'] ) ) {
+				return $table_prefix . $allowed_keys['empty_orderby_default'] . " {$order}";
+			} else {
+				return "{$table_prefix}post_date {$order}";
+			}
 		} elseif ( 'none' == $orderby ) {
 			return '';
-		} elseif ( $orderby == 'post__in' && ! empty( $post__in ) ) {
-			$orderby = "FIELD( {$wpdb->posts}.ID, {$post__in} )";
-		} else {
-			$allowed_keys = array('ID', 'author', 'date', 'description', 'content', 'title', 'caption', 'excerpt', 'slug', 'name', 'modified', 'parent', 'menu_order', 'mime_type', 'comment_count', 'rand');
-			if ( ! empty( $meta_key ) ) {
-				$allowed_keys[] = $meta_key;
-				$allowed_keys[] = 'meta_value';
-				$allowed_keys[] = 'meta_value_num';
+		} elseif ( ! empty( $allowed_keys['explicit_orderby_field'] ) ) {
+			$explicit_field = $allowed_keys['explicit_orderby_field'];
+			if ( $orderby == $explicit_field ) {
+				$explicit_order = implode(',', array_map( 'absint', $query_parameters[ $explicit_field ] ) );
+				if ( ! empty( $explicit_order ) ) {
+					return "FIELD( {$table_prefix}{$explicit_field}, {$explicit_order} )";
+				}
 			}
+		}
+		
+		if ( ! empty( $meta_key ) ) {
+			$allowed_keys[ $meta_key ] = "$wpdb->postmeta.meta_value";
+			$allowed_keys['meta_value'] = "$wpdb->postmeta.meta_value";
+			$allowed_keys['meta_value_num'] = "$wpdb->postmeta.meta_value+0";
+		}
 
-			$obmatches = preg_split('/\s*,\s*/', trim($query_parameters['orderby']));
-			foreach ( $obmatches as $index => $value ) {
-				$count = preg_match('/([a-z0-9_]+)(\s+(ASC|DESC))?/i', $value, $matches);
+		$obmatches = preg_split('/\s*,\s*/', trim($query_parameters['orderby']));
+		foreach ( $obmatches as $index => $value ) {
+			$count = preg_match('/([a-z0-9_]+)(\s+(ASC|DESC))?/i', $value, $matches);
 
-				if ( $count && ( $value == $matches[0] ) && in_array( $matches[1], $allowed_keys ) ) {
-					if ( 'rand' == $matches[1] ) {
-							$results[] = 'RAND()';
-					} else {
-						switch ( $matches[1] ) {
-							case 'ID':
-								$matches[1] = "$wpdb->posts.ID";
-								break;
-							case 'description':
-								$matches[1] = "$wpdb->posts.post_content";
-								break;
-							case 'caption':
-								$matches[1] = "$wpdb->posts.post_excerpt";
-								break;
-							case 'slug':
-								$matches[1] = "$wpdb->posts.post_name";
-								break;
-							case 'menu_order':
-								$matches[1] = "$wpdb->posts.menu_order";
-								break;
-							case 'comment_count':
-								$matches[1] = "$wpdb->posts.comment_count";
-								break;
-							case $meta_key:
-							case 'meta_value':
-								$matches[1] = "$wpdb->postmeta.meta_value";
-								break;
-							case 'meta_value_num':
-								$matches[1] = "$wpdb->postmeta.meta_value+0";
-								break;
-							default:
-								$matches[1] = "$wpdb->posts.post_" . $matches[1];
-						} // switch $matches[1]
+			if ( $count && ( $value == $matches[0] ) && array_key_exists( $matches[1], $allowed_keys ) ) {
+				if ( ( 'rand' == $matches[1] ) || ( 'random' == $matches[1] ) ){
+						$results[] = 'RAND()';
+				} else {
+					switch ( $matches[1] ) {
+						case $meta_key:
+						case 'meta_value':
+							$matches[1] = "$wpdb->postmeta.meta_value";
+							break;
+						case 'meta_value_num':
+							$matches[1] = "$wpdb->postmeta.meta_value+0";
+							break;
+						default:
+							if ( in_array( $matches[1], $binary_keys ) ) {
+								$matches[1] = 'BINARY ' . $table_prefix . $allowed_keys[ $matches[1] ];
+							} else {
+								$matches[1] = $table_prefix . $allowed_keys[ $matches[1] ];
+							}
+					} // switch $matches[1]
 
-						$results[] = isset( $matches[2] ) ? $matches[1] . $matches[2] : $matches[1] . $order;
-					} // not 'rand'
-				} // valid column specification
-			} // foreach $obmatches
+					$results[] = isset( $matches[2] ) ? $matches[1] . $matches[2] : $matches[1] . $order;
+				} // not 'rand'
+			} // valid column specification
+		} // foreach $obmatches
 
-			$orderby = implode( ', ', $results );
-			if ( empty( $orderby ) ) {
-				return false;
-			}
-		} // else filter by allowed keys, etc.
+		$orderby = implode( ', ', $results );
+		if ( empty( $orderby ) ) {
+			return false;
+		}
 
 		return $orderby;
 	}
@@ -3028,7 +3075,7 @@ class MLAShortcodes {
 		 * We leave the clause in because the WHERE clauses refer to "p2.".
 		 */
 		if ( self::$query_parameters['disable_tax_join'] ) {
-			$join_clause = str_replace( " LEFT JOIN $wpdb->posts AS p2 ON ($wpdb->posts.post_parent = p2.ID) ", " LEFT JOIN $wpdb->posts AS p2 ON (p2.ID = p2.ID) ", $join_clause );
+			$join_clause = str_replace( " LEFT JOIN {$wpdb->posts} AS p2 ON ({$wpdb->posts}.post_parent = p2.ID) ", " LEFT JOIN {$wpdb->posts} AS p2 ON (p2.ID = p2.ID) ", $join_clause );
 		}
 
 		return $join_clause;
@@ -3339,6 +3386,9 @@ class MLAShortcodes {
 		 */
 		if ( ! empty( $arguments['ids'] ) && empty( $arguments['include'] ) ) {
 			$ids = wp_parse_id_list( $arguments['ids'] );
+		    $placeholders = implode( "','", $ids );
+			$query[] = "AND p.ID IN ( '{$placeholders}' )";
+
 			$includes = array();
 			foreach ( $ids as $id ) {
 				foreach ($taxonomies as $taxonomy) {
@@ -3434,28 +3484,23 @@ class MLAShortcodes {
 		 * is needed unless a different order is specified
 		 */
 		if ( 'count' != $orderby || 'DESC' != $order ) {
-		    $binary = ( 'true' == strtolower( $arguments['preserve_case'] ) ) ? 'BINARY ' : '';
-
-			switch ($orderby) {
-				case 'count':
-					$final_parameters[] = 'ORDER BY count ' . $order;
-					break;
-				case 'id':
-					$final_parameters[] = 'ORDER BY term_id ' . $order;
-					break;
-				case 'name':
-					$final_parameters[] = 'ORDER BY ' . $binary . 'name ' . $order;
-					break;
-				case 'none':
-					break;
-				case 'random':
-					$final_parameters[] = 'ORDER BY RAND() ' . $order;
-					break;
-				case 'slug':
-					$final_parameters[] = 'ORDER BY ' . $binary . 'slug ' . $order;
-					break;
+		    if ( 'true' == strtolower( $arguments['preserve_case'] ) ) {
+				$binary_keys = array( 'name', 'slug', );
+			} else {
+				$binary_keys = array();
 			}
-		}
+			
+			$allowed_keys = array(
+				'empty_orderby_default' => 'name',
+				'count' => 'count',
+				'id' => 'term_id',
+				'name' => 'name',
+				'random' => 'RAND()',
+				'slug' => 'slug',
+			);
+
+			$final_parameters[] = 'ORDER BY ' . self::_validate_sql_orderby( $arguments, '', $allowed_keys, $binary_keys );
+		} // add ORDER BY
 
 		/*
 		 * Add pagination

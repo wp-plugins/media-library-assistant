@@ -747,6 +747,14 @@ Each item in the tag cloud comprises a term name of varying size, a hyperlink su
 <td style="padding-right: 10px; vertical-align: top; font-weight:bold">link</td>
 <td>Chooses the destination of the item hyperlink; details in the next section below.</td>
 </tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">current_item</td>
+<td>Identifies the current/selected item in the cloud. An integer value will be interpreted as a term id and anything else as a term slug. It will be ignored if it does not match an item in the cloud.</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">current_item_class</td>
+<td>The class attribute for the current item in the cloud as determined by the "current_item" parameter (if specified), Defaults to "mla_current_item".</td>
+</tr>
 </table>
 <p>
 The Item parameters are an easy way to customize the content and markup for each cloud item. For the list and grid formats you can also use the <a href="#tag_cloud_display_content">Tag Cloud Display Content parameters</a> and/or Style and Markup Templates for even greater flexibility.
@@ -955,7 +963,10 @@ The "pad_counts" parameter is only applied to the first (or only) taxonomy you s
 </tr>
 </table>
 <p>
-You can sort on more than one value, e.g., <code>orderby="author, date DESC"</code> and you can specify ASC/DESC on a value by value basis. <strong>NOTE: multiple orderby values are separated by commas, not spaces.</strong> This is a change from WP_Query.
+You can sort on more than one value, e.g., <code>orderby="count DESC, name"</code> and you can specify ASC/DESC on a value by value basis. <strong>NOTE: multiple orderby values are separated by commas, not spaces.</strong> This is a change from WP_Query.
+</p>
+<p>
+The order parameter (default ASC) can give an ASC/DESC default for any value that doesn't have a specific choice. For example, <code>orderby="count DESC, name" order=ASC</code> is the same as <code>orderby="count DESC, name ASC"</code>.
 <a name="tag_cloud_debugging_output"></a>
 </p>
 <h4>Debugging Output</h4>
@@ -1007,6 +1018,10 @@ Tag cloud substitution parameters for the <strong>Style template</strong> are:
 <tr>
 <td style="padding-right: 10px; vertical-align: top; font-weight:bold">taxonomy</td>
 <td>the slug of the taxonomy on which the cloud is based. Multiple taxonomy slugs are joined with a dash to form a single value.</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">current_item</td>
+<td>the current/selected item in the cloud, as entered in the shortcode parameters.</td>
 </tr>
 <tr>
 <td style="padding-right: 10px; vertical-align: top; font-weight:bold">itemtag</td>
@@ -1200,6 +1215,10 @@ Tag cloud <strong>item-specific substitution parameters</strong> for the Markup 
 <tr>
 <td style="padding-right: 10px; vertical-align: top; font-weight:bold">link_attributes</td>
 <td>link attributes, if any, drawn from the mla_target, mla_link_attributes and mla_link_class parameters</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">current_item_class</td>
+<td>set to "mla_current_item" for the current item in the cloud as determined by the "current_item" parameter, and to an empty string for all other items in the cloud.</td>
 </tr>
 <tr>
 <td style="padding-right: 10px; vertical-align: top; font-weight:bold">rollover_text</td>

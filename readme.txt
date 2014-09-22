@@ -155,6 +155,8 @@ All of the MLA source code has been annotated with "DocBlocks", a special type o
 = 1.9x =
 
 * New: An example that shows how to replace the  wp_list_categories() item count with an accurate, padded count of the attachments assigned to each term has been added to the /media-library-assistant/examples/twentytwelve-mla directory. The example comprises the "page-tosca30-dropdown.php" and "content-tosca30-dropdown.php" files.
+* New: For the `[mla_tag_cloud]` shortcode, new `current_item` and `current_item_class` parameters allow you to specify the current or selected term in the cloud and add a `class` attribute to it.
+* New: For the `[mla_tag_cloud]` shortcode, when item-specific clouds are created with the `ids` parameter, the term counts reflect only the items in the `ids` list.
 * Fix: A shortcode-processing defect in WordPress 4.0 is avoided by adding a "no_texturize_shortcodes" filter to the `[mla_gallery]` and `[mla_tag_cloud]` shortcodes.
 * Fix: For the `[mla_gallery]` shortcode, a defect in expanding `request:` and `query:` arguments in pagination parameters has been fixed.
 * Fix: A defect in the Media Manager/Media Grid enhancements has been corrected. The defect caused changes to the Title, Caption, ALT Text and Description fields in the Attachment Details pane to be ignored.

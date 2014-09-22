@@ -2966,7 +2966,7 @@ class MLAData {
 		}
 		
 		$features = array();
-		if ( MLAOptions::$process_featured_in ) {
+		if ( MLAOptions::$process_featured_in && ! empty( $attachment_ids ) ) {
 			$attachment_ids = implode( ',', $attachment_ids );
 			$results = $wpdb->get_results( 
 					"
@@ -3174,7 +3174,7 @@ class MLAData {
 			if ( MLAOptions::$process_gallery_in ) {
 				$reference_tests++;
 				if ( self::_build_mla_galleries( MLAOptions::MLA_GALLERY_IN_TUNING, self::$galleries, '[gallery', $exclude_revisions ) ) {
-					$galleries = self::_search_mla_galleries( self::$galleries, $ID );
+					$galleries = self::_search_mla_galleries( self::$galleries, $attachment->ID );
 					if ( ! empty( $galleries ) ) {
 						$references['found_reference'] = true;
 						$references['galleries'] = $galleries;
