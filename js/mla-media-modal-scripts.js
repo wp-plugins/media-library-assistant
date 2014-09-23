@@ -145,7 +145,7 @@ var wp, wpAjax, ajaxurl, jQuery, _,
 					// Media Grid native dateFilter
 					mlaModal.settings.query[state].filterMonth = ( 100 * query.year ) + ( 1 * query.monthnum ) ;
 				} else {
-					mlaModal.settings.query[state].filterMonth = 0;
+					// mlaModal.settings.query[state].filterMonth = 0;
 				}
 			}
 
@@ -237,8 +237,13 @@ var wp, wpAjax, ajaxurl, jQuery, _,
 					value = mlaModal.settings.query[state].filterMime,
 					props = model.toJSON();
 	
-				if ( 'string' == typeof props.search )
-					mlaModal.settings.query[state].searchValue = props.search;
+				if ( false === mlaModal.settings.enableSearchBox ) {
+					if ( 'string' == typeof props.search ) {
+						mlaModal.settings.query[state].searchValue = props.search;
+					} else {
+						mlaModal.settings.query[state].searchValue = '';
+					}
+				}
 
 				_.find( this.filters, function( filter, id ) {
 					var equal = _.all( filter.props, function( prop, key ) {
@@ -302,8 +307,13 @@ var wp, wpAjax, ajaxurl, jQuery, _,
 				if ( _.isUndefined( props.s ) )
 					props.s = {};
 
-				if ( 'string' == typeof props.search )
-					mlaModal.settings.query[state].searchValue = props.search;
+				if ( false === mlaModal.settings.enableSearchBox ) {
+					if ( 'string' == typeof props.search ) {
+						mlaModal.settings.query[state].searchValue = props.search;
+					} else {
+						mlaModal.settings.query[state].searchValue = '';
+					}
+				}
 
 				if (_.isUndefined( props.s.mla_filter_month ) )
 					props.s.mla_filter_month = mlaModal.settings.query[state].filterMonth;
@@ -369,8 +379,13 @@ var wp, wpAjax, ajaxurl, jQuery, _,
 				if ( _.isUndefined( props.s ) )
 					props.s = {};
 
-				if ( 'string' == typeof props.search )
-					mlaModal.settings.query[state].searchValue = props.search;
+				if ( false === mlaModal.settings.enableSearchBox ) {
+					if ( 'string' == typeof props.search ) {
+						mlaModal.settings.query[state].searchValue = props.search;
+					} else {
+						mlaModal.settings.query[state].searchValue = '';
+					}
+				}
 
 				if (_.isUndefined( props.s.mla_filter_term ) )
 					props.s.mla_filter_term = mlaModal.settings.query[state].filterTerm;
@@ -604,14 +619,14 @@ var wp, wpAjax, ajaxurl, jQuery, _,
 			},
 
 			simulateSearch: function() {
-				var searchValues = {
-					'mla_filter_month': mlaModal.settings.query.initial.filterMonth,
-					'mla_filter_term': mlaModal.settings.query.initial.filterTerm,
-					'mla_terms_search': mlaModal.settings.termsSearch,
-					'mla_search_clicks': mlaModal.settings.searchClicks++,
-					'mla_search_value': mlaModal.settings.query.initial.searchValue,
-					'mla_search_fields': mlaModal.settings.query.initial.searchFields,
-					'mla_search_connector': mlaModal.settings.query.initial.searchConnector };
+				var state = this.controller._state, searchValues = {
+					'mla_filter_month': mlaModal.settings.query[ state ].filterMonth,
+					'mla_filter_term': mlaModal.settings.query[ state ].filterTerm,
+					'mla_terms_search': mlaModal.settings.query[ state ].termsSearch,
+					'mla_search_clicks': mlaModal.settings.query[ state ].searchClicks++,
+					'mla_search_value': mlaModal.settings.query[ state ].searchValue,
+					'mla_search_fields': mlaModal.settings.query[ state ].searchFields,
+					'mla_search_connector': mlaModal.settings.query[ state ].searchConnector };
 				this.model.set({ 's': searchValues });
 			}
 		}); // Simulated search
