@@ -2356,6 +2356,7 @@ class MLAShortcodes {
 			$allowed_keys = array(
 				'empty_orderby_default' => 'post_date',
 				'explicit_orderby_field' => 'post__in',
+				'explicit_orderby_column' => 'ID',
 				'ID' => 'ID',
 				'author' => 'post_author',
 				'date' => 'post_date',
@@ -2386,9 +2387,15 @@ class MLAShortcodes {
 		} elseif ( ! empty( $allowed_keys['explicit_orderby_field'] ) ) {
 			$explicit_field = $allowed_keys['explicit_orderby_field'];
 			if ( $orderby == $explicit_field ) {
-				$explicit_order = implode(',', array_map( 'absint', $query_parameters[ $explicit_field ] ) );
-				if ( ! empty( $explicit_order ) ) {
-					return "FIELD( {$table_prefix}{$explicit_field}, {$explicit_order} )";
+				if ( ! empty( $query_parameters[ $explicit_field ] ) ) {
+					$explicit_order = implode(',', array_map( 'absint', $query_parameters[ $explicit_field ] ) );
+
+					if ( ! empty( $explicit_order ) ) {
+						$explicit_column = $allowed_keys['explicit_orderby_column'];
+						return "FIELD( {$table_prefix}{$explicit_column}, {$explicit_order} )";
+					} else {
+						return '';
+					}
 				}
 			}
 		}
@@ -2789,13 +2796,17 @@ class MLAShortcodes {
 			case 'exclude':
 				if ( ! empty( $value ) ) {
 					if ( is_array( $value ) ) {
-						$query_arguments[ $key ] = array_filter( $value );
+						$value = array_filter( $value );
 					} else {
-						$query_arguments[ $key ] = array_filter( array_map( 'intval', explode( ",", $value ) ) );
+						$value = array_filter( array_map( 'intval', explode( ",", $value ) ) );
 					}
-
-					if ( ! $children_ok ) {
-						$use_children = false;
+				
+					if ( ! empty( $value ) ) {
+						$query_arguments[ $key ] = $value;
+	
+						if ( ! $children_ok ) {
+							$use_children = false;
+						}
 					}
 				}
 				unset( $arguments[ $key ] );
