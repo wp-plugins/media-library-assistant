@@ -276,7 +276,8 @@ var wp, wpAjax, ajaxurl, jQuery, _,
 	 */
 	if ( mlaModal.settings.enableMonthsDropdown ) {
 		wp.media.view.AttachmentFilters.MlaMonths = wp.media.view.AttachmentFilters.extend({
-			className: 'attachment-months',
+			className: 'attachment-filters',
+			id:        'media-attachment-date-filters',
 
 			createFilters: function() {
 				var state = this.controller._state, 
@@ -350,7 +351,8 @@ var wp, wpAjax, ajaxurl, jQuery, _,
 	 */
 	if ( mlaModal.settings.enableTermsDropdown ) {
 		wp.media.view.AttachmentFilters.MlaTerms = wp.media.view.AttachmentFilters.extend({
-			className: 'attachment-terms',
+			className: 'attachment-filters',
+			id:        'media-attachment-term-filters',
 
 			createFilters: function() {
 				var state = this.controller._state, index,

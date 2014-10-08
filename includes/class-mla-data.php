@@ -2889,7 +2889,7 @@ class MLAData {
 	 * Searches all post and page content to see if the attachmenta are used 
 	 * as a Featured Image or inserted in the post as an image or link.
 	 *
-	 * @since 1.9x
+	 * @since 1.94
 	 *
 	 * @param	array	WP_Post objects, passed by reference
 	 *
@@ -3137,13 +3137,9 @@ class MLAData {
 						
 						$references['inserts'][ $ref_key ][ $insert->ID ] = $ref_insert;
 					} // each insert
-					
-//error_log( 'mla_attachment_array_fetch_references $attachment_index = ' . var_export( $attachment_index, true ), 0 );
-//error_log( 'mla_attachment_array_fetch_references inserts = ' . var_export( $inserts[ $attachment_index ], true ), 0 );
 				} else {
 					$references['inserts'] = array();
 				}
-//error_log( 'mla_attachment_array_fetch_references $references[inserts] = ' . var_export( $references['inserts'], true ), 0 );
 			} // $process_inserted_in
 	
 			/*
@@ -3217,9 +3213,6 @@ class MLAData {
 			}
 	
 			$references['parent_errors'] = trim( $errors );
-//error_log( 'mla_attachment_array_fetch_references $attachment_index = ' . var_export( $attachment_index, true ), 0 );
-//error_log( 'mla_attachment_array_fetch_references $attachments[ $attachment_index ] = ' . var_export( $attachments[ $attachment_index ], true ), 0 );
-//error_log( 'mla_attachment_array_fetch_references $references = ' . var_export( $references, true ), 0 );
 			$attachments[ $attachment_index ]->mla_references = $references;
 		} // foreach $attachment
 	}

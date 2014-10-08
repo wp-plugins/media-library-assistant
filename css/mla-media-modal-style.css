@@ -11,7 +11,6 @@
 	overflow: visible;
 }
 
-/* .media-toolbar-primary, */
 .media-toolbar-secondary {
 	width: 50%;
 }
@@ -20,7 +19,6 @@
 .mla-search-options {
 	list-style: none;
 	padding: 0;
-	margin: 0 0 10px;
 }
 
 .mla-search-options > li {
@@ -34,6 +32,15 @@
 /**
  * Media Toolbar Controls
 */
+.media-modal-content #mla-terms-search,
+.media-modal-content #mla-search-submit {
+	height: 26px;
+	line-height:normal;
+	margin-top: 11px;
+	position: static;
+	width:auto
+}
+
 .mode-grid.media-frame .media-toolbar .select-mode-toggle-button,
 .mode-grid.media-frame .media-toolbar input#mla-terms-search {
 	vertical-align:middle;
@@ -57,10 +64,6 @@
 /**
  * Checkbox-style taxonomy meta box
  */
-
-/* .media-modal.mla-expanded .media-toolbar { right: 612px; } */
-/* .media-modal.mla-expanded .attachments { right: 612px; } */
-/* .media-modal.mla-expanded .media-sidebar { 6px; min-width: 600px; } */
 
 .media-modal .media-toolbar {
 	right: 312px;

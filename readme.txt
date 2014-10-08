@@ -4,7 +4,7 @@ Donate link: http://fairtradejudaica.org/make-a-difference/donate/
 Tags: attachment, attachments, documents, gallery, image, images, media, library, media library, tag cloud, media-tags, media tags, tags, media categories, categories, IPTC, EXIF, GPS, PDF, meta, metadata, photo, photos, photograph, photographs, photoblog, photo albums, lightroom, photoshop, MIME, mime-type, icon, upload, file extensions
 Requires at least: 3.3
 Tested up to: 4.0
-Stable tag: 1.93
+Stable tag: 1.94
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -152,11 +152,12 @@ All of the MLA source code has been annotated with "DocBlocks", a special type o
 
 == Changelog ==
 
-= 1.9x =
+= 1.94 =
 
 * New: An example that shows how to replace the  wp_list_categories() item count with an accurate, padded count of the attachments assigned to each term has been added to the /media-library-assistant/examples/twentytwelve-mla directory. The example comprises the "page-tosca30-dropdown.php" and "content-tosca30-dropdown.php" files.
 * New: For the `[mla_tag_cloud]` shortcode, new `current_item` and `current_item_class` parameters allow you to specify the current or selected term in the cloud and add a `class` attribute to it.
 * New: For the `[mla_tag_cloud]` shortcode, when item-specific clouds are created with the `ids` parameter, the term counts reflect only the items in the `ids` list.
+* Fix: CSS Styles for the Media Manager year/month filter, taxonomy term filter, Search Media button adn Terms Search Button have been improved.
 * Fix: A shortcode-processing defect in WordPress 4.0 is avoided by adding a "no_texturize_shortcodes" filter to the `[mla_gallery]` and `[mla_tag_cloud]` shortcodes.
 * Fix: For the `[mla_gallery]` shortcode, a defect in expanding `request:` and `query:` arguments in pagination parameters has been fixed.
 * Fix: A defect in the Media Manager/Media Grid enhancements has been corrected. The defect caused changes to the MIME type, Year/Month and Terms controls on the toolbar to be ignored when the MLA Enhanced Search Box was disabled.
@@ -270,8 +271,8 @@ All of the MLA source code has been annotated with "DocBlocks", a special type o
 
 == Upgrade Notice ==
 
-= 1.93 =
-WordPress 4.0 Media Grid enhancements (optional) and compatibility fixes. New auto-fill option for Media Manager taxonomy meta boxes. One other enhancement, three other fixes.
+= 1.94 =
+Media Manager fixes and new "current-item" parameters for [mla_tag_cloud]. Two other enhancements, seven fixes.
 
 == Other Notes ==
 

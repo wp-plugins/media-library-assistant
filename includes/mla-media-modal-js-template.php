@@ -17,7 +17,7 @@ global $post;
     <label class="screen-reader-text" for="media-search-input"><?php _e( 'Search Media', 'media-library-assistant' ); ?>:</label>
     
     <input type="search" id="media-search-input" name="s[mla_search_value]" class="search" value="{{ data.searchValue }}" placeholder="{{ data.searchBoxPlaceholder }}" size="22" />
-	<input type="submit" name="mla_search_submit" id="mla-search-submit" class="button search" value="<?php _e( 'Search', 'media-library-assistant' ); ?>"  /><br>
+	<input type="submit" name="mla_search_submit" id="mla-search-submit" class="button media-button mla-search-submit-button" value="<?php _e( 'Search', 'media-library-assistant' ); ?>"  /><br>
     <ul class="mla-search-options" style="{{ data.searchBoxControlsStyle }}">
         <li>
             <input type="radio" name="s[mla_search_connector]" value="AND" <# if ( 'OR' !== data.searchConnector ) { #>checked="checked"<# } #> />
