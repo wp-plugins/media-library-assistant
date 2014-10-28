@@ -158,8 +158,9 @@ All of the MLA source code has been annotated with "DocBlocks", a special type o
 * New: On the Media/Assistant submenu table a **"Download" rollover action** has been added to enable easy, one-click down of Media Library items.
 * New: An **"attr" format option** has been added for `[mla_gallery]` substitution parameters that must be encoded for use in an HTML attribute context, e.g., in the `title=` attribute of a hyperlink (`a`) or `img` tag.
 * New: The "MLA Tax Query Example" plugin in `/examples/mla-tax-query-example.php.txt` has been enhanced to handle `orderby`, `order` and `post_mime_type` parameters.
-* New: Examples for custom field mapping/use and IPTC/EXIF mapping/use have been added to the Settings/Media LIbrary Assistant Documentation tab.
+* New: Examples for custom field mapping/use and IPTC/EXIF mapping/use have been added to the Settings/Media Library Assistant Documentation tab.
 * New: Filters have been added to the Media/Assistant submenu table to support adding custom rollover actions to each item.
+* Fix: Improved coverage of `[mla_gallery]` pagination parameters (and some others) has been added to the Settings/Media Library Assistant Documentation tab.
 * Fix: The Title field is now properly encoded when used as the default `title` attribute in `[mla_gallery]` item links.
 * Fix: The `title` attribute no longer appears twice in `[mla_gallery]` item links when the `mla_viewer=true` parameter is specified.
 
@@ -225,7 +226,7 @@ All of the MLA source code has been annotated with "DocBlocks", a special type o
 * New: An example plugin using **BuddyPress and rtMedia** has been created in `/examples/buddypress-hooks-example.php.txt`. The example shows how to replace the WordPress "attachment/media page" links with "BuddyPress/rtMedia page" links. For audio and video files, an option is provided to substitute the "cover_art" thumbnail image for the item Title in the thumbnail_content.
 * Fix: In the Media Manager Modal Window, **adding a taxonomy term** now updates the toolbar "terms filter" dropdown list. It also updates the "parent" dropdown list in the toolbar, if the taxonomy is hierarchical.
 * Fix: In the Media Manager Modal Window, the **year/month and taxonomy filter controls** now appear for plugins such as WooCommerce, Slider Revolution, Image Widget and SimpleFields.
-* Fix: More details added to the "Category Parameters" section of the Settings/Media LIbrary Assistant Documentation tab.
+* Fix: More details added to the "Category Parameters" section of the Settings/Media Library Assistant Documentation tab.
 * Fix: For `[mla_gallery]`, the `mla_rollover_text=` parameter has been restored. WordPress 3.7 removed the `title=` attribute from its attachment links, which disabled `mla_rollover_text=` as well.
 * Fix: For `[mla_tag_cloud]`, the `number` parameter default is now zero, agreeing with the Documentation.
 
@@ -296,7 +297,7 @@ In this section, scroll down to see highlights from the documentation, including
 Media Library Assistant includes many images drawn (with permission) from the [Crystal Project Icons](http://www.softicons.com/free-icons/system-icons/crystal-project-icons-by-everaldo-coelho), created by [Everaldo Coelho](http://www.everaldo.com), founder of [Yellowicon](http://www.yellowicon.com).
 
 <h4>NEW! Hooks for the Edit Media additional meta boxes</h4>
-Media Library Assistant adds support for the "Custom Fields" meta box to the Media/Edit Media screen. MLA also adds several meta boxes to this screen with more information about the item and where it is  used on your site. You can enable/disable the additional meta boxes with an option on the Settings/Media LIbrary Assistant General tab.
+Media Library Assistant adds support for the "Custom Fields" meta box to the Media/Edit Media screen. MLA also adds several meta boxes to this screen with more information about the item and where it is  used on your site. You can enable/disable the additional meta boxes with an option on the Settings/Media Library Assistant General tab.
 
 You can also make individual changes in which meta boxes are displayed and in their content by using one or more of the filters MLA provides. An example of using the hooks from a simple, stand-alone plugin can be found at /media-library-assistant/examples/mla-metabox-hooks-example.php.txt. To run the example:
 

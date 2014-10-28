@@ -165,9 +165,13 @@ Two <code>[mla_gallery]</code> parameters provide a way to apply custom style an
 </tr>
 </table>
 <p>
-Three <code>[mla_gallery]</code> parameters provide control over the placement, size and spacing of gallery items without requiring the use of custom Style templates.
+Four <code>[mla_gallery]</code> parameters provide control over the placement, size and spacing of gallery items without requiring the use of custom Style templates.
 </p>
 <table>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">columns</td>
+<td>specifies the number of columns. The gallery will include a break tag at the end of each row, and calculate the column width as appropriate. The default value is 3. If columns is set to 0, no row breaks will be included.</td>
+</tr>
 <tr>
 <td style="padding-right: 10px; vertical-align: top; font-weight:bold">mla_float</td>
 <td>specifies the CSS float attribute of the ".gallery-item" style. Acceptable values are "left", "none", "right"; the default value is "right" if current locale is RTL, "left" on LTR (left-to-right inline flow, e.g., English).</td>
@@ -190,6 +194,29 @@ These parameters are only important if the gallery thumbnails are too large to f
 </p>
 <p>
 The default margin and width calculations try to make the total width of each row as close to 100% as possible, but never exceed 100% due to rounding errors. If you have more advanced style and format needs, you can define custom style and/or markup templates. You can code <code>mla_style=none</code> to suppress inline styles entirely and use a separate stylesheet to control the format of the gallery. You can also code <code>mla_style=theme</code>, if your theme supports it, to use the theme's stylesheet to control the format of the gallery.
+</p>
+<p>
+Three parameters provide control over the XHTML tags used to enclose each part of the gallery items.
+</p>
+<table>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">itemtag</td>
+<td>the name of the XHTML tag used to enclose each item in the gallery. The default is "dl"; if your theme supports HTML5, the default is "figure".</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">icontag</td>
+<td>the name of the XHTML tag used to enclose each thumbnail icon in the gallery. The default is "dt"; if your theme supports HTML5, the default is "div".</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">captiontag</td>
+<td>the name of the XHTML tag used to enclose each caption. The default is "dd"; if your theme supports HTML5, the default is "figcaption".</td>
+</tr>
+</table>
+<p>
+These parameters work together to change the gallery markup. For example, to change the gallery markup to use div, span and p tags: 
+</p>
+<p>
+<code>[gallery itemtag="div" icontag="span" captiontag="p"]</code>
 <a name="gallery_display_content"></a>
 </p>
 <h4>Gallery Display Content</h4>
@@ -349,7 +376,7 @@ The Orderby parameter specifies which database field(s) are used to sort the gal
 </tr>
 <tr>
 <td style="padding-right: 10px; vertical-align: top; font-weight:bold">&lt;keyname&gt;, meta_value,<br />meta_value_num</td>
-<td style="vertical-align: top;">Order by custom field value. Note that a <em>'meta_key=keyname'</em> must also be present in the query.</td>
+<td style="vertical-align: top;">Order by custom field value. Note that a <em>'meta_key=keyname'</em> must also be present in the query. For example, to sort by a custom field called "Publication Date" and display the most recent items first, code <code>[mla_gallery meta_key="Publication Date" orderby=meta_value order=DESC]</code></td>
 </tr>
 <tr>
 <td style="padding-right: 10px; vertical-align: top; font-weight:bold">post__in</td>
@@ -405,13 +432,23 @@ The Link parameter specifies the target and type of link from the gallery item t
 <a name="include_exclude"></a>
 </p>
 <h4>Include, Exclude</h4>
+<table>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">include</td>
+<td>comma separated attachment IDs to show only the information from these attachments.</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">exclude</td>
+<td>comma separated attachment IDs excludes the information from these attachments. Please note that include and exclude cannot be used together.</td>
+</tr>
+</table>
 <p>
-You can use <code>post_parent=all</code> to include or exclude attachments regardless of which post or page they are attached to. You can use <code>post_mime_type=all</code> to include or exclude attachments of all MIME types, not just images.
+You can add <code>post_parent=all</code> to include or exclude attachments regardless of which post or page they are attached to. You can add <code>post_mime_type=all</code> to include or exclude attachments of all MIME types, not just images.
 <a name="post_id_ids_post_parent"></a>
 </p>
 <h4>Post ID, "ids", Post Parent</h4>
 <p>
-The "id" parameter lets you specify a post ID for your query. If the "id" parameter is not specified, the <code>[mla_gallery]</code> behavior differs from the <code>[gallery]</code> behavior. If your query uses taxonomy or custom field parameters, "author", "author_name" or "s" (search term), then the query will NOT be restricted to items attached to the current post. This lets you build a gallery with any combination of Media Library items that match the parameters.
+The "id" parameter lets you specify a post ID for your query. The gallery will display images which are attached to that post. If the "id" parameter is not specified, the <code>[mla_gallery]</code> behavior differs from the <code>[gallery]</code> behavior. If your query uses taxonomy or custom field parameters, "author", "author_name" or "s" (search term), then the query will NOT be restricted to items attached to the current post. This lets you build a gallery with any combination of Media Library items that match the parameters.
 </p>
 <p>
 For WordPress 3.5 and later, the "ids" parameter lets you specify a list of Post IDs. The attachment(s) matching the "ids" values will be displayed in the order specified by the list.
@@ -542,13 +579,43 @@ For compatibility with the WordPress <code>[gallery]</code> shortcode, these par
 </p>
 <h4>Pagination Parameters</h4>
 <p>
-The <code>[mla_gallery]</code> shortcode supplies <code>nopaging=true</code> as a default parameter. If you are working with a template that supports pagination you can replace this with specific values for "numberposts", "posts_per_page", "posts_per_archive_page", "paged" and/or "offset" . You can also pass "paged=current" to suppress the "nopaging" default; "current" will be replaced by the appropriate value (<code>get_query_var('paged')</code> or <code>get_query_var('page')</code>).
-</p>
+Pagination parameters let you divide your <code>[mla_gallery]</code> display into two or more pages when the display includes a large number of items. These parameters work with MLA's <a href="#mla_output">Support for Alternative Gallery Output, e.g., Pagination</a> to make it easy to construct multi-page galleries without resorting to PHP templates and code in your theme.
+<table>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">nopaging</td>
+<td>The <code>[mla_gallery]</code> shortcode supplies <code>nopaging=true</code> as a default parameter. If you are working with a template that supports pagination you can replace this with specific values for "numberposts", "posts_per_page", "posts_per_archive_page", "paged" and/or "offset" . You can also pass "paged=current" to suppress the "nopaging" default; "current" will be replaced by the appropriate value (<code>get_query_var('paged')</code> or <code>get_query_var('page')</code>).</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">numberposts,<br />posts_per_page</td>
+<td>the number of items to display on each gallery page.</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">posts_per_archive_page</td>
+<td>number of items to show per page - on archive pages only. Over-rides posts_per_page on pages where is_archive() or is_search() would be true. Not often used.</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">paged</td>
+<td>number of page. Show the items that would normally show up just on page X. The "paged=current" parameter is useful for "paginated single posts" (i.e. posts that include the <code>&lt;!--nextpage--&gt;</code> Quicktag one or more times). Simply make two or more copies of your <code>[mla_gallery]</code> shortcode separated by the Quicktag and include the "paged=current' in each copy. For true pagination it is better to use the "mla_paginate_current" parameter.</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">offset</td>
+<td>the number of terms to skip over before starting the current gallery page. This parameter is usually derived automatically from the more useful "mla_paginate_current" parameter.</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">mla_paginate_current</td>
+<td>the "current" gallery page; defaults to one (1) if not specified. MLA will usually manage this for you, looking for this parameter in the HTML $_REQUEST array if it is not coded in the gallery shortcode.</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">mla_page_parameter</td>
+<td>the name of the parameter containing the current page number; default "mla_paginate_current". You can change the name if you need multiple paginated galleries on one post/page. If you use this parameter, make sure you add it to the gallery shortcode and all pagination shortcodes for that gallery, and use the same unique value in all shortcodes for the specific gallery.</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">mla_paginate_total</td>
+<td>the highest page number you want to display; defaults to (total items / posts_per_page) if not specified, which is usually what you want. </td>
+</tr>
+</table>
 <p>
-The "paged=current" parameter is useful for "paginated single posts" (i.e. posts that include the <code>&lt;!--nextpage--&gt;</code> Quicktag one or more times). Simply make two ore more copies of your <code>[mla_gallery]</code> shortcode separated by the Quicktag and include the "paged=current' in each copy.
-</p>
-<p>
-The more complex task of dividing a large <code>[mla_gallery]</code> into two or more pages is supported by MLA's <a href="#mla_output">Support for Alternative Gallery Output, e.g., Pagination</a>; see the section below. 
+The task of dividing a large <code>[mla_gallery]</code> into two or more pages is supported by MLA's <a href="#mla_output">Support for Alternative Gallery Output, e.g., Pagination</a>. For more information and examples, go to that section of the Documentation. 
 <a name="time_parameters"></a>
 </p>
 <h4>Date and Time Parameters</h4>
@@ -1561,7 +1628,14 @@ This example shows the power of the substitution parameters and in particular th
 </p>
 <h4>Next and previous gallery pages; the <code>next_page</code> and <code>previous_page</code> output types</h4>
 <p>
-WordPress provides functions that generate links to the "<em>next/previous set of posts within the current query</em>." These are not useful because the "current query" is for posts/pages, <strong>not</strong> Media Library items. What's needed is a way to paginate an <code>[mla_gallery]</code> shortcode on a single post or page. If, for example, you use an <code>[mla_gallery]</code> shortcode to build a gallery of items with a specific Att. Tag value you can use the <code>next_page</code> and <code>previous_page</code> output types to move through the gallery in groups of, say, ten items per "gallery page".
+WordPress provides functions that generate links to the "<em>next/previous set of posts within the current query</em>." These are not useful because the "current query" is for posts/pages, <strong>not</strong> Media Library items. What's needed is a way to paginate an <code>[mla_gallery]</code> shortcode on a single post or page. If, for example, you use an <code>[mla_gallery]</code> shortcode to build a gallery of items with a specific Att. Tag value you can use the <code>next_page</code> and <code>previous_page</code> output types to move through the gallery in groups of, say, ten items per "gallery page". Here is a very simple example of MLA pagination:
+</p>
+<p>
+<code>[mla_gallery post_parent=all posts_per_page=6]<br />
+[mla_gallery post_parent=all posts_per_page=6 mla_output=paginate_links]</code>
+</p>
+<p>
+The first shortcode displays the gallery. The data selection parameter is post_parent=all, which will select all of the images in your Media Library. The posts_per_page=6 parameter will divide the gallery into pages of six images each. In the second shortcode, mla_output=paginate_links tells the shortcode to display pagination controls instead of the gallery images.
 </p>
 <p>
 WordPress uses the "paged" parameter to indicate the current "<em>set of posts within the current query</em>." To avoid built-in WordPress logic that uses this parameter, MLA has its own "mla_paginate_current" parameter to indicate the current set of items within the gallery (the current gallery page). MLA will automatically manage this parameter for you, but you can also use it explicitly to handle special cases.
@@ -1593,14 +1667,15 @@ Use the following parameters to specify the size of each gallery page and the cu
 </tr>
 <tr>
 <td style="padding-right: 10px; vertical-align: top; font-weight:bold">mla_paginate_rows</td>
-<td>If you have some other way of computing the total number of items you want to paginate you can use <code>mla_paginate_rows</code>simplify your shortcode parameters and avoid redundant database access. If, for example, you want pagination controls for a gallery that you know has fifty items you can code <code>[mla_gallery mla_output=paginate_links mla_paginate_rows=50]</code> and then add any other page selection or gallery display content parameters you need.</td>
+<td>If you have some other way of computing the total number of items you want to paginate you can use <code>mla_paginate_rows</code> to simplify your shortcode parameters and avoid redundant database access. If, for example, you want pagination controls for a gallery that you know has fifty items you can code <code>[mla_gallery mla_output=paginate_links mla_paginate_rows=50]</code> and then add any other page selection or gallery display content parameters you need.</td>
 </tr>
 <tr>
 <td style="padding-right: 10px; vertical-align: top; font-weight:bold">offset, paged</td>
 <td><strong>DO NOT USE THESE PARAMETERS; THEY WILL BREAK MLA PAGINATION</strong></td>
 </tr>
 </table>
-<p>For most applications, "posts_per_page" is the only parameter you need to specify. Make sure this parameter is that same for your main gallery shortcode and for the pagination shortcodes that go with it.</p>
+<p>For most applications, "posts_per_page" is the only pagination parameter you need to specify. Make sure this parameter is the same for your main gallery shortcode and for the pagination shortcodes that go with it. Also, make sure you use exactly the same item selection and sorting parameters in both shortcodes.
+</p>
 <h4>Gallery Display Content parameters for <code>next_page</code> and <code>previous_page</code> output types</h4>
 <p>
 The next or previous link returned can use the following Gallery Display Content parameters to control each element of the link:
@@ -2600,7 +2675,7 @@ Media Library Assistant adds several controls to the toolbar in the Media Manage
 </p>
 <h3>Edit Media additional meta boxes (and Hooks)</h3>
 <p>
-Media Library Assistant adds support for the "Custom Fields" meta box to the Media/Edit Media screen. MLA also adds several meta boxes to this screen with more information about the item and where it is  used on your site. You can enable/disable the additional meta boxes with an option on the Settings/Media LIbrary Assistant General tab.
+Media Library Assistant adds support for the "Custom Fields" meta box to the Media/Edit Media screen. MLA also adds several meta boxes to this screen with more information about the item and where it is  used on your site. You can enable/disable the additional meta boxes with an option on the Settings/Media Library Assistant General tab.
 </p>
 <p>
 You can also make individual changes in which meta boxes are displayed and in their content by using one or more of the filters MLA provides. An example of using the hooks from a simple, stand-alone plugin can be found here: <a title="View the Meta Box Hooks Example source code" href="[+examples_url+]mla-metabox-hooks-example.php.txt" target="_blank" style="font-size:14px; font-weight:bold">mla-metabox-example.php.txt</a>. To run the example:
