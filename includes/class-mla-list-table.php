@@ -308,6 +308,7 @@ class MLA_List_Table extends WP_List_Table {
 	 * @return	array	Updated list of available list table views
 	 */
 	public function mla_views_media_page_mla_menu_filter( $views ) {
+		// hooked by WPML Media in wpml-media.class.php
 		$views = apply_filters( "views_upload", $views );
 		return $views;
 	}
@@ -689,8 +690,17 @@ class MLA_List_Table extends WP_List_Table {
 				}
 			} // delete_post
 
+			if ( current_user_can( 'upload_files' ) ) {
+				$file = get_attached_file( $item->ID );
+				$download_args = array( 'mla_download_file' => $file, 'mla_download_type' => $item->post_mime_type );
+
+				$actions['download'] = '<a href="' . add_query_arg( $download_args, MLA_PLUGIN_URL . 'includes/mla-force-download.php' ) . '" title="' . __( 'Download', 'media-library-assistant' ) . ' &#8220;' . esc_attr( $item->post_title ) . '&#8221;">' . __( 'Download', 'media-library-assistant' ) . '</a>';
+			}
+
 			$actions['view']  = '<a href="' . site_url( ) . '?attachment_id=' . $item->ID . '" rel="permalink" title="' . __( 'View', 'media-library-assistant' ) . ' &#8220;' . esc_attr( $item->post_title ) . '&#8221;">' . __( 'View', 'media-library-assistant' ) . '</a>';
 
+			$actions = apply_filters( "mla_list_table_build_rollover_actions", $actions, $item, $column );
+		
 			$this->rollover_id = $item->ID;
 		} // $this->rollover_id != $item->ID
 
@@ -777,7 +787,10 @@ class MLA_List_Table extends WP_List_Table {
 			}
 		}
 
+		$inline_data = apply_filters( "mla_list_table_build_inline_data", $inline_data, $item );
+		
 		$inline_data .= "</div>\r\n";
+
 		return $inline_data;
 	}
 

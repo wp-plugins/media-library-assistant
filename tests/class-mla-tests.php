@@ -1,6 +1,6 @@
 <?php
 /**
- * Provides basic run-time tests to ensure the plugin can run in the current WordPress envrionment
+ * Provides basic run-time tests to ensure the plugin can run in the current WordPress environment
  *
  * @package Media Library Assistant
  * @since 0.1

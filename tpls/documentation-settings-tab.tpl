@@ -14,12 +14,14 @@
 <li><a href="#author_author_name">Author, Author Name</a></li>
 <li><a href="#category_parameters">Category Parameters</a></li>
 <li><a href="#tag_parameters">Tag Parameters</a></li>
-<li><a href="#taxonomy_parameters_tax_operator">Taxonomy Parameters, "tax_operator"</a></li>
+<li><a href="#taxonomy_parameters_tax_operator">Simple Taxonomy Parameters, "tax_operator"</a></li>
+<li><a href="#taxonomy_queries">Taxonomy Queries, the "tax_query"</a></li>
 <li><a href="#post_mime_type_parameter">Post MIME Type</a></li>
 <li><a href="#post_type_post_status">Post Type, Post Status</a></li>
 <li><a href="#pagination_parameters">Pagination Parameters</a></li>
-<li><a href="#time_parameters">Time Parameters</a></li>
-<li><a href="#custom_field_parameters">Custom Field Parameters</a></li>
+<li><a href="#time_parameters">Date and Time Parameters</a></li>
+<li><a href="#custom_field_parameters">Simple Custom Field Parameters</a></li>
+<li><a href="#custom_field_queries">Custom Field Queries, "meta_query"</a></li>
 <li><a href="#search_keywords">Search Keywords</a></li>
 <li><a href="#cache_parameters">Caching Parameters</a></li>
 <li><a href="#debugging_output">Debugging Output</a></li>
@@ -96,6 +98,7 @@
 <a href="#mla_custom_field_mapping"><strong>Custom Field and Attachment Metadata Processing Options</strong></a>
 </li>
 <ul style="list-style-position:inside; list-style:disc; line-height: 15px; padding-left: 20px">
+<li><a href="#custom_field_mapping_example">Custom field mapping example</a></li>
 <li><a href="#custom_field_mapping_table">The custom field mapping table</a></li>
 <li><a href="#custom_field_mapping_buttons">Custom field mapping command buttons</a></li>
 <li><a href="#attachment_metadata_mapping">Adding or Changing Attachment Metadata</a></li>
@@ -107,6 +110,7 @@
 <a href="#mla_iptc_exif_mapping"><strong>IPTC &amp; EXIF Processing Options</strong></a>
 </li>
 <ul style="list-style-position:inside; list-style:disc; line-height: 15px; padding-left: 20px">
+<li><a href="#iptc_exif_mapping_example">IPTC/EXIF mapping example</a></li>
 <li><a href="#iptc_exif_mapping_tables">IPTC/EXIF mapping tables</a></li>
 <li><a href="#iptc_exif_mapping_buttons">IPTC/EXIF mapping command buttons</a></li>
 <li><a href="#iptc_exif_mapping_with_templates">EXIF/Template mapping with Content Templates</a></li>
@@ -141,6 +145,7 @@ The <code>[mla_gallery]</code> shortcode is used in a post, page or custom post 
 <li>You can combine <code>[mla_gallery]</code> data selection with other popular gallery-generating plugins to get the best of both.
 </li>
 </ul>
+<h4>Option/Parameter Documentation Sources</h4>
 <p>
 All of the options/parameters documented for the <code>[gallery]</code> shortcode are supported by the <code>[mla_gallery]</code> shortcode; you can find them in the <a href="http://codex.wordpress.org/Gallery_Shortcode" title="WordPress Codex link" target="_blank">WordPress Codex</a>. Most of the parameters documented for the WP_Query class are also supported; see the <a href="http://codex.wordpress.org/Class_Reference/WP_Query" title="WordPress Codex link" target="_blank">Codex WP_Query class reference</a>. Because the <code>[mla_gallery]</code> shortcode is designed to work with Media Library items, there are some parameter differences and extensions; these are documented below.
 <a name="gallery_display_style"></a>
@@ -465,7 +470,7 @@ More information and examples can be found on the <a href="http://codex.wordpres
 Note that the "tag_id" parameter requires exactly one tag ID; multiple IDs are not allowed. You can use the "tag__in" parameter to query for multiple values.
 <a name="taxonomy_parameters_tax_operator"></a>
 </p>
-<h4>Taxonomy Parameters, "tax_operator"</h4>
+<h4>Simple Taxonomy Parameters, "tax_operator"</h4>
 <p>
 The <code>[mla_gallery]</code> shortcode supports the simple "{tax} (string)" values (deprecated as of WordPress version 3.1) as well as the more powerful "<a href="http://codex.wordpress.org/Class_Reference/WP_Query#Taxonomy_Parameters" title="WordPress Codex Documentation for tax_query" target="_blank">tax_query</a>" value. Use these queries for your custom taxonomies (and for the MLA attachment_category and attachment_tag taxonomies); use the above Category and Tag parameters for the WordPress-provided taxonomies. If you do use a tax_query for Categories and Tags, the slug values are "category" and "post_tag". 
 </p>
@@ -505,7 +510,9 @@ If you specify either or both of these parameters, MLA will convert your query t
 </ul>
 <p>
 Note that the default tax_include_children value is true, matching the default WordPress setting. If your tax_operator is "AND", you will almost certainly want to change this setting.
+<a name="taxonomy_queries"></a>
 </p>
+<h4>Taxonomy Queries, the "tax_query"</h4>
 <p>
 More complex queries can be specified by using <a href="http://codex.wordpress.org/Class_Reference/WP_Query#Taxonomy_Parameters" title="WordPress Codex Documentation for tax_query" target="_blank">WP_Query's "tax_query"</a>, e.g.:
 </p>
@@ -544,14 +551,46 @@ The "paged=current" parameter is useful for "paginated single posts" (i.e. posts
 The more complex task of dividing a large <code>[mla_gallery]</code> into two or more pages is supported by MLA's <a href="#mla_output">Support for Alternative Gallery Output, e.g., Pagination</a>; see the section below. 
 <a name="time_parameters"></a>
 </p>
-<h4>Time Parameters</h4>
+<h4>Date and Time Parameters</h4>
 <p>
-Support for time parameters is not included in the current version. I may add it later - let me know if you need it.
-<a name="custom_field_parameters"></a>
+The <code>[mla_gallery]</code> shortcode supports the "<a href="http://codex.wordpress.org/Class_Reference/WP_Query#Date_Parameters" title="WordPress Codex Documentation for date_query" target="_blank">date_query</a>" parameter introduced in WordPress Version 3.7. You can use a date_query to filter your gallery based on the 'post_date', 'post_date_gmt', 'post_modified', 'post_modified_gmt', 'comment_date', or 'comment_date_gmt' database columns (although the column names include "post", the same columns are used for attachments).
 </p>
-<h4>Custom Field Parameters</h4>
 <p>
-The <code>[mla_gallery]</code> shortcode supports the simple custom field parameters as well as the more powerful <a href="http://codex.wordpress.org/Class_Reference/WP_Query#Custom_Field_Parameters" title="WordPress Codex documentation for meta_query" target="_blank">"WP_Query meta_query"</a> parameters made available as of WordPress 3.1.
+As the <a href="http://codex.wordpress.org/Class_Reference/WP_Query#Date_Parameters" title="WordPress Codex Documentation for date_query" target="_blank">Codex date_query documentation</a> suggests, "before" and "after" values can use any of the <a href="http://php.net/strtotime" title="PHP Date and Time Formats">PHP strtotime()-compatible string values</a>, which are quite powerful. For example, you can use relative values such as <code>'after' => 'second tuesday of last month'</code>. Careful study of the PHP documentation can be most rewarding. You can use <code>mla_debug=true</code> to see how PHP and WordPress translate your query to specific date-time values.
+</p>
+<p>
+When embedding the shortcode in the body of a post, be very careful when coding the date_query; it must be a valid PHP array specification. Splitting your query over multiple lines or using the "Visual" editor will introduce HTML markup and escape sequences that can render your query invalid. MLA will clean up most of the damage, but if your query fails use the "mla_debug=true" parameter to see if your query has been corrupted. 
+</p>
+<p>
+Remember to use <code>post_parent=current</code> if you want to restrict your query to items attached to the current post.<a name="custom_field_parameters"></a>
+</p>
+<h4>Simple Custom Field Parameters</h4>
+<p>
+The <code>[mla_gallery]</code> shortcode supports the simple custom field parameters:
+</p>
+<table>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">meta_key&nbsp;(string)</td>
+<td>Custom field key.</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">meta_value&nbsp;(string)</td>
+<td>Custom field value.</td>
+</tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">meta_value_num&nbsp;(number)</td>
+<td>Custom field value.</td>
+</tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">meta_compare&nbsp;(string)</td>
+<td>Operator to test the 'meta_value'. Possible values are '!=', '>', '>=', '<', or '<='. Default value is '='. </td>
+</tr>
+</table>
+<p>
+Remember to use <code>post_parent=current</code> if you want to restrict your query to items attached to the current post.
+<a name="custom_field_queries"></a>
+</p>
+<h4>Custom Field Queries, "meta_query"</h4>
+<p>
+The <code>[mla_gallery]</code> shortcode supports the more powerful <a href="http://codex.wordpress.org/Class_Reference/WP_Query#Custom_Field_Parameters" title="WordPress Codex documentation for meta_query" target="_blank">"WP_Query meta_query"</a> parameters made available as of WordPress 3.1.
 </p>
 <p>
 When embedding the shortcode in the body of a post, be very careful when coding the meta_query; it must be a valid PHP array specification. In particular, code the query on one line; splitting it across lines can insert HTML <br> tags and corrupt your query. MLA will clean up most of the damage, but if your query fails use the <code>mla_debug=true</code> parameter to see if your query has been corrupted. 
@@ -695,7 +734,7 @@ The traditional tag cloud output is a "heat map" of term names where larger name
 <table>
 <tr>
 <td style="padding-right: 10px; vertical-align: top; font-weight:bold">flat</td>
-<td>Returns a sequence of hypelink tags without further HTML markup. The "separator" parameter content (default, one newline character) is inserted between each hyperlink.</td>
+<td>Returns a sequence of hypelink tags without further HTML markup. The "separator" parameter content (default, one newline character) is inserted between each hyperlink. This is the default value.</td>
 </tr>
 <tr>
 <td style="padding-right: 10px; vertical-align: top; font-weight:bold">list</td>
@@ -1973,6 +2012,9 @@ These substitution parameters are only available in the "Item" part of the marku
 <p>
 In addition to the parameters in the list below, you can use any of the <a href="#mla_custom_field_parameters">Data sources for custom field mapping</a> (except "None", "Metadata" and "Template"). For numeric data source parameters such as "file_size" you can add the ",commas" option to format the value for display purposes. If you need both the native format and the commas format, simply wrap the commas format in a content template, e.g., <code>[+template:([+width,commas+])+]</code>. The template will prevent the existing numeric width value from being over-written with the formatted value.
 </p>
+<p>
+If you use a substitution parameter in an HTML attribute such as the `title` attribute of a hyperlink (`a`) or `img` tag you can add the ",attr" option to convert special characters such as quotes to their URL-encoded equivalents.
+</p>
 <table>
 <tr>
 <td style="padding-right: 10px; vertical-align: top; font-weight:bold">index</td>
@@ -2767,6 +2809,40 @@ This is a powerful tool, but it comes at the price of additional database storag
 <p>
 If you just want to add a custom field to the Media/Assistant submenu, the quick edit area and/or the bulk edit area you can bypass the mapping logic by leaving the Data Source value as "-- None (select a value) --".
 </p>
+<a name="custom_field_mapping_example"></a>&nbsp;
+<p>
+<a href="#backtotop">Go to Top</a>
+</p>
+<h4>Custom field mapping example</h4>
+<p>
+Here is a simple example of mapping the items' file size to a custom field, so you can display it in the Media/Assistant submenu table and use it in and <code>[mla_gallery]</code> shortcode. You can go to the Settings/Media Library Assistant Custom Fields tab and define a rule that maps file size to a WordPress custom field. The steps required are:
+<ol>
+<li>Navigate to the Settings/Media Library Assistant "Custom Fields" tab.</li>
+<li>Make sure the "Enable custom field mapping when adding new media" box is checked. If not, check the box, scroll down to the bottom of the page and click "Save Changes".</li>
+<li>Scroll down to the "Add a new Field and Mapping Rule" area.</li>
+<li>In the first text box, give your field a name, e.g., "File Size".</li>
+<li>From the Data Source dropdown list, select "file_size".</li>
+<li>In the "Existing Text" dropdown list, select "Replace".</li>
+<li>In the "Format" dropdown list, select "Commas". This will format the values in a more attractive way.</li>
+<li>Click the "MLA Column" check box to make the field available in the Media/Assistant submenu table. You can also click the "Quick Edit" and "Bulk Edit" check boxes to make the field available in the Media/Assistant submenu table Quick Edit and Bulk Edit areas if that's useful for you.</li>
+<li>In the "Option:" dropdown list, select "Text".</li>
+<li>Click the "Delete NULL Values" checkbox.</li>
+<li>Click the "Add Field and Map All Attachments" button to save your work and create the "File Size" value for the items already in your Media Library.</li>
+</ol>
+<p>
+On the Media/Assistant screen you can now display a File Size column. If you don't see the column, pull down the Screen Options (upper-right corner) and check the box next to File Size. Each of the terms in the column is a link; click on a value to get a list filtered by that value. You can also sort the table on File Size by clicking on the column header.</p>
+<p>
+You can use the meta_key, orderby and order parameters to sort an [mla_gallery] by your custom field. For example:<br />
+&nbsp;<br />
+<code>[mla_gallery post_parent=all meta_key="File Size" orderby=meta_value order=DESC]</code><br />
+&nbsp;<br />
+The three parameters in the above example will select all of the images in your media library and sort your gallery so the largest files appear first. You can replace <code>post_parent=all</code> with any other data selection parameters to get the items you want. For example, you can use a "meta_query" to select only those items (of any MIME Type) whose File Size is less than 82,168 bytes (and display the size in the gallery item caption):<br />
+&nbsp;<br />
+<code>[mla_gallery post_mime_type=all meta_query="array( array( 'key' => 'File Size', 'value' => array( '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;', '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;82,168' ), 'compare' => 'BETWEEN' ) )" meta_key="File Size" orderby="meta_value" order="DESC" mla_caption="{+caption+}<br>{+custom:File Size+}"]</code>
+</p>
+<p>
+Note the format of the <code>value</code> and <code>compare</code> parameters within the <code>meta_query</code>. Because the File Size custom field uses the "Commas" format, the values are stored as 15-character strings with leading spaces; this makes the values display and sort sensibly. You must use <code>'compare' => 'BETWEEN'</code> and give the lowest and highest values as an array in the <code>'value' => array( '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;', '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;82,168' )</code> parameter, padding each value out to exactly 15 characters wide.
+</p>
 <a name="custom_field_mapping_table"></a>&nbsp;
 <p>
 <a href="#backtotop">Go to Top</a>
@@ -3329,6 +3405,44 @@ You can define the rules for mapping metadata on the "IPTC/EXIF" tab of the Sett
 <p>If you click any of the three "Map All Attachments, ... Now" buttons, the rules currently displayed in that category will be immediately applied to <strong>all</strong> of the attachments in your site. Rule changes are <strong>not</strong> saved when you click any of these buttons.<strong>THERE IS NO UNDO FOR THESE ACTIONS!</strong></p>
 <p>
 If you just want to add a custom field to the Media/Assistant submenu, the quick edit area and/or the bulk edit area go to the "Custom Fields" tab and follow the instructions there.
+</p>
+<a name="iptc_exif_mapping_example"></a>&nbsp;
+<p>
+<a href="#backtotop">Go to Top</a>
+</p>
+<h4>IPTC/EXIF mapping example</h4>
+<p>
+Here is a simple example of mapping an image's creation date to a custom field, so you can use it to display a gallery of images sorted by the date on which they were taken. There are three common EXIF fields that are populated in most images. For example:
+</p>
+<blockquote>
+DateTimeDigitized 2012:11:28 15:53:23<br />
+DateTimeOriginal 2012:11:28 15:53:23<br />
+DateTime 2012:12:01 17:37:05<br />
+</blockquote>
+<p>
+You can go to the Settings/Media Library Assistant IPTC/EXIF tab and define a rule that maps any of these fields to a WordPress custom field. The steps required are:
+<ol>
+<li>Go to the Settings/Media Library Assistant IPTC/EXIF tab.</li>
+<li>Make sure the "Enable IPTC/EXIF Mapping when adding new media" box is checked.</li>
+<li>Scroll down to the "Custom field mapping" section.</li>
+<li>If you have already defined exif_DateTimeOriginal as a custom field, use the "Add a new Mapping Rule" section and select the field name in the first dropdown. If the field does not yet exist, use the "Add a new Field and Mapping Rule" section and enter, for example, DateTimeCreated in the first text box.</li>
+<li>Leave the "IPTC Value" dropdown list set to the default "None (select a value)" setting.</li>
+<li>Enter "DateTimeOriginal" in the EXIF/Template Value field.</li>
+<li>Set the Priority dropdown to "EXIF".</li>
+<li>Set the Existing Text dropdown to "Keep", unless you want to wipe out any values you've assigned earlier.</li>
+<li>Click "Add Rule/Add Field" to save your rule.</li>
+</ol>
+<p>
+If you are feeling confident you can click the "Add Rule/Field and Map All Attachments" button to save your rule and map all of the attachments in your Media Library in one step. If you want to test your work first, you can go to the Media/Assistant submenu table and click the "Edit" rollover action for an image you know has keywords. Click the "Map IPTC/EXIF Metadata" link in the upper right "Save" area of the screen, then look down at the Caption meta box and see if your value is correct. Once you've got your rule working you can update individual images, use the Bulk Edit area to update groups of images or use the "Map All Attachments" button below your rule to process all of your images.
+</p>
+<p>
+You can use the meta_key, orderby and order parameters to sort an [mla_gallery] by your custom field. For example:<br />
+&nbsp;<br />
+<code>[mla_gallery post_parent=all meta_key=DateTimeCreated orderby=meta_value order=DESC]</code><br />
+&nbsp;<br />
+The three parameters in the above example will select all of the images in your media library and sort your gallery so the newest/most recent images appear first. You can replace <code>post_parent=all</code> with any other data selection parameters to get the images you want. For example, you can use a "meta_query" to select only those images created after 2012-01-01 (and display the date in the gallery item caption):<br />
+&nbsp;<br />
+<code>[mla_gallery meta_query="array( array( 'key' => 'DateTimeCreated', 'value' => '2012-01-01', 'compare' => '<' ) )" meta_key="DateTimeCreated" orderby="meta_value DESC" mla_caption="{+custom:DateTimeCreated+}" ]</code>
 </p>
 <a name="iptc_exif_mapping_tables"></a>&nbsp;
 <p>

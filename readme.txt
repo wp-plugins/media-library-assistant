@@ -152,6 +152,17 @@ All of the MLA source code has been annotated with "DocBlocks", a special type o
 
 == Changelog ==
 
+= 1.95 =
+
+* New: For the `[mla_gallery]` shortcode, the **powerful "date_query" parameter** introduced in WordPress Version 3.7 is now supported.
+* New: On the Media/Assistant submenu table a **"Download" rollover action** has been added to enable easy, one-click down of Media Library items.
+* New: An **"attr" format option** has been added for `[mla_gallery]` substitution parameters that must be encoded for use in an HTML attribute context, e.g., in the `title=` attribute of a hyperlink (`a`) or `img` tag.
+* New: The "MLA Tax Query Example" plugin in `/examples/mla-tax-query-example.php.txt` has been enhanced to handle `orderby`, `order` and `post_mime_type` parameters.
+* New: Examples for custom field mapping/use and IPTC/EXIF mapping/use have been added to the Settings/Media LIbrary Assistant Documentation tab.
+* New: Filters have been added to the Media/Assistant submenu table to support adding custom rollover actions to each item.
+* Fix: The Title field is now properly encoded when used as the default `title` attribute in `[mla_gallery]` item links.
+* Fix: The `title` attribute no longer appears twice in `[mla_gallery]` item links when the `mla_viewer=true` parameter is specified.
+
 = 1.94 =
 
 * New: An example that shows how to replace the  wp_list_categories() item count with an accurate, padded count of the attachments assigned to each term has been added to the /media-library-assistant/examples/twentytwelve-mla directory. The example comprises the "page-tosca30-dropdown.php" and "content-tosca30-dropdown.php" files.

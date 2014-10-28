@@ -58,7 +58,7 @@ class MLAData {
 	 *
 	 * @since 0.1
 	 *
-	 * @param	string 	Complete path and name of the template file, option name or the raw template
+	 * @param	string 	Complete path and/or name of the template file, option name or the raw template
 	 * @param	string 	Optional type of template source; 'path', 'file' (default), 'option', 'string'
 	 *
 	 * @return	string|array|false|NULL
@@ -1006,18 +1006,26 @@ class MLAData {
 							'format' => 'raw',
 							'option' => 'text' );
 
-						$data_value =  MLAOptions::mla_get_data_source( $post_id, 'single_attachment_mapping', $data_value );
-						if ( ( 'commas' == $value['format'] ) && is_numeric( $data_value ) ) {
-							$data_value = number_format( (float)$data_value );
-						}
-
-						$markup_values[ $key ] = $data_value;
+						$markup_values[ $key ] =  MLAOptions::mla_get_data_source( $post_id, 'single_attachment_mapping', $data_value );
+					} elseif ( isset( $markup_values[ $value['value'] ] ) ) {
+						/*
+						 * A standard element can have a format modifier, e.g., commas, attr
+						 */
+						$markup_values[ $key ] = $markup_values[ $value['value'] ];
 					}
-
+					
 					break;
 				default:
 					// ignore anything else
 			} // switch
+			
+			if ( isset( $markup_values[ $key ] ) ) {
+				if ( 'attr' == $value['format'] ) {
+					$markup_values[ $key ] = esc_attr( $markup_values[ $key ] );
+				} elseif ( ( 'commas' == $value['format'] ) && is_numeric( $markup_values[ $key ] ) ) {
+					$markup_values[ $key ] = number_format( (float)$markup_values[ $key ] );
+				}
+			}
 		} // foreach placeholder
 
 		if ( $template_count ) {
@@ -1094,7 +1102,7 @@ class MLAData {
 				$tail = substr( $match, 2);
 			}
 
-			$match_count = preg_match( '/([^,]+)(,(text|single|export|array|multi|commas|raw))\+\]/', $tail, $matches );
+			$match_count = preg_match( '/([^,]+)(,(text|single|export|array|multi|commas|raw|attr))\+\]/', $tail, $matches );
 			if ( 1 == $match_count ) {
 				$result['value'] = $matches[1];
 
@@ -1104,6 +1112,9 @@ class MLAData {
 				} elseif ( 'raw' == $matches[3] ) {		
 					$result['option'] = 'text';
 					$result['format'] = 'raw';
+				} elseif ( 'attr' == $matches[3] ) {		
+					$result['option'] = 'text';
+					$result['format'] = 'attr';
 				} else {
 					$result['option'] = $matches[3];
 				}

@@ -173,7 +173,7 @@ class MLA {
 	 *
 	 * @var	string
 	 */
-	const MLA_ADMIN_terms_search = 'terms_search';
+	const MLA_ADMIN_TERMS_SEARCH = 'terms_search';
 
 	/**
 	 * Holds screen ids to match help text to corresponding screen
@@ -1077,7 +1077,7 @@ class MLA {
 					unset( $_REQUEST['found_post_id'] );
 					unset( $_REQUEST['mla-set-parent-submit'] );
 					break;
-				case self::MLA_ADMIN_terms_search:
+				case self::MLA_ADMIN_TERMS_SEARCH:
 					/*
 					 * This will be handled as a database query argument,
 					 * but validate the arguments here
@@ -1876,7 +1876,7 @@ class MLA {
 	 *
 	 * @since 0.1
 	 * 
-	 * @param	int		The WordPress Post ID of the attachment item
+	 * @param	integer	The WordPress Post ID of the attachment item
 	 *
 	 * @return	array	message and/or HTML content
 	 */
@@ -2157,7 +2157,7 @@ class MLA {
 	 * 
 	 * @since 0.1
 	 * 
-	 * @param	array	The form POST data
+	 * @param	integer	The WordPress Post ID of the attachment item
 	 *
 	 * @return	array	success/failure message and NULL content
 	 */
@@ -2197,7 +2197,7 @@ class MLA {
 	 * 
 	 * @since 0.1
 	 * 
-	 * @param	array	The form POST data
+	 * @param	integer	The WordPress Post ID of the attachment item
 	 *
 	 * @return	array	success/failure message and NULL content
 	 */

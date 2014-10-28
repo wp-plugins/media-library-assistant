@@ -1240,7 +1240,7 @@ class MLAModal {
 
 		$page_values = array(
 			'mla_terms_search_url' =>  esc_url( add_query_arg( array_merge( MLA_List_Table::mla_submenu_arguments( false ), array( 'page' => MLA::ADMIN_PAGE_SLUG ) ), admin_url( 'upload.php' ) ) ),
-			'mla_terms_search_action' => MLA::MLA_ADMIN_terms_search,
+			'mla_terms_search_action' => MLA::MLA_ADMIN_TERMS_SEARCH,
 			'wpnonce' => wp_nonce_field( MLA::MLA_ADMIN_NONCE, '_wpnonce', true, false ),
 			'mla_terms_search_div' => $terms_search_tpl,
 		);

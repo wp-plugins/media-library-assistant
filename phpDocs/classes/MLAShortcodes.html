@@ -62,6 +62,7 @@
 <li class="method public "><a href="#mla_gallery_shortcode" title="mla_gallery_shortcode :: The MLA Gallery shortcode."><span class="description">The MLA Gallery shortcode.</span><pre>mla_gallery_shortcode()</pre></a></li>
 <li class="method public "><a href="#mla_get_shortcode_attachments" title="mla_get_shortcode_attachments :: Parses shortcode parameters and returns the gallery objects"><span class="description">Parses shortcode parameters and returns the gallery objects</span><pre>mla_get_shortcode_attachments()</pre></a></li>
 <li class="method public "><a href="#mla_get_terms" title="mla_get_terms :: Retrieve the terms in one or more taxonomies."><span class="description">Retrieve the terms in one or more taxonomies.</span><pre>mla_get_terms()</pre></a></li>
+<li class="method public "><a href="#mla_no_texturize_shortcodes_filter" title="mla_no_texturize_shortcodes_filter :: Prevents wptexturizing of the [mla_gallery] shortcode, avoiding a bug in WP 4.0."><span class="description">Prevents wptexturizing of the [mla_gallery] shortcode, avoiding a bug in WP 4.0.</span><pre>mla_no_texturize_shortcodes_filter()</pre></a></li>
 <li class="method public "><a href="#mla_shortcode_query_posts_clauses_filter" title="mla_shortcode_query_posts_clauses_filter :: Filters all clauses for shortcode queries, pre caching plugins"><span class="description">Filters all clauses for shortcode queries, pre caching plugins</span><pre>mla_shortcode_query_posts_clauses_filter()</pre></a></li>
 <li class="method public "><a href="#mla_shortcode_query_posts_clauses_request_filter" title="mla_shortcode_query_posts_clauses_request_filter :: Filters all clauses for shortcode queries, post caching plugins"><span class="description">Filters all clauses for shortcode queries, post caching plugins</span><pre>mla_shortcode_query_posts_clauses_request_filter()</pre></a></li>
 <li class="method public "><a href="#mla_shortcode_query_posts_join_filter" title="mla_shortcode_query_posts_join_filter :: Filters the JOIN clause for shortcode queries"><span class="description">Filters the JOIN clause for shortcode queries</span><pre>mla_shortcode_query_posts_join_filter()</pre></a></li>
@@ -193,7 +194,7 @@ Enhancements include many additional selection parameters and full taxonomy supp
 <pre>mla_get_terms(array $attr) : array</pre>
 <div class="labels"></div>
 <div class="row collapse"><div class="detail-description">
-<p class="long_description"><p>Alternative to WordPress get_terms() function that provides
+<p class="long_description"><p>Alternative to WordPress /wp-includes/taxonomy.php function get_terms() that provides
 an accurate count of attachments associated with each term.</p>
 
 <p>taxonomy - string containing one or more (comma-delimited) taxonomy names
@@ -201,9 +202,11 @@ or an array of taxonomy names. Default 'post_tag'.</p>
 
 <p>post_mime_type - MIME type(s) of the items to include in the term-specific counts. Default 'all'.</p>
 
-<p>post_type - The post type(s) of the items to include in the term-specific counts. The default is "attachment".</p>
+<p>post_type - The post type(s) of the items to include in the term-specific counts.
+The default is "attachment".</p>
 
-<p>post_status - The post status value(s) of the items to include in the term-specific counts. The default is "inherit".</p>
+<p>post_status - The post status value(s) of the items to include in the term-specific counts.
+The default is "inherit".</p>
 
 <p>ids - A comma-separated list of attachment ID values for an item-specific cloud.</p>
 
@@ -220,7 +223,7 @@ from the return array. If 'include' is non-empty, 'exclude' is ignored.</p>
 <p>no_count - 'true', 'false' (default) to suppress term-specific attachment-counting process.</p>
 
 <p>number - maximum number of term objects to return. Terms are ordered by count,
-descending and then by term_id before this value is applied. Default 45.</p>
+descending and then by term_id before this value is applied. Default 0.</p>
 
 <p>orderby - 'count', 'id', 'name' (default), 'none', 'random', 'slug'</p>
 
@@ -230,7 +233,7 @@ descending and then by term_id before this value is applied. Default 45.</p>
 
 <p>preserve_case - 'true', 'false' (default) to make orderby case-sensitive.</p>
 
-<p>pad_counts - 'true', 'false' (default) to make orderby case-sensitive.</p>
+<p>pad_counts - 'true', 'false' (default) to to include the count of all children in their parents' count.</p>
 
 <p>limit - final number of term objects to return, for pagination. Default 0.</p>
 
@@ -246,6 +249,26 @@ descending and then by term_id before this value is applied. Default 45.</p>
 <h3>Returns</h3>
 <div class="subelement response">
 <code>array</code>array of term objects, empty if none found</div>
+</div></div>
+</div>
+<a name="mla_no_texturize_shortcodes_filter" id="mla_no_texturize_shortcodes_filter"></a><div class="element clickable method public mla_no_texturize_shortcodes_filter" data-toggle="collapse" data-target=".mla_no_texturize_shortcodes_filter .collapse">
+<h2>Prevents wptexturizing of the [mla_gallery] shortcode, avoiding a bug in WP 4.0.</h2>
+<pre>mla_no_texturize_shortcodes_filter(array $no_texturize_shortcodes) : array</pre>
+<div class="labels"></div>
+<div class="row collapse"><div class="detail-description">
+<p class="long_description"><p>Defined as public because it's a filter.</p></p>
+<table class="table table-bordered"><tr>
+<th>since</th>
+<td>1.94</td>
+</tr></table>
+<h3>Parameters</h3>
+<div class="subelement argument">
+<h4>$no_texturize_shortcodes</h4>
+<code>array</code><p>list of "do not texturize" shortcodes</p>
+</div>
+<h3>Returns</h3>
+<div class="subelement response">
+<code>array</code>updated list of "do not texturize" shortcodes</div>
 </div></div>
 </div>
 <a name="mla_shortcode_query_posts_clauses_filter" id="mla_shortcode_query_posts_clauses_filter"></a><div class="element clickable method public mla_shortcode_query_posts_clauses_filter" data-toggle="collapse" data-target=".mla_shortcode_query_posts_clauses_filter .collapse">
@@ -547,7 +570,7 @@ relevant children are already in the $terms argument.</p></p>
 </div>
 <a name="_validate_sql_orderby" id="_validate_sql_orderby"></a><div class="element clickable method private _validate_sql_orderby" data-toggle="collapse" data-target="._validate_sql_orderby .collapse">
 <h2>Translates query parameters to a valid SQL order by clause.</h2>
-<pre>_validate_sql_orderby(array $query_parameters) : string | bool</pre>
+<pre>_validate_sql_orderby(array $query_parameters, string $table_prefix, array $allowed_keys, array $binary_keys) : string | bool</pre>
 <div class="labels"></div>
 <div class="row collapse"><div class="detail-description">
 <p class="long_description"><p>Accepts one or more valid columns, with or without ASC/DESC.
@@ -559,7 +582,20 @@ Enhanced version of /wp-includes/formatting.php function sanitize_sql_orderby().
 <h3>Parameters</h3>
 <div class="subelement argument">
 <h4>$query_parameters</h4>
-<code>array</code><p>Validated query parameters</p></div>
+<code>array</code><p>Validated query parameters; 'order', 'orderby', 'meta_key', 'post__in'.</p>
+</div>
+<div class="subelement argument">
+<h4>$table_prefix</h4>
+<code>string</code><p>Optional. Database table prefix; can be empty. Default taken from $wpdb->posts.</p>
+</div>
+<div class="subelement argument">
+<h4>$allowed_keys</h4>
+<code>array</code><p>Optional. Field names (keys) and database column equivalents (values). Defaults from [mla_gallery].</p>
+</div>
+<div class="subelement argument">
+<h4>$binary_keys</h4>
+<code>array</code><p>Optional. Field names (values) that require a BINARY prefix to preserve case order. Default array()</p>
+</div>
 <h3>Returns</h3>
 <div class="subelement response">
 <code>string</code><code>bool</code>Returns the orderby clause if present, false otherwise.</div>
@@ -651,7 +687,7 @@ any further logic required to translate those values is contained in the filter.
 <div class="row"><footer class="span12">
             Template is built using <a href="http://twitter.github.com/bootstrap/">Twitter Bootstrap 2</a> and icons provided by <a href="http://glyphicons.com/">Glyphicons</a>.<br>
             Documentation is powered by <a href="http://www.phpdoc.org/">phpDocumentor 2.0.0a8</a> and<br>
-            generated on 2014-08-15T15:57:32-07:00.<br></footer></div>
+            generated on 2014-10-27T20:22:36-07:00.<br></footer></div>
 </div>
 </body>
 </html>

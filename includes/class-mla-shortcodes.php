@@ -31,7 +31,22 @@ class MLAShortcodes {
 		if ( version_compare( get_bloginfo('version'), '4.0', '>=' ) ) {
 			add_filter( 'no_texturize_shortcodes', 'MLAShortcodes::mla_no_texturize_shortcodes_filter', 10, 1 );
 		}
+
+//		add_filter( 'date_query_valid_columns', 'MLAShortcodes::mla_date_query_valid_columns_filter', 10, 1 );
+//		add_filter( 'get_date_sql', 'MLAShortcodes::mla_get_date_sql_filter', 10, 2 );
 	}
+
+/*	public static function mla_date_query_valid_columns_filter( $valid_columns ) {
+		$valid_columns[] = 'meta_value';
+				
+		return $valid_columns;
+	}
+
+	public static function mla_get_date_sql_filter( $where, $date_query ) {
+error_log( ' $where = ' . var_export( $where, true ), 0 );
+
+		return $where;
+	} // */
 
 	/**
 	 * Prevents wptexturizing of the [mla_gallery] shortcode, avoiding a bug in WP 4.0.
@@ -778,7 +793,7 @@ class MLAShortcodes {
 				$item_values['pagelink'] = preg_replace( '/height=\"[^\"]*\"/', sprintf( 'height="%1$d"', $dimensions[0] ), $thumb );
 				$thumb = preg_replace( '/width=\"[^\"]*\"/', sprintf( 'width="%1$d"', $dimensions[1] ), $item_values['filelink'] );
 				$item_values['filelink'] = preg_replace( '/height=\"[^\"]*\"/', sprintf( 'height="%1$d"', $dimensions[0] ), $thumb );
-			}
+			} // SVG thumbnail
 
 			/*
 			 * Apply the Gallery Display Content parameters.
@@ -805,7 +820,7 @@ class MLAShortcodes {
 					$item_values['filelink'] = preg_replace('# title=\"([^\"]*)\"#', " title=\"{$rollover_text}\"", $item_values['filelink'] );
 				}
 			} else {
-				$rollover_text = $item_values['title'];
+				$rollover_text = esc_attr( $item_values['title'] );
 			}
 
 			if ( ! empty( $arguments['mla_target'] ) ) {
@@ -989,11 +1004,16 @@ class MLAShortcodes {
 						$item_values['thumbnail_content'] = sprintf( '<img %1$ssrc="http://docs.google.com/viewer?url=%2$s&a=bi&pagenumber=%3$d&w=%4$d"%5$s%6$s>', $image_attributes, $item_values['filelink_url'], $arguments['mla_viewer_page'], $arguments['mla_viewer_width'], $image_class, $image_alt );
 
 						/*
-						 * Filelink, pagelink and link
+						 * Filelink, pagelink and link.
+						 * The "title=" attribute is in $link_attributes for WP 3.7+.
 						 */
-						$item_values['pagelink'] = sprintf( '<a %1$shref="%2$s" title="%3$s">%4$s</a>', $link_attributes, $item_values['pagelink_url'], $rollover_text, $item_values['thumbnail_content'] );
-						$item_values['filelink'] = sprintf( '<a %1$shref="%2$s" title="%3$s">%4$s</a>', $link_attributes, $item_values['filelink_url'], $rollover_text, $item_values['thumbnail_content'] );
-
+						if ( false === strpos( $link_attributes, 'title=' ) ) {
+							$item_values['pagelink'] = sprintf( '<a %1$shref="%2$s" title="%3$s">%4$s</a>', $link_attributes, $item_values['pagelink_url'], $rollover_text, $item_values['thumbnail_content'] );
+							$item_values['filelink'] = sprintf( '<a %1$shref="%2$s" title="%3$s">%4$s</a>', $link_attributes, $item_values['filelink_url'], $rollover_text, $item_values['thumbnail_content'] );
+						} else {
+							$item_values['pagelink'] = sprintf( '<a %1$shref="%2$s">%3$s</a>', $link_attributes, $item_values['pagelink_url'], $item_values['thumbnail_content'] );
+							$item_values['filelink'] = sprintf( '<a %1$shref="%2$s">%3$s</a>', $link_attributes, $item_values['filelink_url'], $item_values['thumbnail_content'] );
+						}
 						if ( ! empty( $link_href ) ) {
 							$item_values['link'] = sprintf( '<a %1$shref="%2$s" title="%3$s">%4$s</a>', $link_attributes, $link_href, $rollover_text, $item_values['thumbnail_content'] );
 						} elseif ( 'permalink' == $arguments['link'] ) {
@@ -2322,7 +2342,7 @@ class MLAShortcodes {
 	 */
 	private static function _sanitize_query_specification( $specification ) {
 		$specification = wp_specialchars_decode( $specification );
-		$specification = str_replace( array( '<br />', '<p>', '</p>', "\r", "\n" ), ' ', $specification );
+		$specification = str_replace( array( '<br>', '<br />', '<p>', '</p>', "\r", "\n" ), ' ', $specification );
 		return $specification;
 	}
 
@@ -2496,7 +2516,8 @@ class MLAShortcodes {
 			'mla_page_parameter' => 'mla_paginate_current',
 			'mla_paginate_current' => NULL,
 			'mla_paginate_total' => NULL,
-			// TBD Time
+			// Date and Time Queries
+			'date_query' => '',
 			// Custom Field
 			'meta_key' => '',
 			'meta_value' => '',
@@ -2555,7 +2576,7 @@ class MLAShortcodes {
 
 		/*
 		 * The "where used" queries have no $_REQUEST context available to them,
-		 * so tax_ and meta_query evaluation will fail if they contain "{+request:"
+		 * so tax_, date_ and meta_query evaluation will fail if they contain "{+request:"
 		 * parameters. Ignore these errors.
 		 */
 		if ( isset( $attr['where_used_query'] ) && ( 'this-is-a-where-used-query' == $attr['where_used_query'] ) ) {
@@ -2872,6 +2893,37 @@ class MLAShortcodes {
 					}
 				}
 
+				unset( $arguments[ $key ] );
+				break;
+			case 'date_query':
+				if ( ! empty( $value ) ) {
+					if ( is_array( $value ) ) {
+						$query_arguments[ $key ] = $value;
+					} else {
+						$date_query = NULL;
+						$value = self::_sanitize_query_specification( $value );
+
+						/*
+						 * Replace invalid queries from "where-used" callers with a harmless equivalent
+						 */
+						if ( $where_used_query && ( false !== strpos( $value, '{+' ) ) ) {
+							$value = "array( array( 'key' => 'unlikely', 'value' => 'none or otherwise unlikely' ) )";
+						}
+
+						$function = @create_function('', 'return ' . $value . ';' );
+						if ( is_callable( $function ) ) {
+							$date_query = $function();
+						}
+
+						if ( is_array( $date_query ) ) {
+							$query_arguments[ $key ] = $date_query;
+						} else {
+							return '<p>' . __( 'ERROR: Invalid mla_gallery', 'media-library-assistant' ) . ' date_query = ' . var_export( $value, true ) . '</p>';
+						}
+					} // not array
+
+					$use_children = false;
+				}
 				unset( $arguments[ $key ] );
 				break;
 			case 'meta_query':
