@@ -591,8 +591,8 @@ class MLA_List_Table extends WP_List_Table {
 
 		if ( is_object( $sitepress ) ) {		 
 			add_filter( 'views_media_page_mla-menu', 'MLA_List_Table::mla_views_media_page_mla_menu_filter', 10, 1 );
-			add_filter( 'wpml-media_view-upload-count', $this, 'MLA_List_Table::mla_wpml_media_view_upload_count_filter', 10, 4 );
-			add_filter( 'wpml-media_view-upload-page-count', $this, 'MLA_List_Table::mla_wpml_media_view_upload_page_count_filter', 10, 2 );
+			add_filter( 'wpml-media_view-upload-count', 'MLA_List_Table::mla_wpml_media_view_upload_count_filter', 10, 4 );
+			add_filter( 'wpml-media_view-upload-page-count', 'MLA_List_Table::mla_wpml_media_view_upload_page_count_filter', 10, 2 );
 		}
 	}
 
