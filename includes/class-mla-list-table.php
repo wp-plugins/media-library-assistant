@@ -35,7 +35,7 @@ class MLA_List_Table extends WP_List_Table {
 	 *
 	 * @var	int
 	 */
-	private $rollover_id = 0;
+	protected $rollover_id = 0;
 
 	/**
 	 * Currently hidden columns
@@ -46,7 +46,7 @@ class MLA_List_Table extends WP_List_Table {
 	 *
 	 * @var	array
 	 */
-	private $currently_hidden = array();
+	protected $currently_hidden = array();
 
 	/*
 	 * The $default_columns, $default_hidden_columns, and $default_sortable_columns
@@ -70,7 +70,7 @@ class MLA_List_Table extends WP_List_Table {
 	 *
 	 * @var	array
 	 */
-	private static $default_columns = array();
+	protected static $default_columns = array();
 
 	/**
 	 * Default values for hidden columns
@@ -88,7 +88,7 @@ class MLA_List_Table extends WP_List_Table {
 	 *
 	 * @var	array
 	 */
-	private static $default_hidden_columns	= array(
+	protected static $default_hidden_columns	= array(
 		// 'ID_parent',
 		// 'title_name',
 		'post_title',
@@ -121,8 +121,8 @@ class MLA_List_Table extends WP_List_Table {
 	 * to sort by. Often, the key and value will be the same, but this is not always
 	 * the case (as the value is a column name from the database, not the list table).
 	 *
-	 * The array value also contains a boolean which is 'true' if the data is currently
-	 * sorted by that column. This is computed each time the table is displayed.
+	 * The array value also contains a boolean which is 'true' if the initial sort order
+	 * for the column is DESC/Descending.
 	 *
 	 * Taxonomy and custom field columns are added to this array by
 	 * MLA_List_Table::mla_admin_init_action.
@@ -131,8 +131,8 @@ class MLA_List_Table extends WP_List_Table {
 	 *
 	 * @var	array
 	 */
-	private static $default_sortable_columns = array(
-		'ID_parent' => array('ID',false),
+	protected static $default_sortable_columns = array(
+		'ID_parent' => array('ID',true),
 		'title_name' => array('title_name',false),
 		'post_title' => array('post_title',false),
 		'post_name' => array('post_name',false),
@@ -142,30 +142,19 @@ class MLA_List_Table extends WP_List_Table {
 		// 'inserted' => array('inserted',false),
 		// 'galleries' => array('galleries',false),
 		// 'mla_galleries' => array('mla_galleries',false),
-		'alt_text' => array('_wp_attachment_image_alt',false),
+		'alt_text' => array('_wp_attachment_image_alt',true),
 		'caption' => array('post_excerpt',false),
 		'description' => array('post_content',false),
 		'post_mime_type' => array('post_mime_type',false),
 		'file_url' => array('guid',false),
 		'base_file' => array('_wp_attached_file',false),
-		'date' => array('post_date',false),
-		'modified' => array('post_modified',false),
+		'date' => array('post_date',true),
+		'modified' => array('post_modified',true),
 		'author' => array('post_author',false),
 		'attached_to' => array('post_parent',false),
 		// sortable taxonomy columns, if any, added by mla_admin_init_action
 		// sortable custom field columns, if any, added by mla_admin_init_action
         );
-
-	/**
-	 * Access the default list of hidden columns
-	 *
-	 * @since 0.1
-	 *
-	 * @return	array	default list of hidden columns
-	 */
-	private static function _default_hidden_columns( ) {
-		return MLA_List_Table::$default_hidden_columns;
-	}
 
 	/**
 	 * Get MIME types with one or more attachments for view preparation
@@ -179,7 +168,7 @@ class MLA_List_Table extends WP_List_Table {
 	 *
 	 * @return	array	Mime type names
 	 */
-	private function _avail_mime_types( $num_posts ) {
+	protected static function _avail_mime_types( $num_posts ) {
 		$available = array();
 
 		foreach ( $num_posts as $mime_type => $number ) {
@@ -189,6 +178,47 @@ class MLA_List_Table extends WP_List_Table {
 		}
 
 		return $available;
+	}
+
+	/**
+	 * Builds the $default_columns array with translated source texts.
+	 *
+	 * Called from MLA:mla_plugins_loaded_action because the $default_columns information might be
+	 * accessed from "front end" posts/pages.
+	 *
+	 * @since 1.71
+	 *
+	 * @return	void
+	 */
+	public static function mla_localize_default_columns_array( ) {
+		/*
+		 * Build the default columns array at runtime to accomodate calls to the localization functions
+		 */
+		self::$default_columns = array(
+			'cb' => '<input type="checkbox" />', //Render a checkbox instead of text
+			'icon' => '',
+			'ID_parent' => _x( 'ID/Parent', 'list_table_column', 'media-library-assistant' ),
+			'title_name' => _x( 'Title/Name', 'list_table_column', 'media-library-assistant' ),
+			'post_title' => _x( 'Title', 'list_table_column', 'media-library-assistant' ),
+			'post_name' => _x( 'Name', 'list_table_column', 'media-library-assistant' ),
+			'parent' => _x( 'Parent ID', 'list_table_column', 'media-library-assistant' ),
+			'menu_order' => _x( 'Menu Order', 'list_table_column', 'media-library-assistant' ),
+			'featured' => _x( 'Featured in', 'list_table_column', 'media-library-assistant' ),
+			'inserted' => _x( 'Inserted in', 'list_table_column', 'media-library-assistant' ),
+			'galleries' => _x( 'Gallery in', 'list_table_column', 'media-library-assistant' ),
+			'mla_galleries' => _x( 'MLA Gallery in', 'list_table_column', 'media-library-assistant' ),
+			'alt_text' => _x( 'ALT Text', 'list_table_column', 'media-library-assistant' ),
+			'caption' => _x( 'Caption', 'list_table_column', 'media-library-assistant' ),
+			'description' => _x( 'Description', 'list_table_column', 'media-library-assistant' ),
+			'post_mime_type' => _x( 'MIME Type', 'list_table_column', 'media-library-assistant' ),
+			'file_url' => _x( 'File URL', 'list_table_column', 'media-library-assistant' ),
+			'base_file' => _x( 'Base File', 'list_table_column', 'media-library-assistant' ),
+			'date' => _x( 'Date', 'list_table_column', 'media-library-assistant' ),
+			'modified' => _x( 'Last Modified', 'list_table_column', 'media-library-assistant' ),
+			'author' => _x( 'Author', 'list_table_column', 'media-library-assistant' ),
+			'attached_to' => _x( 'Attached to', 'list_table_column', 'media-library-assistant' ),
+			// taxonomy and custom field columns added below
+		);
 	}
 
 	/**
@@ -248,12 +278,133 @@ class MLA_List_Table extends WP_List_Table {
 	public static function mla_get_sortable_columns( ) {
 		$results = array() ;
 
-		foreach ( MLA_List_Table::$default_sortable_columns as $key => $value ) {
-			$value[1] = MLA_List_Table::$default_columns[ $key ];
+		foreach ( self::$default_sortable_columns as $key => $value ) {
+			$value[1] = self::$default_columns[ $key ];
 			$results[ $key ] = $value;
 		}
 
 		return $results;
+	}
+
+	/**
+	 * Process $_REQUEST, building $submenu_arguments
+	 *
+	 * @since 1.42
+	 *
+	 * @param	boolean	Optional: Include the "click filter" values in the results
+	 *
+	 * @return	array	non-empty view, search, filter and sort arguments
+	 */
+	public static function mla_submenu_arguments( $include_filters = true ) {
+		global $sitepress;
+		static $submenu_arguments = NULL, $has_filters = NULL;
+
+		if ( is_array( $submenu_arguments ) && ( $has_filters == $include_filters ) ) {
+			return $submenu_arguments;
+		}
+
+		$submenu_arguments = array();
+		$has_filters = $include_filters;
+		
+		/*
+		 * WPML arguments
+		 */
+		if ( isset( $_REQUEST['lang'] ) ) {
+			$submenu_arguments['lang'] = $_REQUEST['lang'];
+		} elseif ( is_object( $sitepress ) ) {		 
+			$submenu_arguments['lang'] = $sitepress->get_current_language();
+		}
+
+		/*
+		 * View arguments
+		 */
+		if ( isset( $_REQUEST['post_mime_type'] ) ) {
+			$submenu_arguments['post_mime_type'] = $_REQUEST['post_mime_type'];
+		}
+
+		if ( isset( $_REQUEST['detached'] ) ) {
+			$submenu_arguments['detached'] = $_REQUEST['detached'];
+		}
+
+		if ( isset( $_REQUEST['status'] ) ) {
+			$submenu_arguments['status'] = $_REQUEST['status'];
+		}
+
+		if ( isset( $_REQUEST['meta_query'] ) ) {
+			$submenu_arguments['meta_query'] = $_REQUEST['meta_query'];
+		}
+
+		/*
+		 * Search box arguments
+		 */
+		if ( !empty( $_REQUEST['s'] ) ) {
+			$submenu_arguments['s'] = urlencode( stripslashes( $_REQUEST['s'] ) );
+
+			if ( isset( $_REQUEST['mla_search_connector'] ) ) {
+				$submenu_arguments['mla_search_connector'] = $_REQUEST['mla_search_connector'];
+			}
+
+			if ( isset( $_REQUEST['mla_search_fields'] ) ) {
+				$submenu_arguments['mla_search_fields'] = $_REQUEST['mla_search_fields'];
+			}
+		}
+
+		/*
+		 * Filter arguments (from table header)
+		 */
+		if ( isset( $_REQUEST['m'] ) && ( '0' != $_REQUEST['m'] ) ) {
+			$submenu_arguments['m'] = $_REQUEST['m'];
+		}
+
+		if ( isset( $_REQUEST['mla_filter_term'] ) && ( '0' != $_REQUEST['mla_filter_term'] ) ) {
+			$submenu_arguments['mla_filter_term'] = $_REQUEST['mla_filter_term'];
+		}
+
+		/*
+		 * Sort arguments (from column header)
+		 */
+		if ( isset( $_REQUEST['order'] ) ) {
+			$submenu_arguments['order'] = $_REQUEST['order'];
+		}
+
+		if ( isset( $_REQUEST['orderby'] ) ) {
+			$submenu_arguments['orderby'] = $_REQUEST['orderby'];
+		}
+
+		/*
+		 * Filter arguments (from interior table cells)
+		 */
+		if ( $include_filters ) {
+			if ( isset( $_REQUEST['heading_suffix'] ) ) {
+				$submenu_arguments['heading_suffix'] = $_REQUEST['heading_suffix'];
+			}
+
+			if ( isset( $_REQUEST['parent'] ) ) {
+				$submenu_arguments['parent'] = $_REQUEST['parent'];
+			}
+
+			if ( isset( $_REQUEST['author'] ) ) {
+				$submenu_arguments['author'] = $_REQUEST['author'];
+			}
+
+			if ( isset( $_REQUEST['mla-tax'] ) ) {
+				$submenu_arguments['mla-tax'] = $_REQUEST['mla-tax'];
+			}
+
+			if ( isset( $_REQUEST['mla-term'] ) ) {
+				$submenu_arguments['mla-term'] = $_REQUEST['mla-term'];
+			}
+
+			if ( isset( $_REQUEST['mla-metakey'] ) ) {
+				$submenu_arguments['mla-metakey'] = $_REQUEST['mla-metakey'];
+			}
+
+			if ( isset( $_REQUEST['mla-metavalue'] ) ) {
+				$submenu_arguments['mla-metavalue'] = $_REQUEST['mla-metavalue'];
+			}
+		}
+
+		return $submenu_arguments;
 	}
 
 	/**
@@ -276,7 +427,7 @@ class MLA_List_Table extends WP_List_Table {
 			return $result;
 		}
 
-		return self::_default_hidden_columns();
+		return self::$default_hidden_columns;
 	}
 
 	/**
@@ -291,7 +442,7 @@ class MLA_List_Table extends WP_List_Table {
 	 * @return	array	list of table columns
 	 */
 	public static function mla_manage_columns_filter( ) {
-		return MLA_List_Table::$default_columns;
+		return self::$default_columns;
 	}
 
 	/**
@@ -307,7 +458,7 @@ class MLA_List_Table extends WP_List_Table {
 	 *
 	 * @return	array	Updated list of available list table views
 	 */
-	public function mla_views_media_page_mla_menu_filter( $views ) {
+	public static function mla_views_media_page_mla_menu_filter( $views ) {
 		// hooked by WPML Media in wpml-media.class.php
 		$views = apply_filters( "views_upload", $views );
 		return $views;
@@ -328,7 +479,7 @@ class MLA_List_Table extends WP_List_Table {
 	 *
 	 * @return	mixed	NULL to allow SQL query or replacement count value
 	 */
-	public function mla_wpml_media_view_upload_count_filter( $count, $key, $view, $lang ) {
+	public static function mla_wpml_media_view_upload_count_filter( $count, $key, $view, $lang ) {
 		// extract the base URL and query parameters
 		$href_count = preg_match( '/(href=["\'])([\s\S]+?)\?([\s\S]+?)(["\'])/', $view, $href_matches );	
 		if ( $href_count ) {
@@ -360,7 +511,7 @@ class MLA_List_Table extends WP_List_Table {
 	 *
 	 * @return	mixed	NULL to allow SQL query or replacement count value
 	 */
-	public function mla_wpml_media_view_upload_page_count_filter( $count, $lang ) {
+	public static function mla_wpml_media_view_upload_page_count_filter( $count, $lang ) {
 		global $sitepress;
 
 		if ( isset( $_GET['meta_slug'] ) ) {
@@ -380,47 +531,6 @@ class MLA_List_Table extends WP_List_Table {
 	}
 
 	/**
-	 * Builds the $default_columns array with translated source texts.
-	 *
-	 * Called from MLA:mla_plugins_loaded_action because the $default_columns information might be
-	 * accessed from "front end" posts/pages.
-	 *
-	 * @since 1.71
-	 *
-	 * @return	void
-	 */
-	public static function mla_localize_default_columns_array( ) {
-		/*
-		 * Build the default columns array at runtime to accomodate calls to the localization functions
-		 */
-		self::$default_columns = array(
-			'cb' => '<input type="checkbox" />', //Render a checkbox instead of text
-			'icon' => '',
-			'ID_parent' => _x( 'ID/Parent', 'list_table_column', 'media-library-assistant' ),
-			'title_name' => _x( 'Title/Name', 'list_table_column', 'media-library-assistant' ),
-			'post_title' => _x( 'Title', 'list_table_column', 'media-library-assistant' ),
-			'post_name' => _x( 'Name', 'list_table_column', 'media-library-assistant' ),
-			'parent' => _x( 'Parent ID', 'list_table_column', 'media-library-assistant' ),
-			'menu_order' => _x( 'Menu Order', 'list_table_column', 'media-library-assistant' ),
-			'featured' => _x( 'Featured in', 'list_table_column', 'media-library-assistant' ),
-			'inserted' => _x( 'Inserted in', 'list_table_column', 'media-library-assistant' ),
-			'galleries' => _x( 'Gallery in', 'list_table_column', 'media-library-assistant' ),
-			'mla_galleries' => _x( 'MLA Gallery in', 'list_table_column', 'media-library-assistant' ),
-			'alt_text' => _x( 'ALT Text', 'list_table_column', 'media-library-assistant' ),
-			'caption' => _x( 'Caption', 'list_table_column', 'media-library-assistant' ),
-			'description' => _x( 'Description', 'list_table_column', 'media-library-assistant' ),
-			'post_mime_type' => _x( 'MIME Type', 'list_table_column', 'media-library-assistant' ),
-			'file_url' => _x( 'File URL', 'list_table_column', 'media-library-assistant' ),
-			'base_file' => _x( 'Base File', 'list_table_column', 'media-library-assistant' ),
-			'date' => _x( 'Date', 'list_table_column', 'media-library-assistant' ),
-			'modified' => _x( 'Last Modified', 'list_table_column', 'media-library-assistant' ),
-			'author' => _x( 'Author', 'list_table_column', 'media-library-assistant' ),
-			'attached_to' => _x( 'Attached to', 'list_table_column', 'media-library-assistant' ),
-			// taxonomy and custom field columns added below
-		);
-	}
-
-	/**
 	 * Adds support for taxonomy and custom field columns
 	 *
 	 * Called in the admin_init action because the list_table object isn't
@@ -436,15 +546,15 @@ class MLA_List_Table extends WP_List_Table {
 		foreach ( $taxonomies as $tax_name ) {
 			if ( MLAOptions::mla_taxonomy_support( $tax_name ) ) {
 				$tax_object = get_taxonomy( $tax_name );
-				MLA_List_Table::$default_columns[ 't_' . $tax_name ] = $tax_object->labels->name;
-				MLA_List_Table::$default_hidden_columns [] = 't_' . $tax_name;
-				// MLA_List_Table::$default_sortable_columns [] = none at this time
+				self::$default_columns[ 't_' . $tax_name ] = $tax_object->labels->name;
+				self::$default_hidden_columns [] = 't_' . $tax_name;
+				// self::$default_sortable_columns [] = none at this time
 			} // supported taxonomy
 		} // foreach $tax_name
 
-		MLA_List_Table::$default_columns = array_merge( MLA_List_Table::$default_columns, MLAOptions::mla_custom_field_support( 'default_columns' ) );
-		MLA_List_Table::$default_hidden_columns = array_merge( MLA_List_Table::$default_hidden_columns, MLAOptions::mla_custom_field_support( 'default_hidden_columns' ) );
-		MLA_List_Table::$default_sortable_columns = array_merge( MLA_List_Table::$default_sortable_columns, MLAOptions::mla_custom_field_support( 'default_sortable_columns' ) );
+		self::$default_columns = array_merge( self::$default_columns, MLAOptions::mla_custom_field_support( 'default_columns' ) );
+		self::$default_hidden_columns = array_merge( self::$default_hidden_columns, MLAOptions::mla_custom_field_support( 'default_hidden_columns' ) );
+		self::$default_sortable_columns = array_merge( self::$default_sortable_columns, MLAOptions::mla_custom_field_support( 'default_sortable_columns' ) );
 	}
 
 	/**
@@ -480,9 +590,9 @@ class MLA_List_Table extends WP_List_Table {
 		 */
 
 		if ( is_object( $sitepress ) ) {		 
-			add_filter( 'views_media_page_mla-menu', array( $this, 'mla_views_media_page_mla_menu_filter' ), 10, 1 );
-			add_filter( 'wpml-media_view-upload-count', array( $this, 'mla_wpml_media_view_upload_count_filter' ), 10, 4 );
-			add_filter( 'wpml-media_view-upload-page-count', array( $this, 'mla_wpml_media_view_upload_page_count_filter' ), 10, 2 );
+			add_filter( 'views_media_page_mla-menu', 'MLA_List_Table::mla_views_media_page_mla_menu_filter', 10, 1 );
+			add_filter( 'wpml-media_view-upload-count', $this, 'MLA_List_Table::mla_wpml_media_view_upload_count_filter', 10, 4 );
+			add_filter( 'wpml-media_view-upload-page-count', $this, 'MLA_List_Table::mla_wpml_media_view_upload_page_count_filter', 10, 2 );
 		}
 	}
 
@@ -531,7 +641,7 @@ class MLA_List_Table extends WP_List_Table {
 			}
 		} // 't_'
 		elseif ( 'c_' == substr( $column_name, 0, 2 ) ) {
-			$values = get_post_meta( $item->ID, MLA_List_Table::$default_columns[ $column_name ], false );
+			$values = get_post_meta( $item->ID, self::$default_columns[ $column_name ], false );
 			if ( empty( $values ) ) {
 				return '';
 			}
@@ -547,9 +657,9 @@ class MLA_List_Table extends WP_List_Table {
 				} else {
 					$list[] = sprintf( '<a href="%1$s" title="' . __( 'Filter by', 'media-library-assistant' ) . ' &#8220;%2$s&#8221;">%3$s</a>', esc_url( add_query_arg( array_merge( self::mla_submenu_arguments( false ), array(
 						'page' => MLA::ADMIN_PAGE_SLUG,
-						'mla-metakey' => urlencode( MLA_List_Table::$default_columns[ $column_name ] ),
+						'mla-metakey' => urlencode( self::$default_columns[ $column_name ] ),
 						'mla-metavalue' => urlencode( $value ),
-						'heading_suffix' => urlencode( MLA_List_Table::$default_columns[ $column_name ] . ': ' . $value ) 
+						'heading_suffix' => urlencode( self::$default_columns[ $column_name ] . ': ' . $value ) 
 					) ), 'upload.php' ) ), esc_html( substr( $value, 0, 64 ) ), esc_html( $value ) );
 				}
 			}
@@ -560,9 +670,15 @@ class MLA_List_Table extends WP_List_Table {
 				return $list[0];
 			}
 		} else { // 'c_'
-			//Show the whole array for troubleshooting purposes
-			/* translators: 1: column_name 2: column_values */
-			return sprintf( __( 'column_default: %1$s, %2$s', 'media-library-assistant' ), $column_name, print_r( $item, true ) );
+		
+			$content = apply_filters( "mla_list_table_column_default", NULL, $item, $column_name );
+			if ( is_null( $content ) ) {
+				//Show the whole array for troubleshooting purposes
+				/* translators: 1: column_name 2: column_values */
+				return sprintf( __( 'column_default: %1$s, %2$s', 'media-library-assistant' ), $column_name, print_r( $item, true ) );
+			} else {
+				return $content;
+			}
 		}
 	}
 
@@ -642,7 +758,7 @@ class MLA_List_Table extends WP_List_Table {
 	 *
 	 * @return	array	Names and URLs of row-level actions
 	 */
-	private function _build_rollover_actions( $item, $column ) {
+	protected function _build_rollover_actions( $item, $column ) {
 		$actions = array();
 
 		if ( ( $this->rollover_id != $item->ID ) && !in_array( $column, $this->currently_hidden ) ) {
@@ -716,7 +832,7 @@ class MLA_List_Table extends WP_List_Table {
 	 *
 	 * @return	string	HTML <div> with row data
 	 */
-	private function _build_inline_data( $item ) {
+	protected function _build_inline_data( $item ) {
 		$inline_data = "\r\n" . '<div class="hidden" id="inline_' . $item->ID . "\">\r\n";
 		$inline_data .= '	<div class="post_title">' . esc_attr( $item->post_title ) . "</div>\r\n";
 		$inline_data .= '	<div class="post_name">' . esc_attr( $item->post_name ) . "</div>\r\n";
@@ -1279,127 +1395,6 @@ class MLA_List_Table extends WP_List_Table {
 	}
 
 	/**
-	 * Process $_REQUEST, building $submenu_arguments
-	 *
-	 * @since 1.42
-	 *
-	 * @param	boolean	Optional: Include the "click filter" values in the results
-	 *
-	 * @return	array	non-empty view, search, filter and sort arguments
-	 */
-	public static function mla_submenu_arguments( $include_filters = true ) {
-		global $sitepress;
-		static $submenu_arguments = NULL, $has_filters = NULL;
-
-		if ( is_array( $submenu_arguments ) && ( $has_filters == $include_filters ) ) {
-			return $submenu_arguments;
-		}
-
-		$submenu_arguments = array();
-		$has_filters = $include_filters;
-		
-		/*
-		 * WPML arguments
-		 */
-		if ( isset( $_REQUEST['lang'] ) ) {
-			$submenu_arguments['lang'] = $_REQUEST['lang'];
-		} elseif ( is_object( $sitepress ) ) {		 
-			$submenu_arguments['lang'] = $sitepress->get_current_language();
-		}
-
-		/*
-		 * View arguments
-		 */
-		if ( isset( $_REQUEST['post_mime_type'] ) ) {
-			$submenu_arguments['post_mime_type'] = $_REQUEST['post_mime_type'];
-		}
-
-		if ( isset( $_REQUEST['detached'] ) ) {
-			$submenu_arguments['detached'] = $_REQUEST['detached'];
-		}
-
-		if ( isset( $_REQUEST['status'] ) ) {
-			$submenu_arguments['status'] = $_REQUEST['status'];
-		}
-
-		if ( isset( $_REQUEST['meta_query'] ) ) {
-			$submenu_arguments['meta_query'] = $_REQUEST['meta_query'];
-		}
-
-		/*
-		 * Search box arguments
-		 */
-		if ( !empty( $_REQUEST['s'] ) ) {
-			$submenu_arguments['s'] = urlencode( stripslashes( $_REQUEST['s'] ) );
-
-			if ( isset( $_REQUEST['mla_search_connector'] ) ) {
-				$submenu_arguments['mla_search_connector'] = $_REQUEST['mla_search_connector'];
-			}
-
-			if ( isset( $_REQUEST['mla_search_fields'] ) ) {
-				$submenu_arguments['mla_search_fields'] = $_REQUEST['mla_search_fields'];
-			}
-		}
-
-		/*
-		 * Filter arguments (from table header)
-		 */
-		if ( isset( $_REQUEST['m'] ) && ( '0' != $_REQUEST['m'] ) ) {
-			$submenu_arguments['m'] = $_REQUEST['m'];
-		}
-
-		if ( isset( $_REQUEST['mla_filter_term'] ) && ( '0' != $_REQUEST['mla_filter_term'] ) ) {
-			$submenu_arguments['mla_filter_term'] = $_REQUEST['mla_filter_term'];
-		}
-
-		/*
-		 * Sort arguments (from column header)
-		 */
-		if ( isset( $_REQUEST['order'] ) ) {
-			$submenu_arguments['order'] = $_REQUEST['order'];
-		}
-
-		if ( isset( $_REQUEST['orderby'] ) ) {
-			$submenu_arguments['orderby'] = $_REQUEST['orderby'];
-		}
-
-		/*
-		 * Filter arguments (from interior table cells)
-		 */
-		if ( $include_filters ) {
-			if ( isset( $_REQUEST['heading_suffix'] ) ) {
-				$submenu_arguments['heading_suffix'] = $_REQUEST['heading_suffix'];
-			}
-
-			if ( isset( $_REQUEST['parent'] ) ) {
-				$submenu_arguments['parent'] = $_REQUEST['parent'];
-			}
-
-			if ( isset( $_REQUEST['author'] ) ) {
-				$submenu_arguments['author'] = $_REQUEST['author'];
-			}
-
-			if ( isset( $_REQUEST['mla-tax'] ) ) {
-				$submenu_arguments['mla-tax'] = $_REQUEST['mla-tax'];
-			}
-
-			if ( isset( $_REQUEST['mla-term'] ) ) {
-				$submenu_arguments['mla-term'] = $_REQUEST['mla-term'];
-			}
-
-			if ( isset( $_REQUEST['mla-metakey'] ) ) {
-				$submenu_arguments['mla-metakey'] = $_REQUEST['mla-metakey'];
-			}
-
-			if ( isset( $_REQUEST['mla-metavalue'] ) ) {
-				$submenu_arguments['mla-metavalue'] = $_REQUEST['mla-metavalue'];
-			}
-		}
-
-		return $submenu_arguments;
-	}
-
-	/**
 	 * Display the pagination, adding view, search and filter arguments
 	 *
 	 * @since 1.42
@@ -1422,7 +1417,7 @@ class MLA_List_Table extends WP_List_Table {
 	 * @return	array	Column information: 'slugs'=>'Visible Titles'
 	 */
 	function get_columns( ) {
-		return $columns = MLA_List_Table::mla_manage_columns_filter();
+		return apply_filters( "mla_list_table_get_columns", self::mla_manage_columns_filter() );
 	}
 
 	/**
@@ -1437,39 +1432,29 @@ class MLA_List_Table extends WP_List_Table {
 		$columns = get_user_option( 'managemedia_page_' . MLA::ADMIN_PAGE_SLUG . 'columnshidden' );
 
 		if ( is_array( $columns ) ) {
-			return $columns;
+			foreach ( $columns as $index => $value ){
+				if ( empty( $value ) ) {
+					unset( $columns[ $index ] );
+				}
+			}
+		} else {
+			$columns = self::$default_hidden_columns;
 		}
-
-		return self::_default_hidden_columns();
+		
+		return apply_filters( "mla_list_table_get_hidden_columns", $columns );
 	}
 
 	/**
 	 * Returns an array where the  key is the column that needs to be sortable
-	 * and the value is db column to sort by. Also notes the current sort column,
-	 * if set.
+	 * and the value is db column (or other criteria) to sort by.
 	 *
 	 * @since 0.1
 	 * 
 	 * @return	array	Sortable column information,e.g.,
-	 * 					'slugs'=>array('data_values',boolean)
+	 * 					'slug' => array('data_value', (boolean) initial_descending )
 	 */
 	function get_sortable_columns( ) {
-		$columns = MLA_List_Table::$default_sortable_columns;
-
-		if ( isset( $_REQUEST['orderby'] ) ) {
-			$needle = array(
-				 $_REQUEST['orderby'],
-				false 
-			);
-			$key = array_search( $needle, $columns );
-			if ( $key ) {
-				$columns[ $key ][ 1 ] = true;
-			}
-		} else {
-			$columns['title_name'][ 1 ] = true;
-		}
-
-		return $columns;
+		return apply_filters( "mla_list_table_get_sortable_columns", self::$default_sortable_columns );
 	}
 
 	/**
@@ -1516,7 +1501,7 @@ class MLA_List_Table extends WP_List_Table {
 
 			$posts_per_type = (array) wp_count_attachments();
 			$post_mime_types = get_post_mime_types();
-			$avail_post_mime_types = $this->_avail_mime_types( $posts_per_type );
+			$avail_post_mime_types = self::_avail_mime_types( $posts_per_type );
 			$matches = wp_match_mime_types( array_keys( $post_mime_types ), array_keys( $posts_per_type ) );
 
 			foreach ( $matches as $type => $reals ) {
@@ -1750,41 +1735,49 @@ class MLA_List_Table extends WP_List_Table {
 	 * @return	void
 	 */
 	function prepare_items( ) {
-		$this->_column_headers = array(
-			$this->get_columns(),
-			$this->get_hidden_columns(),
-			$this->get_sortable_columns() 
-		);
+		// Initialize $this->_column_headers
+		$this->get_column_info();
 
 		/*
-		 * REQUIRED for pagination.
+		 * Calculate and filter pagination arguments.
 		 */
 		$user = get_current_user_id();
-		$screen = get_current_screen();
-		$option = $screen->get_option( 'per_page', 'option' );
+		$option = $this->screen->get_option( 'per_page', 'option' );
 		$per_page = get_user_meta( $user, $option, true );
 		if ( empty( $per_page ) || $per_page < 1 ) {
-			$per_page = $screen->get_option( 'per_page', 'default' );
+			$per_page = $this->screen->get_option( 'per_page', 'default' );
 		}
 
-//		$current_page = $this->get_pagenum();
 		$current_page = isset( $_REQUEST['paged'] ) ? absint( $_REQUEST['paged'] ) : 1;
 
-		/*
-		 * REQUIRED. Assign sorted and paginated data to the items property, where 
-		 * it can be used by the rest of the class.
-		 */
-		$total_items = MLAData::mla_count_list_table_items( $_REQUEST, ( ( $current_page - 1 ) * $per_page ), $per_page );
-		$this->items = MLAData::mla_query_list_table_items( $_REQUEST, ( ( $current_page - 1 ) * $per_page ), $per_page );
+		$pagination = apply_filters_ref_array( 'mla_list_table_prepare_items_pagination', array( compact( array( 'per_page', 'current_page' ) ), &$this ) );
+		$per_page = isset( $pagination[ 'per_page' ] ) ? $pagination[ 'per_page' ] : $per_page;
+		$current_page = isset( $pagination[ 'current_page' ] ) ? $pagination[ 'current_page' ] : $current_page;
 
 		/*
-		 * REQUIRED. We also have to register our pagination options & calculations.
+		 * Assign sorted and paginated data to the items property, where 
+		 * it can be used by the rest of the class.
+		 */
+		$total_items = apply_filters_ref_array( 'mla_list_table_prepare_items_total_items', array( NULL, &$this ) );
+		if ( is_null( $total_items ) ) {
+			$total_items = MLAData::mla_count_list_table_items( $_REQUEST, ( ( $current_page - 1 ) * $per_page ), $per_page );
+		}
+		
+		$this->items = apply_filters_ref_array( 'mla_list_table_prepare_items_the_items', array( NULL, &$this ) );
+		if ( is_null( $this->items ) ) {
+			$this->items = MLAData::mla_query_list_table_items( $_REQUEST, ( ( $current_page - 1 ) * $per_page ), $per_page );
+		}
+
+		/*
+		 * Register the pagination options & calculations.
 		 */
 		$this->set_pagination_args( array(
 			'total_items' => $total_items, //WE have to calculate the total number of items
 			'per_page' => $per_page, //WE have to determine how many items to show on a page
 			'total_pages' => ceil( $total_items / $per_page ) //WE have to calculate the total number of pages
 		) );
+
+		do_action_ref_array( 'mla_list_table_prepare_items', array( &$this ) );
 	}
 
 	/**

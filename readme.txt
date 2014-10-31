@@ -154,12 +154,13 @@ All of the MLA source code has been annotated with "DocBlocks", a special type o
 
 = 1.95 =
 
+* New: Twenty four (24) **filters for the Media/Assistant submenu table** support customization of the table display and supporting features like table views, Quick Edit, Bulk Edit and rollover actions.
 * New: For the `[mla_gallery]` shortcode, the **powerful "date_query" parameter** introduced in WordPress Version 3.7 is now supported.
 * New: On the Media/Assistant submenu table a **"Download" rollover action** has been added to enable easy, one-click down of Media Library items.
+* New: On the Media/Assistant submenu table  **`template:[+empty+]`** has been added to the Bulk Edit area processing and IPTC/EXIF Standard Field mapping to support deleting the content of the Title, Caption, Description and ALT Text fields.
 * New: An **"attr" format option** has been added for `[mla_gallery]` substitution parameters that must be encoded for use in an HTML attribute context, e.g., in the `title=` attribute of a hyperlink (`a`) or `img` tag.
 * New: The "MLA Tax Query Example" plugin in `/examples/mla-tax-query-example.php.txt` has been enhanced to handle `orderby`, `order` and `post_mime_type` parameters.
 * New: Examples for custom field mapping/use and IPTC/EXIF mapping/use have been added to the Settings/Media Library Assistant Documentation tab.
-* New: Filters have been added to the Media/Assistant submenu table to support adding custom rollover actions to each item.
 * Fix: Improved coverage of `[mla_gallery]` pagination parameters (and some others) has been added to the Settings/Media Library Assistant Documentation tab.
 * Fix: The Title field is now properly encoded when used as the default `title` attribute in `[mla_gallery]` item links.
 * Fix: The `title` attribute no longer appears twice in `[mla_gallery]` item links when the `mla_viewer=true` parameter is specified.

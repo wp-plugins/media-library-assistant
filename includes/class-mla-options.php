@@ -2081,7 +2081,8 @@ class MLAOptions {
 					break;
 				case 'default_sortable_columns':
 					if ( $value['mla_column'] ) {
-						$results[ $slug ] = array( $slug, false );
+						// columns without NULL values should sort descending
+						$results[ $slug ] = array( $slug, $value['no_null'] );
 					}
 					break;
 				case 'quick_edit':
@@ -3551,7 +3552,9 @@ class MLAOptions {
 
 				$iptc_value = apply_filters( 'mla_mapping_iptc_value', $iptc_value, $setting_key, $post->ID, 'iptc_exif_standard_mapping', $attachment_metadata );
 
-				if ( 'template:' == substr( $setting_value['exif_value'], 0, 9 ) ) {
+				if ( 'template:[+empty+]' == $setting_value['exif_value'] ) {
+					$exif_value =  NULL;
+				} elseif ( 'template:' == substr( $setting_value['exif_value'], 0, 9 ) ) {
 					$data_value = array(
 						'name' => $setting_key,
 						'data_source' => 'template',
@@ -3576,7 +3579,7 @@ class MLAOptions {
 						$new_text = $exif_value;
 					}
 				} else {
-					if ( ! empty( $exif_value ) ) {
+					if ( ( ! empty( $exif_value ) ) || is_null( $exif_value ) ) {
 						$new_text = $exif_value;
 					} else {
 						$new_text = $iptc_value;
@@ -3587,6 +3590,19 @@ class MLAOptions {
 					$new_text = implode( ',', $new_text );
 				}
 
+				// Handle 'template:[+empty+]'
+				if ( is_null( $new_text ) ) {
+					$updates[ $setting_key ] = '';
+					continue;
+				}
+				
+				/*
+				 * See /wp-includes/formatting.php, function convert_chars()
+				 *
+				 * Metadata tags <<title>> and <<category>> are removed, <<br>> and <<hr>> are
+				 * converted into correct XHTML and Unicode characters are converted to the
+				 * valid range.
+				 */
 				$new_text = trim( convert_chars( $new_text ) );
 				if ( !empty( $new_text ) ) {
 					switch ( $setting_key ) {

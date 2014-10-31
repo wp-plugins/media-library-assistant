@@ -154,7 +154,7 @@ textarea[readonly] {
 .bulk-edit-row-attachment fieldset.inline-edit-col-right input#bulk-edit-set-parent {
 	display:inline;
 	line-height: 16px;
-	margin: .2em .4em;
+	margin: .2em .4em .2em 0em;
 }
 
 .quick-edit-row-attachment fieldset.inline-edit-col-left label.inline-edit-post-parent-title .input-text-wrap input[type=text] {
