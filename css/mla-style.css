@@ -170,7 +170,7 @@ textarea[readonly] {
 	width: 3em
 }
 
-.quick-edit-row-attachment fieldset.inline-edit-col-right label span.title,
+.quick-edit-row-attachment fieldset.inline-edit-col-right label.inline-edit-tags span.title,
 .bulk-edit-row-attachment fieldset.inline-edit-col-right label.inline-edit-tags span.title {
 	width: 99%
 }

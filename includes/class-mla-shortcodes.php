@@ -43,7 +43,7 @@ class MLAShortcodes {
 	}
 
 	public static function mla_get_date_sql_filter( $where, $date_query ) {
-error_log( ' $where = ' . var_export( $where, true ), 0 );
+//error_log( ' $where = ' . var_export( $where, true ), 0 );
 
 		return $where;
 	} // */

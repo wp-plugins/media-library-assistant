@@ -154,7 +154,7 @@ All of the MLA source code has been annotated with "DocBlocks", a special type o
 
 = 1.95 =
 
-* New: Twenty four (24) **filters for the Media/Assistant submenu table** support customization of the table display and supporting features like table views, Quick Edit, Bulk Edit and rollover actions.
+* New: Twenty six (26) **filters for the Media/Assistant submenu table** support customization of the table display and supporting features like table views, Quick Edit, Bulk Edit and rollover actions.
 * New: For the `[mla_gallery]` shortcode, the **powerful "date_query" parameter** introduced in WordPress Version 3.7 is now supported.
 * New: On the Media/Assistant submenu table a **"Download" rollover action** has been added to enable easy, one-click down of Media Library items.
 * New: On the Media/Assistant submenu table  **`template:[+empty+]`** has been added to the Bulk Edit area processing and IPTC/EXIF Standard Field mapping to support deleting the content of the Title, Caption, Description and ALT Text fields.

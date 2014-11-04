@@ -347,6 +347,8 @@ class MLA {
 				$fields[] = $slug;
 			}
 
+			$fields = apply_filters( 'mla_list_table_inline_fields', $fields );
+
 			$script_variables = array(
 				'fields' => $fields,
 				'ajaxFailError' => __( 'An ajax.fail error has occurred. Please reload the page and try again.', 'media-library-assistant' ),
@@ -853,7 +855,7 @@ class MLA {
 						$custom_message = '';
 					} else {
 						$prevent_default = isset( $item_content['prevent_default'] ) ? $item_content['prevent_default'] : false;
-						$custom_message = isset( $item_content['message'] ) ? $page_content['message'] : '';
+						$custom_message = isset( $item_content['message'] ) ? $item_content['message'] : '';
 					}
 		
 					if ( ! $prevent_default ) {
@@ -981,6 +983,15 @@ class MLA {
 						} // switch $bulk_action
 					} // ! $prevent_default
 					
+					if ( ! empty( $custom_message ) ) {
+						$no_changes = sprintf( __( 'Item %1$d, no changes detected.', 'media-library-assistant' ), $post_id );
+						if ( $no_changes == $item_content['message'] ) {
+							$item_content['message'] = $custom_message;
+						} else {
+							$item_content['message'] = $custom_message . '<br>' . $item_content['message'];
+						}
+					}
+
 					if ( ! empty( $item_content['message'] ) ) {
 						$page_content['message'] .= $item_content['message'] . '<br>';
 					}
@@ -1427,7 +1438,7 @@ class MLA {
 	}
 
 	/**
-	 * Ajax handler for inline editing (quick and bulk edit)
+	 * Ajax handler for inline editing (quick edit only)
 	 *
 	 * Adapted from wp_ajax_inline_save in /wp-admin/includes/ajax-actions.php
 	 *
@@ -1513,9 +1524,26 @@ class MLA {
 		} else { // ! empty( $_REQUEST['tax_input'] )
 			$tax_output = NULL;
 		}
+//error_log( "mla_inline_edit_ajax_action ({$post_id}) \$_REQUEST = " . var_export( $_REQUEST, true ), 0 );
+//error_log( "mla_inline_edit_ajax_action ({$post_id}) \$tax_output = " . var_export( $tax_output, true ), 0 );
 
-		$results = MLAData::mla_update_single_item( $post_id, $_REQUEST, $tax_output );
+		$item_content = apply_filters( 'mla_list_table_inline_action', NULL, $post_id );
+		if ( is_null( $item_content ) ) {
+			$prevent_default = false;
+			$custom_message = '';
+		} else {
+			$prevent_default = isset( $item_content['prevent_default'] ) ? $item_content['prevent_default'] : false;
+			$custom_message = isset( $item_content['message'] ) ? $page_content['message'] : '';
+		}
+
+//error_log( "mla_inline_edit_ajax_action ({$post_id}) \$item_content = " . var_export( $item_content, true ), 0 );
+//error_log( "mla_inline_edit_ajax_action ({$post_id}) \$prevent_default = " . var_export( $prevent_default, true ), 0 );
+		if ( ! $prevent_default ) {
+			$results = MLAData::mla_update_single_item( $post_id, $_REQUEST, $tax_output );
+		}
+	
 		$new_item = (object) MLAData::mla_get_attachment_by_id( $post_id );
+//error_log( "mla_inline_edit_ajax_action ({$post_id}) \$new_item = " . var_export( $new_item, true ), 0 );
 
 		//	Create an instance of our package class and echo the new HTML
 		$MLAListTable = new MLA_List_Table();

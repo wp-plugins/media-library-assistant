@@ -5156,10 +5156,10 @@ class MLAData {
 	 * @return	boolean	true, to bypass PHP error handler
 	 */
 	public static function mla_IPTC_EXIF_error_handler( $type, $string, $file, $line ) {
-//error_log( 'mla_IPTC_EXIF_error_handler $type = ' . var_export( $type, true ), 0 );
-//error_log( 'mla_IPTC_EXIF_error_handler $string = ' . var_export( $string, true ), 0 );
-//error_log( 'mla_IPTC_EXIF_error_handler $file = ' . var_export( $file, true ), 0 );
-//error_log( 'mla_IPTC_EXIF_error_handler $line = ' . var_export( $line, true ), 0 );
+//error_log( 'DEBUG: mla_IPTC_EXIF_error_handler $type = ' . var_export( $type, true ), 0 );
+//error_log( 'DEBUG: mla_IPTC_EXIF_error_handler $string = ' . var_export( $string, true ), 0 );
+//error_log( 'DEBUG: mla_IPTC_EXIF_error_handler $file = ' . var_export( $file, true ), 0 );
+//error_log( 'DEBUG: mla_IPTC_EXIF_error_handler $line = ' . var_export( $line, true ), 0 );
 
 		switch ( $type ) {
 			case E_ERROR:

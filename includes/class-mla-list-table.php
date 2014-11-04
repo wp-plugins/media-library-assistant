@@ -442,7 +442,7 @@ class MLA_List_Table extends WP_List_Table {
 	 * @return	array	list of table columns
 	 */
 	public static function mla_manage_columns_filter( ) {
-		return self::$default_columns;
+		return apply_filters( 'mla_list_table_get_columns', self::$default_columns );
 	}
 
 	/**
@@ -460,7 +460,7 @@ class MLA_List_Table extends WP_List_Table {
 	 */
 	public static function mla_views_media_page_mla_menu_filter( $views ) {
 		// hooked by WPML Media in wpml-media.class.php
-		$views = apply_filters( "views_upload", $views );
+		$views = apply_filters( 'views_upload', $views );
 		return $views;
 	}
 
@@ -671,7 +671,7 @@ class MLA_List_Table extends WP_List_Table {
 			}
 		} else { // 'c_'
 		
-			$content = apply_filters( "mla_list_table_column_default", NULL, $item, $column_name );
+			$content = apply_filters( 'mla_list_table_column_default', NULL, $item, $column_name );
 			if ( is_null( $content ) ) {
 				//Show the whole array for troubleshooting purposes
 				/* translators: 1: column_name 2: column_values */
@@ -815,7 +815,7 @@ class MLA_List_Table extends WP_List_Table {
 
 			$actions['view']  = '<a href="' . site_url( ) . '?attachment_id=' . $item->ID . '" rel="permalink" title="' . __( 'View', 'media-library-assistant' ) . ' &#8220;' . esc_attr( $item->post_title ) . '&#8221;">' . __( 'View', 'media-library-assistant' ) . '</a>';
 
-			$actions = apply_filters( "mla_list_table_build_rollover_actions", $actions, $item, $column );
+			$actions = apply_filters( 'mla_list_table_build_rollover_actions', $actions, $item, $column );
 		
 			$this->rollover_id = $item->ID;
 		} // $this->rollover_id != $item->ID
@@ -903,7 +903,7 @@ class MLA_List_Table extends WP_List_Table {
 			}
 		}
 
-		$inline_data = apply_filters( "mla_list_table_build_inline_data", $inline_data, $item );
+		$inline_data = apply_filters( 'mla_list_table_build_inline_data', $inline_data, $item );
 		
 		$inline_data .= "</div>\r\n";
 
@@ -1417,7 +1417,7 @@ class MLA_List_Table extends WP_List_Table {
 	 * @return	array	Column information: 'slugs'=>'Visible Titles'
 	 */
 	function get_columns( ) {
-		return apply_filters( "mla_list_table_get_columns", self::mla_manage_columns_filter() );
+		return self::mla_manage_columns_filter();
 	}
 
 	/**
@@ -1441,7 +1441,7 @@ class MLA_List_Table extends WP_List_Table {
 			$columns = self::$default_hidden_columns;
 		}
 		
-		return apply_filters( "mla_list_table_get_hidden_columns", $columns );
+		return apply_filters( 'mla_list_table_get_hidden_columns', $columns );
 	}
 
 	/**
@@ -1454,7 +1454,7 @@ class MLA_List_Table extends WP_List_Table {
 	 * 					'slug' => array('data_value', (boolean) initial_descending )
 	 */
 	function get_sortable_columns( ) {
-		return apply_filters( "mla_list_table_get_sortable_columns", self::$default_sortable_columns );
+		return apply_filters( 'mla_list_table_get_sortable_columns', self::$default_sortable_columns );
 	}
 
 	/**

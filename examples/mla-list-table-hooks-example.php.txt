@@ -74,6 +74,7 @@ class MLAListTableHooksExample {
 		 /*
 		  * Defined in /media-library-assistant/includes/class-mla-main.php
 		  */
+		add_filter( 'mla_list_table_inline_action', 'MLAPolylangSupport::mla_list_table_inline_action', 10, 2 );
 		add_filter( 'mla_list_table_bulk_action', 'MLAListTableHooksExample::mla_list_table_bulk_action', 10, 3 );
 		add_filter( 'mla_list_table_custom_bulk_action', 'MLAListTableHooksExample::mla_list_table_custom_bulk_action', 10, 3 );
 		add_filter( 'mla_list_table_single_action', 'MLAListTableHooksExample::mla_list_table_single_action', 10, 3 );
@@ -97,6 +98,7 @@ class MLAListTableHooksExample {
 		add_action( 'mla_list_table_prepare_items', 'MLAListTableHooksExample::mla_list_table_prepare_items', 10, 1 );
 		
 		add_filter( 'mla_list_table_build_rollover_actions', 'MLAListTableHooksExample::mla_list_table_build_rollover_actions', 10, 3 );
+		add_filter( 'mla_list_table_inline_fields', 'MLAPolylangSupport::mla_list_table_inline_fields', 10, 1 );
 		add_filter( 'mla_list_table_build_inline_data', 'MLAListTableHooksExample::mla_list_table_build_inline_data', 10, 2 );
 
 		// 'views_upload' is only applied when WPML is active
@@ -191,6 +193,28 @@ class MLAListTableHooksExample {
 		//error_log( 'MLAListTableHooksExample::manage_media_page_mla_menu_sortable_columns $sortable_columns = ' . var_export( $sortable_columns, true ), 0 );
 		return $sortable_columns;
 	} // manage_media_page_mla_menu_sortable_columns
+
+	/**
+	 * Process an MLA_List_Table inline action, i.e., Quick Edit 
+	 *
+	 * This filter gives you an opportunity to pre-process an MLA_List_Table "Quick Edit"
+	 * action before the MLA handler.
+	 *
+	 * @since 1.00
+	 *
+	 * @param	array	$item_content	NULL, to indicate no handler.
+	 * @param	integer	$post_id		the affected attachment.
+	 *
+	 * @return	object	updated $item_content. NULL if no handler, otherwise
+	 *					( 'message' => error or status message(s), 'body' => '',
+	 *					  'prevent_default' => true to bypass the MLA handler )
+	 */
+	public static function mla_list_table_inline_action( $item_content, $post_id ) {
+		//error_log( 'MLAPolylangSupport::mla_list_table_inline_action $item_content = ' . var_export( $item_content, true ), 0 );
+		//error_log( 'MLAPolylangSupport::mla_list_table_inline_action $post_id = ' . var_export( $post_id, true ), 0 );
+		
+		return $item_content;
+	} // mla_list_table_inline_action
 
 	/**
 	 * Process an MLA_List_Table bulk action
@@ -502,8 +526,8 @@ class MLAListTableHooksExample {
 	 * @return	void	actions do not return anything.
 	 */
 	public static function mla_list_table_prepare_items( $mla_list_table ) {
-		error_log( 'MLAListTableHooksExample::mla_list_table_prepare_items $mla_list_table->get_pagenum() = ' . var_export( $mla_list_table->get_pagenum(), true ), 0 );
-		return $items;
+		//error_log( 'MLAListTableHooksExample::mla_list_table_prepare_items $mla_list_table->get_pagenum() = ' . var_export( $mla_list_table->get_pagenum(), true ), 0 );
+		return $mla_list_table;
 	} // mla_list_table_prepare_items
 	
 	/**
@@ -525,6 +549,24 @@ class MLAListTableHooksExample {
 		//error_log( "MLAListTableHooksExample::mla_list_table_build_rollover_actions ({$column}) \$item = " . var_export( $item, true ), 0 );
 		return $actions;
 	} // mla_list_table_build_rollover_actions_filter
+
+	/**
+	 * Define the fields for inline (Quick) editing
+	 *
+	 * This filter gives you an opportunity to name the fields passed to the
+	 * JavaScript functions for Quick editing.
+	 *
+	 * @since 1.00
+	 *
+	 * @param	array	$fields	The field names for inline data.
+	 *
+	 * @return	string	updated fields for inline data.
+	 */
+	public static function mla_list_table_inline_fields( $fields ) {
+		//error_log( 'MLAPolylangSupport::mla_list_table_inline_fields $fields = ' . var_export( $fields, true ), 0 );
+		
+		return $fields;
+	} // mla_list_table_inline_fields
 
 	/**
 	 * Filter the data for inline (Quick and Bulk) editing
