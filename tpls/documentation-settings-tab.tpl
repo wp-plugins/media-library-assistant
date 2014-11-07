@@ -465,7 +465,13 @@ For example, <code>[mla_gallery tag="artisan"]</code> will display all images ha
 </p>
 <h4>Author, Author Name</h4>
 <p>
-You can query by author's id or the "user_nicename" value (not the "display_name" value). Multiple author ID values are allowed, but only one author name value can be entered.
+You can query by author's id or &quot;Username&quot;, the value used to log in to the site. In the database this is the "user_nicename" column (not the "display_name" column). For example, if you log in as &quot;john&quot; and your id is 2 you can code:
+</p>
+<ul class="mla_settings">
+<li><code>[mla_gallery author=2]</code></li>
+<li><code>[mla_gallery author_name='john']</code></li>
+</ul>
+<p>Multiple author ID values are allowed, but only one author name value can be entered.
 <a name="category_parameters"></a>
 </p>
 <h4>Category Parameters</h4>

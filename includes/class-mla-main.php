@@ -1603,7 +1603,7 @@ class MLA {
 	 */
 	public static function mla_set_parent_form( $return_form = true ) {
 		$set_parent_template = MLAData::mla_load_template( 'admin-set-parent-form.tpl' );
-		if ( ! array( $set_parent_template ) ) {
+		if ( ! is_array( $set_parent_template ) ) {
 			/* translators: 1: function name 2: non-array value */
 			error_log( sprintf( _x( 'ERROR: %1$s non-array "%2$s"', 'error_log', 'media-library-assistant' ), 'MLA::_build_inline_edit_form', var_export( $set_parent_template, true ) ), 0 );
 			return '';
@@ -1678,7 +1678,7 @@ class MLA {
 		}
 
 		$page_template_array = MLAData::mla_load_template( 'admin-inline-edit-form.tpl' );
-		if ( ! array( $page_template_array ) ) {
+		if ( ! is_array( $page_template_array ) ) {
 			/* translators: 1: function name 2: non-array value */
 			error_log( sprintf( _x( 'ERROR: %1$s non-array "%2$s"', 'error_log', 'media-library-assistant' ), 'MLA::_build_inline_edit_form', var_export( $page_template_array, true ) ), 0 );
 			return '';

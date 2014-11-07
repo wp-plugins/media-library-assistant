@@ -1187,7 +1187,7 @@ class MLASettings {
 	 */
 	private static function _compose_view_tab( ) {
 		$page_template_array = MLAData::mla_load_template( 'admin-display-settings-view-tab.tpl' );
-		if ( ! array( $page_template_array ) ) {
+		if ( ! is_array( $page_template_array ) ) {
 			/* translators: 1: function name 2: non-array value */
 			error_log( sprintf( _x( 'ERROR: %1$s non-array "%2$s"', 'error_log', 'media-library-assistant' ), 'MLASettings::_compose_view_tab', var_export( $page_template_array, true ) ), 0 );
 			return '';
@@ -1634,7 +1634,7 @@ class MLASettings {
 	 */
 	private static function _compose_upload_tab( ) {
 		$page_template_array = MLAData::mla_load_template( 'admin-display-settings-upload-tab.tpl' );
-		if ( ! array( $page_template_array ) ) {
+		if ( ! is_array( $page_template_array ) ) {
 			/* translators: 1: function name 2: non-array value */
 			error_log( sprintf( _x( 'ERROR: %1$s non-array "%2$s"', 'error_log', 'media-library-assistant' ), 'MLASettings::_compose_upload_tab', var_export( $page_template_array, true ) ), 0 );
 			return '';

@@ -1680,7 +1680,7 @@ class MLA_List_Table extends WP_List_Table {
 			}
 		}
 
-		return $actions;
+		return apply_filters( 'mla_list_table_get_bulk_actions', $actions );
 	}
 
 	/**
