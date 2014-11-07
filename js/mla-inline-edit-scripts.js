@@ -218,7 +218,7 @@ var jQuery,
 			if ( typeof(id) == 'object' )
 				id = this.getId(id);
 
-			$('table.widefat .inline-edit-save .waiting').show();
+			$('table.widefat .inline-edit-save .spinner').show();
 
 			params = {
 				action: mla.settings.ajax_action,
@@ -235,7 +235,7 @@ var jQuery,
 			// make ajax request
 			$.post( ajaxurl, params,
 				function( response ) {
-					$( 'table.widefat .inline-edit-save .waiting' ).hide();
+					$( 'table.widefat .inline-edit-save .spinner' ).hide();
 
 					if ( response ) {
 						if ( -1 != response.indexOf( '<tr' ) ) {
@@ -376,7 +376,7 @@ var jQuery,
 			var id = $('table.widefat tr.inline-editor').attr('id');
 
 			if ( id ) {
-				$('table.widefat .inline-edit-save .waiting').hide();
+				$('table.widefat .inline-edit-save .spinner').hide();
 
 				if ( 'bulk-edit' == id ) {
 					$('table.widefat #bulk-edit').removeClass('inline-editor').hide();

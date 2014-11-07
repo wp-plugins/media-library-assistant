@@ -81,6 +81,7 @@
           <p class="submit inline-edit-save">
 		  	<a accesskey="c" href="#inline-edit" title="[+Cancel+]" class="button-secondary cancel alignleft">[+Cancel+]</a>
 		  	<a accesskey="s" href="#inline-edit" title="[+Update+]" class="button-primary save alignright">[+Update+]</a>
+			<span class="spinner"></span>
             <input type="hidden" name="page" value="mla-menu" />
             <input type="hidden" name="screen" value="media_page_mla-menu" />
 			<br class="clear" />

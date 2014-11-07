@@ -2454,6 +2454,9 @@ Conditional, choice and template elements can be nested as needed. For example, 
 <p>
 This template has a String, "Terms: " and a Conditional, "(([+terms: ... none)". This Conditional separates the "Terms: " literal from the first alternative in the Choice. Within the Conditional is a Choice having four alternatives. The first alternative is a Conditional, which will be empty unless both categories and tags are present.  The second and third alternatives handle the cases where one of the two taxonomies has terms, and the final alternative is used when neither categories nor tags are present.
 </p>
+<p>
+In the Media/Assistant submenu table  Bulk Edit area and the IPTC/EXIF Standard Field mapping fields you can use the special <code>template:[+empty+]</code> value to support deleting the content of the Title, Caption, Description and ALT Text fields.
+</p>
 <h4>Special characters inside templates</h4>
 <p>
 The conditional and choice elements require delimiters, "(", ")" and "|". If you want to put any of these three characters in your template, preface them with two backslash characters, e.g., "\\(". If you need a backslash in your template, code it as four backslash characters, i.e., "\\\\". The doubling of backslash characters is required because of the way WordPress processes shortcode parameters.
@@ -3658,7 +3661,10 @@ You can use a template to compose a value from multiple data sources, e.g., "<co
 You can use a template to compose a value from alternative data sources, depending on which fields are populated for a given attachment. For example, "<code>[+iptc:2#020+]|[+iptc:2#025+]|none</code>" will use the IPTC supplemental-category field, if populated, then the IPTC keywords field, if populated, or the literal "none" if neither IPTC field contains a value.
 </p>
 <p>
-Using a template in the "Standard field mapping" or "Custom field mapping" tables will yield a text result. For example, multiple IPTC keywords would be converted into a comma-delimited list as a string. In the "Taxonomy term mapping" table the template will deliver an array result if the fields inside the template have multiple values. For example, you can code "<code>([+iptc:2#020+])([+iptc:2#025+])</code>" to store each of the IPTC supplemental-category <em><strong>and</strong></em> keywords values (there is no "|" in the template) as a separate taxonomy term. Note that each of the fields is enclosed in parentheses, so the field is suppressed if it contains no values.
+Using a template in the "Standard field mapping" or "Custom field mapping" tables will yield a text result. For example, multiple IPTC keywords would be converted into a comma-delimited list as a string. In the "Taxonomy term mapping" table the template will deliver an array result if the fields inside the template have multiple values. For example, you can code "<code>template:([+iptc:2#020+])([+iptc:2#025+])</code>" to store each of the IPTC supplemental-category <em><strong>and</strong></em> keywords values (there is no "|" in the template) as a separate taxonomy term. Note that each of the fields is enclosed in parentheses, so the field is suppressed if it contains no values.
+</p>
+<p>
+In the "Standard field mapping" table a special <code>template:[+empty+]</code> value supports deleting the content of the Title, Caption, Description and ALT Text fields. This value is also available in the Media/Assistant submenu table Bulk Edit area.
 </p>
 <p>
 Note that the <strong>,array</strong> formatting option is <strong>not</strong> required to get an array result for the field in a Taxonomy term mapping template; it is assumed. If you want a <strong>text</strong>, <strong>single</strong> or <strong>export</strong> result you can add one of those formatting options to your field specification.

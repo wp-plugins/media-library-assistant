@@ -46,6 +46,7 @@
 <p>When using Bulk Edit, you can change the metadata (author, parent, taxonomy terms) for all selected attachments at once. To remove an attachment from the grouping, just click the x next to its name in the left column of the Bulk Edit area.</p>
 <p>Bulk Edit support for taxonomy terms allows you to <strong>add, remove or completely replace</strong> terms for the selected attachments. Below each taxonomy edit box are three radio buttons that let you select the action you&#8217;d like to perform.</p>
 <p>The taxonomies that appear in the Bulk Edit area can be a subset of the taxonomies supported on the single item edit screen. You can select which taxonomies appear by entering your choice(s) in the Settings/Media Library Assistant General tab.</p>
+<p>You can update the Title, Caption, Description and ALT Text values for all of the selected attachments. You can use a <a href="[+settingsURL+]?page=mla-settings-menu-documentation&mla_tab=documentation#mla_template_parameters" target="_blank">Content Template</a> to customize the values based on attachment-specific data sources. You can also delete the content of a field by entering the special <code>template:[+empty+]</code> value.</p>
 <!-- template="mla-available-actions" -->
 <!-- title="Available Actions" order="9" -->
 <p>Hovering over a row reveals action links such as Edit, Quick Edit, Move to Trash and Delete Permanently. Clicking Edit displays a simple screen to edit that individual file&#8217;s metadata. Clicking Move to Trash will assign the file to the Trash pile but will not affect pages or posts to which it is attached. Clicking Delete Permanently will delete the file from the media library (as well as from any posts to which it is currently attached). Clicking Quick Edit displays an inline form to edit the file's metadata without leaving the menu screen.</p>
@@ -58,5 +59,6 @@
 <p><strong>For more information:</strong></p>
 <p><a href="[+settingsURL+]?page=mla-settings-menu-documentation&mla_tab=documentation#terms_search" target="_blank">MLA Documentation for Terms Search</a></p>
 <p><a href="[+settingsURL+]?page=mla-settings-menu-documentation&mla_tab=documentation#select_parent" target="_blank">MLA Documentation for the Select Parent popup window</a></p>
+<p><a href="[+settingsURL+]?page=mla-settings-menu-documentation&mla_tab=documentation#mla_template_parameters" target="_blank">MLA Documentation for Content Templates</a></p>
 <p><a href="http://codex.wordpress.org/Media_Library_Screen" target="_blank">Codex documentation on Media Library</a></p>
 <p><a href="http://wordpress.org/support/plugin/media-library-assistant" target="_blank">MLA Support Forum</a></p>

@@ -74,7 +74,8 @@ class MLAListTableHooksExample {
 		 /*
 		  * Defined in /media-library-assistant/includes/class-mla-main.php
 		  */
-		add_filter( 'mla_list_table_inline_action', 'MLAPolylangSupport::mla_list_table_inline_action', 10, 2 );
+		add_filter( 'mla_list_table_inline_fields', 'MLAListTableHooksExample::mla_list_table_inline_fields', 10, 1 );
+		add_filter( 'mla_list_table_inline_action', 'MLAListTableHooksExample::mla_list_table_inline_action', 10, 2 );
 		add_filter( 'mla_list_table_bulk_action', 'MLAListTableHooksExample::mla_list_table_bulk_action', 10, 3 );
 		add_filter( 'mla_list_table_custom_bulk_action', 'MLAListTableHooksExample::mla_list_table_custom_bulk_action', 10, 3 );
 		add_filter( 'mla_list_table_single_action', 'MLAListTableHooksExample::mla_list_table_single_action', 10, 3 );
@@ -90,6 +91,7 @@ class MLAListTableHooksExample {
 		add_filter( 'mla_list_table_get_columns', 'MLAListTableHooksExample::mla_list_table_get_columns', 10, 1 );
 		add_filter( 'mla_list_table_get_hidden_columns', 'MLAListTableHooksExample::mla_list_table_get_hidden_columns', 10, 1 );
 		add_filter( 'mla_list_table_get_sortable_columns', 'MLAListTableHooksExample::mla_list_table_get_sortable_columns', 10, 1 );
+		add_filter( 'mla_list_table_get_bulk_actions', 'MLAListTableHooksExample::mla_list_table_get_bulk_actions', 10, 1 );
 		add_filter( 'mla_list_table_column_default', 'MLAListTableHooksExample::mla_list_table_column_default', 10, 3 );
 		
 		add_filter( 'mla_list_table_prepare_items_pagination', 'MLAListTableHooksExample::mla_list_table_prepare_items_pagination', 10, 2 );
@@ -98,7 +100,6 @@ class MLAListTableHooksExample {
 		add_action( 'mla_list_table_prepare_items', 'MLAListTableHooksExample::mla_list_table_prepare_items', 10, 1 );
 		
 		add_filter( 'mla_list_table_build_rollover_actions', 'MLAListTableHooksExample::mla_list_table_build_rollover_actions', 10, 3 );
-		add_filter( 'mla_list_table_inline_fields', 'MLAPolylangSupport::mla_list_table_inline_fields', 10, 1 );
 		add_filter( 'mla_list_table_build_inline_data', 'MLAListTableHooksExample::mla_list_table_build_inline_data', 10, 2 );
 
 		// 'views_upload' is only applied when WPML is active
@@ -210,9 +211,8 @@ class MLAListTableHooksExample {
 	 *					  'prevent_default' => true to bypass the MLA handler )
 	 */
 	public static function mla_list_table_inline_action( $item_content, $post_id ) {
-		//error_log( 'MLAPolylangSupport::mla_list_table_inline_action $item_content = ' . var_export( $item_content, true ), 0 );
-		//error_log( 'MLAPolylangSupport::mla_list_table_inline_action $post_id = ' . var_export( $post_id, true ), 0 );
-		
+		//error_log( 'MLAListTableHooksExample::mla_list_table_inline_action $item_content = ' . var_export( $item_content, true ), 0 );
+		//error_log( 'MLAListTableHooksExample::mla_list_table_inline_action $post_id = ' . var_export( $post_id, true ), 0 );
 		return $item_content;
 	} // mla_list_table_inline_action
 
@@ -340,7 +340,6 @@ class MLAListTableHooksExample {
 	 */
 	public static function mla_list_table_inline_values( $item_values ) {
 		//error_log( 'MLAListTableHooksExample::mla_list_table_inline_values $item_values = ' . var_export( $item_values, true ), 0 );
-		
 		return $item_values;
 	} // mla_list_table_inline_values
 
@@ -358,7 +357,6 @@ class MLAListTableHooksExample {
 	 */
 	public static function mla_list_table_inline_template( $item_template ) {
 		//error_log( 'MLAListTableHooksExample::mla_list_table_inline_template $item_template = ' . var_export( $item_template, true ), 0 );
-		
 		return $item_template;
 	} // mla_list_table_inline_template
 
@@ -380,7 +378,6 @@ class MLAListTableHooksExample {
 		//error_log( 'MLAListTableHooksExample::mla_list_table_inline_parse $html_markup = ' . var_export( $html_markup, true ), 0 );
 		//error_log( 'MLAListTableHooksExample::mla_list_table_inline_parse $item_template = ' . var_export( $item_template, true ), 0 );
 		//error_log( 'MLAListTableHooksExample::mla_list_table_inline_parse $item_values = ' . var_export( $item_values, true ), 0 );
-		
 		return $html_markup;
 	} // mla_gallery_item_parse_filter
 	
@@ -438,6 +435,24 @@ class MLAListTableHooksExample {
 		//error_log( 'MLAListTableHooksExample::mla_list_table_get_sortable_columns $sortable_columns = ' . var_export( $sortable_columns, true ), 0 );
 		return $sortable_columns;
 	} // mla_list_table_get_sortable_columns_filter
+
+	/**
+	 * Filter the MLA_List_Table bulk actions
+	 *
+	 * This MLA-specific filter gives you an opportunity to filter the list of bulk actions;
+	 * a good alternative to the 'bulk_actions-media_page_mla-menu' filter.
+	 *
+	 * @since 1.01
+	 *
+	 * @param	array	$actions	An array of bulk actions.
+	 *								Format: 'slug' => 'Label'
+	 *
+	 * @return	array	updated array of actions.
+	 */
+	public static function mla_list_table_get_bulk_actions( $actions ) {
+		//error_log( 'MLAListTableHooksExample::mla_list_table_get_bulk_actions $actions = ' . var_export( $actions, true ), 0 );
+		return $actions;
+	} // mla_list_table_get_bulk_actions
 
 	/**
 	 * Supply a column value if no column-specific function has been defined
@@ -563,8 +578,7 @@ class MLAListTableHooksExample {
 	 * @return	string	updated fields for inline data.
 	 */
 	public static function mla_list_table_inline_fields( $fields ) {
-		//error_log( 'MLAPolylangSupport::mla_list_table_inline_fields $fields = ' . var_export( $fields, true ), 0 );
-		
+		//error_log( 'MLAListTableHooksExample::mla_list_table_inline_fields $fields = ' . var_export( $fields, true ), 0 );
 		return $fields;
 	} // mla_list_table_inline_fields
 
