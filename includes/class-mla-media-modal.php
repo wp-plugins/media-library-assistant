@@ -584,29 +584,8 @@ class MLAModal {
 			}
 		}
 
-		/*
-		 * Compose the Search Media box
-		 * /
-		if ( isset( $_REQUEST['query']['mla_search_value'] ) ) {
-			$search_value = esc_attr( stripslashes( trim( $_REQUEST['query']['mla_search_value'] ) ) );
-		} else {
-			$search_value = self::$mla_media_modal_settings['query']['initial']['searchValue'];
-		}
-
-		if ( isset( $_REQUEST['query']['mla_search_fields'] ) ) {
-			$search_fields = $_REQUEST['query']['mla_search_fields'];
-		} else {
-			$search_fields = self::$mla_media_modal_settings['query']['initial']['searchFields'];
-		}
-
-		if ( isset( $_REQUEST['query']['mla_search_connector'] ) ) {
-			$search_connector = $_REQUEST['query']['mla_search_connector'];
-		} else {
-			$search_connector = self::$mla_media_modal_settings['query']['initial']['searchConnector'];
-		} // */
-
 		// Include mla javascript templates
-		require_once MLA_PLUGIN_PATH . '/includes/mla-media-modal-js-template.php';
+		require_once MLA_PLUGIN_PATH . 'includes/mla-media-modal-js-template.php';
 	} // mla_print_media_templates_action
 
 	/**

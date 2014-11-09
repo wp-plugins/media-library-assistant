@@ -1270,7 +1270,7 @@ class MLA {
 			/*
 			 * Include the Search Media box
 			 */
-			require_once MLA_PLUGIN_PATH . '/includes/mla-main-search-box-template.php';
+			require_once MLA_PLUGIN_PATH . 'includes/mla-main-search-box-template.php';
 
 			/*
 			 * We also need to ensure that the form posts back to our current page and remember all the view arguments

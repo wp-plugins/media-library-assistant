@@ -162,9 +162,10 @@ All of the MLA source code has been annotated with "DocBlocks", a special type o
 * New: An **"attr" format option** has been added for `[mla_gallery]` substitution parameters that must be encoded for use in an HTML attribute context, e.g., in the `title=` attribute of a hyperlink (`a`) or `img` tag.
 * New: The "MLA Tax Query Example" plugin in `/examples/mla-tax-query-example.php.txt` has been enhanced to handle `orderby`, `order` and `post_mime_type` parameters.
 * New: Examples for custom field mapping/use and IPTC/EXIF mapping/use have been added to the Settings/Media Library Assistant Documentation tab.
-* Fix: Improved coverage of `[mla_gallery]` pagination parameters (and some others) has been added to the Settings/Media Library Assistant Documentation tab.
+* Fix: Improved coverage of `[mla_gallery]` pagination and author parameters (and some others) has been added to the Settings/Media Library Assistant Documentation tab.
 * Fix: The Title field is now properly encoded when used as the default `title` attribute in `[mla_gallery]` item links.
 * Fix: The `title` attribute no longer appears twice in `[mla_gallery]` item links when the `mla_viewer=true` parameter is specified.
+* Fix: An occasional problem with double slashes (`//`) in template path names has been corrected.
 
 = 1.94 =
 

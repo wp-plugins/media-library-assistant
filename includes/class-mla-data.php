@@ -86,7 +86,7 @@ class MLAData {
 					if ( file_exists( $path ) ) {
 						$source = $path;
 					} else {
-						$source = MLA_PLUGIN_PATH . '/tpls/' . $source;
+						$source = MLA_PLUGIN_PATH . 'tpls/' . $source;
 					}
 				}
 				// fallthru
