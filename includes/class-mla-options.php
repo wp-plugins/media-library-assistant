@@ -3668,7 +3668,7 @@ class MLAOptions {
 						'format' => 'native',
 						'option' => 'array' );
 
-					$exif_value =  trim( self::_evaluate_data_source( $post->ID, 'single_attachment_mapping', $data_value, $attachment_metadata ) );
+					$exif_value =  self::_evaluate_data_source( $post->ID, 'single_attachment_mapping', $data_value, $attachment_metadata );
 				} else {
 					$exif_value = MLAData::mla_exif_metadata_value( $setting_value['exif_value'], $image_metadata );
 				}

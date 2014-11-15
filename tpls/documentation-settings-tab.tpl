@@ -709,7 +709,7 @@ The "mla_debug" parameter controls the display of information about the query pa
 The <code>[mla_gallery]</code> shortcode supports a comprehensive set of filters and actions that give you complete control over gallery composition from PHP code in your theme or in another plugin. An example of using the hooks from a simple, stand-alone plugin can be found here: <a title="View the Hooks Example source code" href="[+examples_url+]mla-hooks-example.php.txt" target="_blank" style="font-size:14px; font-weight:bold">mla-hooks-example.php.txt</a>. To run the example:
 <ol>
 <li>Edit the code to, for example, uncomment the <code>error_log()</code> calls so you can see what is passed to the hooks you are interested in.</li>
-<li>Remove the ".txt" extension and saving the "mla-hooks-example.php" file in your plugins directory.</li>
+<li>Remove the ".txt" extension and save the "mla-hooks-example.php" file in your plugins directory.</li>
 <li>Go to the Plugins/Installed Plugins screen and activate the "MLA Gallery Hooks Example" plugin.</li>
 <li>Create a new <code>[mla_gallery]</code> shortcode or modify an existing shortcode, adding the <code>my_filter="all custom"</code> parameter to activate the example output.</li>
 <li>View the post or page on which the modified shortcode appears to see a list of each item's custom fields appended to the gallery captions.</li>
@@ -4018,7 +4018,7 @@ The native format of this data is somewhat complicated, so MLA converts the most
 The Custom Field and IPTC/EXIF Mapping tools support a comprehensive set of filters and actions that give you complete control over rule execution and value creation from PHP code in your theme or in another plugin. An example of using the hooks from a simple, stand-alone plugin can be found here: <a title="View the Mapping Hooks Example source code" href="[+examples_url+]mla-mapping-hooks-example.php.txt" target="_blank" style="font-size:14px; font-weight:bold">mla-mapping-hooks-example.php.txt</a>. To run the example:
 <ol>
 <li>Edit the code to uncomment the <code>error_log()</code> calls so you can see what is passed to the hooks you are interested in.</li>
-<li>Remove the ".txt" extension and saving the "mla-mapping-hooks-example.php" file in your plugins directory.</li>
+<li>Remove the ".txt" extension and save the "mla-mapping-hooks-example.php" file in your plugins directory.</li>
 <li>Go to the Plugins/Installed Plugins screen and activate the "MLA Mapping Hooks Example" plugin.</li>
 <li>Upload a new attachment and/or run the mapping rules to exercise the filters and write mapping information to the site's Error Log.</li>
 <li>Examine the Error Log to see the mapping information.</li>
