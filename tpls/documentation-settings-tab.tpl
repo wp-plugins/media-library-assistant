@@ -533,12 +533,16 @@ Note that you must use the name/slug strings for taxonomy and terms, not the "ti
 In this example, "attachment_tag" is the WordPress taxonomy name/slug for the taxonomy. If you're using "Att. Category", the slug would be "attachment_category".
 </p>
 <p>
-The default behavior of the simple taxonomy query will match any of the terms in the list. MLA enhances the simple taxonomy query form by providing two additional parameters:
+The default behavior of the simple taxonomy query will match any of the terms in the list. If you have two or more simple taxonomy queries, they will be joined by "AND". MLA enhances the simple taxonomy query form by providing three additional parameters:
 </p>
 <table>
 <tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">tax_relation</td>
+<td>SQL operator to join multiple taxonomy queries; can be "AND" (the default) or "OR".</td>
+</tr>
 <td style="padding-right: 10px; vertical-align: top; font-weight:bold">tax_operator</td>
-<td>SQL operator to test terms against; can be "OR", IN", "NOT IN" or "AND".</td>
+<td>SQL operator to join the terms within each taxonomy; can be "IN" (the default), "NOT IN" or "AND".</td>
 </tr>
 <tr>
 <td style="padding-right: 10px; vertical-align: top; font-weight:bold">tax_include_children</td>
@@ -546,10 +550,16 @@ The default behavior of the simple taxonomy query will match any of the terms in
 </tr>
 </table>
 <p>
-If you specify either or both of these parameters, MLA will convert your query to the more powerful "tax_query" form, searching on the "slug" field and using the operator you specify. For example, a query for two terms in which <strong>both</strong> terms must match would be coded as:
+If you specify any of these parameters, MLA will convert your query to the more powerful "tax_query" form, searching on the "slug" field and using the operator you specify. For example, a query for two terms in which <strong>both</strong> terms must match would be coded as:
 </p>
 <ul class="mla_settings">
 <li><code>[mla_gallery attachment_category='separate-category,another-category' tax_operator=AND tax_include_children=false]</code></li>
+</ul>
+<p>
+If you code two or more simple taxonomy queries, the items selected must contain the terms in <strong><em>all</em></strong> of the taxonomies; they are joined by "AND". If you want to include items that match the terms in <strong><em>any</em></strong> of the taxonomies you can add <code>tax_relation="OR"</code>. For example, a query to match either an <code>attachment_category</code> or an <code>attachment_tag</code> would be coded as:
+</p>
+<ul class="mla_settings">
+<li><code>[mla_gallery attachment_category='some-category' attachment_tag="a-tag" tax_relation=OR]</code></li>
 </ul>
 <p>
 Note that the default tax_include_children value is true, matching the default WordPress setting. If your tax_operator is "AND", you will almost certainly want to change this setting.

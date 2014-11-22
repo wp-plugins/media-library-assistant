@@ -2500,8 +2500,9 @@ class MLAShortcodes {
 			// Taxonomy parameters are handled separately
 			// {tax_slug} => 'term' | array ( 'term', 'term', ... )
 			// 'tax_query' => ''
-			'tax_operator' => '',
-			'tax_include_children' => true,
+			// 'tax_relation' => 'OR', 'AND' (default),
+			// 'tax_operator' => 'OR' (default), 'IN', 'NOT IN', 'AND',
+			// 'tax_include_children' => true (default), false
 			// Post 
 			'post_type' => 'attachment',
 			'post_status' => 'inherit',
@@ -2637,9 +2638,10 @@ class MLAShortcodes {
 		/*
 		 * Extract taxonomy arguments
 		 */
-		$taxonomies = get_taxonomies( array ( 'show_ui' => true ), 'names' ); // 'objects'
 		$query_arguments = array();
 		if ( ! empty( $attr ) ) {
+			$all_taxonomies = get_taxonomies( array ( 'show_ui' => true ), 'names' );
+			$simple_tax_queries = array();
 			foreach ( $attr as $key => $value ) {
 				if ( 'tax_query' == $key ) {
 					if ( is_array( $value ) ) {
@@ -2662,34 +2664,70 @@ class MLAShortcodes {
 
 						if ( is_array( $tax_query ) ) {
 							$query_arguments[ $key ] = $tax_query;
+							break; // Done - the tax_query overrides all other taxonomy parameters
 						} else {
 							return '<p>' . __( 'ERROR: Invalid mla_gallery', 'media-library-assistant' ) . ' tax_query = ' . var_export( $value, true ) . '</p>';
 						}
 					} // not array
-				}  /* tax_query */ elseif ( 'category' == $key ) {
-					$arguments['category_name'] = $value;
-				}  /* category */ elseif ( array_key_exists( $key, $taxonomies ) ) {
-					$query_arguments[ $key ] = implode(',', array_filter( array_map( 'trim', explode( ',', $value ) ) ) );
-
-					if ( 'false' == strtolower( trim( $arguments['tax_include_children'] ) ) ) {
-						$arguments['tax_include_children'] = false;
-
-						if ( '' == $arguments['tax_operator'] ) {
-							$arguments['tax_operator'] = 'OR';
-						}
-					} else {
-						$arguments['tax_include_children'] = true;
-					}
-
-					if ( in_array( strtoupper( $arguments['tax_operator'] ), array( 'OR', 'IN', 'NOT IN', 'AND' ) ) ) {
-						$query_arguments['tax_query'] =	array( array( 'taxonomy' => $key, 'field' => 'slug', 'terms' => explode( ',', $query_arguments[ $key ] ), 'operator' => strtoupper( $arguments['tax_operator'] ), 'include_children' => $arguments['tax_include_children'] ) );
-						unset( $query_arguments[ $key ] );
-					}
+				}  /* tax_query */ elseif ( array_key_exists( $key, $all_taxonomies ) ) {
+					$simple_tax_queries[ $key ] = implode(',', array_filter( array_map( 'trim', explode( ',', $value ) ) ) );
 				} // array_key_exists
 			} //foreach $attr
+			
+			/*
+			 * One of five outcomes:
+			 * 1) An explicit tax_query was found; use it and ignore all other taxonomy parameters
+			 * 2) No tax query is present; no further processing required
+			 * 3) Two or more simple tax queries are present; compose a tax_query
+			 * 4) One simple tax query and (tax_operator or tax_include_children) are present; compose a tax_query
+			 * 5) One simple tax query is present; use it as-is or convert 'category' to 'category_name'
+			 */
+			if ( isset( $query_arguments['tax_query'] ) || empty( $simple_tax_queries ) ) {
+				// No further action required
+			} elseif ( ( 1 < count( $simple_tax_queries ) ) || isset( $attr['tax_operator'] ) || isset( $attr['tax_include_children'] ) ) {
+				// Build a tax_query
+				if  ( 1 < count( $simple_tax_queries ) ) {
+					$tax_relation = 'AND';
+					if ( isset( $attr['tax_relation'] ) ) {
+						if ( 'OR' == strtoupper( $attr['tax_relation'] ) ) {
+							$tax_relation = 'OR';
+						}
+					}
+					$tax_query = array ('relation' => $tax_relation );
+				} else {
+					$tax_query = array ();
+				}
+				
+				// Validate other tax_query parameters or set defaults
+				$tax_operator = 'IN';
+				if ( isset( $attr['tax_operator'] ) ) {
+					$attr_value = strtoupper( $attr['tax_operator'] );
+					if ( in_array( $attr_value, array( 'IN', 'NOT IN', 'AND' ) ) ) {
+						$tax_operator = $attr_value;
+					}
+				}
+				
+				$tax_include_children = true;
+				if ( isset( $attr['tax_include_children'] ) ) {
+					if ( 'FALSE' == strtoupper( $attr['tax_include_children'] ) ) {
+						$tax_include_children = false;
+					}
+				}
+				
+				foreach( $simple_tax_queries as $key => $value ) {
+					$tax_query[] =	array( 'taxonomy' => $key, 'field' => 'slug', 'terms' => explode( ',', $value ), 'operator' => $tax_operator, 'include_children' => $tax_include_children );
+				}
+				
+				$query_arguments['tax_query'] = $tax_query;
+			} else {
+				// exactly one simple query is present
+				if ( isset( $simple_tax_queries['category'] ) ) {
+					$arguments['category_name'] = $simple_tax_queries['category'];
+				} else {
+					$query_arguments = $simple_tax_queries;
+				}
+			}
 		} // ! empty
-		unset( $arguments['tax_operator'] );
-		unset( $arguments['tax_include_children'] );
 
 		/*
 		 * $query_arguments has been initialized in the taxonomy code above.

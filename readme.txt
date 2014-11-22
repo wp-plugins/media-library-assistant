@@ -159,9 +159,12 @@ All of the MLA source code has been annotated with "DocBlocks", a special type o
 * New: On the Media/Assistant submenu table a **"Download" rollover action** has been added to enable easy, one-click down of Media Library items.
 * New: On the Media/Assistant submenu table values in the **Base File column can be clicked** to filter the table by the column value. This is useful for plugins such as Polylang that assign the same base file to items translated into multiple languages.
 * New: On the Media/Assistant submenu table  **`template:[+empty+]`** has been added to the Bulk Edit area processing and IPTC/EXIF Standard Field mapping to support deleting the content of the Title, Caption, Description and ALT Text fields.
+* New: A **"tax_relation" parameter** has been added for `[mla_gallery]` simple taxonomy searches that involve two or more taxonomies.
 * New: An **"attr" format option** has been added for `[mla_gallery]` substitution parameters that must be encoded for use in an HTML attribute context, e.g., in the `title=` attribute of a hyperlink (`a`) or `img` tag.
 * New: The "MLA Tax Query Example" plugin in `/examples/mla-tax-query-example.php.txt` has been enhanced to handle `orderby`, `order` and `post_mime_type` parameters.
 * New: Examples for custom field mapping/use and IPTC/EXIF mapping/use have been added to the Settings/Media Library Assistant Documentation tab.
+* Fix: On the Media/Assistant submenu table a bug in the "where-used" information for attachments inserted in the body of a post/page but not used in a `[gallery]`, `[mla_gallery]` or Featured Image has been fixed.
+* Fix: For `[mla_gallery]` simple taxonomy searches that involve two or more taxonomies are now processed correctly.
 * Fix: Improved coverage of `[mla_gallery]` pagination and author parameters (and some others) has been added to the Settings/Media Library Assistant Documentation tab.
 * Fix: The Title field is now properly encoded when used as the default `title` attribute in `[mla_gallery]` item links.
 * Fix: The `title` attribute no longer appears twice in `[mla_gallery]` item links when the `mla_viewer=true` parameter is specified.

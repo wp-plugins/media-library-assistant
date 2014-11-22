@@ -3136,6 +3136,7 @@ class MLAData {
 				$reference_tests++;
 
 				if ( isset( $inserts[ $attachment_index ] ) ) {
+					$references['found_reference'] = true;
 					foreach( $inserts[ $attachment_index ] as $insert ) {
 						$ref_insert = clone $insert;
 						unset( $ref_insert->file_name );
@@ -3147,6 +3148,9 @@ class MLAData {
 						}
 						
 						$references['inserts'][ $ref_key ][ $insert->ID ] = $ref_insert;
+						if ( $insert->ID == $attachment->post_parent ) {
+							$references['found_parent'] = true;
+						}
 					} // each insert
 				} else {
 					$references['inserts'] = array();
