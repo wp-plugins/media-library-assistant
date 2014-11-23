@@ -2098,13 +2098,31 @@ In a template, substitution parameters are surrounded by opening ('[+') and clos
 </p>
 <h4>Attachment-specific substitution parameters for the markup template Item part</h4>
 <p>
-These substitution parameters are only available in the "Item" part of the markup template, since they require an attachment for their data source.
+These substitution parameters are only available in the "Item" part of the markup template, since they require an attachment for their data source. In addition to the parameters in the list below, you can use any of the <a href="#mla_custom_field_parameters">Data sources for custom field mapping</a> (except "None", "Metadata" and "Template").
 </p>
 <p>
-In addition to the parameters in the list below, you can use any of the <a href="#mla_custom_field_parameters">Data sources for custom field mapping</a> (except "None", "Metadata" and "Template"). For numeric data source parameters such as "file_size" you can add the ",commas" option to format the value for display purposes. If you need both the native format and the commas format, simply wrap the commas format in a content template, e.g., <code>[+template:([+width,commas+])+]</code>. The template will prevent the existing numeric width value from being over-written with the formatted value.
+You may need to append one of the format options to the name depending on the context in which the substitution parameter is used. If you need both the native format and the altered format, simply wrap the altered format in a content template, e.g., <code>[+template:([+width,commas+])+]</code>. The template will prevent the native value from being over-written with the formatted value. The format options are:
 </p>
+<table>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">,commas</td>
+<td>For numeric data source parameters such as "file_size" you can add the ",commas" option to format the value for display purposes.</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">,raw</td>
+<td>If you want to avoid filtering a value through the WordPress <code>sanitize_text_field()</code> function you can add the ",raw" option. This is helpful when, for example, you are using a field that contains HTML markup such as a hyperlink.</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">,attr</td>
+<td>If you use a substitution parameter in an HTML attribute such as the <code>title</code> attribute of a hyperlink (<code>a</code>) or <code>img</code> tag you can add the ",attr" option to encode the <, >, &, " and ' (less than, greater than, ampersand, double quote and single quote) characters.</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">,url</td>
+<td>If you use a substitution parameter in an HTML <code>href</code> attribute such as a hyperlink (<code>a</code>) or <code>img</code> tag you can add the ",url" option to convert special characters such as quotes, spaces and ampersands to their URL-encoded equivalents.</td>
+</tr>
+</table>
 <p>
-If you use a substitution parameter in an HTML attribute such as the `title` attribute of a hyperlink (`a`) or `img` tag you can add the ",attr" option to convert special characters such as quotes to their URL-encoded equivalents.
+The item-level substitution parameter names are:
 </p>
 <table>
 <tr>

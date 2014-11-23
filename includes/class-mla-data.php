@@ -1022,6 +1022,8 @@ class MLAData {
 			if ( isset( $markup_values[ $key ] ) ) {
 				if ( 'attr' == $value['format'] ) {
 					$markup_values[ $key ] = esc_attr( $markup_values[ $key ] );
+				} elseif ( 'url' == $value['format'] ) {
+					$markup_values[ $key ] = urlencode( $markup_values[ $key ] );
 				} elseif ( ( 'commas' == $value['format'] ) && is_numeric( $markup_values[ $key ] ) ) {
 					$markup_values[ $key ] = number_format( (float)$markup_values[ $key ] );
 				}
@@ -1102,7 +1104,7 @@ class MLAData {
 				$tail = substr( $match, 2);
 			}
 
-			$match_count = preg_match( '/([^,]+)(,(text|single|export|array|multi|commas|raw|attr))\+\]/', $tail, $matches );
+			$match_count = preg_match( '/([^,]+)(,(text|single|export|array|multi|commas|raw|attr|url))\+\]/', $tail, $matches );
 			if ( 1 == $match_count ) {
 				$result['value'] = $matches[1];
 
@@ -1115,6 +1117,9 @@ class MLAData {
 				} elseif ( 'attr' == $matches[3] ) {		
 					$result['option'] = 'text';
 					$result['format'] = 'attr';
+				} elseif ( 'url' == $matches[3] ) {		
+					$result['option'] = 'text';
+					$result['format'] = 'url';
 				} else {
 					$result['option'] = $matches[3];
 				}
