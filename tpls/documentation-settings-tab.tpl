@@ -121,6 +121,7 @@
 </li>
 </ul>
 <li><a href="#mla_mapping_hooks"><strong>MLA Custom Field and IPTC/EXIF Mapping Actions and Filters (Hooks)</strong></a></li>
+<li><a href="#mla_list_table_hooks"><strong>Media/Assistant Submenu Actions and Filters (Hooks)</strong></a></li>
 </ul>
 <h3>Plugin Code Documentation</h3>
 <p>
@@ -4154,6 +4155,163 @@ The current Settings/Media Library Assistant tab list hook is:
 <tr>
 <td style="padding-right: 10px; vertical-align: top; font-weight:bold">mla_get_options_tablist</td>
 <td>gives you an opportunity to remove one or more tabs from the list that appears on the Settings/Media Library Assistant screen.</td>
+</tr>
+</table>
+<a name="mla_list_table_hooks"></a>&nbsp;
+<p>
+<a href="#backtotop">Go to Top</a>
+</p>
+<h3>Media/Assistant Submenu Actions and Filters (Hooks)</h3>
+<p>
+The Media/Assistant submenu supports a comprehensive set of filters and actions that give you control over table columns, inline actions and bulk actions from PHP code in your theme or in another plugin. An example of using the hooks from a simple, stand-alone plugin can be found here: <a title="View the Media/Assistant Submenu Example source code" href="[+examples_url+]mla-list-table-hooks-example.php.txt" target="_blank" style="font-size:14px; font-weight:bold">mla-list-table-hooks-example.php.txt</a>. To run the example:
+<ol>
+<li>Edit the code to uncomment the <code>error_log()</code> calls so you can see what is passed to the hooks you are interested in.</li>
+<li>Remove the ".txt" extension and save the "mla-list-table-hooks-example.php" file in your plugins directory.</li>
+<li>Go to the Plugins/Installed Plugins screen and activate the "MLA List Table Hooks Example" plugin.</li>
+<li>Go to the Media/Assistant submenu to exercise the filters and write filter/action information to the site's Error Log.</li>
+<li>Examine the Error Log to see the filter/action information.</li>
+</ol>
+</p>
+<p>
+The example code documents each hook with comments in the filter/action function that intercepts each hook. There are hooks that let you add, modify or delete table columns. 
+</p>
+<p>
+In addition, there are hooks that run when the Media Library items are selected from the database and hooks for adding and processing custom quick actions and bulk actions.
+</p>
+<p>
+The following hooks are defined in <code>/wp-admin/includes/class-wp-list-table.php</code>:
+</p>
+<table>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">views_media_page_mla_menu</td>
+<td>Filter the list of available list table views.</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">bulk_actions-media_page_mla-menu</td>
+<td>Filter the list table Bulk Actions drop-down. This WordPress filter can currently only be used to remove bulk actions.</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">months_dropdown_results</td>
+<td>Filter the 'Months' drop-down results.</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">mla_entries_per_page</td>
+<td>Filter the number of items to be displayed on each page of the list table.</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">manage_media_page_mla-menu_sortable_columns</td>
+<td>Filter the list table sortable columns for a specific screen.</td>
+</tr>
+</table>
+<p>
+The following hooks are defined in <code>/wp-admin/includes/class-mla-data.php</code>:
+</p>
+<table>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">mla_list_table_search_filter_fields</td>
+<td>Gives you an opportunity to add or remove any of the MLA standard fields for Search Media.</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">mla_list_table_search_filter_inner_clause</td>
+<td>Gives you an opportunity to modify or add to the inner WHERE clause for Search Media.</td>
+</tr>
+</table>
+<p>
+The following hooks are defined in <code>/media-library-assistant/includes/class-mla-main.php</code>:
+</p>
+<table>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">mla_list_table_inline_fields</td>
+<td>Gives you an opportunity to name the fields passed to the JavaScript functions for Quick editing.</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">mla_list_table_inline_action</td>
+<td>Gives you an opportunity to pre-process an MLA_List_Table "Quick Edit" action before the MLA handler.</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">mla_list_table_bulk_action</td>
+<td>Gives you an opportunity to pre-process an MLA_List_Table page-level or single-item action, standard or custom, before the MLA handler. The filter is called once for each of the items in $_REQUEST['cb_attachment'].</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">mla_list_table_custom_bulk_action</td>
+<td>Gives you an opportunity to process an MLA_List_Table bulk action that MLA does not recognize. The filter is called once for each of the items in $_REQUEST['cb_attachment'].</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">mla_list_table_single_action</td>
+<td>Gives you an opportunity to pre-process an MLA_List_Table page-level or single-item action, standard or custom, before the MLA handler.</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">mla_list_table_custom_single_action</td>
+<td>Gives you an opportunity to process an MLA_List_Table page-level or single-item action that MLA does not recognize.</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">mla_list_table_new_instance</td>
+<td>Gives you an opportunity to extend the MLA_List_Table class.</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">mla_list_table_inline_values</td>
+<td>Gives you a chance to modify and extend the substitution values for the Quick and Bulk Edit forms.</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">mla_list_table_inline_template</td>
+<td>Gives you a chance to modify and extend the template used for the Quick and Bulk Edit forms.</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">mla_list_table_inline_parse</td>
+<td>Gives you a final chance to modify and extend the HTML markup used for the Quick and Bulk Edit forms.</td>
+</tr>
+</table>
+<p>
+The following hooks are defined in <code>/wp-admin/includes/class-wp-list-table.php</code>:
+</p>
+<table>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">mla_list_table_get_columns</td>
+<td>This MLA-specific filter gives you an opportunity to filter the list table columns.</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">mla_list_table_get_hidden_columns</td>
+<td>This MLA-specific filter gives you an opportunity to filter the hidden list table columns.</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">mla_list_table_get_sortable_columns</td>
+<td>This MLA-specific filter gives you an opportunity to filter the sortable list table columns; a good alternative to the 'manage_media_page_mla_menu_sortable_columns' filter.</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">mla_list_table_get_bulk_actions</td>
+<td>This MLA-specific filter gives you an opportunity to filter the list of bulk actions; a good alternative to the 'bulk_actions-media_page_mla-menu' filter.</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">mla_list_table_column_default</td>
+<td>Called when the MLA_List_Table can't find a value for a given column.</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">mla_list_table_prepare_items_pagination</td>
+<td>Gives you an opportunity to filter the per_page and current_page parameters used for the prepare_items database query.</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">mla_list_table_prepare_items_total_items</td>
+<td>Gives you an opportunity to substitute your own $total_items parameter used for the prepare_items database query.</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">mla_list_table_prepare_items_the_items</td>
+<td>Gives you an opportunity to substitute your own items array in place of the default prepare_items database query.</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">mla_list_table_prepare_items</td>
+<td>Gives you an opportunity to record or modify the results of the prepare_items database query. </td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">mla_list_table_build_rollover_actions</td>
+<td>Gives you an opportunity to filter the list of "Rollover" actions giving item-level links such as "Quick Edit", "Move to Trash".</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">mla_list_table_build_inline_data</td>
+<td>Gives you an opportunity to filter the data passed to the JavaScript functions for Quick and Bulk editing.</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">views_upload</td>
+<td>Views for the "upload" page when WPML is active. This filter is hooked by WPML Media in wpml-media.class.php, and is only applied when WPML is active.</td>
 </tr>
 </table>
 <p>

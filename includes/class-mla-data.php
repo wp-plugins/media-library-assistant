@@ -1861,7 +1861,7 @@ class MLAData {
 				$terms_search = array_map('MLAData::mla_search_terms_tidy', $matches[0]);
 			}
 
-			$fields = self::$query_parameters['mla_search_fields'];
+			$fields = apply_filters( 'mla_list_table_search_filter_fields', self::$query_parameters['mla_search_fields'], array( 'content', 'title', 'excerpt', 'alt-text', 'name', 'terms' ) );
 			$percent = self::$query_parameters['exact'] ? '' : '%';
 			$connector = '';
 
@@ -1906,6 +1906,8 @@ class MLAData {
 					if ( in_array( 'name', $fields ) ) {
 					  $inner_clause .= "{$inner_connector}({$wpdb->posts}.post_name LIKE {$sql_term})";
 					}
+					
+					$inner_clause = apply_filters( 'mla_list_table_search_filter_inner_clause', $inner_clause, $inner_connector, $wpdb->posts, $sql_term );
 
 					if ( ! empty($inner_clause) ) {
 						$search_clause .= "{$connector}({$inner_clause})";

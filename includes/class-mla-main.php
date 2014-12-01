@@ -1236,8 +1236,8 @@ class MLA {
 				echo "  #icon.column-icon {\n";
 				echo "    width: {$option_value};\n";
 				echo "    max-width: {$option_value};\n";
-				echo "    height: {$option_value};\n";
-				echo "    max-height: {$option_value};\n";
+				//echo "    height: {$option_value};\n";
+				//echo "    max-height: {$option_value};\n";
 				echo "  }\n";
 				echo "  img.{$class} {\n";
 				echo "    width: {$option_value};\n";

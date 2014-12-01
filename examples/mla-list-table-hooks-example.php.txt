@@ -72,6 +72,12 @@ class MLAListTableHooksExample {
 		add_filter( 'manage_media_page_mla-menu_sortable_columns', 'MLAListTableHooksExample::manage_media_page_mla_menu_sortable_columns', 10, 1 );
 
 		 /*
+		  * Defined in /media-library-assistant/includes/class-mla-data.php
+		  */
+		add_filter( 'mla_list_table_search_filter_fields', 'MLAListTableHooksExample::mla_list_table_search_filter_fields', 10, 2 );
+		add_filter( 'mla_list_table_search_filter_inner_clause', 'MLAListTableHooksExample::mla_list_table_search_filter_inner_clause', 10, 4 );
+
+		 /*
 		  * Defined in /media-library-assistant/includes/class-mla-main.php
 		  */
 		add_filter( 'mla_list_table_inline_fields', 'MLAListTableHooksExample::mla_list_table_inline_fields', 10, 1 );
@@ -194,6 +200,65 @@ class MLAListTableHooksExample {
 		//error_log( 'MLAListTableHooksExample::manage_media_page_mla_menu_sortable_columns $sortable_columns = ' . var_export( $sortable_columns, true ), 0 );
 		return $sortable_columns;
 	} // manage_media_page_mla_menu_sortable_columns
+
+	/**
+	 * Records the list of active search fields
+	 *
+	 * @since 1.00
+	 *
+	 * @var	array
+	 */
+	private static $search_fields = array();
+
+	/**
+	 * Process the list of fields for keywords search 
+	 *
+	 * This filter gives you an opportunity to add or remove any of the MLA standard fields for Search Media.
+	 *
+	 * @since 1.00
+	 *
+	 * @param	array	$active_fields	fields that will be searched.
+	 * @param	array	$all_fields		all of the fields that can be searched.
+	 *
+	 * @return	array	updated $active_fields.
+	 */
+	public static function mla_list_table_search_filter_fields( $active_fields, $all_fields ) {
+		//error_log( 'MLAListTableHooksExample::mla_list_table_search_filter_fields $active_fields = ' . var_export( $active_fields, true ), 0 );
+		//error_log( 'MLAListTableHooksExample::mla_list_table_search_filter_fields $all_fields = ' . var_export( $all_fields, true ), 0 );
+		
+		// Uncomment next line to add File URL (guid) to the list of active search fields
+		//$active_fields[] = 'guid';
+		self::$search_fields = $active_fields;
+		
+		return $active_fields;
+	} // mla_list_table_search_filter_fields
+
+	/**
+	 * Process the inner WHERE clause for keywords search 
+	 *
+	 * This filter gives you an opportunity to modify or add to the inner WHERE clause for Search Media.
+	 *
+	 * @since 1.00
+	 *
+	 * @param	string	$inner_clause		current SQL inner WHERE clause.
+	 * @param	string	$inner_connector	AND/OR connector between the search field clauses.
+	 * @param	string	$wpdb_posts			name of the POSTS database table.
+	 * @param	string	$sql_term			keyword value for the search.
+	 *
+	 * @return	string	updated $inner_clause.
+	 */
+	public static function mla_list_table_search_filter_inner_clause( $inner_clause, $inner_connector, $wpdb_posts, $sql_term ) {
+		//error_log( 'MLAListTableHooksExample::mla_list_table_search_filter_fields $inner_clause = ' . var_export( $inner_clause, true ), 0 );
+		//error_log( 'MLAListTableHooksExample::mla_list_table_search_filter_fields $inner_connector = ' . var_export( $inner_connector, true ), 0 );
+		//error_log( 'MLAListTableHooksExample::mla_list_table_search_filter_fields $wpdb_posts = ' . var_export( $wpdb_posts, true ), 0 );
+		//error_log( 'MLAListTableHooksExample::mla_list_table_search_filter_fields $sql_term = ' . var_export( $sql_term, true ), 0 );
+		
+		if ( in_array( 'guid', self::$search_fields ) ) {
+			$inner_clause .= "{$inner_connector}({$wpdb_posts}.guid LIKE {$sql_term})";
+		}
+
+		return $inner_clause;
+	} // mla_list_table_search_filter_fields
 
 	/**
 	 * Process an MLA_List_Table inline action, i.e., Quick Edit 

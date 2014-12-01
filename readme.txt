@@ -165,6 +165,7 @@ All of the MLA source code has been annotated with "DocBlocks", a special type o
 * New: The "MLA Tax Query Example" plugin in `/examples/mla-tax-query-example.php.txt` has been enhanced to handle `orderby`, `order` and `post_mime_type` parameters.
 * New: On the "help" dropdown for Media/Assistant submenu table a new tab has been added to document the "Where-used Reporting" information.
 * New: Examples for custom field mapping/use and IPTC/EXIF mapping/use have been added to the Settings/Media Library Assistant Documentation tab.
+* Fix: On the Media/Assistant submenu table the table header height is no longer affected by the "Icon Size" option value.
 * Fix: On the Media/Assistant submenu table a bug in the "where-used" information for attachments inserted in the body of a post/page but not used in a `[gallery]`, `[mla_gallery]` or Featured Image has been fixed.
 * Fix: For `[mla_gallery]` simple taxonomy searches that involve two or more taxonomies are now processed correctly.
 * Fix: Improved coverage of `[mla_gallery]` pagination and author parameters (and some others) has been added to the Settings/Media Library Assistant Documentation tab.
