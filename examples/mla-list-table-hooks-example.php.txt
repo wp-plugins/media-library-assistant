@@ -76,6 +76,7 @@ class MLAListTableHooksExample {
 		  */
 		add_filter( 'mla_list_table_search_filter_fields', 'MLAListTableHooksExample::mla_list_table_search_filter_fields', 10, 2 );
 		add_filter( 'mla_list_table_search_filter_inner_clause', 'MLAListTableHooksExample::mla_list_table_search_filter_inner_clause', 10, 4 );
+		add_filter( 'mla_fetch_attachment_references', 'MLAListTableHooksExample::mla_fetch_attachment_references', 10, 3 );
 
 		 /*
 		  * Defined in /media-library-assistant/includes/class-mla-main.php
@@ -226,7 +227,13 @@ class MLAListTableHooksExample {
 		//error_log( 'MLAListTableHooksExample::mla_list_table_search_filter_fields $active_fields = ' . var_export( $active_fields, true ), 0 );
 		//error_log( 'MLAListTableHooksExample::mla_list_table_search_filter_fields $all_fields = ' . var_export( $all_fields, true ), 0 );
 		
-		// Uncomment next line to add File URL (guid) to the list of active search fields
+		if ( in_array( 'name', $active_fields ) ) {
+			/* Uncomment next line to add File URL (guid) to the list of active search fields
+			   when the "Name" box below the Search Media text box is checked */ 
+			//$active_fields[] = 'guid';
+		}
+		
+		// Uncomment next line to ALWAYS add File URL (guid) to the list of active search fields
 		//$active_fields[] = 'guid';
 		self::$search_fields = $active_fields;
 		
@@ -259,6 +266,53 @@ class MLAListTableHooksExample {
 
 		return $inner_clause;
 	} // mla_list_table_search_filter_fields
+
+	/**
+	 * Process the "where-used" reference reporting results 
+	 *
+	 * This filter gives you an opportunity to modify or add to the "where-used" reference reporting information.
+	 *
+	 * @since 1.00
+	 *
+	 * @param	array	$references	current attachment reference information.
+	 * @param	integer	$post_id	attachment ID.
+	 * @param	integer	$parent_id	attachment's parent ID (or zero).
+	 *
+	 * @return	array	updated $references.
+	 */
+	public static function mla_fetch_attachment_references( $references, $post_id, $parent_id ) {
+		//error_log( 'MLAListTableHooksExample::mla_fetch_attachment_references $references = ' . var_export( $references, true ), 0 );
+		//error_log( 'MLAListTableHooksExample::mla_fetch_attachment_references $post_id = ' . var_export( $post_id, true ), 0 );
+		//error_log( 'MLAListTableHooksExample::mla_fetch_attachment_references $parent_id = ' . var_export( $parent_id, true ), 0 );
+		
+		/*
+		 * $references contains:
+		 *
+		 * tested_reference	true if any of the four where-used types was processed
+		 * found_reference	true if any where-used array is not empty()
+		 * found_parent		true if $parent matches a where-used post ID
+		 * is_unattached	true if $parent is zero (0)
+		 * base_file		relative path and name of the uploaded file, e.g., 2012/04/image.jpg
+		 * path				path to the file, relative to the "uploads/" directory, e.g., 2012/04/
+		 * file				The name portion of the base file, e.g., image.jpg
+		 * files			base file and any other image size files. Array key is path and file name.
+		 *					Non-image file value is a string containing file name without path
+		 *					Image file value is an array with file name, width and height
+		 * features			Array of objects with the post_type and post_title of each post
+		 *					that has the attachment as a "Featured Image"
+		 * inserts			Array of specific files (i.e., sizes) found in one or more posts/pages
+		 *					as an image (<img>) or link (<a href>). The array key is the path and file name.
+		 *					The array value is an array with the ID, post_type and post_title of each reference
+		 * mla_galleries	Array of objects with the post_type and post_title of each post
+		 *					that was returned by an [mla_gallery] shortcode
+		 * galleries		Array of objects with the post_type and post_title of each post
+		 *					that was returned by a [gallery] shortcode
+		 * parent_type		'post' or 'page' or the custom post type of the attachment's parent
+		 * parent_title		post_title of the attachment's parent
+		 * parent_errors	UNATTACHED, ORPHAN, BAD/INVALID PARENT
+		 */
+		return $references;
+	} // mla_fetch_attachment_references
 
 	/**
 	 * Process an MLA_List_Table inline action, i.e., Quick Edit 

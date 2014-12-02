@@ -2685,13 +2685,21 @@ class MLAData {
 		$attachment_metadata = get_post_meta( $ID, '_wp_attachment_metadata', true );
 		$sizes = isset( $attachment_metadata['sizes'] ) ? $attachment_metadata['sizes'] : NULL;
 		if ( ! empty( $sizes ) ) {
-			/* Using the name as the array key ensures each name is added only once */
+			// Using the name as the array key ensures each name is added only once
 			foreach ( $sizes as $size ) {
 				$references['files'][ $references['path'] . $size['file'] ] = $size;
 			}
 		}
-
-		$references['files'][ $references['base_file'] ] = $references['base_file'];
+		
+		$base_type = wp_check_filetype( $references['file'] );
+		$base_reference = array(
+			'file' => $references['file'],
+			'width' => isset( $attachment_metadata['width'] ) ? $attachment_metadata['width'] : 0,
+			'height' => isset( $attachment_metadata['height'] ) ? $attachment_metadata['height'] : 0,
+			'mime_type' => isset( $base_type['type'] ) ? $base_type['type'] : 'unknown',
+			);
+			
+		$references['files'][ $references['base_file'] ] = $base_reference;
 
 		/*
 		 * Process the where-used settings option
@@ -2813,7 +2821,7 @@ class MLAData {
 
 					if ( ! empty( $inserts ) ) {
 						$references['found_reference'] = true;
-						$references['inserts'][ $file ] = $inserts;
+						$references['inserts'][ $file_data['file'] ] = $inserts;
 
 						foreach ( $inserts as $insert ) {
 							if ( $insert->ID == $parent ) {
@@ -2898,6 +2906,7 @@ class MLAData {
 		$references['parent_errors'] = trim( $errors );
 
 		$save_id = $ID;
+		$references = apply_filters( 'mla_fetch_attachment_references', $references, $ID, $parent );
 		return $references;
 	}
 
@@ -2947,18 +2956,18 @@ class MLAData {
 			$references = array();
 			if ( isset( $attachment->mla_wp_attached_file ) )  {
 				$references['base_file'] = $attachment->mla_wp_attached_file;
-				$references['files'][ $references['base_file'] ] = array( 'file' => $references['base_file'] );
 			} else {
 				$references['base_file'] = '';
 			}
 			
 			$pathinfo = pathinfo($references['base_file']);
-			$references['file'] = $pathinfo['basename'];
 			if ( ( ! isset( $pathinfo['dirname'] ) ) || '.' == $pathinfo['dirname'] ) {
 				$references['path'] = '/';
 			} else {
 				$references['path'] = $pathinfo['dirname'] . '/';
 			}
+
+			$references['file'] = $pathinfo['basename'];
 	
 			if ( isset( $attachment->mla_wp_attachment_metadata ) )  {
 				$attachment_metadata = $attachment->mla_wp_attachment_metadata;
@@ -2974,6 +2983,15 @@ class MLAData {
 				}
 			}
 			
+			$base_type = wp_check_filetype( $references['file'] );
+			$base_reference = array(
+				'file' => $references['file'],
+				'width' => isset( $attachment_metadata['width'] ) ? $attachment_metadata['width'] : 0,
+				'height' => isset( $attachment_metadata['height'] ) ? $attachment_metadata['height'] : 0,
+				'mime_type' => isset( $base_type['type'] ) ? $base_type['type'] : 'unknown',
+				);
+				
+			$references['files'][ $references['base_file'] ] = $base_reference;
 			$files[ $index ] = $references;
 		}
 	
@@ -3066,7 +3084,7 @@ class MLAData {
 		}
 
 		foreach ( $attachments as $attachment_index => $attachment ) {
-			$references = $initial_references;
+			$references = array_merge( $initial_references, $files[ $attachment_index ] );
 			
 			/*
 			 * Fill in Parent data
@@ -3084,36 +3102,7 @@ class MLAData {
 					$references['parent_title'] =  $attachment->parent_title;
 				}
 			}
-	
-			if ( isset( $attachment->mla_wp_attached_file ) )  {
-				$references['base_file'] = $attachment->mla_wp_attached_file;
-				$references['files'][ $references['base_file'] ] = $references['base_file'];
-			} else {
-				$references['base_file'] = '';
-			}
-			
-			$pathinfo = pathinfo($references['base_file']);
-			$references['file'] = $pathinfo['basename'];
-			if ( ( ! isset( $pathinfo['dirname'] ) ) || '.' == $pathinfo['dirname'] ) {
-				$references['path'] = '/';
-			} else {
-				$references['path'] = $pathinfo['dirname'] . '/';
-			}
-	
-			if ( isset( $attachment->mla_wp_attachment_metadata ) )  {
-				$attachment_metadata = $attachment->mla_wp_attachment_metadata;
-			} else {
-				$attachment_metadata = '';
-			}
-			
-			$sizes = isset( $attachment_metadata['sizes'] ) ? $attachment_metadata['sizes'] : NULL;
-			if ( ! empty( $sizes ) ) {
-				/* Using the path and name as the array key ensures each name is added only once */
-				foreach ( $sizes as $size ) {
-					$references['files'][ $references['path'] . $size['file'] ] = $size;
-				}
-			}
-	
+
 			/*
 			 * Accumulate reference test types, e.g.,  0 = no tests, 4 = all tests
 			 */
@@ -3235,7 +3224,7 @@ class MLAData {
 			}
 	
 			$references['parent_errors'] = trim( $errors );
-			$attachments[ $attachment_index ]->mla_references = $references;
+			$attachments[ $attachment_index ]->mla_references = apply_filters( 'mla_fetch_attachment_references', $references, $attachment->ID, (int) $attachment->post_parent );
 		} // foreach $attachment
 	}
 

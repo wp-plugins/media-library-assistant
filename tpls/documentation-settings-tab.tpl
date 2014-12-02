@@ -4215,6 +4215,10 @@ The following hooks are defined in <code>/wp-admin/includes/class-mla-data.php</
 <td style="padding-right: 10px; vertical-align: top; font-weight:bold">mla_list_table_search_filter_inner_clause</td>
 <td>Gives you an opportunity to modify or add to the inner WHERE clause for Search Media.</td>
 </tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">mla_fetch_attachment_references</td>
+<td>Gives you an opportunity to modify or add to the "where-used" reference reporting information.</td>
+</tr>
 </table>
 <p>
 The following hooks are defined in <code>/media-library-assistant/includes/class-mla-main.php</code>:
