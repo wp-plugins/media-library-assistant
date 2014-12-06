@@ -1327,6 +1327,16 @@ class MLAData {
 					}
 					break;
 				/*
+				 * ids allows hooks to supply a persistent list of items
+				 */
+				case 'ids':
+					if ( is_array( $value ) ) {
+						$clean_request[ 'post__in' ] = $value;
+					} else {
+						$clean_request[ 'post__in' ] = array_map( 'absint', explode( ',', $value ) );
+					}
+					break;
+				/*
 				 * post__in and post__not_in are used in the Media Modal Ajax queries
 				 */
 				case 'post__in':
@@ -1362,8 +1372,8 @@ class MLAData {
 					}
 					break;
 				case 'detached':
-					if ( '1' == $value ) {
-						$clean_request['detached'] = '1';
+					if ( ( '0' == $value ) || ( '1' == $value ) ) {
+						$clean_request['detached'] = $value;
 					}
 
 					break;
@@ -1434,7 +1444,7 @@ class MLAData {
 		 * Pass query parameters to the filters for _execute_list_table_query
 		 */
 		self::$query_parameters = array( 'use_postmeta_view' => false, 'orderby' => $clean_request['orderby'], 'order' => $clean_request['order'] );
-		self::$query_parameters['detached'] = isset( $clean_request['detached'] );
+		self::$query_parameters['detached'] = isset( $clean_request['detached'] ) ? $clean_request['detached'] : NULL;
 
 		/*
 		 * Matching a meta_value to NULL requires a LEFT JOIN to a view and a special WHERE clause
@@ -2009,7 +2019,7 @@ class MLAData {
 	}
 
 	/**
-	 * Adds a WHERE clause for detached items
+	 * Adds/modifies the WHERE clause for meta values, LIKE patterns and detached items
 	 * 
 	 * Modeled after _edit_attachments_query_helper in wp-admin/post.php.
 	 * Defined as public because it's a filter.
@@ -2018,7 +2028,7 @@ class MLAData {
 	 *
 	 * @param	string	query clause before modification
 	 *
-	 * @return	string	query clause after "detached" item modification
+	 * @return	string	query clause after modification
 	 */
 	public static function mla_query_posts_where_filter( $where_clause ) {
 		global $wpdb;
@@ -2054,8 +2064,12 @@ class MLAData {
 		/*
 		 * Unattached items require some help
 		 */
-		if ( self::$query_parameters['detached'] ) {
-			$where_clause .= sprintf( ' AND %1$s.post_parent < 1', $wpdb->posts );
+		if ( isset( self::$query_parameters['detached'] ) ) {
+			if ( '1' == self::$query_parameters['detached'] ) {
+				$where_clause .= sprintf( ' AND %1$s.post_parent < 1', $wpdb->posts );
+			} elseif ( '0' == self::$query_parameters['detached'] ) {
+				$where_clause .= sprintf( ' AND %1$s.post_parent > 0', $wpdb->posts );
+			}
 		}
 
 		if ( isset( self::$query_parameters['debug'] ) ) {

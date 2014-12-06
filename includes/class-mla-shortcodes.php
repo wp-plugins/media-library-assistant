@@ -2479,7 +2479,7 @@ class MLAShortcodes {
 			'exclude' => array(),
 			// MLA extensions, from WP_Query
 			// Force 'get_children' style query
-			'post_parent' => NULL, // post/page ID or 'current' or 'all'
+			'post_parent' => NULL, // post/page ID, 'none', 'any', 'current' or 'all'
 			// Author
 			'author' => NULL,
 			'author_name' => '',

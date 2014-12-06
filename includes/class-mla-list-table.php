@@ -404,7 +404,7 @@ class MLA_List_Table extends WP_List_Table {
 			}
 		}
 
-		return $submenu_arguments;
+		return apply_filters( 'mla_list_table_submenu_arguments', $submenu_arguments, $include_filters );
 	}
 
 	/**
@@ -1748,9 +1748,9 @@ class MLA_List_Table extends WP_List_Table {
 		 */
 		$user = get_current_user_id();
 		$option = $this->screen->get_option( 'per_page', 'option' );
-		$per_page = get_user_meta( $user, $option, true );
+		$per_page = (integer) get_user_meta( $user, $option, true );
 		if ( empty( $per_page ) || $per_page < 1 ) {
-			$per_page = $this->screen->get_option( 'per_page', 'default' );
+			$per_page = (integer) $this->screen->get_option( 'per_page', 'default' );
 		}
 
 		$current_page = isset( $_REQUEST['paged'] ) ? absint( $_REQUEST['paged'] ) : 1;
@@ -1768,11 +1768,6 @@ class MLA_List_Table extends WP_List_Table {
 			$total_items = MLAData::mla_count_list_table_items( $_REQUEST, ( ( $current_page - 1 ) * $per_page ), $per_page );
 		}
 		
-		$this->items = apply_filters_ref_array( 'mla_list_table_prepare_items_the_items', array( NULL, &$this ) );
-		if ( is_null( $this->items ) ) {
-			$this->items = MLAData::mla_query_list_table_items( $_REQUEST, ( ( $current_page - 1 ) * $per_page ), $per_page );
-		}
-
 		/*
 		 * Register the pagination options & calculations.
 		 */
@@ -1781,6 +1776,11 @@ class MLA_List_Table extends WP_List_Table {
 			'per_page' => $per_page, //WE have to determine how many items to show on a page
 			'total_pages' => ceil( $total_items / $per_page ) //WE have to calculate the total number of pages
 		) );
+
+		$this->items = apply_filters_ref_array( 'mla_list_table_prepare_items_the_items', array( NULL, &$this ) );
+		if ( is_null( $this->items ) ) {
+			$this->items = MLAData::mla_query_list_table_items( $_REQUEST, ( ( $current_page - 1 ) * $per_page ), $per_page );
+		}
 
 		do_action_ref_array( 'mla_list_table_prepare_items', array( &$this ) );
 	}

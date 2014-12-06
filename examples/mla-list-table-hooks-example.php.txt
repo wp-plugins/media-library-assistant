@@ -87,6 +87,7 @@ class MLAListTableHooksExample {
 		add_filter( 'mla_list_table_custom_bulk_action', 'MLAListTableHooksExample::mla_list_table_custom_bulk_action', 10, 3 );
 		add_filter( 'mla_list_table_single_action', 'MLAListTableHooksExample::mla_list_table_single_action', 10, 3 );
 		add_filter( 'mla_list_table_custom_single_action', 'MLAListTableHooksExample::mla_list_table_custom_single_action', 10, 3 );
+		add_action( 'mla_list_table_clear_filter_by', 'MLAListTableHooksExample::mla_list_table_clear_filter_by' );
 		add_filter( 'mla_list_table_new_instance', 'MLAListTableHooksExample::mla_list_table_new_instance', 10, 1 );
 		add_filter( 'mla_list_table_inline_values', 'MLAListTableHooksExample::mla_list_table_inline_values', 10, 1 );
 		add_filter( 'mla_list_table_inline_template', 'MLAListTableHooksExample::mla_list_table_inline_template', 10, 1 );
@@ -100,7 +101,9 @@ class MLAListTableHooksExample {
 		add_filter( 'mla_list_table_get_sortable_columns', 'MLAListTableHooksExample::mla_list_table_get_sortable_columns', 10, 1 );
 		add_filter( 'mla_list_table_get_bulk_actions', 'MLAListTableHooksExample::mla_list_table_get_bulk_actions', 10, 1 );
 		add_filter( 'mla_list_table_column_default', 'MLAListTableHooksExample::mla_list_table_column_default', 10, 3 );
-		
+
+		add_filter( 'mla_list_table_submenu_arguments', 'MLAListTableHooksExample::mla_list_table_submenu_arguments', 10, 2 );
+
 		add_filter( 'mla_list_table_prepare_items_pagination', 'MLAListTableHooksExample::mla_list_table_prepare_items_pagination', 10, 2 );
 		add_filter( 'mla_list_table_prepare_items_total_items', 'MLAListTableHooksExample::mla_list_table_prepare_items_total_items', 10, 2 );
 		add_filter( 'mla_list_table_prepare_items_the_items', 'MLAListTableHooksExample::mla_list_table_prepare_items_the_items', 10, 2 );
@@ -430,6 +433,19 @@ class MLAListTableHooksExample {
 	} // mla_list_table_custom_single_action
 
 	/**
+	 * Clear the custom "Filter-by" parameters
+	 *
+	 * This action gives you an opportunity to clear any custom submenu "Filter-by" parameters.
+	 *
+	 * @since 1.00
+	 *
+	 * @return	void
+	 */
+	public static function mla_list_table_clear_filter_by() {
+		//error_log( 'MLAListTableHooksExample::mla_list_table_clear_filter_by $_REQUEST = ' . var_export( $_REQUEST, true ), 0 );
+	} // mla_list_table_clear_filter_by
+	
+	/**
 	 * Extend the MLA_List_Table class
 	 *
 	 * This filter gives you an opportunity to extend the MLA_List_Table class.
@@ -589,6 +605,25 @@ class MLAListTableHooksExample {
 		//error_log( "MLAListTableHooksExample::mla_list_table_column_default ({$column_name}) \$item = " . var_export( $item, true ), 0 );
 		return $content;
 	} // mla_list_table_column_default_filter
+
+	/**
+	 * Filter the "sticky" submenu URL parameters
+	 *
+	 * This filter gives you an opportunity to filter the URL parameters that will be
+	 * retained when the submenu page refreshes.
+	 *
+	 * @since 1.00
+	 *
+	 * @param	array	$submenu_arguments	Current view, pagination and sort parameters.
+	 * @param	object	$include_filters	True to include "filter-by" parameters, e.g., year/month dropdown.
+	 *
+	 * @return	array	updated submenu_arguments.
+	 */
+	public static function mla_list_table_submenu_arguments( $submenu_arguments, $include_filters ) {
+		//error_log( 'MLAListTableHooksExample::mla_list_table_submenu_arguments $submenu_arguments = ' . var_export( $submenu_arguments, true ), 0 );
+		//error_log( 'MLAListTableHooksExample::mla_list_table_submenu_arguments $include_filters = ' . var_export( $include_filters, true ), 0 );
+		return $submenu_arguments;
+	} // mla_list_table_submenu_arguments
 
 	/**
 	 * Filter the pagination parameters for prepare_items()

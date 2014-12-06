@@ -154,7 +154,7 @@ All of the MLA source code has been annotated with "DocBlocks", a special type o
 
 = 1.95 =
 
-* New: Twenty six (26) **filters for the Media/Assistant submenu table** support customization of the table display and supporting features like table views, Quick Edit, Bulk Edit and rollover actions.
+* New: Twenty eight (28) **filters for the Media/Assistant submenu table** support customization of the table display and supporting features like table views, Quick Edit, Bulk Edit and rollover actions.
 * New: For the `[mla_gallery]` shortcode, the **powerful "date_query" parameter** introduced in WordPress Version 3.7 is now supported.
 * New: On the Media/Assistant submenu table a **"Download" rollover action** has been added to enable easy, one-click down of Media Library items.
 * New: On the Media/Assistant submenu table values in the **Base File column can be clicked** to filter the table by the column value. This is useful for plugins such as Polylang that assign the same base file to items translated into multiple languages.

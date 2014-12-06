@@ -455,11 +455,26 @@ The "id" parameter lets you specify a post ID for your query. The gallery will d
 For WordPress 3.5 and later, the "ids" parameter lets you specify a list of Post IDs. The attachment(s) matching the "ids" values will be displayed in the order specified by the list.
 </p>
 <p>
-You can use the "post_parent" to override the default behavior. If you set "post_parent" to a specific post ID, only the items attached to that post are displayed. If you set "post_parent" to <strong>"current"</strong>, only the items attached to the current post are displayed. If you set "post_parent" to <strong>"all"</strong>, the query will not have a post ID or post_parent parameter.
+You can use the "post_parent" to override the default behavior. If you set "post_parent" to a specific post ID, only the items attached to that post are displayed. There are four additional values available:
 </p>
-<p>
-Two other "post_parent" values let you restrict the gallery to attached or unattached items. If you set "post_parent" to <strong>"any"</strong>, only the items attached to a post or page are displayed. If you set "post_parent" to <strong>"none"</strong>, only the unattached items are displayed.
-</p>
+<table>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">none</td>
+<td>all the <strong>unattached</strong> items are displayed, i.e., items with post_parent equal to zero (0)</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">current</td>
+<td>only the items attached to the current post/page are displayed, i.e., the post/page that contains the shortcode</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">any</td>
+<td>all the <strong>attached</strong> items are displayed, i.e., items with post_parent not equal to zero (0)</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">all</td>
+<td>all of the items are displayed, i.e., post_parent is ignored</td>
+</tr>
+</table>
 <p>
 For example, <code>[mla_gallery tag="artisan"]</code> will display all images having the specified tag value, regardless of which post (if any) they are attached to. If you use <code>[mla_gallery tag="artisan" post_parent="current"]</code> it will display images having the specified tag value only if they are attached to the current post.
 <a name="author_author_name"></a>
@@ -4249,6 +4264,10 @@ The following hooks are defined in <code>/media-library-assistant/includes/class
 <td>Gives you an opportunity to process an MLA_List_Table page-level or single-item action that MLA does not recognize.</td>
 </tr>
 <tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">mla_list_table_clear_filter_by</td>
+<td>Gives you an opportunity to clear any custom submenu "Filter-by" parameters.</td>
+</tr>
+<tr>
 <td style="padding-right: 10px; vertical-align: top; font-weight:bold">mla_list_table_new_instance</td>
 <td>Gives you an opportunity to extend the MLA_List_Table class.</td>
 </tr>
@@ -4288,6 +4307,10 @@ The following hooks are defined in <code>/wp-admin/includes/class-wp-list-table.
 <tr>
 <td style="padding-right: 10px; vertical-align: top; font-weight:bold">mla_list_table_column_default</td>
 <td>Called when the MLA_List_Table can't find a value for a given column.</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">mla_list_table_submenu_arguments</td>
+<td>Gives you an opportunity to filter the URL parameters that will be retained when the submenu page refreshes.</td>
 </tr>
 <tr>
 <td style="padding-right: 10px; vertical-align: top; font-weight:bold">mla_list_table_prepare_items_pagination</td>

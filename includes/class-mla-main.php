@@ -1034,6 +1034,7 @@ class MLA {
 			unset( $_REQUEST['mla-term'] );
 			unset( $_REQUEST['mla-metakey'] );
 			unset( $_REQUEST['mla-metavalue'] );
+			do_action( 'mla_list_table_clear_filter_by' );
 		}
 
 		/*
