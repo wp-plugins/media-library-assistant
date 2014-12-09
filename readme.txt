@@ -3,8 +3,8 @@ Contributors: dglingren
 Donate link: http://fairtradejudaica.org/make-a-difference/donate/
 Tags: attachment, attachments, documents, gallery, image, images, media, library, media library, tag cloud, media-tags, media tags, tags, media categories, categories, IPTC, EXIF, GPS, PDF, meta, metadata, photo, photos, photograph, photographs, photoblog, photo albums, lightroom, photoshop, MIME, mime-type, icon, upload, file extensions
 Requires at least: 3.3
-Tested up to: 4.0
-Stable tag: 1.94
+Tested up to: 4.0.1
+Stable tag: 1.95
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -292,8 +292,8 @@ All of the MLA source code has been annotated with "DocBlocks", a special type o
 
 == Upgrade Notice ==
 
-= 1.94 =
-Media Manager fixes and new "current-item" parameters for [mla_tag_cloud]. Two other enhancements, seven fixes.
+= 1.95 =
+New [mla_gallery] parameters, Download rollover action, Media/Assistant submenu filters. Eleven enhancements, seven fixes.
 
 == Other Notes ==
 

@@ -29,7 +29,7 @@ class MLA {
 	 *
 	 * @var	string
 	 */
-	const CURRENT_MLA_VERSION = '1.94';
+	const CURRENT_MLA_VERSION = '1.95';
 
 	/**
 	 * Slug for registering and enqueueing plugin style sheet
