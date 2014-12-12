@@ -777,6 +777,10 @@ class MLAShortcodes {
 			 * As of WP 3.7, this function returns "<a href='$url'>$link_text</a>", where $link_text
 			 * can be an image thumbnail or a text link. The "title=" attribute was dropped.
 			 * The function is defined in /wp-includes/post-template.php.
+			 *
+			 * As of WP 4.1, this function has an additional optional parameter, an "Array or string of attributes",
+			 * used in the [gallery] shortcode to tie the link to a caption with 'aria-describedby'. The caption
+			 * has a matching 'id' attribute "$selector-#id".
 			 */
 			$item_values['pagelink'] = wp_get_attachment_link($attachment->ID, $size, true, $show_icon, $link_text);
 			$item_values['filelink'] = wp_get_attachment_link($attachment->ID, $size, false, $show_icon, $link_text);
@@ -2615,11 +2619,12 @@ class MLAShortcodes {
 
 		/*
 		 * 'RAND' is not documented in the codex, but is present in the code.
-		 */
+		 * CODE REMOVED in WordPress 4.1
+		 * /
 		if ( 'RAND' == strtoupper( $arguments['order'] ) ) {
 			$arguments['orderby'] = 'none';
 			unset( $arguments['order'] );
-		}
+		} // */
 
 		if ( !empty( $arguments['ids'] ) ) {
 			// 'ids' is explicitly ordered, unless you specify otherwise.

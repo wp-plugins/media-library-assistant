@@ -152,6 +152,44 @@
           </p>
         </td>
       </tr>
+      <tr id="bulk-progress" class="inline-edit-row inline-edit-row-attachment inline-edit-attachment bulk-edit-row bulk-edit-row-attachment bulk-edit-attachment" style="display: none">
+        <td colspan="[+colspan+]" class="colspanchange">
+          <fieldset class="inline-edit-col-left">
+            <div class="inline-edit-col">
+              <h4>[+Bulk Edit+] [+Bulk Waiting+]</h4>
+              <div id="bulk-progress-waiting-div">
+                <div class="bulk-progress-titles" id="bulk-progress-waiting"></div>
+              </div>
+            </div>
+          </fieldset>
+          <fieldset class="inline-edit-col-center">
+		    <div class="inline-edit-col">
+              <h4>[+Bulk Running+]</h4>
+              <div id="bulk-progress-running-div">
+                <div class="bulk-progress-titles" id="bulk-progress-running"></div>
+              </div>
+		    </div>
+		  </fieldset>
+          <fieldset class="inline-edit-col-right">
+            <div class="inline-edit-col">
+		    <div class="inline-edit-col">
+              <h4>[+Bulk Complete+]</h4>
+              <div id="bulk-progress-complete-div">
+                <div class="bulk-progress-titles" id="bulk-progress-complete"></div>
+              </div>
+		    </div>
+            </div>
+          </fieldset>
+          <p class="submit inline-edit-save">
+		  	<a accesskey="c" href="#inline-edit" title="[+Cancel+]" class="button-secondary cancel alignleft">[+Cancel+]</a>
+            <input accesskey="r" type="submit" name="bulk_refresh" id="bulk_refresh" class="button-primary alignright" value="[+Refresh+]"  />
+			<span class="spinner"></span>
+            <input type="hidden" name="page" value="mla-menu" />
+            <input type="hidden" name="screen" value="media_page_mla-menu" />
+            <span class="error" style="display:none"></span> <br class="clear" />
+          </p>
+        </td>
+      </tr>
     </tbody>
   </table>
 </form>

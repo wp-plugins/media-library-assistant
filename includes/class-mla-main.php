@@ -357,6 +357,13 @@ class MLA {
 				'ntdelTitle' => __( 'Remove From Bulk Edit', 'media-library-assistant' ),
 				'noTitle' => __( '(no title)', 'media-library-assistant' ),
 				'bulkTitle' => __( 'Bulk Edit items', 'media-library-assistant' ),
+				'bulkWaiting' => __( 'Waiting', 'media-library-assistant' ),
+				'bulkComplete' => __( 'Complete', 'media-library-assistant' ),
+				'bulkUnchanged' => __( 'Unchanged', 'media-library-assistant' ),
+				'bulkSuccess' => __( 'Succeeded', 'media-library-assistant' ),
+				'bulkFailure' => __( 'Failed', 'media-library-assistant' ),
+				'bulkCanceled' => __( 'CANCELED', 'media-library-assistant' ),
+				'bulkChunkSize' => MLAOptions::mla_get_option( MLAOptions::MLA_BULK_CHUNK_SIZE ),
 				'comma' => _x( ',', 'tag_delimiter', 'media-library-assistant' ),
 				'ajax_action' => self::JAVASCRIPT_INLINE_EDIT_SLUG,
 				'ajax_nonce' => wp_create_nonce( self::MLA_ADMIN_NONCE ) 
@@ -775,6 +782,227 @@ class MLA {
 	}
 
 	/**
+	 * Process bulk action for one or more attachments
+	 *
+	 * @since 1.9x
+	 *
+	 * @param	string	Bulk action slug: delete, edit, restore, trash, custom action
+	 *
+	 * @return	array	messages and page content: ( 'message', 'body', 'unchanged', 'success', 'failure', 'item_results' )
+	 */
+	private static function _process_bulk_action( $bulk_action ) {
+		$page_content = array( 'message' => '', 'body' => '', 'unchanged' => 0, 'success' => 0, 'failure' => 0 );
+
+		if ( isset( $_REQUEST['cb_attachment'] ) ) {
+			if ( !empty( $_REQUEST['bulk_custom_field_map'] ) ) {
+				do_action( 'mla_begin_mapping', 'bulk_custom', NULL );
+			} elseif ( !empty( $_REQUEST['bulk_map'] ) ) {
+				do_action( 'mla_begin_mapping', 'bulk_iptc_exif', NULL );
+			}
+
+			foreach ( $_REQUEST['cb_attachment'] as $index => $post_id ) {
+				if ( ! current_user_can( 'edit_post', $post_id ) ) {
+					$page_content['message'] .= __( 'ERROR: You are not allowed to edit Attachment: ', 'media-library-assistant' ) . $post_id . '<br>';
+					continue;
+				}
+
+				$item_content = apply_filters( 'mla_list_table_bulk_action', NULL, $bulk_action, $post_id );
+				if ( is_null( $item_content ) ) {
+					$prevent_default = false;
+					$custom_message = '';
+				} else {
+					$prevent_default = isset( $item_content['prevent_default'] ) ? $item_content['prevent_default'] : false;
+					$custom_message = isset( $item_content['message'] ) ? $item_content['message'] : '';
+				}
+	
+				if ( ! $prevent_default ) {
+					switch ( $bulk_action ) {
+						case 'delete':
+							$item_content = self::_delete_single_item( $post_id );
+							break;
+						case 'edit':
+							if ( !empty( $_REQUEST['bulk_custom_field_map'] ) ) {
+								$updates = MLAOptions::mla_evaluate_custom_field_mapping( $post_id, 'single_attachment_mapping' );
+								$item_content = MLAData::mla_update_single_item( $post_id, $updates );
+								break;
+							}
+
+							if ( !empty( $_REQUEST['bulk_map'] ) ) {
+								$item = get_post( $post_id );
+								$updates = MLAOptions::mla_evaluate_iptc_exif_mapping( $item, 'iptc_exif_mapping' );
+								$item_content = MLAData::mla_update_single_item( $post_id, $updates );
+								break;
+							}
+
+							/*
+							 * Copy the edit form contents to $new_data
+							 * Trim text values for testing purposes only
+							 */
+							$new_data = array() ;
+							if ( isset( $_REQUEST['post_title'] ) ) {
+								$test_value = self::_process_bulk_value( $post_id, $_REQUEST['post_title'] );
+								if ( ! empty( $test_value ) ) {
+									$new_data['post_title'] = $test_value;
+								} elseif ( is_null( $test_value ) ) {
+									$new_data['post_title'] = '';
+								}
+							}
+
+							if ( isset( $_REQUEST['post_excerpt'] ) ) {
+								$test_value = self::_process_bulk_value( $post_id, $_REQUEST['post_excerpt'] );
+								if ( ! empty( $test_value ) ) {
+									$new_data['post_excerpt'] = $test_value;
+								} elseif ( is_null( $test_value ) ) {
+									$new_data['post_excerpt'] = '';
+								}
+							}
+
+							if ( isset( $_REQUEST['post_content'] ) ) {
+								$test_value = self::_process_bulk_value( $post_id, $_REQUEST['post_content'] );
+								if ( ! empty( $test_value ) ) {
+									$new_data['post_content'] = $test_value;
+								} elseif ( is_null( $test_value ) ) {
+									$new_data['post_content'] = '';
+								}
+							}
+
+							/*
+							 * image_alt requires a separate key because some attachment types
+							 * should not get a value, e.g., text or PDF documents
+							 */
+							if ( isset( $_REQUEST['image_alt'] ) ) {
+								$test_value = self::_process_bulk_value( $post_id, $_REQUEST['image_alt'] );
+								if ( ! empty( $test_value ) ) {
+									$new_data['bulk_image_alt'] = $test_value;
+								} elseif ( is_null( $test_value ) ) {
+									$new_data['bulk_image_alt'] = '';
+								}
+							}
+
+							if ( isset( $_REQUEST['post_parent'] ) ) {
+								if ( is_numeric( $_REQUEST['post_parent'] ) ) {
+									$new_data['post_parent'] = $_REQUEST['post_parent'];
+								}
+							}
+
+							if ( isset( $_REQUEST['post_author'] ) ) {
+								if ( -1 != $_REQUEST['post_author'] ) {
+										$new_data['post_author'] = $_REQUEST['post_author'];
+								}
+							}
+
+							if ( isset( $_REQUEST['comment_status'] ) ) {
+								if ( -1 != $_REQUEST['comment_status'] ) {
+										$new_data['comment_status'] = $_REQUEST['comment_status'];
+								}
+							}
+
+							if ( isset( $_REQUEST['ping_status'] ) ) {
+								if ( -1 != $_REQUEST['ping_status'] ) {
+										$new_data['ping_status'] = $_REQUEST['ping_status'];
+								}
+							}
+
+							/*
+							 * Custom field support
+							 */
+							$custom_fields = array();
+							foreach (MLAOptions::mla_custom_field_support( 'bulk_edit' ) as $slug => $label ) {
+								if ( isset( $_REQUEST[ $slug ] ) ) {
+									$test_value = self::_process_bulk_value( $post_id, $_REQUEST[ $slug ] );
+									if ( ! empty( $test_value ) ) {
+										$custom_fields[ $label ] = $test_value;
+									} elseif ( is_null( $test_value ) ) {
+										$custom_fields[ $label ] = '';
+									}
+								}
+							} // foreach
+
+							if ( ! empty( $custom_fields ) ) {
+								$new_data[ 'custom_updates' ] = $custom_fields;
+							}
+
+							$item_content = MLAData::mla_update_single_item( $post_id, $new_data, $_REQUEST['tax_input'], $_REQUEST['tax_action'] );
+							break;
+						case 'restore':
+							$item_content = self::_restore_single_item( $post_id );
+							break;
+						//case 'tag':
+						case 'trash':
+							$item_content = self::_trash_single_item( $post_id );
+							break;
+						default:
+							$item_content = apply_filters( 'mla_list_table_custom_bulk_action', NULL, $bulk_action, $post_id );
+							if ( is_null( $item_content ) ) {
+								$item_content = array(
+									/* translators: 1: bulk_action, e.g., delete, edit, restore, trash */
+									 'message' => sprintf( __( 'Unknown bulk action %1$s', 'media-library-assistant' ), $bulk_action ),
+									'body' => '' 
+								);
+							} // unknown bulk_action
+					} // switch $bulk_action
+				} // ! $prevent_default
+				
+				if ( ! empty( $custom_message ) ) {
+					$no_changes = sprintf( __( 'Item %1$d, no changes detected.', 'media-library-assistant' ), $post_id );
+					if ( $no_changes == $item_content['message'] ) {
+						$item_content['message'] = $custom_message;
+					} else {
+						$item_content['message'] = $custom_message . '<br>' . $item_content['message'];
+					}
+				}
+
+				$page_content['item_results'][ $post_id ] = array( 'result' => 'unknown', 'message' => $item_content['message'] );
+				if ( ! empty( $item_content['message'] ) ) {
+					$page_content['message'] .= $item_content['message'] . '<br>';
+
+					if ( false !== strpos( $item_content['message'], __( 'no changes detected', 'media-library-assistant' ) ) ) {
+						$page_content['unchanged'] += 1;
+						$page_content['item_results'][ $post_id ]['result'] = 'unchanged';
+						} elseif (	 false !== strpos( $item_content['message'], __( 'ERROR:', 'media-library-assistant' ) ) ) {
+						$page_content['failure'] += 1;
+						$page_content['item_results'][ $post_id ]['result'] = 'failure';
+					} else {
+						$page_content['success'] += 1;
+						$page_content['item_results'][ $post_id ]['result'] = 'success';
+					}
+				}
+			} // foreach cb_attachment
+
+			if ( !empty( $_REQUEST['bulk_custom_field_map'] ) || !empty( $_REQUEST['bulk_map'] ) ) {
+				do_action( 'mla_end_mapping' );
+			}
+
+			unset( $_REQUEST['post_title'] );
+			unset( $_REQUEST['post_excerpt'] );
+			unset( $_REQUEST['post_content'] );
+			unset( $_REQUEST['image_alt'] );
+			unset( $_REQUEST['comment_status'] );
+			unset( $_REQUEST['ping_status'] );
+			unset( $_REQUEST['post_parent'] );
+			unset( $_REQUEST['post_author'] );
+			unset( $_REQUEST['tax_input'] );
+			unset( $_REQUEST['tax_action'] );
+
+			foreach (MLAOptions::mla_custom_field_support( 'bulk_edit' ) as $slug => $label )
+				unset( $_REQUEST[ $slug ] );
+
+			unset( $_REQUEST['cb_attachment'] );
+		} else { // isset cb_attachment
+			/* translators: 1: action name, e.g., edit */
+			$page_content['message'] = sprintf( __( 'Bulk Action %1$s - no items selected.', 'media-library-assistant' ), $bulk_action );
+		}
+
+		unset( $_REQUEST['action'] );
+		unset( $_REQUEST['bulk_custom_field_map'] );
+		unset( $_REQUEST['bulk_map'] );
+		unset( $_REQUEST['bulk_edit'] );
+		unset( $_REQUEST['action2'] );
+		
+		return $page_content;
+	}
+
+	/**
 	 * Render the "Assistant" subpage in the Media section, using the list_table package
 	 *
 	 * @since 0.1
@@ -840,190 +1068,11 @@ class MLA {
 		 * Process bulk actions that affect an array of items
 		 */
 		if ( $bulk_action && ( $bulk_action != 'none' ) ) {
-
-			if ( isset( $_REQUEST['cb_attachment'] ) ) {
-				if ( !empty( $_REQUEST['bulk_custom_field_map'] ) ) {
-					do_action( 'mla_begin_mapping', 'bulk_custom', NULL );
-				} elseif ( !empty( $_REQUEST['bulk_map'] ) ) {
-					do_action( 'mla_begin_mapping', 'bulk_iptc_exif', NULL );
-				}
-
-				foreach ( $_REQUEST['cb_attachment'] as $index => $post_id ) {
-					$item_content = apply_filters( 'mla_list_table_bulk_action', NULL, $bulk_action, $post_id );
-					if ( is_null( $item_content ) ) {
-						$prevent_default = false;
-						$custom_message = '';
-					} else {
-						$prevent_default = isset( $item_content['prevent_default'] ) ? $item_content['prevent_default'] : false;
-						$custom_message = isset( $item_content['message'] ) ? $item_content['message'] : '';
-					}
-		
-					if ( ! $prevent_default ) {
-						switch ( $bulk_action ) {
-							case 'delete':
-								$item_content = self::_delete_single_item( $post_id );
-								break;
-							case 'edit':
-								if ( !empty( $_REQUEST['bulk_custom_field_map'] ) ) {
-									$updates = MLAOptions::mla_evaluate_custom_field_mapping( $post_id, 'single_attachment_mapping' );
-									$item_content = MLAData::mla_update_single_item( $post_id, $updates );
-									break;
-								}
-	
-								if ( !empty( $_REQUEST['bulk_map'] ) ) {
-									$item = get_post( $post_id );
-									$updates = MLAOptions::mla_evaluate_iptc_exif_mapping( $item, 'iptc_exif_mapping' );
-									$item_content = MLAData::mla_update_single_item( $post_id, $updates );
-									break;
-								}
-	
-								/*
-								 * Copy the edit form contents to $new_data
-								 * Trim text values for testing purposes only
-								 */
-								$new_data = array() ;
-								if ( isset( $_REQUEST['post_title'] ) ) {
-									$test_value = self::_process_bulk_value( $post_id, $_REQUEST['post_title'] );
-									if ( ! empty( $test_value ) ) {
-										$new_data['post_title'] = $test_value;
-									} elseif ( is_null( $test_value ) ) {
-										$new_data['post_title'] = '';
-									}
-								}
-	
-								if ( isset( $_REQUEST['post_excerpt'] ) ) {
-									$test_value = self::_process_bulk_value( $post_id, $_REQUEST['post_excerpt'] );
-									if ( ! empty( $test_value ) ) {
-										$new_data['post_excerpt'] = $test_value;
-									} elseif ( is_null( $test_value ) ) {
-										$new_data['post_excerpt'] = '';
-									}
-								}
-	
-								if ( isset( $_REQUEST['post_content'] ) ) {
-									$test_value = self::_process_bulk_value( $post_id, $_REQUEST['post_content'] );
-									if ( ! empty( $test_value ) ) {
-										$new_data['post_content'] = $test_value;
-									} elseif ( is_null( $test_value ) ) {
-										$new_data['post_content'] = '';
-									}
-								}
-	
-								/*
-								 * image_alt requires a separate key because some attachment types
-								 * should not get a value, e.g., text or PDF documents
-								 */
-								if ( isset( $_REQUEST['image_alt'] ) ) {
-									$test_value = self::_process_bulk_value( $post_id, $_REQUEST['image_alt'] );
-									if ( ! empty( $test_value ) ) {
-										$new_data['bulk_image_alt'] = $test_value;
-									} elseif ( is_null( $test_value ) ) {
-										$new_data['bulk_image_alt'] = '';
-									}
-								}
-	
-								if ( isset( $_REQUEST['post_parent'] ) ) {
-									if ( is_numeric( $_REQUEST['post_parent'] ) ) {
-										$new_data['post_parent'] = $_REQUEST['post_parent'];
-									}
-								}
-	
-								if ( isset( $_REQUEST['post_author'] ) ) {
-									if ( -1 != $_REQUEST['post_author'] ) {
-											$new_data['post_author'] = $_REQUEST['post_author'];
-									}
-								}
-	
-								if ( isset( $_REQUEST['comment_status'] ) ) {
-									if ( -1 != $_REQUEST['comment_status'] ) {
-											$new_data['comment_status'] = $_REQUEST['comment_status'];
-									}
-								}
-	
-								if ( isset( $_REQUEST['ping_status'] ) ) {
-									if ( -1 != $_REQUEST['ping_status'] ) {
-											$new_data['ping_status'] = $_REQUEST['ping_status'];
-									}
-								}
-	
-								/*
-								 * Custom field support
-								 */
-								$custom_fields = array();
-								foreach (MLAOptions::mla_custom_field_support( 'bulk_edit' ) as $slug => $label ) {
-									if ( isset( $_REQUEST[ $slug ] ) ) {
-										if ( ! empty( $_REQUEST[ $slug ] ) ) {
-											$custom_fields[ $label ] = $_REQUEST[ $slug ];
-										}
-									}
-								} // foreach
-	
-								if ( ! empty( $custom_fields ) ) {
-									$new_data[ 'custom_updates' ] = $custom_fields;
-								}
-	
-								$item_content = MLAData::mla_update_single_item( $post_id, $new_data, $_REQUEST['tax_input'], $_REQUEST['tax_action'] );
-								break;
-							case 'restore':
-								$item_content = self::_restore_single_item( $post_id );
-								break;
-							//case 'tag':
-							case 'trash':
-								$item_content = self::_trash_single_item( $post_id );
-								break;
-							default:
-								$item_content = apply_filters( 'mla_list_table_custom_bulk_action', NULL, $bulk_action, $post_id );
-								if ( is_null( $item_content ) ) {
-									$item_content = array(
-										/* translators: 1: bulk_action, e.g., delete, edit, restore, trash */
-										 'message' => sprintf( __( 'Unknown bulk action %1$s', 'media-library-assistant' ), $bulk_action ),
-										'body' => '' 
-									);
-								} // unknown bulk_action
-						} // switch $bulk_action
-					} // ! $prevent_default
-					
-					if ( ! empty( $custom_message ) ) {
-						$no_changes = sprintf( __( 'Item %1$d, no changes detected.', 'media-library-assistant' ), $post_id );
-						if ( $no_changes == $item_content['message'] ) {
-							$item_content['message'] = $custom_message;
-						} else {
-							$item_content['message'] = $custom_message . '<br>' . $item_content['message'];
-						}
-					}
-
-					if ( ! empty( $item_content['message'] ) ) {
-						$page_content['message'] .= $item_content['message'] . '<br>';
-					}
-				} // foreach cb_attachment
-
-				if ( !empty( $_REQUEST['bulk_custom_field_map'] ) || !empty( $_REQUEST['bulk_map'] ) ) {
-					do_action( 'mla_end_mapping' );
-				}
-
-				unset( $_REQUEST['post_title'] );
-				unset( $_REQUEST['post_excerpt'] );
-				unset( $_REQUEST['post_content'] );
-				unset( $_REQUEST['image_alt'] );
-				unset( $_REQUEST['comment_status'] );
-				unset( $_REQUEST['ping_status'] );
-				unset( $_REQUEST['post_parent'] );
-				unset( $_REQUEST['post_author'] );
-				unset( $_REQUEST['tax_input'] );
-				unset( $_REQUEST['tax_action'] );
-
-				foreach (MLAOptions::mla_custom_field_support( 'bulk_edit' ) as $slug => $label )
-					unset( $_REQUEST[ $slug ] );
-
-				unset( $_REQUEST['cb_attachment'] );
-			} else { // isset cb_attachment
-				/* translators: 1: action name, e.g., edit */
-				$page_content['message'] = sprintf( __( 'Bulk Action %1$s - no items selected.', 'media-library-assistant' ), $bulk_action );
+			// bulk_refresh simply refreshes the page, ignoring other bulk actions
+			if ( empty( $_REQUEST['bulk_refresh'] ) ) {
+				$item_content = self::_process_bulk_action( $bulk_action );
+				$page_content['message'] .= $item_content['message'] . '<br>';
 			}
-
-			unset( $_REQUEST['action'] );
-			unset( $_REQUEST['bulk_edit'] );
-			unset( $_REQUEST['action2'] );
 		} // $bulk_action
 
 		if ( isset( $_REQUEST['clear_filter_by'] ) ) {
@@ -1439,18 +1488,35 @@ class MLA {
 	}
 
 	/**
-	 * Ajax handler for inline editing (quick edit only)
+	 * Ajax handler for bulk editing and mapping
 	 *
-	 * Adapted from wp_ajax_inline_save in /wp-admin/includes/ajax-actions.php
+	 * @since 1.9x
+	 *
+	 * @return	void	echo json results or error message, then die()
+	 */
+	private static function _bulk_edit_ajax_handler() {
+		$item_content = (object) self::_process_bulk_action( 'edit' );
+		wp_send_json_success( $item_content );
+	}
+
+	/**
+	 * Ajax handler for inline editing
+	 *
+	 * Adapted for Quick Edit from wp_ajax_inline_save in /wp-admin/includes/ajax-actions.php
 	 *
 	 * @since 0.20
 	 *
 	 * @return	void	echo HTML <tr> markup for updated row or error message, then die()
 	 */
 	public static function mla_inline_edit_ajax_action() {
+//error_log( 'DEBUG: mla_inline_edit_ajax_action $_REQUEST = ' . var_export( $_REQUEST, true ), 0 );
 		set_current_screen( $_REQUEST['screen'] );
 
 		check_ajax_referer( self::MLA_ADMIN_NONCE, 'nonce' );
+
+		if ( ! empty( $_REQUEST['bulk_action'] ) ) {
+			self::_bulk_edit_ajax_handler();
+		}
 
 		if ( empty( $_REQUEST['post_ID'] ) ) {
 			echo __( 'ERROR: No post ID found', 'media-library-assistant' );
@@ -1836,6 +1902,10 @@ class MLA {
 			'bulk_custom_fields' => $bulk_custom_fields,
 			'Map IPTC/EXIF metadata' =>  __( 'Map IPTC/EXIF metadata', 'media-library-assistant' ),
 			'Map Custom Field metadata' =>  __( 'Map Custom Field Metadata', 'media-library-assistant' ),
+			'Bulk Waiting' =>  __( 'Waiting', 'media-library-assistant' ),
+			'Bulk Running' =>  __( 'In-process', 'media-library-assistant' ),
+			'Bulk Complete' =>  __( 'Complete', 'media-library-assistant' ),
+			'Refresh' =>  __( 'Refresh', 'media-library-assistant' ),
 			'set_parent_form' => $set_parent_form,
 		);
 		

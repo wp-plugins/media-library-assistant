@@ -152,92 +152,17 @@ All of the MLA source code has been annotated with "DocBlocks", a special type o
 
 == Changelog ==
 
-= 1.95 =
+= 1.9x =
+* New: **Ajax-powered Bulk Edit** processing lets you see the progress of large update batches and prevents script timeouts.
+* New: On the Media/Assistant submenu table  **Content Templates, including `template:[+empty+]`,** have been added to the Bulk Edit area processing for custom fields.
 
-* New: Twenty eight (28) **filters for the Media/Assistant submenu table** support customization of the table display and supporting features like table views, Quick Edit, Bulk Edit and rollover actions.
-* New: For the `[mla_gallery]` shortcode, the **powerful "date_query" parameter** introduced in WordPress Version 3.7 is now supported.
-* New: On the Media/Assistant submenu table a **"Download" rollover action** has been added to enable easy, one-click down of Media Library items.
-* New: On the Media/Assistant submenu table values in the **Base File column can be clicked** to filter the table by the column value. This is useful for plugins such as Polylang that assign the same base file to items translated into multiple languages.
-* New: On the Media/Assistant submenu table  **`template:[+empty+]`** has been added to the Bulk Edit area processing and IPTC/EXIF Standard Field mapping to support deleting the content of the Title, Caption, Description and ALT Text fields.
-* New: A **"tax_relation" parameter** has been added for `[mla_gallery]` simple taxonomy searches that involve two or more taxonomies.
-* New: A **"url" format option** has been added for `[mla_gallery]` substitution parameters that must be encoded for use in an HTML href/URL context, e.g., in hyperlink (`a`) or `img` tag.
-* New: An **"attr" format option** has been added for `[mla_gallery]` substitution parameters that must be encoded for use in an HTML attribute context, e.g., in the `title=` attribute of a hyperlink (`a`) or `img` tag.
-* New: The "MLA Tax Query Example" plugin in `/examples/mla-tax-query-example.php.txt` has been enhanced to handle `orderby`, `order` and `post_mime_type` parameters.
-* New: On the "help" dropdown for Media/Assistant submenu table a new tab has been added to document the "Where-used Reporting" information.
-* New: Examples for custom field mapping/use and IPTC/EXIF mapping/use have been added to the Settings/Media Library Assistant Documentation tab.
-* Fix: On the Media/Assistant submenu table the table header height is no longer affected by the "Icon Size" option value.
-* Fix: On the Media/Assistant submenu table a bug in the "where-used" information for attachments inserted in the body of a post/page but not used in a `[gallery]`, `[mla_gallery]` or Featured Image has been fixed.
-* Fix: For `[mla_gallery]` simple taxonomy searches that involve two or more taxonomies are now processed correctly.
-* Fix: Improved coverage of `[mla_gallery]` pagination and author parameters (and some others) has been added to the Settings/Media Library Assistant Documentation tab.
-* Fix: The Title field is now properly encoded when used as the default `title` attribute in `[mla_gallery]` item links.
-* Fix: The `title` attribute no longer appears twice in `[mla_gallery]` item links when the `mla_viewer=true` parameter is specified.
-* Fix: An occasional problem with double slashes (`//`) in template path names has been corrected.
-
-= 1.94 =
-
-* New: An example that shows how to replace the  wp_list_categories() item count with an accurate, padded count of the attachments assigned to each term has been added to the /media-library-assistant/examples/twentytwelve-mla directory. The example comprises the "page-tosca30-dropdown.php" and "content-tosca30-dropdown.php" files.
-* New: For the `[mla_tag_cloud]` shortcode, new `current_item` and `current_item_class` parameters allow you to specify the current or selected term in the cloud and add a `class` attribute to it.
-* New: For the `[mla_tag_cloud]` shortcode, when item-specific clouds are created with the `ids` parameter, the term counts reflect only the items in the `ids` list.
-* Fix: CSS Styles for the Media Manager year/month filter, taxonomy term filter, Search Media button adn Terms Search Button have been improved.
-* Fix: A shortcode-processing defect in WordPress 4.0 is avoided by adding a "no_texturize_shortcodes" filter to the `[mla_gallery]` and `[mla_tag_cloud]` shortcodes.
-* Fix: For the `[mla_gallery]` shortcode, a defect in expanding `request:` and `query:` arguments in pagination parameters has been fixed.
-* Fix: A defect in the Media Manager/Media Grid enhancements has been corrected. The defect caused changes to the MIME type, Year/Month and Terms controls on the toolbar to be ignored when the MLA Enhanced Search Box was disabled.
-* Fix: A defect in the Media Manager/Media Grid enhancements has been corrected. The defect caused changes to the Title, Caption, ALT Text and Description fields in the Attachment Details pane to be ignored.
-* Fix: The number of "where-used" SQL queries required to compose the Media/Assistant submenu table has been reduced significantly. For example, a table with 100 items has been reduced from 282 queries to 67, and a table with 621 items has been reduced from 2,722 queries to 241.
-* Fix: An occasional PHP notice in the `posts_join` filter has been removed.
-
-= 1.93 =
-
-* New: MLA enhancements have been added to the new WordPress 4.0 Media/Library Media Grid submenu. An option has been added to the Settings/Media Library Assistant General tab to disable them if they are not wanted.
-* New: An option has been added to the Settings/Media Library Assistant General tab to automatically populate taxonomy metaboxes in the Media Manager Details pane when the item is selected. The option is disabled by default.
-* New: A new mla-simple-mapping-hooks-example.php.txt example plugin has been added to the /media-library-assistant/examples directory.
-* Fix: Completed WordPress 4.0 compatibility work.
-* Fix: Media Manager toolbar controls for different modes, e.g., Insert Media, Set Featured Image, are now separated so each mode retains its own settings.
-* Fix: Media Manager MLA enhanced toolbar controls for MIME type, date and terms now work when the enhanced Search Media control is disabled.
-* Fix: The buddypress-hooks-example.php.txt example plugin now handles cover art for the most recent rtMedia releases.
-
-= 1.92 =
-* Fix: PHP "Fatal error: Call to undefined function get_current_screen ()" has been fixed.
-* Fix: Enhanced taxonomy support for drag & drop file uploads has been restored.
-* Fix: JavaScript "undefined or null object" reference when all Media Manager toolbar enhancements are disabled has been fixed.
-
-= 1.91 =
-
-* New: Fourteen filters have been added to the "Edit Media additional meta boxes". You can customize which meta boxes appear and replace their contents. An example plugin has been added to demonstrate their use. See the [Other Notes section](http://wordpress.org/extend/plugins/media-library-assistant/other_notes/ "Click here, then scroll down") section or the Settings/Media Library Assistant Documentation tab for more information.
-* New: A new hook, `mla_media_modal_initial_filters` has been added to the "Media Manager Enhancement filters (Hooks)".
-* New: A new "MLA Media Modal Hooks Example" plugin has been created in `/examples/mla-media-modal-hooks-example.php.txt`.
-* New: Two new examples have been added to the MLA Gallery Hooks example plugin.
-* New: A new "MLA Tax Query Example" plugin has been created in `/examples/mla-tax-query-example.php.txt`.
-* New: Two new hooks, `mla_begin_mapping` and `mla_end_mapping` have been added to the "MLA Custom Field and IPTC/EXIF Mapping Actions and Filters (Hooks)".
-* New: A new "MLA Meta Box Hooks Example" plugin has been created in `/examples/mla-metabox-hooks-example.php.txt`.
-* New: A new, simplified MLA Mapping Hooks example plugin has been created. The older, more complex example is provided as a separate example plugin, `/examples/mla-metadata-mapping-hooks-example.php.txt`.
-* Fix: On the Media/Assistant submenu table, the "Set Parent" links now refresh the entire table row, properly updating all of the affected columns and the Quick Edit data.
-* Fix: A defect that affected certain "front end" file uploads, e.g., changing an avatar in BuddyPress, has been corrected.
-* Fix: All `like_escape()` calls have been changed to `$wpdb->esc_like()` for WordPress 4.0 and later.
-* Fix: A defect in multi-word or quoted Search Media box content on the Media/Assistant submenu table has been fixed.
-* Fix: A defect in WPML support on the Media/Assistant submenu table has been fixed.
-* Fix: A defect in using fields in the "posts" database table as "Data sources for custom field mapping" has been fixed.
-
-= 1.90 =
-
-* New: On the Media/Assistant submenu and Media Manager Modal Window, a **new "Terms Search" popup filter** lets you filter the display by terms whose name contains the keywords and phrases entered in the search box. See the [Other Notes section](http://wordpress.org/extend/plugins/media-library-assistant/other_notes/ "Click here, then scroll down") section for more details.
-* New: On the Media/Assistant submenu and Media Manager Modal Window Search Media boxes, a **new "terms" checkbox** lets you extend the search to terms whose name contains the keywords and phrases entered in the search box. See the [Other Notes section](http://wordpress.org/extend/plugins/media-library-assistant/other_notes/ "Click here, then scroll down") section for more details.
-* New: On the Media/Assistant submenu and Media Manager Modal Window Search Media boxes, you can **hide the and/or connector and search fields controls** by unchecking the appropriate box in the Settings/Media Library Assistant General tab.
-* New: On the Media/Assistant submenu and Media Manager Modal Window Search Media boxes, you can **change defaults for and/or connector and search fields controls** by setting them in the Settings/Media Library Assistant General tab.
-* New: The **"Select Parent" popup window** now has a post type filter and pagination controls. See the [Other Notes section](http://wordpress.org/extend/plugins/media-library-assistant/other_notes/ "Click here, then scroll down") section for more details.
-* New: The **"Select Parent" popup window** has been added to the Media/Assistant submenu table Bulk Edit area.
-* New: **Documentation for "Select Parent" and "Terms Search** has been added to the Media/Assistant submenu table "Help" dropdown area and the Settings/Media Library Assistant Documentation tab.
-* New: Most of the fields in the "posts" database table have been added as "Data sources for custom field mapping".
-* New: For `[mla_tag_cloud]`, a **new "pad_counts" parameter** lets you add children to their parents' term-specific count(s).
-* New: For `[mla_tag_cloud]`, **new "post_type" and "post_status" parameters** give you more control over cloud content when a taxonomy such as `category` is registered for posts/pages as well as attachments.
-* New: For `[mla_gallery]`, "category" is accepted as a synonym for "category_name" to make filtering by category more intuitive.
-* New: An example using a **custom SQL Query to replace gallery content** has been added to the `mla-hooks-example.php.txt` example plugin.
-* New: An example plugin using **BuddyPress and rtMedia** has been created in `/examples/buddypress-hooks-example.php.txt`. The example shows how to replace the WordPress "attachment/media page" links with "BuddyPress/rtMedia page" links. For audio and video files, an option is provided to substitute the "cover_art" thumbnail image for the item Title in the thumbnail_content.
-* Fix: In the Media Manager Modal Window, **adding a taxonomy term** now updates the toolbar "terms filter" dropdown list. It also updates the "parent" dropdown list in the toolbar, if the taxonomy is hierarchical.
-* Fix: In the Media Manager Modal Window, the **year/month and taxonomy filter controls** now appear for plugins such as WooCommerce, Slider Revolution, Image Widget and SimpleFields.
-* Fix: More details added to the "Category Parameters" section of the Settings/Media Library Assistant Documentation tab.
-* Fix: For `[mla_gallery]`, the `mla_rollover_text=` parameter has been restored. WordPress 3.7 removed the `title=` attribute from its attachment links, which disabled `mla_rollover_text=` as well.
-* Fix: For `[mla_tag_cloud]`, the `number` parameter default is now zero, agreeing with the Documentation.
+= 1.90 - 1.95 =
+* 1.95: New [mla_gallery] parameters, Download rollover action, Media/Assistant submenu filters. Eleven enhancements, seven fixes.
+* 1.94: Media Manager fixes and new "current-item" parameters for [mla_tag_cloud]. Two other enhancements, seven fixes.
+* 1.93: WordPress 4.0 Media Grid enhancements (optional) and compatibility fixes. New auto-fill option for Media Manager taxonomy meta boxes. One other enhancement, three other fixes.
+* 1.92: Three bug fixes, one serious.
+* 1.91: WordPress 4.0 support! New "Edit Media meta box" and "Media Modal Initial Values" filters and example plugins. Four other enhancements, six fixes.
+* 1.90: New "Terms Search" popup window and Search Media "Terms" checkbox. Post Type filter and pagination for "Select Parent" popup. Ten other enhancements, five fixes.
 
 = 1.80 - 1.83 =
 * 1.83: Corrects serious defect, restoring Quick Edit, Bulk Edit and Screen Options to Media/Assistant submenu. Three other fixes.

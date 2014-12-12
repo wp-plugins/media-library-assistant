@@ -138,6 +138,18 @@ textarea[readonly] {
 	width: 49%
 }
 
+#wpbody-content tr#bulk-progress .inline-edit-col-left {
+	width: 30%
+}
+
+#wpbody-content tr#bulk-progress .inline-edit-col-center {
+	width: 30%
+}
+
+#wpbody-content tr#bulk-progress .inline-edit-col-right {
+	width: 40%
+}
+
 .quick-edit-row-attachment fieldset.inline-edit-col-left label span.title,
 .bulk-edit-row-attachment fieldset.inline-edit-col-right label span.title {
 	width: 6em
@@ -182,6 +194,78 @@ textarea[readonly] {
 .quick-edit-row-attachment fieldset.inline-edit-col-right label.inline-edit-tags span.title,
 .bulk-edit-row-attachment fieldset.inline-edit-col-right label.inline-edit-tags span.title {
 	width: 99%
+}
+
+.bulk-progress-titles div a:before {
+	background: none;
+	color: #bbb;
+	content: '\f153';
+	display: block !important;
+	font: normal 16px/1 'dashicons';
+	speak: none;
+	height: 20px;
+	text-align: center;
+	width: 20px;
+	-webkit-font-smoothing: antialiased !important;
+}
+
+.bulk-progress-titles div a:before {
+	margin: 2px 0;
+}
+
+.bulk-progress-titles div a:hover:before {
+	color: #c00;
+}
+
+.bulk-progress-titles {
+	display: block;
+	height: 12em;
+	border: 1px solid #ddd;
+	overflow-y: scroll;
+	padding: 0 5px;
+	margin: 0 0 5px;
+}
+
+.bulk-progress-titles div {
+	font-style: normal;
+	font-size: 11px;
+}
+
+.bulk-progress-titles {
+	line-height: 140%;
+}
+.bulk-progress-titles div {
+	margin: 0.2em 0.3em;
+}
+
+.bulk-progress-titles div a {
+	cursor: pointer;
+	display: block;
+	float: left;
+	height: 18px;
+	margin: 0 3px 0 -2px;
+	overflow: hidden;
+	position: relative;
+	width: 20px;
+}
+
+.bulk-progress-titles div a:before {
+	position: relative;
+	top: -3px;
+}
+
+@media screen and ( max-width: 782px ) {
+	.bulk-progress-titles div {
+		font-size: 16px;
+	}
+
+	.bulk-progress-titles div {
+		margin: 0.8em 0.3em;
+	}
+
+	.bulk-progress-titles div a {
+		height: 22px;
+	}
 }
 
 /*

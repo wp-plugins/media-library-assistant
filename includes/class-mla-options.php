@@ -97,6 +97,11 @@ class MLAOptions {
 	const MLA_TABLE_ICON_SIZE = 'table_icon_size';
 
 	/**
+	 * Provides a unique name for the Bulk Update and Map All chunk size option
+	 */
+	const MLA_BULK_CHUNK_SIZE = 'bulk_chunk_size';
+
+	/**
 	 * Provides a unique name for the taxonomy filter maximum depth option
 	 */
 	const MLA_TAXONOMY_FILTER_DEPTH = 'taxonomy_filter_depth';
@@ -615,8 +620,16 @@ class MLAOptions {
 					'name' => __( 'Icon Size', 'media-library-assistant' ),
 					'type' => 'text',
 					'std' => '',
-					'size' => 10,
+					'size' => 5,
 					'help' => __( 'Enter the size of the thumbnail/icon images, in pixels', 'media-library-assistant' )),
+
+			self::MLA_BULK_CHUNK_SIZE =>
+				array('tab' => 'general',
+					'name' => __( 'Bulk Chunk Size', 'media-library-assistant' ),
+					'type' => 'text',
+					'std' => '25',
+					'size' => 5,
+					'help' => __( 'Enter the size of the Bulk Edit and Map All processing chunks', 'media-library-assistant' )),
 
 			'taxonomy_filter_subheader' =>
 				array('tab' => 'general',
