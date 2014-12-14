@@ -3397,8 +3397,10 @@ class MLAShortcodes {
 		$arguments = shortcode_atts( self::$mla_get_terms_parameters, $attr );
 		$arguments = apply_filters( 'mla_get_terms_query_arguments', $arguments );
 
-		$query = array();
-		$query_parameters = array();
+		/*
+		 * Build an array of individual clauses that can be filtered
+		 */
+		$clauses = array( 'fields' => '', 'join' => '', 'where' => '', 'order' => '', 'orderby' => '', 'limits' => '', );
 
 		/*
 		 * If we're not counting attachments per term, strip
@@ -3419,14 +3421,15 @@ class MLAShortcodes {
 				$arguments['orderby'] = 'none';
 			}
 		}
-
-		$query[] = 'SELECT ' . $arguments['fields'];
-		$query[] = 'FROM `' . $wpdb->terms . '` AS t';
-		$query[] = 'JOIN `' . $wpdb->term_taxonomy . '` AS tt ON t.term_id = tt.term_id';
+		
+		$clauses['fields'] = $arguments['fields'];
+		
+		$clause = array ( 'INNER JOIN `' . $wpdb->term_taxonomy . '` AS tt ON t.term_id = tt.term_id' );
+		$clause_parameters = array();
 
 		if ( ! $no_count ) {
-			$query[] = 'LEFT JOIN `' . $wpdb->term_relationships . '` AS tr ON tt.term_taxonomy_id = tr.term_taxonomy_id';
-			$query[] = 'LEFT JOIN `' . $wpdb->posts . '` AS p ON tr.object_id = p.ID';
+			$clause[] = 'LEFT JOIN `' . $wpdb->term_relationships . '` AS tr ON tt.term_taxonomy_id = tr.term_taxonomy_id';
+			$clause[] = 'LEFT JOIN `' . $wpdb->posts . '` AS p ON tr.object_id = p.ID';
 
 			/*
 			 * Add type and status constraints
@@ -3440,10 +3443,10 @@ class MLAShortcodes {
 			$placeholders = array();
 			foreach ( $post_types as $post_type ) {
 				$placeholders[] = '%s';
-				$query_parameters[] = $post_type;
+				$clause_parameters[] = $post_type;
 			}
 
-			$query[] = 'AND p.post_type IN (' . join( ',', $placeholders ) . ')';
+			$clause[] = 'AND p.post_type IN (' . join( ',', $placeholders ) . ')';
 
 			if ( is_array( $arguments['post_status'] ) ) {
 				$post_stati = $arguments['post_status'];
@@ -3455,15 +3458,18 @@ class MLAShortcodes {
 			foreach ( $post_stati as $post_status ) {
 				if ( ( 'private' != $post_status ) || is_user_logged_in() ) {
 					$placeholders[] = '%s';
-					$query_parameters[] = $post_status;
+					$clause_parameters[] = $post_status;
 				}
 			}
 
-			$query[] = 'AND p.post_status IN (' . join( ',', $placeholders ) . ')';
+			$clause[] = 'AND p.post_status IN (' . join( ',', $placeholders ) . ')';
 		}
+		
+		$clause =  join(' ', $clause);
+		$clauses['join'] = $wpdb->prepare( $clause, $clause_parameters );
 
 		/*
-		 * Add taxonomy constraint
+		 * Start WHERE clause with a taxonomy constraint
 		 */
 		if ( is_array( $arguments['taxonomy'] ) ) {
 			$taxonomies = $arguments['taxonomy'];
@@ -3478,13 +3484,14 @@ class MLAShortcodes {
 			}
 		}
 
+		$clause_parameters = array();
 		$placeholders = array();
 		foreach ($taxonomies as $taxonomy) {
 		    $placeholders[] = '%s';
-		    $query_parameters[] = $taxonomy;
+			$clause_parameters[] = $taxonomy;
 		}
 
-		$query[] = 'WHERE ( tt.taxonomy IN (' . join( ',', $placeholders ) . ')';
+		$clause = array( 'tt.taxonomy IN (' . join( ',', $placeholders ) . ')' );
 
 		/*
 		 * The "ids" parameter can build an item-specific cloud.
@@ -3493,7 +3500,7 @@ class MLAShortcodes {
 		if ( ! empty( $arguments['ids'] ) && empty( $arguments['include'] ) ) {
 			$ids = wp_parse_id_list( $arguments['ids'] );
 		    $placeholders = implode( "','", $ids );
-			$query[] = "AND p.ID IN ( '{$placeholders}' )";
+			$clause[] = "AND p.ID IN ( '{$placeholders}' )";
 
 			$includes = array();
 			foreach ( $ids as $id ) {
@@ -3523,58 +3530,37 @@ class MLAShortcodes {
 		 */
 		if ( ! empty( $arguments['include'] ) ) {
 		    $placeholders = implode( "','", wp_parse_id_list( $arguments['include'] ) );
-			$query[] = "AND t.term_id IN ( '{$placeholders}' )";
+			$clause[] = "AND t.term_id IN ( '{$placeholders}' )";
 		} elseif ( ! empty( $arguments['exclude'] ) ) {
 		    $placeholders = implode( "','", wp_parse_id_list( $arguments['exclude'] ) );
-			$query[] = "AND t.term_id NOT IN ( '{$placeholders}' )";
+			$clause[] = "AND t.term_id NOT IN ( '{$placeholders}' )";
 		}
 
 		if ( '' !== $arguments['parent'] ) {
 			$parent = (int) $arguments['parent'];
-			$query[] = "AND tt.parent = '{$parent}'";
+			$clause[] = "AND tt.parent = '{$parent}'";
 		}
 
 		if ( 'all' !== strtolower( $arguments['post_mime_type'] ) ) {
 			$where = str_replace( '%', '%%', wp_post_mime_type_where( $arguments['post_mime_type'], 'p' ) );
 
 			if ( 0 == absint( $arguments['minimum'] ) ) {
-				$query[] = ' AND ( p.post_mime_type IS NULL OR ' . substr( $where, 6 );
+				$clause[] = ' AND ( p.post_mime_type IS NULL OR ' . substr( $where, 6 );
 			} else {
-				$query[] = $where;
+				$clause[] = $where;
 			}
 		}
 
-		$query[] = ' ) GROUP BY tt.term_taxonomy_id';
-
-		if ( 0 < absint( $arguments['minimum'] ) ) {
-			$query[] = 'HAVING count >= %d';
-			$query_parameters[] = absint( $arguments['minimum'] );
-		}
+		$clause =  join(' ', $clause);
+		$clauses['where'] = $wpdb->prepare( $clause, $clause_parameters );
 
 		/*
-		 * For now, always select the most popular terms,
-		 * except when specifically told to omit the clause
+		 * For the inner/initial query, always select the most popular terms
 		 */
 		if ( $arguments['no_orderby'] ) {
 			$arguments['orderby'] = 'count';
 			$arguments['order']  = 'DESC';
-		} elseif ( ! $no_count ) {
-			$query[] = 'ORDER BY count DESC, t.term_id ASC';
 		}
-
-		/*
-		 * Limit the total number of terms returned
-		 */
-		$terms_limit = absint( $arguments['number'] );
-		if ( 0 < $terms_limit ) {
-			$query[] = 'LIMIT %d';
-			$query_parameters[] = $terms_limit;
-		}
-
-		/*
-		 * $final_parameters, if present, require an SQL subquery
-		 */
-		$final_parameters = array();
 
 		/*
 		 * Add sort order
@@ -3584,6 +3570,9 @@ class MLAShortcodes {
 		if ( 'DESC' != $order ) {
 			$order = 'ASC';
 		}
+		
+		$clauses['order'] = $order;
+		$clauses['orderby'] = "ORDER BY {$orderby}";
 
 		/*
 		 * Count, Descending, is the default order so no further work
@@ -3605,25 +3594,70 @@ class MLAShortcodes {
 				'slug' => 'slug',
 			);
 
-			$final_parameters[] = 'ORDER BY ' . self::_validate_sql_orderby( $arguments, '', $allowed_keys, $binary_keys );
+			$clause = 'ORDER BY ' . self::_validate_sql_orderby( $arguments, '', $allowed_keys, $binary_keys );
+			$clauses['orderby'] = substr( $clause, 0, strrpos( $clause, ' ' . $order ) );
 		} // add ORDER BY
 
 		/*
 		 * Add pagination
 		 */
+		$clauses['limits'] = '';
 		$offset = absint( $arguments['offset'] );
 		$limit = absint( $arguments['limit'] );
 		if ( 0 < $offset && 0 < $limit ) {
-			$final_parameters[] = 'LIMIT %d, %d';
-			$query_parameters[] = $offset;
-			$query_parameters[] = $limit;
+			$clauses['limits'] = "LIMIT {$offset}, {$limit}";
 		} elseif ( 0 < $limit ) {
-			$final_parameters[] = 'LIMIT %d';
-			$query_parameters[] = $limit;
+			$clauses['limits'] = "LIMIT {$limit}";
 		} elseif ( 0 < $offset ) {
-			$final_parameters[] = 'LIMIT %d, %d';
-			$query_parameters[] = $offset;
-			$query_parameters[] = 0x7FFFFFFF; // big number!
+			$clause_parameters = 0x7FFFFFFF;
+			$clauses['limits'] = "LIMIT {$offset}, {$clause_parameters}";
+		}
+
+		$clauses = apply_filters( 'mla_get_terms_clauses', $clauses );
+		
+		/*
+		 * Build the final query
+		 */
+		$query = array( 'SELECT' );
+		$query[] = $clauses['fields'];
+		$query[] = 'FROM `' . $wpdb->terms . '` AS t';
+		$query[] = $clauses['join'];
+		$query[] = 'WHERE (';
+		$query[] = $clauses['where'];
+		$query[] = ') GROUP BY tt.term_taxonomy_id';
+		
+		$clause_parameters = absint( $arguments['minimum'] );
+		if ( 0 < $clause_parameters ) {
+			$query[] = "HAVING count >= {$clause_parameters}";
+		}
+
+		/*
+		 * If specifically told to omit the ORDER BY clause or the COUNT,
+		 * supply a sort order for the initial/inner query only
+		 */
+		if ( ! ( $arguments['no_orderby'] || $no_count ) ) {
+			$query[] = 'ORDER BY count DESC, t.term_id ASC';
+		}
+		
+		/*
+		 * Limit the total number of terms returned
+		 */
+		$terms_limit = absint( $arguments['number'] );
+		if ( 0 < $terms_limit ) {
+			$query[] = "LIMIT {$terms_limit}";
+		}
+		
+		/*
+		 * $final_clauses, if present, require an SQL subquery
+		 */
+		$final_clauses = array();
+		if ( 'count' != $orderby || 'DESC' != $order ) {
+			$final_clauses[] = $clauses['orderby'];
+			$final_clauses[] = $clauses['order'];
+		}
+		
+		if ( '' !== $clauses['limits'] ) {
+			$final_clauses[] = $clauses['limits'];
 		}
 
 		/*
@@ -3631,22 +3665,21 @@ class MLAShortcodes {
 		 */
 		if ( ! $no_count && ( 0 < $offset || 0 < $limit ) ) {
 			$count_query = 'SELECT COUNT(*) as count FROM (' . join(' ', $query) . ' ) as subQuery';
-			$count = $wpdb->get_results( $wpdb->prepare( $count_query, $query_parameters ) );
+			$count = $wpdb->get_results( $count_query );
 			$found_rows = $count[0]->count;
 		}
 
-		if ( ! empty( $final_parameters ) ) {
+		if ( ! empty( $final_clauses ) ) {
 			if ( ! $no_count ) {
 			    array_unshift($query, 'SELECT * FROM (');
 			    $query[] = ') AS subQuery';
 			}
 
-			$query = array_merge( $query, $final_parameters );
+			$query = array_merge( $query, $final_clauses );
 		}
 
 		$query =  join(' ', $query);
-
-		$tags = $wpdb->get_results(	$wpdb->prepare( $query, $query_parameters )	);
+		$tags = $wpdb->get_results(	$query );
 		if ( ! isset( $found_rows ) ) {
 			$found_rows = $wpdb->num_rows;
 		}

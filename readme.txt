@@ -2,8 +2,8 @@
 Contributors: dglingren
 Donate link: http://fairtradejudaica.org/make-a-difference/donate/
 Tags: attachment, attachments, documents, gallery, image, images, media, library, media library, tag cloud, media-tags, media tags, tags, media categories, categories, IPTC, EXIF, GPS, PDF, meta, metadata, photo, photos, photograph, photographs, photoblog, photo albums, lightroom, photoshop, MIME, mime-type, icon, upload, file extensions
-Requires at least: 3.3
-Tested up to: 4.0.1
+Requires at least: 3.5.0
+Tested up to: 4.1
 Stable tag: 1.95
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
@@ -153,8 +153,10 @@ All of the MLA source code has been annotated with "DocBlocks", a special type o
 == Changelog ==
 
 = 1.9x =
+* New: **Requires WordPress v3.5 or greater.**
 * New: **Ajax-powered Bulk Edit** processing lets you see the progress of large update batches and prevents script timeouts.
 * New: On the Media/Assistant submenu table  **Content Templates, including `template:[+empty+]`,** have been added to the Bulk Edit area processing for custom fields.
+* New: For the `[mla_tag_cloud]` shortcode, the `mla_get_terms_clauses` filter lets you inspect or modify the SQL clauses used to retrieve terms for the cloud.
 
 = 1.90 - 1.95 =
 * 1.95: New [mla_gallery] parameters, Download rollover action, Media/Assistant submenu filters. Eleven enhancements, seven fixes.

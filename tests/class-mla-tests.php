@@ -63,7 +63,7 @@ class MLATest {
 	 *
 	 * @since 0.1
 	 *
-	 * @param string	representing the minimum required version of WordPress, e.g. '3.3.0'
+	 * @param string	representing the minimum required version of WordPress, e.g. '3.5.0'
 	 *
 	 * @return	string	'' if pass else error message
 	 */

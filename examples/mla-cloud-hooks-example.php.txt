@@ -7,7 +7,7 @@
  * available in the [mla_tag_cloud] shortcode.
  *
  * @package MLA Tag Cloud Hooks Example
- * @version 1.00
+ * @version 1.01
  */
 
 /*
@@ -15,7 +15,7 @@ Plugin Name: MLA Tag Cloud Hooks Example
 Plugin URI: http://fairtradejudaica.org/media-library-assistant-a-wordpress-plugin/
 Description: Provides an example of hooking the filters provided by the [mla_tag_cloud] shortcode
 Author: David Lingren
-Version: 1.00
+Version: 1.01
 Author URI: http://fairtradejudaica.org/our-story/staff/
 
 Copyright 2013 David Lingren
@@ -71,6 +71,7 @@ class MLATagCloudHooksExample {
 		add_filter( 'mla_tag_cloud_arguments', 'MLATagCloudHooksExample::mla_tag_cloud_arguments_filter', 10, 1 );
 		add_filter( 'mla_get_terms_query_attributes', 'MLATagCloudHooksExample::mla_get_terms_query_attributes_filter', 10, 1 );
 		add_filter( 'mla_get_terms_query_arguments', 'MLATagCloudHooksExample::mla_get_terms_query_arguments_filter', 10, 1 );
+		add_filter( 'mla_get_terms_clauses', 'MLATagCloudHooksExample::mla_get_terms_clauses_filter', 10, 1 );
 		add_filter( 'mla_get_terms_query_results', 'MLATagCloudHooksExample::mla_get_terms_query_results_filter', 10, 1 );
 
 		add_filter( 'mla_tag_cloud_scale', 'MLATagCloudHooksExample::mla_tag_cloud_scale_filter', 10, 4 );
@@ -240,6 +241,24 @@ class MLATagCloudHooksExample {
 	} // mla_get_terms_query_arguments_filter
 
 	/**
+	 * MLA Tag Cloud Query Clauses
+	 *
+	 * This action gives you a final opportunity to inspect or modify
+	 * the SQL clauses for the data selection process.
+	 *
+	 * @since 1.01
+	 *
+	 * @param	array	SQL clauses ( 'fields', 'join', 'where', 'order', 'orderby', 'limits' )
+	 *
+	 * @return	array	updated SQL clauses
+	 */
+	public static function mla_get_terms_clauses_filter( $clauses ) {
+		//error_log( 'MLATagCloudHooksExample::mla_get_terms_clauses_filter $clauses = ' . var_export( $clauses, true ), 0 );
+
+		return $clauses;
+	} // mla_get_terms_clauses_filter
+
+	/**
 	 * MLA Tag Cloud Query Results
 	 *
 	 * This action gives you an opportunity to inspect, save, modify, reorder, etc.
@@ -252,7 +271,7 @@ class MLATagCloudHooksExample {
 	 * @return	array	updated tag objects
 	 */
 	public static function mla_get_terms_query_results_filter( $tag_objects ) {
-		//error_log( 'MLATagCloudHooksExample::mla_get_terms_query_results_filter $tag_objects = ' . var_export( $tag_objects, true ), 0 );
+		error_log( 'MLATagCloudHooksExample::mla_get_terms_query_results_filter $tag_objects = ' . var_export( $tag_objects, true ), 0 );
 
 		return $tag_objects;
 	} // mla_get_terms_query_results_filter

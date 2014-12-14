@@ -1495,6 +1495,20 @@ class MLA {
 	 * @return	void	echo json results or error message, then die()
 	 */
 	private static function _bulk_edit_ajax_handler() {
+		/*
+		 * Convert bulk_action to the old button name/value variables
+		 */
+		switch ( $_REQUEST['bulk_action'] ) {
+			case 'bulk_custom_field_map':
+				$_REQUEST['bulk_custom_field_map'] = __( 'Map Custom Field Metadata', 'media-library-assistant' );
+				break;
+			case 'bulk_map':
+				$_REQUEST['bulk_map'] = __( 'Map IPTC/EXIF metadata', 'media-library-assistant' );
+				break;
+			case 'bulk_edit':
+				$_REQUEST['bulk_edit'] = __( 'Update', 'media-library-assistant' );
+		}
+		
 		$item_content = (object) self::_process_bulk_action( 'edit' );
 		wp_send_json_success( $item_content );
 	}
