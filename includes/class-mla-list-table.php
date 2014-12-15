@@ -808,9 +808,9 @@ class MLA_List_Table extends WP_List_Table {
 
 			if ( current_user_can( 'upload_files' ) ) {
 				$file = get_attached_file( $item->ID );
-				$download_args = array( 'mla_download_file' => $file, 'mla_download_type' => $item->post_mime_type );
+				$download_args = array( 'page' => MLA::ADMIN_PAGE_SLUG, 'mla_download_file' => urlencode( $file ), 'mla_download_type' => $item->post_mime_type );
 
-				$actions['download'] = '<a href="' . add_query_arg( $download_args, MLA_PLUGIN_URL . 'includes/mla-force-download.php' ) . '" title="' . __( 'Download', 'media-library-assistant' ) . ' &#8220;' . esc_attr( $item->post_title ) . '&#8221;">' . __( 'Download', 'media-library-assistant' ) . '</a>';
+				$actions['download'] = '<a href="' . add_query_arg( $download_args, wp_nonce_url( 'upload.php', MLA::MLA_ADMIN_NONCE ) ) . '" title="' . __( 'Download', 'media-library-assistant' ) . ' &#8220;' . esc_attr( $item->post_title ) . '&#8221;">' . __( 'Download', 'media-library-assistant' ) . '</a>';
 			}
 
 			$actions['view']  = '<a href="' . site_url( ) . '?attachment_id=' . $item->ID . '" rel="permalink" title="' . __( 'View', 'media-library-assistant' ) . ' &#8220;' . esc_attr( $item->post_title ) . '&#8221;">' . __( 'View', 'media-library-assistant' ) . '</a>';

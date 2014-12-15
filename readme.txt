@@ -156,7 +156,9 @@ All of the MLA source code has been annotated with "DocBlocks", a special type o
 * New: **Requires WordPress v3.5 or greater.**
 * New: **Ajax-powered Bulk Edit** processing lets you see the progress of large update batches and prevents script timeouts.
 * New: On the Media/Assistant submenu table  **Content Templates, including `template:[+empty+]`,** have been added to the Bulk Edit area processing for custom fields.
+* New: On the Media/Assistant submenu table  **the Download rollover action is more secure.** Downloads now require a WordPress admin-mode nonce check to succeed.
 * New: For the `[mla_tag_cloud]` shortcode, the `mla_get_terms_clauses` filter lets you inspect or modify the SQL clauses used to retrieve terms for the cloud.
+* New: Two (2) new **filters for the Media/Assistant submenu table** let you intercept the beginning and end of Bulk Edit actions.
 
 = 1.90 - 1.95 =
 * 1.95: New [mla_gallery] parameters, Download rollover action, Media/Assistant submenu filters. Eleven enhancements, seven fixes.

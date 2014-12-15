@@ -3,7 +3,7 @@
  * Provides an example of hooking the filters provided by the MLA_List_Table class
  *
  * @package MLA List Table Hooks Example
- * @version 1.00
+ * @version 1.01
  */
 
 /*
@@ -11,7 +11,7 @@ Plugin Name: MLA List Table Hooks Example
 Plugin URI: http://fairtradejudaica.org/media-library-assistant-a-wordpress-plugin/
 Description: Provides an example of hooking the filters provided by the MLA_List_Table class
 Author: David Lingren
-Version: 1.00
+Version: 1.01
 Author URI: http://fairtradejudaica.org/our-story/staff/
 
 Copyright 2014 David Lingren
@@ -83,8 +83,12 @@ class MLAListTableHooksExample {
 		  */
 		add_filter( 'mla_list_table_inline_fields', 'MLAListTableHooksExample::mla_list_table_inline_fields', 10, 1 );
 		add_filter( 'mla_list_table_inline_action', 'MLAListTableHooksExample::mla_list_table_inline_action', 10, 2 );
+
+		add_filter( 'mla_list_table_begin_bulk_action', 'MLAListTableHooksExample::mla_list_table_begin_bulk_action', 10, 2 );
 		add_filter( 'mla_list_table_bulk_action', 'MLAListTableHooksExample::mla_list_table_bulk_action', 10, 3 );
 		add_filter( 'mla_list_table_custom_bulk_action', 'MLAListTableHooksExample::mla_list_table_custom_bulk_action', 10, 3 );
+		add_filter( 'mla_list_table_end_bulk_action', 'MLAListTableHooksExample::mla_list_table_end_bulk_action', 10, 2 );
+
 		add_filter( 'mla_list_table_single_action', 'MLAListTableHooksExample::mla_list_table_single_action', 10, 3 );
 		add_filter( 'mla_list_table_custom_single_action', 'MLAListTableHooksExample::mla_list_table_custom_single_action', 10, 3 );
 		add_action( 'mla_list_table_clear_filter_by', 'MLAListTableHooksExample::mla_list_table_clear_filter_by' );
@@ -339,6 +343,28 @@ class MLAListTableHooksExample {
 	} // mla_list_table_inline_action
 
 	/**
+	 * Begin an MLA_List_Table bulk action
+	 *
+	 * This filter gives you an opportunity to pre-process an MLA_List_Table page-level
+	 * or single-item action, standard or custom, before the MLA handler.
+	 * The filter is called once before any of the items in $_REQUEST['cb_attachment'] are processed.
+	 *
+	 * @since 1.01
+	 *
+	 * @param	array	$item_content	NULL, to indicate no handler.
+	 * @param	string	$bulk_action	the requested action.
+	 *
+	 * @return	object	updated $item_content. NULL if no handler, otherwise
+	 *					( 'message' => error or status message(s), 'body' => '',
+	 *					  'prevent_default' => true to bypass the MLA handler )
+	 */
+	public static function mla_list_table_begin_bulk_action( $item_content, $bulk_action ) {
+		//error_log( 'MLAListTableHooksExample::mla_list_table_begin_bulk_action $item_content = ' . var_export( $item_content, true ), 0 );
+		//error_log( 'MLAListTableHooksExample::mla_list_table_begin_bulk_action $bulk_action = ' . var_export( $bulk_action, true ), 0 );
+		return $item_content;
+	} // mla_list_table_begin_bulk_action
+
+	/**
 	 * Process an MLA_List_Table bulk action
 	 *
 	 * This filter gives you an opportunity to pre-process an MLA_List_Table page-level
@@ -376,7 +402,8 @@ class MLAListTableHooksExample {
 	 * @param	integer	$post_id		the affected attachment.
 	 *
 	 * @return	object	updated $item_content. NULL if no handler, otherwise
-	 *					( 'message' => error or status message(s), 'body' => '' )
+	 *					( 'message' => error or status message(s), 'body' => '',
+	 *					  'prevent_default' => true to bypass the MLA handler )
 	 */
 	public static function mla_list_table_custom_bulk_action( $item_content, $bulk_action, $post_id ) {
 		//error_log( 'MLAListTableHooksExample::mla_list_table_custom_bulk_action $item_content = ' . var_export( $item_content, true ), 0 );
@@ -384,6 +411,28 @@ class MLAListTableHooksExample {
 		//error_log( 'MLAListTableHooksExample::mla_list_table_custom_bulk_action $post_id = ' . var_export( $post_id, true ), 0 );
 		return $item_content;
 	} // mla_list_table_custom_bulk_action
+
+	/**
+	 * End an MLA_List_Table bulk action
+	 *
+	 * This filter gives you an opportunity to post-process an MLA_List_Table page-level
+	 * or single-item action, standard or custom.
+	 * The filter is called once after all of the items in $_REQUEST['cb_attachment'] are processed.
+	 *
+	 * @since 1.01
+	 *
+	 * @param	array	$item_content	NULL, to indicate no handler.
+	 * @param	string	$bulk_action	the requested action.
+	 *
+	 * @return	object	updated $item_content. NULL if no handler, otherwise
+	 *					( 'message' => error or status message(s), 
+	 *					  'body' => '' or page content in place of the submenu table )
+	 */
+	public static function mla_list_table_end_bulk_action( $item_content, $bulk_action ) {
+		//error_log( 'MLAListTableHooksExample::mla_list_table_end_bulk_action $item_content = ' . var_export( $item_content, true ), 0 );
+		//error_log( 'MLAListTableHooksExample::mla_list_table_end_bulk_action $bulk_action = ' . var_export( $bulk_action, true ), 0 );
+		return $item_content;
+	} // mla_list_table_begin_bulk_action
 
 	/**
 	 * Process an MLA_List_Table single action

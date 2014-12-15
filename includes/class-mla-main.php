@@ -247,6 +247,15 @@ class MLA {
 	public static function mla_admin_init_action() {
 //error_log( 'DEBUG: mla_admin_init_action $_REQUEST = ' . var_export( $_REQUEST, true ), 0 );
 		/*
+		 * Process secure file download requests
+		 */
+		if ( isset( $_REQUEST['mla_download_file'] ) && isset( $_REQUEST['mla_download_type'] ) ) {
+			check_admin_referer( self::MLA_ADMIN_NONCE );
+			self::_process_mla_download_file();
+			exit();
+		}
+
+		/*
 		 * Process row-level actions from the Edit Media screen
 		 */
 		if ( !empty( $_REQUEST['mla_admin_action'] ) ) {
@@ -255,7 +264,6 @@ class MLA {
 			} else {
 				check_admin_referer( self::MLA_ADMIN_NONCE );
 			}
-
 
 			switch ( $_REQUEST['mla_admin_action'] ) {
 				case self::MLA_ADMIN_SINGLE_CUSTOM_FIELD_MAP:
@@ -285,9 +293,11 @@ class MLA {
 			} // switch ($_REQUEST['mla_admin_action'])
 		} // (!empty($_REQUEST['mla_admin_action'])
 
-		add_action( 'wp_ajax_' . self::JAVASCRIPT_INLINE_EDIT_SLUG, 'MLA::mla_inline_edit_ajax_action' );
-		add_action( 'wp_ajax_' . self::JAVASCRIPT_INLINE_EDIT_SLUG . '-set-parent', 'MLA::mla_set_parent_ajax_action' );
-		add_action( 'wp_ajax_' . 'mla_find_posts', 'MLA::mla_find_posts_ajax_action' );
+		if ( ( defined('WP_ADMIN') && WP_ADMIN ) && ( defined('DOING_AJAX') && DOING_AJAX ) ) {
+			add_action( 'wp_ajax_' . self::JAVASCRIPT_INLINE_EDIT_SLUG, 'MLA::mla_inline_edit_ajax_action' );
+			add_action( 'wp_ajax_' . self::JAVASCRIPT_INLINE_EDIT_SLUG . '-set-parent', 'MLA::mla_set_parent_ajax_action' );
+			add_action( 'wp_ajax_' . 'mla_find_posts', 'MLA::mla_find_posts_ajax_action' );
+		}
 	}
 
 	/**
@@ -747,6 +757,59 @@ class MLA {
 	}
 
 	/**
+	 * Process secure file download
+	 *
+	 * Requires _wpnonce, mla_download_file and mla_download_type in $_REQUEST; mla_download_disposition is optional.
+	 *
+	 * @since 1.9x
+	 *
+	 * @return	void	echos file contents and calls exit();
+	 */
+	private static function _process_mla_download_file() {
+		if ( isset( $_REQUEST['mla_download_file'] ) && isset( $_REQUEST['mla_download_type'] ) ) {
+			if( ini_get( 'zlib.output_compression' ) ) { 
+				ini_set( 'zlib.output_compression', 'Off' );
+			}
+			
+			$file_name = stripslashes( $_REQUEST['mla_download_file'] );
+		
+			header('Pragma: public'); 	// required
+			header('Expires: 0');		// no cache
+			header('Cache-Control: must-revalidate, post-check=0, pre-check=0');
+			header('Last-Modified: '.gmdate ( 'D, d M Y H:i:s', filemtime ( $file_name ) ).' GMT');
+			header('Cache-Control: private',false);
+			header('Content-Type: '.$_REQUEST['mla_download_type']);
+			header('Content-Disposition: attachment; filename="'.basename( $file_name ).'"');
+			header('Content-Transfer-Encoding: binary');
+			header('Content-Length: '.filesize( $file_name ));	// provide file size
+			header('Connection: close');
+		
+			readfile( $file_name );
+		
+			if ( isset( $_REQUEST['mla_download_disposition'] ) && 'delete' == $_REQUEST['mla_download_disposition'] ) {
+				@unlink( $file_name );
+			}
+			
+			exit();
+		} else {
+			$message = 'ERROR: download argument(s) not set.';
+		}
+		
+		echo '<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">';
+		echo '<html xmlns="http://www.w3.org/1999/xhtml">';
+		echo '<head>';
+		echo '<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />';
+		echo '<title>Download Error</title>';
+		echo '</head>';
+		echo '';
+		echo '<body>';
+		echo $message;
+		echo '</body>';
+		echo '</html> ';
+		exit();
+	}
+
+	/**
 	 * Process bulk edit area fields, which may contain a Content Template
 	 *
 	 * @since 1.80
@@ -791,9 +854,28 @@ class MLA {
 	 * @return	array	messages and page content: ( 'message', 'body', 'unchanged', 'success', 'failure', 'item_results' )
 	 */
 	private static function _process_bulk_action( $bulk_action ) {
-		$page_content = array( 'message' => '', 'body' => '', 'unchanged' => 0, 'success' => 0, 'failure' => 0 );
-
+		$page_content = array( 'message' => '', 'body' => '', 'unchanged' => 0, 'success' => 0, 'failure' => 0, 'item_results' => array() );
+		
 		if ( isset( $_REQUEST['cb_attachment'] ) ) {
+			$item_content = apply_filters( 'mla_list_table_begin_bulk_action', NULL, $bulk_action );
+			if ( is_null( $item_content ) ) {
+				$prevent_default = false;
+			} else {
+				$prevent_default = isset( $item_content['prevent_default'] ) ? $item_content['prevent_default'] : false;
+			}
+
+			if ( $prevent_default ) {
+				if ( isset( $item_content['message'] ) ) {
+					$page_content['message'] = $item_content['message'];
+				}
+
+				if ( isset( $item_content['body'] ) ) {
+					$page_content['body'] = $item_content['body'];
+				}
+				
+				return $page_content;
+			}
+			
 			if ( !empty( $_REQUEST['bulk_custom_field_map'] ) ) {
 				do_action( 'mla_begin_mapping', 'bulk_custom', NULL );
 			} elseif ( !empty( $_REQUEST['bulk_map'] ) ) {
@@ -933,46 +1015,58 @@ class MLA {
 							break;
 						default:
 							$item_content = apply_filters( 'mla_list_table_custom_bulk_action', NULL, $bulk_action, $post_id );
+	
 							if ( is_null( $item_content ) ) {
-								$item_content = array(
-									/* translators: 1: bulk_action, e.g., delete, edit, restore, trash */
-									 'message' => sprintf( __( 'Unknown bulk action %1$s', 'media-library-assistant' ), $bulk_action ),
-									'body' => '' 
-								);
-							} // unknown bulk_action
+								$prevent_default = false;
+								$custom_message = sprintf( __( 'ERROR: Unknown bulk action %1$s', 'media-library-assistant' ), $bulk_action );
+							} else {
+								$prevent_default = isset( $item_content['prevent_default'] ) ? $item_content['prevent_default'] : false;
+							}
 					} // switch $bulk_action
 				} // ! $prevent_default
 				
-				if ( ! empty( $custom_message ) ) {
-					$no_changes = sprintf( __( 'Item %1$d, no changes detected.', 'media-library-assistant' ), $post_id );
-					if ( $no_changes == $item_content['message'] ) {
-						$item_content['message'] = $custom_message;
-					} else {
-						$item_content['message'] = $custom_message . '<br>' . $item_content['message'];
+				// Custom action can set $prevent_default, so test again.
+				if ( ! $prevent_default ) {
+					if ( ! empty( $custom_message ) ) {
+						$no_changes = sprintf( __( 'Item %1$d, no changes detected.', 'media-library-assistant' ), $post_id );
+						if ( $no_changes == $item_content['message'] ) {
+							$item_content['message'] = $custom_message;
+						} else {
+							$item_content['message'] = $custom_message . '<br>' . $item_content['message'];
+						}
 					}
-				}
-
-				$page_content['item_results'][ $post_id ] = array( 'result' => 'unknown', 'message' => $item_content['message'] );
-				if ( ! empty( $item_content['message'] ) ) {
-					$page_content['message'] .= $item_content['message'] . '<br>';
-
-					if ( false !== strpos( $item_content['message'], __( 'no changes detected', 'media-library-assistant' ) ) ) {
-						$page_content['unchanged'] += 1;
-						$page_content['item_results'][ $post_id ]['result'] = 'unchanged';
+	
+					$page_content['item_results'][ $post_id ] = array( 'result' => 'unknown', 'message' => $item_content['message'] );
+					if ( ! empty( $item_content['message'] ) ) {
+						$page_content['message'] .= $item_content['message'] . '<br>';
+	
+						if ( false !== strpos( $item_content['message'], __( 'no changes detected', 'media-library-assistant' ) ) ) {
+							$page_content['unchanged'] += 1;
+							$page_content['item_results'][ $post_id ]['result'] = 'unchanged';
 						} elseif (	 false !== strpos( $item_content['message'], __( 'ERROR:', 'media-library-assistant' ) ) ) {
-						$page_content['failure'] += 1;
-						$page_content['item_results'][ $post_id ]['result'] = 'failure';
-					} else {
-						$page_content['success'] += 1;
-						$page_content['item_results'][ $post_id ]['result'] = 'success';
+							$page_content['failure'] += 1;
+							$page_content['item_results'][ $post_id ]['result'] = 'failure';
+						} else {
+							$page_content['success'] += 1;
+							$page_content['item_results'][ $post_id ]['result'] = 'success';
+						}
 					}
-				}
+				} // ! $prevent_default
 			} // foreach cb_attachment
 
 			if ( !empty( $_REQUEST['bulk_custom_field_map'] ) || !empty( $_REQUEST['bulk_map'] ) ) {
 				do_action( 'mla_end_mapping' );
 			}
 
+			$item_content = apply_filters( 'mla_list_table_end_bulk_action', NULL, $bulk_action );
+			if ( isset( $item_content['message'] ) ) {
+				$page_content['message'] .= $item_content['message'];
+			}
+
+			if ( isset( $item_content['body'] ) ) {
+				$page_content['body'] = $item_content['body'];
+			}
+				
 			unset( $_REQUEST['post_title'] );
 			unset( $_REQUEST['post_excerpt'] );
 			unset( $_REQUEST['post_content'] );
