@@ -48,7 +48,7 @@
 
 .mode-grid.media-frame .media-toolbar input#media-search-input,
 .mode-grid.media-frame .media-toolbar input#mla-search-submit {
-	margin-top: 11px;
+	/* margin-top: 11px; */
 	position: static;
 	width:auto
 }

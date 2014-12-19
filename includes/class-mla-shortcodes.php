@@ -31,22 +31,7 @@ class MLAShortcodes {
 		if ( version_compare( get_bloginfo('version'), '4.0', '>=' ) ) {
 			add_filter( 'no_texturize_shortcodes', 'MLAShortcodes::mla_no_texturize_shortcodes_filter', 10, 1 );
 		}
-
-//		add_filter( 'date_query_valid_columns', 'MLAShortcodes::mla_date_query_valid_columns_filter', 10, 1 );
-//		add_filter( 'get_date_sql', 'MLAShortcodes::mla_get_date_sql_filter', 10, 2 );
 	}
-
-/*	public static function mla_date_query_valid_columns_filter( $valid_columns ) {
-		$valid_columns[] = 'meta_value';
-				
-		return $valid_columns;
-	}
-
-	public static function mla_get_date_sql_filter( $where, $date_query ) {
-//error_log( ' $where = ' . var_export( $where, true ), 0 );
-
-		return $where;
-	} // */
 
 	/**
 	 * Prevents wptexturizing of the [mla_gallery] shortcode, avoiding a bug in WP 4.0.
@@ -2529,8 +2514,17 @@ class MLAShortcodes {
 			'meta_value_num' => NULL,
 			'meta_compare' => '',
 			'meta_query' => '',
+			// Terms Search
+			'mla_terms_phrases' => '',
+			'mla_terms_taxonomies' => '',
+			'mla_phrase_connector' => '',
+			'mla_term_connector' => '',
 			// Search
 			's' => '',
+			'mla_search_fields' => '',
+			'mla_search_connector' => '',
+			'sentence' => '',
+			'exact' => '',
 			// Returned fields, for support topic "Adding 'fields' to function mla_get_shortcode_attachments" by leoloso
 			'fields' => '',
 			// Caching parameters, for support topic "Lag in attachment categories" by Ruriko
@@ -2550,7 +2544,7 @@ class MLAShortcodes {
 	 * @var	object
 	 */
 	public static $mla_gallery_wp_query_object = NULL;
-
+	
 	/**
 	 * Parses shortcode parameters and returns the gallery objects
 	 *
@@ -2569,6 +2563,11 @@ class MLAShortcodes {
 		 * Parameters passed to the where and orderby filter functions
 		 */
 		self::$query_parameters = array();
+
+		/*
+		 * Parameters passed to the posts_search filter function
+		 */
+		MLAData::$search_parameters = array( 'debug' => 'none' );
 
 		/*
 		 * Make sure $attr is an array, even if it's empty
@@ -2905,13 +2904,47 @@ class MLAShortcodes {
 
 				unset( $arguments[ $key ] );
 				break;
+			case 'sentence':
+			case 'exact':
+				if ( ! empty( $value ) && ( 'true' == strtolower( $value ) ) ) {
+					MLAData::$search_parameters[ $key ] = true;
+				} else {
+					MLAData::$search_parameters[ $key ] = false;
+				}
+
+				unset( $arguments[ $key ] );
+				break;
+			case 'mla_search_connector':
+			case 'mla_phrase_connector':
+			case 'mla_term_connector':
+				if ( ! empty( $value ) && ( 'OR' == strtoupper( $value ) ) ) {
+					MLAData::$search_parameters[ $key ] = 'OR';
+				} else {
+					MLAData::$search_parameters[ $key ] = 'AND';
+				}
+
+				unset( $arguments[ $key ] );
+				break;
+			case 'mla_terms_phrases':
+				$use_children = false;
+				// fallthru
+			case 'mla_terms_taxonomies':
+			case 'mla_search_fields':
+				if ( ! empty( $value ) ) {
+					MLAData::$search_parameters[ $key ] = $value;
+				}
+
+				unset( $arguments[ $key ] );
+				break;
+			case 's':
+				MLAData::$search_parameters['s'] = $value;
+				// fallthru
 			case 'author_name':
 			case 'category_name':
 			case 'tag':
 			case 'meta_key':
 			case 'meta_value':
 			case 'meta_compare':
-			case 's':
 				$children_ok = false;
 				// fallthru
 			case 'post_type':
@@ -3093,6 +3126,80 @@ class MLAShortcodes {
 		add_filter( 'posts_where', 'MLAShortcodes::mla_shortcode_query_posts_where_filter', 0x7FFFFFFF, 1 );
 		add_filter( 'posts_orderby', 'MLAShortcodes::mla_shortcode_query_posts_orderby_filter', 0x7FFFFFFF, 1 );
 
+		/*
+		 * Handle the keyword and terms search in the posts_search filter.
+		 * One or both of 'mla_terms_phrases' and 's' must be present to
+		 * trigger the search.
+		 */
+		if ( empty( MLAData::$search_parameters['mla_terms_phrases'] ) && empty( MLAData::$search_parameters['s'] ) ) {
+			MLAData::$search_parameters = array( 'debug' => 'none' );
+		} else {
+			/*
+			 * Convert Terms Search parameters to the filter's requirements
+			 */
+			if ( ! empty( MLAData::$search_parameters['mla_terms_phrases'] ) ) {
+				MLAData::$search_parameters['mla_terms_search']['phrases'] = MLAData::$search_parameters['mla_terms_phrases'];
+				
+				if ( empty( MLAData::$search_parameters['mla_terms_taxonomies'] ) ) {
+					MLAData::$search_parameters['mla_terms_search']['taxonomies'] = MLAOptions::mla_supported_taxonomies( 'term-search' );
+				} else {
+					MLAData::$search_parameters['mla_terms_search']['taxonomies'] = array_filter( array_map( 'trim', explode( ',', MLAData::$search_parameters['mla_terms_taxonomies'] ) ) );
+				}
+
+				if ( empty( MLAData::$search_parameters['mla_phrase_connector'] ) ) {
+					MLAData::$search_parameters['mla_terms_search']['radio_phrases'] = 'AND';
+				} else {
+					MLAData::$search_parameters['mla_terms_search']['radio_phrases'] = MLAData::$search_parameters['mla_phrase_connector'];
+				}
+
+				if ( empty( MLAData::$search_parameters['mla_term_connector'] ) ) {
+					MLAData::$search_parameters['mla_terms_search']['radio_terms'] = 'OR';
+				} else {
+					MLAData::$search_parameters['mla_terms_search']['radio_terms'] = MLAData::$search_parameters['mla_phrase_connector'];
+				}
+			}
+			
+			unset( MLAData::$search_parameters['mla_terms_phrases'] );
+			unset( MLAData::$search_parameters['mla_terms_taxonomies'] );
+			unset( MLAData::$search_parameters['mla_phrase_connector'] );
+			unset( MLAData::$search_parameters['mla_term_connector'] );
+			
+			if ( empty( MLAData::$search_parameters['mla_search_fields'] ) ) {
+				MLAData::$search_parameters['mla_search_fields'] = array( 'title', 'content' );
+			} else {
+				MLAData::$search_parameters['mla_search_fields'] = array_filter( array_map( 'trim', explode( ',', MLAData::$search_parameters['mla_search_fields'] ) ) );
+				MLAData::$search_parameters['mla_search_fields'] = array_intersect( array( 'title', 'content', 'excerpt', 'name', 'terms' ), MLAData::$search_parameters['mla_search_fields'] );
+
+				/*
+				 * The Terms Search overrides any terms-based keyword search for now; too complicated.
+				 */
+				if ( isset( MLAData::$search_parameters['mla_terms_search']['phrases'] ) ) {
+					foreach ( MLAData::$search_parameters['mla_search_fields'] as $index => $field ) {
+						if ( 'terms' == $field ) {
+							unset ( MLAData::$search_parameters['mla_search_fields'][ $index ] );
+						}
+					}
+				}
+			} // mla_search_fields present
+			
+			if ( empty( MLAData::$search_parameters['mla_search_connector'] ) ) {
+				MLAData::$search_parameters['mla_search_connector'] = 'AND';
+			}
+			
+			if ( empty( MLAData::$search_parameters['sentence'] ) ) {
+				MLAData::$search_parameters['sentence'] = false;
+			}
+			
+			if ( empty( MLAData::$search_parameters['exact'] ) ) {
+				MLAData::$search_parameters['exact'] = false;
+			}
+			
+			MLAData::$search_parameters['debug'] = self::$mla_debug ? 'shortcode' : 'none';
+
+			add_filter( 'posts_search', 'MLAData::mla_query_posts_search_filter', 10, 2 );
+			add_filter( 'posts_groupby', 'MLAData::mla_query_posts_groupby_filter' );
+		}
+
 		if ( self::$mla_debug ) {
 			global $wp_filter;
 
@@ -3139,6 +3246,14 @@ class MLAShortcodes {
 			$attachments['found_rows'] = self::$mla_gallery_wp_query_object->found_posts;
 		}
 
+		if ( ! empty( MLAData::$search_parameters ) ) {
+			remove_filter( 'posts_search', 'MLAData::mla_query_posts_search_filter' );
+
+			if ( self::$mla_debug && isset( MLAData::$search_parameters['mla_debug_messages'] ) ) {
+				self::$mla_debug_messages .= MLAData::$search_parameters['mla_debug_messages'];
+			}
+		}
+
 		if ( function_exists( 'relevanssi_prevent_default_request' ) ) {
 			remove_filter( 'relevanssi_admin_search_ok', 'MLAData::mla_query_relevanssi_admin_search_ok_filter' );
 		}
@@ -3183,6 +3298,22 @@ class MLAShortcodes {
 		if ( self::$query_parameters['disable_tax_join'] ) {
 			$join_clause = str_replace( " LEFT JOIN {$wpdb->posts} AS p2 ON ({$wpdb->posts}.post_parent = p2.ID) ", " LEFT JOIN {$wpdb->posts} AS p2 ON (p2.ID = p2.ID) ", $join_clause );
 		}
+
+		/*
+		 * These joins support the 'terms' search_field
+		 */
+		if ( isset( MLAData::$search_parameters['tax_terms_count'] ) ) {
+			$tax_index = 0;
+			$tax_clause = '';
+
+			while ( $tax_index < MLAData::$search_parameters['tax_terms_count'] ) {
+				$prefix = 'mlatt' . $tax_index++;
+				$tax_clause .= sprintf( ' INNER JOIN %1$s AS %2$s ON (%3$s.ID = %2$s.object_id)', $wpdb->term_relationships, $prefix, $wpdb->posts );
+			}
+
+			$join_clause .= $tax_clause;
+		}
+
 
 		return $join_clause;
 	}

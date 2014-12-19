@@ -1240,13 +1240,43 @@ class MLAData {
 	 * The parameters are set up in the _prepare_list_table_query function, and
 	 * any further logic required to translate those values is contained in the filters.
 	 *
-	 * Array index values are: use_postmeta_view, postmeta_key, postmeta_value, patterns, detached, orderby, order, mla-metavalue, debug, s, mla_search_connector, mla_search_fields, sentence, exact
+	 * Array index values are: use_postmeta_view, postmeta_key, postmeta_value, patterns,
+	 * detached, orderby, order, mla-metavalue, debug (also in search_parameters)
 	 *
 	 * @since 0.30
 	 *
 	 * @var	array
 	 */
 	private static $query_parameters = array();
+
+	/**
+	 * WP_Query 'posts_search' filter "parameters"
+	 *
+	 * This array defines parameters for the query's posts_search filter, which uses
+	 * 'search_string' to add a clause to the query's WHERE clause. It is shared between
+	 * the list_table-query functions here and the mla_get_shortcode_attachments function
+	 * in class-mla-shortcodes.php. This array passes the relevant parameters to the filter.
+	 *
+	 * Array index values are:
+	 * ['mla_terms_search']['phrases']
+	 * ['mla_terms_search']['taxonomies']
+	 * ['mla_terms_search']['radio_phrases'] => AND/OR
+	 * ['mla_terms_search']['radio_terms'] => AND/OR
+	 * ['s'] => numeric for ID/parent search
+	 * ['mla_search_fields'] => 'content', 'title', 'excerpt', 'alt-text', 'name', 'terms'
+	 * Note: 'alt-text' is not supported in [mla_gallery]
+	 * ['mla_search_connector'] => AND/OR
+	 * ['sentence'] => entire string must match as one "keyword"
+	 * ['exact'] => entire string must match entire field value
+	 * ['debug'] => internal element, console/log/shortcode/none
+	 * ['mla_debug_messages'] => internal element, added when debug = 'shortcode'
+	 * ['tax_terms_count'] => internal element, shared with JOIN and GROUP BY filters
+	 *
+	 * @since 1.9x
+	 *
+	 * @var	array
+	 */
+	public static $search_parameters = array();
 
 	/**
 	 * Sanitize and expand query arguments from request variables
@@ -1441,11 +1471,12 @@ class MLAData {
 		} // foreach $raw_request
 
 		/*
-		 * Pass query parameters to the filters for _execute_list_table_query
+		 * Pass query and search parameters to the filters for _execute_list_table_query
 		 */
 		self::$query_parameters = array( 'use_postmeta_view' => false, 'orderby' => $clean_request['orderby'], 'order' => $clean_request['order'] );
 		self::$query_parameters['detached'] = isset( $clean_request['detached'] ) ? $clean_request['detached'] : NULL;
-
+		self::$search_parameters = array( 'debug' => 'none' );
+		
 		/*
 		 * Matching a meta_value to NULL requires a LEFT JOIN to a view and a special WHERE clause
 		 * Matching a wildcard pattern requires mainpulating the WHERE clause, too
@@ -1462,6 +1493,7 @@ class MLAData {
 
 		if ( isset( $clean_request['debug'] ) ) {
 			self::$query_parameters['debug'] = $clean_request['debug'];
+			self::$search_parameters['debug'] = $clean_request['debug'];
 			unset( $clean_request['debug'] );
 		}
 
@@ -1476,7 +1508,7 @@ class MLAData {
 		 * We will handle "Terms Search" in the mla_query_posts_search_filter.
 		 */
 		if ( isset( $clean_request['mla_terms_search'] ) ) {
-			self::$query_parameters['mla_terms_search'] = $clean_request['mla_terms_search'];
+			self::$search_parameters['mla_terms_search'] = $clean_request['mla_terms_search'];
 
 			/*
 			 * The Terms Search overrides any terms-based keyword search for now; too complicated.
@@ -1494,13 +1526,13 @@ class MLAData {
 		 * We will handle keyword search in the mla_query_posts_search_filter.
 		 */
 		if ( isset( $clean_request['s'] ) ) {
-			self::$query_parameters['s'] = $clean_request['s'];
-			self::$query_parameters['mla_search_connector'] = $clean_request['mla_search_connector'];
-			self::$query_parameters['mla_search_fields'] = $clean_request['mla_search_fields'];
-			self::$query_parameters['sentence'] = isset( $clean_request['sentence'] );
-			self::$query_parameters['exact'] = isset( $clean_request['exact'] );
+			self::$search_parameters['s'] = $clean_request['s'];
+			self::$search_parameters['mla_search_fields'] = apply_filters( 'mla_list_table_search_filter_fields', $clean_request['mla_search_fields'], array( 'content', 'title', 'excerpt', 'alt-text', 'name', 'terms' ) );
+			self::$search_parameters['mla_search_connector'] = $clean_request['mla_search_connector'];
+			self::$search_parameters['sentence'] = isset( $clean_request['sentence'] );
+			self::$search_parameters['exact'] = isset( $clean_request['exact'] );
 
-			if ( in_array( 'alt-text', self::$query_parameters['mla_search_fields'] ) ) {
+			if ( in_array( 'alt-text', self::$search_parameters['mla_search_fields'] ) ) {
 			  self::$query_parameters['use_postmeta_view'] = true;
 			  self::$query_parameters['postmeta_key'] = '_wp_attachment_image_alt';
 			}
@@ -1758,6 +1790,10 @@ class MLAData {
 	 * @return	string	query clause after keyword search addition
 	 */
 	public static function mla_query_posts_search_filter( $search_string, &$query_object ) {
+//error_log( 'mla_query_posts_search_filter $search_string = ' . var_export( $search_string, true ), 0 );
+//error_log( 'mla_query_posts_search_filter $query_vars  = ' . var_export( $query_object->query_vars, true ), 0 );
+//error_log( 'DEBUG: xdebug_get_function_stack = ' . var_export( xdebug_get_function_stack(), true), 0 );		
+//error_log( 'mla_query_posts_search_filter $search_parameters  = ' . var_export( self::$search_parameters, true ), 0 );
 		global $wpdb;
 
 		$numeric_clause = '';
@@ -1769,8 +1805,8 @@ class MLAData {
 		/*
 		 * Process the Terms Search arguments, if present.
 		 */
-		if ( isset( self::$query_parameters['mla_terms_search'] ) ) {
-			$terms = array_map( 'trim', explode( ',', self::$query_parameters['mla_terms_search']['phrases'] ) );
+		if ( isset( self::$search_parameters['mla_terms_search'] ) ) {
+			$terms = array_map( 'trim', explode( ',', self::$search_parameters['mla_terms_search']['phrases'] ) );
 			if ( 1 < count( $terms ) ) {
 				$terms_connector = '(';			
 			} else {
@@ -1784,7 +1820,7 @@ class MLAData {
 				$tax_terms = array();
 				$tax_counts = array();
 				foreach ( $phrases as $phrase ) {
-					$the_terms = get_terms( self::$query_parameters['mla_terms_search']['taxonomies'], array( 'name__like' => $phrase, 'fields' => 'all', 'hide_empty' => false ) );
+					$the_terms = get_terms( self::$search_parameters['mla_terms_search']['taxonomies'], array( 'name__like' => $phrase, 'fields' => 'all', 'hide_empty' => false ) );
 					foreach( $the_terms as $the_term ) {
 						$tax_terms[ $the_term->taxonomy ][ $the_term->term_id ] = (integer) $the_term->term_taxonomy_id;
 
@@ -1799,7 +1835,7 @@ class MLAData {
 				/*
 				 * For the AND connector, a taxonomy term must have all of the search terms within it
 				 */
-				if ( 'AND' == self::$query_parameters['mla_terms_search']['radio_phrases'] ) {
+				if ( 'AND' == self::$search_parameters['mla_terms_search']['radio_phrases'] ) {
 					$search_term_count = count( $phrases );
 					foreach ($tax_terms as $taxonomy => $term_ids ) {
 						foreach ( $term_ids as $term_id => $term_taxonomy_id ) {
@@ -1826,7 +1862,7 @@ class MLAData {
 						$inner_connector = ' OR';
 					} // foreach tax_term
 
-					$terms_connector = ' ) ' . self::$query_parameters['mla_terms_search']['radio_terms'] . ' (';
+					$terms_connector = ' ) ' . self::$search_parameters['mla_terms_search']['radio_terms'] . ' (';
 				} // tax_terms present
 			} // foreach term
 
@@ -1837,42 +1873,38 @@ class MLAData {
 			if ( empty( $tax_clause ) ) {
 				$tax_clause = '1=0';
 			} else {
-				self::$query_parameters['tax_terms_count'] = $tax_index;
+				self::$search_parameters['tax_terms_count'] = $tax_index;
 			};
 		} // isset mla_terms_search
 
 		/*
 		 * Process the keyword search argument, if present.
 		 */
-		if ( isset( self::$query_parameters['s'] ) ) {
-			if ( isset( self::$query_parameters['debug'] ) ) {
-				$debug_array = array( 's' => self::$query_parameters['s'] );
-			} // debug
-
+		if ( isset( self::$search_parameters['s'] ) ) {
 			/*
-			 * Interpret a numeric value as the ID of a specific attachment or the ID of a parent post/page;
-			 * add it to the regular text-based search.
+			 * Interpret a numeric value as the ID of a specific attachment or the ID of
+			 * a parent post/page; add it to the regular text-based search.
 			 */
-			if ( is_numeric( self::$query_parameters['s'] ) ) {
-				$id = absint( self::$query_parameters['s'] );
+			if ( is_numeric( self::$search_parameters['s'] ) ) {
+				$id = absint( self::$search_parameters['s'] );
 				$numeric_clause = '( ( ' . $wpdb->posts . '.ID = ' . $id . ' ) OR ( ' . $wpdb->posts . '.post_parent = ' . $id . ' ) ) OR ';
 			} else {
 				$numeric_clause = '';
 			}
 
 			// WordPress v3.7 says: there are no line breaks in <input /> fields
-			self::$query_parameters['s'] = str_replace( array( "\r", "\n" ), '', self::$query_parameters['s'] );
+			self::$search_parameters['s'] = str_replace( array( "\r", "\n" ), '', self::$search_parameters['s'] );
 
-			if (  self::$query_parameters['sentence'] ) {
-				$terms_search = array( self::$query_parameters['s'] );
+			if (  self::$search_parameters['sentence'] ) {
+				$terms_search = array( self::$search_parameters['s'] );
 			} else {
 				// v3.6.1 was '/".*?("|$)|((?<=[\r\n\t ",+])|^)[^\r\n\t ",+]+/'
-				preg_match_all('/".*?("|$)|((?<=[\t ",+])|^)[^\t ",+]+/', self::$query_parameters['s'], $matches);
+				preg_match_all('/".*?("|$)|((?<=[\t ",+])|^)[^\t ",+]+/', self::$search_parameters['s'], $matches);
 				$terms_search = array_map('MLAData::mla_search_terms_tidy', $matches[0]);
 			}
 
-			$fields = apply_filters( 'mla_list_table_search_filter_fields', self::$query_parameters['mla_search_fields'], array( 'content', 'title', 'excerpt', 'alt-text', 'name', 'terms' ) );
-			$percent = self::$query_parameters['exact'] ? '' : '%';
+			$fields = self::$search_parameters['mla_search_fields'];
+			$percent = self::$search_parameters['exact'] ? '' : '%';
 			$connector = '';
 
 			if ( empty( $fields ) ) {
@@ -1921,7 +1953,7 @@ class MLAData {
 
 					if ( ! empty($inner_clause) ) {
 						$search_clause .= "{$connector}({$inner_clause})";
-						$connector = ' ' . self::$query_parameters['mla_search_connector'] . ' ';
+						$connector = ' ' . self::$search_parameters['mla_search_connector'] . ' ';
 					}
 
 					/*
@@ -1929,7 +1961,9 @@ class MLAData {
 					 * separated by taxonomy.
 					 */
 					if ( in_array( 'terms', $fields ) ) {
+//error_log( 'mla_query_posts_search_filter $term = ' . var_export( $term, true ), 0 );
 						$the_terms = get_terms( MLAOptions::mla_supported_taxonomies( 'term-search' ), array( 'name__like' => $term, 'fields' => 'all', 'hide_empty' => false ) );
+//error_log( 'mla_query_posts_search_filter $the_terms = ' . var_export( $the_terms, true ), 0 );
 						foreach( $the_terms as $the_term ) {
 							$tax_terms[ $the_term->taxonomy ][ $the_term->term_id ] = (integer) $the_term->term_taxonomy_id;
 
@@ -1946,7 +1980,7 @@ class MLAData {
 					/*
 					 * For the AND connector, a taxonomy term must have all of the search terms within it
 					 */
-					if ( 'AND' == self::$query_parameters['mla_search_connector'] ) {
+					if ( 'AND' == self::$search_parameters['mla_search_connector'] ) {
 						$search_term_count = count( $terms_search );
 						foreach ($tax_terms as $taxonomy => $term_ids ) {
 							foreach ( $term_ids as $term_id => $term_taxonomy_id ) {
@@ -1963,6 +1997,7 @@ class MLAData {
 						} // foreach taxonomy
 					} // AND connector
 
+//error_log( 'mla_query_posts_search_filter $tax_terms = ' . var_export( $tax_terms, true ), 0 );
 					if ( empty( $tax_terms ) ) {
 						/*
 						 * If "Terms" is the only field and no terms are present,
@@ -1972,17 +2007,16 @@ class MLAData {
 							$tax_clause = '1=0';
 						}
 					} else {
-						self::$query_parameters['tax_terms'] = $tax_terms;
 						$tax_index = 0;
 						$inner_connector = '';
 
-						foreach( self::$query_parameters['tax_terms'] as $tax_term ) {
+						foreach( $tax_terms as $tax_term ) {
 							$prefix = 'mlatt' . $tax_index++;
 							$tax_clause .= sprintf( '%1$s %2$s.term_taxonomy_id IN (%3$s)', $inner_connector, $prefix, implode( ',', $tax_term ) );
 							$inner_connector = ' OR';
 						} // foreach tax_term
 
-						self::$query_parameters['tax_terms_count'] = $tax_index;
+						self::$search_parameters['tax_terms_count'] = $tax_index;
 						$tax_connector = 'OR';
 					} // tax_terms present
 				} // terms in fields
@@ -2002,19 +2036,23 @@ class MLAData {
 			}
 		}
 
-		if ( isset( self::$query_parameters['debug'] ) ) {
-			$debug_array['search_clause'] = $search_clause;
+		if ( 'none' != self::$search_parameters['debug'] ) {
 			$debug_array['search_string'] = $search_string;
+			$debug_array['search_parameters'] = self::$search_parameters;
+			$debug_array['search_clause'] = $search_clause;
 
-			if ( 'console' == self::$query_parameters['debug'] ) {
+			if ( 'shortcode' == self::$search_parameters['debug'] ) {
+				self::$search_parameters['mla_debug_messages'] = '<p><strong>mla_debug posts_search filter</strong> = ' . var_export( $debug_array, true ) . '</p>';
+			} elseif ( 'console' == self::$search_parameters['debug'] ) {
 				/* translators: 1: search filter details */
-				trigger_error( sprintf( __( 'mla_query_posts_search_filter not numeric, = "%1$s".', 'media-library-assistant' ), var_export( $debug_array, true ) ), E_USER_WARNING );
+				trigger_error( sprintf( __( 'mla_query_posts_search_filter = "%1$s".', 'media-library-assistant' ), var_export( $debug_array, true ) ), E_USER_WARNING );
 			} else {
 				/* translators: 1: search filter details */
-				error_log( sprintf( _x( 'DEBUG: mla_query_posts_search_filter not numeric, = "%1$s".', 'error_log', 'media-library-assistant' ), var_export( $debug_array, true ) ), 0 );
+				error_log( sprintf( _x( 'DEBUG: mla_query_posts_search_filter = "%1$s".', 'error_log', 'media-library-assistant' ), var_export( $debug_array, true ) ), 0 );
 			}
 		} // debug
 
+//error_log( 'mla_query_posts_search_filter $search_clause = ' . var_export( $search_clause, true ), 0 );
 		return $search_clause;
 	}
 
@@ -2114,11 +2152,11 @@ class MLAData {
 			$join_clause .= sprintf( ' LEFT JOIN %1$s ON (%2$s.ID = %1$s.post_id)', self::$mla_alt_text_view, $wpdb->posts );
 		}
 
-		if ( isset( self::$query_parameters['tax_terms_count'] ) ) {
+		if ( isset( self::$search_parameters['tax_terms_count'] ) ) {
 			$tax_index = 0;
 			$tax_clause = '';
 
-			while ( $tax_index < self::$query_parameters['tax_terms_count'] ) {
+			while ( $tax_index < self::$search_parameters['tax_terms_count'] ) {
 				$prefix = 'mlatt' . $tax_index++;
 				$tax_clause .= sprintf( ' INNER JOIN %1$s AS %2$s ON (%3$s.ID = %2$s.object_id)', $wpdb->term_relationships, $prefix, $wpdb->posts );
 			}
@@ -2156,7 +2194,7 @@ class MLAData {
 	public static function mla_query_posts_groupby_filter( $groupby_clause ) {
 		global $wpdb;
 
-		if ( isset( self::$query_parameters['tax_terms_count'] ) ) {
+		if ( isset( self::$search_parameters['tax_terms_count'] ) ) {
 			$groupby_clause = "{$wpdb->posts}.ID";
 		}
 
@@ -2967,7 +3005,7 @@ class MLAData {
 		$files = array();
 		foreach ( $attachments as $index => $attachment ) {
 			$attachment_ids[ $index ] = $attachment->ID;
-			$references = array();
+			$references = array( 'files' => array() );
 			if ( isset( $attachment->mla_wp_attached_file ) )  {
 				$references['base_file'] = $attachment->mla_wp_attached_file;
 			} else {
@@ -2997,18 +3035,21 @@ class MLAData {
 				}
 			}
 			
-			$base_type = wp_check_filetype( $references['file'] );
-			$base_reference = array(
-				'file' => $references['file'],
-				'width' => isset( $attachment_metadata['width'] ) ? $attachment_metadata['width'] : 0,
-				'height' => isset( $attachment_metadata['height'] ) ? $attachment_metadata['height'] : 0,
-				'mime_type' => isset( $base_type['type'] ) ? $base_type['type'] : 'unknown',
-				);
+			if ( ! empty( $references['base_file'] ) ) {
+				$base_type = wp_check_filetype( $references['file'] );
+				$base_reference = array(
+					'file' => $references['file'],
+					'width' => isset( $attachment_metadata['width'] ) ? $attachment_metadata['width'] : 0,
+					'height' => isset( $attachment_metadata['height'] ) ? $attachment_metadata['height'] : 0,
+					'mime_type' => ( isset( $base_type['type'] ) && false !== $base_type['type'] ) ? $base_type['type'] : 'unknown',
+					);
 				
-			$references['files'][ $references['base_file'] ] = $base_reference;
+				$references['files'][ $references['base_file'] ] = $base_reference;
+			}
+			
 			$files[ $index ] = $references;
 		}
-	
+
 		if ('checked' == MLAOptions::mla_get_option( MLAOptions::MLA_EXCLUDE_REVISIONS ) ) {
 			$exclude_revisions = " AND (p.post_type <> 'revision')";
 		} else {
@@ -3084,7 +3125,7 @@ class MLAData {
 				} // foreach attachment
 			} // results
 		} // process_inserted_in
-		
+
 		if ( MLAOptions::$process_mla_gallery_in ) {
 			$have_mla_galleries = self::_build_mla_galleries( MLAOptions::MLA_MLA_GALLERY_IN_TUNING, self::$mla_galleries, '[mla_gallery', $exclude_revisions );
 		} else {

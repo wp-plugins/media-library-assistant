@@ -2,10 +2,11 @@
 /**
  * Provides an example of hooking the filters provided by the [mla_tag_cloud] shortcode
  *
- * In this example, MLA Tag Cloud term names are translated
+ * In this example, MLA Tag Cloud term names are translated and a language prefix is
+ * added to the site_url value.
  *
  * @package MLA mqTranslate Example
- * @version 1.00
+ * @version 1.01
  */
 
 /*
@@ -13,7 +14,7 @@ Plugin Name: MLA mqTranslate Example
 Plugin URI: http://fairtradejudaica.org/media-library-assistant-a-wordpress-plugin/
 Description: Provides an example of hooking the filters provided by the [mla_tag_cloud] shortcode
 Author: David Lingren
-Version: 1.00
+Version: 1.01
 Author URI: http://fairtradejudaica.org/our-story/staff/
 
 Copyright 2014 David Lingren
@@ -57,6 +58,7 @@ class MLAmqTranslateExample {
 			return;
 
 		add_filter( 'mla_get_terms_query_results', 'MLAmqTranslateExample::mla_get_terms_query_results_filter', 10, 1 );
+		add_filter( 'mla_gallery_open_values', 'MLAmqTranslateExample::mla_gallery_open_values_filter', 10, 1 );
 	}
 
 	/**
@@ -76,6 +78,25 @@ class MLAmqTranslateExample {
 		
 		return $tag_objects;
 	} // mla_get_terms_query_results_filter
+
+	/**
+	 * MLA Gallery Open Values
+	 *
+	 * @since 1.01
+	 *
+	 * @param	array	parameter_name => parameter_value pairs
+	 *
+	 * @return	array	updated substitution parameter name => value pairs
+	 */
+	public static function mla_gallery_open_values_filter( $item_values ) {
+		global $q_config;
+		
+		if ( $q_config['language'] != $q_config['default_language'] ) {
+			$item_values['site_url'] = $item_values['site_url'] . '/' . $q_config['language'];
+		}
+		
+		return $item_values;
+	} // mla_gallery_open_values_filter
 } // Class MLAmqTranslateExample
 
 /*

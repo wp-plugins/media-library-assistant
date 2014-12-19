@@ -151,8 +151,8 @@ All of the MLA source code has been annotated with "DocBlocks", a special type o
 9. The Media Manager popup modal window showing additional filters for date and taxonomy terms. Also shows the enhanced Search Media box and the full-function taxonomy support in the ATTACHMENT DETAILS area.
 
 == Changelog ==
-
 = 1.9x =
+* New: **Enhanced Keyword(s) Search and Taxonomy term keyword(s) search for the `[mla_gallery]` shortcode**. See the [Other Notes section](http://wordpress.org/extend/plugins/media-library-assistant/other_notes/ "Click here, then scroll down") section or the Settings/Media Library Assistant Documentation tab for more information.
 * New: **Requires WordPress v3.5 or greater.**
 * New: **Ajax-powered Bulk Edit** processing lets you see the progress of large update batches and prevents script timeouts.
 * New: On the Media/Assistant submenu table  **Content Templates, including `template:[+empty+]`,** have been added to the Bulk Edit area processing for custom fields.
@@ -234,38 +234,30 @@ In this section, scroll down to see highlights from the documentation, including
 
 Media Library Assistant includes many images drawn (with permission) from the [Crystal Project Icons](http://www.softicons.com/free-icons/system-icons/crystal-project-icons-by-everaldo-coelho), created by [Everaldo Coelho](http://www.everaldo.com), founder of [Yellowicon](http://www.yellowicon.com).
 
-<h4>NEW! Hooks for the Edit Media additional meta boxes</h4>
-Media Library Assistant adds support for the "Custom Fields" meta box to the Media/Edit Media screen. MLA also adds several meta boxes to this screen with more information about the item and where it is  used on your site. You can enable/disable the additional meta boxes with an option on the Settings/Media Library Assistant General tab.
+<h4>NEW! Enhanced keyword(s) search for the [mla_gallery] shortcode</h4>
+The search parameter ("s=keyword") will perform a keyword search. By default, the search includes the "post_title" and "post_content" (Description) fields but not the "post_excerpt" (Caption) field. All of the words you enter in the parameter must match for the search to succeed. An SQL "LIKE" clause for each word is composed and added to the search criteria. 
 
-You can also make individual changes in which meta boxes are displayed and in their content by using one or more of the filters MLA provides. An example of using the hooks from a simple, stand-alone plugin can be found at /media-library-assistant/examples/mla-metabox-hooks-example.php.txt. To run the example:
+You can match on multi-word phrases in a variety of ways. These are described in detail, with examples, in the "Entering Words and Phrases" portion of the "Terms Search - filtering on taxonomy term names" section below. You can also use the `sentence=true` and `exact=true` parameters to change the matching logic used in the `[mla_gallery]` shortcode. 
 
-1. Edit the code to, for example, uncomment the <code>error_log()</code> calls so you can see what is passed to the hooks you are interested in.
-1. Remove the ".txt" extension and save the "mla-metabox-example.php" file in your plugins directory. You can give the plugin and its file any (unique) name you like.
-1. Go to the Plugins/Installed Plugins screen and activate the "MLA Meta Box Hooks Example" plugin.
-1. Make any changes or additions you want to in the example plugin source code. For example, you can modify the <code>mla_inserted_in_metabox</code> example to display a simplified version of the "Inserted in" information.
-1. View the Media/Edit Media screen for an item to see the effect of your changes.
+You can use the `mla_search_connector` and `mla_search_fields` parameters to extend the search to other fields and to relax the requirement that all phrases must match. Here are all of the parameters that control keyword searching: 
 
-The example code documents each hook with comments in the filter function that intercepts the hook. Generally, each meta box filter lets you change the size of the text box (if appropriate) and the content that appears in the box. There is also a second filter for each meta box that lets you replace <strong>all</strong> of the HTML content for most boxes; use these with caution. The current hooks are: 
+* <strong>s</strong> - The word(s) or phrase(s) you are searching for. 
+* <strong>mla_search_fields</strong> - The fields in which to search. Choose from title, content, excerpt, name, terms. Searching on alt-text is not supported. 
+* <strong>mla_search_connector</strong> - Choose from OR to require that any one of the phrases must match for the search to succeed, or AND (the default) to require that all of the phrases must match. 
+* <strong>sentence</strong> - Add `sentence=true` to require that all of the words entered must match in sequence. This is equivalent to putting quotes around all of the words in your search. 
+* <strong>exact</strong> - Add `exact=true` to require that the entire field content must match the search text. 
 
-* <strong>mla_edit_media_support</strong> - suppress the addition of Custom Fields to the Edit Media screen. To suppress Custom Fields, return an empty array, i.e., <code>return array();</code>
+The `mla_search_fields=terms` feature is a simple way to extend the search to the terms assigned to Media Library items. If searching on taxonomy terms is your primary goal, consider the more powerful "Taxonomy term keyword(s) search" parameters discussed in the next section. 
 
-* <strong>mla_edit_media_meta_boxes</strong> - record the original list of meta box slugs. You can also remove elements from the array to suppress one or more meta boxes. To suppress a box, remove it from the array, e.g., <code>unset( $active_boxes['mla-menu-order'] );</code>
+<h4>NEW! Taxonomy term keyword(s) search for the [mla_gallery] shortcode</h4>
+Searching for keywords within the names of taxonomy terms is a completely different way to find items based on taxonomy information. Instead of matching on a slug or term-id value you can match on all or part of the term Title. The shortcode parameters in this section give you all the power of the "Terms Search" feature on the Media/Assistant submenu table, as described in the "Terms Search - filtering on taxonomy term names" section below. Here are the shortcode parameters that correspond to the controls on the "Search Terms" popup window. 
 
-* <strong>mla_parent_info_meta_box</strong> - modify the text portion of the "Parent Info" meta box.
+* <strong>mla_terms_phrases</strong> - The word(s) or phrase(s) you are searching for. 
+* <strong>mla_terms_taxonomies</strong> - A comma-separated list of the taxonomy or taxonomies in which to search. Enter the slug(s) for one or more of the taxonomies registered for Media Library items, e.g., attachment_category or attachment_tag. 
+* <strong>mla_phrase_connector</strong> - Choose from OR to require that any one of the phrases must match for the search to succeed, or AND (the default) to require that all of the phrases must match. 
+* <strong>mla_term_connector</strong> - If you enter multiple terms (separated by commas) in the mla_terms_phrases parameter, this parameter controls how they are connected. Choose from OR (the default) to require that any one of the terms must match for the search to succeed, or AND to require that all of the terms must match. 
 
-* <strong>mla_menu_order_meta_box</strong> - modify the "Menu Order" meta box.
-
-* <strong>mla_image_metadata_meta_box</strong> - modify the rows, columns and content of the "Attachment Metadata" meta box.<br><strong>mla_image_metadata_meta_box_html</strong>
-
-* <strong>mla_featured_in_meta_box</strong> - modify the rows, columns and content of the "Featured in" meta box.<br><strong>mla_featured_in_meta_box_html</strong>
-
-* <strong>mla_inserted_in_meta_box</strong> - modify the rows, columns and content of the "Inserted in" meta box.<br><strong>mla_inserted_in_meta_box_html</strong>
-
-* <strong>mla_gallery_in_meta_box</strong> - modify the rows, columns and content of the "Gallery in" meta box.<br><strong>mla_gallery_in_meta_box_html</strong>
-
-* <strong>mla_mla_gallery_in_meta_box</strong> - modify the rows, columns and content of the "MLA Gallery in" meta box.<br><strong>mla_mla_gallery_in_meta_box_html</strong>
-
-<h4>Terms Search</h4>
+<h4>Terms Search - filtering on taxonomy term names</h4>
 The "Terms Search" features let you filter the Media/Assistant submenu table and the Media Manager Modal Window by matching one or more phrases in the Name field of taxonomy terms. There are two ways to access this feature:
 
 <ol>
@@ -327,27 +319,3 @@ If you enter 'big,dog', separating the two phrases with a comma, the search resu
 By default, the Att. Categories and Att. Tags taxonomies are included in the terms search. In the Taxonomy Support section of the Settings/Media Library Assistant General tab you can use the checkboxes in the Terms Search column to add or remove any of the supported taxonomies from the search process.
 
 In the Search Terms popup window you will find a list of all supported taxonomies, with checkboxes reflecting their participation in the search process. You can add or remove taxonomies from the process on a search-by-search basis.
-
-<h4>Select Parent Popup Window</h4>
-The "Select Parent" popup window lets you find the parent post/page/custom post type for one or more attachments. You can access the popup window in four ways:
-
-<ol>
-<li>Click the "Set Parent" link in the "Attached to" column of the Media/Assistant submenu table.</li>
-<li>Click the "Select" button in the Media/Assistant submenu table Quick Edit area.</li>
-<li>Click the "Select" button in the Media/Assistant submenu table Bulk Edit area.</li>
-<li>Click the "Select" button in the Media/Edit Media submenu "Parent Info" meta box.</li>
-</ol>
-
-In all cases the Select Parent popup window will appear and will be filled with up to 50 parent candidates. If the current parent is in the list its radio button will be selected. You can select a new parent, including "(unattached)", by clicking anywhere in the row of the candidate you want.
-
-If you don't see the candidate you want you have three ways of updating the list:
-
-<ol>
-<li>Enter one or more keywords in the text box at the top of the window and click "Search". The word(s) you enter will filter the list by searching the Title and Content fields for matches.</li>
-<li>Select a post type from the dropdown list at the top of the window. The list will be filtered to show candidates from the post type you choose.</li>
-<li>Click the "next page" (" &raquo; ") button in the Media/Assistant submenu table Bulk Edit area. The list will move to the next page of up to 50 additional candidates. You can click the "previous page" (" &laquo; ") button to move back towards the top of the list.</li>
-</ol>
-
-Once you have chosen a new parent, click the "Update" button at the lower right of the window to save your choice. You will be returned to your starting point with the new value filled in. Changes made in the "Attached to" column are immediate; changes to the Quick Edit, Bulk Edit and Parent Info meta box are made later, when you click the "Update" button in those areas to save all your changes.
-
-If you change your mind you can close the window without making a change by clicking the "X" in the upper-right corner of the window or the "Cancel" button in the lower-left corner of the window.

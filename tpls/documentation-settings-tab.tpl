@@ -16,13 +16,14 @@
 <li><a href="#tag_parameters">Tag Parameters</a></li>
 <li><a href="#taxonomy_parameters_tax_operator">Simple Taxonomy Parameters, "tax_operator"</a></li>
 <li><a href="#taxonomy_queries">Taxonomy Queries, the "tax_query"</a></li>
+<li><a href="#taxonomy_keyword_search">Taxonomy term keyword(s) search</a></li>
 <li><a href="#post_mime_type_parameter">Post MIME Type</a></li>
 <li><a href="#post_type_post_status">Post Type, Post Status</a></li>
 <li><a href="#pagination_parameters">Pagination Parameters</a></li>
 <li><a href="#time_parameters">Date and Time Parameters</a></li>
 <li><a href="#custom_field_parameters">Simple Custom Field Parameters</a></li>
 <li><a href="#custom_field_queries">Custom Field Queries, "meta_query"</a></li>
-<li><a href="#search_keywords">Search Keywords</a></li>
+<li><a href="#search_keywords">Keyword(s) Search</a></li>
 <li><a href="#cache_parameters">Caching Parameters</a></li>
 <li><a href="#debugging_output">Debugging Output</a></li>
 <li><a href="#mla_gallery_hooks">MLA Gallery Filters (Hooks)</a></li>
@@ -597,6 +598,31 @@ When embedding the shortcode in the body of a post, be very careful when coding 
 </p>
 <p>
 Remember to use <code>post_parent=current</code> if you want to restrict your query to items attached to the current post.
+<a name="taxonomy_keyword_search"></a>
+</p>
+<h4>Taxonomy term keyword(s) search</h4>
+<p>
+Searching for keywords within the names of taxonomy terms is a completely different way to find items based on taxonomy information. Instead of matching on a slug or term-id value you can match on all or part of the term Title. The shortcode parameters in this section give you all the power of the "Terms Search" feature on the Media/Assistant submenu table, as described in the "<a href="#terms_search">Terms Search - filtering on taxonomy term names</a>" Documentation section. Here are the shortcode parameters that correspond to the controls on the "Search Terms" popup window:
+</p>
+<table>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">mla_terms_phrases</td>
+<td>The word(s) or phrase(s) you are searching for.</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">mla_terms_taxonomies</td>
+<td>A comma-separated list of the taxonomy or taxonomies in which to search. Enter the slug(s) for one or more of the taxonomies registered for Media Library items, e.g., attachment_category or attachment_tag.</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">mla_phrase_connector</td>
+<td>Choose from OR to require that any one of the phrases must match for the search to succeed, or AND (the default) to require that all of the phrases must match.</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">mla_term_connector</td>
+<td>If you enter multiple terms (separated by commas) in the <code>mla_terms_phrases</code> parameter, this parameter controls how they are connected. Choose from OR (the default) to require that any one of the terms must match for the search to succeed, or AND to require that all of the terms must match.</td>
+</tr>
+</table>
+<p>
 <a name="post_mime_type_parameter"></a>
 </p>
 <h4>Post MIME Type</h4>
@@ -698,9 +724,40 @@ When embedding the shortcode in the body of a post, be very careful when coding 
 Remember to use <code>post_parent=current</code> if you want to restrict your query to items attached to the current post.
 <a name="search_keywords"></a>
 </p>
-<h4>Search Keywords</h4>
+<h4>Keyword(s) Search</h4>
 <p>
-The search parameter ("s=keyword") will perform a keyword search. A cursory inspection of the code in /wp-includes/query.php reveals that the search includes the "post_title" and "post_content" (Description) fields but not the "post_excerpt" (Caption) field. An SQL "LIKE" clause is composed and added to the search criteria. I haven't done much testing of this parameter.
+The search parameter ("s=keyword") will perform a keyword search. By default, the search includes the "post_title" and "post_content" (Description) fields but not the "post_excerpt" (Caption) field. All of the words you enter in the parameter must match for the search to succeed. An SQL "LIKE" clause for each word is composed and added to the search criteria.
+</p>
+<p>
+You can match on multi-word phrases in a variety of ways. These are described in detail, with examples, in the "Entering Words and Phrases" portion of the "<a href="#terms_search">Terms Search - filtering on taxonomy term names</a>" Documentation section. You can also use the <code>sentence=true</code> and <code>exact=true</code> parameters to change the matching logic used in the <code>[mla_gallery]</code> shortcode.
+</p>
+<p>
+You can use the <code>mla_search_connector</code> and <code>mla_search_fields</code> parameters to extend the search to other fields and to relax the requirement that all phrases must match. Here are all of the parameters that control keyword searching:
+</p>
+<table>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">s</td>
+<td>The word(s) or phrase(s) you are searching for.</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">mla_search_fields</td>
+<td>The fields in which to search. Choose from title, content, excerpt, name, terms. Searching on alt-text is not supported.</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">mla_search_connector</td>
+<td>Choose from OR to require that any one of the phrases must match for the search to succeed, or AND (the default) to require that all of the phrases must match.</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">sentence</td>
+<td>Add <code>sentence=true</code> to require that all of the words entered must match in sequence. This is equivalent to putting quotes around all of the words in your search.</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">exact</td>
+<td>Add <code>exact=true</code> to require that the entire field content must match the search text.</td>
+</tr>
+</table>
+<p>
+The <code>mla_search_fields=terms</code> feature is a simple way to extend the search to the terms assigned to Media Library items. If searching on taxonomy terms is your primary goal, consider the more powerful "<a href="#taxonomy_keyword_search">Taxonomy term keyword(s) search</a>" parameters discussed in an earlier Documentation section.
 <a name="cache_parameters"></a>
 </p>
 <h4>Caching Parameters</h4>
