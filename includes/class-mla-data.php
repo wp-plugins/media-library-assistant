@@ -2031,8 +2031,7 @@ class MLAData {
 			$search_clause = " AND ( {$numeric_clause}{$search_clause}{$tax_clause} ) ";
 
 			if ( ! is_user_logged_in() ) {
-				$post_password = $wpdb->posts.post_password;
-				$search_clause .= " AND ( {$post_password} = '' ) ";
+				$search_clause .= " AND ( {$wpdb->posts}.post_password = '' ) ";
 			}
 		}
 
