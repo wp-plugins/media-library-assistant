@@ -1272,7 +1272,7 @@ class MLAData {
 	 * ['mla_debug_messages'] => internal element, added when debug = 'shortcode'
 	 * ['tax_terms_count'] => internal element, shared with JOIN and GROUP BY filters
 	 *
-	 * @since 1.9x
+	 * @since 2.00
 	 *
 	 * @var	array
 	 */
@@ -1790,10 +1790,6 @@ class MLAData {
 	 * @return	string	query clause after keyword search addition
 	 */
 	public static function mla_query_posts_search_filter( $search_string, &$query_object ) {
-//error_log( 'mla_query_posts_search_filter $search_string = ' . var_export( $search_string, true ), 0 );
-//error_log( 'mla_query_posts_search_filter $query_vars  = ' . var_export( $query_object->query_vars, true ), 0 );
-//error_log( 'DEBUG: xdebug_get_function_stack = ' . var_export( xdebug_get_function_stack(), true), 0 );		
-//error_log( 'mla_query_posts_search_filter $search_parameters  = ' . var_export( self::$search_parameters, true ), 0 );
 		global $wpdb;
 
 		$numeric_clause = '';
@@ -1961,9 +1957,7 @@ class MLAData {
 					 * separated by taxonomy.
 					 */
 					if ( in_array( 'terms', $fields ) ) {
-//error_log( 'mla_query_posts_search_filter $term = ' . var_export( $term, true ), 0 );
 						$the_terms = get_terms( MLAOptions::mla_supported_taxonomies( 'term-search' ), array( 'name__like' => $term, 'fields' => 'all', 'hide_empty' => false ) );
-//error_log( 'mla_query_posts_search_filter $the_terms = ' . var_export( $the_terms, true ), 0 );
 						foreach( $the_terms as $the_term ) {
 							$tax_terms[ $the_term->taxonomy ][ $the_term->term_id ] = (integer) $the_term->term_taxonomy_id;
 
@@ -1997,7 +1991,6 @@ class MLAData {
 						} // foreach taxonomy
 					} // AND connector
 
-//error_log( 'mla_query_posts_search_filter $tax_terms = ' . var_export( $tax_terms, true ), 0 );
 					if ( empty( $tax_terms ) ) {
 						/*
 						 * If "Terms" is the only field and no terms are present,
@@ -2051,7 +2044,6 @@ class MLAData {
 			}
 		} // debug
 
-//error_log( 'mla_query_posts_search_filter $search_clause = ' . var_export( $search_clause, true ), 0 );
 		return $search_clause;
 	}
 
@@ -5458,6 +5450,7 @@ class MLAData {
 				} // one-element array
 			} // Multi-key value
 
+			$value = sanitize_text_field( $value );
 			$old_value = self::mla_find_array_element( $key, $current_values, 'array' );
 			if ( ! empty( $old_value ) ) {
 				if ( empty( $value ) ) {
@@ -5555,7 +5548,7 @@ class MLAData {
 
 					$delete = empty( $old_meta_value );
 				} else  {
-					$delete = NULL == $meta_value;
+					$delete = NULL === $meta_value;
 				}
 
 				if ( $delete) {
@@ -5567,7 +5560,7 @@ class MLAData {
 					continue;
 				}
 			} else {
-				if ( NULL != $meta_value ) {
+				if ( NULL !== $meta_value ) {
 					if ( $multi_key ) {
 						foreach ( $meta_value as $new_value ) {
 							if ( add_post_meta( $post_id, $meta_key, $new_value ) ) {

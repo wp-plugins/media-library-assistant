@@ -29,7 +29,7 @@ class MLA {
 	 *
 	 * @var	string
 	 */
-	const CURRENT_MLA_VERSION = '1.95';
+	const CURRENT_MLA_VERSION = '2.00';
 
 	/**
 	 * Slug for registering and enqueueing plugin style sheet
@@ -761,7 +761,7 @@ class MLA {
 	 *
 	 * Requires _wpnonce, mla_download_file and mla_download_type in $_REQUEST; mla_download_disposition is optional.
 	 *
-	 * @since 1.9x
+	 * @since 2.00
 	 *
 	 * @return	void	echos file contents and calls exit();
 	 */
@@ -847,7 +847,7 @@ class MLA {
 	/**
 	 * Process bulk action for one or more attachments
 	 *
-	 * @since 1.9x
+	 * @since 2.00
 	 *
 	 * @param	string	Bulk action slug: delete, edit, restore, trash, custom action
 	 *
@@ -1584,7 +1584,7 @@ class MLA {
 	/**
 	 * Ajax handler for bulk editing and mapping
 	 *
-	 * @since 1.9x
+	 * @since 2.00
 	 *
 	 * @return	void	echo json results or error message, then die()
 	 */

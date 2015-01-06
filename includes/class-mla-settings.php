@@ -32,7 +32,7 @@ class MLASettings {
 	const JAVASCRIPT_INLINE_EDIT_VIEW_OBJECT = 'mla_inline_edit_view_vars';
 
 	/**
-	 * Slug for localizing and enqueueing JavaScript - MLA View List Table
+	 * Slug for localizing and enqueueing JavaScript - MLA Upload List Table
 	 *
 	 * @since 1.40
 	 *
@@ -41,13 +41,40 @@ class MLASettings {
 	const JAVASCRIPT_INLINE_EDIT_UPLOAD_SLUG = 'mla-inline-edit-upload-scripts';
 
 	/**
-	 * Object name for localizing JavaScript - MLA View List Table
+	 * Object name for localizing JavaScript - MLA Upload List Table
 	 *
 	 * @since 1.40
 	 *
 	 * @var	string
 	 */
 	const JAVASCRIPT_INLINE_EDIT_UPLOAD_OBJECT = 'mla_inline_edit_upload_vars';
+
+	/**
+	 * Slug for localizing and enqueueing JavaScript - MLA Custom tab
+	 *
+	 * @since 2.00
+	 *
+	 * @var	string
+	 */
+	const JAVASCRIPT_INLINE_MAPPING_CUSTOM_SLUG = 'mla-inline-mapping-custom-scripts';
+
+	/**
+	 * Slug for localizing and enqueueing JavaScript - MLA IPTC/EXIF tab
+	 *
+	 * @since 2.00
+	 *
+	 * @var	string
+	 */
+	const JAVASCRIPT_INLINE_MAPPING_IPTC_EXIF_SLUG = 'mla-inline-mapping-iptc-exif-scripts';
+
+	/**
+	 * Object name for localizing JavaScript - MLA Custom and IPTC/EXIF tabs
+	 *
+	 * @since 2.00
+	 *
+	 * @var	string
+	 */
+	const JAVASCRIPT_INLINE_MAPPING_OBJECT = 'mla_inline_mapping_vars';
 
 	/**
 	 * Provides a unique name for the settings page
@@ -277,6 +304,8 @@ class MLASettings {
 	public static function mla_admin_init_action() {
 		add_action( 'wp_ajax_' . self::JAVASCRIPT_INLINE_EDIT_VIEW_SLUG, 'MLASettings::mla_inline_edit_view_action' );
 		add_action( 'wp_ajax_' . self::JAVASCRIPT_INLINE_EDIT_UPLOAD_SLUG, 'MLASettings::mla_inline_edit_upload_action' );
+		add_action( 'wp_ajax_' . self::JAVASCRIPT_INLINE_MAPPING_CUSTOM_SLUG, 'MLASettings::mla_inline_mapping_custom_action' );
+		add_action( 'wp_ajax_' . self::JAVASCRIPT_INLINE_MAPPING_IPTC_EXIF_SLUG, 'MLASettings::mla_inline_mapping_iptc_exif_action' );
 	}
 
 	/**
@@ -289,49 +318,100 @@ class MLASettings {
 	 * @return	void
 	 */
 	public static function mla_admin_enqueue_scripts_action( $page_hook ) {
-		$suffix = defined('SCRIPT_DEBUG') && SCRIPT_DEBUG ? '' : '.min';
-
-		if ( self::$current_page_hook != $page_hook ) {
+		global $wpdb;
+		
+		/*
+		 * Without a tab value, there's nothing to do
+		 */
+		if ( ( self::$current_page_hook != $page_hook ) || empty( $_REQUEST['mla_tab'] ) ) {
 			return;
 		}
 
 		wp_register_style( MLA::STYLESHEET_SLUG, MLA_PLUGIN_URL . 'css/mla-style.css', false, MLA::CURRENT_MLA_VERSION );
 		wp_enqueue_style( MLA::STYLESHEET_SLUG );
 
-		if ( isset( $_REQUEST['mla_tab'] ) && ( $_REQUEST['mla_tab'] == 'view' ) ) {
-			wp_enqueue_script( self::JAVASCRIPT_INLINE_EDIT_VIEW_SLUG, MLA_PLUGIN_URL . "js/mla-inline-edit-view-scripts{$suffix}.js", 
-				array( 'wp-lists', 'suggest', 'jquery' ), MLA::CURRENT_MLA_VERSION, false );
+		/*
+		 * Initialize common script variables
+		 */
+		$script_variables = array(
+			'error' => __( 'Error while saving the changes.', 'media-library-assistant' ),
+			'ntdeltitle' => __( 'Remove From Bulk Edit', 'media-library-assistant' ),
+			'notitle' => '(' . __( 'no slug', 'media-library-assistant' ) . ')',
+			'comma' => _x( ',', 'tag_delimiter', 'media-library-assistant' ),
+			'ajax_nonce' => wp_create_nonce( MLA::MLA_ADMIN_NONCE ) 
+		);
+		
+		$mapping_variables = array(
+			'page' => 'mla-settings-menu-custom_field',
+			'mla_tab' => 'custom_field',
+			'screen' => 'settings_page_mla-settings-menu-custom_field',
+			'bulkChunkSize' => MLAOptions::mla_get_option( MLAOptions::MLA_BULK_CHUNK_SIZE ),
+			'bulkWaiting' => __( 'Waiting', 'media-library-assistant' ),
+			'bulkRunning' => __( 'Running', 'media-library-assistant' ),
+			'bulkComplete' => __( 'Complete', 'media-library-assistant' ),
+			'bulkUnchanged' => __( 'Unchanged', 'media-library-assistant' ),
+			'bulkSuccess' => __( 'Succeeded', 'media-library-assistant' ),
+			'bulkFailure' => __( 'Failed', 'media-library-assistant' ),
+			'bulkCanceled' => __( 'CANCELED', 'media-library-assistant' ),
+		);
 
-			$script_variables = array(
-				'fields' => array( 'original_slug', 'slug', 'singular', 'plural', 'specification', 'menu_order' ),
-				'checkboxes' => array( 'post_mime_type', 'table_view' ),
-				'error' => __( 'Error while saving the changes.', 'media-library-assistant' ),
-				'ntdeltitle' => __( 'Remove From Bulk Edit', 'media-library-assistant' ),
-				'notitle' => '(' . __( 'no slug', 'media-library-assistant' ) . ')',
-				'comma' => _x( ',', 'tag_delimiter', 'media-library-assistant' ),
-				'ajax_action' => self::JAVASCRIPT_INLINE_EDIT_VIEW_SLUG,
-				'ajax_nonce' => wp_create_nonce( MLA::MLA_ADMIN_NONCE ) 
-			);
-			wp_localize_script( self::JAVASCRIPT_INLINE_EDIT_VIEW_SLUG, self::JAVASCRIPT_INLINE_EDIT_VIEW_OBJECT, $script_variables );
-			return;
-		}
 
-		if ( isset( $_REQUEST['mla_tab'] ) && ( $_REQUEST['mla_tab'] == 'upload' ) ) {
-			wp_enqueue_script( self::JAVASCRIPT_INLINE_EDIT_UPLOAD_SLUG, MLA_PLUGIN_URL . "js/mla-inline-edit-upload-scripts{$suffix}.js", 
-				array( 'wp-lists', 'suggest', 'jquery' ), MLA::CURRENT_MLA_VERSION, false );
+		$suffix = defined('SCRIPT_DEBUG') && SCRIPT_DEBUG ? '' : '.min';
 
-			$script_variables = array(
-				'fields' => array( 'original_slug', 'slug', 'mime_type', 'icon_type', 'core_type', 'mla_type', 'source', 'standard_source' ),
-				'checkboxes' => array( 'disabled' ),
-				'error' => __( 'Error while saving the changes.', 'media-library-assistant' ),
-				'ntdeltitle' => __( 'Remove From Bulk Edit', 'media-library-assistant' ),
-				'notitle' => '(' . __( 'no slug', 'media-library-assistant' ) . ')',
-				'comma' => _x( ',', 'tag_delimiter', 'media-library-assistant' ),
-				'ajax_action' => self::JAVASCRIPT_INLINE_EDIT_UPLOAD_SLUG,
-				'ajax_nonce' => wp_create_nonce( MLA::MLA_ADMIN_NONCE ) 
-			);
-			wp_localize_script( self::JAVASCRIPT_INLINE_EDIT_UPLOAD_SLUG, self::JAVASCRIPT_INLINE_EDIT_UPLOAD_OBJECT, $script_variables );
-			return;
+		/*
+		 * Select tab-specific scripts and variables
+		 */		
+		switch ( $_REQUEST['mla_tab'] ) {
+			case 'view':
+				wp_enqueue_script( self::JAVASCRIPT_INLINE_EDIT_VIEW_SLUG,
+					MLA_PLUGIN_URL . "js/mla-inline-edit-view-scripts{$suffix}.js", 
+					array( 'wp-lists', 'suggest', 'jquery' ), MLA::CURRENT_MLA_VERSION, false );
+
+				$script_variables['fields'] = array( 'original_slug', 'slug', 'singular', 'plural', 'specification', 'menu_order' );
+				$script_variables['checkboxes'] = array( 'post_mime_type', 'table_view' );
+				$script_variables['ajax_action'] = self::JAVASCRIPT_INLINE_EDIT_VIEW_SLUG;
+
+				wp_localize_script( self::JAVASCRIPT_INLINE_EDIT_VIEW_SLUG,
+					self::JAVASCRIPT_INLINE_EDIT_VIEW_OBJECT, $script_variables );
+				return;
+			case 'upload':
+				wp_enqueue_script( self::JAVASCRIPT_INLINE_EDIT_UPLOAD_SLUG,
+					MLA_PLUGIN_URL . "js/mla-inline-edit-upload-scripts{$suffix}.js", 
+					array( 'wp-lists', 'suggest', 'jquery' ), MLA::CURRENT_MLA_VERSION, false );
+
+				$script_variables['fields'] = array( 'original_slug', 'slug', 'mime_type', 'icon_type', 'core_type', 'mla_type', 'source', 'standard_source' );
+				$script_variables['checkboxes'] = array( 'disabled' );
+				$script_variables['ajax_action'] = self::JAVASCRIPT_INLINE_EDIT_UPLOAD_SLUG;
+
+				wp_localize_script( self::JAVASCRIPT_INLINE_EDIT_UPLOAD_SLUG,
+					self::JAVASCRIPT_INLINE_EDIT_UPLOAD_OBJECT, $script_variables );
+				return;
+			case 'custom_field':
+				wp_enqueue_script( self::JAVASCRIPT_INLINE_MAPPING_CUSTOM_SLUG,
+					MLA_PLUGIN_URL . "js/mla-inline-mapping-scripts{$suffix}.js", 
+					array( 'jquery' ), MLA::CURRENT_MLA_VERSION, false );
+
+				$script_variables = array_merge( $script_variables, $mapping_variables );
+				$script_variables['ajax_action'] = self::JAVASCRIPT_INLINE_MAPPING_CUSTOM_SLUG;
+				$script_variables['fieldsId'] = '#mla-display-settings-custom-field-tab';
+				$script_variables['totalItems'] = $wpdb->get_var( "SELECT COUNT(*) FROM {$wpdb->posts} WHERE `post_type` = 'attachment'" );
+
+				wp_localize_script( self::JAVASCRIPT_INLINE_MAPPING_CUSTOM_SLUG,
+					self::JAVASCRIPT_INLINE_MAPPING_OBJECT, $script_variables );
+				return;
+			case 'iptc_exif':
+				wp_enqueue_script( self::JAVASCRIPT_INLINE_MAPPING_IPTC_EXIF_SLUG,
+					MLA_PLUGIN_URL . "js/mla-inline-mapping-scripts{$suffix}.js", 
+					array( 'jquery' ), MLA::CURRENT_MLA_VERSION, false );
+
+				$script_variables = array_merge( $script_variables, $mapping_variables );
+				$script_variables['ajax_action'] = self::JAVASCRIPT_INLINE_MAPPING_IPTC_EXIF_SLUG;
+				$script_variables['fieldsId'] = '#mla-display-settings-iptc-exif-tab';
+				$script_variables['totalItems'] = $wpdb->get_var( "SELECT COUNT(*) FROM {$wpdb->posts} WHERE `post_type` = 'attachment' AND ( `post_mime_type` LIKE 'image/%' OR `post_mime_type` LIKE 'application/%pdf%' )" );
+
+				wp_localize_script( self::JAVASCRIPT_INLINE_MAPPING_IPTC_EXIF_SLUG,
+					self::JAVASCRIPT_INLINE_MAPPING_OBJECT, $script_variables );
+				return;
 		}
 	}
 
@@ -599,6 +679,259 @@ class MLASettings {
 		$MLAListUploadTable = new MLA_Upload_List_Table();
 		$MLAListUploadTable->single_row( $new_item );
 		die(); // this is required to return a proper result
+	}
+
+	/**
+	 * Ajax handler for Custom Fields tab inline mapping
+	 *
+	 * @since 2.00
+	 *
+	 * @return	void	echo json response object, then die()
+	 */
+	public static function mla_inline_mapping_custom_action() {
+		set_current_screen( $_REQUEST['screen'] );
+		check_ajax_referer( MLA::MLA_ADMIN_NONCE, 'nonce' );
+
+		/*
+		 * Convert the ajax bulk_action back to the older Submit button equivalent
+		 */
+		if ( ! empty( $_REQUEST['bulk_action'] ) ) {
+			if ( 'custom-field-options-map' == $_REQUEST['bulk_action'] ) {
+				$_REQUEST['custom-field-options-map'] = __( 'Map All Rules, All Attachments Now', 'media-library-assistant' );
+			} else {
+				$match_count = preg_match( '/custom_field_mapping\[(.*)\]\[(.*)\]\[(.*)\]/', $_REQUEST['bulk_action'], $matches );
+				if ( $match_count ) {
+					$_REQUEST['custom_field_mapping'][ $matches[1] ][ $matches[2] ][ $matches[3] ] = __( 'Map All Attachments', 'media-library-assistant' );
+				}
+			}
+		}
+		
+		/*
+		 * Check for action or submit buttons.
+		 */
+		
+		if ( isset( $_REQUEST['custom_field_mapping'] ) && is_array( $_REQUEST['custom_field_mapping'] ) ) {
+			/*
+			 * Find the current chunk
+			 */
+			$offset = isset( $_REQUEST['offset'] ) ? $_REQUEST['offset'] : 0;
+			$length = isset( $_REQUEST['length'] ) ? $_REQUEST['length'] : 0;
+			
+			/*
+			 * Check for page-level submit button to map attachments.
+			 */
+			if ( !empty( $_REQUEST['custom-field-options-map'] ) ) {
+				$page_content = self::_process_custom_field_mapping( NULL, $offset, $length );
+			} else {
+				$page_content = array(
+					'message' => '',
+					'body' => '',
+					'processed' => 0,
+					'unchanged' => 0,
+					'success' =>  0
+				);
+
+				/*
+				 * Check for single-rule action buttons
+				 */
+				foreach ( $_REQUEST['custom_field_mapping'] as $key => $value ) {
+					if ( isset( $value['action'] ) ) {
+						$settings = array( $key => $value );
+						foreach ( $value['action'] as $action => $label ) {
+							switch( $action ) {
+								case 'map_now':
+									$page_content = self::_process_custom_field_mapping( $settings, $offset, $length );
+									break;
+								case 'add_rule_map':
+									if ( 'none' == $value['name'] ) {
+										$page_content['message'] = __( 'Custom field no mapping rule changes detected.', 'media-library-assistant' );
+										break;
+									}
+									// fallthru
+								case 'add_field_map':
+									if ( '' == $value['name'] ) {
+										$page_content['message'] = __( 'Custom field no mapping rule changes detected.', 'media-library-assistant' );
+										break;
+									}
+									
+									if ( 0 == $offset ) {
+										$page_content = self::_save_custom_field_settings( $settings );
+										if ( false !== strpos( $page_content['message'], __( 'ERROR:', 'media-library-assistant' ) ) ) {
+											$page_content['processed'] = 0;
+											$page_content['unchanged'] = 0;
+											$page_content['success'] = 0;
+											break;
+										}
+									}
+									
+									$current_values = MLAOptions::mla_get_option( 'custom_field_mapping' );
+									$settings = array( $value['name'] => $current_values[$value['name']] );
+									$map_content = self::_process_custom_field_mapping( $settings, $offset, $length );
+									$page_content['message'] .= '<br>&nbsp;<br>' . $map_content['message'];
+									$page_content['processed'] = $map_content['processed'];
+									$page_content['unchanged'] = $map_content['unchanged'];
+									$page_content['success'] = $map_content['success'];
+									$page_content['refresh'] = true;
+									break;
+								default:
+									// ignore everything else
+							} //switch action
+						} // foreach action
+					} /// isset action
+				} // foreach rule
+			} // specific rule check
+		} // isset custom_field_mapping
+		else {
+			$page_content = array(
+				'message' => '',
+				'body' => '',
+				'processed' => 0,
+				'unchanged' => 0,
+				'success' =>  0
+			);
+		}
+
+		$chunk_results = array( 
+			'message' => $page_content['message'],
+			'processed' => $page_content['processed'],
+			'unchanged' => $page_content['unchanged'],
+			'success' => $page_content['success'],
+			'refresh' => isset( $page_content['refresh'] ) && true == $page_content['refresh'],
+		);
+
+		wp_send_json_success( $chunk_results );
+	}
+
+	/**
+	 * Ajax handler for IPTC/EXIF tab inline mapping
+	 *
+	 * @since 2.00
+	 *
+	 * @return	void	echo json response object, then die()
+	 */
+	public static function mla_inline_mapping_iptc_exif_action() {
+		set_current_screen( $_REQUEST['screen'] );
+		check_ajax_referer( MLA::MLA_ADMIN_NONCE, 'nonce' );
+
+		/*
+		 * Convert the ajax bulk_action back to the older Submit button equivalent
+		 */
+		if ( ! empty( $_REQUEST['bulk_action'] ) ) {
+			switch ( $_REQUEST['bulk_action'] ) {
+				case 'iptc-exif-options-process-standard':
+				$_REQUEST['iptc-exif-options-process-standard'] = __( 'Map All Attachments, Standard Fields Now', 'media-library-assistant' );
+					break;
+				case 'iptc-exif-options-process-taxonomy':
+				$_REQUEST['iptc-exif-options-process-taxonomy'] = __( 'Map All Attachments, Taxonomy Terms Now', 'media-library-assistant' );
+					break;
+				case 'iptc-exif-options-process-custom':
+				$_REQUEST['iptc-exif-options-process-custom'] = __( 'Map All Attachments, Custom Fields Now', 'media-library-assistant' );
+					break;
+				default:
+					$match_count = preg_match( '/iptc_exif_mapping\[custom\]\[(.*)\]\[(.*)\]\[(.*)\]/', $_REQUEST['bulk_action'], $matches );
+					if ( $match_count ) {
+						$_REQUEST['iptc_exif_mapping']['custom'][ $matches[1] ][ $matches[2] ][ $matches[3] ] = __( 'Map All Attachments', 'media-library-assistant' );
+					}
+			}
+		}
+		
+		/*
+		 * Check for action or submit buttons.
+		 */
+		if ( isset( $_REQUEST['iptc_exif_mapping'] ) && is_array( $_REQUEST['iptc_exif_mapping'] ) ) {
+			/*
+			 * Find the current chunk
+			 */
+			$offset = isset( $_REQUEST['offset'] ) ? $_REQUEST['offset'] : 0;
+			$length = isset( $_REQUEST['length'] ) ? $_REQUEST['length'] : 0;
+			
+			/*
+			 * Check for page-level submit button to map attachments.
+			 */
+			if ( !empty( $_REQUEST['iptc-exif-options-process-standard'] ) ) {
+				$page_content = self::_process_iptc_exif_standard( $offset, $length );
+			} elseif ( !empty( $_REQUEST['iptc-exif-options-process-taxonomy'] ) ) {
+				$page_content = self::_process_iptc_exif_taxonomy( $offset, $length );
+			} elseif ( !empty( $_REQUEST['iptc-exif-options-process-custom'] ) ) {
+				$page_content = self::_process_iptc_exif_custom( NULL, $offset, $length );
+			} else {
+				$page_content = array(
+					'message' => '',
+					'body' => '',
+					'processed' => 0,
+					'unchanged' => 0,
+					'success' =>  0
+				);
+
+				/*
+				 * Check for single-rule action buttons
+				 */
+				foreach ( $_REQUEST['iptc_exif_mapping']['custom'] as $key => $value ) {
+					if ( isset( $value['action'] ) ) {
+						$settings = array( 'custom' => array( $key => $value ) );
+						foreach ( $value['action'] as $action => $label ) {
+							switch( $action ) {
+								case 'map_now':
+									$page_content = self::_process_iptc_exif_custom( $settings, $offset, $length );
+									break;
+								case 'add_rule_map':
+									if ( 'none' == $value['name'] ) {
+										$page_content['message'] = __( 'IPTC/EXIF no mapping changes detected.', 'media-library-assistant' );
+										break;
+									}
+									// fallthru
+								case 'add_field_map':
+									if ( '' == $value['name'] ) {
+										$page_content['message'] = __( 'IPTC/EXIF no mapping changes detected.', 'media-library-assistant' );
+										break;
+									}
+									
+									if ( 0 == $offset ) {
+										$page_content = self::_save_iptc_exif_custom_settings( $settings );
+										if ( false !== strpos( $page_content['message'], __( 'ERROR:', 'media-library-assistant' ) ) ) {
+											$page_content['processed'] = 0;
+											$page_content['unchanged'] = 0;
+											$page_content['success'] = 0;
+											break;
+										}
+									}
+
+									$current_values = MLAOptions::mla_get_option( 'iptc_exif_mapping' );
+									$settings = array( 'custom' => array( $value['name'] => $current_values['custom'][$value['name']] ) );
+									$map_content = self::_process_iptc_exif_custom( $settings, $offset, $length );
+									$page_content['message'] .= '<br>&nbsp;<br>' . $map_content['message'];
+									$page_content['processed'] = $map_content['processed'];
+									$page_content['unchanged'] = $map_content['unchanged'];
+									$page_content['success'] = $map_content['success'];
+									$page_content['refresh'] = true;
+									break;
+								default:
+									// ignore everything else
+							} //switch action
+						} // foreach action
+					} /// isset action
+				} // foreach rule
+			}
+		} // isset custom_field_mapping
+		else {
+			$page_content = array(
+				'message' => '',
+				'body' => '',
+				'processed' => 0,
+				'unchanged' => 0,
+				'success' =>  0
+			);
+		}
+
+		$chunk_results = array( 
+			'message' => $page_content['message'],
+			'processed' => $page_content['processed'],
+			'unchanged' => $page_content['unchanged'],
+			'success' => $page_content['success'],
+			'refresh' => isset( $page_content['refresh'] ) && true == $page_content['refresh'],
+		);
+
+		wp_send_json_success( $chunk_results );
 	}
 
 	/**
@@ -1136,7 +1469,6 @@ class MLASettings {
 	 */
 	private static function _compose_edit_view_tab( $view, $template ) {
 		$page_values = array(
-//			'settingsURL' => admin_url('options-general.php'),
 			'Edit View' => __( 'Edit View', 'media-library-assistant' ),
 			'form_url' => admin_url( 'options-general.php' ) . '?page=mla-settings-menu-view&mla_tab=view',
 			'action' => MLA::MLA_ADMIN_SINGLE_EDIT_UPDATE,
@@ -1340,7 +1672,6 @@ class MLASettings {
 			}
 
 			$page_values = array(
-//				'settingsURL' => admin_url('options-general.php'),
 				'Support is disabled' => __( 'View and Post MIME Type Support is disabled', 'media-library-assistant' ),
 				'form_url' => admin_url( 'options-general.php' ) . '?page=mla-settings-menu-view&mla_tab=view',
 				'options_list' => $options_list,
@@ -1496,7 +1827,6 @@ class MLASettings {
 	 */
 	private static function _compose_edit_upload_tab( $item, &$templates ) {
 		$page_values = array(
-//			'settingsURL' => admin_url('options-general.php'),
 			'Edit Upload MIME' => __( 'Edit Upload MIME Type', 'media-library-assistant' ),
 			'form_url' => admin_url( 'options-general.php' ) . '?page=mla-settings-menu-upload&mla_tab=upload',
 			'action' => MLA::MLA_ADMIN_SINGLE_EDIT_UPDATE,
@@ -1810,7 +2140,6 @@ class MLASettings {
 			}
 
 			$page_values = array(
-//				'settingsURL' => admin_url('options-general.php'),
 				'Support is disabled' => __( 'Upload MIME Type Support is disabled', 'media-library-assistant' ),
 				'form_url' => admin_url( 'options-general.php' ) . '?page=mla-settings-menu-upload&mla_tab=upload',
 				'options_list' => $options_list,
@@ -1946,7 +2275,6 @@ class MLASettings {
 			'form_url' => admin_url( 'options-general.php' ) . '?page=mla-settings-menu-mla_gallery&mla_tab=mla_gallery',
 			'options_list' => '',
 			'Style Templates' => __( 'Style Templates', 'media-library-assistant' ),
-//			'settingsURL' => admin_url('options-general.php'),
 			'style_options_list' => '',
 			'Markup Templates' => __( 'Markup Templates', 'media-library-assistant' ),
 			'markup_options_list' => '',
@@ -2344,6 +2672,15 @@ class MLASettings {
 		}
 
 		$page_values = array(
+			'Mapping Progress' => __( 'Custom Field Mapping Progress', 'media-library-assistant' ),
+			'Progress' => __( 'Progress', 'media-library-assistant' ),
+			'DO NOT' => __( 'DO NOT DO THE FOLLOWING (they will cause mapping to fail)', 'media-library-assistant' ),
+			'DO NOT Close' => __( 'Close the window', 'media-library-assistant' ),
+			'DO NOT Reload' => __( 'Reload the page', 'media-library-assistant' ),
+			'DO NOT Click' => __( 'Click the browser&rsquo;s Stop, Back or forward buttons', 'media-library-assistant' ),
+			'Cancel' => __( 'Cancel', 'media-library-assistant' ),
+			'Close' => __( 'Close', 'media-library-assistant' ),
+			'Refresh' => __( 'Refresh', 'media-library-assistant' ),
 			'Custom Field Options' => __( 'Custom Field and Attachment Metadata Processing Options', 'media-library-assistant' ),
 			/* translators: 1: Documentation hyperlink */
 			'In this tab' => sprintf( __( 'In this tab you can define the rules for mapping several types of image metadata to WordPress custom fields. You can also use this screen to define rules for adding or updating fields within the WordPress-supplied "Attachment Metadata", stored in the "_wp_attachment_metadata" custom field. See the %1$s section of the Documentation for details.', 'media-library-assistant' ), '<a href="[+settingsURL+]?page=mla-settings-menu-documentation&amp;mla_tab=documentation#attachment_metadata_mapping" title="' . __( 'Updating Attachment Metadata Documentation', 'media-library-assistant' ) . '">' . __( 'Adding or changing Attachment Metadata', 'media-library-assistant' ) . '</a>' ),
@@ -2461,6 +2798,15 @@ class MLASettings {
 		}
 
 		$page_values = array(
+			'Mapping Progress' => __( 'IPTC &amp; EXIF Mapping Progress', 'media-library-assistant' ),
+			'Progress' => __( 'Progress', 'media-library-assistant' ),
+			'DO NOT' => __( 'DO NOT DO THE FOLLOWING (they will cause mapping to fail)', 'media-library-assistant' ),
+			'DO NOT Close' => __( 'Close the window', 'media-library-assistant' ),
+			'DO NOT Reload' => __( 'Reload the page', 'media-library-assistant' ),
+			'DO NOT Click' => __( 'Click the browser&rsquo;s Stop, Back or forward buttons', 'media-library-assistant' ),
+			'Cancel' => __( 'Cancel', 'media-library-assistant' ),
+			'Close' => __( 'Close', 'media-library-assistant' ),
+			'Refresh' => __( 'Refresh', 'media-library-assistant' ),
 			'IPTX/EXIF Options' => __( 'IPTC &amp; EXIF Processing Options', 'media-library-assistant' ),
 			'In this tab' => __( 'In this tab you can define the rules for mapping IPTC (International Press Telecommunications Council) and EXIF (EXchangeable Image File) metadata to WordPress standard attachment fields, taxonomy terms and custom fields. <strong>NOTE:</strong> settings changes will not be made permanent until you click "Save Changes" at the bottom of this page.', 'media-library-assistant' ),
 			/* translators: 1: Documentation hyperlink */
@@ -2550,7 +2896,6 @@ class MLASettings {
 		$current_tab_slug = isset( $_REQUEST['mla_tab'] ) ? $_REQUEST['mla_tab']: 'general';
 		$current_tab = self::mla_get_options_tablist( $current_tab_slug );
 		$page_values = array(
-//			'settingsURL' => admin_url('options-general.php'),
 			'donateURL' => MLA_PLUGIN_URL . 'images/DonateButton.jpg',
 			'version' => 'v' . MLA::CURRENT_MLA_VERSION,
 			'messages' => '',
@@ -2931,12 +3276,13 @@ class MLASettings {
 	 * @uses $_REQUEST if passed a NULL parameter
 	 *
 	 * @param	array | NULL	specific custom_field_mapping values 
+	 * @param	integer			offset for chunk mapping 
+	 * @param	integer			length for chunk mapping
 	 *
 	 * @return	array	Message(s) reflecting the results of the operation
 	 */
-	private static function _process_custom_field_mapping( $settings = NULL ) {
+	private static function _process_custom_field_mapping( $settings = NULL, $offset = 0, $length = 0 ) {
 		global $wpdb;
-
 		if ( NULL == $settings ) {
 			$source = 'custom_fields';
 			$settings = ( isset( $_REQUEST['custom_field_mapping'] ) ) ? $_REQUEST['custom_field_mapping'] : array();
@@ -2957,9 +3303,15 @@ class MLASettings {
 			);
 		}
 
+		if ( $length > 0 ) {
+			$limits = "LIMIT {$offset}, {$length}";
+		} else {
+			$limits = '';
+		}
+
 		$examine_count = 0;
 		$update_count = 0;
-		$post_ids = $wpdb->get_col( "SELECT ID FROM {$wpdb->posts} WHERE `post_type` = 'attachment'" );
+		$post_ids = $wpdb->get_col( "SELECT ID FROM {$wpdb->posts} WHERE `post_type` = 'attachment' {$limits}" );
 
 		do_action( 'mla_begin_mapping', $source, NULL );
 		foreach ( $post_ids as $key => $post_id ) {
@@ -2985,7 +3337,10 @@ class MLASettings {
 
 		return array(
 			'message' => $message,
-			'body' => '' 
+			'body' => '',
+			'processed' => $examine_count,
+			'unchanged' => $examine_count - $update_count,
+			'success' =>  $update_count
 		);
 	} // _process_custom_field_mapping
 
@@ -3064,9 +3419,12 @@ class MLASettings {
 	 *
 	 * @uses $_REQUEST
 	 *
+	 * @param	integer			offset for chunk mapping 
+	 * @param	integer			length for chunk mapping
+	 *
 	 * @return	array	Message(s) reflecting the results of the operation
 	 */
-	private static function _process_iptc_exif_standard( ) {
+	private static function _process_iptc_exif_standard( $offset = 0, $length = 0 ) {
 		if ( ! isset( $_REQUEST['iptc_exif_mapping']['standard'] ) ) {
 			return array(
 				/* translators: 1: field type */
@@ -3077,8 +3435,13 @@ class MLASettings {
 
 		$examine_count = 0;
 		$update_count = 0;
-
 		$query = array( 'orderby' => 'none', 'post_parent' => 'all', 'post_mime_type' => 'image,application/*pdf*' );
+
+		if ( $length > 0 ) {
+			$query['numberposts'] = $length;
+			$query['offset'] = $offset;
+		}
+
 		$posts = MLAShortcodes::mla_get_shortcode_attachments( 0, $query );
 
 		if ( is_string( $posts ) ) {
@@ -3112,7 +3475,10 @@ class MLASettings {
 
 		return array(
 			'message' => $message,
-			'body' => '' 
+			'body' => '',
+			'processed' => $examine_count,
+			'unchanged' => $examine_count - $update_count,
+			'success' => $update_count
 		);
 	} // _process_iptc_exif_standard
 
@@ -3124,9 +3490,12 @@ class MLASettings {
 	 *
 	 * @uses $_REQUEST
 	 *
+	 * @param	integer			offset for chunk mapping 
+	 * @param	integer			length for chunk mapping
+	 *
 	 * @return	array	Message(s) reflecting the results of the operation
 	 */
-	private static function _process_iptc_exif_taxonomy( ) {
+	private static function _process_iptc_exif_taxonomy( $offset = 0, $length = 0 ) {
 		if ( ! isset( $_REQUEST['iptc_exif_mapping']['taxonomy'] ) ) {
 			return array(
 				/* translators: 1: field type */
@@ -3137,8 +3506,13 @@ class MLASettings {
 
 		$examine_count = 0;
 		$update_count = 0;
-
 		$query = array( 'orderby' => 'none', 'post_parent' => 'all', 'post_mime_type' => 'image,application/*pdf*' );
+
+		if ( $length > 0 ) {
+			$query['numberposts'] = $length;
+			$query['offset'] = $offset;
+		}
+
 		$posts = MLAShortcodes::mla_get_shortcode_attachments( 0, $query );
 
 		if ( is_string( $posts ) ) {
@@ -3172,7 +3546,10 @@ class MLASettings {
 
 		return array(
 			'message' => $message,
-			'body' => '' 
+			'body' => '',
+			'processed' => $examine_count,
+			'unchanged' => $examine_count - $update_count,
+			'success' => $update_count
 		);
 	} // _process_iptc_exif_taxonomy
 
@@ -3185,10 +3562,12 @@ class MLASettings {
 	 * @uses $_REQUEST if passed a NULL parameter
 	 *
 	 * @param	array | NULL	specific iptc_exif_custom_mapping values 
+	 * @param	integer			offset for chunk mapping 
+	 * @param	integer			length for chunk mapping
 	 *
 	 * @return	array	Message(s) reflecting the results of the operation
 	 */
-	private static function _process_iptc_exif_custom( $settings = NULL ) {
+	private static function _process_iptc_exif_custom( $settings = NULL, $offset = 0, $length = 0 ) {
 		if ( NULL == $settings ) {
 			$source = 'iptc_exif_custom';
 			$settings = ( isset( $_REQUEST['iptc_exif_mapping'] ) ) ? $_REQUEST['iptc_exif_mapping'] : array();
@@ -3212,8 +3591,13 @@ class MLASettings {
 
 		$examine_count = 0;
 		$update_count = 0;
-
 		$query = array( 'orderby' => 'none', 'post_parent' => 'all', 'post_mime_type' => 'image,application/*pdf*' );
+
+		if ( $length > 0 ) {
+			$query['numberposts'] = $length;
+			$query['offset'] = $offset;
+		}
+
 		$posts = MLAShortcodes::mla_get_shortcode_attachments( 0, $query );
 
 		if ( is_string( $posts ) ) {
@@ -3247,7 +3631,10 @@ class MLASettings {
 
 		return array(
 			'message' => $message,
-			'body' => '' 
+			'body' => '',
+			'processed' => $examine_count,
+			'unchanged' => $examine_count - $update_count,
+			'success' => $update_count
 		);
 	} // _process_iptc_exif_custom
 

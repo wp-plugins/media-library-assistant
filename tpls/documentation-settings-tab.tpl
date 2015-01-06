@@ -1591,6 +1591,10 @@ The example code documents each hook with comments in the filter/action function
 <td>called just before the <code>WP_Query->query()</code> call that selects gallery items, with query parameters before or after they are combined with defaults.</td>
 </tr>
 <tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">mla_get_terms_clauses</td>
+<td>gives you a final opportunity to inspect or modify the SQL clauses for the data selection process.</td>
+</tr>
+<tr>
 <td style="padding-right: 10px; vertical-align: top; font-weight:bold">mla_get_terms_query_results</td>
 <td>called just after the <code>$wpdb->get_results</code> call, so you can inspect/record or modify the results.</td>
 </tr>
@@ -2045,19 +2049,19 @@ In a template, substitution parameters are surrounded by opening ('[+') and clos
 </tr>
 <tr>
 <td style="padding-right: 10px; vertical-align: top; font-weight:bold">id</td>
-<td>post_ID of the post/page in which the gallery appears</td>
+<td>post ID of the post/page in which the gallery appears</td>
 </tr>
 <tr>
 <td style="padding-right: 10px; vertical-align: top; font-weight:bold">itemtag</td>
-<td>shortcode parameter, default = 'dl'</td>
+<td>shortcode parameter, default = 'dl', or 'figure' for HTML5 themes</td>
 </tr>
 <tr>
 <td style="padding-right: 10px; vertical-align: top; font-weight:bold">icontag</td>
-<td>shortcode parameter, default = 'dt'</td>
+<td>shortcode parameter, default = 'dt', or 'div' for HTML5 themes</td>
 </tr>
 <tr>
 <td style="padding-right: 10px; vertical-align: top; font-weight:bold">captiontag</td>
-<td>shortcode parameter, default = 'dd'</td>
+<td>shortcode parameter, default = 'dd', or 'figcaption' for HTML5 themes</td>
 </tr>
 <tr>
 <td style="padding-right: 10px; vertical-align: top; font-weight:bold">columns</td>
@@ -2109,15 +2113,15 @@ In a template, substitution parameters are surrounded by opening ('[+') and clos
 </tr>
 <tr>
 <td style="padding-right: 10px; vertical-align: top; font-weight:bold">itemtag</td>
-<td>shortcode parameter, default = 'dl'</td>
+<td>shortcode parameter, default = 'dl', or 'figure' for HTML5 themes</td>
 </tr>
 <tr>
 <td style="padding-right: 10px; vertical-align: top; font-weight:bold">icontag</td>
-<td>shortcode parameter, default = 'dt'</td>
+<td>shortcode parameter, default = 'dt', or 'div' for HTML5 themes</td>
 </tr>
 <tr>
 <td style="padding-right: 10px; vertical-align: top; font-weight:bold">captiontag</td>
-<td>shortcode parameter, default = 'dd'</td>
+<td>shortcode parameter, default = 'dd', or 'figcaption' for HTML5 themes</td>
 </tr>
 <tr>
 <td style="padding-right: 10px; vertical-align: top; font-weight:bold">columns</td>
@@ -2215,7 +2219,7 @@ The item-level substitution parameter names are:
 </tr>
 <tr>
 <td style="padding-right: 10px; vertical-align: top; font-weight:bold">attachment_ID</td>
-<td>attachment post_ID</td>
+<td>attachment post ID</td>
 </tr>
 <tr>
 <td style="padding-right: 10px; vertical-align: top; font-weight:bold">mime_type</td>
@@ -3063,7 +3067,7 @@ You can combine "Keep" and "Multi" in useful ways. For example, you might enter 
 </dd>
 <dt>Format dropdown</dt>
 <dd>
-Sorting by custom fields in the Media/Assistant submenu is by string values. For numeric data this can cause odd-looking results, e.g., dimensions of "1200x768" will sort before "640x480". Numeic data sources are converted to strings and padded on the left with spaces if you use the "commas" format. This padding makes them sort more sensibly. The following example shows the results for the &quot;size_bytes[large]&quot; data source, sorted in ascending order:
+Sorting by custom fields in the Media/Assistant submenu is by string values. For numeric data this can cause odd-looking results, e.g., dimensions of "1200x768" will sort before "640x480". Numeic data sources are converted to strings and padded on the left with spaces if you use the "<strong>commas</strong>" format. This padding makes them sort more sensibly. The following example shows the results for the &quot;size_bytes[large]&quot; data source, sorted in ascending order:
 <table style="margin-left: 40px; margin-bottom: 10px;">
 <thead>
 <tr>
@@ -3073,28 +3077,42 @@ Native
 <td style="width: 80px; text-align:right">
 Commas
 </td>
+<td style="padding-left: 40px; width: 80px; text-align:left">
+Raw
+</td>
 </tr>
 </thead>
 <tbody>
 <tr>
+<td>&nbsp;</td>
+<td style="text-align:right">&nbsp;</td>
+<td style="padding-left: 40px;">0</td>
+</tr>
+<tr>
 <td>374871</td>
-<td style="width: 80px; text-align:right">4,096</td>
+<td style="text-align:right">4,096</td>
+<td style="padding-left: 40px;">374871</td>
 </tr>
 <tr>
 <td>4096</td>
-<td style="width: 80px; text-align:right">8,192</td>
+<td style="text-align:right">8,192</td>
+<td style="padding-left: 40px;">4096</td>
 </tr>
 <tr>
 <td>440242</td>
-<td style="width: 80px; text-align:right">374,871</td>
+<td style="text-align:right">374,871</td>
+<td style="padding-left: 40px;">440242</td>
 </tr>
 <tr>
 <td>8192</td>
-<td style="width: 80px; text-align:right">440,242</td>
+<td style="text-align:right">440,242</td>
+<td style="padding-left: 40px;">8192</td>
 </tr>
 </tbody>
 </table>
-Four data sources, "file_size", "pixels", "width" and "height", are <strong>always</strong> padded on the left with spaces, even if you use the "Native" format.
+Four data sources, "file_size", "pixels", "width" and "height", are padded on the left with spaces even if you use the "<strong>native</strong>" format.<br />
+&nbsp;<br />
+You can also use the "<strong>raw</strong>" format to avoid the conversion of empty values, such as a numeric zero, to a single space. The first row in the above table shows this "<strong>raw</strong>" treatment; it can be useful for fields like "parent".
 </dd>
 <dt>MLA Column checkbox</dt>
 <dd>
@@ -3304,7 +3322,7 @@ There are two other ways you can perform custom field mapping for one or more ex
 <td style="padding-bottom: 2em;">A Content Template; enter the template text (without the "template:" prefix) in the text box below the dropdown list. More coding guidelines are given below this table in the "Custom field mapping for Content Templates" section.</td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">post_id</td>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">post_id, ID</td>
 <td>the value stored in the attachment's "posts" database row.</td>
 </tr>
 <tr>
@@ -4305,12 +4323,20 @@ The following hooks are defined in <code>/media-library-assistant/includes/class
 <td>Gives you an opportunity to pre-process an MLA_List_Table "Quick Edit" action before the MLA handler.</td>
 </tr>
 <tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">mla_list_table_begin_bulk_action</td>
+<td>Gives you an opportunity to pre-process an MLA_List_Table page-level or single-item action, standard or custom, before the MLA handler. The filter is called once before any of the items in $_REQUEST['cb_attachment'] are processed.</td>
+</tr>
+<tr>
 <td style="padding-right: 10px; vertical-align: top; font-weight:bold">mla_list_table_bulk_action</td>
 <td>Gives you an opportunity to pre-process an MLA_List_Table page-level or single-item action, standard or custom, before the MLA handler. The filter is called once for each of the items in $_REQUEST['cb_attachment'].</td>
 </tr>
 <tr>
 <td style="padding-right: 10px; vertical-align: top; font-weight:bold">mla_list_table_custom_bulk_action</td>
 <td>Gives you an opportunity to process an MLA_List_Table bulk action that MLA does not recognize. The filter is called once for each of the items in $_REQUEST['cb_attachment'].</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">mla_list_table_end_bulk_action</td>
+<td>Gives you an opportunity to post-process an MLA_List_Table page-level or single-item action, standard or custom. The filter is called once after all of the items in $_REQUEST['cb_attachment'] are processed.</td>
 </tr>
 <tr>
 <td style="padding-right: 10px; vertical-align: top; font-weight:bold">mla_list_table_single_action</td>

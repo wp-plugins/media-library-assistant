@@ -1177,7 +1177,7 @@ this.listenTo( this, 'all', this.selectionEvent );
 
 				// Hook the 'change' event when the sidebar has been rendered so we can add our enhancements
 				this.on( 'change', function( model ) {
-					var hookCompat = false, mediaFrame, compat, changed;
+					var hookCompat = false, changed;
 
 					if ( mlaModal.uploading && mlaModal.cid === model.cid ) {
 						mlaModal.uploading = false;

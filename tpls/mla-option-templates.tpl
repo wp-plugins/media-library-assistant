@@ -147,6 +147,7 @@
             <select name="custom_field_mapping[[+key+]][format]" id="custom_field_format_[+key+]">
                 <option [+native_format+] value="native">[+Native+]</option>
                 <option [+commas_format+] value="commas">[+Commas+]</option>
+                <option [+raw_format+] value="raw">[+Raw+]</option>
             </select>
         </td>
 		<td style="text-align:center;">
@@ -181,10 +182,10 @@
 		</tr>
         <tr valign="top">
 		<td colspan="[+column_count+]" style="padding-bottom: 10px">
-	        <input type="submit" name="custom_field_mapping[[+key+]][action][delete_rule]" class="button-primary" style="height: 18px; line-height: 16px" value="[+Delete Rule+]" />
-	        <input type="submit" name="custom_field_mapping[[+key+]][action][delete_field]" class="button-primary" style="height: 18px; line-height: 16px" value="[+Delete Field+]" />
-	        <input type="submit" name="custom_field_mapping[[+key+]][action][update_rule]" class="button-primary" style="height: 18px; line-height: 16px" value="[+Update Rule+]" />
-	        <input type="submit" name="custom_field_mapping[[+key+]][action][map_now]" class="button-secondary" style="height: 18px; line-height: 16px" value="[+Map All Attachments+]" />
+	        <input name="custom_field_mapping[[+key+]][action][delete_rule]" class="button-primary" id="custom-field-mapping-delete-rule-[+key+]" style="height: 18px; line-height: 16px" type="submit" value="[+Delete Rule+]" />
+	        <input name="custom_field_mapping[[+key+]][action][delete_field]" class="button-primary" id="custom-field-mapping-delete-field-[+key+]" style="height: 18px; line-height: 16px" type="submit" value="[+Delete Field+]" />
+	        <input name="custom_field_mapping[[+key+]][action][update_rule]" class="button-primary" id="custom-field-mapping-update-rule-[+key+]" style="height: 18px; line-height: 16px" type="submit" value="[+Update Rule+]" />
+	        <input name="custom_field_mapping[[+key+]][action][map_now]" class="button-secondary mla-mapping" id="custom-field-mapping-map-now-[+key+]" style="height: 18px; line-height: 16px" type="submit" value="[+Map All Attachments+]" />
         </td>
 		</tr>
 
@@ -215,6 +216,7 @@
             <select name="custom_field_mapping[[+key+]][format]" id="custom_field_format_[+key+]">
                 <option [+native_format+] value="native">[+Native+]</option>
                 <option [+commas_format+] value="commas">[+Commas+]</option>
+                <option [+raw_format+] value="raw">[+Raw+]</option>
             </select>
         </td>
 		<td style="text-align:center;">
@@ -249,8 +251,8 @@
 		</tr>
         <tr valign="top">
 		<td colspan="[+column_count+]">
-	        <input type="submit" name="custom_field_mapping[[+key+]][action][add_rule]" type="submit" class="button-primary" value="[+Add Rule+]" />
-	        <input type="submit" name="custom_field_mapping[[+key+]][action][add_rule_map]" type="submit" class="button-secondary" value="[+Map All Attachments+]" />
+	        <input name="custom_field_mapping[[+key+]][action][add_rule]" class="button-primary" id="custom-field-mapping-add-rule-[+key+]" type="submit" value="[+Add Rule+]" />
+	        <input name="custom_field_mapping[[+key+]][action][add_rule_map]" class="button-secondary mla-mapping" id="custom-field-mapping-add-rule-map-[+key+]" type="submit" value="[+Map All Attachments+]" />
         </td>
 		</tr>
 
@@ -279,6 +281,7 @@
             <select name="custom_field_mapping[[+key+]][format]" id="custom_field_format_[+key+]">
                 <option [+native_format+] value="native">[+Native+]</option>
                 <option [+commas_format+] value="commas">[+Commas+]</option>
+                <option [+raw_format+] value="raw">[+Raw+]</option>
             </select>
         </td>
 		<td style="text-align:center;">
@@ -313,8 +316,8 @@
 		</tr>
         <tr valign="top">
 		<td colspan="[+column_count+]">
-	        <input type="submit" name="custom_field_mapping[[+key+]][action][add_field]" type="submit" class="button-primary" value="[+Add Field+]" />
-	        <input type="submit" name="custom_field_mapping[[+key+]][action][add_field_map]" type="submit" class="button-secondary" value="[+Map All Attachments+]" />
+	        <input name="custom_field_mapping[[+key+]][action][add_field]" class="button-primary" id="custom-field-mapping-add-field-[+key+]" type="submit" value="[+Add Field+]" />
+	        <input name="custom_field_mapping[[+key+]][action][add_field_map]" class="button-secondary mla-mapping" id="custom-field-mapping-add-field-map-[+key+]" type="submit" value="[+Map All Attachments+]" />
         </td>
 		</tr>
 
@@ -520,10 +523,10 @@
 		</tr>
         <tr valign="top">
 		<td colspan="[+column_count+]" style="padding-bottom: 10px">
-	        <input type="submit" name="iptc_exif_mapping[custom][[+key+]][action][delete_rule]" class="button-primary" style="height: 18px; line-height: 16px" value="[+Delete Rule+]" />
-	        <input type="submit" name="iptc_exif_mapping[custom][[+key+]][action][delete_field]" class="button-primary" style="height: 18px; line-height: 16px" value="[+Delete Field+]" />
-	        <input type="submit" name="iptc_exif_mapping[custom][[+key+]][action][update_rule]" class="button-primary" style="height: 18px; line-height: 16px" value="[+Update Rule+]" />
-	        <input type="submit" name="iptc_exif_mapping[custom][[+key+]][action][map_now]" class="button-secondary" style="height: 18px; line-height: 16px" value="[+Map All Attachments+]" />
+	        <input name="iptc_exif_mapping[custom][[+key+]][action][delete_rule]" class="button-primary" id="iptc-exif-mapping-delete-rule-[+key+]" style="height: 18px; line-height: 16px" type="submit" value="[+Delete Rule+]" />
+	        <input name="iptc_exif_mapping[custom][[+key+]][action][delete_field]" class="button-primary" id="iptc-exif-mapping-delete-field-[+key+]" style="height: 18px; line-height: 16px" type="submit" value="[+Delete Field+]" />
+	        <input name="iptc_exif_mapping[custom][[+key+]][action][update_rule]" class="button-primary" id="iptc-exif-mapping-update-rule-[+key+]" style="height: 18px; line-height: 16px" type="submit" value="[+Update Rule+]" />
+	        <input name="iptc_exif_mapping[custom][[+key+]][action][map_now]" class="button-secondary mla-mapping" id="iptc-exif-mapping-map-now-[+key+]" style="height: 18px; line-height: 16px" type="submit" value="[+Map All Attachments+]" />
         </td>
 		</tr>
 
@@ -562,8 +565,8 @@
 		</tr>
         <tr valign="top">
 		<td colspan="[+column_count+]">
-	        <input type="submit" name="iptc_exif_mapping[custom][[+key+]][action][add_rule]" type="submit" class="button-primary" value="[+Add Rule+]" />
-	        <input type="submit" name="iptc_exif_mapping[custom][[+key+]][action][add_rule_map]" type="submit" class="button-secondary" value="[+Map All Attachments+]" />
+	        <input name="iptc_exif_mapping[custom][[+key+]][action][add_rule]" class="button-primary" id="iptc-exif-mapping-add-rule-[+key+]" type="submit" value="[+Add Rule+]" />
+	        <input name="iptc_exif_mapping[custom][[+key+]][action][add_rule_map]" class="button-secondary mla-mapping" id="iptc-exif-mapping-add-rule-map-[+key+]" type="submit" value="[+Map All Attachments+]" />
         </td>
 		</tr>
 
@@ -600,8 +603,8 @@
 		</tr>
         <tr valign="top">
 		<td colspan="[+column_count+]">
-	        <input type="submit" name="iptc_exif_mapping[custom][[+key+]][action][add_field]" type="submit" class="button-primary" value="[+Add Field+]" />
-	        <input type="submit" name="iptc_exif_mapping[custom][[+key+]][action][add_field_map]" type="submit" class="button-secondary" value="[+Map All Attachments+]" />
+	        <input name="iptc_exif_mapping[custom][[+key+]][action][add_field]" class="button-primary" id="iptc-exif-mapping-add-field-[+key+]" type="submit" value="[+Add Field+]" />
+	        <input name="iptc_exif_mapping[custom][[+key+]][action][add_field_map]" class="button-secondary mla-mapping" id="iptc-exif-mapping-add-field-map-[+key+]" type="submit" value="[+Map All Attachments+]" />
         </td>
 		</tr>
 

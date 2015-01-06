@@ -1288,9 +1288,12 @@ class MLA_List_Table extends WP_List_Table {
 	 * @return	string	HTML markup to be placed inside the column
 	 */
 	function column_date( $item ) {
+		global $post;
+		
 		if ( '0000-00-00 00:00:00' == $item->post_date ) {
 			$h_time = __( 'Unpublished', 'media-library-assistant' );
 		} else {
+			$post = $item; // Resolve issue with "The Events Calendar"
 			$m_time = $item->post_date;
 			$time = get_post_time( 'G', true, $item, false );
 

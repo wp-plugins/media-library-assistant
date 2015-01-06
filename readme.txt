@@ -4,7 +4,7 @@ Donate link: http://fairtradejudaica.org/make-a-difference/donate/
 Tags: attachment, attachments, documents, gallery, image, images, media, library, media library, tag cloud, media-tags, media tags, tags, media categories, categories, IPTC, EXIF, GPS, PDF, meta, metadata, photo, photos, photograph, photographs, photoblog, photo albums, lightroom, photoshop, MIME, mime-type, icon, upload, file extensions
 Requires at least: 3.5.0
 Tested up to: 4.1
-Stable tag: 1.95
+Stable tag: 2.00
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -151,14 +151,18 @@ All of the MLA source code has been annotated with "DocBlocks", a special type o
 9. The Media Manager popup modal window showing additional filters for date and taxonomy terms. Also shows the enhanced Search Media box and the full-function taxonomy support in the ATTACHMENT DETAILS area.
 
 == Changelog ==
-= 1.9x =
-* New: **Enhanced Keyword(s) Search and Taxonomy term keyword(s) search for the `[mla_gallery]` shortcode**. See the [Other Notes section](http://wordpress.org/extend/plugins/media-library-assistant/other_notes/ "Click here, then scroll down") section or the Settings/Media Library Assistant Documentation tab for more information.
+= 2.00 =
 * New: **Requires WordPress v3.5 or greater.**
+* New: **Enhanced Keyword(s) Search and Taxonomy term keyword(s) search for the `[mla_gallery]` shortcode**. See the [Other Notes section](http://wordpress.org/extend/plugins/media-library-assistant/other_notes/ "Click here, then scroll down") section or the Settings/Media Library Assistant Documentation tab for more information.
 * New: **Ajax-powered Bulk Edit** processing lets you see the progress of large update batches and prevents script timeouts.
+* New: **Ajax-powered Custom Field and IPTC/EXIF mapping** lets you see the progress of large update runs and prevents script timeouts.
+* New: For custom field mapping rules, the "Raw" Format avoids the conversion of numeric zero values to blanks.
 * New: On the Media/Assistant submenu table  **Content Templates, including `template:[+empty+]`,** have been added to the Bulk Edit area processing for custom fields.
 * New: On the Media/Assistant submenu table  **the Download rollover action is more secure.** Downloads now require a WordPress admin-mode nonce check to succeed.
 * New: For the `[mla_tag_cloud]` shortcode, the `mla_get_terms_clauses` filter lets you inspect or modify the SQL clauses used to retrieve terms for the cloud.
 * New: Two (2) new **filters for the Media/Assistant submenu table** let you intercept the beginning and end of Bulk Edit actions.
+* Fix: For [mla_gallery], the keyword search parameter ("s") now works properly when the user is not logged in.
+* Fix: For IPTC/EXIF mapping of custom fields, field names containing uppercase letters, whitespace and punctuation are now handled correctly.
 
 = 1.90 - 1.95 =
 * 1.95: New [mla_gallery] parameters, Download rollover action, Media/Assistant submenu filters. Eleven enhancements, seven fixes.
@@ -221,8 +225,8 @@ All of the MLA source code has been annotated with "DocBlocks", a special type o
 
 == Upgrade Notice ==
 
-= 1.95 =
-New [mla_gallery] parameters, Download rollover action, Media/Assistant submenu filters. Eleven enhancements, seven fixes.
+= 2.00 =
+Requires WP v3.5+. Ajax-powered bulk edit and mapping, front-end "terms search" for [mla_gallery]. Five other enhancements, two fixes.
 
 == Other Notes ==
 

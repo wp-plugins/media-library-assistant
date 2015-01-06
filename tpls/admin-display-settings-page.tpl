@@ -212,6 +212,28 @@
 </form>
 
 <!-- template="custom-field-tab" -->
+<div class="wrap" id="mla-progress-div" style="display:none; border-bottom:1px solid #cccccc">
+	<h3>[+Mapping Progress+]</h3>
+	<p style="font-weight:bold">[+DO NOT+]:</p>
+	<ol>
+		<li>[+DO NOT Close+]</li>
+		<li>[+DO NOT Reload+]</li>
+		<li>[+DO NOT Click+]</li>
+	</ol>
+	<p style="font-weight:bold">[+Progress+]:</p>
+	<div id="mla-progress-meter-div" style="padding: 3px; border: 1px solid rgb(101, 159, 255); border-image: none; width: 80%; height: 11px;">
+		<div id="mla-progress-meter" style="width: 100%; height: 11px; text-align: center; color: rgb(255, 255, 255); line-height: 11px; font-size: 6pt; background-color: rgb(101, 159, 255);">100%
+		</div>
+	</div>
+	<div id="mla-progress-message">&nbsp;</div>
+	<p class="submit inline-edit-save">
+		<a title="[+Cancel+]" class="button-secondary alignleft" id="mla-progress-cancel" accesskey="c" href="#mla-progress">[+Cancel+]</a>
+		<a title="[+Close+]" class="button-primary alignright" id="mla-progress-close" accesskey="x" href="#mla-progress">[+Close+]</a>
+		<a title="[+Refresh+]" class="button-primary alignright" id="mla-progress-refresh" accesskey="r" href="?page=mla-settings-menu-custom_field&mla_tab=custom_field">[+Refresh+]</a>
+		<span class="spinner"></span>
+		<span id="mla-progress-error" style="display:inline"></span><br class="clear" />
+	</p>
+</div>
 <h3>[+Custom Field Options+]</h3>
 <p>
 [+In this tab+]
@@ -227,8 +249,8 @@
 [+custom_options_list+]
 	</table>
     <p class="submit" style="padding-bottom: 0;">
-        <input name="custom-field-options-save" type="submit" class="button-primary" value="[+Save Changes+]" />
-        <input name="custom-field-options-map" type="submit" class="button-secondary" style="margin-left: 20px" value="[+Map All Rules+]" />
+        <input name="custom-field-options-save" class="button-primary" id="custom-field-options-save" type="submit" value="[+Save Changes+]" />
+        <input name="custom-field-options-map" class="button-secondary mla-mapping" id="custom-field-options-map" style="margin-left: 20px" type="submit" value="[+Map All Rules+]" />
 	<div style="font-size:8pt;padding-bottom:5px;">[+Click Save Changes+]</div>
 	<div style="font-size:8pt;padding-bottom:5px;">[+Click Map All+]</div>
     </p>
@@ -237,6 +259,28 @@
 </form>
 
 <!-- template="iptc-exif-tab" -->
+<div class="wrap" id="mla-progress-div" style="display:none; border-bottom:1px solid #cccccc">
+	<h3>[+Mapping Progress+]</h3>
+	<p style="font-weight:bold">[+DO NOT+]:</p>
+	<ol>
+		<li>[+DO NOT Close+]</li>
+		<li>[+DO NOT Reload+]</li>
+		<li>[+DO NOT Click+]</li>
+	</ol>
+	<p style="font-weight:bold">[+Progress+]:</p>
+	<div id="mla-progress-meter-div" style="padding: 3px; border: 1px solid rgb(101, 159, 255); border-image: none; width: 80%; height: 11px;">
+		<div id="mla-progress-meter" style="width: 100%; height: 11px; text-align: center; color: rgb(255, 255, 255); line-height: 11px; font-size: 6pt; background-color: rgb(101, 159, 255);">100%
+		</div>
+	</div>
+	<div id="mla-progress-message">&nbsp;</div>
+	<p class="submit inline-edit-save">
+		<a title="[+Cancel+]" class="button-secondary alignleft" id="mla-progress-cancel" accesskey="c" href="#mla-progress">[+Cancel+]</a>
+		<a title="[+Close+]" class="button-primary alignright" id="mla-progress-close" accesskey="x" href="#mla-progress">[+Close+]</a>
+		<a title="[+Refresh+]" class="button-primary alignright" id="mla-progress-refresh" accesskey="r" href="?page=mla-settings-menu-iptc_exif&mla_tab=iptc_exif">[+Refresh+]</a>
+		<span class="spinner"></span>
+		<span id="mla-progress-error" style="display:inline"></span><br class="clear" />
+	</p>
+</div>
 <h3>[+IPTX/EXIF Options+]</h3>
 <p>
 [+In this tab+]
@@ -247,20 +291,20 @@
 <form action="[+form_url+]" method="post" class="mla-display-settings-page" id="mla-display-settings-iptc-exif-tab">
 &nbsp;<br />
 [+options_list+]
-<h4>[+Standard field mapping+] <input name="iptc-exif-options-process-standard" type="submit" class="button-secondary" style="margin-left: 20px" value="[+Map Standard Fields+]" /></h4>
+<h4>[+Standard field mapping+] <input name="iptc-exif-options-process-standard" class="button-secondary mla-mapping" id="iptc-exif-options-process-standard" style="margin-left: 20px" type="submit" value="[+Map Standard Fields+]" /></h4>
     <table class="optiontable">
 [+standard_options_list+]
 	</table>
-<h4>[+Taxonomy term mapping+] <input name="iptc-exif-options-process-taxonomy" type="submit" class="button-secondary" style="margin-left: 10px" value="[+Map Taxonomy Terms+]" /></h4>
+<h4>[+Taxonomy term mapping+] <input name="iptc-exif-options-process-taxonomy" class="button-secondary mla-mapping" id="iptc-exif-options-process-taxonomy" style="margin-left: 10px" type="submit" value="[+Map Taxonomy Terms+]" /></h4>
     <table class="optiontable">
 [+taxonomy_options_list+]
 	</table>
-<h4>[+Custom field mapping+] <input name="iptc-exif-options-process-custom" type="submit" class="button-secondary" style="margin-left: 25px" value="[+Map Custom Fields+]" /></h4>
+<h4>[+Custom field mapping+] <input name="iptc-exif-options-process-custom" class="button-secondary mla-mapping" id="iptc-exif-options-process-custom" style="margin-left: 25px" type="submit" value="[+Map Custom Fields+]" /></h4>
     <table class="optiontable">
 [+custom_options_list+]
 	</table>
     <p class="submit" style="padding-bottom: 0;">
-        <input name="iptc-exif-options-save" type="submit" class="button-primary" value="[+Save Changes+]" />
+        <input name="iptc-exif-options-save" class="button-primary" id="iptc-exif-options-save" type="submit" value="[+Save Changes+]" />
 	<div style="font-size:8pt;padding-bottom:5px;">[+Click Save Changes+]</div>
     </p>
 [+_wpnonce+]

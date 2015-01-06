@@ -93,8 +93,8 @@ of bulk actions available on this table.</span><pre>get_bulk_actions()</pre></a>
 from default values if the option is not set"><span class="description">Returns the list of currently hidden columns from a user option or
 from default values if the option is not set</span><pre>get_hidden_columns()</pre></a></li>
 <li class="method public "><a href="#get_sortable_columns" title="get_sortable_columns :: Returns an array where the  key is the column that needs to be sortable
-and the value is db column to sort by."><span class="description">Returns an array where the  key is the column that needs to be sortable
-and the value is db column to sort by.</span><pre>get_sortable_columns()</pre></a></li>
+and the value is db column (or other criteria) to sort by."><span class="description">Returns an array where the  key is the column that needs to be sortable
+and the value is db column (or other criteria) to sort by.</span><pre>get_sortable_columns()</pre></a></li>
 <li class="method public "><a href="#get_views" title="get_views :: Returns an associative array listing all the views that can be used with this table."><span class="description">Returns an associative array listing all the views that can be used with this table.</span><pre>get_views()</pre></a></li>
 <li class="method public "><a href="#mla_admin_init_action" title="mla_admin_init_action :: Adds support for taxonomy and custom field columns"><span class="description">Adds support for taxonomy and custom field columns</span><pre>mla_admin_init_action()</pre></a></li>
 <li class="method public "><a href="#mla_get_sortable_columns" title="mla_get_sortable_columns :: Return the names and display values of the sortable columns"><span class="description">Return the names and display values of the sortable columns</span><pre>mla_get_sortable_columns()</pre></a></li>
@@ -110,21 +110,20 @@ and the value is db column to sort by.</span><pre>get_sortable_columns()</pre></
 <li class="method public "><a href="#prepare_items" title="prepare_items :: Prepares the list of items for displaying"><span class="description">Prepares the list of items for displaying</span><pre>prepare_items()</pre></a></li>
 <li class="method public "><a href="#print_column_headers" title="print_column_headers :: Print column headers, adding view, search and filter arguments"><span class="description">Print column headers, adding view, search and filter arguments</span><pre>print_column_headers()</pre></a></li>
 <li class="method public "><a href="#single_row" title="single_row :: Generates (echoes) content for a single row of the table"><span class="description">Generates (echoes) content for a single row of the table</span><pre>single_row()</pre></a></li>
-<li class="nav-header private">» Private</li>
-<li class="method private "><a href="#_avail_mime_types" title="_avail_mime_types :: Get MIME types with one or more attachments for view preparation"><span class="description">Get MIME types with one or more attachments for view preparation</span><pre>_avail_mime_types()</pre></a></li>
-<li class="method private "><a href="#_build_inline_data" title="_build_inline_data :: Add hidden fields with the data for use in the inline editor"><span class="description">Add hidden fields with the data for use in the inline editor</span><pre>_build_inline_data()</pre></a></li>
-<li class="method private "><a href="#_build_rollover_actions" title="_build_rollover_actions :: Add rollover actions to exactly one of the following displayed columns:
+<li class="nav-header protected">» Protected</li>
+<li class="method protected "><a href="#_avail_mime_types" title="_avail_mime_types :: Get MIME types with one or more attachments for view preparation"><span class="description">Get MIME types with one or more attachments for view preparation</span><pre>_avail_mime_types()</pre></a></li>
+<li class="method protected "><a href="#_build_inline_data" title="_build_inline_data :: Add hidden fields with the data for use in the inline editor"><span class="description">Add hidden fields with the data for use in the inline editor</span><pre>_build_inline_data()</pre></a></li>
+<li class="method protected "><a href="#_build_rollover_actions" title="_build_rollover_actions :: Add rollover actions to exactly one of the following displayed columns:
 'ID_parent', 'title_name', 'post_title', 'post_name'"><span class="description">Add rollover actions to exactly one of the following displayed columns:
 'ID_parent', 'title_name', 'post_title', 'post_name'</span><pre>_build_rollover_actions()</pre></a></li>
-<li class="method private "><a href="#_default_hidden_columns" title="_default_hidden_columns :: Access the default list of hidden columns"><span class="description">Access the default list of hidden columns</span><pre>_default_hidden_columns()</pre></a></li>
 <li class="nav-header">
 <i class="icon-custom icon-property"></i> Properties</li>
-<li class="nav-header private">» Private</li>
-<li class="property private "><a href="#%24currently_hidden" title="$currently_hidden :: Currently hidden columns"><span class="description">Currently hidden columns</span><pre>$currently_hidden</pre></a></li>
-<li class="property private "><a href="#%24default_columns" title="$default_columns :: Table column definitions"><span class="description">Table column definitions</span><pre>$default_columns</pre></a></li>
-<li class="property private "><a href="#%24default_hidden_columns" title="$default_hidden_columns :: Default values for hidden columns"><span class="description">Default values for hidden columns</span><pre>$default_hidden_columns</pre></a></li>
-<li class="property private "><a href="#%24default_sortable_columns" title="$default_sortable_columns :: Sortable column definitions"><span class="description">Sortable column definitions</span><pre>$default_sortable_columns</pre></a></li>
-<li class="property private "><a href="#%24rollover_id" title="$rollover_id :: Records assignment of row-level actions to a table row"><span class="description">Records assignment of row-level actions to a table row</span><pre>$rollover_id</pre></a></li>
+<li class="nav-header protected">» Protected</li>
+<li class="property protected "><a href="#%24currently_hidden" title="$currently_hidden :: Currently hidden columns"><span class="description">Currently hidden columns</span><pre>$currently_hidden</pre></a></li>
+<li class="property protected "><a href="#%24default_columns" title="$default_columns :: Table column definitions"><span class="description">Table column definitions</span><pre>$default_columns</pre></a></li>
+<li class="property protected "><a href="#%24default_hidden_columns" title="$default_hidden_columns :: Default values for hidden columns"><span class="description">Default values for hidden columns</span><pre>$default_hidden_columns</pre></a></li>
+<li class="property protected "><a href="#%24default_sortable_columns" title="$default_sortable_columns :: Sortable column definitions"><span class="description">Sortable column definitions</span><pre>$default_sortable_columns</pre></a></li>
+<li class="property protected "><a href="#%24rollover_id" title="$rollover_id :: Records assignment of row-level actions to a table row"><span class="description">Records assignment of row-level actions to a table row</span><pre>$rollover_id</pre></a></li>
 </ul>
 </div>
 <div class="span8">
@@ -724,19 +723,18 @@ from default values if the option is not set</h2>
 </div>
 <a name="get_sortable_columns" id="get_sortable_columns"></a><div class="element clickable method public get_sortable_columns" data-toggle="collapse" data-target=".get_sortable_columns .collapse">
 <h2>Returns an array where the  key is the column that needs to be sortable
-and the value is db column to sort by.</h2>
+and the value is db column (or other criteria) to sort by.</h2>
 <pre>get_sortable_columns() : array</pre>
 <div class="labels"></div>
 <div class="row collapse"><div class="detail-description">
-<p class="long_description"><p>Also notes the current sort column,
-if set.</p></p>
+<p class="long_description"></p>
 <table class="table table-bordered"><tr>
 <th>since</th>
 <td>0.1</td>
 </tr></table>
 <h3>Returns</h3>
 <div class="subelement response">
-<code>array</code>Sortable column information,e.g., 'slugs'=>array('data_values',boolean)</div>
+<code>array</code>Sortable column information,e.g., 'slug' => array('data_value', (boolean) initial_descending )</div>
 </div></div>
 </div>
 <a name="get_views" id="get_views"></a><div class="element clickable method public get_views" data-toggle="collapse" data-target=".get_views .collapse">
@@ -1021,7 +1019,7 @@ $this->set_pagination_args().</p></p>
 <code>object</code><p>the current item</p></div>
 </div></div>
 </div>
-<a name="_avail_mime_types" id="_avail_mime_types"></a><div class="element clickable method private _avail_mime_types" data-toggle="collapse" data-target="._avail_mime_types .collapse">
+<a name="_avail_mime_types" id="_avail_mime_types"></a><div class="element clickable method protected _avail_mime_types" data-toggle="collapse" data-target="._avail_mime_types .collapse">
 <h2>Get MIME types with one or more attachments for view preparation</h2>
 <pre>_avail_mime_types(array $num_posts) : array</pre>
 <div class="labels"></div>
@@ -1041,7 +1039,7 @@ but uses the output of wp_count_attachments() as input.</p></p>
 <code>array</code>Mime type names</div>
 </div></div>
 </div>
-<a name="_build_inline_data" id="_build_inline_data"></a><div class="element clickable method private _build_inline_data" data-toggle="collapse" data-target="._build_inline_data .collapse">
+<a name="_build_inline_data" id="_build_inline_data"></a><div class="element clickable method protected _build_inline_data" data-toggle="collapse" data-target="._build_inline_data .collapse">
 <h2>Add hidden fields with the data for use in the inline editor</h2>
 <pre>_build_inline_data(object $item) : string</pre>
 <div class="labels"></div>
@@ -1061,7 +1059,7 @@ but uses the output of wp_count_attachments() as input.</p></p>
 <code>string</code>HTML <div> with row data</div>
 </div></div>
 </div>
-<a name="_build_rollover_actions" id="_build_rollover_actions"></a><div class="element clickable method private _build_rollover_actions" data-toggle="collapse" data-target="._build_rollover_actions .collapse">
+<a name="_build_rollover_actions" id="_build_rollover_actions"></a><div class="element clickable method protected _build_rollover_actions" data-toggle="collapse" data-target="._build_rollover_actions .collapse">
 <h2>Add rollover actions to exactly one of the following displayed columns:
 'ID_parent', 'title_name', 'post_title', 'post_name'</h2>
 <pre>_build_rollover_actions(object $item, string $column) : array</pre>
@@ -1085,24 +1083,9 @@ but uses the output of wp_count_attachments() as input.</p></p>
 <code>array</code>Names and URLs of row-level actions</div>
 </div></div>
 </div>
-<a name="_default_hidden_columns" id="_default_hidden_columns"></a><div class="element clickable method private _default_hidden_columns" data-toggle="collapse" data-target="._default_hidden_columns .collapse">
-<h2>Access the default list of hidden columns</h2>
-<pre>_default_hidden_columns() : array</pre>
-<div class="labels"></div>
-<div class="row collapse"><div class="detail-description">
-<p class="long_description"></p>
-<table class="table table-bordered"><tr>
-<th>since</th>
-<td>0.1</td>
-</tr></table>
-<h3>Returns</h3>
-<div class="subelement response">
-<code>array</code>default list of hidden columns</div>
-</div></div>
-</div>
 <h3>
 <i class="icon-custom icon-property"></i> Properties</h3>
-<a name="%24currently_hidden" id="$currently_hidden"> </a><div class="element clickable property private $currently_hidden" data-toggle="collapse" data-target=".$currently_hidden .collapse">
+<a name="%24currently_hidden" id="$currently_hidden"> </a><div class="element clickable property protected $currently_hidden" data-toggle="collapse" data-target=".$currently_hidden .collapse">
 <h2>Currently hidden columns</h2>
 <pre>$currently_hidden : array</pre>
 <div class="labels"></div>
@@ -1114,7 +1097,7 @@ but uses the output of wp_count_attachments() as input.</p></p>
 </tr></table>
 </div></div>
 </div>
-<a name="%24default_columns" id="$default_columns"> </a><div class="element clickable property private $default_columns" data-toggle="collapse" data-target=".$default_columns .collapse">
+<a name="%24default_columns" id="$default_columns"> </a><div class="element clickable property protected $default_columns" data-toggle="collapse" data-target=".$default_columns .collapse">
 <h2>Table column definitions</h2>
 <pre>$default_columns : array</pre>
 <div class="labels"></div>
@@ -1134,7 +1117,7 @@ bulk actions or checkboxes, simply leave the 'cb' entry out of your array.</p>
 </tr></table>
 </div></div>
 </div>
-<a name="%24default_hidden_columns" id="$default_hidden_columns"> </a><div class="element clickable property private $default_hidden_columns" data-toggle="collapse" data-target=".$default_hidden_columns .collapse">
+<a name="%24default_hidden_columns" id="$default_hidden_columns"> </a><div class="element clickable property protected $default_hidden_columns" data-toggle="collapse" data-target=".$default_hidden_columns .collapse">
 <h2>Default values for hidden columns</h2>
 <pre>$default_hidden_columns : array</pre>
 <div class="labels"></div>
@@ -1153,7 +1136,7 @@ MLA_List_Table::mla_admin_init_action.</p></p>
 </tr></table>
 </div></div>
 </div>
-<a name="%24default_sortable_columns" id="$default_sortable_columns"> </a><div class="element clickable property private $default_sortable_columns" data-toggle="collapse" data-target=".$default_sortable_columns .collapse">
+<a name="%24default_sortable_columns" id="$default_sortable_columns"> </a><div class="element clickable property protected $default_sortable_columns" data-toggle="collapse" data-target=".$default_sortable_columns .collapse">
 <h2>Sortable column definitions</h2>
 <pre>$default_sortable_columns : array</pre>
 <div class="labels"></div>
@@ -1163,8 +1146,8 @@ is the column slug that needs to be sortable, and the value is database column
 to sort by. Often, the key and value will be the same, but this is not always
 the case (as the value is a column name from the database, not the list table).</p>
 
-<p>The array value also contains a boolean which is 'true' if the data is currently
-sorted by that column. This is computed each time the table is displayed.</p>
+<p>The array value also contains a boolean which is 'true' if the initial sort order
+for the column is DESC/Descending.</p>
 
 <p>Taxonomy and custom field columns are added to this array by
 MLA_List_Table::mla_admin_init_action.</p></p>
@@ -1174,7 +1157,7 @@ MLA_List_Table::mla_admin_init_action.</p></p>
 </tr></table>
 </div></div>
 </div>
-<a name="%24rollover_id" id="$rollover_id"> </a><div class="element clickable property private $rollover_id" data-toggle="collapse" data-target=".$rollover_id .collapse">
+<a name="%24rollover_id" id="$rollover_id"> </a><div class="element clickable property protected $rollover_id" data-toggle="collapse" data-target=".$rollover_id .collapse">
 <h2>Records assignment of row-level actions to a table row</h2>
 <pre>$rollover_id : int</pre>
 <div class="labels"></div>
@@ -1193,7 +1176,7 @@ MLA_List_Table::mla_admin_init_action.</p></p>
 <div class="row"><footer class="span12">
             Template is built using <a href="http://twitter.github.com/bootstrap/">Twitter Bootstrap 2</a> and icons provided by <a href="http://glyphicons.com/">Glyphicons</a>.<br>
             Documentation is powered by <a href="http://www.phpdoc.org/">phpDocumentor 2.0.0a8</a> and<br>
-            generated on 2014-10-27T20:22:36-07:00.<br></footer></div>
+            generated on 2015-01-05T13:15:01-08:00.<br></footer></div>
 </div>
 </body>
 </html>

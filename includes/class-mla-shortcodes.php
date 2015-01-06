@@ -2195,7 +2195,6 @@ class MLAShortcodes {
 				break;
 			case 'paginate_links':
 				$new_page = 0;
-				$new_text = '';
 		}
 
 		$markup_values['current_page'] = $paged;
@@ -2237,6 +2236,7 @@ class MLAShortcodes {
 		 */
 		$pagination_arguments = array( 'mla_nolink_text', 'mla_link_class', 'mla_rollover_text', 'mla_link_attributes', 'mla_link_href', 'mla_link_text', 'mla_prev_text', 'mla_next_text' );
 		
+		$new_text = '';
 		foreach( $pagination_arguments as $value ) {
 			$new_text .= str_replace( '{+', '[+', str_replace( '+}', '+]', $arguments[ $value ] ) );
 		}

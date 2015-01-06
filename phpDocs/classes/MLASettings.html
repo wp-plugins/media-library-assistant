@@ -73,6 +73,8 @@ add settings link in the Plugins section entry for MLA.</span><pre>mla_admin_men
 <li class="method public "><a href="#mla_get_icon_type_dropdown" title="mla_get_icon_type_dropdown :: Get an HTML select element representing a list of icon types"><span class="description">Get an HTML select element representing a list of icon types</span><pre>mla_get_icon_type_dropdown()</pre></a></li>
 <li class="method public "><a href="#mla_inline_edit_upload_action" title="mla_inline_edit_upload_action :: Ajax handler for Upload MIME Types inline editing (quick and bulk edit)"><span class="description">Ajax handler for Upload MIME Types inline editing (quick and bulk edit)</span><pre>mla_inline_edit_upload_action()</pre></a></li>
 <li class="method public "><a href="#mla_inline_edit_view_action" title="mla_inline_edit_view_action :: Ajax handler for Post MIME Types inline editing (quick and bulk edit)"><span class="description">Ajax handler for Post MIME Types inline editing (quick and bulk edit)</span><pre>mla_inline_edit_view_action()</pre></a></li>
+<li class="method public "><a href="#mla_inline_mapping_custom_action" title="mla_inline_mapping_custom_action :: Ajax handler for Custom Fields tab inline mapping"><span class="description">Ajax handler for Custom Fields tab inline mapping</span><pre>mla_inline_mapping_custom_action()</pre></a></li>
+<li class="method public "><a href="#mla_inline_mapping_iptc_exif_action" title="mla_inline_mapping_iptc_exif_action :: Ajax handler for IPTC/EXIF tab inline mapping"><span class="description">Ajax handler for IPTC/EXIF tab inline mapping</span><pre>mla_inline_mapping_iptc_exif_action()</pre></a></li>
 <li class="method public "><a href="#mla_localize_tablist" title="mla_localize_tablist :: Localize $mla_option_definitions array"><span class="description">Localize $mla_option_definitions array</span><pre>mla_localize_tablist()</pre></a></li>
 <li class="method public "><a href="#mla_render_settings_page" title='mla_render_settings_page :: Render (echo) the "Media Library Assistant" subpage in the Settings section'><span class="description">Render (echo) the "Media Library Assistant" subpage in the Settings section</span><pre>mla_render_settings_page()</pre></a></li>
 <li class="method public "><a href="#mla_screen_options_show_screen_filter" title="mla_screen_options_show_screen_filter :: Only show screen options on the View and Upload tabs"><span class="description">Only show screen options on the View and Upload tabs</span><pre>mla_screen_options_show_screen_filter()</pre></a></li>
@@ -129,10 +131,13 @@ Each tab is defined by an array with the following elements:"><span class="descr
 Each tab is defined by an array with the following elements:</span><pre>$mla_tablist</pre></a></li>
 <li class="nav-header">
 <i class="icon-custom icon-constant"></i> Constants</li>
-<li class="constant  "><a href="#JAVASCRIPT_INLINE_EDIT_UPLOAD_OBJECT" title="JAVASCRIPT_INLINE_EDIT_UPLOAD_OBJECT :: Object name for localizing JavaScript - MLA View List Table"><span class="description">Object name for localizing JavaScript - MLA View List Table</span><pre>JAVASCRIPT_INLINE_EDIT_UPLOAD_OBJECT</pre></a></li>
-<li class="constant  "><a href="#JAVASCRIPT_INLINE_EDIT_UPLOAD_SLUG" title="JAVASCRIPT_INLINE_EDIT_UPLOAD_SLUG :: Slug for localizing and enqueueing JavaScript - MLA View List Table"><span class="description">Slug for localizing and enqueueing JavaScript - MLA View List Table</span><pre>JAVASCRIPT_INLINE_EDIT_UPLOAD_SLUG</pre></a></li>
+<li class="constant  "><a href="#JAVASCRIPT_INLINE_EDIT_UPLOAD_OBJECT" title="JAVASCRIPT_INLINE_EDIT_UPLOAD_OBJECT :: Object name for localizing JavaScript - MLA Upload List Table"><span class="description">Object name for localizing JavaScript - MLA Upload List Table</span><pre>JAVASCRIPT_INLINE_EDIT_UPLOAD_OBJECT</pre></a></li>
+<li class="constant  "><a href="#JAVASCRIPT_INLINE_EDIT_UPLOAD_SLUG" title="JAVASCRIPT_INLINE_EDIT_UPLOAD_SLUG :: Slug for localizing and enqueueing JavaScript - MLA Upload List Table"><span class="description">Slug for localizing and enqueueing JavaScript - MLA Upload List Table</span><pre>JAVASCRIPT_INLINE_EDIT_UPLOAD_SLUG</pre></a></li>
 <li class="constant  "><a href="#JAVASCRIPT_INLINE_EDIT_VIEW_OBJECT" title="JAVASCRIPT_INLINE_EDIT_VIEW_OBJECT :: Object name for localizing JavaScript - MLA View List Table"><span class="description">Object name for localizing JavaScript - MLA View List Table</span><pre>JAVASCRIPT_INLINE_EDIT_VIEW_OBJECT</pre></a></li>
 <li class="constant  "><a href="#JAVASCRIPT_INLINE_EDIT_VIEW_SLUG" title="JAVASCRIPT_INLINE_EDIT_VIEW_SLUG :: Slug for localizing and enqueueing JavaScript - MLA View List Table"><span class="description">Slug for localizing and enqueueing JavaScript - MLA View List Table</span><pre>JAVASCRIPT_INLINE_EDIT_VIEW_SLUG</pre></a></li>
+<li class="constant  "><a href="#JAVASCRIPT_INLINE_MAPPING_CUSTOM_SLUG" title="JAVASCRIPT_INLINE_MAPPING_CUSTOM_SLUG :: Slug for localizing and enqueueing JavaScript - MLA Custom tab"><span class="description">Slug for localizing and enqueueing JavaScript - MLA Custom tab</span><pre>JAVASCRIPT_INLINE_MAPPING_CUSTOM_SLUG</pre></a></li>
+<li class="constant  "><a href="#JAVASCRIPT_INLINE_MAPPING_IPTC_EXIF_SLUG" title="JAVASCRIPT_INLINE_MAPPING_IPTC_EXIF_SLUG :: Slug for localizing and enqueueing JavaScript - MLA IPTC/EXIF tab"><span class="description">Slug for localizing and enqueueing JavaScript - MLA IPTC/EXIF tab</span><pre>JAVASCRIPT_INLINE_MAPPING_IPTC_EXIF_SLUG</pre></a></li>
+<li class="constant  "><a href="#JAVASCRIPT_INLINE_MAPPING_OBJECT" title="JAVASCRIPT_INLINE_MAPPING_OBJECT :: Object name for localizing JavaScript - MLA Custom and IPTC/EXIF tabs"><span class="description">Object name for localizing JavaScript - MLA Custom and IPTC/EXIF tabs</span><pre>JAVASCRIPT_INLINE_MAPPING_OBJECT</pre></a></li>
 <li class="constant  "><a href="#MLA_SETTINGS_SLUG" title="MLA_SETTINGS_SLUG :: Provides a unique name for the settings page"><span class="description">Provides a unique name for the settings page</span><pre>MLA_SETTINGS_SLUG</pre></a></li>
 </ul>
 </div>
@@ -333,6 +338,30 @@ add settings link in the Plugins section entry for MLA.</h2>
 <table class="table table-bordered"><tr>
 <th>since</th>
 <td>1.40</td>
+</tr></table>
+</div></div>
+</div>
+<a name="mla_inline_mapping_custom_action" id="mla_inline_mapping_custom_action"></a><div class="element clickable method public mla_inline_mapping_custom_action" data-toggle="collapse" data-target=".mla_inline_mapping_custom_action .collapse">
+<h2>Ajax handler for Custom Fields tab inline mapping</h2>
+<pre>mla_inline_mapping_custom_action() : void</pre>
+<div class="labels"></div>
+<div class="row collapse"><div class="detail-description">
+<p class="long_description"></p>
+<table class="table table-bordered"><tr>
+<th>since</th>
+<td>2.00</td>
+</tr></table>
+</div></div>
+</div>
+<a name="mla_inline_mapping_iptc_exif_action" id="mla_inline_mapping_iptc_exif_action"></a><div class="element clickable method public mla_inline_mapping_iptc_exif_action" data-toggle="collapse" data-target=".mla_inline_mapping_iptc_exif_action .collapse">
+<h2>Ajax handler for IPTC/EXIF tab inline mapping</h2>
+<pre>mla_inline_mapping_iptc_exif_action() : void</pre>
+<div class="labels"></div>
+<div class="row collapse"><div class="detail-description">
+<p class="long_description"></p>
+<table class="table table-bordered"><tr>
+<th>since</th>
+<td>2.00</td>
 </tr></table>
 </div></div>
 </div>
@@ -745,7 +774,7 @@ in the "public static" array definition itself.</p></p>
 <a name="_process_custom_field_mapping" id="_process_custom_field_mapping"></a><div class="element clickable method private _process_custom_field_mapping" data-toggle="collapse" data-target="._process_custom_field_mapping .collapse">
 <h2>Process custom field settings against all image attachments
 without saving the settings to the mla_option</h2>
-<pre>_process_custom_field_mapping(array $settings) : array</pre>
+<pre>_process_custom_field_mapping(array $settings, integer $offset, integer $length) : array</pre>
 <div class="labels"></div>
 <div class="row collapse"><div class="detail-description">
 <p class="long_description"></p>
@@ -763,6 +792,12 @@ without saving the settings to the mla_option</h2>
 <div class="subelement argument">
 <h4>$settings</h4>
 <code>array</code><p>| NULL specific custom_field_mapping values</p></div>
+<div class="subelement argument">
+<h4>$offset</h4>
+<code>integer</code><p>offset for chunk mapping</p></div>
+<div class="subelement argument">
+<h4>$length</h4>
+<code>integer</code><p>length for chunk mapping</p></div>
 <h3>Returns</h3>
 <div class="subelement response">
 <code>array</code>Message(s) reflecting the results of the operation</div>
@@ -771,7 +806,7 @@ without saving the settings to the mla_option</h2>
 <a name="_process_iptc_exif_custom" id="_process_iptc_exif_custom"></a><div class="element clickable method private _process_iptc_exif_custom" data-toggle="collapse" data-target="._process_iptc_exif_custom .collapse">
 <h2>Process IPTC/EXIF custom field settings against all image attachments
 without saving the settings to the mla_option</h2>
-<pre>_process_iptc_exif_custom(array $settings) : array</pre>
+<pre>_process_iptc_exif_custom(array $settings, integer $offset, integer $length) : array</pre>
 <div class="labels"></div>
 <div class="row collapse"><div class="detail-description">
 <p class="long_description"></p>
@@ -789,6 +824,12 @@ without saving the settings to the mla_option</h2>
 <div class="subelement argument">
 <h4>$settings</h4>
 <code>array</code><p>| NULL specific iptc_exif_custom_mapping values</p></div>
+<div class="subelement argument">
+<h4>$offset</h4>
+<code>integer</code><p>offset for chunk mapping</p></div>
+<div class="subelement argument">
+<h4>$length</h4>
+<code>integer</code><p>length for chunk mapping</p></div>
 <h3>Returns</h3>
 <div class="subelement response">
 <code>array</code>Message(s) reflecting the results of the operation</div>
@@ -797,7 +838,7 @@ without saving the settings to the mla_option</h2>
 <a name="_process_iptc_exif_standard" id="_process_iptc_exif_standard"></a><div class="element clickable method private _process_iptc_exif_standard" data-toggle="collapse" data-target="._process_iptc_exif_standard .collapse">
 <h2>Process IPTC/EXIF standard field settings against all image attachments
 without saving the settings to the mla_option</h2>
-<pre>_process_iptc_exif_standard() : array</pre>
+<pre>_process_iptc_exif_standard(integer $offset, integer $length) : array</pre>
 <div class="labels"></div>
 <div class="row collapse"><div class="detail-description">
 <p class="long_description"></p>
@@ -811,6 +852,13 @@ without saving the settings to the mla_option</h2>
 <td>\global\$_REQUEST</td>
 </tr>
 </table>
+<h3>Parameters</h3>
+<div class="subelement argument">
+<h4>$offset</h4>
+<code>integer</code><p>offset for chunk mapping</p></div>
+<div class="subelement argument">
+<h4>$length</h4>
+<code>integer</code><p>length for chunk mapping</p></div>
 <h3>Returns</h3>
 <div class="subelement response">
 <code>array</code>Message(s) reflecting the results of the operation</div>
@@ -819,7 +867,7 @@ without saving the settings to the mla_option</h2>
 <a name="_process_iptc_exif_taxonomy" id="_process_iptc_exif_taxonomy"></a><div class="element clickable method private _process_iptc_exif_taxonomy" data-toggle="collapse" data-target="._process_iptc_exif_taxonomy .collapse">
 <h2>Process IPTC/EXIF taxonomy term settings against all image attachments
 without saving the settings to the mla_option</h2>
-<pre>_process_iptc_exif_taxonomy() : array</pre>
+<pre>_process_iptc_exif_taxonomy(integer $offset, integer $length) : array</pre>
 <div class="labels"></div>
 <div class="row collapse"><div class="detail-description">
 <p class="long_description"></p>
@@ -833,6 +881,13 @@ without saving the settings to the mla_option</h2>
 <td>\global\$_REQUEST</td>
 </tr>
 </table>
+<h3>Parameters</h3>
+<div class="subelement argument">
+<h4>$offset</h4>
+<code>integer</code><p>offset for chunk mapping</p></div>
+<div class="subelement argument">
+<h4>$length</h4>
+<code>integer</code><p>length for chunk mapping</p></div>
 <h3>Returns</h3>
 <div class="subelement response">
 <code>array</code>Message(s) reflecting the results of the operation</div>
@@ -1133,7 +1188,7 @@ because Localization calls cannot be placed in the "public static" array definit
 <h3>
 <i class="icon-custom icon-constant"></i> Constants</h3>
 <a name="JAVASCRIPT_INLINE_EDIT_UPLOAD_OBJECT" id="JAVASCRIPT_INLINE_EDIT_UPLOAD_OBJECT"> </a><div class="element clickable constant  JAVASCRIPT_INLINE_EDIT_UPLOAD_OBJECT" data-toggle="collapse" data-target=".JAVASCRIPT_INLINE_EDIT_UPLOAD_OBJECT .collapse">
-<h2>Object name for localizing JavaScript - MLA View List Table</h2>
+<h2>Object name for localizing JavaScript - MLA Upload List Table</h2>
 <pre>JAVASCRIPT_INLINE_EDIT_UPLOAD_OBJECT : string</pre>
 <div class="labels"></div>
 <div class="row collapse"><div class="detail-description">
@@ -1145,7 +1200,7 @@ because Localization calls cannot be placed in the "public static" array definit
 </div></div>
 </div>
 <a name="JAVASCRIPT_INLINE_EDIT_UPLOAD_SLUG" id="JAVASCRIPT_INLINE_EDIT_UPLOAD_SLUG"> </a><div class="element clickable constant  JAVASCRIPT_INLINE_EDIT_UPLOAD_SLUG" data-toggle="collapse" data-target=".JAVASCRIPT_INLINE_EDIT_UPLOAD_SLUG .collapse">
-<h2>Slug for localizing and enqueueing JavaScript - MLA View List Table</h2>
+<h2>Slug for localizing and enqueueing JavaScript - MLA Upload List Table</h2>
 <pre>JAVASCRIPT_INLINE_EDIT_UPLOAD_SLUG : string</pre>
 <div class="labels"></div>
 <div class="row collapse"><div class="detail-description">
@@ -1180,6 +1235,42 @@ because Localization calls cannot be placed in the "public static" array definit
 </tr></table>
 </div></div>
 </div>
+<a name="JAVASCRIPT_INLINE_MAPPING_CUSTOM_SLUG" id="JAVASCRIPT_INLINE_MAPPING_CUSTOM_SLUG"> </a><div class="element clickable constant  JAVASCRIPT_INLINE_MAPPING_CUSTOM_SLUG" data-toggle="collapse" data-target=".JAVASCRIPT_INLINE_MAPPING_CUSTOM_SLUG .collapse">
+<h2>Slug for localizing and enqueueing JavaScript - MLA Custom tab</h2>
+<pre>JAVASCRIPT_INLINE_MAPPING_CUSTOM_SLUG : string</pre>
+<div class="labels"></div>
+<div class="row collapse"><div class="detail-description">
+<p class="long_description"></p>
+<table class="table table-bordered"><tr>
+<th>since</th>
+<td>2.00</td>
+</tr></table>
+</div></div>
+</div>
+<a name="JAVASCRIPT_INLINE_MAPPING_IPTC_EXIF_SLUG" id="JAVASCRIPT_INLINE_MAPPING_IPTC_EXIF_SLUG"> </a><div class="element clickable constant  JAVASCRIPT_INLINE_MAPPING_IPTC_EXIF_SLUG" data-toggle="collapse" data-target=".JAVASCRIPT_INLINE_MAPPING_IPTC_EXIF_SLUG .collapse">
+<h2>Slug for localizing and enqueueing JavaScript - MLA IPTC/EXIF tab</h2>
+<pre>JAVASCRIPT_INLINE_MAPPING_IPTC_EXIF_SLUG : string</pre>
+<div class="labels"></div>
+<div class="row collapse"><div class="detail-description">
+<p class="long_description"></p>
+<table class="table table-bordered"><tr>
+<th>since</th>
+<td>2.00</td>
+</tr></table>
+</div></div>
+</div>
+<a name="JAVASCRIPT_INLINE_MAPPING_OBJECT" id="JAVASCRIPT_INLINE_MAPPING_OBJECT"> </a><div class="element clickable constant  JAVASCRIPT_INLINE_MAPPING_OBJECT" data-toggle="collapse" data-target=".JAVASCRIPT_INLINE_MAPPING_OBJECT .collapse">
+<h2>Object name for localizing JavaScript - MLA Custom and IPTC/EXIF tabs</h2>
+<pre>JAVASCRIPT_INLINE_MAPPING_OBJECT : string</pre>
+<div class="labels"></div>
+<div class="row collapse"><div class="detail-description">
+<p class="long_description"></p>
+<table class="table table-bordered"><tr>
+<th>since</th>
+<td>2.00</td>
+</tr></table>
+</div></div>
+</div>
 <a name="MLA_SETTINGS_SLUG" id="MLA_SETTINGS_SLUG"> </a><div class="element clickable constant  MLA_SETTINGS_SLUG" data-toggle="collapse" data-target=".MLA_SETTINGS_SLUG .collapse">
 <h2>Provides a unique name for the settings page</h2>
 <pre>MLA_SETTINGS_SLUG : string</pre>
@@ -1199,7 +1290,7 @@ because Localization calls cannot be placed in the "public static" array definit
 <div class="row"><footer class="span12">
             Template is built using <a href="http://twitter.github.com/bootstrap/">Twitter Bootstrap 2</a> and icons provided by <a href="http://glyphicons.com/">Glyphicons</a>.<br>
             Documentation is powered by <a href="http://www.phpdoc.org/">phpDocumentor 2.0.0a8</a> and<br>
-            generated on 2014-10-27T20:22:36-07:00.<br></footer></div>
+            generated on 2015-01-05T13:15:02-08:00.<br></footer></div>
 </div>
 </body>
 </html>

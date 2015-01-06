@@ -2231,6 +2231,10 @@ class MLAOptions {
 			}
 		}
 
+		if ( 'post_id' == $data_source ) {
+			$data_source = 'ID';
+		}
+		
 		if ( property_exists( $post_info[$post_id], $data_source ) ) {
 			$post_array = (array) $post_info[$post_id];
 			$value = $post_array[ $data_source ];
@@ -2239,6 +2243,7 @@ class MLAOptions {
 		}
 
 		switch ( $data_source ) {
+			case 'ID':
 			case 'post_id':
 			case 'post_author':
 			case 'post_parent':
@@ -2476,6 +2481,7 @@ class MLAOptions {
 			case 'parent':
 				$data_source = 'post_parent';
 				/* fallthru */
+			case 'ID':
 			case 'post_id':
 			case 'post_author':
 			case 'post_parent':
@@ -2766,6 +2772,7 @@ class MLAOptions {
 					$result = str_pad( number_format( (float)$result ), 15, ' ', STR_PAD_LEFT );
 				}
 				break;
+			case 'native':
 			default:
 				/*
 				 * Make some numeric values sortable as strings, make all value non-empty
@@ -3316,6 +3323,8 @@ class MLAOptions {
 						'Native' => __( 'Native', 'media-library-assistant' ),
 						'commas_format' => '',
 						'Commas' => __( 'Commas', 'media-library-assistant' ),
+						'raw_format' => '',
+						'Raw' => __( 'Raw', 'media-library-assistant' ),
 						'mla_column_checked' => '',
 						'quick_edit_checked' => '',
 						'bulk_edit_checked' => '',
@@ -3354,6 +3363,9 @@ class MLAOptions {
 							break;
 						case 'commas':
 							$row_values['commas_format'] = 'selected="selected"';
+							break;
+						case 'raw':
+							$row_values['raw_format'] = 'selected="selected"';
 							break;
 						default:
 							$row_values['native_format'] = 'selected="selected"';
@@ -3413,6 +3425,8 @@ class MLAOptions {
 					'Native' => __( 'Native', 'media-library-assistant' ),
 					'commas_format' => '',
 					'Commas' => __( 'Commas', 'media-library-assistant' ),
+					'raw_format' => '',
+					'Raw' => __( 'Raw', 'media-library-assistant' ),
 					'mla_column_checked' => '',
 					'quick_edit_checked' => '',
 					'bulk_edit_checked' => '',
@@ -3455,6 +3469,8 @@ class MLAOptions {
 					'Native' => __( 'Native', 'media-library-assistant' ),
 					'commas_format' => '',
 					'Commas' => __( 'Commas', 'media-library-assistant' ),
+					'raw_format' => '',
+					'Raw' => __( 'Raw', 'media-library-assistant' ),
 					'mla_column_checked' => '',
 					'quick_edit_checked' => '',
 					'bulk_edit_checked' => '',
@@ -3772,6 +3788,7 @@ class MLAOptions {
 		if ( $update_all || ( 'iptc_exif_custom_mapping' == $category ) ) {
 			$custom_updates = array();
 			foreach ( $settings['custom'] as $setting_key => $setting_value ) {
+				$setting_name = $setting_value['name'];
 				$setting_value = apply_filters( 'mla_mapping_rule', $setting_value, $post->ID, 'iptc_exif_custom_mapping', $attachment_metadata );
 				if ( NULL === $setting_value ) {
 					continue;
@@ -3820,8 +3837,8 @@ class MLAOptions {
 				}
 
 				if ( $setting_value['keep_existing'] ) {
-					if ( 'meta:' == substr( $setting_key, 0, 5 ) ) {
-						$meta_key = substr( $setting_key, 5 );
+					if ( 'meta:' == substr( $setting_name, 0, 5 ) ) {
+						$meta_key = substr( $setting_name, 5 );
 
 						if ( NULL === $attachment_metadata ) {
 							$attachment_metadata = maybe_unserialize( get_metadata( 'post', $post->ID, '_wp_attachment_metadata', true ) );
@@ -3833,17 +3850,17 @@ class MLAOptions {
 							$old_value = '';
 						}
 					} else {
-						if ( is_string( $old_value = get_metadata( 'post', $post->ID, $setting_key, true ) ) ) {
+						if ( is_string( $old_value = get_metadata( 'post', $post->ID, $setting_name, true ) ) ) {
 							$old_value = trim( $old_value );
 						}
 					}
 
 					if ( ( ! empty( $new_text ) ) && empty( $old_value ) ) {
-						$custom_updates[ $setting_key ] = $new_text;
+						$custom_updates[ $setting_name ] = $new_text;
 					}
 				} // keep_existing
 				else {
-					$custom_updates[ $setting_key ] = $new_text;
+					$custom_updates[ $setting_name ] = $new_text;
 				}
 			} // foreach new setting
 
@@ -4489,7 +4506,7 @@ class MLAOptions {
 						foreach ( $current_values['custom'] as $row_name => $current_value ) {
 							$row_values = array (
 								'column_count' => 5,
-								'key' => $row_name,
+								'key' => sanitize_title( $row_name ), //$row_name,
 								'name' => $row_name,
 								'iptc_field_options' => '',
 								'exif_size' => self::MLA_EXIF_SIZE,

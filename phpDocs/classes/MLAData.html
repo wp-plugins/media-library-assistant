@@ -85,7 +85,7 @@
 <li class="method public "><a href="#mla_query_posts_join_filter" title="mla_query_posts_join_filter :: Adds a JOIN clause, if required, to handle sorting/searching on custom fields or ALT Text"><span class="description">Adds a JOIN clause, if required, to handle sorting/searching on custom fields or ALT Text</span><pre>mla_query_posts_join_filter()</pre></a></li>
 <li class="method public "><a href="#mla_query_posts_orderby_filter" title="mla_query_posts_orderby_filter :: Adds a ORDERBY clause, if required"><span class="description">Adds a ORDERBY clause, if required</span><pre>mla_query_posts_orderby_filter()</pre></a></li>
 <li class="method public "><a href="#mla_query_posts_search_filter" title="mla_query_posts_search_filter :: Adds a keyword search to the WHERE clause, if required"><span class="description">Adds a keyword search to the WHERE clause, if required</span><pre>mla_query_posts_search_filter()</pre></a></li>
-<li class="method public "><a href="#mla_query_posts_where_filter" title="mla_query_posts_where_filter :: Adds a WHERE clause for detached items"><span class="description">Adds a WHERE clause for detached items</span><pre>mla_query_posts_where_filter()</pre></a></li>
+<li class="method public "><a href="#mla_query_posts_where_filter" title="mla_query_posts_where_filter :: Adds/modifies the WHERE clause for meta values, LIKE patterns and detached items"><span class="description">Adds/modifies the WHERE clause for meta values, LIKE patterns and detached items</span><pre>mla_query_posts_where_filter()</pre></a></li>
 <li class="method public "><a href="#mla_query_relevanssi_admin_search_ok_filter" title="mla_query_relevanssi_admin_search_ok_filter :: Disable Relevanssi - A Better Search, v3.2 by Mikko Saari
 Defined as public because it's a filter."><span class="description">Disable Relevanssi - A Better Search, v3.2 by Mikko Saari
 Defined as public because it's a filter.</span><pre>mla_query_relevanssi_admin_search_ok_filter()</pre></a></li>
@@ -130,6 +130,7 @@ and meta data for a single attachment</span><pre>mla_update_single_item()</pre><
 <li class="nav-header">
 <i class="icon-custom icon-property"></i> Properties</li>
 <li class="property public "><a href="#%24mla_iptc_keys" title="$mla_iptc_keys :: IPTC Dataset friendly name/slug and identifiers"><span class="description">IPTC Dataset friendly name/slug and identifiers</span><pre>$mla_iptc_keys</pre></a></li>
+<li class="property public "><a href="#%24search_parameters" title="$search_parameters :: WP_Query 'posts_search' filter &quot;parameters&quot;"><span class="description">WP_Query 'posts_search' filter "parameters"</span><pre>$search_parameters</pre></a></li>
 <li class="nav-header private">» Private</li>
 <li class="property private "><a href="#%24galleries" title="$galleries :: Objects containing [gallery] shortcodes"><span class="description">Objects containing [gallery] shortcodes</span><pre>$galleries</pre></a></li>
 <li class="property private "><a href="#%24mla_IPTC_EXIF_errors" title="$mla_IPTC_EXIF_errors :: Passes IPTC/EXIF parse errors between mla_IPTC_EXIF_error_handler
@@ -830,7 +831,7 @@ Defined as public because it's a filter.</p></p>
 </div></div>
 </div>
 <a name="mla_query_posts_where_filter" id="mla_query_posts_where_filter"></a><div class="element clickable method public mla_query_posts_where_filter" data-toggle="collapse" data-target=".mla_query_posts_where_filter .collapse">
-<h2>Adds a WHERE clause for detached items</h2>
+<h2>Adds/modifies the WHERE clause for meta values, LIKE patterns and detached items</h2>
 <pre>mla_query_posts_where_filter(string $where_clause) : string</pre>
 <div class="labels"></div>
 <div class="row collapse"><div class="detail-description">
@@ -846,7 +847,7 @@ Defined as public because it's a filter.</p></p>
 <code>string</code><p>query clause before modification</p></div>
 <h3>Returns</h3>
 <div class="subelement response">
-<code>string</code>query clause after "detached" item modification</div>
+<code>string</code>query clause after modification</div>
 </div></div>
 </div>
 <a name="mla_query_relevanssi_admin_search_ok_filter" id="mla_query_relevanssi_admin_search_ok_filter"></a><div class="element clickable method public mla_query_relevanssi_admin_search_ok_filter" data-toggle="collapse" data-target=".mla_query_relevanssi_admin_search_ok_filter .collapse">
@@ -1687,6 +1688,36 @@ the "IPTC-NAA Information Interchange Model Version No. 4.1".</p></p>
 </tr></table>
 </div></div>
 </div>
+<a name="%24search_parameters" id="$search_parameters"> </a><div class="element clickable property public $search_parameters" data-toggle="collapse" data-target=".$search_parameters .collapse">
+<h2>WP_Query 'posts_search' filter "parameters"</h2>
+<pre>$search_parameters : array</pre>
+<div class="labels"></div>
+<div class="row collapse"><div class="detail-description">
+<p class="long_description"><p>This array defines parameters for the query's posts_search filter, which uses
+'search_string' to add a clause to the query's WHERE clause. It is shared between
+the list_table-query functions here and the mla_get_shortcode_attachments function
+in class-mla-shortcodes.php. This array passes the relevant parameters to the filter.</p>
+
+<p>Array index values are:
+['mla_terms_search']['phrases']
+['mla_terms_search']['taxonomies']
+['mla_terms_search']['radio_phrases'] => AND/OR
+['mla_terms_search']['radio_terms'] => AND/OR
+['s'] => numeric for ID/parent search
+['mla_search_fields'] => 'content', 'title', 'excerpt', 'alt-text', 'name', 'terms'
+Note: 'alt-text' is not supported in [mla_gallery]
+['mla_search_connector'] => AND/OR
+['sentence'] => entire string must match as one "keyword"
+['exact'] => entire string must match entire field value
+['debug'] => internal element, console/log/shortcode/none
+['mla_debug_messages'] => internal element, added when debug = 'shortcode'
+['tax_terms_count'] => internal element, shared with JOIN and GROUP BY filters</p></p>
+<table class="table table-bordered"><tr>
+<th>since</th>
+<td>2.00</td>
+</tr></table>
+</div></div>
+</div>
 <a name="%24galleries" id="$galleries"> </a><div class="element clickable property private $galleries" data-toggle="collapse" data-target=".$galleries .collapse">
 <h2>Objects containing [gallery] shortcodes</h2>
 <pre>$galleries : array</pre>
@@ -1835,7 +1866,8 @@ The array value is array( number, generation, start, optional /length )</p></p>
 The parameters are set up in the _prepare_list_table_query function, and
 any further logic required to translate those values is contained in the filters.</p>
 
-<p>Array index values are: use_postmeta_view, postmeta_key, postmeta_value, patterns, detached, orderby, order, mla-metavalue, debug, s, mla_search_connector, mla_search_fields, sentence, exact</p></p>
+<p>Array index values are: use_postmeta_view, postmeta_key, postmeta_value, patterns,
+detached, orderby, order, mla-metavalue, debug (also in search_parameters)</p></p>
 <table class="table table-bordered"><tr>
 <th>since</th>
 <td>0.30</td>
@@ -1876,7 +1908,7 @@ ALT Text and custom field columns.</p></p>
 <div class="row"><footer class="span12">
             Template is built using <a href="http://twitter.github.com/bootstrap/">Twitter Bootstrap 2</a> and icons provided by <a href="http://glyphicons.com/">Glyphicons</a>.<br>
             Documentation is powered by <a href="http://www.phpdoc.org/">phpDocumentor 2.0.0a8</a> and<br>
-            generated on 2014-10-27T20:22:36-07:00.<br></footer></div>
+            generated on 2015-01-05T13:15:01-08:00.<br></footer></div>
 </div>
 </body>
 </html>

@@ -65,7 +65,7 @@
 <li class="method public "><a href="#mla_admin_menu_action" title="mla_admin_menu_action :: Add the submenu pages"><span class="description">Add the submenu pages</span><pre>mla_admin_menu_action()</pre></a></li>
 <li class="method public "><a href="#mla_edit_tax_redirect" title="mla_edit_tax_redirect :: Redirect to the Edit Tags/Categories page"><span class="description">Redirect to the Edit Tags/Categories page</span><pre>mla_edit_tax_redirect()</pre></a></li>
 <li class="method public "><a href="#mla_find_posts_ajax_action" title='mla_find_posts_ajax_action :: Ajax handler to fetch candidates for the "Set Parent" popup window'><span class="description">Ajax handler to fetch candidates for the "Set Parent" popup window</span><pre>mla_find_posts_ajax_action()</pre></a></li>
-<li class="method public "><a href="#mla_inline_edit_ajax_action" title="mla_inline_edit_ajax_action :: Ajax handler for inline editing (quick and bulk edit)"><span class="description">Ajax handler for inline editing (quick and bulk edit)</span><pre>mla_inline_edit_ajax_action()</pre></a></li>
+<li class="method public "><a href="#mla_inline_edit_ajax_action" title="mla_inline_edit_ajax_action :: Ajax handler for inline editing"><span class="description">Ajax handler for inline editing</span><pre>mla_inline_edit_ajax_action()</pre></a></li>
 <li class="method public "><a href="#mla_load_media_action" title="mla_load_media_action :: Redirect to Media/Assistant if Media/Library is hidden"><span class="description">Redirect to Media/Assistant if Media/Library is hidden</span><pre>mla_load_media_action()</pre></a></li>
 <li class="method public "><a href="#mla_parent_file_filter" title="mla_parent_file_filter :: Cleanup menus for Edit Tags/Categories page"><span class="description">Cleanup menus for Edit Tags/Categories page</span><pre>mla_parent_file_filter()</pre></a></li>
 <li class="method public "><a href="#mla_plugins_loaded_action" title="mla_plugins_loaded_action :: Load a plugin text domain"><span class="description">Load a plugin text domain</span><pre>mla_plugins_loaded_action()</pre></a></li>
@@ -77,13 +77,16 @@
 <li class="nav-header private">» Private</li>
 <li class="method private "><a href="#_authors_dropdown" title="_authors_dropdown :: Get the edit Authors dropdown box, if user has suitable permissions"><span class="description">Get the edit Authors dropdown box, if user has suitable permissions</span><pre>_authors_dropdown()</pre></a></li>
 <li class="method private "><a href="#_build_inline_edit_form" title="_build_inline_edit_form :: Build the hidden row templates for inline editing (quick and bulk edit)"><span class="description">Build the hidden row templates for inline editing (quick and bulk edit)</span><pre>_build_inline_edit_form()</pre></a></li>
+<li class="method private "><a href="#_bulk_edit_ajax_handler" title="_bulk_edit_ajax_handler :: Ajax handler for bulk editing and mapping"><span class="description">Ajax handler for bulk editing and mapping</span><pre>_bulk_edit_ajax_handler()</pre></a></li>
 <li class="method private "><a href="#_compose_post_type_select" title="_compose_post_type_select :: Compose a Post Type Options list with current selection"><span class="description">Compose a Post Type Options list with current selection</span><pre>_compose_post_type_select()</pre></a></li>
 <li class="method private "><a href="#_current_bulk_action" title="_current_bulk_action :: Get the current action selected from the bulk actions dropdown"><span class="description">Get the current action selected from the bulk actions dropdown</span><pre>_current_bulk_action()</pre></a></li>
 <li class="method private "><a href="#_delete_single_item" title="_delete_single_item :: Delete a single item permanently"><span class="description">Delete a single item permanently</span><pre>_delete_single_item()</pre></a></li>
 <li class="method private "><a href="#_display_single_item" title="_display_single_item :: Display a single item sub page; prepare the form to
 change the meta data for a single attachment."><span class="description">Display a single item sub page; prepare the form to
 change the meta data for a single attachment.</span><pre>_display_single_item()</pre></a></li>
+<li class="method private "><a href="#_process_bulk_action" title="_process_bulk_action :: Process bulk action for one or more attachments"><span class="description">Process bulk action for one or more attachments</span><pre>_process_bulk_action()</pre></a></li>
 <li class="method private "><a href="#_process_bulk_value" title="_process_bulk_value :: Process bulk edit area fields, which may contain a Content Template"><span class="description">Process bulk edit area fields, which may contain a Content Template</span><pre>_process_bulk_value()</pre></a></li>
+<li class="method private "><a href="#_process_mla_download_file" title="_process_mla_download_file :: Process secure file download"><span class="description">Process secure file download</span><pre>_process_mla_download_file()</pre></a></li>
 <li class="method private "><a href="#_restore_single_item" title="_restore_single_item :: Restore a single item from the Trash"><span class="description">Restore a single item from the Trash</span><pre>_restore_single_item()</pre></a></li>
 <li class="method private "><a href="#_trash_single_item" title="_trash_single_item :: Move a single item to Trash"><span class="description">Move a single item to Trash</span><pre>_trash_single_item()</pre></a></li>
 <li class="nav-header">
@@ -250,11 +253,11 @@ Adds filters for post type and pagination.</p></p>
 </div></div>
 </div>
 <a name="mla_inline_edit_ajax_action" id="mla_inline_edit_ajax_action"></a><div class="element clickable method public mla_inline_edit_ajax_action" data-toggle="collapse" data-target=".mla_inline_edit_ajax_action .collapse">
-<h2>Ajax handler for inline editing (quick and bulk edit)</h2>
+<h2>Ajax handler for inline editing</h2>
 <pre>mla_inline_edit_ajax_action() : void</pre>
 <div class="labels"></div>
 <div class="row collapse"><div class="detail-description">
-<p class="long_description"><p>Adapted from wp_ajax_inline_save in /wp-admin/includes/ajax-actions.php</p></p>
+<p class="long_description"><p>Adapted for Quick Edit from wp_ajax_inline_save in /wp-admin/includes/ajax-actions.php</p></p>
 <table class="table table-bordered"><tr>
 <th>since</th>
 <td>0.20</td>
@@ -450,6 +453,18 @@ Defined as public because it's an action.</p></p>
 <code>string</code>HTML <form> markup for hidden rows</div>
 </div></div>
 </div>
+<a name="_bulk_edit_ajax_handler" id="_bulk_edit_ajax_handler"></a><div class="element clickable method private _bulk_edit_ajax_handler" data-toggle="collapse" data-target="._bulk_edit_ajax_handler .collapse">
+<h2>Ajax handler for bulk editing and mapping</h2>
+<pre>_bulk_edit_ajax_handler() : void</pre>
+<div class="labels"></div>
+<div class="row collapse"><div class="detail-description">
+<p class="long_description"></p>
+<table class="table table-bordered"><tr>
+<th>since</th>
+<td>2.00</td>
+</tr></table>
+</div></div>
+</div>
 <a name="_compose_post_type_select" id="_compose_post_type_select"></a><div class="element clickable method private _compose_post_type_select" data-toggle="collapse" data-target="._compose_post_type_select .collapse">
 <h2>Compose a Post Type Options list with current selection</h2>
 <pre>_compose_post_type_select(array $templates, string $selection) : string</pre>
@@ -533,6 +548,25 @@ change the meta data for a single attachment.</h2>
 <code>array</code>message and/or HTML content</div>
 </div></div>
 </div>
+<a name="_process_bulk_action" id="_process_bulk_action"></a><div class="element clickable method private _process_bulk_action" data-toggle="collapse" data-target="._process_bulk_action .collapse">
+<h2>Process bulk action for one or more attachments</h2>
+<pre>_process_bulk_action(string $bulk_action) : array</pre>
+<div class="labels"></div>
+<div class="row collapse"><div class="detail-description">
+<p class="long_description"></p>
+<table class="table table-bordered"><tr>
+<th>since</th>
+<td>2.00</td>
+</tr></table>
+<h3>Parameters</h3>
+<div class="subelement argument">
+<h4>$bulk_action</h4>
+<code>string</code><p>Bulk action slug: delete, edit, restore, trash, custom action</p></div>
+<h3>Returns</h3>
+<div class="subelement response">
+<code>array</code>messages and page content: ( 'message', 'body', 'unchanged', 'success', 'failure', 'item_results' )</div>
+</div></div>
+</div>
 <a name="_process_bulk_value" id="_process_bulk_value"></a><div class="element clickable method private _process_bulk_value" data-toggle="collapse" data-target="._process_bulk_value .collapse">
 <h2>Process bulk edit area fields, which may contain a Content Template</h2>
 <pre>_process_bulk_value(integer $post_id, string $bulk_value) : string</pre>
@@ -553,6 +587,18 @@ change the meta data for a single attachment.</h2>
 <h3>Returns</h3>
 <div class="subelement response">
 <code>string</code>Empty, or new value for the field</div>
+</div></div>
+</div>
+<a name="_process_mla_download_file" id="_process_mla_download_file"></a><div class="element clickable method private _process_mla_download_file" data-toggle="collapse" data-target="._process_mla_download_file .collapse">
+<h2>Process secure file download</h2>
+<pre>_process_mla_download_file() : void</pre>
+<div class="labels"></div>
+<div class="row collapse"><div class="detail-description">
+<p class="long_description"><p>Requires _wpnonce, mla_download_file and mla_download_type in $_REQUEST; mla_download_disposition is optional.</p></p>
+<table class="table table-bordered"><tr>
+<th>since</th>
+<td>2.00</td>
+</tr></table>
 </div></div>
 </div>
 <a name="_restore_single_item" id="_restore_single_item"></a><div class="element clickable method private _restore_single_item" data-toggle="collapse" data-target="._restore_single_item .collapse">
@@ -820,7 +866,7 @@ change the meta data for a single attachment.</h2>
 <div class="row"><footer class="span12">
             Template is built using <a href="http://twitter.github.com/bootstrap/">Twitter Bootstrap 2</a> and icons provided by <a href="http://glyphicons.com/">Glyphicons</a>.<br>
             Documentation is powered by <a href="http://www.phpdoc.org/">phpDocumentor 2.0.0a8</a> and<br>
-            generated on 2014-10-27T20:22:36-07:00.<br></footer></div>
+            generated on 2015-01-05T13:15:01-08:00.<br></footer></div>
 </div>
 </body>
 </html>
