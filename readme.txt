@@ -151,13 +151,6 @@ All of the MLA source code has been annotated with "DocBlocks", a special type o
 9. The Media Manager popup modal window showing additional filters for date and taxonomy terms. Also shows the enhanced Search Media box and the full-function taxonomy support in the ATTACHMENT DETAILS area.
 
 == Changelog ==
-= 2.0x =
-
-* New: An example of Media/Assistant submenu support for Advanced Custom Fields Checkbox variables is provided at `/media-library-assistant/examples/mla-acf-checkbox-example.txt`
-* New: An example of mapping PDF metadata to Standard Fields and Taxonomy Terms has been added to the "IPTC/EXIF Mapping for PDF Documents" section of the Settings/Media Library Assistant Documentation tab.
-* Fix: For `[mla_gallery]`, a defect in the default handling of the `post_parent` parameter has been fixed. The defect was introduced in version 2.00.
-* Fix: For the "Select Parent" popup window, a defect in handling invalid post_status values has been fixed.
-
 = 2.00 =
 * New: **Requires WordPress v3.5 or greater.**
 * New: **Enhanced Keyword(s) Search and Taxonomy term keyword(s) search for the `[mla_gallery]` shortcode**. See the [Other Notes section](http://wordpress.org/extend/plugins/media-library-assistant/other_notes/ "Click here, then scroll down") section or the Settings/Media Library Assistant Documentation tab for more information.
