@@ -2926,12 +2926,16 @@ class MLAShortcodes {
 				unset( $arguments[ $key ] );
 				break;
 			case 'mla_terms_phrases':
-				$use_children = false;
+				$children_ok = false;
 				// fallthru
 			case 'mla_terms_taxonomies':
 			case 'mla_search_fields':
 				if ( ! empty( $value ) ) {
 					MLAData::$search_parameters[ $key ] = $value;
+
+					if ( ! $children_ok ) {
+						$use_children = false;
+					}
 				}
 
 				unset( $arguments[ $key ] );
@@ -3047,7 +3051,7 @@ class MLAShortcodes {
 				// ignore anything else
 			} // switch $key
 		} // foreach $arguments 
-
+ 
 		/*
 		 * Decide whether to use a "get_children" style query
 		 */

@@ -1523,6 +1523,8 @@ class MLA {
 					case 'draft' :
 						$stat = __('Draft');
 						break;
+					default:
+						$stat = sanitize_text_field( $post->post_status );
 				}
 
 				if ( '0000-00-00 00:00:00' == $post->post_date ) {

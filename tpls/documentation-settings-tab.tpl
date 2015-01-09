@@ -115,6 +115,7 @@
 <li><a href="#iptc_exif_mapping_tables">IPTC/EXIF mapping tables</a></li>
 <li><a href="#iptc_exif_mapping_buttons">IPTC/EXIF mapping command buttons</a></li>
 <li><a href="#iptc_exif_mapping_with_templates">EXIF/Template mapping with Content Templates</a></li>
+<li><a href="#pdf_iptc_exif_mapping">IPTC/EXIF Mapping for PDF Documents</a></li>
 <li><a href="#other_iptc_exif_mapping">Other mapping techniques</a></li>
 <li><a href="#wordpress_default_mapping">WordPress default title, slug and description mapping</a></li>
 <li><a href="#mla_gps_values">Enhanced GPS values</a></li>
@@ -184,7 +185,7 @@ Four <code>[mla_gallery]</code> parameters provide control over the placement, s
 </tr>
 <tr>
 <td style="padding-right: 10px; vertical-align: top; font-weight:bold">mla_itemwidth</td>
-<td>specifies the CSS width attribute of the ".gallery-item" style. You can specify a percent of the total gallery width, e.g., "33.3%". You can also specify any dimension value, e.g., "10px" or "2em", as well as the "auto" or "inherit" values. You can specify "none", which will remove the margin property from the styles template altogether.
+<td>specifies the CSS width attribute of the ".gallery-item" style. You can specify a percent of the total gallery width, e.g., "33.3%". You can also specify any dimension value, e.g., "10px" or "2em", as well as the "auto" or "inherit" values. You can specify "none", which will remove the width property from the styles template altogether.
 <br />&nbsp;<br />
 Two additional values, "calculate" (the default) and "exact",  calculate the width automatically, based on the "columns" and "mla_margin" values. For "calculate", the width is calculated by dividing 100% by the number of columns, then subtracting twice the margin. For example, the default value is (floor(1000/3)/10) - ( 2.0 * 1.5 ) = 30.3%. Adding in the left and right margins makes each column 33.3% and the total width will be 99.9%
 <br />&nbsp;<br />
@@ -3315,11 +3316,11 @@ There are two other ways you can perform custom field mapping for one or more ex
 </tr>
 <tr>
 <td style="padding-right: 10px; vertical-align: top; font-weight:bold">--&nbsp;Metadata&nbsp;(see&nbsp;below)&nbsp;--</td>
-<td>WordPress attachment metadata, from the <em>_wp_attachment_metadata</em> array. Enter the field you want in the text box below the dropdown list. More coding guidelines are given below this table in the "Custom field mapping for metadata fields" section.</td>
+<td>WordPress attachment metadata, from the <em>_wp_attachment_metadata</em> array. Enter the field you want in the text box below the dropdown list. More coding guidelines are given in the "<a href="#attachment_metadata_mapping">Adding or changing Attachment Metadata</a>" section above.</td>
 </tr>
 <tr>
 <td style="padding-right: 10px; vertical-align: top; font-weight:bold">--&nbsp;Template&nbsp;(see&nbsp;below)&nbsp;--</td>
-<td style="padding-bottom: 2em;">A Content Template; enter the template text (without the "template:" prefix) in the text box below the dropdown list. More coding guidelines are given below this table in the "Custom field mapping for Content Templates" section.</td>
+<td style="padding-bottom: 2em;">A Content Template; enter the template text (without the "template:" prefix) in the text box below the dropdown list. More coding guidelines are given in the "<a href="#custom_field_mapping_with_templates">Custom field mapping with Content Templates</a>" section above.</td>
 </tr>
 <tr>
 <td style="padding-right: 10px; vertical-align: top; font-weight:bold">post_id, ID</td>
@@ -3628,7 +3629,7 @@ You can go to the Settings/Media Library Assistant IPTC/EXIF tab and define a ru
 <li>Go to the Settings/Media Library Assistant IPTC/EXIF tab.</li>
 <li>Make sure the "Enable IPTC/EXIF Mapping when adding new media" box is checked.</li>
 <li>Scroll down to the "Custom field mapping" section.</li>
-<li>If you have already defined exif_DateTimeOriginal as a custom field, use the "Add a new Mapping Rule" section and select the field name in the first dropdown. If the field does not yet exist, use the "Add a new Field and Mapping Rule" section and enter, for example, DateTimeCreated in the first text box.</li>
+<li>If you have already defined "Date Time Created" as a custom field, use the "Add a new Mapping Rule" section and select the field name in the first dropdown. If the field does not yet exist, use the "Add a new Field and Mapping Rule" section and enter, for example, "Date Time Created" in the first text box.</li>
 <li>Leave the "IPTC Value" dropdown list set to the default "None (select a value)" setting.</li>
 <li>Enter "DateTimeOriginal" in the EXIF/Template Value field.</li>
 <li>Set the Priority dropdown to "EXIF".</li>
@@ -3641,11 +3642,11 @@ If you are feeling confident you can click the "Add Rule/Field and Map All Attac
 <p>
 You can use the meta_key, orderby and order parameters to sort an [mla_gallery] by your custom field. For example:<br />
 &nbsp;<br />
-<code>[mla_gallery post_parent=all meta_key=DateTimeCreated orderby=meta_value order=DESC]</code><br />
+<code>[mla_gallery post_parent=all meta_key="Date Time Created" orderby=meta_value order=DESC]</code><br />
 &nbsp;<br />
 The three parameters in the above example will select all of the images in your media library and sort your gallery so the newest/most recent images appear first. You can replace <code>post_parent=all</code> with any other data selection parameters to get the images you want. For example, you can use a "meta_query" to select only those images created after 2012-01-01 (and display the date in the gallery item caption):<br />
 &nbsp;<br />
-<code>[mla_gallery meta_query="array( array( 'key' => 'DateTimeCreated', 'value' => '2012-01-01', 'compare' => '<' ) )" meta_key="DateTimeCreated" orderby="meta_value DESC" mla_caption="{+custom:DateTimeCreated+}" ]</code>
+<code>[mla_gallery meta_query="array( array( 'key' => 'Date Time Created', 'value' => '2012-01-01', 'compare' => '<' ) )" meta_key="Date Time Created" orderby="meta_value DESC" mla_caption="{+custom:Date Time Created+}" ]</code>
 </p>
 <a name="iptc_exif_mapping_tables"></a>&nbsp;
 <p>
@@ -3700,7 +3701,10 @@ In some cases multiple terms will be contained in a single IPTC or EXIF value. F
 </p>
 <h4>IPTC/EXIF mapping command buttons</h4>
 <p>
-The screen contains command buttons for maintaining the rules and using them to map attachment data. For each of the three mapping categories, a button allows immediate mapping using the current rule parameters. Rule parameter changes are <strong><em>NOT</em></strong> saved when you click these buttons, and <strong><em>THERE IS NO UNDO FOR THE MAPPING ACTIONS!</em></strong>
+To the right of each table heading is a "Map All Attachments, ... Now" button. When you click one of these buttons, the mapping rules in that table are applied to <strong><em>ALL of the images in the Media Library</em></strong>. This is a great way to bring your media items up to date, but it is <strong><em>NOT REVERSIBLE</em></strong>, so think carefully before you click! Each button applies the rules in just one category, so (for exmple) you can update taxonomy terms without disturbing standard or custom field values.
+</p>
+<p>
+These immediate mapping buttons <strong><em>DO NOT</em></strong> save any rules changes you've made, so you can make a temporary rule change and process your attachments without disturbing the standing rules.
 </p>
 <dl>
 <dt>Map All Attachments, Standard Fields Now</dt>
@@ -3738,7 +3742,7 @@ Click this button to map all attachments using this one rule with its current pa
 </dd>
 </dl>
 <p>
-At the bottom of the screen are command buttons for adding a new IPTC/EXIF to custom field rule, adding a new field and mapping attachment data using all of the existing rules:
+Below the existing custom field rules there are command buttons for adding a new IPTC/EXIF to custom field rule, adding a new field and mapping attachment data using all of the existing rules:
 </p>
 <dl>
 <dt>Add Rule</dt>
@@ -3757,11 +3761,18 @@ To define a new rule and a new custom field, enter the field name in the text bo
 <dd>
 Click this button to define a new rule, define a new custom field and map all attachments using all the rule&rsquo;s parameters.
 </dd>
+</dl>
+<p>
+At the bottom of the screen is a command button for saving <strong><em>all</em></strong> of the rule updates at one time:
+</p>
+<dl>
 <dt>Save Changes</dt>
 <dd>
 Click this button to update all of the existing rules at one time. This is handy of you change several rules at once.
 </dd>
 </dl>
+<p>
+"Save Changes" is the <strong><em>only</em></strong> command button that saves changes made in the Standard Field Mapping and Taxonomy Term Mapping sections. </p>
 <a name="iptc_exif_mapping_with_templates"></a>&nbsp;
 <p>
 <a href="#backtotop">Go to Top</a>
@@ -3788,13 +3799,96 @@ In the "Standard field mapping" table a special <code>template:[+empty+]</code> 
 <p>
 Note that the <strong>,array</strong> formatting option is <strong>not</strong> required to get an array result for the field in a Taxonomy term mapping template; it is assumed. If you want a <strong>text</strong>, <strong>single</strong> or <strong>export</strong> result you can add one of those formatting options to your field specification.
 </p>
-<h4>Map All Attachments Now</h4>
+<a name="pdf_iptc_exif_mapping"></a>&nbsp;
 <p>
-To the right of each table heading is a "Map All Attachments Now" button. When you click one of these buttons, the mapping rules in that table are applied to <strong><em>ALL of the images in the Media Library</em></strong>. This is a great way to bring your media items up to date, but it is <strong><em>NOT REVERSIBLE</em></strong>, so think carefully before you click!
-Each button applies the rules in just one category, so you can update taxonomy terms without disturbing standard or custom field values.
+<a href="#backtotop">Go to Top</a>
+</p>
+<h4>IPTC/EXIF Mapping for PDF Documents</h4>
+<p>
+You can use Content Templates in the EXIF/Template Value text box to extract metadata from your PDF documents and add it to the Standard Fields and Taxonomy Terms of your Media Library items. The templates can be coded to select the appropriate source whether the item is a PDF document or an image. Here are three rules for metadata contained in PDF documents:
+</p>
+<table>
+<tr style="font-weight: bold">
+<td style="padding-right: 10px; text-align: right">Field</td>
+<td>EXIF/Template Value</td>
+<td>Priority</td>
+<td>Existing Text</td>
+<td>Delimiter(s)</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; text-align: right; font-weight:bold">Title:</td>
+<td style="padding-right: 10px; vertical-align: top">template:([+pdf:Title+])</td>
+<td>EXIF</td>
+<td>Replace</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; text-align: right; font-weight:bold">Caption:</td>
+<td style="padding-right: 10px; vertical-align: top">template:([+pdf:Subject+])</td>
+<td>EXIF</td>
+<td>Replace</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; text-align: right; font-weight:bold">Att. Categories:</td>
+<td style="padding-right: 10px; vertical-align: top">template:([+pdf:Keywords,array+])</td>
+<td>EXIF</td>
+<td>Replace</td>
+<td>;,</td>
+</tr>
+</table>
+<p>
+The three rules have a similar structure:
+<ul style="line-height: 1em; list-style-type:disc; margin-left: 20px ">
+<li>"template:" (goes in the text box below "EXIF/Template Value") is used to access the pdf: values instead of the EXIF values.</li>
+<li>The values are surrounded by parentheses "(" and ")" so they will return an empty string for documents without meta data in the field and for other items such as images.
+</li>
+<li>I have selected "Replace" to overwrite the existing text, because a default Title was assigned to the items when they were uploaded. You can change this to "Keep" if you already have values in one or more of the fields that you want to retain.
+</li>
+</ul>
+The taxonomy rule also has the ",array" option to return multiple keywords as individual array elements that can be converted to taxonomy terms. For this rule, the "Delimiter(s)" text box contains a comma and a semicolon, which should cover most of the documents you will encounter.
 </p>
 <p>
-These buttons <strong><em>DO NOT</em></strong> save any rules changes you've made, so you can make a temporary rule change and process your attachments without disturbing the standing rules.
+If your Media Library contains a mix of images and PDF documents you will want a more flexible rule to map metadata from different sources in each MIME type. You can extend the rules as follows:
+</p>
+<table>
+<tr style="font-weight: bold">
+<td style="padding-right: 10px; text-align: right">Field</td>
+<td>EXIF/Template Value</td>
+<td>Priority</td>
+<td>Existing Text</td>
+<td>Delimiter(s)</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; text-align: right; font-weight:bold">Title:</td>
+<td style="padding-right: 10px; vertical-align: top">template:([+pdf:Title+]|[+exif:Title+])</td>
+<td>EXIF</td>
+<td>Replace</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; text-align: right; font-weight:bold">Caption:</td>
+<td style="padding-right: 10px; vertical-align: top">template:([+pdf:Subject+]|[+exif:ImageDescription+])</td>
+<td>EXIF</td>
+<td>Replace</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; text-align: right; font-weight:bold">Att. Categories:</td>
+<td style="padding-right: 10px; vertical-align: top">template:([+pdf:Keywords,array+]|[+iptc:2#025+])</td>
+<td>EXIF</td>
+<td>Replace</td>
+<td>;,</td>
+</tr>
+</table>
+<p>
+The three rules have similar changes:
+<ul style="line-height: 1em; list-style-type:disc; margin-left: 20px ">
+<li>A vertical bar ("|") separates the two data source specifications. This is the Content Template "Choice" operator, which takes the first non-blank alternative from among the choices.</li>
+<li>A second data source for images. The PDF documents will not have "exif:"/"iptc:" data sources, and images will not have "pdf:" data sources, so only one (at most) of the two alternatives will be non-blank.
+</li>
+</ul>
+In fact, WordPress contains its own rules for composing a Title from IPTC/Exif metadata (see <a href="#wordpress_default_mapping">WordPress default title, slug and description mapping</a>), so you may not need or want to extend the Title rule. WordPress also fills the Description field, but does not fill the Caption. You may want to copy the Description into the Caption; if you do, replace <code>[+exif:ImageDescription+]</code> with <code>[+post_content+]</code> in the Caption rule.
 </p>
 <a name="other_iptc_exif_mapping"></a>&nbsp;
 <p>
