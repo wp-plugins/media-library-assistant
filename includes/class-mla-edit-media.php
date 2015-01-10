@@ -413,7 +413,22 @@ class MLAEdit {
 			if ( empty(self::$mla_references['parent_title'] ) ) {
 				$parent_info = self::$mla_references['parent_errors'];
 			} else {
-				$parent_info = sprintf( '(%1$s) %2$s %3$s', self::$mla_references['parent_type'], self::$mla_references['parent_title'], self::$mla_references['parent_errors'] );
+				$flag = ', ';
+				switch ( self::$mla_references['parent_status'] ) {
+					case 'future' :
+						$flag .= __('Scheduled');
+						break;
+					case 'pending' :
+						$flag .= _x('Pending', 'post state');
+						break;
+					case 'draft' :
+						$flag .= __('Draft');
+						break;
+					default:
+						$flag = '';
+				}
+
+				$parent_info = sprintf( '%1$s (%2$s%3$s) %4$s', self::$mla_references['parent_title'], self::$mla_references['parent_type'], $flag, self::$mla_references['parent_errors'] );
 			}
 		} else {
 			$parent_info = '';
@@ -421,11 +436,9 @@ class MLAEdit {
 
 		$parent_info = apply_filters( 'mla_parent_info_meta_box', $parent_info, self::$mla_references, $post );
 
-		echo '<table><tr>';
-		echo '<td><label class="screen-reader-text" for="mla_post_parent">' . __( 'Post Parent', 'media-library-assistant' ) . '</label><input name="mla_post_parent" type="text" size="4" id="mla_post_parent" value="' . $post->post_parent . "\" /></td>\n";
-		echo '<td><label class="screen-reader-text" for="mla_parent_info">' . __( 'Parent Info', 'media-library-assistant' ) . '</label><input class="readonly" name="mla_parent_info" type="text" readonly="readonly" disabled="disabled" id="mla_parent_info" value="' . esc_attr( $parent_info ) . "\" /></td>\n";
-		echo '<td><label class="screen-reader-text" for="mla_parent_info">' . __( 'Select Parent', 'media-library-assistant' ) . '</label><input id="mla_set_parent" class="button-primary parent" type="button" name="post_parent_set" value="' . __( 'Select', 'media-library-assistant' ) . '" /></td>';
-		echo '</tr></table>';
+		echo '<label class="screen-reader-text" for="mla_post_parent">' . __( 'Post Parent', 'media-library-assistant' ) . '</label><input name="mla_post_parent" id="mla_post_parent" type="text" value="' . $post->post_parent . "\" />\n";
+		echo '<label class="screen-reader-text" for="mla_parent_info">' . __( 'Select Parent', 'media-library-assistant' ) . '</label><input name="post_parent_set" id="mla_set_parent" class="button-primary parent" type="button" value="' . __( 'Select', 'media-library-assistant' ) . '" />';
+		echo '<label class="screen-reader-text" for="mla_parent_info">' . __( 'Parent Info', 'media-library-assistant' ) . '</label><input name="mla_parent_info" id="mla_parent_info" type="text" readonly="readonly" disabled="disabled" value="' . esc_attr( $parent_info ) . "\" /></span>\n";
 
 		echo MLA::mla_set_parent_form( false );
 	}

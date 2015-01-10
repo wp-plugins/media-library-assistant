@@ -2427,6 +2427,10 @@ class MLAData {
 			if ( isset( $parent->post_type ) ) {
 				$parent_data['parent_type'] = $parent->post_type;
 			}
+
+			if ( isset( $parent->post_status ) ) {
+				$parent_data['parent_status'] = $parent->post_status;
+			}
 		}
 
 		$save_id = $parent_id;
@@ -2683,6 +2687,7 @@ class MLAData {
 		 * galleries		Array of objects with the post_type and post_title of each post
 		 *					that was returned by a [gallery] shortcode
 		 * parent_type		'post' or 'page' or the custom post type of the attachment's parent
+		 * parent_status	'publish', 'private', 'future', 'pending', 'draft'
 		 * parent_title		post_title of the attachment's parent
 		 * parent_errors	UNATTACHED, ORPHAN, BAD/INVALID PARENT
 		 */
@@ -2700,6 +2705,7 @@ class MLAData {
 			'mla_galleries' => array(),
 			'galleries' => array(),
 			'parent_type' => '',
+			'parent_status' => '',
 			'parent_title' => '',
 			'parent_errors' => ''
 		);
@@ -2710,6 +2716,10 @@ class MLAData {
 		$parent_data = self::mla_fetch_attachment_parent_data( $parent );
 		if ( isset( $parent_data['parent_type'] ) ) {
 			$references['parent_type'] =  $parent_data['parent_type'];
+		}
+
+		if ( isset( $parent_data['parent_status'] ) ) {
+			$references['parent_status'] =  $parent_data['parent_status'];
 		}
 
 		if ( isset( $parent_data['parent_title'] ) )  {
@@ -2775,7 +2785,7 @@ class MLAData {
 				foreach ( $features as $feature ) {
 					$feature_results = $wpdb->get_results(
 							"
-							SELECT post_type, post_title
+							SELECT post_type, post_status, post_title
 							FROM {$wpdb->posts}
 							WHERE {$exclude_revisions}(ID = {$feature->post_id})
 							"
@@ -2807,7 +2817,7 @@ class MLAData {
 			if ( 'base' == $inserted_in_option ) {
 				$query_parameters = array();
 				$query = array();
-				$query[] = "SELECT ID, post_type, post_title, CONVERT(`post_content` USING utf8 ) AS POST_CONTENT FROM {$wpdb->posts} WHERE {$exclude_revisions} ( %s=%s";
+				$query[] = "SELECT ID, post_type, post_status, post_title, CONVERT(`post_content` USING utf8 ) AS POST_CONTENT FROM {$wpdb->posts} WHERE {$exclude_revisions} ( %s=%s";
 				$query_parameters[] = '1'; // for empty file name array
 				$query_parameters[] = '0'; // for empty file name array
 
@@ -2857,7 +2867,7 @@ class MLAData {
 		
 					$inserts = $wpdb->get_results(
 						$wpdb->prepare(
-							"SELECT ID, post_type, post_title FROM {$wpdb->posts}
+							"SELECT ID, post_type, post_status, post_title FROM {$wpdb->posts}
 							WHERE {$exclude_revisions}(CONVERT(`post_content` USING utf8 ) LIKE %s)", "%{$like}%"
 						)
 					);
@@ -2985,6 +2995,7 @@ class MLAData {
 			'mla_galleries' => array(),
 			'galleries' => array(),
 			'parent_type' => '',
+			'parent_status' => '',
 			'parent_title' => '',
 			'parent_errors' => ''
 		);
@@ -3052,7 +3063,7 @@ class MLAData {
 			$attachment_ids = implode( ',', $attachment_ids );
 			$results = $wpdb->get_results( 
 					"
-					SELECT m.meta_value, p.ID, p.post_type, p.post_title
+					SELECT m.meta_value, p.ID, p.post_type, p.post_status, p.post_title
 					FROM {$wpdb->postmeta} AS m INNER JOIN {$wpdb->posts} AS p ON m.post_id = p.ID
 					WHERE ( m.meta_key = '_thumbnail_id' )
 					AND ( m.meta_value IN ( {$attachment_ids} ) ){$exclude_revisions}
@@ -3060,7 +3071,7 @@ class MLAData {
 			);
 			
 			foreach ( $results as $result ) {
-				$features[ $result->meta_value ][ $result->ID ] = (object) array( 'post_title' => $result->post_title, 'post_type' => $result->post_type );
+				$features[ $result->meta_value ][ $result->ID ] = (object) array( 'post_title' => $result->post_title, 'post_type' => $result->post_type, 'post_status' => $result->post_status );
 			}
 		} // $process_featured_in
 
@@ -3073,7 +3084,7 @@ class MLAData {
 			$wp_4dot0_plus = version_compare( get_bloginfo('version'), '4.0', '>=' );
 			$query_parameters = array();
 			$query = array();
-			$query[] = "SELECT ID, post_type, post_title, CONVERT(`post_content` USING utf8 ) AS POST_CONTENT FROM {$wpdb->posts} WHERE ( %s=%s";
+			$query[] = "SELECT ID, post_type, post_status, post_title, CONVERT(`post_content` USING utf8 ) AS POST_CONTENT FROM {$wpdb->posts} WHERE ( %s=%s";
 			// for empty file name array
 			$query_parameters[] = '1';
 			$query_parameters[] = '0';
@@ -3142,6 +3153,10 @@ class MLAData {
 				
 				if ( isset( $attachment->parent_type ) ) {
 					$references['parent_type'] =  $attachment->parent_type;
+				}
+		
+				if ( isset( $attachment->parent_status ) ) {
+					$references['parent_status'] =  $attachment->parent_status;
 				}
 		
 				if ( isset( $attachment->parent_title ) )  {
@@ -3284,6 +3299,7 @@ class MLAData {
 	 * The outer array is keyed by post_id. It contains an associative array with:
 	 * ['parent_title'] post_title of the gallery parent, 
 	 * ['parent_type'] 'post' or 'page' or the custom post_type of the gallery parent,
+	 * ['parent_status'] 'publish', 'private', 'future', 'pending', 'draft'
 	 * ['results'] array ( ID => ID ) of attachments appearing in ANY of the parent's galleries.
 	 * ['galleries'] array of [gallery] entries numbered from one (1), containing:
 	 * galleries[X]['query'] contains a string with the arguments of the [gallery], 
@@ -3406,7 +3422,7 @@ class MLAData {
 		$results = $wpdb->get_results(
 			$wpdb->prepare(
 				"
-				SELECT ID, post_type, post_title, post_content
+				SELECT ID, post_type, post_status, post_title, post_content
 				FROM {$wpdb->posts}
 				WHERE {$exclude_revisions}(
 					CONVERT(`post_content` USING utf8 )
@@ -3425,6 +3441,7 @@ class MLAData {
 				$result_id = $result->ID;
 				$galleries_array[ $result_id ]['parent_title'] = $result->post_title;
 				$galleries_array[ $result_id ]['parent_type'] = $result->post_type;
+				$galleries_array[ $result_id ]['parent_status'] = $result->post_status;
 				$galleries_array[ $result_id ]['results'] = array();
 				$galleries_array[ $result_id ]['galleries'] = array();
 				$instance = 0;
@@ -3483,7 +3500,7 @@ class MLAData {
 		if ( ! empty( $galleries_array ) ) {
 			foreach ( $galleries_array as $parent_id => $gallery ) {
 				if ( in_array( $attachment_id, $gallery['results'] ) ) {
-					$gallery_refs[ $parent_id ] = array ( 'post_title' => $gallery['parent_title'], 'post_type' => $gallery['parent_type'] );
+					$gallery_refs[ $parent_id ] = array ( 'post_title' => $gallery['parent_title'], 'post_type' => $gallery['parent_type'], 'post_status' => $gallery['parent_status'] );
 				}
 			} // foreach gallery
 		} // ! empty

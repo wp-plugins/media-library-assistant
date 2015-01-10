@@ -745,7 +745,35 @@ class MLA_List_Table extends WP_List_Table {
 		}
 		
 		return sprintf( '<a href="%1$s" title="' . __( 'Edit', 'media-library-assistant' ) . ' &#8220;%2$s&#8221;">%3$s</a>', admin_url( $edit_url ), esc_attr( $item->post_title ), $thumb ); 
+	}
+
+	/**
+	 * Translate post_status 'future', 'pending' and 'draft' to label
+	 *
+	 * @since 2.01
+	 * 
+	 * @param	string	post_status
+	 *
+	 * @return	string	Status label or empty string
+	 */
+	protected function _format_post_status( $post_status ) {
+		$flag = ',<br>';
+		switch ( $post_status ) {
+			case 'future' :
+				$flag .= __('Scheduled');
+				break;
+			case 'pending' :
+				$flag .= _x('Pending', 'post state');
+				break;
+			case 'draft' :
+				$flag .= __('Draft');
+				break;
+			default:
+				$flag = '';
 		}
+		
+	return $flag;
+	}
 
 	/**
 	 * Add rollover actions to exactly one of the following displayed columns:
@@ -1057,19 +1085,21 @@ class MLA_List_Table extends WP_List_Table {
 		$value = '';
 
 		foreach ( $item->mla_references['features'] as $feature_id => $feature ) {
+			$status = self::_format_post_status( $feature->post_status );
+			
 			if ( $feature_id == $item->post_parent ) {
 				$parent = ',<br>' . __( 'PARENT', 'media-library-assistant' );
 			} else {
 				$parent = '';
 			}
 
-			$value .= sprintf( '(%1$s %2$s%3$s), <a href="%4$s" title="' . __( 'Edit', 'media-library-assistant' ) . ' &#8220;%5$s&#8221;">%6$s</a>',
-				/*%1$s*/ esc_attr( $feature->post_type ),
-				/*%2$s*/ $feature_id,
-				/*%3$s*/ $parent,
-				/*%4$s*/ esc_url( add_query_arg( array('post' => $feature_id, 'action' => 'edit'), 'post.php' ) ),
-				/*%5$s*/ esc_attr( $feature->post_title ),
-				/*%6$s*/ esc_attr( $feature->post_title ) ) . "<br>\r\n";
+			$value .= sprintf( '<a href="%1$s" title="' . __( 'Edit', 'media-library-assistant' ) . ' &#8220;%2$s&#8221;">%2$s</a> (%3$s %4$s%5$s%6$s), ',
+				/*%1$s*/ esc_url( add_query_arg( array('post' => $feature_id, 'action' => 'edit'), 'post.php' ) ),
+				/*%2$s*/ esc_attr( $feature->post_title ),
+				/*%3$s*/ esc_attr( $feature->post_type ),
+				/*%4$s*/ $feature_id,
+				/*%5$s*/ $status,
+				/*%6$s*/ $parent ) . "<br>\r\n";
 		} // foreach $feature
 
 		return $value;
@@ -1094,19 +1124,21 @@ class MLA_List_Table extends WP_List_Table {
 			$value .= sprintf( '<strong>%1$s</strong><br>', $file );
 
 			foreach ( $inserts as $insert ) {
+				$status = self::_format_post_status( $insert->post_status );
+
 				if ( $insert->ID == $item->post_parent ) {
 					$parent = ',<br>' . __( 'PARENT', 'media-library-assistant' );
 				} else {
 					$parent = '';
 				}
 
-			$value .= sprintf( '(%1$s %2$s%3$s), <a href="%4$s" title="' . __( 'Edit', 'media-library-assistant' ) . ' &#8220;%5$s&#8221;">%6$s</a>',
-				/*%1$s*/ esc_attr( $insert->post_type ),
-				/*%2$s*/ $insert->ID,
-				/*%3$s*/ $parent,
-				/*%4$s*/ esc_url( add_query_arg( array('post' => $insert->ID, 'action' => 'edit'), 'post.php' ) ),
-				/*%5$s*/ esc_attr( $insert->post_title ),
-				/*%6$s*/ esc_attr( $insert->post_title ) ) . "<br>\r\n";
+				$value .= sprintf( '<a href="%1$s" title="' . __( 'Edit', 'media-library-assistant' ) . ' &#8220;%2$s&#8221;">%2$s</a> (%3$s %4$s%5$s%6$s), ',
+				/*%1$s*/ esc_url( add_query_arg( array('post' => $insert->ID, 'action' => 'edit'), 'post.php' ) ),
+				/*%2$s*/ esc_attr( $insert->post_title ),
+				/*%3$s*/ esc_attr( $insert->post_type ),
+				/*%4$s*/ $insert->ID,
+				/*%3$s*/ $status,
+				/*%6$s*/ $parent ) . "<br>\r\n";
 			} // foreach $insert
 		} // foreach $file
 
@@ -1129,19 +1161,21 @@ class MLA_List_Table extends WP_List_Table {
 		$value = '';
 
 		foreach ( $item->mla_references['galleries'] as $ID => $gallery ) {
+			$status = self::_format_post_status( $gallery['post_status'] );
+			
 			if ( $ID == $item->post_parent ) {
 				$parent = ',<br>' . __( 'PARENT', 'media-library-assistant' );
 			} else {
 				$parent = '';
 			}
 
-			$value .= sprintf( '(%1$s %2$s%3$s), <a href="%4$s" title="' . __( 'Edit', 'media-library-assistant' ) . ' &#8220;%5$s&#8221;">%6$s</a>',
-				/*%1$s*/ esc_attr( $gallery['post_type'] ),
-				/*%2$s*/ $ID,
-				/*%3$s*/ $parent,
-				/*%4$s*/ esc_url( add_query_arg( array('post' => $ID, 'action' => 'edit'), 'post.php' ) ),
-				/*%5$s*/ esc_attr( $gallery['post_title'] ),
-				/*%6$s*/ esc_attr( $gallery['post_title'] ) ) . "<br>\r\n";
+			$value .= sprintf( '<a href="%1$s" title="' . __( 'Edit', 'media-library-assistant' ) . ' &#8220;%2$s&#8221;">%2$s</a> (%3$s %4$s%5$s%6$s),',
+				/*%1$s*/ esc_url( add_query_arg( array('post' => $ID, 'action' => 'edit'), 'post.php' ) ),
+				/*%2$s*/ esc_attr( $gallery['post_title'] ),
+				/*%3$s*/ esc_attr( $gallery['post_type'] ),
+				/*%4$s*/ $ID,
+				/*%5$s*/ $status,
+				/*%6$s*/ $parent ) . "<br>\r\n";
 		} // foreach $gallery
 
 		return $value;
@@ -1163,19 +1197,21 @@ class MLA_List_Table extends WP_List_Table {
 		$value = '';
 
 		foreach ( $item->mla_references['mla_galleries'] as $ID => $gallery ) {
+			$status = self::_format_post_status( $gallery['post_status'] );
+			
 			if ( $ID == $item->post_parent ) {
 				$parent = ',<br>' . __( 'PARENT', 'media-library-assistant' );
 			} else {
 				$parent = '';
 			}
 
-			$value .= sprintf( '(%1$s %2$s%3$s), <a href="%4$s" title="' . __( 'Edit', 'media-library-assistant' ) . ' &#8220;%5$s&#8221;">%6$s</a>',
-				/*%1$s*/ esc_attr( $gallery['post_type'] ),
-				/*%2$s*/ $ID,
-				/*%3$s*/ $parent,
-				/*%4$s*/ esc_url( add_query_arg( array('post' => $ID, 'action' => 'edit'), 'post.php' ) ),
-				/*%5$s*/ esc_attr( $gallery['post_title'] ),
-				/*%6$s*/ esc_attr( $gallery['post_title'] ) ) . "<br>\r\n";
+			$value .= sprintf( '<a href="%1$s" title="' . __( 'Edit', 'media-library-assistant' ) . ' &#8220;%2$s&#8221;">%2$s</a> (%3$s %4$s%5$s%6$s),',
+				/*%1$s*/ esc_url( add_query_arg( array('post' => $ID, 'action' => 'edit'), 'post.php' ) ),
+				/*%2$s*/ esc_attr( $gallery['post_title'] ),
+				/*%3$s*/ esc_attr( $gallery['post_type'] ),
+				/*%4$s*/ $ID,
+				/*%5$s*/ $status,
+				/*%6$s*/ $parent ) . "<br>\r\n";
 		} // foreach $gallery
 
 		return $value;
@@ -1387,7 +1423,7 @@ class MLA_List_Table extends WP_List_Table {
 			}
 
 			if ( isset( $item->parent_type ) ) {
-				$parent_type = '(' . $item->parent_type . ' ' . (string) $item->post_parent . ')';
+				$parent_type = '(' . $item->parent_type . ' ' . (string) $item->post_parent . self::_format_post_status( $item->parent_status ) . ')';
 			} else {
 				$parent_type = '';
 			}

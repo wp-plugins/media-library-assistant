@@ -13,13 +13,23 @@
 	width: 100%;
 }
 
-#mla_post_parent,
-#mla_parent_info {
-	width: 96%;
+/*
+ * Parent Info meta box
+ */
+ 
+#mla_post_parent {
+	width: 4em;
 }
 
 #mla_set_parent {
-	display:inline;
 	line-height: 16px;
-	margin: 1px;
+	margin: 1px 4px;
 }
+
+#mla_parent_info {
+	height: 25px;
+	line-height: 16px;
+	width: 100%;
+	margin: 4px 0;
+}
+
