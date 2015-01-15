@@ -855,7 +855,6 @@ class MLA {
 	 */
 	private static function _process_bulk_action( $bulk_action ) {
 		$page_content = array( 'message' => '', 'body' => '', 'unchanged' => 0, 'success' => 0, 'failure' => 0, 'item_results' => array() );
-		
 		if ( isset( $_REQUEST['cb_attachment'] ) ) {
 			$item_content = apply_filters( 'mla_list_table_begin_bulk_action', NULL, $bulk_action );
 			if ( is_null( $item_content ) ) {
@@ -1692,6 +1691,19 @@ class MLA {
 	 * @return	void	echo json results or error message, then die()
 	 */
 	private static function _bulk_edit_ajax_handler() {
+		/*
+		 * The category taxonomy (edit screens) is a special case because 
+		 * post_categories_meta_box() changes the input name
+		 */
+		if ( !isset( $_REQUEST['tax_input'] ) ) {
+			$_REQUEST['tax_input'] = array();
+		}
+
+		if ( isset( $_REQUEST['post_category'] ) ) {
+			$_REQUEST['tax_input']['category'] = $_REQUEST['post_category'];
+			unset ( $_REQUEST['post_category'] );
+		}
+
 		/*
 		 * Convert bulk_action to the old button name/value variables
 		 */
