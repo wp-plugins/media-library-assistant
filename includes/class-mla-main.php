@@ -1004,12 +1004,113 @@ class MLA {
 								$new_data[ 'custom_updates' ] = $custom_fields;
 							}
 
-							$item_content = MLAData::mla_update_single_item( $post_id, $new_data, $_REQUEST['tax_input'], $_REQUEST['tax_action'] );
+								/*
+								 * Taxonomy Support
+								 */
+								$tax_input = array();
+								foreach ( $_REQUEST['tax_input'] as $taxonomy => $terms ) {
+									if ( ! empty( $_REQUEST['tax_action'] ) ) {
+										$tax_action = $_REQUEST['tax_action'][ $taxonomy ];
+									} else {
+										$tax_action = 'replace';
+									}
+
+									/*
+									 * Ignore empty updates
+									 */
+									if ( $hierarchical = is_array( $terms ) ) {
+										if ( false !== ( $index = array_search( 0, $terms ) ) ) {
+											unset( $terms[ $index ] );
+										}
+									} else {
+										/*
+										 * Parse out individual terms
+										 */
+										$comma = _x( ',', 'tag_delimiter', 'media-library-assistant' );
+										if ( ',' !== $comma ) {
+											$tags = str_replace( $comma, ',', $terms );
+										}
+							
+										$fragments = explode( ',', trim( $terms, " \n\t\r\0\x0B," ) );
+										$terms = array();
+										foreach( $fragments as $fragment ) {
+											$fragment = trim( wp_unslash( $fragment ) );
+											if ( ! empty( $fragment ) ) {
+												$terms[] = $fragment;
+											}
+										} // foreach fragment
+
+										$terms = array_unique( $terms );
+									}
+
+									if ( empty( $terms ) && 'replace' != $tax_action ) {
+										continue;
+									}
+
+									$post_terms = get_object_term_cache( $post_id, $taxonomy );
+									if ( false === $post_terms ) {
+										$post_terms = wp_get_object_terms( $post_id, $taxonomy );
+										wp_cache_add( $post_id, $post_terms, $taxonomy . '_relationships' );
+									}
+
+									$current_terms = array();
+									foreach( $post_terms as $new_term ) {
+										if ( $hierarchical ) {
+											$current_terms[ $new_term->term_id ] =  $new_term->term_id;
+										} else {
+											$current_terms[ $new_term->name ] =  $new_term->name;
+										}
+									}
+									
+									if ( 'add' == $tax_action ) {
+										/*
+										 * Add new terms; remove existing terms
+										 */
+										foreach ( $terms as $index => $new_term ) {
+											if ( isset( $current_terms[ $new_term ] ) ) {
+												unset( $terms[ $index ] );
+											}
+										}
+										
+										$do_update = ! empty( $terms );
+									} elseif ( 'remove' == $tax_action ) {
+										/*
+										 * Remove only the existing terms
+										 */
+										foreach ( $terms as $index => $new_term ) {
+											if ( ! isset( $current_terms[ $new_term ] ) ) {
+												unset( $terms[ $index ] );
+											}
+										}
+										
+										$do_update = ! empty( $terms );
+									} else { 
+										/*
+										 * Replace all terms; if the new terms match the term
+										 * cache, we can skip the update
+										 */
+										foreach ( $terms as $new_term ) {
+											if ( isset( $current_terms[ $new_term ] ) ) {
+												unset( $current_terms[ $new_term ] );
+											} else {
+												$current_terms[ $new_term ] = $new_term;
+												break; // not a match; stop checking
+											}
+										}
+										
+										$do_update = ! empty( $current_terms );
+									}
+
+									if ( $do_update ) {
+										$tax_input[ $taxonomy ] = $terms;
+									}
+								} // foreach taxonomy
+
+								$item_content = MLAData::mla_update_single_item( $post_id, $new_data, $tax_input, $_REQUEST['tax_action'] );
 							break;
 						case 'restore':
 							$item_content = self::_restore_single_item( $post_id );
 							break;
-						//case 'tag':
 						case 'trash':
 							$item_content = self::_trash_single_item( $post_id );
 							break;

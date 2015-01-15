@@ -153,6 +153,7 @@ All of the MLA source code has been annotated with "DocBlocks", a special type o
 == Changelog ==
 = 2.0x =
 
+* New: For **IPTC/EXIF mapping of taxonomy terms, significant performance improvements.** Explicit handling of special cases and new caching code for "map all" processing eliminates unnecessary database queries.
 * New: For the Media/Assistant submenu, **post status (Draft, Pending, Future)** is now included in the "where-used" reporting columns. It is also included in the "Parent Info" meta box on the Media/Edit Media screen.
 * New: An example of Media/Assistant submenu support for Advanced Custom Fields Checkbox variables is provided at `/media-library-assistant/examples/mla-acf-checkbox-example.txt`
 * New: An example of mapping PDF metadata to Standard Fields and Taxonomy Terms has been added to the "IPTC/EXIF Mapping for PDF Documents" section of the Settings/Media Library Assistant Documentation tab.

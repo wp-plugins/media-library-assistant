@@ -867,7 +867,11 @@ class MLAData {
 					break;
 				case 'terms':
 					if ( 0 < $post_id ) {
-						$terms = wp_get_object_terms( $post_id, $value['value'] );
+						$terms = get_object_term_cache( $post_id, $value['value'] );
+						if ( false === $terms ) {
+							$terms = wp_get_object_terms( $post_id, $value['value'] );
+							wp_cache_add( $post_id, $terms, $value['value'] . '_relationships' );
+						}
 					} else {
 						break;
 					}
@@ -877,12 +881,14 @@ class MLAData {
 						$text = implode( ',', $terms->get_error_messages() );
 					} elseif ( ! empty( $terms ) ) {
 						if ( 'single' == $value['option'] || 1 == count( $terms ) ) {
-							$text = sanitize_term_field( 'name', $terms[0]->name, $terms[0]->term_id, $value, 'display' );
+							reset( $terms );
+							$term = current( $terms );
+							$text = sanitize_term_field( 'name', $term->name, $term->term_id, $value['value'], 'display' );
 						} elseif ( 'export' == $value['option'] ) {
 							$text = sanitize_text_field( var_export( $terms, true ) );
 						} else {
 							foreach ( $terms as $term ) {
-								$term_name = sanitize_term_field( 'name', $term->name, $term->term_id, $value, 'display' );
+								$term_name = sanitize_term_field( 'name', $term->name, $term->term_id, $value['value'], 'display' );
 								$text .= strlen( $text ) ? ', ' . $term_name : $term_name;
 							}
 						}
@@ -5879,10 +5885,7 @@ class MLAData {
 				$taxonomy_obj = get_taxonomy( $taxonomy );
 
 				if ( current_user_can( $taxonomy_obj->cap->assign_terms ) ) {
-					$terms_before = wp_get_post_terms( $post_id, $taxonomy, array(
-						'fields' => 'ids' // all' 
-					) );
-					if ( is_array( $tags ) ) // array = hierarchical, string = non-hierarchical.
+					if ( is_array( $tags ) ) // array of int = hierarchical, array of string = non-hierarchical.
 						$tags = array_filter( $tags );
 
 					switch ( $tax_action ) {
@@ -5892,24 +5895,33 @@ class MLAData {
 							break;
 						case 'remove':
 							$action_name = __( 'Removing', 'media-library-assistant' );
-							$tags = self::_remove_tags( $terms_before, $tags, $taxonomy_obj );
+							$tags = self::_remove_terms( $post_id, $tags, $taxonomy_obj );
 							$result = wp_set_post_terms( $post_id, $tags, $taxonomy );
+							
+							if ( empty( $tags ) ) {
+								$result = true;
+							}
 							break;
 						case 'replace':
 							$action_name = __( 'Replacing', 'media-library-assistant' );
 							$result = wp_set_post_terms( $post_id, $tags, $taxonomy );
+							
+							if ( empty( $tags ) ) {
+								$result = true;
+							}
 							break;
 						default:
 							$action_name = __( 'Ignoring', 'media-library-assistant' );
 							$result = NULL;
 							// ignore anything else
 					}
-
-					$terms_after = wp_get_post_terms( $post_id, $taxonomy, array(
-						'fields' => 'ids' // all' 
-					) );
-
-					if ( $terms_before != $terms_after ) {
+					
+					/*
+					 * Definitive results check would use:
+					 * do_action( 'set_object_terms', $object_id, $terms, $tt_ids, $taxonomy, $append, $old_tt_ids );
+					 * in /wp_includes/taxonomy.php function wp_set_object_terms()
+					 */
+					if ( ! empty( $result ) ) {
 						delete_transient( MLA_OPTION_PREFIX . 't_term_counts_' . $taxonomy );
 						/* translators: 1: action_name, 2: taxonomy */
 						$message .= sprintf( __( '%1$s "%2$s" terms', 'media-library-assistant' ) . '<br>', $action_name, $taxonomy );
@@ -5962,50 +5974,52 @@ class MLAData {
 	}
 
 	/**
-	 * Remove tags from a term ids list
+	 * Remove terms from an attachment's assignments
 	 * 
 	 * @since 0.40
 	 * 
-	 * @param	array	The term ids currently assigned
-	 * @param	array | string	The term ids (array) or names (string) to remove
+	 * @param	integer	The ID of the attachment to be updated
+	 * @param	array	The term ids (integer array) or names (string array) to remove
 	 * @param	object	The taxonomy object
 	 *
-	 * @return	array	Term ids of the surviving tags
+	 * @return	array	Term ids/names of the surviving terms
 	 */
-	private static function _remove_tags( $terms_before, $tags, $taxonomy_obj ) {
-		if ( ! is_array( $tags ) ) {
-			/*
-			 * Convert names to term ids
-			 */
-			$comma = _x( ',', 'tag_delimiter', 'media-library-assistant' );
-			if ( ',' !== $comma ) {
-				$tags = str_replace( $comma, ',', $tags );
+	private static function _remove_terms( $post_id, $terms, $taxonomy_obj ) {
+		$taxonomy = $taxonomy_obj->name;
+		$hierarchical = $taxonomy_obj->hierarchical;
+		
+		/*
+		 * Get the current terms for the terms_after check
+		 */
+		$current_terms = get_object_term_cache( $post_id, $taxonomy );
+		if ( false === $current_terms ) {
+			$current_terms = wp_get_object_terms( $post_id, $taxonomy );
+			wp_cache_add( $post_id, $current_terms, $taxonomy . '_relationships' );
+		}
+		
+		$terms_before = array();
+		foreach( $current_terms as $term ) {
+			$terms_before[ $term->term_id ] = $term->name;
+		}
+		
+		$terms_after = array();
+		if ( $hierarchical ) {
+			$terms = array_map( 'intval', $terms );
+			$terms = array_unique( $terms );
+			
+			foreach( $terms_before as $index => $term ) {
+				if ( ! in_array( $index, $terms ) ) {
+					$terms_after[] = $index;
+				}
 			}
-
-			$terms = explode( ',', trim( $tags, " \n\t\r\0\x0B," ) );
-
-			$tags = array();
-			foreach ( (array) $terms as $term) {
-				if ( !strlen(trim($term)) ) {
-					continue;
+		} else {
+			foreach( $terms_before as $index => $term ) {
+				if ( ! in_array( $term, $terms ) ) {
+					$terms_after[] = $term;
 				}
-
-				// Skip if a non-existent term name is passed.
-				if ( ! $term_info = term_exists($term, $taxonomy_obj->name ) ) {
-					continue;
-				}
-
-				if ( is_wp_error($term_info) ) {
-					continue;
-				}
-
-				$tags[] = $term_info['term_id'];
-			} // foreach term
-		} // not an array
-
-		$tags = array_map( 'intval', $tags );
-		$tags = array_unique( $tags );
-		$terms_after = array_diff( array_map( 'intval', $terms_before ), $tags );
+			}
+		}
+		
 		return $terms_after;
 	}
 

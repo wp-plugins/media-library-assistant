@@ -219,6 +219,7 @@ class MLAModal {
 
 					if ( false === $terms ) {
 						$terms = wp_get_object_terms( $post_id, $key );
+						wp_cache_add( $post_id, $terms, $key . '_relationships' );
 					}
 
 					if ( is_wp_error( $terms ) || empty( $terms ) ) {
@@ -775,6 +776,7 @@ class MLAModal {
 
 						if ( false === $terms ) {
 							$terms = wp_get_object_terms( $post_id, $key );
+							wp_cache_add( $post_id, $terms, $key . '_relationships' );
 						}
 
 						if ( is_wp_error( $terms ) || empty( $terms ) ) {
@@ -824,6 +826,7 @@ class MLAModal {
 
 						if ( false === $terms ) {
 							$terms = wp_get_object_terms( $post_id, $key );
+							wp_cache_add( $post_id, $terms, $key . '_relationships' );
 						}
 
 						if ( is_wp_error( $terms ) || empty( $terms ) ) {
@@ -954,7 +957,13 @@ class MLAModal {
 
 					$results[$key]["mla-{$key}-checklist"] = ob_get_clean();
 				} else {
-					$terms = wp_get_object_terms( $id, $key );
+					$terms = get_object_term_cache( $id, $key );
+
+					if ( false === $terms ) {
+						$terms = wp_get_object_terms( $id, $key );
+						wp_cache_add( $id, $terms, $key . '_relationships' );
+					}
+
 					if ( is_wp_error( $terms ) || empty( $terms ) ) {
 						$terms = array();
 					}

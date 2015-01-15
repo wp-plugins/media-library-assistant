@@ -617,6 +617,7 @@ class MLA_List_Table extends WP_List_Table {
 
 			if ( false === $terms ) {
 				$terms = wp_get_object_terms( $item->ID, $taxonomy );
+				wp_cache_add( $item->ID, $terms, $taxonomy . '_relationships' );
 			}
 
 			if ( !is_wp_error( $terms ) ) {
@@ -626,7 +627,7 @@ class MLA_List_Table extends WP_List_Table {
 
 				$list = array();
 				foreach ( $terms as $term ) {
-					$term_name = esc_html( sanitize_term_field( 'name', $term->name, $term->term_id, 'category', 'display' ) );
+					$term_name = esc_html( sanitize_term_field( 'name', $term->name, $term->term_id, $taxonomy, 'display' ) );
 					$list[] = sprintf( '<a href="%1$s" title="' . __( 'Filter by', 'media-library-assistant' ) . ' &#8220;%2$s&#8221;">%3$s</a>', esc_url( add_query_arg( array_merge( self::mla_submenu_arguments( false ), array(
 						'page' => MLA::ADMIN_PAGE_SLUG,
 						'mla-tax' => $taxonomy,
@@ -905,6 +906,7 @@ class MLA_List_Table extends WP_List_Table {
 				$terms = get_object_term_cache( $item->ID, $tax_name );
 				if ( false === $terms ) {
 					$terms = wp_get_object_terms( $item->ID, $tax_name );
+					wp_cache_add( $item->ID, $terms, $tax_name . '_relationships' );
 				}
 
 				if ( is_wp_error( $terms ) || empty( $terms ) ) {

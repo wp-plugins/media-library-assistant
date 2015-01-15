@@ -1991,7 +1991,7 @@ class MLAOptions {
 			
 			if ( $options['enable_iptc_exif_mapping'] ) {
 				$item = get_post( $post_id );
-				$updates = MLAOptions::mla_evaluate_iptc_exif_mapping( $item, 'iptc_exif_mapping', NULL, $data );
+				$updates = MLAOptions::mla_evaluate_iptc_exif_mapping( $item, 'iptc_exif_mapping', NULL, $data, true );
 				$updates = self::_update_attachment_metadata( $updates, $data );
 
 				if ( !empty( $updates ) ) {
@@ -3545,6 +3545,54 @@ class MLAOptions {
 	} // mla_custom_field_option_handler
 
 	/**
+	 * Build and search a cache of taxonomy and term name to term ID mappings
+ 	 *
+	 * @since 2.01
+	 *
+	 * @param	string 	term name (not slug)
+	 * @param	integer zero or term's parent term_id
+	 * @param	string 	taxonomy slug
+	 * @param	array 	term objects currently assigned to the item
+	 *
+	 * @return	integer	term_id for the term name
+	 */
+	private static function _get_term_id( $term_name, $term_parent, $taxonomy, &$post_terms ) {
+		static $term_cache = array();
+		
+		if ( isset( $term_cache[ $taxonomy ] ) && isset( $term_cache[ $taxonomy ][ $term_parent ] ) && isset( $term_cache[ $taxonomy ][ $term_parent ][ $term_name ] ) ) {
+			return $term_cache[ $taxonomy ][ $term_parent ][ $term_name ];
+		}
+		
+		if ( is_array( $post_terms ) ) {
+			$term_id = 0;
+			foreach( $post_terms as $post_term ) {
+				$term_cache[ $taxonomy ][ $post_term->parent ][ $post_term->name ] = $post_term->term_id;
+				if ( $term_name == $post_term->name && $term_parent == $post_term->parent ) {
+					$term_id = $post_term->term_id;
+				}
+			}
+			
+			if ( 0 < $term_id ) {
+				return $term_id;
+			}
+		}
+		
+		$post_term = term_exists( $term_name, $taxonomy, $term_parent );
+		if ( $post_term !== 0 && $post_term !== NULL ) {
+			$term_cache[ $taxonomy ][ $term_parent ][ $term_name ] = $post_term['term_id'];
+			return $post_term['term_id'];
+		}
+		
+		$post_term = wp_insert_term( $term_name, $taxonomy, array( 'parent' => $term_parent ) );
+		if ( ( ! is_wp_error( $post_term ) ) && isset( $post_term['term_id'] ) ) {
+			$term_cache[ $taxonomy ][ $term_parent ][ $term_name ] = $post_term['term_id'];
+			return $post_term['term_id'];
+		}
+		
+		return 0;
+	} // _get_term_id
+
+	/**
 	 * Evaluate IPTC/EXIF mapping updates for a post
  	 *
 	 * @since 1.00
@@ -3553,10 +3601,11 @@ class MLAOptions {
 	 * @param	string 	category to evaluate against, e.g., iptc_exif_standard_mapping or iptc_exif_mapping
 	 * @param	array 	(optional) iptc_exif_mapping values, default - current option value
 	 * @param	array 	(optional) _wp_attachment_metadata, for MLAOptions::mla_update_attachment_metadata_filter
+	 * @param	boolean	(optional) true if uploading a new item else false (default)
 	 *
 	 * @return	array	Updates suitable for MLAData::mla_update_single_item, if any
 	 */
-	public static function mla_evaluate_iptc_exif_mapping( $post, $category, $settings = NULL, $attachment_metadata = NULL ) {
+	public static function mla_evaluate_iptc_exif_mapping( $post, $category, $settings = NULL, $attachment_metadata = NULL, $is_upload = false ) {
 		$image_metadata = MLAData::mla_fetch_attachment_image_metadata( $post->ID );
 		$updates = array();
 		$update_all = ( 'iptc_exif_mapping' == $category );
@@ -3673,7 +3722,7 @@ class MLAOptions {
 				/*
 				 * Convert checkbox value(s)
 				 */
-				$setting_value['hierarchical'] = (boolean) $setting_value['hierarchical'];
+				$hierarchical = $setting_value['hierarchical'] = (boolean) $setting_value['hierarchical'];
 
 				$setting_value = apply_filters( 'mla_mapping_rule', $setting_value, $post->ID, 'iptc_exif_taxonomy_mapping', $attachment_metadata );
 				if ( NULL === $setting_value ) {
@@ -3722,7 +3771,7 @@ class MLAOptions {
 				}
 
 				/*
-				 * Parse out individual terms if Delimiter(s) are present
+				 * Parse out individual terms
 				 */
 				if ( ! empty( $setting_value['delimiters'] ) ) {
 					$text = $setting_value['delimiters'];
@@ -3731,53 +3780,97 @@ class MLAOptions {
 						$delimiters[] = $text[0];
 						$text = substr($text, 1);
 					}
-
-					if ( is_scalar( $new_text ) ) {
-						$new_text = array( $new_text );
-					}
-
-					foreach( $delimiters as $delimiter ) {
-						$new_terms = array();
-						foreach ( $new_text as $text ) {
-								$fragments = explode( $delimiter, $text );
-								foreach( $fragments as $fragment ) {
-									$fragment = trim( $fragment );
-									if ( ! empty( $fragment ) ) {
-										$new_terms[] = $fragment;
-									}
-								} // foreach fragment
-						} // foreach $text
-						$new_text = array_unique( $new_terms );
-					} // foreach $delimiter
+				} else {
+					$delimiters = array( _x( ',', 'tag_delimiter', 'media-library-assistant' ) );
 				}
 
-				if ( !empty( $new_text ) ) {
-					if ( $setting_value['hierarchical'] ) {
-						if ( is_string( $new_text ) ) {
-							$new_text = array( $new_text );
-						}
+				if ( is_scalar( $new_text ) ) {
+					$new_text = array( $new_text );
+				}
 
-						$new_terms = array();
-						foreach ( $new_text as $new_term ) {
-							$term_object = term_exists( $new_term, $setting_key );
-							if ($term_object !== 0 && $term_object !== null) {
-								$new_terms[] = $term_object['term_id'];
-							} else {
-								$term_object = wp_insert_term( $new_term, $setting_key, array( 'parent' => $tax_parent ) );
-								if ( ( ! is_wp_error( $term_object ) ) && isset( $term_object['term_id'] ) ) {
-									$new_terms[] = $term_object['term_id'];
+				foreach( $delimiters as $delimiter ) {
+					$new_terms = array();
+					foreach ( $new_text as $text ) {
+							$fragments = explode( $delimiter, $text );
+							foreach( $fragments as $fragment ) {
+								$fragment = trim( wp_unslash( $fragment ) );
+								if ( ! empty( $fragment ) ) {
+									$new_terms[] = $fragment;
 								}
-							}
-						} // foreach new_term
+							} // foreach fragment
+					} // foreach $text
+					$new_text = array_unique( $new_terms );
+				} // foreach $delimiter
 
-						$tax_inputs[ $setting_key ] = $new_terms;
-					} // hierarchical
-					else {
-						$tax_inputs[ $setting_key ] = $new_text;
+				if ( empty( $new_text ) ) {
+					continue;
+				}
+				
+				$current_terms = array();
+				if ( ! $is_upload ) {
+					$post_terms = get_object_term_cache( $post->ID, $setting_key );
+					if ( false === $post_terms ) {
+						$post_terms = wp_get_object_terms( $post->ID, $setting_key );
+						wp_cache_add( $post->ID, $post_terms, $setting_key . '_relationships' );
 					}
+	
+					foreach( $post_terms as $new_term ) {
+						if ( $hierarchical ) {
+							$current_terms[ $new_term->term_id ] =  $new_term->term_id;
+						} else {
+							$current_terms[ $new_term->name ] =  $new_term->name;
+						}
+					}
+				}
 
-				$tax_actions[ $setting_key ] = $tax_action;
-				} // new_text
+				/*
+				 * Hierarchical taxonomies require term_id, flat require term names
+				 */
+				if ( $hierarchical ) {
+					/*
+					 * Convert text to term_id
+					 */
+					$new_terms = array();
+					foreach ( $new_text as $new_term ) {
+						if ( 0 < $new_term = self::_get_term_id( $new_term, $tax_parent, $setting_key, $post_terms ) ) {
+							$new_terms[] = $new_term;
+						}
+					} // foreach new_term
+				} else {
+					$new_terms = $new_text;
+				}
+
+				if ( 'replace' == $tax_action ) {
+					/*
+					 * If the new terms match the term cache, we can skip the update
+					 */
+					foreach ( $new_terms as $new_term ) {
+						if ( isset( $current_terms[ $new_term ] ) ) {
+							unset( $current_terms[ $new_term ] );
+						} else {
+							$current_terms[ $new_term ] = $new_term;
+							break; // not a match; stop checking
+						}
+					}
+					
+					$do_update = ! empty( $current_terms );
+				} else {
+					/*
+					 * We are adding terms; remove existing terms
+					 */
+					foreach ( $new_terms as $index => $new_term ) {
+						if ( isset( $current_terms[ esc_attr( $new_term ) ] ) ) {
+							unset( $new_terms[ $index ] );
+						}
+					}
+					
+					$do_update = ! empty( $new_terms );
+				}
+				
+				if ( $do_update ) {
+					$tax_inputs[ $setting_key ] = $new_terms;
+					$tax_actions[ $setting_key ] = $tax_action;
+				}
 			} // foreach new setting
 
 		if ( ! empty( $tax_inputs ) ) {
