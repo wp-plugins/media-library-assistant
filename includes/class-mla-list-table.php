@@ -1083,23 +1083,32 @@ class MLA_List_Table extends WP_List_Table {
 		if ( !MLAOptions::$process_featured_in ) {
 			return __( 'Disabled', 'media-library-assistant' );
 		}
+		
+		/*
+		 * Move parent to the top of the list
+		 */
+		$features = $item->mla_references['features'];
+		if ( isset( $features[ $item->post_parent ] ) ) {
+			$parent = $features[ $item->post_parent ];
+			unset( $features[ $item->post_parent ] );
+			array_unshift( $features, $parent );
+		}
 
 		$value = '';
-
-		foreach ( $item->mla_references['features'] as $feature_id => $feature ) {
+		foreach ( $features as $feature ) {
 			$status = self::_format_post_status( $feature->post_status );
 			
-			if ( $feature_id == $item->post_parent ) {
+			if ( $feature->ID == $item->post_parent ) {
 				$parent = ',<br>' . __( 'PARENT', 'media-library-assistant' );
 			} else {
 				$parent = '';
 			}
 
 			$value .= sprintf( '<a href="%1$s" title="' . __( 'Edit', 'media-library-assistant' ) . ' &#8220;%2$s&#8221;">%2$s</a> (%3$s %4$s%5$s%6$s), ',
-				/*%1$s*/ esc_url( add_query_arg( array('post' => $feature_id, 'action' => 'edit'), 'post.php' ) ),
+				/*%1$s*/ esc_url( add_query_arg( array('post' => $feature->ID, 'action' => 'edit'), 'post.php' ) ),
 				/*%2$s*/ esc_attr( $feature->post_title ),
 				/*%3$s*/ esc_attr( $feature->post_type ),
-				/*%4$s*/ $feature_id,
+				/*%4$s*/ $feature->ID,
 				/*%5$s*/ $status,
 				/*%6$s*/ $parent ) . "<br>\r\n";
 		} // foreach $feature
@@ -1121,10 +1130,20 @@ class MLA_List_Table extends WP_List_Table {
 		}
 
 		$value = '';
-
 		foreach ( $item->mla_references['inserts'] as $file => $inserts ) {
-			$value .= sprintf( '<strong>%1$s</strong><br>', $file );
+			if ( 'base' != $item->mla_references['inserted_option'] ) {
+				$value .= sprintf( '<strong>%1$s</strong><br>', $file );
+			}
 
+			/*
+			 * Move parent to the top of the list
+			 */
+			if ( isset( $inserts[ $item->post_parent ] ) ) {
+				$parent = $inserts[ $item->post_parent ];
+				unset( $inserts[ $item->post_parent ] );
+				array_unshift( $inserts, $parent );
+			}
+			
 			foreach ( $inserts as $insert ) {
 				$status = self::_format_post_status( $insert->post_status );
 
@@ -1160,22 +1179,31 @@ class MLA_List_Table extends WP_List_Table {
 			return __( 'Disabled', 'media-library-assistant' );
 		}
 
+		/*
+		 * Move parent to the top of the list
+		 */
+		$galleries = $item->mla_references['galleries'];
+		if ( isset( $galleries[ $item->post_parent ] ) ) {
+			$parent = $galleries[ $item->post_parent ];
+			unset( $galleries[ $item->post_parent ] );
+			array_unshift( $galleries, $parent );
+		}
+		
 		$value = '';
-
-		foreach ( $item->mla_references['galleries'] as $ID => $gallery ) {
+		foreach ( $galleries as $ID => $gallery ) {
 			$status = self::_format_post_status( $gallery['post_status'] );
 			
-			if ( $ID == $item->post_parent ) {
+			if ( $gallery['ID'] == $item->post_parent ) {
 				$parent = ',<br>' . __( 'PARENT', 'media-library-assistant' );
 			} else {
 				$parent = '';
 			}
 
 			$value .= sprintf( '<a href="%1$s" title="' . __( 'Edit', 'media-library-assistant' ) . ' &#8220;%2$s&#8221;">%2$s</a> (%3$s %4$s%5$s%6$s),',
-				/*%1$s*/ esc_url( add_query_arg( array('post' => $ID, 'action' => 'edit'), 'post.php' ) ),
+				/*%1$s*/ esc_url( add_query_arg( array('post' => $gallery['ID'], 'action' => 'edit'), 'post.php' ) ),
 				/*%2$s*/ esc_attr( $gallery['post_title'] ),
 				/*%3$s*/ esc_attr( $gallery['post_type'] ),
-				/*%4$s*/ $ID,
+				/*%4$s*/ $gallery['ID'],
 				/*%5$s*/ $status,
 				/*%6$s*/ $parent ) . "<br>\r\n";
 		} // foreach $gallery
@@ -1196,22 +1224,31 @@ class MLA_List_Table extends WP_List_Table {
 			return __( 'Disabled', 'media-library-assistant' );
 		}
 
+		/*
+		 * Move parent to the top of the list
+		 */
+		$mla_galleries = $item->mla_references['mla_galleries'];
+		if ( isset( $mla_galleries[ $item->post_parent ] ) ) {
+			$parent = $mla_galleries[ $item->post_parent ];
+			unset( $mla_galleries[ $item->post_parent ] );
+			array_unshift( $mla_galleries, $parent );
+		}
+		
 		$value = '';
-
-		foreach ( $item->mla_references['mla_galleries'] as $ID => $gallery ) {
+		foreach ( $mla_galleries as $gallery ) {
 			$status = self::_format_post_status( $gallery['post_status'] );
 			
-			if ( $ID == $item->post_parent ) {
+			if ( $gallery['ID'] == $item->post_parent ) {
 				$parent = ',<br>' . __( 'PARENT', 'media-library-assistant' );
 			} else {
 				$parent = '';
 			}
 
 			$value .= sprintf( '<a href="%1$s" title="' . __( 'Edit', 'media-library-assistant' ) . ' &#8220;%2$s&#8221;">%2$s</a> (%3$s %4$s%5$s%6$s),',
-				/*%1$s*/ esc_url( add_query_arg( array('post' => $ID, 'action' => 'edit'), 'post.php' ) ),
+				/*%1$s*/ esc_url( add_query_arg( array('post' => $gallery['ID'], 'action' => 'edit'), 'post.php' ) ),
 				/*%2$s*/ esc_attr( $gallery['post_title'] ),
 				/*%3$s*/ esc_attr( $gallery['post_type'] ),
-				/*%4$s*/ $ID,
+				/*%4$s*/ $gallery['ID'],
 				/*%5$s*/ $status,
 				/*%6$s*/ $parent ) . "<br>\r\n";
 		} // foreach $gallery

@@ -2216,6 +2216,10 @@ class MLAOptions {
 		global $wpdb;
 		static $post_info = NULL;
 		
+		if ( 0 == $post_id ) {
+			return false;
+		}
+		
 		/*
 		 * Check for $post_id match
 		 */
@@ -2235,7 +2239,7 @@ class MLAOptions {
 			$data_source = 'ID';
 		}
 		
-		if ( property_exists( $post_info[$post_id], $data_source ) ) {
+		if ( isset( $post_info[$post_id] ) && property_exists( $post_info[$post_id], $data_source ) ) {
 			$post_array = (array) $post_info[$post_id];
 			$value = $post_array[ $data_source ];
 		} else {

@@ -154,11 +154,13 @@ All of the MLA source code has been annotated with "DocBlocks", a special type o
 = 2.0x =
 
 * New: For **IPTC/EXIF mapping of taxonomy terms, significant performance improvements.** Explicit handling of special cases and new caching code for "map all" processing eliminates unnecessary database queries.
-* New: For the Media/Assistant submenu, **post status (Draft, Pending, Future)** is now included in the "where-used" reporting columns. It is also included in the "Parent Info" meta box on the Media/Edit Media screen.
+* New: For the Media/Assistant submenu, the **"where-used" displays have improved**. The post status (Draft, Pending, Future) is now included (it is also included in the "Parent Info" meta box on the Media/Edit Media screen). The parent post/page is moved to the top of the references list. The "Inserted in" file name is no longer displayed for the "base" option to save space.
+* New: For `[mla_gallery]` and `[mla_tag_cloud]`, several new **page-level substitution values** have been added. You can use these, for example, to add page-level information like Title or Date to data selection parameters.
 * New: An example of Media/Assistant submenu support for Advanced Custom Fields Checkbox variables is provided at `/media-library-assistant/examples/mla-acf-checkbox-example.txt`
 * New: An example of mapping PDF metadata to Standard Fields and Taxonomy Terms has been added to the "IPTC/EXIF Mapping for PDF Documents" section of the Settings/Media Library Assistant Documentation tab.
 * Fix: For the Media/Assistant submenu Bulk Edit area, updates to the "Categories" taxonomy are now handled correctly.
 * Fix: For `[mla_gallery]`, a defect in the default handling of the `post_parent` parameter has been fixed. The defect was introduced in version 2.00.
+* Fix: For `[mla_gallery]`, a defect in the handling of the `exact=true` parameter has been fixed.
 * Fix: For the "Select Parent" popup window, a defect in handling invalid post_status values has been fixed.
 
 = 2.00 =

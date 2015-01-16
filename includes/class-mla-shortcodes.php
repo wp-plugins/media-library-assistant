@@ -218,8 +218,37 @@ class MLAShortcodes {
 			$mla_arguments
 		);
 
+		// $instance supports multiple galleries in one page/post	
+		static $instance = 0;
+		$instance++;
+
 		/*
-		 * Look for 'request' substitution parameters,
+		 * Some values are already known, and can be used in data selection parameters
+		 */
+		$upload_dir = wp_upload_dir();
+		$page_values = array(
+			'instance' => $instance,
+			'selector' => "mla_gallery-{$instance}",
+			'site_url' => site_url(),
+			'base_url' => $upload_dir['baseurl'],
+			'base_dir' => $upload_dir['basedir'],
+			'id' => $post->ID,
+			'page_ID' => $post->ID,
+			'page_author' => $post->post_author,
+			'page_date' => $post->post_date,
+			'page_content' => $post->post_content,
+			'page_title' => $post->post_title,
+			'page_excerpt' => $post->post_excerpt,
+			'page_status' => $post->post_status,
+			'page_name' => $post->post_name,
+			'page_modified' => $post->post_modified,
+			'page_guid' => $post->guid,
+			'page_type' => $post->post_type,
+			'page_url' => get_page_link(),
+		);
+
+		/*
+		 * Look for page-level and 'request:' substitution parameters,
 		 * which can be added to any input parameter
 		 */
 		foreach ( $attr as $attr_key => $attr_value ) {
@@ -232,11 +261,8 @@ class MLAShortcodes {
 			}
 
 			$attr_value = str_replace( '{+', '[+', str_replace( '+}', '+]', $attr_value ) );
-			$replacement_values = MLAData::mla_expand_field_level_parameters( $attr_value );
-
-			if ( ! empty( $replacement_values ) ) {
-				$attr[ $attr_key ] = MLAData::mla_parse_template( $attr_value, $replacement_values );
-			}
+			$replacement_values = MLAData::mla_expand_field_level_parameters( $attr_value, NULL, $page_values );
+			$attr[ $attr_key ] = MLAData::mla_parse_template( $attr_value, $replacement_values );
 		}
 
 		/*
@@ -382,10 +408,6 @@ class MLAShortcodes {
 			$arguments['mla_viewer_width'] = absint( $arguments['mla_viewer_width'] );
 		}
 
-		// $instance supports multiple galleries in one page/post	
-		static $instance = 0;
-		$instance++;
-
 		/*
 		 * The default MLA style template includes "margin: 1.5%" to put a bit of
 		 * minimum space between the columns. "mla_margin" can be used to change
@@ -427,11 +449,9 @@ class MLAShortcodes {
 			$float = is_rtl() ? 'right' : 'left';
 		}
 
-		$style_values = array(
+		$style_values = array_merge( $page_values, array(
 			'mla_style' => $arguments['mla_style'],
 			'mla_markup' => $arguments['mla_markup'],
-			'instance' => $instance,
-			'id' => $post->ID,
 			'itemtag' => tag_escape( $arguments['itemtag'] ),
 			'icontag' => tag_escape( $arguments['icontag'] ),
 			'captiontag' => tag_escape( $arguments['captiontag'] ),
@@ -439,9 +459,8 @@ class MLAShortcodes {
 			'itemwidth' => $width_string,
 			'margin' => $margin_string,
 			'float' => $float,
-			'selector' => "mla_gallery-{$instance}",
 			'size_class' => sanitize_html_class( $size_class )
-		);
+		) );
 
 		$style_template = $gallery_style = '';
 
@@ -495,13 +514,7 @@ class MLAShortcodes {
 			} // !empty template
 		} // use_mla_gallery_style
 
-		$upload_dir = wp_upload_dir();
 		$markup_values = $style_values;
-		$markup_values['site_url'] = site_url();
-		$markup_values['base_url'] = $upload_dir['baseurl'];
-		$markup_values['base_dir'] = $upload_dir['basedir'];
-		$markup_values['page_ID'] = get_the_ID();
-		$markup_values['page_url'] = ( 0 < $markup_values['page_ID'] ) ? get_page_link() : '';
 
 		$open_template = MLAOptions::mla_fetch_gallery_template( $markup_values['mla_markup'] . '-open', 'markup' );
 		if ( false === $open_template ) {
@@ -740,7 +753,6 @@ class MLAShortcodes {
 			foreach( $mla_item_specific_arguments as $index => $value ) {
 				$new_text .= str_replace( '{+', '[+', str_replace( '+}', '+]', $arguments[ $index ] ) );
 			}
-
 			$item_values = MLAData::mla_expand_field_level_parameters( $new_text, $attr, $item_values, $attachment->ID );
 
 			if ( $item_values['captiontag'] ) {
@@ -1092,6 +1104,8 @@ class MLAShortcodes {
 	 * @return string HTML content to display the tag cloud.
 	 */
 	public static function mla_tag_cloud( $attr ) {
+		global $post;
+
 		/*
 		 * These are the default parameters for tag cloud display
 		 */
@@ -1172,6 +1186,35 @@ class MLAShortcodes {
 			}
 		}
 		 
+		// $instance supports multiple clouds in one page/post	
+		static $instance = 0;
+		$instance++;
+
+		/*
+		 * Some values are already known, and can be used in data selection parameters
+		 */
+		$upload_dir = wp_upload_dir();
+		$page_values = array(
+			'instance' => $instance,
+			'selector' => "mla_tag_cloud-{$instance}",
+			'site_url' => site_url(),
+			'base_url' => $upload_dir['baseurl'],
+			'base_dir' => $upload_dir['basedir'],
+			'id' => $post->ID,
+			'page_ID' => $post->ID,
+			'page_author' => $post->post_author,
+			'page_date' => $post->post_date,
+			'page_content' => $post->post_content,
+			'page_title' => $post->post_title,
+			'page_excerpt' => $post->post_excerpt,
+			'page_status' => $post->post_status,
+			'page_name' => $post->post_name,
+			'page_modified' => $post->post_modified,
+			'page_guid' => $post->guid,
+			'page_type' => $post->post_type,
+			'page_url' => get_page_link(),
+		);
+
 		/*
 		 * Look for 'request' substitution parameters,
 		 * which can be added to any input parameter
@@ -1186,11 +1229,8 @@ class MLAShortcodes {
 			}
 
 			$attr_value = str_replace( '{+', '[+', str_replace( '+}', '+]', $attr_value ) );
-			$replacement_values = MLAData::mla_expand_field_level_parameters( $attr_value );
-
-			if ( ! empty( $replacement_values ) ) {
-				$attr[ $attr_key ] = MLAData::mla_parse_template( $attr_value, $replacement_values );
-			}
+			$replacement_values = MLAData::mla_expand_field_level_parameters( $attr_value, NULL, $page_values );
+			$attr[ $attr_key ] = MLAData::mla_parse_template( $attr_value, $replacement_values );
 		}
 
 		$attr = apply_filters( 'mla_tag_cloud_attributes', $attr );
@@ -1399,10 +1439,6 @@ class MLAShortcodes {
 			}
 		} // foreach tag
 
-		// $instance supports multiple clouds in one page/post	
-		static $instance = 0;
-		$instance++;
-
 		/*
 		 * The default MLA style template includes "margin: 1.5%" to put a bit of
 		 * minimum space between the columns. "mla_margin" can be used to change
@@ -1459,11 +1495,10 @@ class MLAShortcodes {
 
 		$font_step = $font_spread / $spread;
 
-		$style_values = array(
+		$style_values = array_merge( $page_values, array(
 			'mla_output' => $arguments['mla_output'],
 			'mla_style' => $arguments['mla_style'],
 			'mla_markup' => $arguments['mla_markup'],
-			'instance' => $instance,
 			'taxonomy' => implode( '-', $arguments['taxonomy'] ),
 			'current_item' => $arguments['current_item'],
 			'itemtag' => tag_escape( $arguments['itemtag'] ),
@@ -1473,7 +1508,6 @@ class MLAShortcodes {
 			'itemwidth' => $width_string,
 			'margin' => $margin_string,
 			'float' => $float,
-			'selector' => "mla_tag_cloud-{$instance}",
 			'found_rows' => $found_rows,
 			'min_count' => $min_count,
 			'max_count' => $max_count,
@@ -1490,7 +1524,7 @@ class MLAShortcodes {
 			'multiple_text' => $arguments['multiple_text'],
 			'echo' => $arguments['echo'],
 			'link' => $arguments['link']
-		);
+		) );
 
 		$style_template = $gallery_style = '';
 		$use_mla_tag_cloud_style = ( $is_grid || $is_list ) && ( 'none' != strtolower( $style_values['mla_style'] ) );
@@ -1527,11 +1561,7 @@ class MLAShortcodes {
 			} // !empty template
 		} // use_mla_tag_cloud_style
 
-		$upload_dir = wp_upload_dir();
 		$markup_values = $style_values;
-		$markup_values['site_url'] = site_url();
-		$markup_values['page_ID'] = get_the_ID();
-		$markup_values['page_url'] = ( 0 < $markup_values['page_ID'] ) ? get_page_link() : '';
 
 		if ( $is_grid || $is_list ) {
 			$open_template = MLAOptions::mla_fetch_gallery_template( $markup_values['mla_markup'] . '-open', 'markup' );

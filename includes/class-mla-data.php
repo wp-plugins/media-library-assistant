@@ -1897,7 +1897,7 @@ class MLAData {
 			// WordPress v3.7 says: there are no line breaks in <input /> fields
 			self::$search_parameters['s'] = str_replace( array( "\r", "\n" ), '', self::$search_parameters['s'] );
 
-			if (  self::$search_parameters['sentence'] ) {
+			if (  self::$search_parameters['sentence'] || self::$search_parameters['exact'] ) {
 				$terms_search = array( self::$search_parameters['s'] );
 			} else {
 				// v3.6.1 was '/".*?("|$)|((?<=[\r\n\t ",+])|^)[^\r\n\t ",+]+/'
@@ -2673,6 +2673,7 @@ class MLAData {
 		}
 
 		/*
+		 * inserted_option  'enabled', 'base' or 'disabled'
 		 * tested_reference	true if any of the four where-used types was processed
 		 * found_reference	true if any where-used array is not empty()
 		 * found_parent		true if $parent matches a where-used post ID
@@ -2698,6 +2699,7 @@ class MLAData {
 		 * parent_errors	UNATTACHED, ORPHAN, BAD/INVALID PARENT
 		 */
 		$references = array(
+			'inserted_option' => '',
 			'tested_reference' => false,
 			'found_reference' => false,
 			'found_parent' => false,
@@ -2745,8 +2747,9 @@ class MLAData {
 		$sizes = isset( $attachment_metadata['sizes'] ) ? $attachment_metadata['sizes'] : NULL;
 		if ( ! empty( $sizes ) ) {
 			// Using the name as the array key ensures each name is added only once
-			foreach ( $sizes as $size ) {
-				$references['files'][ $references['path'] . $size['file'] ] = $size;
+			foreach ( $sizes as $size => $size_info ) {
+				$size_info['size'] = $size;
+				$references['files'][ $references['path'] . $size_info['file'] ] = $size_info;
 			}
 		}
 		
@@ -2756,6 +2759,7 @@ class MLAData {
 			'width' => isset( $attachment_metadata['width'] ) ? $attachment_metadata['width'] : 0,
 			'height' => isset( $attachment_metadata['height'] ) ? $attachment_metadata['height'] : 0,
 			'mime_type' => isset( $base_type['type'] ) ? $base_type['type'] : 'unknown',
+			'size' => 'full',
 			);
 			
 		$references['files'][ $references['base_file'] ] = $base_reference;
@@ -2791,7 +2795,7 @@ class MLAData {
 				foreach ( $features as $feature ) {
 					$feature_results = $wpdb->get_results(
 							"
-							SELECT post_type, post_status, post_title
+							SELECT ID, post_type, post_status, post_title
 							FROM {$wpdb->posts}
 							WHERE {$exclude_revisions}(ID = {$feature->post_id})
 							"
@@ -2812,13 +2816,15 @@ class MLAData {
 		/*
 		 * Look for item(s) inserted in post_content
 		 */
+		$references['inserted_option'] = $inserted_in_option;
 		if ( MLAOptions::$process_inserted_in ) {
 			$reference_tests++;
 
 			if ( NULL == $inserted_in_option ) {
 				$inserted_in_option = MLAOptions::mla_get_option( MLAOptions::MLA_INSERTED_IN_TUNING );
+				$references['inserted_option'] = $inserted_in_option;
 			}
-
+			
 			$wp_4dot0_plus = version_compare( get_bloginfo('version'), '4.0', '>=' );
 			if ( 'base' == $inserted_in_option ) {
 				$query_parameters = array();
@@ -2988,6 +2994,7 @@ class MLAData {
 		 * See element definitions above
 		 */
 		$initial_references = array(
+			'inserted_option' => '',
 			'tested_reference' => false,
 			'found_reference' => false,
 			'found_parent' => false,
@@ -3038,8 +3045,9 @@ class MLAData {
 			$sizes = isset( $attachment_metadata['sizes'] ) ? $attachment_metadata['sizes'] : NULL;
 			if ( ! empty( $sizes ) ) {
 				/* Using the path and name as the array key ensures each name is added only once */
-				foreach ( $sizes as $size ) {
-					$references['files'][ $references['path'] . $size['file'] ] = $size;
+				foreach ( $sizes as $size => $size_info ) {
+					$size_info['size'] = $size;
+					$references['files'][ $references['path'] . $size_info['file'] ] = $size_info;
 				}
 			}
 			
@@ -3050,6 +3058,7 @@ class MLAData {
 					'width' => isset( $attachment_metadata['width'] ) ? $attachment_metadata['width'] : 0,
 					'height' => isset( $attachment_metadata['height'] ) ? $attachment_metadata['height'] : 0,
 					'mime_type' => ( isset( $base_type['type'] ) && false !== $base_type['type'] ) ? $base_type['type'] : 'unknown',
+					'size' => 'full',
 					);
 				
 				$references['files'][ $references['base_file'] ] = $base_reference;
@@ -3077,7 +3086,7 @@ class MLAData {
 			);
 			
 			foreach ( $results as $result ) {
-				$features[ $result->meta_value ][ $result->ID ] = (object) array( 'post_title' => $result->post_title, 'post_type' => $result->post_type, 'post_status' => $result->post_status );
+				$features[ $result->meta_value ][ $result->ID ] = (object) array( 'ID' => $result->ID, 'post_title' => $result->post_title, 'post_type' => $result->post_type, 'post_status' => $result->post_status );
 			}
 		} // $process_featured_in
 
@@ -3086,6 +3095,7 @@ class MLAData {
 		}
 
 		$inserted_in_option = MLAOptions::mla_get_option( MLAOptions::MLA_INSERTED_IN_TUNING );
+		$initial_references['inserted_option'] = $inserted_in_option;
 		if ( MLAOptions::$process_inserted_in ) {
 			$wp_4dot0_plus = version_compare( get_bloginfo('version'), '4.0', '>=' );
 			$query_parameters = array();
@@ -3506,7 +3516,7 @@ class MLAData {
 		if ( ! empty( $galleries_array ) ) {
 			foreach ( $galleries_array as $parent_id => $gallery ) {
 				if ( in_array( $attachment_id, $gallery['results'] ) ) {
-					$gallery_refs[ $parent_id ] = array ( 'post_title' => $gallery['parent_title'], 'post_type' => $gallery['parent_type'], 'post_status' => $gallery['parent_status'] );
+					$gallery_refs[ $parent_id ] = array ( 'ID' => $parent_id, 'post_title' => $gallery['parent_title'], 'post_type' => $gallery['parent_type'], 'post_status' => $gallery['parent_status'] );
 				}
 			} // foreach gallery
 		} // ! empty
