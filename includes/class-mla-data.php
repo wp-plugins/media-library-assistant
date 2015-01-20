@@ -2349,10 +2349,12 @@ class MLAData {
 	 * @since 0.1
 	 * @uses $post WordPress global variable
 	 * 
-	 * @param	int		The ID of the attachment post
+	 * @param	integer	The ID of the attachment post
+	 * @param	boolean	True to add references, false to skip references
+	 *
 	 * @return	NULL|array NULL on failure else associative array
 	 */
-	public static function mla_get_attachment_by_id( $post_id ) {
+	public static function mla_get_attachment_by_id( $post_id, $add_references = true ) {
 		global $post;
 		static $save_id = -1, $post_data;
 
@@ -2391,9 +2393,9 @@ class MLAData {
 		$post_data = array_merge( $post_data, self::mla_fetch_attachment_metadata( $post_id ) );
 
 		/*
-		 * Add references
+		 * Add references, if requested, or "empty" references array
 		 */
-		$post_data['mla_references'] = self::mla_fetch_attachment_references( $post_id, $post_data['post_parent'] );
+		$post_data['mla_references'] = self::mla_fetch_attachment_references( $post_id, $post_data['post_parent'], $add_references );
 
 		$save_id = $post_id;
 		return $post_data;
@@ -2658,10 +2660,11 @@ class MLAData {
 	 *
 	 * @param	int	post ID of attachment
 	 * @param	int	post ID of attachment's parent, if any
+	 * @param	boolean	True to compute references, false to return empty values
 	 *
 	 * @return	array	Reference information; see $references array comments
 	 */
-	public static function mla_fetch_attachment_references( $ID, $parent ) {
+	public static function mla_fetch_attachment_references( $ID, $parent, $add_references = true ) {
 		global $wpdb;
 		static $save_id = -1, $references, $inserted_in_option = NULL;
 
@@ -2671,7 +2674,7 @@ class MLAData {
 			$save_id = -1;
 			return NULL;
 		}
-
+		
 		/*
 		 * inserted_option  'enabled', 'base' or 'disabled'
 		 * tested_reference	true if any of the four where-used types was processed
@@ -2718,6 +2721,10 @@ class MLAData {
 			'parent_errors' => ''
 		);
 
+		if ( ! $add_references ) {
+			return $references;
+		}
+		
 		/*
 		 * Fill in Parent data
 		 */
@@ -5713,7 +5720,7 @@ class MLAData {
 	 * @return	array	success/failure message and NULL content
 	 */
 	public static function mla_update_single_item( $post_id, $new_data, $tax_input = NULL, $tax_actions = NULL ) {
-		$post_data = self::mla_get_attachment_by_id( $post_id );
+		$post_data = self::mla_get_attachment_by_id( $post_id, false );
 		if ( !isset( $post_data ) ) {
 			return array(
 				'message' => __( 'ERROR: Could not retrieve Attachment.', 'media-library-assistant' ),
