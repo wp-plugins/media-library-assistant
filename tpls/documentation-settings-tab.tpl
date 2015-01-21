@@ -3,6 +3,8 @@
 <h3>Plugin and Shortcode Documentation. In this tab, jump to:</h3>
 <div style="float:left; margin-right: 15px;"><a href="#mla_gallery"><strong>MLA Gallery Shortcode</strong></a>
 <ul style="list-style-position:inside; list-style:disc; line-height: 15px; padding-left: 20px">
+<li><a href="#gallery_substitution">Substitution Parameters</a></li>
+<li><a href="#gallery_specific">Gallery-specific Substitution Parameters</a></li>
 <li><a href="#gallery_display_style">Gallery Display Style</a></li>
 <li><a href="#gallery_display_content">Gallery Display Content</a></li>
 <li><a href="#google_file_viewer_support">Google File Viewer Support</a></li>
@@ -151,7 +153,120 @@ The <code>[mla_gallery]</code> shortcode is used in a post, page or custom post 
 <h4>Option/Parameter Documentation Sources</h4>
 <p>
 All of the options/parameters documented for the <code>[gallery]</code> shortcode are supported by the <code>[mla_gallery]</code> shortcode; you can find them in the <a href="http://codex.wordpress.org/Gallery_Shortcode" title="WordPress Codex link" target="_blank">WordPress Codex</a>. Most of the parameters documented for the WP_Query class are also supported; see the <a href="http://codex.wordpress.org/Class_Reference/WP_Query" title="WordPress Codex link" target="_blank">Codex WP_Query class reference</a>. Because the <code>[mla_gallery]</code> shortcode is designed to work with Media Library items, there are some parameter differences and extensions; these are documented below.
+<a name="gallery_substitution"></a>
+</p>
+<h4>Substitution Parameters</h4>
+<p>
+Substitution parameters are a powerful way to add general and attachment-specific values to the cloud display. For example, if you code "<code>mla_rollover_text='{+date+} : {+description+}'</code>, the rollover text will contain the upload date, a colon, and the full description of each gallery item. There are dozens of parameter names like `date` and `description` divided in several categories:
+<table>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold"><a href="#gallery_specific">Gallery-specific</a></td>
+<td>values that are known at the beginning of shortcode processing and remain the same for the entire shortcode, such as the ID and URL of the post/page in which the shortcode appears</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold"><a href="#mla_style_parameters">Style</a></td>
+<td>values that are known when the gallery-specific CSS inline styles are composed just before gallery output begins</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold"><a href="#mla_markup_parameters">Markup</a></td>
+<td>values that are known at the beginning of gallery output processing and remain the same for the entire gallery</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold"><a href="#mla_attachment_parameters">Attachment-specific</a></td>
+<td  style="vertical-align: top">values that change for each item in the gallery, such as Title and Caption</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold"><a href="#mla_variable_parameters">Field-level</a></td>
+<td>additional values from sources like query arguments, custom fields, taxonomy terms and attachment metadata</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold"><a href="#mla_template_parameters">Content Template</a></td>
+<td>lets you compose a value from multiple substitution parameters and test for empty values, choose among two or more alternatives or suppress output entirely</td>
+</tr>
+</table>
+&nbsp;<br />
+Click on any of the category names in the above table to go to the Documentation section describing the names available in that category and how to use them.
+</p>
+<p>
+To use a substitution parameter in your shortcode, simply add "{+" before the substitution parameter name and add "+}" after the name. Note that the enclosing delimiters are different than those used in Style and Markup templates, since the WordPress shortcode parser reserves square brackets ("[" and "]") for its own use. Also, because square brackets are reserved, <strong>you must substitute curly braces for square brackets</strong> if your parameter values require them. For example, if your shortcode parameter is <code>mla_link_attributes='rel="shadowbox{sbalbum-{+instance+}};player=img"'</code>, the actual attribute added to the link will be <code>rel="shadowbox[sbalbum-1];player=img"</code>. If you must code a curly brace in a parameter value, preface it with <strong>two backslash characters</strong>, e.g., "\\{" or "\\}".
+<a name="gallery_specific"></a>
+</p>
+<h4>Gallery-specific Substitution Parameters</h4>
+<p>
+Gallery-specific substitution parameters are known at the beginning of shortcode processing and they do not change during processing. They can be used, for example, in any of the data selection parameters to change the items selected for the gallery based on information about the post/page on which the gallery appears. The gallery-specific substitution parameters are:
+<table>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">site_url</td>
+<td>absolute URL to the site directory, without trailing slash</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">base_url</td>
+<td>absolute URL to the upload directory, without trailing slash</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">base_dir</td>
+<td>absolute (full) path to the upload directory, without trailing slash</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">instance</td>
+<td>starts at '1', incremented for each additional shortcode in the post/page</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">selector</td>
+<td>"mla_gallery-{$instance}", e.g., mla_gallery-1</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">page_ID,<br />id</td>
+<td style="vertical-align: top">the <code>ID</code> value of the post/page in which the gallery appears</td>
+</tr>
+<tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">page_author</td>
+<td>the <code>post_author</code> value of the post/page in which the gallery appears</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">page_date</td>
+<td>the <code>post_date</code> value of the post/page in which the gallery appears</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">page_content</td>
+<td>the <code>post_content</code> value of the post/page in which the gallery appears</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">page_title</td>
+<td>the <code>post_title</code> value of the post/page in which the gallery appears</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">page_excerpt</td>
+<td>the <code>post_excerpt</code> value of the post/page in which the gallery appears</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">page_status</td>
+<td>the <code>post_status</code> value of the post/page in which the gallery appears</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">page_name</td>
+<td>the <code>post_name</code> value of the post/page in which the gallery appears</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">page_modified</td>
+<td>the <code>post_modified</code> value of the post/page in which the gallery appears</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">page_guid</td>
+<td>the <code>post_guid</code> value of the post/page in which the gallery appears</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">page_type</td>
+<td>the <code>post_type</code> value of the post/page in which the gallery appears</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">page_url</td>
+<td>absolute URL to the page or post on which the gallery appears, if any, with trailing slash</td>
+</tr>
+</table>
 <a name="gallery_display_style"></a>
+&nbsp;<br />
 </p>
 <h4>Gallery Display Style</h4>
 <p>
@@ -278,7 +393,7 @@ Twelve <code>[mla_gallery]</code> parameters provide an easy way to control the 
 <tr>
 </table>
 <p>
-All but the "mla_target" parameter support the <a href="#mla_markup_parameters">Markup</a>, <a href="#mla_attachment_parameters">Attachment-specific</a>, <a href="#mla_variable_parameters">Field-level</a> and <a href="#mla_template_parameters">Content Template</a> substitution arguments defined for Markup Templates. For example, if you code "<code>mla_rollover_text='{+date+} : {+description+}'</code>, the rollover text will contain the upload date, a colon, and the full description of each gallery item. Simply add "{+" before the substitution parameter name and add "+}" after the name. Note that the enclosing delimiters are different than those used in the templates, since the WordPress shortcode parser reserves square brackets ("[" and "]") for its own use.
+All but the "mla_target" parameter support the <a href="#mla_markup_parameters">Markup</a>, <a href="#mla_attachment_parameters">Attachment-specific</a>, <a href="#mla_variable_parameters">Field-level</a> and <a href="#mla_template_parameters">Content Template</a> substitution parameters defined for Markup Templates. For example, if you code "<code>mla_rollover_text='{+date+} : {+description+}'</code>, the rollover text will contain the upload date, a colon, and the full description of each gallery item. Simply add "{+" before the substitution parameter name and add "+}" after the name. Note that the enclosing delimiters are different than those used in the templates, since the WordPress shortcode parser reserves square brackets ("[" and "]") for its own use.
 </p>
 <p>
 The "mla_link_href" parameter is a great way to change the destination your gallery item links to or add arguments to the link for later processing. For example, to make a gallery item link back to the page/post it is attached to, you can code: <code>mla_link_href='{+site_url+}/?page_id={+parent+}'</code>. You can also add arguments to the link, e.g., <code>mla_link_href='{+link_url+}?myarg1=myvalue1&amp;amp;myarg2=myvalue2'</code>. Note the use of the HTML entity name "&amp;amp;" to put an ampersand in the value; the WordPress "visual" post editor will replace "&", "<" and ">" with "&amp;amp;", "&amp;lt;" and "&amp;gt;" whether you like it not. The <strong>only</strong> markup parameter modified by this parameter is "link". Other markup parameters such as "pagelink", "filelink" and "link_url" are not modified.
@@ -1066,7 +1181,7 @@ Eight parameters provide an easy way to control the contents of tag cloud items 
 <tr>
 </table>
 <p>
-All but the "mla_target" parameter support the <a href="#tag_cloud_markup_parameters">Markup</a>, <a href="#tag_cloud_item_parameters">Item-specific</a>, <a href="#tag_cloud_variable_parameters">Field-level</a> and <a href="#mla_template_parameters">Content Template</a> substitution arguments defined for Markup Templates. For example, if you code "<code>mla_rollover_text='{+slug+} : {+rollover_text+}'</code>, the rollover text will contain the term slug, a colon, and the appropriate "single text" or "multiple text". Simply add "{+" before the substitution parameter name and add "+}" after the name. Note that the enclosing delimiters are different than those used in the templates, since the WordPress shortcode parser reserves square brackets ("[" and "]") for its own use.
+All but the "mla_target" parameter support the <a href="#tag_cloud_markup_parameters">Markup</a>, <a href="#tag_cloud_item_parameters">Item-specific</a>, <a href="#tag_cloud_variable_parameters">Field-level</a> and <a href="#mla_template_parameters">Content Template</a> substitution parameters defined for Markup Templates. For example, if you code "<code>mla_rollover_text='{+slug+} : {+rollover_text+}'</code>, the rollover text will contain the term slug, a colon, and the appropriate "single text" or "multiple text". Simply add "{+" before the substitution parameter name and add "+}" after the name. Note that the enclosing delimiters are different than those used in the templates, since the WordPress shortcode parser reserves square brackets ("[" and "]") for its own use.
 </p>
 <p>
 The "mla_link_href" parameter is a great way to change the destination your cloud item links to and/or add arguments to the link for later processing. For example, to make a gallery item link back to the current page/post you can code: <code>mla_link_href='{+page_url+}'</code>. You can also add arguments to the link, e.g., <code>mla_link_href='{+page_url+}&amp;amp;myarg=myvalue'</code>. Note the use of the HTML entity name "&amp;amp;" to put an ampersand in the value; the WordPress "visual" post editor will replace "&", "<" and ">" with "&amp;amp;", "&amp;lt;" and "&amp;gt;" whether you like it not. The <strong>only</strong> markup parameters modified by this parameter are "link_url" and "thelink". The markup parameters "viewlink" and "editlink" are not modified.
@@ -1172,6 +1287,113 @@ The "mla_debug" parameter controls the display of information about the query pa
 </p>
 <h4>Tag Cloud Substitution Parameters</h4>
 <p>
+Substitution parameters are a powerful way to add general and attachment-specific values to the gallery display. For example, if you code "<code>mla_link_href="{+page_url+}?current_id={+term_id+}&amp;mla_cloud_current={+request:mla_cloud_current+}"</code>, the hyperlinks behind each cloud term will contain the page URL and the taxonomy term ID. There are many parameter names like `page_url` and `term_id` divided in several categories:
+<table>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">Cloud-specific</td>
+<td>values that are known at the beginning of shortcode processing and remain the same for the entire shortcode, such as the ID and URL of the post/page in which the shortcode appears</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">Style</td>
+<td>values that are known when the cloud-specific CSS inline styles are composed just before cloud output begins</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">Markup</td>
+<td>values that are known at the beginning of cloud output processing and remain the same for the entire cloud</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">Item-specific</a></td>
+<td  style="vertical-align: top">values that change for each term/item in the cloud, such as Name and Description</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold"><a href="#mla_variable_parameters">Field-level</a></td>
+<td>additional values from sources like query arguments and shortcode parameters</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold"><a href="#mla_template_parameters">Content Template</a></td>
+<td>lets you compose a value from multiple substitution parameters and test for empty values, choose among two or more alternatives or suppress output entirely</td>
+</tr>
+</table>
+&nbsp;<br />
+The following paragraphs go into more detail about each category and the parameter names within them.
+</p>
+<p>
+To use a substitution parameter in your shortcode, simply add "{+" before the substitution parameter name and add "+}" after the name. Note that the enclosing delimiters are different than those used in Style and Markup templates, since the WordPress shortcode parser reserves square brackets ("[" and "]") for its own use. Also, because square brackets are reserved, <strong>you must substitute curly braces for square brackets</strong> if your parameter values require them. For example, if your shortcode parameter is <code>mla_link_attributes='rel="shadowbox{sbalbum-{+instance+}};player=img"'</code>, the actual attribute added to the link will be <code>rel="shadowbox[sbalbum-1];player=img"</code>. If you must code a curly brace in a parameter value, preface it with <strong>two backslash characters</strong>, e.g., "\\{" or "\\}".
+</p>
+<p>
+<strong>Cloud-specific substitution parameters</strong> are known at the beginning of shortcode processing and they do not change during processing. They can be used, for example, in any of the data selection parameters to change the items selected for the cloud based on information about the post/page on which the cloud appears. The cloud-specific substitution parameters are:
+<table>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">site_url</td>
+<td>absolute URL to the site directory, without trailing slash</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">base_url</td>
+<td>absolute URL to the upload directory, without trailing slash</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">base_dir</td>
+<td>absolute (full) path to the upload directory, without trailing slash</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">instance</td>
+<td>starts at '1', incremented for each additional shortcode in the post/page</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">selector</td>
+<td>"mla_tag_cloud-{$instance}", e.g., mla_tag_cloud-1</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">page_ID,<br />id</td>
+<td style="vertical-align: top">the <code>ID</code> value of the post/page in which the cloud appears</td>
+</tr>
+<tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">page_author</td>
+<td>the <code>post_author</code> value of the post/page in which the cloud appears</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">page_date</td>
+<td>the <code>post_date</code> value of the post/page in which the cloud appears</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">page_content</td>
+<td>the <code>post_content</code> value of the post/page in which the cloud appears</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">page_title</td>
+<td>the <code>post_title</code> value of the post/page in which the cloud appears</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">page_excerpt</td>
+<td>the <code>post_excerpt</code> value of the post/page in which the cloud appears</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">page_status</td>
+<td>the <code>post_status</code> value of the post/page in which the cloud appears</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">page_name</td>
+<td>the <code>post_name</code> value of the post/page in which the cloud appears</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">page_modified</td>
+<td>the <code>post_modified</code> value of the post/page in which the cloud appears</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">page_guid</td>
+<td>the <code>post_guid</code> value of the post/page in which the cloud appears</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">page_type</td>
+<td>the <code>post_type</code> value of the post/page in which the cloud appears</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">page_url</td>
+<td>absolute URL to the page or post on which the cloud appears, if any, with trailing slash</td>
+</tr>
+</table>
+<p>
 Style and Markup templates give you great flexibility for the content and format of each [mla_tag_cloud] when you use the "list" and "grid" output formats. You can define as many templates as you need. 
 </p>
 <p>
@@ -1208,10 +1430,6 @@ Tag cloud substitution parameters for the <strong>Style template</strong> are:
 <td>shortcode parameter, default = 'tag-cloud-ul', or 'tag-cloud-dl' if the "captiontag" parameter is present.</td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">instance</td>
-<td>starts at '1', incremented for each additional shortcode in the post/page</td>
-</tr>
-<tr>
 <td style="padding-right: 10px; vertical-align: top; font-weight:bold">taxonomy</td>
 <td>the slug of the taxonomy on which the cloud is based. Multiple taxonomy slugs are joined with a dash to form a single value.</td>
 </tr>
@@ -1246,10 +1464,6 @@ Tag cloud substitution parameters for the <strong>Style template</strong> are:
 <tr>
 <td style="padding-right: 10px; vertical-align: top; font-weight:bold">float</td>
 <td>'right' if current locale is RTL, 'left' if not</td>
-</tr>
-<tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">selector</td>
-<td>"mla_gallery-{$instance}", e.g., mla_gallery-1</td>
 </tr>
 <tr>
 <td style="padding-right: 10px; vertical-align: top; font-weight:bold">found_rows</td>
@@ -1317,22 +1531,8 @@ Tag cloud substitution parameters for the <strong>Style template</strong> are:
 </tr>
 </table>
 <p>
-Tag cloud substitution parameters for the <strong>Markup template</strong> are available in all of the template sections. They include all of the parameters defined above (for the Style template). Additional markup-specific parameters are:
+Tag cloud substitution parameters for the <strong>Markup template</strong> are available in all of the template sections. All of the <strong>cloud-specific substitution parameters</strong> and the <strong>substitution parameters for Style templates</strong> are available for use in markup templates. There are no additional substitution parameters defined at the start of markup processing, but there are <a href="#mla_tag_cloud_hooks">MLA Tag Cloud Filters (Hooks)</a> that could add, modify or delete parameters available for markup processing, if your application uses them.
 </p>
-<table>
-<tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">site_url</td>
-<td>absolute URL to the site directory, without trailing slash</td>
-</tr>
-<tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">page_ID</td>
-<td>the ID value of the page or post on which the tag cloud appears, if any.</td>
-</tr>
-<tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">page_url</td>
-<td>absolute URL to the page or post on which the tag cloud appears, if any, with trailing slash</td>
-</tr>
-</table>
 <p>
 Tag cloud <strong>item-specific substitution parameters</strong> for the Markup template are available in the "Item" section of the template. They include all of the parameters defined above (for the Style and Markup templates) Additional item-specific parameters are:
 </p>
@@ -1523,14 +1723,14 @@ The "limit=10" parameter (on <strong>both</strong> shortcodes) limits the term d
 <p>Now we'll make the cloud a convenient way to control a term-specific <code>[mla_gallery]</code>. The next step uses the "mla_link_href" parameter to change the link destination of each cloud term, returning to the current page with the term id of the selected term. We also add the "mla_cloud_current" parameter to each of these new links, so the tag cloud page is retained when a term is selected:
 </p>
 <p>
-<code>[mla_tag_cloud taxonomy=attachment_category number=0 limit=10 mla_link_href="{+page_url+}?current_id={+term_id+}&amp;amp;mla_cloud_current={+request:mla_cloud_current+}]<br />
+<code>[mla_tag_cloud taxonomy=attachment_category number=0 limit=10 mla_link_href="{+page_url+}?current_id={+term_id+}&amp;amp;mla_cloud_current={+request:mla_cloud_current+}"]<br />
 [mla_tag_cloud taxonomy=attachment_category number=0 limit=10  mla_output="paginate_links,prev_next"]</code>
 </p>
 <p>
 The "&amp;amp;" before the "mla_cloud_current" parameter is required to get by the WordPress Visual Editor. The "{+request:mla_cloud_current+}" value copies the current page number from the URL ($_REQUEST array) and adds it to each term's link. Now, let's use the "current_id={+term_id+}" information in the link to compose a term-specific <code>[mla_gallery]</code>: 
 </p>
 <p>
-<code>[mla_tag_cloud taxonomy=attachment_category number=0 limit=10 mla_link_href="{+page_url+}?current_id={+term_id+}&amp;amp;mla_cloud_current={+request:mla_cloud_current+}]<br />
+<code>[mla_tag_cloud taxonomy=attachment_category number=0 limit=10 mla_link_href="{+page_url+}?current_id={+term_id+}&amp;amp;mla_cloud_current={+request:mla_cloud_current+}"]<br />
 [mla_tag_cloud taxonomy=attachment_category number=0 limit=10  mla_output="paginate_links,prev_next"]
 <br />&nbsp;<br />
 [mla_gallery post_mime_type=all tax_query="array ( 0 => array ( 'taxonomy' => 'attachment_category', 'field' => 'id', 'terms' => array( {+request:current_id+} ), 'include_children' => false ) )" mla_caption="{+title+}" columns=5 size=icon link=file]</code>
@@ -1542,7 +1742,7 @@ The most complicated part of the new shortcode is the "tax_query" parameter, whi
 We can easily paginate the term-specific gallery by adding a second <code>[mla_gallery]</code> shortcode and a "posts_per_page" parameter to both shortcodes:
 </p>
 <p>
-<code>[mla_tag_cloud taxonomy=attachment_category number=0 limit=10 mla_link_href="{+page_url+}?current_id={+term_id+}&amp;amp;mla_cloud_current={+request:mla_cloud_current+}]<br />
+<code>[mla_tag_cloud taxonomy=attachment_category number=0 limit=10 mla_link_href="{+page_url+}?current_id={+term_id+}&amp;amp;mla_cloud_current={+request:mla_cloud_current+}"]<br />
 [mla_tag_cloud taxonomy=attachment_category number=0 limit=10  mla_output="paginate_links,prev_next"]
 <br />&nbsp;<br />
 [mla_gallery post_mime_type=all tax_query="array ( 0 => array ( 'taxonomy' => 'attachment_category', 'field' => 'id', 'terms' => array( {+request:current_id+} ), 'include_children' => false ) )" mla_caption="{+title+}" columns=5 posts_per_page=5 size=icon link=file]
@@ -2035,6 +2235,7 @@ In a template, substitution parameters are surrounded by opening ('[+') and clos
 <a href="#backtotop">Go to Top</a>
 </p>
 <h4>Substitution parameters for style templates</h4>
+All of the <a href="#gallery_specific">gallery-specific substitution parameters</a> are available for use in style templates. These additional substitution parameters are also available:
 <table>
 <tr>
 <td style="padding-right: 10px; vertical-align: top; font-weight:bold">mla_style</td>
@@ -2043,14 +2244,6 @@ In a template, substitution parameters are surrounded by opening ('[+') and clos
 <tr>
 <td style="padding-right: 10px; vertical-align: top; font-weight:bold">mla_markup</td>
 <td>shortcode parameter, default = 'default'</td>
-</tr>
-<tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">instance</td>
-<td>starts at '1', incremented for each additional shortcode in the post/page</td>
-</tr>
-<tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">id</td>
-<td>post ID of the post/page in which the gallery appears</td>
 </tr>
 <tr>
 <td style="padding-right: 10px; vertical-align: top; font-weight:bold">itemtag</td>
@@ -2079,10 +2272,6 @@ In a template, substitution parameters are surrounded by opening ('[+') and clos
 <tr>
 <td style="padding-right: 10px; vertical-align: top; font-weight:bold">float</td>
 <td>'right' if current locale is RTL, 'left' if not</td>
-</tr>
-<tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">selector</td>
-<td>"mla_gallery-{$instance}", e.g., mla_gallery-1</td>
 </tr>
 <tr>
 <td style="padding-right: 10px; vertical-align: top; font-weight:bold">size_class</td>
@@ -2095,82 +2284,10 @@ In a template, substitution parameters are surrounded by opening ('[+') and clos
 <a href="#backtotop">Go to Top</a>
 </p>
 <h4>Substitution parameters for markup templates</h4>
-<table>
-<tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">mla_style</td>
-<td>shortcode parameter, default = 'default'</td>
-</tr>
-<tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">mla_markup</td>
-<td>shortcode parameter, default = 'default'</td>
-</tr>
-<tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">instance</td>
-<td>starts at '1', incremented for each additional shortcode in the post/page</td>
-</tr>
-<tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">id</td>
-<td>post_ID of the post/page in which the gallery appears</td>
-</tr>
-<tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">itemtag</td>
-<td>shortcode parameter, default = 'dl', or 'figure' for HTML5 themes</td>
-</tr>
-<tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">icontag</td>
-<td>shortcode parameter, default = 'dt', or 'div' for HTML5 themes</td>
-</tr>
-<tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">captiontag</td>
-<td>shortcode parameter, default = 'dd', or 'figcaption' for HTML5 themes</td>
-</tr>
-<tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">columns</td>
-<td>shortcode parameter, default = '3'</td>
-</tr>
-<tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">itemwidth</td>
-<td>shortcode parameter, default is calculated by dividing 100% by the number of columns and subtracting twice the margin value, e.g., 30.3% for three columns and a margin value of 1.5%. Can also contain other dimensional values such as '10px' or CSS-specific values like 'auto' or 'inherit'.</td>
-</tr>
-<tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">margin</td>
-<td>shortcode parameter, default = '1.5%'. Can also contain other dimensional values such as '10px' or CSS-specific values like 'auto' or 'inherit'.</td>
-</tr>
-<tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">float</td>
-<td>'right' if current locale is RTL, 'left' if not</td>
-</tr>
-<tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">selector</td>
-<td>"mla_gallery-{$instance}", e.g., mla_gallery-1</td>
-</tr>
-<tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">size_class</td>
-<td>shortcode 'size' parameter, default = "thumbnail". If this parameter contains "none" or an empty string (size="") the attachment title will be displayed instead of the image/icon.</td>
-</tr>
-<tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">site_url</td>
-<td>absolute URL to the site directory, without trailing slash</td>
-</tr>
-<tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">page_ID</td>
-<td>the ID value of the page or post on which the gallery appears, if any.</td>
-</tr>
-<tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">page_url</td>
-<td>absolute URL to the page or post on which the gallery appears, if any, with trailing slash</td>
-</tr>
-<tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">base_url</td>
-<td>absolute URL to the upload directory, without trailing slash</td>
-</tr>
-<tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">base_dir</td>
-<td>absolute (full) path to the upload directory, without trailing slash</td>
-</tr>
-</table>
+<p>
+All of the <a href="#gallery_specific">gallery-specific substitution parameters</a> and the  <a href="#mla_style_parameters">Substitution parameters for style templates</a> are available for use in markup templates. There are no additional substitution parameters defined at the start of markup processing, but there are <a href="#mla_gallery_hooks">MLA Gallery Filters (Hooks)</a> that could add, modify or delete parameters available for markup processing, if your application uses them.
 <a name="mla_attachment_parameters"></a>
-&nbsp;
+</p>
 <p>
 <a href="#backtotop">Go to Top</a>
 </p>
