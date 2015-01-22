@@ -375,6 +375,14 @@ class MLAShortcodes {
 			return $output;
 		}
 
+		/*
+		 * Google File Viewer no longer works at all!
+		 */
+		if ( !empty( $arguments['mla_viewer'] ) && ( 'true' == strtolower( $arguments['mla_viewer'] ) ) ) {
+			$arguments['mla_viewer'] = false;
+			$arguments['size'] = 'icon';
+		}
+
 		$size = $size_class = $arguments['size'];
 		if ( 'icon' == strtolower( $size) ) {
 			if ( 'checked' == MLAOptions::mla_get_option( MLAOptions::MLA_ENABLE_MLA_ICONS ) ) {
