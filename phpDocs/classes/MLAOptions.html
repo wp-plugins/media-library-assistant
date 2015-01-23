@@ -96,6 +96,7 @@ settings are being updated or reset.</span><pre>mla_taxonomy_support()</pre></a>
 <li class="method private "><a href="#_evaluate_file_information" title="_evaluate_file_information :: Evaluate file information for custom field mapping"><span class="description">Evaluate file information for custom field mapping</span><pre>_evaluate_file_information()</pre></a></li>
 <li class="method private "><a href="#_evaluate_post_information" title="_evaluate_post_information :: Evaluate post information for custom field mapping"><span class="description">Evaluate post information for custom field mapping</span><pre>_evaluate_post_information()</pre></a></li>
 <li class="method private "><a href="#_get_custom_field_names" title="_get_custom_field_names :: Generate a list of all (post) Custom Field names"><span class="description">Generate a list of all (post) Custom Field names</span><pre>_get_custom_field_names()</pre></a></li>
+<li class="method private "><a href="#_get_term_id" title="_get_term_id :: Build and search a cache of taxonomy and term name to term ID mappings"><span class="description">Build and search a cache of taxonomy and term name to term ID mappings</span><pre>_get_term_id()</pre></a></li>
 <li class="method private "><a href="#_load_option_templates" title="_load_option_templates :: Load style and markup templates to $mla_templates"><span class="description">Load style and markup templates to $mla_templates</span><pre>_load_option_templates()</pre></a></li>
 <li class="method private "><a href="#_update_attachment_metadata" title="_update_attachment_metadata :: Update _wp_attachment_metadata for just-inserted attachment"><span class="description">Update _wp_attachment_metadata for just-inserted attachment</span><pre>_update_attachment_metadata()</pre></a></li>
 <li class="method private "><a href="#_update_custom_field_mapping" title="_update_custom_field_mapping :: Update custom field mappings"><span class="description">Update custom field mappings</span><pre>_update_custom_field_mapping()</pre></a></li>
@@ -391,7 +392,7 @@ and provides functions to get and put them from/to WordPress option variables</p
 </div>
 <a name="mla_evaluate_iptc_exif_mapping" id="mla_evaluate_iptc_exif_mapping"></a><div class="element clickable method public mla_evaluate_iptc_exif_mapping" data-toggle="collapse" data-target=".mla_evaluate_iptc_exif_mapping .collapse">
 <h2>Evaluate IPTC/EXIF mapping updates for a post</h2>
-<pre>mla_evaluate_iptc_exif_mapping(object $post, string $category, array $settings, array $attachment_metadata) : array</pre>
+<pre>mla_evaluate_iptc_exif_mapping(object $post, string $category, array $settings, array $attachment_metadata, boolean $is_upload) : array</pre>
 <div class="labels"></div>
 <div class="row collapse"><div class="detail-description">
 <p class="long_description"></p>
@@ -413,6 +414,10 @@ and provides functions to get and put them from/to WordPress option variables</p
 <div class="subelement argument">
 <h4>$attachment_metadata</h4>
 <code>array</code><p>(optional) _wp_attachment_metadata, for MLAOptions::mla_update_attachment_metadata_filter</p>
+</div>
+<div class="subelement argument">
+<h4>$is_upload</h4>
+<code>boolean</code><p>(optional) true if uploading a new item else false (default)</p>
 </div>
 <h3>Returns</h3>
 <div class="subelement response">
@@ -1087,6 +1092,36 @@ haven't been mapped to any attachments, yet.</p></p>
 <code>array</code>Custom field names from the postmeta table and MLA rules</div>
 </div></div>
 </div>
+<a name="_get_term_id" id="_get_term_id"></a><div class="element clickable method private _get_term_id" data-toggle="collapse" data-target="._get_term_id .collapse">
+<h2>Build and search a cache of taxonomy and term name to term ID mappings</h2>
+<pre>_get_term_id(string $term_name, integer $term_parent, string $taxonomy, array $post_terms) : integer</pre>
+<div class="labels"></div>
+<div class="row collapse"><div class="detail-description">
+<p class="long_description"></p>
+<table class="table table-bordered"><tr>
+<th>since</th>
+<td>2.01</td>
+</tr></table>
+<h3>Parameters</h3>
+<div class="subelement argument">
+<h4>$term_name</h4>
+<code>string</code><p>term name (not slug)</p>
+</div>
+<div class="subelement argument">
+<h4>$term_parent</h4>
+<code>integer</code><p>zero or term's parent term_id</p>
+</div>
+<div class="subelement argument">
+<h4>$taxonomy</h4>
+<code>string</code><p>taxonomy slug</p></div>
+<div class="subelement argument">
+<h4>$post_terms</h4>
+<code>array</code><p>term objects currently assigned to the item</p></div>
+<h3>Returns</h3>
+<div class="subelement response">
+<code>integer</code>term_id for the term name</div>
+</div></div>
+</div>
 <a name="_load_option_templates" id="_load_option_templates"></a><div class="element clickable method private _load_option_templates" data-toggle="collapse" data-target="._load_option_templates .collapse">
 <h2>Load style and markup templates to $mla_templates</h2>
 <pre>_load_option_templates() : void</pre>
@@ -1603,7 +1638,7 @@ also controls the ATTACHMENT DETAILS enhancements</h2>
 <div class="row"><footer class="span12">
             Template is built using <a href="http://twitter.github.com/bootstrap/">Twitter Bootstrap 2</a> and icons provided by <a href="http://glyphicons.com/">Glyphicons</a>.<br>
             Documentation is powered by <a href="http://www.phpdoc.org/">phpDocumentor 2.0.0a8</a> and<br>
-            generated on 2015-01-05T13:15:02-08:00.<br></footer></div>
+            generated on 2015-01-22T20:33:02-08:00.<br></footer></div>
 </div>
 </body>
 </html>

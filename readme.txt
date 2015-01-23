@@ -4,7 +4,7 @@ Donate link: http://fairtradejudaica.org/make-a-difference/donate/
 Tags: attachment, attachments, documents, gallery, image, images, media, library, media library, tag cloud, media-tags, media tags, tags, media categories, categories, IPTC, EXIF, GPS, PDF, meta, metadata, photo, photos, photograph, photographs, photoblog, photo albums, lightroom, photoshop, MIME, mime-type, icon, upload, file extensions
 Requires at least: 3.5.0
 Tested up to: 4.1
-Stable tag: 2.00
+Stable tag: 2.01
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -152,13 +152,13 @@ All of the MLA source code has been annotated with "DocBlocks", a special type o
 
 == Changelog ==
 
-= 2.0x =
+= 2.01 =
 * New: For **IPTC/EXIF mapping of taxonomy terms, significant performance improvements.** Explicit handling of special cases and new caching code for "map all" processing eliminates unnecessary database queries.
 * New: For the Media/Assistant submenu, the **"where-used" displays have improved**. The post status (Draft, Pending, Future) is now included (it is also included in the "Parent Info" meta box on the Media/Edit Media screen). The parent post/page is moved to the top of the references list. The "Inserted in" file name is no longer displayed for the "base" option to save space.
 * New: For `[mla_gallery]` and `[mla_tag_cloud]`, several new **galley-/cloud- substitution values** have been added. You can use these, for example, to add page-level information like Title or Date to data selection parameters.
 * New: An example of Media/Assistant submenu support for Advanced Custom Fields Checkbox variables is provided at `/media-library-assistant/examples/mla-acf-checkbox-example.txt`
 * New: An example of mapping PDF metadata to Standard Fields and Taxonomy Terms has been added to the "IPTC/EXIF Mapping for PDF Documents" section of the Settings/Media Library Assistant Documentation tab.
-* Fix: For `[mla_gallery]`, the **Google File Viewer parameter has been disabled**. Recent changes by Google, beyond MLA control, have removed support for this option.
+* Fix: For `[mla_gallery]`, the **Google File Viewer parameter (mla_viewer) has been disabled**. Recent changes by Google, beyond MLA control, have removed support for this feature.
 * Fix: Where-used reference information is no longer computed during file uploads, improving performance.
 * Fix: For the Media/Assistant submenu Bulk Edit area, updates to the "Categories" taxonomy are now handled correctly.
 * Fix: For `[mla_gallery]`, a defect in the default handling of the `post_parent` parameter has been fixed. The defect was introduced in version 2.00.
@@ -239,8 +239,8 @@ All of the MLA source code has been annotated with "DocBlocks", a special type o
 
 == Upgrade Notice ==
 
-= 2.00 =
-Requires WP v3.5+. Ajax-powered bulk edit and mapping, front-end "terms search" for [mla_gallery]. Five other enhancements, two fixes.
+= 2.01 =
+Google File Viewer (mla_viewer) disabled. IPTC/EXIF mapping performance gains. Four other enhancements, five fixes.
 
 == Other Notes ==
 

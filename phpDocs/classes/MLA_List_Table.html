@@ -116,6 +116,7 @@ and the value is db column (or other criteria) to sort by.</span><pre>get_sortab
 <li class="method protected "><a href="#_build_rollover_actions" title="_build_rollover_actions :: Add rollover actions to exactly one of the following displayed columns:
 'ID_parent', 'title_name', 'post_title', 'post_name'"><span class="description">Add rollover actions to exactly one of the following displayed columns:
 'ID_parent', 'title_name', 'post_title', 'post_name'</span><pre>_build_rollover_actions()</pre></a></li>
+<li class="method protected "><a href="#_format_post_status" title="_format_post_status :: Translate post_status 'future', 'pending' and 'draft' to label"><span class="description">Translate post_status 'future', 'pending' and 'draft' to label</span><pre>_format_post_status()</pre></a></li>
 <li class="nav-header">
 <i class="icon-custom icon-property"></i> Properties</li>
 <li class="nav-header protected">» Protected</li>
@@ -1083,6 +1084,25 @@ but uses the output of wp_count_attachments() as input.</p></p>
 <code>array</code>Names and URLs of row-level actions</div>
 </div></div>
 </div>
+<a name="_format_post_status" id="_format_post_status"></a><div class="element clickable method protected _format_post_status" data-toggle="collapse" data-target="._format_post_status .collapse">
+<h2>Translate post_status 'future', 'pending' and 'draft' to label</h2>
+<pre>_format_post_status(string $post_status) : string</pre>
+<div class="labels"></div>
+<div class="row collapse"><div class="detail-description">
+<p class="long_description"></p>
+<table class="table table-bordered"><tr>
+<th>since</th>
+<td>2.01</td>
+</tr></table>
+<h3>Parameters</h3>
+<div class="subelement argument">
+<h4>$post_status</h4>
+<code>string</code><p>post_status</p></div>
+<h3>Returns</h3>
+<div class="subelement response">
+<code>string</code>Status label or empty string</div>
+</div></div>
+</div>
 <h3>
 <i class="icon-custom icon-property"></i> Properties</h3>
 <a name="%24currently_hidden" id="$currently_hidden"> </a><div class="element clickable property protected $currently_hidden" data-toggle="collapse" data-target=".$currently_hidden .collapse">
@@ -1176,7 +1196,7 @@ MLA_List_Table::mla_admin_init_action.</p></p>
 <div class="row"><footer class="span12">
             Template is built using <a href="http://twitter.github.com/bootstrap/">Twitter Bootstrap 2</a> and icons provided by <a href="http://glyphicons.com/">Glyphicons</a>.<br>
             Documentation is powered by <a href="http://www.phpdoc.org/">phpDocumentor 2.0.0a8</a> and<br>
-            generated on 2015-01-05T13:15:01-08:00.<br></footer></div>
+            generated on 2015-01-22T20:33:02-08:00.<br></footer></div>
 </div>
 </body>
 </html>

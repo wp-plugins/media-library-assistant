@@ -123,7 +123,7 @@ and meta data for a single attachment</span><pre>mla_update_single_item()</pre><
 <li class="method private "><a href="#_prepare_list_table_query" title="_prepare_list_table_query :: Sanitize and expand query arguments from request variables"><span class="description">Sanitize and expand query arguments from request variables</span><pre>_prepare_list_table_query()</pre></a></li>
 <li class="method private "><a href="#_process_field_level_array" title="_process_field_level_array :: Process an markup field array value according to the supplied data-format option"><span class="description">Process an markup field array value according to the supplied data-format option</span><pre>_process_field_level_array()</pre></a></li>
 <li class="method private "><a href="#_rational_to_decimal" title="_rational_to_decimal :: Convert an EXIF GPS rational value to a PHP float value"><span class="description">Convert an EXIF GPS rational value to a PHP float value</span><pre>_rational_to_decimal()</pre></a></li>
-<li class="method private "><a href="#_remove_tags" title="_remove_tags :: Remove tags from a term ids list"><span class="description">Remove tags from a term ids list</span><pre>_remove_tags()</pre></a></li>
+<li class="method private "><a href="#_remove_terms" title="_remove_terms :: Remove terms from an attachment's assignments"><span class="description">Remove terms from an attachment's assignments</span><pre>_remove_terms()</pre></a></li>
 <li class="method private "><a href="#_search_mla_galleries" title="_search_mla_galleries :: Search the $mla_galleries or $galleries array"><span class="description">Search the $mla_galleries or $galleries array</span><pre>_search_mla_galleries()</pre></a></li>
 <li class="method private "><a href="#_set_array_element" title="_set_array_element :: Adds or replaces the value of a key in a possibly nested array structure"><span class="description">Adds or replaces the value of a key in a possibly nested array structure</span><pre>_set_array_element()</pre></a></li>
 <li class="method private "><a href="#_unset_array_element" title="_unset_array_element :: Deletes the value of a key in a possibly nested array structure"><span class="description">Deletes the value of a key in a possibly nested array structure</span><pre>_unset_array_element()</pre></a></li>
@@ -419,7 +419,7 @@ are stripped out or converted to an 'mla</em>' equivalent.</p></p>
 </div>
 <a name="mla_fetch_attachment_references" id="mla_fetch_attachment_references"></a><div class="element clickable method public mla_fetch_attachment_references" data-toggle="collapse" data-target=".mla_fetch_attachment_references .collapse">
 <h2>Find Featured Image and inserted image/link references to an attachment</h2>
-<pre>mla_fetch_attachment_references(int $ID, int $parent) : array</pre>
+<pre>mla_fetch_attachment_references(int $ID, int $parent, boolean $add_references) : array</pre>
 <div class="labels"></div>
 <div class="row collapse"><div class="detail-description">
 <p class="long_description"><p>Searches all post and page content to see if the attachment is used
@@ -436,6 +436,9 @@ as a Featured Image or inserted in the post as an image or link.</p></p>
 <h4>$parent</h4>
 <code>int</code><p>post ID of attachment's parent, if any</p>
 </div>
+<div class="subelement argument">
+<h4>$add_references</h4>
+<code>boolean</code><p>True to compute references, false to return empty values</p></div>
 <h3>Returns</h3>
 <div class="subelement response">
 <code>array</code>Reference information; see $references array comments</div>
@@ -491,7 +494,7 @@ Could also be used with the ID3 metadata exposed in WordPress 3.6 and later.</p>
 </div>
 <a name="mla_get_attachment_by_id" id="mla_get_attachment_by_id"></a><div class="element clickable method public mla_get_attachment_by_id" data-toggle="collapse" data-target=".mla_get_attachment_by_id .collapse">
 <h2>Retrieve an Attachment array given a $post_id</h2>
-<pre>mla_get_attachment_by_id(int $post_id) : NULL | array</pre>
+<pre>mla_get_attachment_by_id(integer $post_id, boolean $add_references) : NULL | array</pre>
 <div class="labels"></div>
 <div class="row collapse"><div class="detail-description">
 <p class="long_description"><p>The (associative) array will contain every field that can be found in
@@ -509,7 +512,10 @@ the posts and postmeta tables, and all references to the attachment.</p></p>
 <h3>Parameters</h3>
 <div class="subelement argument">
 <h4>$post_id</h4>
-<code>int</code><p>The ID of the attachment post</p></div>
+<code>integer</code><p>The ID of the attachment post</p></div>
+<div class="subelement argument">
+<h4>$add_references</h4>
+<code>boolean</code><p>True to add references, false to skip references</p></div>
 <h3>Returns</h3>
 <div class="subelement response">
 <code>NULL</code><code>array</code>NULL on failure else associative array</div>
@@ -1578,9 +1584,9 @@ Modeled after wp_edit_attachments_query in wp-admin/post.php</p></p>
 <code>float</code>numerator/denominator</div>
 </div></div>
 </div>
-<a name="_remove_tags" id="_remove_tags"></a><div class="element clickable method private _remove_tags" data-toggle="collapse" data-target="._remove_tags .collapse">
-<h2>Remove tags from a term ids list</h2>
-<pre>_remove_tags(array $terms_before, array $tags, object $taxonomy_obj) : array</pre>
+<a name="_remove_terms" id="_remove_terms"></a><div class="element clickable method private _remove_terms" data-toggle="collapse" data-target="._remove_terms .collapse">
+<h2>Remove terms from an attachment's assignments</h2>
+<pre>_remove_terms(integer $post_id, array $terms, object $taxonomy_obj) : array</pre>
 <div class="labels"></div>
 <div class="row collapse"><div class="detail-description">
 <p class="long_description"></p>
@@ -1590,18 +1596,18 @@ Modeled after wp_edit_attachments_query in wp-admin/post.php</p></p>
 </tr></table>
 <h3>Parameters</h3>
 <div class="subelement argument">
-<h4>$terms_before</h4>
-<code>array</code><p>The term ids currently assigned</p></div>
+<h4>$post_id</h4>
+<code>integer</code><p>The ID of the attachment to be updated</p></div>
 <div class="subelement argument">
-<h4>$tags</h4>
-<code>array</code><p>| string The term ids (array) or names (string) to remove</p>
+<h4>$terms</h4>
+<code>array</code><p>The term ids (integer array) or names (string array) to remove</p>
 </div>
 <div class="subelement argument">
 <h4>$taxonomy_obj</h4>
 <code>object</code><p>The taxonomy object</p></div>
 <h3>Returns</h3>
 <div class="subelement response">
-<code>array</code>Term ids of the surviving tags</div>
+<code>array</code>Term ids/names of the surviving terms</div>
 </div></div>
 </div>
 <a name="_search_mla_galleries" id="_search_mla_galleries"></a><div class="element clickable method private _search_mla_galleries" data-toggle="collapse" data-target="._search_mla_galleries .collapse">
@@ -1730,6 +1736,7 @@ each page load and cached for subsequent calls.</p>
 <p>The outer array is keyed by post_id. It contains an associative array with:
 ['parent_title'] post_title of the gallery parent,
 ['parent_type'] 'post' or 'page' or the custom post_type of the gallery parent,
+['parent_status'] 'publish', 'private', 'future', 'pending', 'draft'
 ['results'] array ( ID => ID ) of attachments appearing in ANY of the parent's galleries.
 ['galleries'] array of [gallery] entries numbered from one (1), containing:
 galleries[X]['query'] contains a string with the arguments of the [gallery],
@@ -1908,7 +1915,7 @@ ALT Text and custom field columns.</p></p>
 <div class="row"><footer class="span12">
             Template is built using <a href="http://twitter.github.com/bootstrap/">Twitter Bootstrap 2</a> and icons provided by <a href="http://glyphicons.com/">Glyphicons</a>.<br>
             Documentation is powered by <a href="http://www.phpdoc.org/">phpDocumentor 2.0.0a8</a> and<br>
-            generated on 2015-01-05T13:15:01-08:00.<br></footer></div>
+            generated on 2015-01-22T20:33:02-08:00.<br></footer></div>
 </div>
 </body>
 </html>
