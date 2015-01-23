@@ -155,6 +155,11 @@ textarea[readonly] {
 	width: 6em
 }
 
+.quick-edit-row-attachment fieldset.inline-edit-col-center span.catshow,
+.bulk-edit-row-attachment fieldset.inline-edit-col-center span.catshow {
+	display: none
+}
+
 .quick-edit-row-attachment fieldset.inline-edit-col-left label span.input-text-wrap,
 .bulk-edit-row-attachment fieldset.inline-edit-col-right label span.input-text-wrap {
 	margin-left: 6em
@@ -171,11 +176,16 @@ textarea[readonly] {
 	padding-top: 2px;
 }
 
-.quick-edit-row-attachment fieldset.inline-edit-col-left input#inline-edit-post-set-parent,
+.quick-edit-row-attachment fieldset.inline-edit-col-left input#inline-edit-post-set-parent {
+	display:inline;
+	line-height: 16px;
+	margin: .2em .4em .2em .0em;
+}
+
 .bulk-edit-row-attachment fieldset.inline-edit-col-right input#bulk-edit-set-parent {
 	display:inline;
 	line-height: 16px;
-	margin: .2em .4em .2em 0em;
+	margin: .2em .4em .2em .4em;
 }
 
 .quick-edit-row-attachment fieldset.inline-edit-col-left label.inline-edit-post-parent-title .input-text-wrap input[type=text] {

@@ -1914,7 +1914,7 @@ class MLA {
 			'Date' => __( 'Date', 'media-library-assistant' ),
 			'Status' => __( 'Status', 'media-library-assistant' ),
 			'Unattached' => __( 'Unattached', 'media-library-assistant' ),
-			'mla_find_posts_nonce' => wp_nonce_field( 'mla_find_posts', 'mla-set-parent-ajax-nonce', false ),
+			'mla_find_posts_nonce' => wp_nonce_field( 'mla_find_posts', 'mla-set-parent-ajax-nonce', false, false ),
 		);
 
 		ob_start();
