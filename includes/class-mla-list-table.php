@@ -197,26 +197,26 @@ class MLA_List_Table extends WP_List_Table {
 		self::$default_columns = array(
 			'cb' => '<input type="checkbox" />', //Render a checkbox instead of text
 			'icon' => '',
-			'ID_parent' => _x( 'ID/Parent', 'list_table_column', 'media-library-assistant' ),
-			'title_name' => _x( 'Title/Name', 'list_table_column', 'media-library-assistant' ),
-			'post_title' => _x( 'Title', 'list_table_column', 'media-library-assistant' ),
-			'post_name' => _x( 'Name', 'list_table_column', 'media-library-assistant' ),
-			'parent' => _x( 'Parent ID', 'list_table_column', 'media-library-assistant' ),
-			'menu_order' => _x( 'Menu Order', 'list_table_column', 'media-library-assistant' ),
-			'featured' => _x( 'Featured in', 'list_table_column', 'media-library-assistant' ),
-			'inserted' => _x( 'Inserted in', 'list_table_column', 'media-library-assistant' ),
-			'galleries' => _x( 'Gallery in', 'list_table_column', 'media-library-assistant' ),
-			'mla_galleries' => _x( 'MLA Gallery in', 'list_table_column', 'media-library-assistant' ),
-			'alt_text' => _x( 'ALT Text', 'list_table_column', 'media-library-assistant' ),
-			'caption' => _x( 'Caption', 'list_table_column', 'media-library-assistant' ),
-			'description' => _x( 'Description', 'list_table_column', 'media-library-assistant' ),
-			'post_mime_type' => _x( 'MIME Type', 'list_table_column', 'media-library-assistant' ),
-			'file_url' => _x( 'File URL', 'list_table_column', 'media-library-assistant' ),
-			'base_file' => _x( 'Base File', 'list_table_column', 'media-library-assistant' ),
-			'date' => _x( 'Date', 'list_table_column', 'media-library-assistant' ),
-			'modified' => _x( 'Last Modified', 'list_table_column', 'media-library-assistant' ),
-			'author' => _x( 'Author', 'list_table_column', 'media-library-assistant' ),
-			'attached_to' => _x( 'Attached to', 'list_table_column', 'media-library-assistant' ),
+			'ID_parent' => esc_html( _x( 'ID/Parent', 'list_table_column', 'media-library-assistant' ) ),
+			'title_name' => esc_html( _x( 'Title/Name', 'list_table_column', 'media-library-assistant' ) ),
+			'post_title' => esc_html( _x( 'Title', 'list_table_column', 'media-library-assistant' ) ),
+			'post_name' => esc_html( _x( 'Name', 'list_table_column', 'media-library-assistant' ) ),
+			'parent' => esc_html( _x( 'Parent ID', 'list_table_column', 'media-library-assistant' ) ),
+			'menu_order' => esc_html( _x( 'Menu Order', 'list_table_column', 'media-library-assistant' ) ),
+			'featured' => esc_html( _x( 'Featured in', 'list_table_column', 'media-library-assistant' ) ),
+			'inserted' => esc_html( _x( 'Inserted in', 'list_table_column', 'media-library-assistant' ) ),
+			'galleries' => esc_html( _x( 'Gallery in', 'list_table_column', 'media-library-assistant' ) ),
+			'mla_galleries' => esc_html( _x( 'MLA Gallery in', 'list_table_column', 'media-library-assistant' ) ),
+			'alt_text' => esc_html( _x( 'ALT Text', 'list_table_column', 'media-library-assistant' ) ),
+			'caption' => esc_html( _x( 'Caption', 'list_table_column', 'media-library-assistant' ) ),
+			'description' => esc_html( _x( 'Description', 'list_table_column', 'media-library-assistant' ) ),
+			'post_mime_type' => esc_html( _x( 'MIME Type', 'list_table_column', 'media-library-assistant' ) ),
+			'file_url' => esc_html( _x( 'File URL', 'list_table_column', 'media-library-assistant' ) ),
+			'base_file' => esc_html( _x( 'Base File', 'list_table_column', 'media-library-assistant' ) ),
+			'date' => esc_html( _x( 'Date', 'list_table_column', 'media-library-assistant' ) ),
+			'modified' => esc_html( _x( 'Last Modified', 'list_table_column', 'media-library-assistant' ) ),
+			'author' => esc_html( _x( 'Author', 'list_table_column', 'media-library-assistant' ) ),
+			'attached_to' => esc_html( _x( 'Attached to', 'list_table_column', 'media-library-assistant' ) ),
 			// taxonomy and custom field columns added below
 		);
 	}
@@ -546,7 +546,7 @@ class MLA_List_Table extends WP_List_Table {
 		foreach ( $taxonomies as $tax_name ) {
 			if ( MLAOptions::mla_taxonomy_support( $tax_name ) ) {
 				$tax_object = get_taxonomy( $tax_name );
-				self::$default_columns[ 't_' . $tax_name ] = $tax_object->labels->name;
+				self::$default_columns[ 't_' . $tax_name ] = esc_html( $tax_object->labels->name );
 				self::$default_hidden_columns [] = 't_' . $tax_name;
 				// self::$default_sortable_columns [] = none at this time
 			} // supported taxonomy
@@ -610,6 +610,8 @@ class MLA_List_Table extends WP_List_Table {
 	 * @return	string	Text or HTML to be placed inside the column
 	 */
 	function column_default( $item, $column_name ) {
+		static $custom_columns = NULL;
+		
 		if ( 't_' == substr( $column_name, 0, 2 ) ) {
 			$taxonomy = substr( $column_name, 2 );
 			$tax_object = get_taxonomy( $taxonomy );
@@ -642,7 +644,11 @@ class MLA_List_Table extends WP_List_Table {
 			}
 		} // 't_'
 		elseif ( 'c_' == substr( $column_name, 0, 2 ) ) {
-			$values = get_post_meta( $item->ID, self::$default_columns[ $column_name ], false );
+			if ( NULL === $custom_columns ) {
+				$custom_columns = MLAOptions::mla_custom_field_support( 'custom_columns' );
+			}
+			
+			$values = get_post_meta( $item->ID, $custom_columns[ $column_name ], false );
 			if ( empty( $values ) ) {
 				return '';
 			}

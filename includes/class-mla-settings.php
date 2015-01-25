@@ -735,6 +735,8 @@ class MLASettings {
 				 * Check for single-rule action buttons
 				 */
 				foreach ( $_REQUEST['custom_field_mapping'] as $key => $value ) {
+					$value = stripslashes_deep( $value );
+					
 					if ( isset( $value['action'] ) ) {
 						$settings = array( $key => $value );
 						foreach ( $value['action'] as $action => $label ) {
@@ -867,6 +869,8 @@ class MLASettings {
 				 * Check for single-rule action buttons
 				 */
 				foreach ( $_REQUEST['iptc_exif_mapping']['custom'] as $key => $value ) {
+					$value = stripslashes_deep( $value );
+					
 					if ( isset( $value['action'] ) ) {
 						$settings = array( 'custom' => array( $key => $value ) );
 						foreach ( $value['action'] as $action => $label ) {
@@ -2624,6 +2628,8 @@ class MLASettings {
 				 * Check for single-rule action buttons
 				 */
 				foreach ( $_REQUEST['custom_field_mapping'] as $key => $value ) {
+					$value = stripslashes_deep( $value );
+					
 					if ( isset( $value['action'] ) ) {
 						$settings = array( $key => $value );
 						foreach ( $value['action'] as $action => $label ) {
@@ -2756,6 +2762,8 @@ class MLASettings {
 				 * Check for single-rule action buttons
 				 */
 				foreach ( $_REQUEST['iptc_exif_mapping']['custom'] as $key => $value ) {
+					$value = stripslashes_deep( $value );
+					
 					if ( isset( $value['action'] ) ) {
 						$settings = array( 'custom' => array( $key => $value ) );
 						foreach ( $value['action'] as $action => $label ) {
@@ -3285,7 +3293,7 @@ class MLASettings {
 		global $wpdb;
 		if ( NULL == $settings ) {
 			$source = 'custom_fields';
-			$settings = ( isset( $_REQUEST['custom_field_mapping'] ) ) ? $_REQUEST['custom_field_mapping'] : array();
+			$settings = ( isset( $_REQUEST['custom_field_mapping'] ) ) ? stripslashes_deep( $_REQUEST['custom_field_mapping'] ) : array();
 			if ( isset( $settings[ MLAOptions::MLA_NEW_CUSTOM_FIELD ] ) ) {
 				unset( $settings[ MLAOptions::MLA_NEW_CUSTOM_FIELD ] );
 			}
@@ -3294,6 +3302,7 @@ class MLASettings {
 			}
 		} else {
 			$source = 'custom_rule';
+			$settings = stripslashes_deep( $settings );
 		}
 
 		if ( empty( $settings ) ) {
@@ -3570,7 +3579,7 @@ class MLASettings {
 	private static function _process_iptc_exif_custom( $settings = NULL, $offset = 0, $length = 0 ) {
 		if ( NULL == $settings ) {
 			$source = 'iptc_exif_custom';
-			$settings = ( isset( $_REQUEST['iptc_exif_mapping'] ) ) ? $_REQUEST['iptc_exif_mapping'] : array();
+			$settings = ( isset( $_REQUEST['iptc_exif_mapping'] ) ) ? stripslashes_deep( $_REQUEST['iptc_exif_mapping'] ) : array();
 			if ( isset( $settings['custom'][ MLAOptions::MLA_NEW_CUSTOM_FIELD ] ) ) {
 				unset( $settings['custom'][ MLAOptions::MLA_NEW_CUSTOM_FIELD ] );
 			}
@@ -3579,6 +3588,7 @@ class MLASettings {
 			}
 		} else {
 			$source = 'iptc_exif_custom_rule';
+			$settings = stripslashes_deep( $settings );
 		}
 		
 		if ( empty( $settings['custom'] ) ) {

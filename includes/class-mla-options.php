@@ -129,12 +129,12 @@ class MLAOptions {
 	/**
 	 * Provides a unique name for the Custom Field "new rule" key
 	 */
-	const MLA_NEW_CUSTOM_RULE = '__NEW RULE__';
+	const MLA_NEW_CUSTOM_RULE = '__NEW_RULE__';
 
 	/**
 	 * Provides a unique name for the Custom Field "new field" key
 	 */
-	const MLA_NEW_CUSTOM_FIELD = '__NEW FIELD__';
+	const MLA_NEW_CUSTOM_FIELD = '__NEW_FIELD__';
 
 	/**
 	 * Provides a unique name for the "searchable taxonomies" option
@@ -1571,7 +1571,7 @@ class MLAOptions {
 
 				$option_values = array(
 					'key' => MLA_OPTION_PREFIX . $key,
-					'value' => $value['name'],
+					'value' => esc_attr( $value['name'] ),
 					'options' => $select_options,
 					'help' => $value['help'] 
 				);
@@ -2082,9 +2082,14 @@ class MLAOptions {
 			$slug = 'c_' . sanitize_title( $key );
 
 			switch( $support_type ) {
-				case 'default_columns':
+				case 'custom_columns':
 					if ( $value['mla_column'] ) {
 						$results[ $slug ] = $value['name'];
+					}
+					break;
+				case 'default_columns':
+					if ( $value['mla_column'] ) {
+						$results[ $slug ] = esc_html( $value['name'] );
 					}
 					break;
 				case 'default_hidden_columns':
@@ -2903,24 +2908,35 @@ class MLAOptions {
 	 * @return	string	HTML markup with select field options
 	 */
 	private static function _compose_custom_field_option_list( $selection = 'none', $blacklist = array() ) {
+		/*
+		 * Add the "None" option to the front of the list
+		 */
 		$option_template = self::$mla_option_templates['custom-field-select-option'];
 		$option_values = array (
 			'selected' => ( 'none' == $selection ) ? 'selected="selected"' : '',
 			'value' => 'none',
 			'text' => '&mdash; ' . __( 'None (select a value)', 'media-library-assistant' ) . ' &mdash;'
 		);
-
 		$custom_field_options = MLAData::mla_parse_template( $option_template, $option_values );					
+
+		/*
+		 * Add an option for each name without a rule, i.e., not in the blacklist
+		 */
+		$blacklist_names = array();
+		foreach ( $blacklist as $value ) {
+			$blacklist_names[] = $value['name'];
+		}
+		
 		$custom_field_names = self::_get_custom_field_names();
 		foreach ( $custom_field_names as $value ) {
-			if ( array_key_exists( $value, $blacklist ) ) {
+			if ( in_array( $value, $blacklist_names ) ) {
 				continue;
 			}
 
 			$option_values = array (
 				'selected' => ( $value == $selection ) ? 'selected="selected"' : '',
-				'value' => $value,
-				'text' => $value
+				'value' => esc_attr( $value ),
+				'text' => esc_html( $value )
 			);
 
 			$custom_field_options .= MLAData::mla_parse_template( $option_template, $option_values );					
@@ -3054,7 +3070,7 @@ class MLAOptions {
 					$value = $root_value . '[' . $size_name . ']';
 					$option_values = array (
 						'selected' => ( $value == $selection ) ? 'selected="selected"' : '',
-						'value' => $value,
+						'value' => esc_attr( $value ),
 						'text' => $value
 					);
 
@@ -3064,7 +3080,7 @@ class MLAOptions {
 			} else {
 				$option_values = array (
 					'selected' => ( $value == $selection ) ? 'selected="selected"' : '',
-					'value' => $value,
+					'value' => esc_attr( $value ),
 					'text' => $value
 				);
 			}
@@ -3093,42 +3109,39 @@ class MLAOptions {
 
 		foreach ( $new_values as $new_key => $new_value ) {
 			$any_setting_changed = false;
+			/*
+			 * Replace index with field name
+			 */
+			$new_key = trim( stripslashes( $new_value['name'] ) );
 
 			/*
 			 * Check for the addition of a new rule or field
 			 */
-			if ( self::MLA_NEW_CUSTOM_FIELD == $new_key ) {
-				$new_key = trim( $new_value['name'] );
-
+			if ( self::MLA_NEW_CUSTOM_FIELD === $new_key ) {
 				if ( empty( $new_key ) ) {
 					continue;
 				}
 
 				if ( in_array( $new_key, $custom_field_names ) ) {
 					/* translators: 1: custom field name */
-					$error_list .= '<br>' . sprintf( __( 'ERROR: New field %1$s already exists.', 'media-library-assistant' ), $new_key ) . "\r\n";
+					$error_list .= '<br>' . sprintf( __( 'ERROR: New field %1$s already exists.', 'media-library-assistant' ), esc_html( $new_key ) ) . "\r\n";
 					continue;
 				}
 
 				/* translators: 1: custom field name */
-				$message_list .= '<br>' . sprintf( __( 'Adding new field %1$s.', 'media-library-assistant' ), $new_key ) . "\r\n";
+				$message_list .= '<br>' . sprintf( __( 'Adding new field %1$s.', 'media-library-assistant' ), esc_html( $new_key ) ) . "\r\n";
 				$any_setting_changed = true;
-			} elseif ( self::MLA_NEW_CUSTOM_RULE == $new_key ) {
-				$new_key = trim( $new_value['name'] );
-
+			} elseif ( self::MLA_NEW_CUSTOM_RULE === $new_key ) {
 				if ( 'none' == $new_key ) {
 					continue;
 				}
 
 				/* translators: 1: custom field name */
-				$message_list .= '<br>' . sprintf( __( 'Adding new rule for %1$s.', 'media-library-assistant' ), $new_key ) . "\r\n";
+				$message_list .= '<br>' . sprintf( __( 'Adding new rule for %1$s.', 'media-library-assistant' ), esc_html( $new_key ) ) . "\r\n";
 				$any_setting_changed = true;
-			} else {
-				/*
-				 * Replace slug with field name
-				 */
-				$new_key = trim( $new_value['name'] );
 			}
+
+			$new_value = stripslashes_deep( $new_value );
 
 			if ( isset( $current_values[ $new_key ] ) ) {
 				$old_values = $current_values[ $new_key ];
@@ -3152,7 +3165,7 @@ class MLAOptions {
 				if ( array_key_exists( 'delete_rule', $new_value['action'] ) || array_key_exists( 'delete_field', $new_value['action'] ) ) {
 					$settings_changed = true;
 					/* translators: 1: custom field name */
-					$message_list .= '<br>' . sprintf( __( 'Deleting rule for %1$s.', 'media-library-assistant' ), $old_values['name'] ) . "\r\n";
+					$message_list .= '<br>' . sprintf( __( 'Deleting rule for %1$s.', 'media-library-assistant' ), esc_html( $old_values['name'] ) ) . "\r\n";
 					unset( $current_values[ $new_key ] );
 					continue;
 				} // delete rule
@@ -3175,7 +3188,7 @@ class MLAOptions {
 				}
 
 				/* translators: 1: custom field name 2: attribute 3: old value 4: new value */
-				$message_list .= '<br>' . sprintf( __( '%1$s changing %2$s from %3$s to %4$s.', 'media-library-assistant' ), $old_values['name'], __( 'Data Source', 'media-library-assistant' ), $old_values['data_source'], $new_value['data_source'] ) . "\r\n";
+				$message_list .= '<br>' . sprintf( __( '%1$s changing %2$s from %3$s to %4$s.', 'media-library-assistant' ), esc_html( $old_values['name'] ), __( 'Data Source', 'media-library-assistant' ), $old_values['data_source'], $new_value['data_source'] ) . "\r\n";
 				$old_values['data_source'] = $new_value['data_source'];
 			}
 
@@ -3189,14 +3202,14 @@ class MLAOptions {
 			if ( $old_values['keep_existing'] != $boolean_value ) {
 				$any_setting_changed = true;
 				/* translators: 1: custom field name 2: attribute 3: old value 'to' new value */
-				$message_list .= '<br>' . sprintf( __( '%1$s changing %2$s value from %3$s.', 'media-library-assistant' ), $old_values['name'], __( 'Existing Text', 'media-library-assistant' ), $boolean_text ) . "\r\n";
+				$message_list .= '<br>' . sprintf( __( '%1$s changing %2$s value from %3$s.', 'media-library-assistant' ), esc_html( $old_values['name'] ), __( 'Existing Text', 'media-library-assistant' ), $boolean_text ) . "\r\n";
 				$old_values['keep_existing'] = $boolean_value;
 			}
 
 			if ( $old_values['format'] != $new_value['format'] ) {
 				$any_setting_changed = true;
 				/* translators: 1: custom field name 2: attribute 3: old value 4: new value */
-				$message_list .= '<br>' . sprintf( __( '%1$s changing %2$s from %3$s to %4$s.', 'media-library-assistant' ), $old_values['name'], __( 'Format', 'media-library-assistant' ), $old_values['format'], $new_value['format'] ) . "\r\n";
+				$message_list .= '<br>' . sprintf( __( '%1$s changing %2$s from %3$s to %4$s.', 'media-library-assistant' ), esc_html( $old_values['name'] ), __( 'Format', 'media-library-assistant' ), $old_values['format'], $new_value['format'] ) . "\r\n";
 				$old_values['format'] = $new_value['format'];
 			}
 
@@ -3210,7 +3223,7 @@ class MLAOptions {
 			if ( $old_values['mla_column'] != $boolean_value ) {
 				$any_setting_changed = true;
 				/* translators: 1: custom field name 2: attribute 3: old value 'to' new value */
-				$message_list .= '<br>' . sprintf( __( '%1$s changing %2$s value from %3$s.', 'media-library-assistant' ), $old_values['name'], __( 'MLA Column', 'media-library-assistant' ), $boolean_text ) . "\r\n";
+				$message_list .= '<br>' . sprintf( __( '%1$s changing %2$s value from %3$s.', 'media-library-assistant' ), esc_html( $old_values['name'] ), __( 'MLA Column', 'media-library-assistant' ), $boolean_text ) . "\r\n";
 				$old_values['mla_column'] = $boolean_value;
 			}
 
@@ -3224,7 +3237,7 @@ class MLAOptions {
 			if ( $old_values['quick_edit'] != $boolean_value ) {
 				$any_setting_changed = true;
 				/* translators: 1: custom field name 2: attribute 3: old value 'to' new value */
-				$message_list .= '<br>' . sprintf( __( '%1$s changing %2$s value from %3$s.', 'media-library-assistant' ), $old_values['name'], __( 'Quick Edit', 'media-library-assistant' ), $boolean_text ) . "\r\n";
+				$message_list .= '<br>' . sprintf( __( '%1$s changing %2$s value from %3$s.', 'media-library-assistant' ), esc_html( $old_values['name'] ), __( 'Quick Edit', 'media-library-assistant' ), $boolean_text ) . "\r\n";
 				$old_values['quick_edit'] = $boolean_value;
 			}
 
@@ -3238,7 +3251,7 @@ class MLAOptions {
 			if ( $old_values['bulk_edit'] != $boolean_value ) {
 				$any_setting_changed = true;
 				/* translators: 1: custom field name 2: attribute 3: old value 'to' new value */
-				$message_list .= '<br>' . sprintf( __( '%1$s changing %2$s value from %3$s.', 'media-library-assistant' ), $old_values['name'], __( 'Bulk Edit', 'media-library-assistant' ), $boolean_text ) . "\r\n";
+				$message_list .= '<br>' . sprintf( __( '%1$s changing %2$s value from %3$s.', 'media-library-assistant' ), esc_html( $old_values['name'] ), __( 'Bulk Edit', 'media-library-assistant' ), $boolean_text ) . "\r\n";
 				$old_values['bulk_edit'] = $boolean_value;
 			}
 
@@ -3246,14 +3259,14 @@ class MLAOptions {
 				$any_setting_changed = true;
 
 				/* translators: 1: custom field name 2: attribute 3: old value 4: new value */
-				$message_list .= '<br>' . sprintf( __( '%1$s changing %2$s from %3$s to %4$s.', 'media-library-assistant' ), $old_values['name'], __( 'Metavalue name', 'media-library-assistant' ), $old_values['meta_name'], $new_value['meta_name'] ) . "\r\n";
+				$message_list .= '<br>' . sprintf( __( '%1$s changing %2$s from %3$s to %4$s.', 'media-library-assistant' ), esc_html( $old_values['name'] ), __( 'Metavalue name', 'media-library-assistant' ), $old_values['meta_name'], $new_value['meta_name'] ) . "\r\n";
 				$old_values['meta_name'] = $new_value['meta_name'];
 			}
 
 			if ( $old_values['option'] != $new_value['option'] ) {
 				$any_setting_changed = true;
 				/* translators: 1: custom field name 2: attribute 3: old value 4: new value */
-				$message_list .= '<br>' . sprintf( __( '%1$s changing %2$s from %3$s to %4$s.', 'media-library-assistant' ), $old_values['name'], __( 'Option', 'media-library-assistant' ), $old_values['option'], $new_value['option'] ) . "\r\n";
+				$message_list .= '<br>' . sprintf( __( '%1$s changing %2$s from %3$s to %4$s.', 'media-library-assistant' ), esc_html( $old_values['name'] ), __( 'Option', 'media-library-assistant' ), $old_values['option'], $new_value['option'] ) . "\r\n";
 				$old_values['option'] = $new_value['option'];
 			}
 
@@ -3267,7 +3280,7 @@ class MLAOptions {
 			if ( $old_values['no_null'] != $boolean_value ) {
 				$any_setting_changed = true;
 				/* translators: 1: custom field name 2: attribute 3: old value 'to' new value */
-				$message_list .= '<br>' . sprintf( __( '%1$s changing %2$s value from %3$s.', 'media-library-assistant' ), $old_values['name'], __( 'Delete NULL', 'media-library-assistant' ), $boolean_text ) . "\r\n";
+				$message_list .= '<br>' . sprintf( __( '%1$s changing %2$s value from %3$s.', 'media-library-assistant' ), esc_html( $old_values['name'] ), __( 'Delete NULL', 'media-library-assistant' ), $boolean_text ) . "\r\n";
 				$old_values['no_null'] = $boolean_value;
 			}
 
@@ -3311,105 +3324,131 @@ class MLAOptions {
 				} else {
 					$row_template = self::$mla_option_templates['custom-field-rule-row'];
 					$table_rows = '';
+					$index = 0;
 				}
 
-				ksort( $current_values );
+				/*
+				 * One row for each existing rule, case insensitive "natural order"
+				 */
+				$sorted_keys = array();
 				foreach ( $current_values as $row_name => $current_value ) {
-					$row_values = array (
-						'key' => sanitize_title( $row_name ),
-						'name' => $row_name,
-						'data_source_options' => self::_compose_data_source_option_list( $current_value['data_source'] ),
-						'keep_selected' => '',
-						'Keep' => __( 'Keep', 'media-library-assistant' ),
-						'replace_selected' => '',
-						'Replace' => __( 'Replace', 'media-library-assistant' ),
-						'native_format' => '',
-						'Native' => __( 'Native', 'media-library-assistant' ),
-						'commas_format' => '',
-						'Commas' => __( 'Commas', 'media-library-assistant' ),
-						'raw_format' => '',
-						'Raw' => __( 'Raw', 'media-library-assistant' ),
-						'mla_column_checked' => '',
-						'quick_edit_checked' => '',
-						'bulk_edit_checked' => '',
-						'column_count' => 7,
-						'meta_name_size' => 30,
-						'meta_name' => $current_value['meta_name'],
-						'column_count_meta' => (7 - 2),
-						'Option' => __( 'Option', 'media-library-assistant' ),
-						'text_option' => '',
-						'Text' => __( 'Text', 'media-library-assistant' ),
-						'single_option' => '',
-						'Single' => __( 'Single', 'media-library-assistant' ),
-						'export_option' => '',
-						'Export' => __( 'Export', 'media-library-assistant' ),
-						'array_option' => '',
-						'Array' => __( 'Array', 'media-library-assistant' ),
-						'multi_option' => '',
-						'Multi' => __( 'Multi', 'media-library-assistant' ),
-						'no_null_checked' => '',
-						'Delete NULL values' => __( 'Delete NULL values', 'media-library-assistant' ),
-						'Delete Rule' => __( 'Delete Rule', 'media-library-assistant' ),
-						'Delete Field' => __( 'Delete Rule AND Field', 'media-library-assistant' ),
-						'Update Rule' => __( 'Update Rule', 'media-library-assistant' ),
-						'Map All Attachments' => __( 'Map All Attachments', 'media-library-assistant' ),
-					);
+					$sorted_keys[ $current_value['name'] ] = $current_value['name'];
+				}
+				natcasesort( $sorted_keys );
+				
+				$sorted_names = array();
+				foreach ( $sorted_keys as $row_name ) {
+					$sorted_names[ $row_name ] = array();
+				}
 
-					if ( $current_value['keep_existing'] ) {
-						$row_values['keep_selected'] = 'selected="selected"';
-					} else {
-						$row_values['replace_selected'] = 'selected="selected"';
-					}
+				/*
+				 * Allow for multiple rules mapping the same name (an old bug)
+				 */						
+				foreach ( $current_values as $row_name => $current_value ) {
+					$sorted_names[ $current_value['name'] ][] = $row_name;
+				}
 
-					switch( $current_value['format'] ) {
-						case 'native':
-							$row_values['native_format'] = 'selected="selected"';
-							break;
-						case 'commas':
-							$row_values['commas_format'] = 'selected="selected"';
-							break;
-						case 'raw':
-							$row_values['raw_format'] = 'selected="selected"';
-							break;
-						default:
-							$row_values['native_format'] = 'selected="selected"';
-					} // format
-
-					if ( $current_value['mla_column'] ) {
-						$row_values['mla_column_checked'] = 'checked="checked"';
-					}
-
-					if ( $current_value['quick_edit'] ) {
-						$row_values['quick_edit_checked'] = 'checked="checked"';
-					}
-
-					if ( $current_value['bulk_edit'] ) {
-						$row_values['bulk_edit_checked'] = 'checked="checked"';
-					}
-
-					switch( $current_value['option'] ) {
-						case 'single':
-							$row_values['single_option'] = 'selected="selected"';
-							break;
-						case 'export':
-							$row_values['export_option'] = 'selected="selected"';
-							break;
-						case 'array':
-							$row_values['array_option'] = 'selected="selected"';
-							break;
-						case 'multi':
-							$row_values['multi_option'] = 'selected="selected"';
-							break;
-						default:
-							$row_values['text_option'] = 'selected="selected"';
-					} // option
-
-					if ( $current_value['no_null'] ) {
-						$row_values['no_null_checked'] = 'checked="checked"';
-					}
-
-					$table_rows .= MLAData::mla_parse_template( $row_template, $row_values );
-				} // foreach current_value
+				foreach ( $sorted_names as $sorted_keys ) {
+					foreach ( $sorted_keys as $row_name ) {
+						$current_value = $current_values[ $row_name ];
+						$row_values = array (
+							'index' => $index++,
+							'key' => esc_attr( $row_name ),
+							'name_attr' => esc_attr( $row_name ),
+							'name' => esc_html( $row_name ),
+							'data_source_options' => self::_compose_data_source_option_list( $current_value['data_source'] ),
+							'keep_selected' => '',
+							'Keep' => __( 'Keep', 'media-library-assistant' ),
+							'replace_selected' => '',
+							'Replace' => __( 'Replace', 'media-library-assistant' ),
+							'native_format' => '',
+							'Native' => __( 'Native', 'media-library-assistant' ),
+							'commas_format' => '',
+							'Commas' => __( 'Commas', 'media-library-assistant' ),
+							'raw_format' => '',
+							'Raw' => __( 'Raw', 'media-library-assistant' ),
+							'mla_column_checked' => '',
+							'quick_edit_checked' => '',
+							'bulk_edit_checked' => '',
+							'column_count' => 7,
+							'meta_name_size' => 30,
+							'meta_name' => esc_attr( $current_value['meta_name'] ),
+							'column_count_meta' => (7 - 2),
+							'Option' => __( 'Option', 'media-library-assistant' ),
+							'text_option' => '',
+							'Text' => __( 'Text', 'media-library-assistant' ),
+							'single_option' => '',
+							'Single' => __( 'Single', 'media-library-assistant' ),
+							'export_option' => '',
+							'Export' => __( 'Export', 'media-library-assistant' ),
+							'array_option' => '',
+							'Array' => __( 'Array', 'media-library-assistant' ),
+							'multi_option' => '',
+							'Multi' => __( 'Multi', 'media-library-assistant' ),
+							'no_null_checked' => '',
+							'Delete NULL values' => __( 'Delete NULL values', 'media-library-assistant' ),
+							'Delete Rule' => __( 'Delete Rule', 'media-library-assistant' ),
+							'Delete Field' => __( 'Delete Rule AND Field', 'media-library-assistant' ),
+							'Update Rule' => __( 'Update Rule', 'media-library-assistant' ),
+							'Map All Attachments' => __( 'Map All Attachments', 'media-library-assistant' ),
+						);
+	
+						if ( $current_value['keep_existing'] ) {
+							$row_values['keep_selected'] = 'selected="selected"';
+						} else {
+							$row_values['replace_selected'] = 'selected="selected"';
+						}
+	
+						switch( $current_value['format'] ) {
+							case 'native':
+								$row_values['native_format'] = 'selected="selected"';
+								break;
+							case 'commas':
+								$row_values['commas_format'] = 'selected="selected"';
+								break;
+							case 'raw':
+								$row_values['raw_format'] = 'selected="selected"';
+								break;
+							default:
+								$row_values['native_format'] = 'selected="selected"';
+						} // format
+	
+						if ( $current_value['mla_column'] ) {
+							$row_values['mla_column_checked'] = 'checked="checked"';
+						}
+	
+						if ( $current_value['quick_edit'] ) {
+							$row_values['quick_edit_checked'] = 'checked="checked"';
+						}
+	
+						if ( $current_value['bulk_edit'] ) {
+							$row_values['bulk_edit_checked'] = 'checked="checked"';
+						}
+	
+						switch( $current_value['option'] ) {
+							case 'single':
+								$row_values['single_option'] = 'selected="selected"';
+								break;
+							case 'export':
+								$row_values['export_option'] = 'selected="selected"';
+								break;
+							case 'array':
+								$row_values['array_option'] = 'selected="selected"';
+								break;
+							case 'multi':
+								$row_values['multi_option'] = 'selected="selected"';
+								break;
+							default:
+								$row_values['text_option'] = 'selected="selected"';
+						} // option
+	
+						if ( $current_value['no_null'] ) {
+							$row_values['no_null_checked'] = 'checked="checked"';
+						}
+	
+						$table_rows .= MLAData::mla_parse_template( $row_template, $row_values );
+					} // foreach current_value
+				} // foreach sorted_name
 
 				/*
 				 * Add a row for defining a new Custom Rule
@@ -3418,7 +3457,7 @@ class MLAOptions {
 				$row_values = array (
 					'column_count' => 7,
 					'Add new Rule' => __( 'Add a new Mapping Rule', 'media-library-assistant' ),
-					'key' => self::MLA_NEW_CUSTOM_RULE,
+					'index' => self::MLA_NEW_CUSTOM_RULE,
 					'field_name_options' => self::_compose_custom_field_option_list( 'none', $current_values ),
 					'data_source_options' => self::_compose_data_source_option_list( 'none' ),
 					'keep_selected' => '',
@@ -3462,7 +3501,7 @@ class MLAOptions {
 				$row_values = array (
 					'column_count' => 7,
 					'Add new Field' => __( 'Add a new Field and Mapping Rule', 'media-library-assistant' ),
-					'key' => self::MLA_NEW_CUSTOM_FIELD,
+					'index' => self::MLA_NEW_CUSTOM_FIELD,
 					'field_name_size' => '24',
 					'data_source_options' => self::_compose_data_source_option_list( 'none' ),
 					'keep_selected' => '',
@@ -4070,7 +4109,7 @@ class MLAOptions {
 				$any_setting_changed = false;
 			} else {
 				/* translators: 1: custom field name */
-				$error_list .= '<br>' . sprintf( __( 'ERROR: No old values for %1$s.', 'media-library-assistant' ), $new_key ) . "\r\n";
+				$error_list .= '<br>' . sprintf( __( 'ERROR: No old values for %1$s.', 'media-library-assistant' ), esc_html( $new_key ) ) . "\r\n";
 				continue;
 			}
 
@@ -4082,21 +4121,21 @@ class MLAOptions {
 			if ( $old_values['name'] != $new_value['name'] ) {
 				$any_setting_changed = true;
 				/* translators: 1: custom field name 2: attribute 3: old value 4: new value */
-				$message_list .= '<br>' . sprintf( __( '%1$s changing %2$s from %3$s to %4$s.', 'media-library-assistant' ), $old_values['name'], __( 'Field Title', 'media-library-assistant' ), $old_values['name'], $new_value['name'] ) . "\r\n";
+				$message_list .= '<br>' . sprintf( __( '%1$s changing %2$s from %3$s to %4$s.', 'media-library-assistant' ), esc_html( $old_values['name'] ), __( 'Field Title', 'media-library-assistant' ), esc_html( $old_values['name'] ), esc_html( $new_value['name'] ) ) . "\r\n";
 				$old_values['name'] = $new_value['name'];
 			}
 
 			if ( $old_values['iptc_value'] != $new_value['iptc_value'] ) {
 				$any_setting_changed = true;
 				/* translators: 1: custom field name 2: attribute 3: old value 4: new value */
-				$message_list .= '<br>' . sprintf( __( '%1$s changing %2$s from %3$s to %4$s.', 'media-library-assistant' ), $old_values['name'], __( 'IPTC Value', 'media-library-assistant' ), $old_values['iptc_value'], $new_value['iptc_value'] ) . "\r\n";
+				$message_list .= '<br>' . sprintf( __( '%1$s changing %2$s from %3$s to %4$s.', 'media-library-assistant' ), esc_html( $old_values['name'] ), __( 'IPTC Value', 'media-library-assistant' ), $old_values['iptc_value'], $new_value['iptc_value'] ) . "\r\n";
 				$old_values['iptc_value'] = $new_value['iptc_value'];
 			}
 
 			if ( $old_values['exif_value'] != $new_value['exif_value'] ) {
 				$any_setting_changed = true;
 				/* translators: 1: custom field name 2: attribute 3: old value 4: new value */
-				$message_list .= '<br>' . sprintf( __( '%1$s changing %2$s from %3$s to %4$s.', 'media-library-assistant' ), $old_values['name'], __( 'EXIF Value', 'media-library-assistant' ), $old_values['exif_value'], $new_value['exif_value'] ) . "\r\n";
+				$message_list .= '<br>' . sprintf( __( '%1$s changing %2$s from %3$s to %4$s.', 'media-library-assistant' ), esc_html( $old_values['name'] ), __( 'EXIF Value', 'media-library-assistant' ), $old_values['exif_value'], $new_value['exif_value'] ) . "\r\n";
 				$old_values['exif_value'] = $new_value['exif_value'];
 			}
 
@@ -4110,7 +4149,7 @@ class MLAOptions {
 			if ( $old_values['iptc_first'] != $boolean_value ) {
 				$any_setting_changed = true;
 				/* translators: 1: custom field name 2: attribute 3: old value 'to' new value */
-				$message_list .= '<br>' . sprintf( __( '%1$s changing %2$s value from %3$s.', 'media-library-assistant' ), $old_values['name'], __( 'Priority', 'media-library-assistant' ), $boolean_text ) . "\r\n";
+				$message_list .= '<br>' . sprintf( __( '%1$s changing %2$s value from %3$s.', 'media-library-assistant' ), esc_html( $old_values['name'] ), __( 'Priority', 'media-library-assistant' ), $boolean_text ) . "\r\n";
 				$old_values['iptc_first'] = $boolean_value;
 			}
 
@@ -4124,7 +4163,7 @@ class MLAOptions {
 			if ( $old_values['keep_existing'] != $boolean_value ) {
 				$any_setting_changed = true;
 				/* translators: 1: custom field name 2: attribute 3: old value 'to' new value */
-				$message_list .= '<br>' . sprintf( __( '%1$s changing %2$s value from %3$s.', 'media-library-assistant' ), $old_values['name'], __( 'Existing Text', 'media-library-assistant' ), $boolean_text ) . "\r\n";
+				$message_list .= '<br>' . sprintf( __( '%1$s changing %2$s value from %3$s.', 'media-library-assistant' ), esc_html( $old_values['name'] ), __( 'Existing Text', 'media-library-assistant' ), $boolean_text ) . "\r\n";
 				$old_values['keep_existing'] = $boolean_value;
 			}
 
@@ -4165,7 +4204,7 @@ class MLAOptions {
 			if ( ! isset( $taxonomies[ $new_key ] ) ) {
 				$settings_changed = true;
 				/* translators: 1: custom field name */
-				$message_list .= '<br>' . sprintf( __( 'Deleting rule for %1$s.', 'media-library-assistant' ), $new_key ) . "\r\n";
+				$message_list .= '<br>' . sprintf( __( 'Deleting rule for %1$s.', 'media-library-assistant' ), esc_html( $new_key ) ) . "\r\n";
 				unset( $current_values['taxonomy'][ $new_key ] );
 			}
 		}
@@ -4175,7 +4214,7 @@ class MLAOptions {
 				$old_values = $current_values['taxonomy'][ $new_key ];
 			} else {
 				$old_values = array(
-					'name' => $new_value['name'],
+					'name' => stripslashes( $new_value['name'] ),
 					'hierarchical' => $new_value['hierarchical'],
 					'iptc_value' => 'none',
 					'exif_value' => '',
@@ -4190,14 +4229,14 @@ class MLAOptions {
 			if ( $old_values['iptc_value'] != $new_value['iptc_value'] ) {
 				$any_setting_changed = true;
 				/* translators: 1: custom field name 2: attribute 3: old value 4: new value */
-				$message_list .= '<br>' . sprintf( __( '%1$s changing %2$s from %3$s to %4$s.', 'media-library-assistant' ), $old_values['name'], __( 'IPTC Value', 'media-library-assistant' ), $old_values['iptc_value'], $new_value['iptc_value'] ) . "\r\n";
+				$message_list .= '<br>' . sprintf( __( '%1$s changing %2$s from %3$s to %4$s.', 'media-library-assistant' ), esc_html( $old_values['name'] ), __( 'IPTC Value', 'media-library-assistant' ), $old_values['iptc_value'], $new_value['iptc_value'] ) . "\r\n";
 				$old_values['iptc_value'] = $new_value['iptc_value'];
 			}
 
 			if ( $old_values['exif_value'] != $new_value['exif_value'] ) {
 				$any_setting_changed = true;
 				/* translators: 1: custom field name 2: attribute 3: old value 4: new value */
-				$message_list .= '<br>' . sprintf( __( '%1$s changing %2$s from %3$s to %4$s.', 'media-library-assistant' ), $old_values['name'], __( 'EXIF Value', 'media-library-assistant' ), $old_values['exif_value'], $new_value['exif_value'] ) . "\r\n";
+				$message_list .= '<br>' . sprintf( __( '%1$s changing %2$s from %3$s to %4$s.', 'media-library-assistant' ), esc_html( $old_values['name'] ), __( 'EXIF Value', 'media-library-assistant' ), $old_values['exif_value'], $new_value['exif_value'] ) . "\r\n";
 				$old_values['exif_value'] = $new_value['exif_value'];
 			}
 
@@ -4211,7 +4250,7 @@ class MLAOptions {
 			if ( $old_values['iptc_first'] != $boolean_value ) {
 				$any_setting_changed = true;
 				/* translators: 1: custom field name 2: attribute 3: old value 'to' new value */
-				$message_list .= '<br>' . sprintf( __( '%1$s changing %2$s value from %3$s.', 'media-library-assistant' ), $old_values['name'], __( 'Priority', 'media-library-assistant' ), $boolean_text ) . "\r\n";
+				$message_list .= '<br>' . sprintf( __( '%1$s changing %2$s value from %3$s.', 'media-library-assistant' ), esc_html( $old_values['name'] ), __( 'Priority', 'media-library-assistant' ), $boolean_text ) . "\r\n";
 				$old_values['iptc_first'] = $boolean_value;
 			}
 
@@ -4225,21 +4264,21 @@ class MLAOptions {
 			if ( $old_values['keep_existing'] != $boolean_value ) {
 				$any_setting_changed = true;
 				/* translators: 1: custom field name 2: attribute 3: old value 'to' new value */
-				$message_list .= '<br>' . sprintf( __( '%1$s changing %2$s value from %3$s.', 'media-library-assistant' ), $old_values['name'], __( 'Existing Text', 'media-library-assistant' ), $boolean_text ) . "\r\n";
+				$message_list .= '<br>' . sprintf( __( '%1$s changing %2$s value from %3$s.', 'media-library-assistant' ), esc_html( $old_values['name'] ), __( 'Existing Text', 'media-library-assistant' ), $boolean_text ) . "\r\n";
 				$old_values['keep_existing'] = $boolean_value;
 			}
 
 			if ( $old_values['delimiters'] != $new_value['delimiters'] ) {
 				$any_setting_changed = true;
 				/* translators: 1: custom field name 2: attribute 3: old value 4: new value */
-				$message_list .= '<br>' . sprintf( __( '%1$s changing %2$s from %3$s to %4$s.', 'media-library-assistant' ), $old_values['name'], __( 'Delimiter(s)', 'media-library-assistant' ), $old_values['delimiters'], $new_value['delimiters'] ) . "\r\n";
+				$message_list .= '<br>' . sprintf( __( '%1$s changing %2$s from %3$s to %4$s.', 'media-library-assistant' ), esc_html( $old_values['name'] ), __( 'Delimiter(s)', 'media-library-assistant' ), $old_values['delimiters'], $new_value['delimiters'] ) . "\r\n";
 				$old_values['delimiters'] = $new_value['delimiters'];
 			}
 
 			if ( isset( $new_value['parent'] ) && ( $old_values['parent'] != $new_value['parent'] ) ) {
 				$any_setting_changed = true;
 				/* translators: 1: custom field name 2: attribute 3: old value 4: new value */
-				$message_list .= '<br>' . sprintf( __( '%1$s changing %2$s from %3$s to %4$s.', 'media-library-assistant' ), $old_values['name'], __( 'Parent', 'media-library-assistant' ), $old_values['parent'], $new_value['parent'] ) . "\r\n";
+				$message_list .= '<br>' . sprintf( __( '%1$s changing %2$s from %3$s to %4$s.', 'media-library-assistant' ), esc_html( $old_values['name'] ), __( 'Parent', 'media-library-assistant' ), $old_values['parent'], $new_value['parent'] ) . "\r\n";
 				$old_values['parent'] = $new_value['parent'];
 			}
 
@@ -4275,37 +4314,39 @@ class MLAOptions {
 
 		foreach ( $new_values['custom'] as $new_key => $new_value ) {
 			$any_setting_changed = false;
+			/*
+			 * Replace index with field name
+			 */
+			$new_key = trim( stripslashes( $new_value['name'] ) );
 
 			/*
 			 * Check for the addition of a new field or new rule
 			 */
-			if ( self::MLA_NEW_CUSTOM_FIELD == $new_key ) {
-				$new_key = trim( $new_value['name'] );
-
+			if ( self::MLA_NEW_CUSTOM_FIELD === $new_key ) {
 				if ( empty( $new_key ) ) {
 					continue;
 				}
 
 				if ( in_array( $new_key, $custom_field_names ) ) {
 					/* translators: 1: custom field name */
-					$error_list .= '<br>' . sprintf( __( 'ERROR: New field %1$s already exists.', 'media-library-assistant' ), $new_key ) . "\r\n";
+					$error_list .= '<br>' . sprintf( __( 'ERROR: New field %1$s already exists.', 'media-library-assistant' ), esc_html( $new_key ) ) . "\r\n";
 					continue;
 				}
 
 				/* translators: 1: custom field name */
-				$message_list .= '<br>' . sprintf( __( 'Adding new field %1$s.', 'media-library-assistant' ), $new_key ) . "\r\n";
+				$message_list .= '<br>' . sprintf( __( 'Adding new field %1$s.', 'media-library-assistant' ), esc_html( $new_key ) ) . "\r\n";
 				$any_setting_changed = true;
-			} elseif ( self::MLA_NEW_CUSTOM_RULE == $new_key ) {
-				$new_key = trim( $new_value['name'] );
-
+			} elseif ( self::MLA_NEW_CUSTOM_RULE === $new_key ) {
 				if ( 'none' == $new_key ) {
 					continue;
 				}
 
 				/* translators: 1: custom field name */
-				$message_list .= '<br>' . sprintf( __( 'Adding new rule for %1$s.', 'media-library-assistant' ), $new_key ) . "\r\n";
+				$message_list .= '<br>' . sprintf( __( 'Adding new rule for %1$s.', 'media-library-assistant' ), esc_html( $new_key ) ) . "\r\n";
 				$any_setting_changed = true;
 			}
+
+			$new_value = stripslashes_deep( $new_value );
 
 			if ( isset( $current_values['custom'][ $new_key ] ) ) {
 				$old_values = $current_values['custom'][ $new_key ];
@@ -4324,7 +4365,7 @@ class MLAOptions {
 				if ( array_key_exists( 'delete_rule', $new_value['action'] ) || array_key_exists( 'delete_field', $new_value['action'] ) ) {
 					$settings_changed = true;
 					/* translators: 1: custom field name */
-					$message_list .= '<br>' . sprintf( __( 'Deleting rule for %1$s.', 'media-library-assistant' ), $old_values['name'] ) . "\r\n";
+					$message_list .= '<br>' . sprintf( __( 'Deleting rule for %1$s.', 'media-library-assistant' ), esc_html( $old_values['name'] ) ) . "\r\n";
 					unset( $current_values['custom'][ $new_key ] );
 					$settings_changed = true;
 					continue;
@@ -4334,14 +4375,14 @@ class MLAOptions {
 			if ( $old_values['iptc_value'] != $new_value['iptc_value'] ) {
 				$any_setting_changed = true;
 				/* translators: 1: custom field name 2: attribute 3: old value 4: new value */
-				$message_list .= '<br>' . sprintf( __( '%1$s changing %2$s from %3$s to %4$s.', 'media-library-assistant' ), $old_values['name'], __( 'IPTC Value', 'media-library-assistant' ), $old_values['iptc_value'], $new_value['iptc_value'] ) . "\r\n";
+				$message_list .= '<br>' . sprintf( __( '%1$s changing %2$s from %3$s to %4$s.', 'media-library-assistant' ), esc_html( $old_values['name'] ), __( 'IPTC Value', 'media-library-assistant' ), $old_values['iptc_value'], $new_value['iptc_value'] ) . "\r\n";
 				$old_values['iptc_value'] = $new_value['iptc_value'];
 			}
 
 			if ( $old_values['exif_value'] != $new_value['exif_value'] ) {
 				$any_setting_changed = true;
 				/* translators: 1: custom field name 2: attribute 3: old value 4: new value */
-				$message_list .= '<br>' . sprintf( __( '%1$s changing %2$s from %3$s to %4$s.', 'media-library-assistant' ), $old_values['name'], __( 'EXIF Value', 'media-library-assistant' ), $old_values['exif_value'], $new_value['exif_value'] ) . "\r\n";
+				$message_list .= '<br>' . sprintf( __( '%1$s changing %2$s from %3$s to %4$s.', 'media-library-assistant' ), esc_html( $old_values['name'] ), __( 'EXIF Value', 'media-library-assistant' ), $old_values['exif_value'], $new_value['exif_value'] ) . "\r\n";
 				$old_values['exif_value'] = $new_value['exif_value'];
 			}
 
@@ -4355,7 +4396,7 @@ class MLAOptions {
 			if ( $old_values['iptc_first'] != $boolean_value ) {
 				$any_setting_changed = true;
 				/* translators: 1: custom field name 2: attribute 3: old value 'to' new value */
-				$message_list .= '<br>' . sprintf( __( '%1$s changing %2$s value from %3$s.', 'media-library-assistant' ), $old_values['name'], __( 'Priority', 'media-library-assistant' ), $boolean_text ) . "\r\n";
+				$message_list .= '<br>' . sprintf( __( '%1$s changing %2$s value from %3$s.', 'media-library-assistant' ), esc_html( $old_values['name'] ), __( 'Priority', 'media-library-assistant' ), $boolean_text ) . "\r\n";
 				$old_values['iptc_first'] = $boolean_value;
 			}
 
@@ -4369,7 +4410,7 @@ class MLAOptions {
 			if ( $old_values['keep_existing'] != $boolean_value ) {
 				$any_setting_changed = true;
 				/* translators: 1: custom field name 2: attribute 3: old value 'to' new value */
-				$message_list .= '<br>' . sprintf( __( '%1$s changing %2$s value from %3$s.', 'media-library-assistant' ), $old_values['name'], __( 'Existing Text', 'media-library-assistant' ), $boolean_text ) . "\r\n";
+				$message_list .= '<br>' . sprintf( __( '%1$s changing %2$s value from %3$s.', 'media-library-assistant' ), esc_html( $old_values['name'] ), __( 'Existing Text', 'media-library-assistant' ), $boolean_text ) . "\r\n";
 				$old_values['keep_existing'] = $boolean_value;
 			}
 
@@ -4377,12 +4418,12 @@ class MLAOptions {
 				$settings_changed = true;
 				$current_values['custom'][ $new_key ] = $old_values;
 			}
-		} // new standard value
+		} // new custom value
 
 		/*
 		 * Uncomment this for debugging.
 		 */
-		//$error_list .= $message_list;
+		// $error_list .= $message_list;
 
 		return array( 'message' => $error_list, 'values' => $current_values, 'changed' => $settings_changed );
 	} // _update_iptc_exif_custom_mapping
@@ -4400,11 +4441,11 @@ class MLAOptions {
 	private static function _get_custom_field_names( ) {
 		global $wpdb;
 
-		$custom_field_mapping = array_keys( self::mla_get_option( 'custom_field_mapping' ) );
+		$custom_field_mapping = self::mla_get_option( 'custom_field_mapping' );
 		$iptc_exif_mapping = self::mla_get_option( 'iptc_exif_mapping' );
-		$iptc_exif_mapping = array_keys( $iptc_exif_mapping['custom'] );
+		$iptc_exif_mapping = $iptc_exif_mapping['custom'];
 
-		$limit = (int) apply_filters( 'postmeta_form_limit', 50 );
+		$limit = (int) apply_filters( 'postmeta_form_limit', 100 );
 		$keys = $wpdb->get_col( "
 			SELECT meta_key
 			FROM $wpdb->postmeta
@@ -4413,15 +4454,18 @@ class MLAOptions {
 			ORDER BY meta_key
 			LIMIT $limit" );
 
+		/*
+		 * Add any names in mapping rules that don't exist in the database
+		 */
 		if ( $keys ) {
 			foreach ( $custom_field_mapping as $value )
-				if ( ! in_array( $value, $keys ) ) {
-					$keys[] = $value;
+				if ( ! in_array( $value['name'], $keys ) ) {
+					$keys[] = $value['name'];
 				}
 
 			foreach ( $iptc_exif_mapping as $value )
-				if ( ! in_array( $value, $keys ) ) {
-					$keys[] = $value;
+				if ( ! in_array( $value['name'], $keys ) ) {
+					$keys[] = $value['name'];
 				}
 
 			natcasesort($keys);
@@ -4456,11 +4500,12 @@ class MLAOptions {
 
 						foreach ( $current_values['standard'] as $row_name => $row_value ) {
 							$row_values = array (
-								'key' => $row_name,
-								'name' => $row_value['name'],
+								'key' => esc_attr( $row_name ),
+								'name_attr' => esc_attr( $row_value['name'] ),
+								'name' => esc_html( $row_value['name'] ),
 								'iptc_field_options' => self::_compose_iptc_option_list( $row_value['iptc_value'] ),
 								'exif_size' => self::MLA_EXIF_SIZE,
-								'exif_text' => $row_value['exif_value'],
+								'exif_text' => esc_attr( $row_value['exif_value'] ),
 								'iptc_selected' => '',
 								'IPTC' => __( 'IPTC', 'media-library-assistant' ),
 								'exif_selected' => '',
@@ -4505,7 +4550,7 @@ class MLAOptions {
 
 						foreach ( $taxonomies as $row_name => $row_value ) {
 							$row_values = array (
-								'key' => $row_name,
+								'key' => esc_attr( $row_name ),
 								'name' => esc_html( $row_value->labels->name ),
 								'hierarchical' => (string) $row_value->hierarchical,
 								'iptc_field_options' => '',
@@ -4547,7 +4592,7 @@ class MLAOptions {
 									$parent = ( isset( $current_value['parent'] ) ) ? (integer) $current_value['parent'] : 0;
 									$select_values = array (
 										'array' => 'taxonomy',
-										'key' => $row_name,
+										'key' => esc_attr( $row_name ),
 										'element' => 'parent',
 										'options' => self::_compose_parent_option_list( $row_name, $parent )
 									);
@@ -4561,7 +4606,7 @@ class MLAOptions {
 								if ( $row_value->hierarchical ) {
 									$select_values = array (
 										'array' => 'taxonomy',
-										'key' => $row_name,
+										'key' => esc_attr( $row_name ),
 										'element' => 'parent',
 										'options' => self::_compose_parent_option_list( $row_name, 0 )
 									);
@@ -4594,51 +4639,71 @@ class MLAOptions {
 						} else {
 							$row_template = self::$mla_option_templates['iptc-exif-custom-rule-row'];
 							$table_rows = '';
+							$index = 0;
 						}
 
 						/*
-						 * One row for each existing rule
+						 * One row for each existing rule, case insensitive "natural order"
 						 */
-						ksort( $current_values['custom'] );
+						$sorted_keys = array();
 						foreach ( $current_values['custom'] as $row_name => $current_value ) {
-							$row_values = array (
-								'column_count' => 5,
-								'key' => sanitize_title( $row_name ), //$row_name,
-								'name' => $row_name,
-								'iptc_field_options' => '',
-								'exif_size' => self::MLA_EXIF_SIZE,
-								'exif_text' => '',
-								'iptc_selected' => '',
-								'IPTC' => __( 'IPTC', 'media-library-assistant' ),
-								'exif_selected' => '',
-								'EXIF' => __( 'EXIF', 'media-library-assistant' ),
-								'keep_selected' => '',
-								'Keep' => __( 'Keep', 'media-library-assistant' ),
-								'replace_selected' => '',
-								'Replace' => __( 'Replace', 'media-library-assistant' ),
-								'Delete Rule' => __( 'Delete Rule', 'media-library-assistant' ),
-								'Delete Field' => __( 'Delete Rule AND Field', 'media-library-assistant' ),
-								'Update Rule' => __( 'Update Rule', 'media-library-assistant' ),
-								'Map All Attachments' => __( 'Map All Attachments', 'media-library-assistant' ),
-							);
+							$sorted_keys[ $current_value['name'] ] = $current_value['name'];
+						}
+						natcasesort( $sorted_keys );
+						
+						$sorted_names = array();
+						foreach ( $sorted_keys as $row_name ) {
+							$sorted_names[ $row_name ] = array();
+						}
 
-							$row_values['iptc_field_options'] = self::_compose_iptc_option_list( $current_value['iptc_value'] );
-							$row_values['exif_text'] = $current_value['exif_value'];
+						/*
+						 * Allow for multiple rules mapping the same name (an old bug)
+						 */						
+						foreach ( $current_values['custom'] as $row_name => $current_value ) {
+							$sorted_names[ $current_value['name'] ][] = $row_name;
+						}
 
-							if ( $current_value['iptc_first'] ) {
-								$row_values['iptc_selected'] = 'selected="selected"';
-							} else {
-								$row_values['exif_selected'] = 'selected="selected"';
-							}
-
-							if ( $current_value['keep_existing'] ) {
-								$row_values['keep_selected'] = 'selected="selected"';
-							} else {
-								$row_values['replace_selected'] = 'selected="selected"';
-							}
-
-							$table_rows .= MLAData::mla_parse_template( $row_template, $row_values );
-						} // foreach existing rule
+						foreach ( $sorted_names as $sorted_keys ) {
+							foreach ( $sorted_keys as $row_name ) {
+								$current_value = $current_values['custom'][ $row_name ];
+								$row_values = array (
+									'column_count' => 5,
+									'index' => $index++,
+									'key' => esc_attr( $row_name ),
+									'name_attr' => esc_attr( $current_value['name'] ),
+									'name' => esc_html( $current_value['name'] ),
+									'iptc_field_options' => self::_compose_iptc_option_list( $current_value['iptc_value'] ),
+									'exif_size' => self::MLA_EXIF_SIZE,
+									'exif_text' => esc_attr( $current_value['exif_value'] ),
+									'iptc_selected' => '',
+									'IPTC' => __( 'IPTC', 'media-library-assistant' ),
+									'exif_selected' => '',
+									'EXIF' => __( 'EXIF', 'media-library-assistant' ),
+									'keep_selected' => '',
+									'Keep' => __( 'Keep', 'media-library-assistant' ),
+									'replace_selected' => '',
+									'Replace' => __( 'Replace', 'media-library-assistant' ),
+									'Delete Rule' => __( 'Delete Rule', 'media-library-assistant' ),
+									'Delete Field' => __( 'Delete Rule AND Field', 'media-library-assistant' ),
+									'Update Rule' => __( 'Update Rule', 'media-library-assistant' ),
+									'Map All Attachments' => __( 'Map All Attachments', 'media-library-assistant' ),
+								);
+	
+								if ( $current_value['iptc_first'] ) {
+									$row_values['iptc_selected'] = 'selected="selected"';
+								} else {
+									$row_values['exif_selected'] = 'selected="selected"';
+								}
+	
+								if ( $current_value['keep_existing'] ) {
+									$row_values['keep_selected'] = 'selected="selected"';
+								} else {
+									$row_values['replace_selected'] = 'selected="selected"';
+								}
+	
+								$table_rows .= MLAData::mla_parse_template( $row_template, $row_values );
+							} // foreach current_values key
+						} // foreach sorted_name
 
 						/*
 						 * Add a row for defining a new rule, existing Custom Field
@@ -4647,7 +4712,7 @@ class MLAOptions {
 						$row_values = array (
 							'column_count' => 5 ,
 							'Add new Rule' => __( 'Add a new Mapping Rule', 'media-library-assistant' ),
-							'key' => self::MLA_NEW_CUSTOM_RULE,
+							'index' => self::MLA_NEW_CUSTOM_RULE,
 							'field_name_options' => self::_compose_custom_field_option_list( 'none', $current_values['custom'] ),
 							'iptc_field_options' => self::_compose_iptc_option_list( 'none' ),
 							'exif_size' => self::MLA_EXIF_SIZE,
@@ -4672,7 +4737,7 @@ class MLAOptions {
 						$row_values = array (
 							'column_count' => 5 ,
 							'Add new Field' => __( 'Add a new Field and Mapping Rule', 'media-library-assistant' ),
-							'key' => self::MLA_NEW_CUSTOM_FIELD,
+							'index' => self::MLA_NEW_CUSTOM_FIELD,
 							'field_name_size' => '24',
 							'iptc_field_options' => self::_compose_iptc_option_list( 'none' ),
 							'exif_size' => self::MLA_EXIF_SIZE,

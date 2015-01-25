@@ -498,24 +498,25 @@
         <tr valign="top">
 		<td style="text-align:left; vertical-align:middle">
             [+name+]&nbsp;
-			<input type="hidden" name="iptc_exif_mapping[custom][[+key+]][name]" id="iptc_exif_custom_name_[+key+]" value="[+name+]" />
+			<input name="iptc_exif_mapping[custom][[+index+]][name]" id="iptc_exif_custom_name_[+index+]" type="hidden" value="[+name_attr+]" />
+			<input name="iptc_exif_mapping[custom][[+index+]][key]" id="iptc_exif_custom_key_[+index+]" type="hidden" value="[+key+]" />
         </td>
 		<td style="text-align:left;">
-            <select name="iptc_exif_mapping[custom][[+key+]][iptc_value]" id="iptc_exif_custom_iptc_field_[+key+]">
+            <select name="iptc_exif_mapping[custom][[+index+]][iptc_value]" id="iptc_exif_custom_iptc_field_[+index+]">
 [+iptc_field_options+]
             </select>
         </td>
 		<td style="text-align:center;">
-            <input name="iptc_exif_mapping[custom][[+key+]][exif_value]" id="iptc_exif_custom_exif_field_[+key+]" type="text" size="[+exif_size+]" value="[+exif_text+]" />
+            <input name="iptc_exif_mapping[custom][[+index+]][exif_value]" id="iptc_exif_custom_exif_field_[+index+]" type="text" size="[+exif_size+]" value="[+exif_text+]" />
         </td>
 		<td style="text-align:left;">
-            <select name="iptc_exif_mapping[custom][[+key+]][iptc_first]" id="iptc_exif_custom_priority_[+key+]">
+            <select name="iptc_exif_mapping[custom][[+index+]][iptc_first]" id="iptc_exif_custom_priority_[+index+]">
                 <option [+iptc_selected+] value="1">[+IPTC+]</option>
                 <option [+exif_selected+] value="">[+EXIF+]</option>
             </select>
         </td>
 		<td style="text-align:left;">
-            <select name="iptc_exif_mapping[custom][[+key+]][keep_existing]" id="iptc_exif_custom_existing_[+key+]">
+            <select name="iptc_exif_mapping[custom][[+index+]][keep_existing]" id="iptc_exif_custom_existing_[+index+]">
                 <option [+keep_selected+] value="1">[+Keep+]</option>
                 <option [+replace_selected+] value="">[+Replace+]</option>
             </select>
@@ -523,10 +524,10 @@
 		</tr>
         <tr valign="top">
 		<td colspan="[+column_count+]" style="padding-bottom: 10px">
-	        <input name="iptc_exif_mapping[custom][[+key+]][action][delete_rule]" class="button-primary" id="iptc-exif-mapping-delete-rule-[+key+]" style="height: 18px; line-height: 16px" type="submit" value="[+Delete Rule+]" />
-	        <input name="iptc_exif_mapping[custom][[+key+]][action][delete_field]" class="button-primary" id="iptc-exif-mapping-delete-field-[+key+]" style="height: 18px; line-height: 16px" type="submit" value="[+Delete Field+]" />
-	        <input name="iptc_exif_mapping[custom][[+key+]][action][update_rule]" class="button-primary" id="iptc-exif-mapping-update-rule-[+key+]" style="height: 18px; line-height: 16px" type="submit" value="[+Update Rule+]" />
-	        <input name="iptc_exif_mapping[custom][[+key+]][action][map_now]" class="button-secondary mla-mapping" id="iptc-exif-mapping-map-now-[+key+]" style="height: 18px; line-height: 16px" type="submit" value="[+Map All Attachments+]" />
+	        <input name="iptc_exif_mapping[custom][[+index+]][action][delete_rule]" class="button-primary" id="iptc-exif-mapping-delete-rule-[+index+]" style="height: 18px; line-height: 16px" type="submit" value="[+Delete Rule+]" />
+	        <input name="iptc_exif_mapping[custom][[+index+]][action][delete_field]" class="button-primary" id="iptc-exif-mapping-delete-field-[+index+]" style="height: 18px; line-height: 16px" type="submit" value="[+Delete Field+]" />
+	        <input name="iptc_exif_mapping[custom][[+index+]][action][update_rule]" class="button-primary" id="iptc-exif-mapping-update-rule-[+index+]" style="height: 18px; line-height: 16px" type="submit" value="[+Update Rule+]" />
+	        <input name="iptc_exif_mapping[custom][[+index+]][action][map_now]" class="button-secondary mla-mapping" id="iptc-exif-mapping-map-now-[+index+]" style="height: 18px; line-height: 16px" type="submit" value="[+Map All Attachments+]" />
         </td>
 		</tr>
 
@@ -538,26 +539,26 @@
 		</tr>
         <tr valign="top">
 		<td style="text-align:left;">
-            <select name="iptc_exif_mapping[custom][[+key+]][name]" id="iptc_exif_custom_name_[+key+]">
+            <select name="iptc_exif_mapping[custom][[+index+]][name]" id="iptc_exif_custom_name_[+index+]">
 [+field_name_options+]
             </select>
         </td>
 		<td style="text-align:left;">
-            <select name="iptc_exif_mapping[custom][[+key+]][iptc_value]" id="iptc_exif_custom_iptc_field_[+key+]">
+            <select name="iptc_exif_mapping[custom][[+index+]][iptc_value]" id="iptc_exif_custom_iptc_field_[+index+]">
 [+iptc_field_options+]
             </select>
         </td>
 		<td style="text-align:center;">
-            <input name="iptc_exif_mapping[custom][[+key+]][exif_value]" id="iptc_exif_custom_exif_field_[+key+]" type="text" size="[+exif_size+]" value="[+exif_text+]" />
+            <input name="iptc_exif_mapping[custom][[+index+]][exif_value]" id="iptc_exif_custom_exif_field_[+index+]" type="text" size="[+exif_size+]" value="[+exif_text+]" />
         </td>
 		<td style="text-align:left;">
-            <select name="iptc_exif_mapping[custom][[+key+]][iptc_first]" id="iptc_exif_custom_priority_[+key+]">
+            <select name="iptc_exif_mapping[custom][[+index+]][iptc_first]" id="iptc_exif_custom_priority_[+index+]">
                 <option [+iptc_selected+] value="1">[+IPTC+]</option>
                 <option [+exif_selected+] value="">[+EXIF+]</option>
             </select>
         </td>
 		<td style="text-align:left;">
-            <select name="iptc_exif_mapping[custom][[+key+]][keep_existing]" id="iptc_exif_custom_existing_[+key+]">
+            <select name="iptc_exif_mapping[custom][[+index+]][keep_existing]" id="iptc_exif_custom_existing_[+index+]">
                 <option [+keep_selected+] value="1">[+Keep+]</option>
                 <option [+replace_selected+] value="">[+Replace+]</option>
             </select>
@@ -565,8 +566,8 @@
 		</tr>
         <tr valign="top">
 		<td colspan="[+column_count+]">
-	        <input name="iptc_exif_mapping[custom][[+key+]][action][add_rule]" class="button-primary" id="iptc-exif-mapping-add-rule-[+key+]" type="submit" value="[+Add Rule+]" />
-	        <input name="iptc_exif_mapping[custom][[+key+]][action][add_rule_map]" class="button-secondary mla-mapping" id="iptc-exif-mapping-add-rule-map-[+key+]" type="submit" value="[+Map All Attachments+]" />
+	        <input name="iptc_exif_mapping[custom][[+index+]][action][add_rule]" class="button-primary" id="iptc-exif-mapping-add-rule-[+index+]" type="submit" value="[+Add Rule+]" />
+	        <input name="iptc_exif_mapping[custom][[+index+]][action][add_rule_map]" class="button-secondary mla-mapping" id="iptc-exif-mapping-add-rule-map-[+index+]" type="submit" value="[+Map All Attachments+]" />
         </td>
 		</tr>
 
@@ -578,24 +579,24 @@
 		</tr>
         <tr valign="top">
 		<td style="text-align:left;">
-            <input name="iptc_exif_mapping[custom][[+key+]][name]" id="iptc_exif_custom_name_[+key+]" type="text" size="[+field_name_size+]" value="" />
+            <input name="iptc_exif_mapping[custom][[+index+]][name]" id="iptc_exif_custom_name_[+index+]" type="text" size="[+field_name_size+]" value="" />
         </td>
 		<td style="text-align:left;">
-            <select name="iptc_exif_mapping[custom][[+key+]][iptc_value]" id="iptc_exif_custom_iptc_field_[+key+]">
+            <select name="iptc_exif_mapping[custom][[+index+]][iptc_value]" id="iptc_exif_custom_iptc_field_[+index+]">
 [+iptc_field_options+]
             </select>
         </td>
 		<td style="text-align:center;">
-            <input name="iptc_exif_mapping[custom][[+key+]][exif_value]" id="iptc_exif_custom_exif_field_[+key+]" type="text" size="[+exif_size+]" value="[+exif_text+]" />
+            <input name="iptc_exif_mapping[custom][[+index+]][exif_value]" id="iptc_exif_custom_exif_field_[+index+]" type="text" size="[+exif_size+]" value="[+exif_text+]" />
         </td>
 		<td style="text-align:left;">
-            <select name="iptc_exif_mapping[custom][[+key+]][iptc_first]" id="iptc_exif_custom_priority_[+key+]">
+            <select name="iptc_exif_mapping[custom][[+index+]][iptc_first]" id="iptc_exif_custom_priority_[+index+]">
                 <option [+iptc_selected+] value="1">[+IPTC+]</option>
                 <option [+exif_selected+] value="">[+EXIF+]</option>
             </select>
         </td>
 		<td style="text-align:left;">
-            <select name="iptc_exif_mapping[custom][[+key+]][keep_existing]" id="iptc_exif_custom_existing_[+key+]">
+            <select name="iptc_exif_mapping[custom][[+index+]][keep_existing]" id="iptc_exif_custom_existing_[+index+]">
                 <option [+keep_selected+] value="1">[+Keep+]</option>
                 <option [+replace_selected+] value="">[+Replace+]</option>
             </select>
@@ -603,8 +604,8 @@
 		</tr>
         <tr valign="top">
 		<td colspan="[+column_count+]">
-	        <input name="iptc_exif_mapping[custom][[+key+]][action][add_field]" class="button-primary" id="iptc-exif-mapping-add-field-[+key+]" type="submit" value="[+Add Field+]" />
-	        <input name="iptc_exif_mapping[custom][[+key+]][action][add_field_map]" class="button-secondary mla-mapping" id="iptc-exif-mapping-add-field-map-[+key+]" type="submit" value="[+Map All Attachments+]" />
+	        <input name="iptc_exif_mapping[custom][[+index+]][action][add_field]" class="button-primary" id="iptc-exif-mapping-add-field-[+index+]" type="submit" value="[+Add Field+]" />
+	        <input name="iptc_exif_mapping[custom][[+index+]][action][add_field_map]" class="button-secondary mla-mapping" id="iptc-exif-mapping-add-field-map-[+index+]" type="submit" value="[+Map All Attachments+]" />
         </td>
 		</tr>
 

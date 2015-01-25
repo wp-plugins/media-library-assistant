@@ -152,6 +152,10 @@ All of the MLA source code has been annotated with "DocBlocks", a special type o
 
 == Changelog ==
 
+= 2.02 =
+* Fix: For **IPTC/EXIF and Custom Field mapping**, custom field names with mixed case, spaces and punctuation characters are now properly handled. Custom field names with HTML reserved characters such as quotes and angle brackerts are properly escaped for display purposes.
+* Fix: For the Media/Assistant submenu table, column headers containing HTML reserved characters are now properly escaped for display purposes.
+
 = 2.01 =
 * New: For **IPTC/EXIF mapping of taxonomy terms, significant performance improvements.** Explicit handling of special cases and new caching code for "map all" processing eliminates unnecessary database queries.
 * New: For the Media/Assistant submenu, the **"where-used" displays have improved**. The post status (Draft, Pending, Future) is now included (it is also included in the "Parent Info" meta box on the Media/Edit Media screen). The parent post/page is moved to the top of the references list. The "Inserted in" file name is no longer displayed for the "base" option to save space.
@@ -239,7 +243,7 @@ All of the MLA source code has been annotated with "DocBlocks", a special type o
 
 == Upgrade Notice ==
 
-= 2.01 =
+= 2.02 =
 Google File Viewer (mla_viewer) disabled. IPTC/EXIF mapping performance gains. Four other enhancements, five fixes.
 
 == Other Notes ==
