@@ -671,9 +671,11 @@ class MLAShortcodes {
 			$item_values['date'] = $attachment->post_date;
 			$item_values['modified'] = $attachment->post_modified;
 			$item_values['parent'] = $attachment->post_parent;
-			$item_values['parent_title'] = '(' . __( 'unattached', 'media-library-assistant' ) . ')';
+			$item_values['parent_name'] = '';
 			$item_values['parent_type'] = '';
+			$item_values['parent_title'] = '(' . __( 'unattached', 'media-library-assistant' ) . ')';
 			$item_values['parent_date'] = '';
+			$item_values['parent_permalink'] = '';
 			$item_values['title'] = wptexturize( $attachment->post_title );
 			$item_values['slug'] = wptexturize( $attachment->post_name );
 			$item_values['width'] = '';
@@ -741,18 +743,29 @@ class MLAShortcodes {
 				$file_name = '';
 			}
 
-			$parent_info = MLAData::mla_fetch_attachment_parent_data( $attachment->post_parent );
-			if ( isset( $parent_info['parent_title'] ) ) {
-				$item_values['parent_title'] = wptexturize( $parent_info['parent_title'] );
-			}
+			if ( 0 < $attachment->post_parent ) {
+				$parent_info = MLAData::mla_fetch_attachment_parent_data( $attachment->post_parent );
+				if ( isset( $parent_info['parent_name'] ) ) {
+					$item_values['parent_name'] = $parent_info['parent_name'];
+				}
+	
+				if ( isset( $parent_info['parent_type'] ) ) {
+					$item_values['parent_type'] = wptexturize( $parent_info['parent_type'] );
+				}
+	
+				if ( isset( $parent_info['parent_title'] ) ) {
+					$item_values['parent_title'] = wptexturize( $parent_info['parent_title'] );
+				}
+	
+				if ( isset( $parent_info['parent_date'] ) ) {
+					$item_values['parent_date'] = wptexturize( $parent_info['parent_date'] );
+				}
 
-			if ( isset( $parent_info['parent_date'] ) ) {
-				$item_values['parent_date'] = wptexturize( $parent_info['parent_date'] );
-			}
-
-			if ( isset( $parent_info['parent_type'] ) ) {
-				$item_values['parent_type'] = wptexturize( $parent_info['parent_type'] );
-			}
+				$permalink = get_permalink( $attachment->post_parent );
+				if ( false !== $permalink ) {
+					$item_values['parent_permalink'] = $permalink;
+				}
+			} // has parent
 
 			/*
 			 * Add attachment-specific field-level substitution parameters
@@ -2038,7 +2051,8 @@ class MLAShortcodes {
 
 		$new_attributes = ( ! empty( $arguments['mla_link_attributes'] ) ) ? esc_attr( self::_process_shortcode_parameter( $arguments['mla_link_attributes'], $markup_values ) ) . ' ' : '';
 
-		$new_base =  ( ! empty( $arguments['mla_link_href'] ) ) ? esc_attr( self::_process_shortcode_parameter( $arguments['mla_link_href'], $markup_values ) ) : $markup_values['new_url'];
+		//$new_base =  ( ! empty( $arguments['mla_link_href'] ) ) ? esc_attr( self::_process_shortcode_parameter( $arguments['mla_link_href'], $markup_values ) ) : $markup_values['new_url'];
+		$new_base =  ( ! empty( $arguments['mla_link_href'] ) ) ? self::_process_shortcode_parameter( $arguments['mla_link_href'], $markup_values ) : $markup_values['new_url'];
 
 		/*
 		 * Build the array of page links
@@ -2049,7 +2063,8 @@ class MLAShortcodes {
 		if ( $prev_next && $current_page && 1 < $current_page ) {
 			$markup_values['new_page'] = $current_page - 1;
 			$new_title = ( ! empty( $arguments['mla_rollover_text'] ) ) ? 'title="' . esc_attr( self::_process_shortcode_parameter( $arguments['mla_rollover_text'], $markup_values ) ) . '" ' : '';
-			$new_url = add_query_arg( array(  $mla_page_parameter  => $current_page - 1 ), $new_base );
+			$new_url = remove_query_arg( $mla_page_parameter, $new_base );
+			$new_url = add_query_arg( array(  $mla_page_parameter  => $current_page - 1 ), $new_url );
 			$prev_text = ( ! empty( $arguments['mla_prev_text'] ) ) ? esc_attr( self::_process_shortcode_parameter( $arguments['mla_prev_text'], $markup_values ) ) : '&laquo; ' . __( 'Previous', 'media-library-assistant' );
 			$page_links[] = sprintf( '<a %1$sclass="prev page-numbers%2$s" %3$s%4$shref="%5$s">%6$s</a>',
 				/* %1$s */ $new_target,
@@ -2074,7 +2089,8 @@ class MLAShortcodes {
 			} else {
 				if ( $show_all || ( $new_page <= $end_size || ( $current_page && $new_page >= $current_page - $mid_size && $new_page <= $current_page + $mid_size ) || $new_page > $last_page - $end_size ) ) {
 					// build link
-					$new_url = add_query_arg( array(  $mla_page_parameter  => $new_page ), $new_base );
+					$new_url = remove_query_arg( $mla_page_parameter, $new_base );
+					$new_url = add_query_arg( array(  $mla_page_parameter  => $new_page ), $new_url );
 					$page_links[] = sprintf( '<a %1$sclass="page-numbers%2$s" %3$s%4$shref="%5$s">%6$s</a>',
 						/* %1$s */ $new_target,
 						/* %2$s */ $new_class,
@@ -2096,7 +2112,8 @@ class MLAShortcodes {
 			// build next link
 			$markup_values['new_page'] = $current_page + 1;
 			$new_title = ( ! empty( $arguments['mla_rollover_text'] ) ) ? 'title="' . esc_attr( self::_process_shortcode_parameter( $arguments['mla_rollover_text'], $markup_values ) ) . '" ' : '';
-			$new_url = add_query_arg( array(  $mla_page_parameter  => $current_page + 1 ), $new_base );
+			$new_url = remove_query_arg( $mla_page_parameter, $new_base );
+			$new_url = add_query_arg( array(  $mla_page_parameter  => $current_page + 1 ), $new_url );
 			$next_text = ( ! empty( $arguments['mla_next_text'] ) ) ? esc_attr( self::_process_shortcode_parameter( $arguments['mla_next_text'], $markup_values ) ) : __( 'Next', 'media-library-assistant' ) . ' &raquo;';
 			$page_links[] = sprintf( '<a %1$sclass="next page-numbers%2$s" %3$s%4$shref="%5$s">%6$s</a>',
 				/* %1$s */ $new_target,
@@ -2265,7 +2282,14 @@ class MLAShortcodes {
 		}
 
 		$markup_values['http_host'] = $_SERVER['HTTP_HOST'];
-		$markup_values['request_uri'] = add_query_arg( array(  $mla_page_parameter  => $new_page ), $_SERVER['REQUEST_URI'] );	
+		
+		if ( 0 < $new_page ) {
+			$new_uri = remove_query_arg( $mla_page_parameter, $_SERVER['REQUEST_URI'] );
+			$markup_values['request_uri'] = add_query_arg( array(  $mla_page_parameter  => $new_page ), $new_uri );	
+		} else {
+			$markup_values['request_uri'] = $_SERVER['REQUEST_URI'];	
+		}
+		
 		$markup_values['new_url'] = set_url_scheme( $markup_values['scheme'] . $markup_values['http_host'] . $markup_values['request_uri'] );
 
 		/*
@@ -2315,7 +2339,8 @@ class MLAShortcodes {
 		}
 
 		if ( ! empty( $arguments['mla_link_href'] ) ) {
-			$new_link .= 'href="' . esc_attr( self::_process_shortcode_parameter( $arguments['mla_link_href'], $markup_values ) ) . '" >';
+			//$new_link .= 'href="' . esc_attr( self::_process_shortcode_parameter( $arguments['mla_link_href'], $markup_values ) ) . '" >';
+			$new_link .= 'href="' . self::_process_shortcode_parameter( $arguments['mla_link_href'], $markup_values ) . '" >';
 		} else {
 			$new_link .= 'href="' . $markup_values['new_url'] . '" >';
 		}
@@ -3177,17 +3202,18 @@ class MLAShortcodes {
 			MLAData::$search_parameters = array( 'debug' => 'none' );
 		} else {
 			/*
-			 * Convert Terms Search parameters to the filter's requirements
+			 * Convert Terms Search parameters to the filter's requirements.
+			 * mla_terms_taxonomies is shared with keyword search.
 			 */
+			if ( empty( MLAData::$search_parameters['mla_terms_taxonomies'] ) ) {
+				MLAData::$search_parameters['mla_terms_search']['taxonomies'] = MLAOptions::mla_supported_taxonomies( 'term-search' );
+			} else {
+				MLAData::$search_parameters['mla_terms_search']['taxonomies'] = array_filter( array_map( 'trim', explode( ',', MLAData::$search_parameters['mla_terms_taxonomies'] ) ) );
+			}
+
 			if ( ! empty( MLAData::$search_parameters['mla_terms_phrases'] ) ) {
 				MLAData::$search_parameters['mla_terms_search']['phrases'] = MLAData::$search_parameters['mla_terms_phrases'];
 				
-				if ( empty( MLAData::$search_parameters['mla_terms_taxonomies'] ) ) {
-					MLAData::$search_parameters['mla_terms_search']['taxonomies'] = MLAOptions::mla_supported_taxonomies( 'term-search' );
-				} else {
-					MLAData::$search_parameters['mla_terms_search']['taxonomies'] = array_filter( array_map( 'trim', explode( ',', MLAData::$search_parameters['mla_terms_taxonomies'] ) ) );
-				}
-
 				if ( empty( MLAData::$search_parameters['mla_phrase_connector'] ) ) {
 					MLAData::$search_parameters['mla_terms_search']['radio_phrases'] = 'AND';
 				} else {
@@ -3213,14 +3239,20 @@ class MLAShortcodes {
 				MLAData::$search_parameters['mla_search_fields'] = array_intersect( array( 'title', 'content', 'excerpt', 'name', 'terms' ), MLAData::$search_parameters['mla_search_fields'] );
 
 				/*
-				 * The Terms Search overrides any terms-based keyword search for now; too complicated.
+				 * Look for keyword search including 'terms' 
 				 */
-				if ( isset( MLAData::$search_parameters['mla_terms_search']['phrases'] ) ) {
-					foreach ( MLAData::$search_parameters['mla_search_fields'] as $index => $field ) {
-						if ( 'terms' == $field ) {
+				foreach ( MLAData::$search_parameters['mla_search_fields'] as $index => $field ) {
+					if ( 'terms' == $field ) {
+						if ( isset( MLAData::$search_parameters['mla_terms_search']['phrases'] ) ) {
+							/*
+							 * The Terms Search overrides any terms-based keyword search for now; too complicated.
+							 */
 							unset ( MLAData::$search_parameters['mla_search_fields'][ $index ] );
+						} else {
+							MLAData::$search_parameters['mla_search_taxonomies'] = MLAData::$search_parameters['mla_terms_search']['taxonomies'];
+							unset( MLAData::$search_parameters['mla_terms_search']['taxonomies'] );
 						}
-					}
+					} // terms in search fields
 				}
 			} // mla_search_fields present
 			

@@ -2049,7 +2049,7 @@ class MLAOptions {
  	 *
 	 * @since 1.10
 	 *
-	 * @param	string	slug, e.g., 'c_file-size' for the 'File Size' field
+	 * @param	string	slug, e.g., 'c_File Size' for the 'File Size' field
 	 *
 	 * @return	array	option value, e.g., array( 'name' => 'File Size', ... )
 	 */
@@ -2057,7 +2057,7 @@ class MLAOptions {
 		$option_values = self::mla_get_option( 'custom_field_mapping' );
 
 		foreach ( $option_values as $key => $value ) {
-			if ( $slug == 'c_' . sanitize_title( $key ) ) {
+			if ( $slug == 'c_' . $value['name'] ) {
 				return $value;
 			}
 		}
@@ -2077,9 +2077,10 @@ class MLAOptions {
 	public static function mla_custom_field_support( $support_type = 'default_columns' ) {
 		$option_values = self::mla_get_option( 'custom_field_mapping' );
 		$results = array();
-
+		$index = 0;
+		
 		foreach ( $option_values as $key => $value ) {
-			$slug = 'c_' . sanitize_title( $key );
+			$slug = 'c_' . $index++; // sanitize_title( $key ); Didn't handle HTML in name, e.g., "R><B"
 
 			switch( $support_type ) {
 				case 'custom_columns':
@@ -2097,10 +2098,16 @@ class MLAOptions {
 						$results[] = $slug;
 					}
 					break;
+				case 'custom_sortable_columns':
+					if ( $value['mla_column'] ) {
+						// columns without NULL values should sort descending
+						$results[ $slug ] = array( $value['name'], $value['no_null'] );
+					}
+					break;
 				case 'default_sortable_columns':
 					if ( $value['mla_column'] ) {
 						// columns without NULL values should sort descending
-						$results[ $slug ] = array( $slug, $value['no_null'] );
+						$results[ $slug ] = array( esc_html( $value['name'] ), $value['no_null'] );
 					}
 					break;
 				case 'quick_edit':
@@ -3107,7 +3114,7 @@ class MLAOptions {
 		$settings_changed = false;
 		$custom_field_names = self::_get_custom_field_names();
 
-		foreach ( $new_values as $new_key => $new_value ) {
+		foreach ( $new_values as $the_key => $new_value ) {
 			$any_setting_changed = false;
 			/*
 			 * Replace index with field name
@@ -3117,7 +3124,7 @@ class MLAOptions {
 			/*
 			 * Check for the addition of a new rule or field
 			 */
-			if ( self::MLA_NEW_CUSTOM_FIELD === $new_key ) {
+			if ( self::MLA_NEW_CUSTOM_FIELD === $the_key ) {
 				if ( empty( $new_key ) ) {
 					continue;
 				}
@@ -3131,7 +3138,7 @@ class MLAOptions {
 				/* translators: 1: custom field name */
 				$message_list .= '<br>' . sprintf( __( 'Adding new field %1$s.', 'media-library-assistant' ), esc_html( $new_key ) ) . "\r\n";
 				$any_setting_changed = true;
-			} elseif ( self::MLA_NEW_CUSTOM_RULE === $new_key ) {
+			} elseif ( self::MLA_NEW_CUSTOM_RULE === $the_key ) {
 				if ( 'none' == $new_key ) {
 					continue;
 				}
@@ -4312,7 +4319,7 @@ class MLAOptions {
 		$settings_changed = false;
 		$custom_field_names = self::_get_custom_field_names();
 
-		foreach ( $new_values['custom'] as $new_key => $new_value ) {
+		foreach ( $new_values['custom'] as $the_key => $new_value ) {
 			$any_setting_changed = false;
 			/*
 			 * Replace index with field name
@@ -4322,7 +4329,7 @@ class MLAOptions {
 			/*
 			 * Check for the addition of a new field or new rule
 			 */
-			if ( self::MLA_NEW_CUSTOM_FIELD === $new_key ) {
+			if ( self::MLA_NEW_CUSTOM_FIELD === $the_key ) {
 				if ( empty( $new_key ) ) {
 					continue;
 				}
@@ -4336,7 +4343,7 @@ class MLAOptions {
 				/* translators: 1: custom field name */
 				$message_list .= '<br>' . sprintf( __( 'Adding new field %1$s.', 'media-library-assistant' ), esc_html( $new_key ) ) . "\r\n";
 				$any_setting_changed = true;
-			} elseif ( self::MLA_NEW_CUSTOM_RULE === $new_key ) {
+			} elseif ( self::MLA_NEW_CUSTOM_RULE === $the_key ) {
 				if ( 'none' == $new_key ) {
 					continue;
 				}

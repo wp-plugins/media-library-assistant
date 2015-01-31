@@ -344,7 +344,7 @@ Twelve <code>[mla_gallery]</code> parameters provide an easy way to control the 
 <table>
 <tr>
 <td style="padding-right: 10px; vertical-align: top; font-weight:bold">mla_output</td>
-<td>completely replaces gallery output with links to the "previous" or "next" item/page or pagination links. Complete documentation is in the <a href="#mla_output"><strong>Support for Alternative Gallery Output, e.g., Pagination</strong></a> section below.</td>
+<td>completely replaces gallery output with links to the "previous" or "next" item/page or pagination links. Complete documentation is in the <a href="#mla_output_parameter"><strong>Support for Alternative Gallery Output, e.g., Pagination</strong></a> section below.</td>
 </tr>
 <tr>
 <td style="padding-right: 10px; vertical-align: top; font-weight:bold">mla_link_attributes</td>
@@ -753,7 +753,7 @@ For compatibility with the WordPress <code>[gallery]</code> shortcode, these par
 </p>
 <h4>Pagination Parameters</h4>
 <p>
-Pagination parameters let you divide your <code>[mla_gallery]</code> display into two or more pages when the display includes a large number of items. These parameters work with MLA's <a href="#mla_output">Support for Alternative Gallery Output, e.g., Pagination</a> to make it easy to construct multi-page galleries without resorting to PHP templates and code in your theme.
+Pagination parameters let you divide your <code>[mla_gallery]</code> display into two or more pages when the display includes a large number of items. These parameters work with MLA's <a href="#mla_output_parameter"><strong>Support for Alternative Gallery Output, e.g., Pagination</strong></a> to make it easy to construct multi-page galleries without resorting to PHP templates and code in your theme.
 <table>
 <tr>
 <td style="padding-right: 10px; vertical-align: top; font-weight:bold">nopaging</td>
@@ -789,7 +789,7 @@ Pagination parameters let you divide your <code>[mla_gallery]</code> display int
 </tr>
 </table>
 <p>
-The task of dividing a large <code>[mla_gallery]</code> into two or more pages is supported by MLA's <a href="#mla_output">Support for Alternative Gallery Output, e.g., Pagination</a>. For more information and examples, go to that section of the Documentation. 
+The task of dividing a large <code>[mla_gallery]</code> into two or more pages is supported by MLA's <a href="#mla_output_parameter"><strong>Support for Alternative Gallery Output, e.g., Pagination</strong></a>. For more information and examples, go to that section of the Documentation. 
 <a name="time_parameters"></a>
 </p>
 <h4>Date and Time Parameters</h4>
@@ -1646,7 +1646,7 @@ Tag cloud <strong>item-specific substitution parameters</strong> for the Markup 
 </p>
 <h4>Tag Cloud Pagination Parameters</h4>
 <p>
-If you have a large number of terms in your cloud taxonomy you may want to paginate the cloud display, i.e., divide the cloud into two or more pages of a reasonable size. Pagination support for <code>[mla_tag_cloud]</code> is modeled on similar functions for<code>[mla_gallery]</code>, and you can find more explaination of the ideas behind pagination in the <a href="#mla_output"><strong>Support for Alternative Gallery Output, e.g., Pagination</strong></a> section. Five parameters are supplied for this purpose:
+If you have a large number of terms in your cloud taxonomy you may want to paginate the cloud display, i.e., divide the cloud into two or more pages of a reasonable size. Pagination support for <code>[mla_tag_cloud]</code> is modeled on similar functions for<code>[mla_gallery]</code>, and you can find more explaination of the ideas behind pagination in the <a href="#mla_output_parameter"><strong>Support for Alternative Gallery Output, e.g., Pagination</strong></a> section. Five parameters are supplied for this purpose:
 <table>
 <tr>
 <td style="padding-right: 10px; vertical-align: top; font-weight:bold">limit</td>

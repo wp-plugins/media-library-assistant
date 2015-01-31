@@ -844,6 +844,14 @@ class MLAGalleryHooksExample {
 			return $item_values; // leave them unchanged
 		}
 		
+		if ( 'format terms' == self::$shortcode_attributes['my_filter'] ) {
+			$object_terms = wp_get_object_terms ( absint( $item_values['attachment_ID'] ), 'attachment_category', array( 'fields' => 'slugs' ) );
+			$item_values['terms:attachment_category'] = implode( ' ', $object_terms );
+			$item_values['caption'] = implode( ' ', $object_terms );
+			
+		//error_log( 'MLAGalleryHooksExample::mla_gallery_item_values_filter terms = ' . var_export( $item_values['terms:attachment_category'], true ), 0 );
+		}
+
 		/*
 		 * For this first example, we will reformat the 'date' value as d/m/Y.
 		 */

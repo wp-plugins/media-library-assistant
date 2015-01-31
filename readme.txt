@@ -153,8 +153,14 @@ All of the MLA source code has been annotated with "DocBlocks", a special type o
 == Changelog ==
 
 = 2.02 =
+* New: An enhanced array of "CAMERA"-related fields is provided as part of the EXIF metadata. They contain more attractive and useful versions of "ExposureBiasValue", "ExposureTime", "Flash", "FNumber", "FocalLength" and "ShutterSpeed".
+* New: For mapping rules and `[mla_gallery]`, **"timestamp", "date" and "fraction" format options** can be used to format IPTC/EXIF metadata values, custom fields and other Data Sources.
+* New: For `[mla_gallery]`, `parent_name` (slug) and `parent_permalink` have been added to the Attachment-specific substitution parameters for the markup template Item part.
+* New: For `[mla_gallery]`, the `mla_terms_taxonomies` parameter can be used for "Keyword(s) Search" to control which taxonomies are included if `mla_search_fields` includes "terms".
 * Fix: For **IPTC/EXIF and Custom Field mapping**, custom field names with mixed case, spaces and punctuation characters are now properly handled. Custom field names with HTML reserved characters such as quotes and angle brackerts are properly escaped for display purposes.
 * Fix: For the Media/Assistant submenu table, column headers containing HTML reserved characters are now properly escaped for display purposes.
+* Fix: For the Media/Assistant submenu table, unnecessary processing and database access are avoided when all four "where-used" reporting options are disabled.
+* Fix: For `[mla_gallery]` and `[mla_tag_cloud]`, duplicate `mla_page_parameter` query arguments have been eliminated from links in the gallery or cloud.
 
 = 2.01 =
 * New: For **IPTC/EXIF mapping of taxonomy terms, significant performance improvements.** Explicit handling of special cases and new caching code for "map all" processing eliminates unnecessary database queries.

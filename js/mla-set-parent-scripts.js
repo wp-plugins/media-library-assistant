@@ -2,6 +2,18 @@
 
 var jQuery;
 
+/*
+ * This script requires the global "mla"object to be defined and include the following:
+ *
+ * properties:
+ *     mla.settings.useDashicons
+ *     mla.settings.ajaxDoneError
+ *     mla.settings.ajaxFailError
+ *
+ * components:
+ *     mla.setParent
+ */
+
 ( function( $ ) {
 	/**
 	 * setParent displays a popup modal window with a post/page list

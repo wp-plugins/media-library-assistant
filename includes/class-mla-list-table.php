@@ -1352,12 +1352,14 @@ class MLA_List_Table extends WP_List_Table {
 	 * @return	string	HTML markup to be placed inside the column
 	 */
 	function column_base_file( $item ) {
+		$base_file = isset( $item->mla_wp_attached_file ) ? $item->mla_wp_attached_file : '';
+
 		return sprintf( '<a href="%1$s" title="' . __( 'Filter by', 'media-library-assistant' ) . ' &#8220;%2$s&#8221;">%2$s</a>', esc_url( add_query_arg( array_merge( self::mla_submenu_arguments( false ), array(
 			'page' => MLA::ADMIN_PAGE_SLUG,
 			'mla-metakey' => urlencode( '_wp_attached_file' ),
-			'mla-metavalue' => urlencode( $item->mla_references['base_file'] ),
-			'heading_suffix' => urlencode( __( 'Base File', 'media-library-assistant' ) . ': ' . $item->mla_references['base_file'] ) 
-		) ), 'upload.php' ) ), esc_html( $item->mla_references['base_file'] ) );
+			'mla-metavalue' => urlencode( $base_file ),
+			'heading_suffix' => urlencode( __( 'Base File', 'media-library-assistant' ) . ': ' . $base_file ) 
+		) ), 'upload.php' ) ), esc_html( $base_file ) );
 	}
 
 	/**

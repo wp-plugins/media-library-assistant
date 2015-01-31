@@ -676,6 +676,7 @@ class MLAData {
 						$results .= self::_evaluate_template_node( $value, $markup_values );
 				} // array of nodes
 
+//error_log( __LINE__ . " _evaluate_template_node [{$node_value}] results = " . var_export( $results, true ), 0 );
 				if ( false === strpos( $results, '[+' ) ) {
 					return $results;
 				}
@@ -824,6 +825,7 @@ class MLAData {
 					$template_count++;
 					break;
 				case 'meta':
+//error_log( __LINE__ . " mla_expand_field_level_parameters [{$key}] = " . var_export( $value, true ), 0 );
 					if ( is_null( $item_metadata ) ) {
 						if ( 0 < $post_id ) {
 							$item_metadata = get_metadata( 'post', $post_id, '_wp_attachment_metadata', true );
@@ -831,8 +833,10 @@ class MLAData {
 							break;
 						}
 					}
+//error_log( __LINE__ . " mla_expand_field_level_parameters [{$post_id}] item_metadata = " . var_export( $item_metadata, true ), 0 );
 
 					$markup_values[ $key ] = self::mla_find_array_element( $value['value'], $item_metadata, $value['option'] );
+//error_log( __LINE__ . " mla_expand_field_level_parameters [{$key}] markup_values = " . var_export( $markup_values[ $key ], true ), 0 );
 					break;
 				case 'query':
 					if ( isset( $query ) && isset( $query[ $value['value'] ] ) ) {
@@ -1024,7 +1028,9 @@ class MLAData {
 				default:
 					// ignore anything else
 			} // switch
+//error_log( __LINE__ . " mla_expand_field_level_parameters [{$key}] markup_values = " . var_export( $markup_values[ $key ], true ), 0 );
 			
+//error_log( __LINE__ . " mla_expand_field_level_parameters [{$key}] value = " . var_export( $value, true ), 0 );
 			if ( isset( $markup_values[ $key ] ) ) {
 				if ( 'attr' == $value['format'] ) {
 					$markup_values[ $key ] = esc_attr( $markup_values[ $key ] );
@@ -1032,14 +1038,66 @@ class MLAData {
 					$markup_values[ $key ] = urlencode( $markup_values[ $key ] );
 				} elseif ( ( 'commas' == $value['format'] ) && is_numeric( $markup_values[ $key ] ) ) {
 					$markup_values[ $key ] = number_format( (float)$markup_values[ $key ] );
-				}
-			}
+				} elseif ( 'timestamp' == $value['format'] && is_numeric( $markup_values[ $key ] ) ) {
+					/*
+					 * date "Returns a string formatted according to the given format string using the given integer"
+					 */
+					$format = empty( $value['args'] ) ? 'd/m/Y H:i:s' : $value['args'];
+//error_log( __LINE__ . " mla_expand_field_level_parameters [{$key}] format = " . var_export( date( $format , (integer) $markup_values[ $key ] ), true ), 0 );
+//error_log( __LINE__ . " mla_expand_field_level_parameters [{$key}] date = " . var_export( date( $format , (integer) $markup_values[ $key ] ), true ), 0 );
+					$markup_values[ $key ] = date( $format , (integer) $markup_values[ $key ] );
+				} elseif ( 'date' == $value['format'] ) {
+					/*
+					 * strtotime will "Parse about any English textual datetime description into a Unix timestamp"
+					 * If it succeeds we can format the timestamp for display
+					 */
+					$timestamp = strtotime( $markup_values[ $key ] );
+					if( false !== $timestamp ) {
+						$markup_values[ $key ] = date( $value['args'], $timestamp );
+					}
+				} elseif ( 'fraction' == $value['format'] ) {
+					$show_fractions = true;
+					if ( ! empty( $value['args'] ) ) {
+						if ( is_array( $value['args'] ) ) {
+							$format = '%1$+.' . absint( $value['args'][0] ) . 'f';
+							$show_fractions = ( 'false' !== strtolower( trim( $value['args'][1] ) ) );
+						} else {
+							$format = '%1$+.' . absint( $value['args'] ) . 'f';
+						}
+					} else {
+						$format = '%1$+.2f';
+					}
+					
+					$fragments = array_map( 'intval', explode( '/', $markup_values[ $key ] ) );
+					if ( is_null( $fragments[1] ) ) {
+						$value = trim( $markup_values[ $key ] );
+						if ( ! empty( $value ) ) {
+							$markup_values[ $key ] = $value;
+						}
+					} else {
+						if ( $fragments[0] ) {
+							if ( 1 == $fragments[1] ) {
+								$markup_values[ $key ] = sprintf( '%1$+d', $fragments[0] );
+							} elseif ( 0 != $fragments[1] ) {
+								$value = $fragments[0] / $fragments[1];
+								if ( $show_fractions && ( -1 <= $value ) && ( 1 >= $value ) ) {
+									$markup_values[ $key ] = sprintf( '%1$+d/%2$d', $fragments[0], $fragments[1] );
+								} else {
+									$markup_values[ $key ] = sprintf( $format, $value );
+								}
+							} // fractional value
+						} // non-zero numerator
+					} // valid denominator
+				} 
+//error_log( __LINE__ . " mla_expand_field_level_parameters markup_values [{$key}] = " . var_export( $markup_values[ $key ], true ), 0 );
+			} // isset( $markup_values[ $key ] )
 		} // foreach placeholder
 
 		if ( $template_count ) {
 			$markup_values['[+template_count+]'] = $template_count;
 		}
 
+//error_log( __LINE__ . " mla_expand_field_level_parameters markup_values = " . var_export( $markup_values, true ), 0 );
 		return $markup_values;
 	}
 
@@ -1110,9 +1168,21 @@ class MLAData {
 				$tail = substr( $match, 2);
 			}
 
-			$match_count = preg_match( '/([^,]+)(,(text|single|export|array|multi|commas|raw|attr|url))\+\]/', $tail, $matches );
+			$match_count = preg_match( '/([^,]+)(,(text|single|export|array|multi|commas|raw|attr|url|timestamp|date|fraction))(\(([^)]+)\))*\+\]/', $tail, $matches );
 			if ( 1 == $match_count ) {
 				$result['value'] = $matches[1];
+				if ( ! empty( $matches[5] ) ) {
+					$args = explode( ',', trim( $matches[5], " \n\t\r\0\x0B," ) );
+					foreach ( $args as $index => $arg ) {
+						$args[ $index ] = trim( $arg, "\'\"" );
+					}
+					
+					if ( 1 == count( $args ) ) {
+						$args = $args[0];
+					}
+				} else {
+					$args = '';
+				}
 
 				if ( 'commas' == $matches[3] ) {		
 					$result['option'] = 'text';
@@ -1126,6 +1196,18 @@ class MLAData {
 				} elseif ( 'url' == $matches[3] ) {		
 					$result['option'] = 'text';
 					$result['format'] = 'url';
+				} elseif ( 'timestamp' == $matches[3] ) {		
+					$result['option'] = 'text';
+					$result['format'] = 'timestamp';
+					$result['args'] = $args;
+				} elseif ( 'date' == $matches[3] ) {		
+					$result['option'] = 'text';
+					$result['format'] = 'date';
+					$result['args'] = $args;
+				} elseif ( 'fraction' == $matches[3] ) {		
+					$result['option'] = 'text';
+					$result['format'] = 'fraction';
+					$result['args'] = $args;
 				} else {
 					$result['option'] = $matches[3];
 				}
@@ -1353,13 +1435,32 @@ class MLAData {
 					if ( in_array( $value, array( 'none', 'post__in' ) ) ) {
 						$clean_request[ $key ] = $value;
 					} else {
-						$sortable_columns = MLA_List_Table::mla_get_sortable_columns( );
+						$orderby = NULL;
+						/*
+						 * Custom fields can have HTML reserved characters, which are encoded by
+						 * mla_get_sortable_columns, so a separate, unencoded list is required.
+						 */
+						$sortable_columns = MLAOptions::mla_custom_field_support( 'custom_sortable_columns' );
 						foreach ($sortable_columns as $sort_key => $sort_value ) {
 							if ( $value == $sort_value[0] ) {
-								$clean_request[ $key ] = $value;
+								$orderby = 'c_' . $value;
 								break;
 							}
 						} // foreach
+
+						if ( NULL === $orderby ) {
+							$sortable_columns = MLA_List_Table::mla_get_sortable_columns();
+							foreach ($sortable_columns as $sort_key => $sort_value ) {
+								if ( $value == $sort_value[0] ) {
+									$orderby = $value;
+									break;
+								}
+							} // foreach
+						}
+						
+						if ( NULL !== $orderby ) {
+							$clean_request[ $key ] = $orderby;
+						}
 					}
 					break;
 				/*
@@ -1554,8 +1655,8 @@ class MLAData {
 		 * We have to handle custom field/post_meta values here
 		 * because they need a JOIN clause supplied by WP_Query
 		 */
-		if ( 'c_' == substr( self::$query_parameters['orderby'], 0, 2 ) ) {
-			$option_value = MLAOptions::mla_custom_field_option_value( self::$query_parameters['orderby'] );
+		if ( 'c_' == substr( $clean_request['orderby'], 0, 2 ) ) {
+			$option_value = MLAOptions::mla_custom_field_option_value( $clean_request['orderby'] );
 			if ( isset( $option_value['name'] ) ) {
 				self::$query_parameters['use_postmeta_view'] = true;
 				self::$query_parameters['postmeta_key'] = $option_value['name'];
@@ -1807,7 +1908,7 @@ class MLAData {
 		/*
 		 * Process the Terms Search arguments, if present.
 		 */
-		if ( isset( self::$search_parameters['mla_terms_search'] ) ) {
+		if ( isset( self::$search_parameters['mla_terms_search']['phrases'] ) ) {
 			$terms = array_map( 'trim', explode( ',', self::$search_parameters['mla_terms_search']['phrases'] ) );
 			if ( 1 < count( $terms ) ) {
 				$terms_connector = '(';			
@@ -1963,7 +2064,7 @@ class MLAData {
 					 * separated by taxonomy.
 					 */
 					if ( in_array( 'terms', $fields ) ) {
-						$the_terms = get_terms( MLAOptions::mla_supported_taxonomies( 'term-search' ), array( 'name__like' => $term, 'fields' => 'all', 'hide_empty' => false ) );
+						$the_terms = get_terms( self::$search_parameters['mla_search_taxonomies'], array( 'name__like' => $term, 'fields' => 'all', 'hide_empty' => false ) );
 						foreach( $the_terms as $the_term ) {
 							$tax_terms[ $the_term->taxonomy ][ $the_term->term_id ] = (integer) $the_term->term_taxonomy_id;
 
@@ -2424,16 +2525,20 @@ class MLAData {
 		if ( $parent_id ) {
 			$parent = get_post( $parent_id );
 
-			if ( isset( $parent->post_date ) ) {
-				$parent_data['parent_date'] = $parent->post_date;
+			if ( isset( $parent->post_name ) ) {
+				$parent_data['parent_name'] = $parent->post_name;
+			}
+
+			if ( isset( $parent->post_type ) ) {
+				$parent_data['parent_type'] = $parent->post_type;
 			}
 
 			if ( isset( $parent->post_title ) ) {
 				$parent_data['parent_title'] = $parent->post_title;
 			}
 
-			if ( isset( $parent->post_type ) ) {
-				$parent_data['parent_type'] = $parent->post_type;
+			if ( isset( $parent->post_date ) ) {
+				$parent_data['parent_date'] = $parent->post_date;
 			}
 
 			if ( isset( $parent->post_status ) ) {
@@ -3020,6 +3125,20 @@ class MLAData {
 			'parent_errors' => ''
 		);
 
+		$inserted_in_option = MLAOptions::mla_get_option( MLAOptions::MLA_INSERTED_IN_TUNING );
+		$initial_references['inserted_option'] = $inserted_in_option;
+
+		/*
+		 * Make sure there's work to do; otherwise initialize the attachment data and return
+		 */
+		if ( false == ( MLAOptions::$process_featured_in || MLAOptions::$process_inserted_in || MLAOptions::$process_gallery_in || MLAOptions::$process_mla_gallery_in ) ) {
+			foreach ( $attachments as $attachment_index => $attachment ) {
+				$attachments[ $attachment_index ]->mla_references = $initial_references;
+			}
+
+			return;
+		}
+		
 		/*
 		 * Collect the raw data for where-used analysis
 		 */
@@ -3050,7 +3169,7 @@ class MLAData {
 			}
 			
 			$sizes = isset( $attachment_metadata['sizes'] ) ? $attachment_metadata['sizes'] : NULL;
-			if ( ! empty( $sizes ) ) {
+			if ( ! empty( $sizes ) && is_array( $sizes ) ) {
 				/* Using the path and name as the array key ensures each name is added only once */
 				foreach ( $sizes as $size => $size_info ) {
 					$size_info['size'] = $size;
@@ -3101,8 +3220,6 @@ class MLAData {
 			$exclude_revisions = " AND (post_type <> 'revision')";
 		}
 
-		$inserted_in_option = MLAOptions::mla_get_option( MLAOptions::MLA_INSERTED_IN_TUNING );
-		$initial_references['inserted_option'] = $inserted_in_option;
 		if ( MLAOptions::$process_inserted_in ) {
 			$wp_4dot0_plus = version_compare( get_bloginfo('version'), '4.0', '>=' );
 			$query_parameters = array();
@@ -5332,7 +5449,6 @@ class MLAData {
 				//set_error_handler( 'MLAData::mla_IPTC_EXIF_error_handler' );
 				$results['mla_exif_metadata'] = $exif_data = @exif_read_data( $path );
 				//restore_error_handler();
-
 				if ( ! empty( MLAData::$mla_IPTC_EXIF_errors ) ) {
 					$results['mla_exif_errors'] = MLAData::$mla_IPTC_EXIF_errors;
 					MLAData::$mla_IPTC_EXIF_errors = array();
@@ -5342,18 +5458,153 @@ class MLAData {
 		}
 
 		/*
+		 * Expand EXIF Camera-related values:
+		 *
+		 * ExposureBiasValue
+		 * ExposureTime
+		 * Flash
+		 * FNumber 
+		 * FocalLength
+		 * ShutterSpeed from ExposureTime
+		 */
+		$new_data = array();
+		if ( isset( $exif_data['FNumber'] ) ) {
+			$fragments = array_map( 'intval', explode( '/', $exif_data['FNumber'] ) );
+			if ( is_null( $fragments[1] ) ) {
+				$value = trim( $exif_data['FNumber'] );
+				if ( ! empty( $value ) ) {
+					$new_data['FNumber'] = $value;
+				}
+			} else {
+				if ( $fragments[0] ) {
+					if ( 1 == $fragments[1] ) {
+						$new_data['FNumber'] = sprintf( '%1$d', $fragments[0] );
+					} elseif ( 0 != $fragments[1] ) {
+						$value = $fragments[0] / $fragments[1];
+						if ( 1 > $value ) {
+							$new_data['FNumber'] = sprintf( '%1$d/%2$d', $fragments[0], $fragments[1] );
+						} else {
+							$new_data['FNumber'] = sprintf( '%1$.1f', $value );
+						}
+					} // fractional value
+				} // non-zero numerator
+			} // valid denominator
+		} // FNumber
+		
+		if ( isset( $exif_data['ExposureBiasValue'] ) ) {
+			$fragments = array_map( 'intval', explode( '/', $exif_data['ExposureBiasValue'] ) );
+			if ( is_null( $fragments[1] ) ) {
+				$value = trim( $exif_data['ExposureBiasValue'] );
+				if ( ! empty( $value ) ) {
+					$new_data['ExposureBiasValue'] = $value;
+				}
+			} else {
+				if ( $fragments[0] ) {
+					if ( 1 == $fragments[1] ) {
+						$new_data['ExposureBiasValue'] = sprintf( '%1$+d', $fragments[0] );
+					} elseif ( 0 != $fragments[1] ) {
+						$value = $fragments[0] / $fragments[1];
+						if ( ( -1 <= $value ) && ( 1 >= $value ) ) {
+							$new_data['ExposureBiasValue'] = sprintf( '%1$+d/%2$d', $fragments[0], $fragments[1] );
+						} else {
+							$new_data['ExposureBiasValue'] = sprintf( '%1$+.2f', $value );
+						}
+					} // fractional value
+				} // non-zero numerator
+			} // valid denominator
+		} // ExposureBiasValue
+		
+		if ( isset( $exif_data['Flash'] ) ) {
+			$value = ( absint( $exif_data['Flash'] ) );
+			if ( $value & 0x1 ) {
+				$new_data['Flash'] = __( 'yes', 'media-library-assistant' );
+			} else {
+				$new_data['Flash'] = __( 'no', 'media-library-assistant' );
+			}
+		} // Flash
+		
+		if ( isset( $exif_data['FocalLength'] ) ) {
+			$fragments = array_map( 'intval', explode( '/', $exif_data['FocalLength'] ) );
+			if ( is_null( $fragments[1] ) ) {
+				$value = trim( $exif_data['FocalLength'] );
+				if ( ! empty( $value ) ) {
+					$new_data['FocalLength'] = $value;
+				}
+			} else {
+				if ( $fragments[0] ) {
+					if ( 1 == $fragments[1] ) {
+						$new_data['FocalLength'] = sprintf( '%1$d', $fragments[0] );
+					} elseif ( 0 != $fragments[1] ) {
+						$value = $fragments[0] / $fragments[1];
+						if ( ( 1 > $value ) ) {
+							$new_data['FocalLength'] = sprintf( '%1$d/%2$d', $fragments[0], $fragments[1] );
+						} else {
+							if ( $value == intval( $value ) ) {
+								$new_data['FocalLength'] = sprintf( '%1$d', $value );
+							}else {
+								$new_data['FocalLength'] = sprintf( '%1$.2f', $value );
+							}
+						}
+					} // fractional value
+				} // non-zero numerator
+			} // valid denominator
+		} // FocalLength
+		
+		/*
+		 * ExposureTime
+		 */
+		if ( isset( $exif_data['ExposureTime'] ) ) {
+			$fragments = array_map( 'intval', explode( '/', $exif_data['ExposureTime'] ) );
+			if ( is_null( $fragments[1] ) ) {
+				$value = trim( $exif_data['ExposureTime'] );
+				if ( ! empty( $value ) ) {
+					$new_data['ExposureTime'] = $value;
+				}
+			} else {
+				if ( $fragments[0] ) {
+					if ( 1 == $fragments[1] ) {
+						$new_data['ShutterSpeed'] = $new_data['ExposureTime'] = sprintf( '%1$d', $fragments[0] );
+					} elseif ( 0 != $fragments[1] ) {
+						$value = $fragments[0] / $fragments[1];
+						if ( 1 > $value ) {
+							$new_data['ExposureTime'] = sprintf( '%1$d/%2$d', $fragments[0], $fragments[1] );
+							
+							// Convert to "1/" value for shutter speed
+							if ( 1 == $fragments[0] ) {
+								$new_data['ShutterSpeed'] = $new_data['ExposureTime'];
+							} else {
+								$test = (float) number_format( 1.0 / $value, 1, '.', '');
+								if ( in_array( $test, array( 1.3, 1.5, 1.6, 2.5 ) ) ) {
+									$new_data['ShutterSpeed'] = '1/' . number_format( 1.0 / $value, 1, '.', '' );
+								} else {
+									$new_data['ShutterSpeed'] = '1/' .  number_format( 1.0 / $value, 0, '.', '' );
+								}
+							}
+						} else {
+							$new_data['ShutterSpeed'] = $new_data['ExposureTime'] = sprintf( '%1$.2f', $value );
+						}
+					} // fractional value
+				} // non-zero numerator
+			} // valid denominator
+		} // ExposureTime
+		
+		if ( ! empty( $new_data ) ) {
+			$results['mla_exif_metadata']['CAMERA'] = $new_data;
+		}
+
+		/*
 		 * Expand EXIF GPS values
 		 */
-		$gps_data = array();
+		$new_data = array();
 		if ( isset( $exif_data['GPSVersion'] ) ) {
-			$gps_data['Version'] = sprintf( '%1$d.%2$d.%3$d.%4$d', ord( $exif_data['GPSVersion'][0] ), ord( $exif_data['GPSVersion'][1] ), ord( $exif_data['GPSVersion'][2] ), ord( $exif_data['GPSVersion'][3] ) );
+			$new_data['Version'] = sprintf( '%1$d.%2$d.%3$d.%4$d', ord( $exif_data['GPSVersion'][0] ), ord( $exif_data['GPSVersion'][1] ), ord( $exif_data['GPSVersion'][2] ), ord( $exif_data['GPSVersion'][3] ) );
 		}
 
 		if ( isset( $exif_data['GPSLatitudeRef'] ) ) {
-			$gps_data['LatitudeRef'] = $exif_data['GPSLatitudeRef'];
-			$gps_data['LatitudeRefS'] = ( 'N' == $exif_data['GPSLatitudeRef'] ) ? '' : '-';
-			$ref = $gps_data['LatitudeRef'];
-			$refs = $gps_data['LatitudeRefS'];
+			$new_data['LatitudeRef'] = $exif_data['GPSLatitudeRef'];
+			$new_data['LatitudeRefS'] = ( 'N' == $exif_data['GPSLatitudeRef'] ) ? '' : '-';
+			$ref = $new_data['LatitudeRef'];
+			$refs = $new_data['LatitudeRefS'];
 		} else {
 			$ref = '';
 			$refs = '';
@@ -5361,28 +5612,28 @@ class MLAData {
 
 		if ( isset( $exif_data['GPSLatitude'] ) ) {
 			$rational = $exif_data['GPSLatitude'];
-			$gps_data['LatitudeD'] = $degrees = self::_rational_to_decimal( $rational[0] );
-			$gps_data['LatitudeM'] = $minutes = self::_rational_to_decimal( $rational[1] );
-			$gps_data['LatitudeS'] = sprintf( '%1$01.4f', $seconds = self::_rational_to_decimal( $rational[2] ) );
+			$new_data['LatitudeD'] = $degrees = self::_rational_to_decimal( $rational[0] );
+			$new_data['LatitudeM'] = $minutes = self::_rational_to_decimal( $rational[1] );
+			$new_data['LatitudeS'] = sprintf( '%1$01.4f', $seconds = self::_rational_to_decimal( $rational[2] ) );
 			$decimal_minutes = $minutes + ( $seconds / 60 );
 			$decimal_degrees = ( $decimal_minutes / 60 );
 
-			$gps_data['Latitude'] = sprintf( '%1$dd %2$d\' %3$01.4f" %4$s', $degrees, $minutes, $seconds, $ref );
-			$gps_data['LatitudeDM'] = sprintf( '%1$d %2$01.4f', $degrees, $decimal_minutes );
-			$gps_data['LatitudeDD'] = sprintf( '%1$01f', $degrees + $decimal_degrees );
-			$gps_data['LatitudeMinDec'] = substr( $gps_data['LatitudeDM'], strpos( $gps_data['LatitudeDM'], ' ' ) + 1 );
-			$gps_data['LatitudeDegDec'] = substr( $gps_data['LatitudeDD'], strpos( $gps_data['LatitudeDD'], '.' ) );
-			$gps_data['LatitudeSDM'] = $refs . $gps_data['LatitudeDM'];
-			$gps_data['LatitudeSDD'] = $refs . $gps_data['LatitudeDD'];
-			$gps_data['LatitudeDM'] = $gps_data['LatitudeDM'] . $ref;
-			$gps_data['LatitudeDD'] = $gps_data['LatitudeDD'] . $ref;
+			$new_data['Latitude'] = sprintf( '%1$dd %2$d\' %3$01.4f" %4$s', $degrees, $minutes, $seconds, $ref );
+			$new_data['LatitudeDM'] = sprintf( '%1$d %2$01.4f', $degrees, $decimal_minutes );
+			$new_data['LatitudeDD'] = sprintf( '%1$01f', $degrees + $decimal_degrees );
+			$new_data['LatitudeMinDec'] = substr( $new_data['LatitudeDM'], strpos( $new_data['LatitudeDM'], ' ' ) + 1 );
+			$new_data['LatitudeDegDec'] = substr( $new_data['LatitudeDD'], strpos( $new_data['LatitudeDD'], '.' ) );
+			$new_data['LatitudeSDM'] = $refs . $new_data['LatitudeDM'];
+			$new_data['LatitudeSDD'] = $refs . $new_data['LatitudeDD'];
+			$new_data['LatitudeDM'] = $new_data['LatitudeDM'] . $ref;
+			$new_data['LatitudeDD'] = $new_data['LatitudeDD'] . $ref;
 		}
 
 		if ( isset( $exif_data['GPSLongitudeRef'] ) ) {
-			$gps_data['LongitudeRef'] = $exif_data['GPSLongitudeRef'];
-			$gps_data['LongitudeRefS'] = ( 'E' == $exif_data['GPSLongitudeRef'] ) ? '' : '-';
-			$ref = $gps_data['LongitudeRef'];
-			$refs = $gps_data['LongitudeRefS'];
+			$new_data['LongitudeRef'] = $exif_data['GPSLongitudeRef'];
+			$new_data['LongitudeRefS'] = ( 'E' == $exif_data['GPSLongitudeRef'] ) ? '' : '-';
+			$ref = $new_data['LongitudeRef'];
+			$refs = $new_data['LongitudeRefS'];
 		} else {
 			$ref = '';
 			$refs = '';
@@ -5390,58 +5641,58 @@ class MLAData {
 
 		if ( isset( $exif_data['GPSLongitude'] ) ) {
 			$rational = $exif_data['GPSLongitude'];
-			$gps_data['LongitudeD'] = $degrees = self::_rational_to_decimal( $rational[0] );
-			$gps_data['LongitudeM'] = $minutes = self::_rational_to_decimal( $rational[1] );
-			$gps_data['LongitudeS'] = sprintf( '%1$01.4f', $seconds = self::_rational_to_decimal( $rational[2] ) );
+			$new_data['LongitudeD'] = $degrees = self::_rational_to_decimal( $rational[0] );
+			$new_data['LongitudeM'] = $minutes = self::_rational_to_decimal( $rational[1] );
+			$new_data['LongitudeS'] = sprintf( '%1$01.4f', $seconds = self::_rational_to_decimal( $rational[2] ) );
 			$decimal_minutes = $minutes + ( $seconds / 60 );
 			$decimal_degrees = ( $decimal_minutes / 60 );
 
-			$gps_data['Longitude'] = sprintf( '%1$dd %2$d\' %3$01.4f" %4$s', $degrees, $minutes, $seconds, $ref );
-			$gps_data['LongitudeDM'] = sprintf( '%1$d %2$01.4f', $degrees, $decimal_minutes );
-			$gps_data['LongitudeDD'] = sprintf( '%1$01f', $degrees + $decimal_degrees );
-			$gps_data['LongitudeMinDec'] = substr( $gps_data['LongitudeDM'], strpos( $gps_data['LongitudeDM'], ' ' ) + 1 );
-			$gps_data['LongitudeDegDec'] = substr( $gps_data['LongitudeDD'], strpos( $gps_data['LongitudeDD'], '.' ) );
-			$gps_data['LongitudeSDM'] = $refs . $gps_data['LongitudeDM'];
-			$gps_data['LongitudeSDD'] = $refs . $gps_data['LongitudeDD'];
-			$gps_data['LongitudeDM'] = $gps_data['LongitudeDM'] . $ref;
-			$gps_data['LongitudeDD'] = $gps_data['LongitudeDD'] . $ref;
+			$new_data['Longitude'] = sprintf( '%1$dd %2$d\' %3$01.4f" %4$s', $degrees, $minutes, $seconds, $ref );
+			$new_data['LongitudeDM'] = sprintf( '%1$d %2$01.4f', $degrees, $decimal_minutes );
+			$new_data['LongitudeDD'] = sprintf( '%1$01f', $degrees + $decimal_degrees );
+			$new_data['LongitudeMinDec'] = substr( $new_data['LongitudeDM'], strpos( $new_data['LongitudeDM'], ' ' ) + 1 );
+			$new_data['LongitudeDegDec'] = substr( $new_data['LongitudeDD'], strpos( $new_data['LongitudeDD'], '.' ) );
+			$new_data['LongitudeSDM'] = $refs . $new_data['LongitudeDM'];
+			$new_data['LongitudeSDD'] = $refs . $new_data['LongitudeDD'];
+			$new_data['LongitudeDM'] = $new_data['LongitudeDM'] . $ref;
+			$new_data['LongitudeDD'] = $new_data['LongitudeDD'] . $ref;
 		}
 
 		if ( isset( $exif_data['GPSAltitudeRef'] ) ) {
-			$gps_data['AltitudeRef'] = sprintf( '%1$d', ord( $exif_data['GPSAltitudeRef'][0] ) );
-			$gps_data['AltitudeRefS'] = ( '0' == $gps_data['AltitudeRef'] ) ? '' : '-';
-			$refs = $gps_data['AltitudeRefS'];
+			$new_data['AltitudeRef'] = sprintf( '%1$d', ord( $exif_data['GPSAltitudeRef'][0] ) );
+			$new_data['AltitudeRefS'] = ( '0' == $new_data['AltitudeRef'] ) ? '' : '-';
+			$refs = $new_data['AltitudeRefS'];
 		} else {
 			$refs = '';
 		}
 
 		if ( isset( $exif_data['GPSAltitude'] ) ) {
-			$gps_data['Altitude'] = sprintf( '%1$s%2$01.4f', $refs, $meters = self::_rational_to_decimal( $exif_data['GPSAltitude'] ) );
-			$gps_data['AltitudeFeet'] = sprintf( '%1$s%2$01.2f', $refs, $meters * 3.280839895013 );
+			$new_data['Altitude'] = sprintf( '%1$s%2$01.4f', $refs, $meters = self::_rational_to_decimal( $exif_data['GPSAltitude'] ) );
+			$new_data['AltitudeFeet'] = sprintf( '%1$s%2$01.2f', $refs, $meters * 3.280839895013 );
 		}
 
 		if ( isset( $exif_data['GPSTimeStamp'] ) ) {
 			$rational = $exif_data['GPSTimeStamp'];
-			$gps_data['TimeStampH'] = sprintf( '%1$02d', $hours = self::_rational_to_decimal( $rational[0] ) );
-			$gps_data['TimeStampM'] = sprintf( '%1$02d', $minutes = self::_rational_to_decimal( $rational[1] ) );
-			$gps_data['TimeStampS'] = sprintf( '%1$02d', $seconds = self::_rational_to_decimal( $rational[2] ) );
-			$gps_data['TimeStamp'] = sprintf( '%1$02d:%2$02d:%3$02d', $hours, $minutes, $seconds );
+			$new_data['TimeStampH'] = sprintf( '%1$02d', $hours = self::_rational_to_decimal( $rational[0] ) );
+			$new_data['TimeStampM'] = sprintf( '%1$02d', $minutes = self::_rational_to_decimal( $rational[1] ) );
+			$new_data['TimeStampS'] = sprintf( '%1$02d', $seconds = self::_rational_to_decimal( $rational[2] ) );
+			$new_data['TimeStamp'] = sprintf( '%1$02d:%2$02d:%3$02d', $hours, $minutes, $seconds );
 		}
 
 		if ( isset( $exif_data['GPSDateStamp'] ) ) {
 			$parts = explode( ':', $exif_data['GPSDateStamp'] );		
-			$gps_data['DateStampY'] = $parts[0];
-			$gps_data['DateStampM'] = $parts[1];
-			$gps_data['DateStampD'] = $parts[2];
-			$gps_data['DateStamp'] = $exif_data['GPSDateStamp'];
+			$new_data['DateStampY'] = $parts[0];
+			$new_data['DateStampM'] = $parts[1];
+			$new_data['DateStampD'] = $parts[2];
+			$new_data['DateStamp'] = $exif_data['GPSDateStamp'];
 		}
 
 		if ( isset( $exif_data['GPSMapDatum'] ) ) {
-			$gps_data['MapDatum'] = $exif_data['GPSMapDatum'];
+			$new_data['MapDatum'] = $exif_data['GPSMapDatum'];
 		}
 
-		if ( ! empty( $gps_data ) ) {
-			$results['mla_exif_metadata']['GPS'] = $gps_data;
+		if ( ! empty( $new_data ) ) {
+			$results['mla_exif_metadata']['GPS'] = $new_data;
 		}
 
 		/*
@@ -5526,7 +5777,7 @@ class MLAData {
 				}
 			} // old_value empty
 
-			if ( $old_value != $value ) {
+			if ( $old_value !== $value ) {
 				if ( self::_set_array_element( $key, $value, $current_values ) ) {
 					/* translators: 1: element name 2: old_value 3: new_value */
 					$message .= sprintf( __( 'Changing %1$s from "%2$s" to "%3$s"', 'media-library-assistant' ) . '<br>', 'meta:' . $key,
@@ -5667,7 +5918,7 @@ class MLAData {
 					/* translators: 1: meta_key 2: old_value 3: new_value 4: update count*/
 					$message .= sprintf( __( 'Changing %1$s from "%2$s" to "%3$s"; %4$d updates', 'media-library-assistant' ) . '<br>', 'meta:' . $meta_key, $old_text, $new_text, $updated );
 				}
-			} elseif ( $old_meta_value != $meta_value ) {
+			} elseif ( $old_meta_value !== $meta_value ) {
 				if ( is_array( $old_meta_value ) ) {
 					delete_post_meta( $post_id, $meta_key );
 				}
