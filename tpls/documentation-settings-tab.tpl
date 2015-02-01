@@ -407,28 +407,33 @@ The "mla_target" parameter accepts any value and adds an HTML "target" attribute
 </p>
 <h4>Google File Viewer Support</h4>
 <p>
-Four <code>[mla_gallery]</code> parameters provide an easy way to generate thumbnail images for the non-image file types.
+<strong>NOTE: Google has discontinued the File Viewer support for thumbnail images.</strong>
+This is an interim solution; better thumbnail image generation is under investigation for a future MLA version.
+Thanks for your understanding and your patience!
+</p>
+<p>
+Four <code>[mla_gallery]</code> parameters provide an easy way to simulate thumbnail images for the non-image file types.
 </p>
 <table>
 <tr>
 <td style="padding-right: 10px; vertical-align: top; font-weight:bold">mla_viewer</td>
-<td>must be "true" to enable thumbnail generation</td>
+<td>must be "true" to enable thumbnail simulation.</td>
 </tr>
 <tr>
 <td style="padding-right: 10px; vertical-align: top; font-weight:bold">mla_viewer_extensions</td>
-<td>a comma-delimited list of the file extensions to be processed; the default is "pdf,txt,doc,xls,ppt" (do not include the dot (".") preceding the file extension). You may add or remove extensions, but these are known to generate reasonable thumbnail images. Sadly, the newer "docx,xlsx,pptx" extensions do not work well with the Google File Viewer.</td>
+<td>a comma-delimited list of the file extensions to be processed; the default is "pdf,txt,doc,xls,ppt" (do not include the dot (".") preceding the file extension). You may add or remove extensions.</td>
 </tr>
 <tr>
 <td style="padding-right: 10px; vertical-align: top; font-weight:bold">mla_viewer_page</td>
-<td>the page number (default "1") to be used for the thumbnail image. If you specify a value greater than the number of pages in the file, no image is generated.</td>
+<td>the page number (default "1") to be used for the thumbnail image. <strong>Not currently implemented</strong>.</td>
 </tr>
 <tr>
 <td style="padding-right: 10px; vertical-align: top; font-weight:bold">mla_viewer_width</td>
-<td>the width in pixels (default "150") of the generated thumbnail image. The height will be set automatically and cannot be specified.</td>
+<td>the width in pixels (default "150") of the simulated thumbnail image. The height will be set to the same value and cannot be specified.</td>
 </tr>
 </table>
 <p>
-When this feature is active, gallery items for which WordPress can generate a thumbnail image are not altered. If WordPress generation fails, the gallery thumbnail is replaced by an "img" html tag whose "src" attribute contains a url reference to the Google File Viewer. The Google File Viewer arguments include the url of the source file, the page number and the width. Note that the source file must be Internet accessible; files behind firewalls and on local servers will not generate a thumbnail image.
+When this feature is active, gallery items for which WordPress can generate a thumbnail image are not altered. If WordPress generation fails, the gallery thumbnail is replaced by an "img" html tag whose "src" attribute contains a url reference to the appropriate icon for the file/MIME type.
 <a name="order_orderby"></a>
 </p>
 <h4>Order, Orderby</h4>

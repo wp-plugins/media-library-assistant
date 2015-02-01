@@ -375,14 +375,6 @@ class MLAShortcodes {
 			return $output;
 		}
 
-		/*
-		 * Google File Viewer no longer works at all!
-		 */
-		if ( !empty( $arguments['mla_viewer'] ) && ( 'true' == strtolower( $arguments['mla_viewer'] ) ) ) {
-			$arguments['mla_viewer'] = false;
-			$arguments['size'] = 'icon';
-		}
-
 		$size = $size_class = $arguments['size'];
 		if ( 'icon' == strtolower( $size) ) {
 			if ( 'checked' == MLAOptions::mla_get_option( MLAOptions::MLA_ENABLE_MLA_ICONS ) ) {
@@ -1001,15 +993,19 @@ class MLAShortcodes {
 			}
 
 			/*
-			 * Check for Google file viewer substitution, uses above-defined
+			 * Check for "Google file viewer" substitution, uses above-defined
 			 * $link_attributes (includes target), $rollover_text, $link_href (link only),
 			 * $image_attributes, $image_class, $image_alt
+			 *
+			 * Since Google File Viewer has been discontinued, uses the MIME type icon for a thumbnail.
 			 */
 			if ( $arguments['mla_viewer'] && empty( $item_values['thumbnail_url'] ) ) {
 				$last_dot = strrpos( $item_values['file'], '.' );
 				if ( !( false === $last_dot) ) {
 					$extension = substr( $item_values['file'], $last_dot + 1 );
 					if ( in_array( $extension, $arguments['mla_viewer_extensions'] ) ) {
+						$icon_url = wp_mime_type_icon( $attachment->ID );
+
 						/*
 						 * <img> tag (thumbnail_text)
 						 */
@@ -1023,7 +1019,8 @@ class MLAShortcodes {
 							$image_alt = ' alt="' . $item_values['caption'] . '"';
 						}
 
-						$item_values['thumbnail_content'] = sprintf( '<img %1$ssrc="http://docs.google.com/viewer?url=%2$s&a=bi&pagenumber=%3$d&w=%4$d"%5$s%6$s>', $image_attributes, $item_values['filelink_url'], $arguments['mla_viewer_page'], $arguments['mla_viewer_width'], $image_class, $image_alt );
+						$item_values['thumbnail_content'] = sprintf( 
+'<img %1$swidth="%2$s" height="%2$s" src="%3$s"%4$s%5$s>', $image_attributes, $arguments['mla_viewer_width'], $icon_url, $image_class, $image_alt );
 
 						/*
 						 * Filelink, pagelink and link.

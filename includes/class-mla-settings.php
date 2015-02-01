@@ -352,6 +352,8 @@ class MLASettings {
 			'bulkUnchanged' => __( 'Unchanged', 'media-library-assistant' ),
 			'bulkSuccess' => __( 'Succeeded', 'media-library-assistant' ),
 			'bulkFailure' => __( 'Failed', 'media-library-assistant' ),
+			'bulkSkip' => __( 'Skipped', 'media-library-assistant' ),
+			'bulkRedone' => __( 'Reprocessed', 'media-library-assistant' ),
 			'bulkCanceled' => __( 'CANCELED', 'media-library-assistant' ),
 		);
 
@@ -705,7 +707,7 @@ class MLASettings {
 				}
 			}
 		}
-		
+
 		/*
 		 * Check for action or submit buttons.
 		 */
@@ -2679,14 +2681,22 @@ class MLASettings {
 
 		$page_values = array(
 			'Mapping Progress' => __( 'Custom Field Mapping Progress', 'media-library-assistant' ),
-			'Progress' => __( 'Progress', 'media-library-assistant' ),
 			'DO NOT' => __( 'DO NOT DO THE FOLLOWING (they will cause mapping to fail)', 'media-library-assistant' ),
 			'DO NOT Close' => __( 'Close the window', 'media-library-assistant' ),
 			'DO NOT Reload' => __( 'Reload the page', 'media-library-assistant' ),
 			'DO NOT Click' => __( 'Click the browser&rsquo;s Stop, Back or forward buttons', 'media-library-assistant' ),
+			'Progress' => __( 'Progress', 'media-library-assistant' ),
 			'Cancel' => __( 'Cancel', 'media-library-assistant' ),
+			'Resume' => __( 'Resume', 'media-library-assistant' ),
 			'Close' => __( 'Close', 'media-library-assistant' ),
 			'Refresh' => __( 'Refresh', 'media-library-assistant' ),
+			'refresh_href' => '?page=mla-settings-menu-custom_field&mla_tab=custom_field',
+		);
+
+		$progress_div = MLAData::mla_parse_template( self::$page_template_array['mla-progress-div'], $page_values );
+
+		$page_values = array(
+			'mla-progress-div' => $progress_div,
 			'Custom Field Options' => __( 'Custom Field and Attachment Metadata Processing Options', 'media-library-assistant' ),
 			/* translators: 1: Documentation hyperlink */
 			'In this tab' => sprintf( __( 'In this tab you can define the rules for mapping several types of image metadata to WordPress custom fields. You can also use this screen to define rules for adding or updating fields within the WordPress-supplied "Attachment Metadata", stored in the "_wp_attachment_metadata" custom field. See the %1$s section of the Documentation for details.', 'media-library-assistant' ), '<a href="[+settingsURL+]?page=mla-settings-menu-documentation&amp;mla_tab=documentation#attachment_metadata_mapping" title="' . __( 'Updating Attachment Metadata Documentation', 'media-library-assistant' ) . '">' . __( 'Adding or changing Attachment Metadata', 'media-library-assistant' ) . '</a>' ),
@@ -2806,15 +2816,23 @@ class MLASettings {
 		}
 
 		$page_values = array(
-			'Mapping Progress' => __( 'IPTC &amp; EXIF Mapping Progress', 'media-library-assistant' ),
-			'Progress' => __( 'Progress', 'media-library-assistant' ),
+			'Mapping Progress' => __( 'Custom Field Mapping Progress', 'media-library-assistant' ),
 			'DO NOT' => __( 'DO NOT DO THE FOLLOWING (they will cause mapping to fail)', 'media-library-assistant' ),
 			'DO NOT Close' => __( 'Close the window', 'media-library-assistant' ),
 			'DO NOT Reload' => __( 'Reload the page', 'media-library-assistant' ),
 			'DO NOT Click' => __( 'Click the browser&rsquo;s Stop, Back or forward buttons', 'media-library-assistant' ),
+			'Progress' => __( 'Progress', 'media-library-assistant' ),
 			'Cancel' => __( 'Cancel', 'media-library-assistant' ),
+			'Resume' => __( 'Resume', 'media-library-assistant' ),
 			'Close' => __( 'Close', 'media-library-assistant' ),
 			'Refresh' => __( 'Refresh', 'media-library-assistant' ),
+			'refresh_href' => '?page=mla-settings-menu-iptc_exif&mla_tab=iptc_exif',
+		);
+
+		$progress_div = MLAData::mla_parse_template( self::$page_template_array['mla-progress-div'], $page_values );
+
+		$page_values = array(
+			'mla-progress-div' => $progress_div,
 			'IPTX/EXIF Options' => __( 'IPTC &amp; EXIF Processing Options', 'media-library-assistant' ),
 			'In this tab' => __( 'In this tab you can define the rules for mapping IPTC (International Press Telecommunications Council) and EXIF (EXchangeable Image File) metadata to WordPress standard attachment fields, taxonomy terms and custom fields. <strong>NOTE:</strong> settings changes will not be made permanent until you click "Save Changes" at the bottom of this page.', 'media-library-assistant' ),
 			/* translators: 1: Documentation hyperlink */

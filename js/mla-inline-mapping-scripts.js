@@ -30,7 +30,7 @@ var jQuery,
 			var progressDiv = $( '#mla-progress-div' );
 
 			$('#mla-progress-cancel', progressDiv).off( 'click' );
-			$('#mla-progress-cancel', progressDiv).click(function(){
+			$('#mla-progress-cancel', progressDiv).click( function(){
 				if ( mla.bulkMap.inProcess ) {
 					mla.bulkMap.doCancel = true;
 					return false;
@@ -39,15 +39,35 @@ var jQuery,
 				}
 			});
 
+			$('#mla-progress-resume', progressDiv).off( 'click' );
+			$('#mla-progress-resume', progressDiv).click( function(){
+				var totalItems = +mla.settings.totalItems, newOffset = + $( '#mla-progress-offset' ).val();
+				
+				if ( totalItems < newOffset ) {
+					newOffset = totalItems;
+				} else {
+					if ( 0 > newOffset ) {
+						newOffset = 0;
+					}
+				}
+				
+				if ( mla.bulkMap.inProcess ) {
+					mla.bulkMap.doCancel = true;
+					return false;
+				} else {
+					return mla.inlineMapAttachment.bulkMap( mla.bulkMap.targetName, newOffset );
+				}
+			});
+
 			// Clicking "Refresh" submits the form, refreshing the page
 			$( '#mla-progress-refresh', progressDiv ).off( 'click' );
-			$( '#mla-progress-refresh', progressDiv ).click(function(){
+			$( '#mla-progress-refresh', progressDiv ).click( function(){
 				$( '#mla-progress-refresh' ).prop( 'disabled', true );
 				$( '#mla-progress-refresh' ).css( 'opacity', '0.5' );
 			});
 
 			$('#mla-progress-close', progressDiv).off( 'click' );
-			$('#mla-progress-close', progressDiv).click(function( e ){
+			$('#mla-progress-close', progressDiv).click( function( e ){
 				if ( mla.bulkMap.inProcess ) {
 					return false;
 				}
@@ -58,24 +78,46 @@ var jQuery,
 			// add event handler to the Map All links
 			$( 'input[type="submit"].mla-mapping' ).click(function( e ){
 				e.preventDefault();
-				return mla.inlineMapAttachment.bulkMap( e );
-			return false;
+				return mla.inlineMapAttachment.bulkMap( e.target.name, 0 );
 			});
 		},
 
-		bulkMap : function( e ) {
+		bulkMap : function( action, initialOffset ) {
+			var oldComplete = 0, oldUnchanged = 0, oldSuccess = 0, oldSkip = 0, oldRedone = 0;
+			
+			initialOffset = +initialOffset;
+			
+			if ( 0 < initialOffset ) {
+				oldComplete = typeof mla.bulkMap.complete === 'undefined' ? 0 : mla.bulkMap.complete;
+				oldUnchanged = typeof mla.bulkMap.unchanged === 'undefined' ? 0 : mla.bulkMap.unchanged;
+				oldSuccess = typeof mla.bulkMap.success === 'undefined' ? 0 : mla.bulkMap.success;
+				oldSkip = typeof mla.bulkMap.skip === 'undefined' ? 0 : mla.bulkMap.skip;
+				oldRedone = typeof mla.bulkMap.redone === 'undefined' ? 0 : mla.bulkMap.redone;
+			}
+			
+			// See if we're skipping or re-processing any items
+			if ( oldComplete < initialOffset ) {
+				oldSkip += initialOffset - oldComplete;
+			} else {
+				if ( oldComplete > initialOffset ) {
+					oldRedone += oldComplete - initialOffset;
+				}
+			}
+			
 			mla.bulkMap = {
 				inProcess: false,
 				doCancel: false,
 				chunkSize: +mla.settings.bulkChunkSize,
-				targetName: e.target.name,
+				targetName: action,
 				fields: $( mla.settings.fieldsId + ' :input').serialize(),
-				offset: 0,
-				waiting: +mla.settings.totalItems,
+				offset: initialOffset,
+				waiting: mla.settings.totalItems - initialOffset,
 				running: 0,
-				complete: 0,
-				unchanged:0,
-				success: 0,
+				complete: initialOffset,
+				unchanged: oldUnchanged,
+				success: oldSuccess,
+				skip: oldSkip,
+				redone: oldRedone,
 				refresh: false
 			};
 
@@ -95,13 +137,15 @@ var jQuery,
 
 			// Disable "Close" until the bulk mapping is complete
 			$( '#mla-progress-cancel' ).prop( 'disabled', false ).css( 'opacity', '1.0' );
+			$( '#mla-progress-resume' ).hide();
+			$( '#mla-progress-offset' ).hide();
 			$( '#mla-progress-refresh' ).hide();
 			$( '#mla-progress-close' ).prop( 'disabled', true ).css( 'opacity', '0.5' ).show();
 			$( 'html, body' ).animate( { scrollTop: 0 }, 'fast' );
 		},
 
 		bulkPost : function() {
-			var params, chunk, statusMessage,
+			var params, chunk, statusMessage = '',
 				spinner = $('#mla-progress-div p.inline-edit-save .spinner'),
 				message = $( '#mla-progress-message' ),
 				error = $( '#mla-progress-error' );
@@ -136,10 +180,19 @@ var jQuery,
 			$( '#mla-progress-meter' ).css( 'width', percentComplete );
 			$( '#mla-progress-meter' ).html( percentComplete );
 
+			if ( 0 < mla.bulkMap.skip ) {
+				statusMessage += ', ' + mla.settings.bulkSkip + ': ' + mla.bulkMap.skip;
+			}
+			
+			if ( 0 < mla.bulkMap.redone ) {
+				statusMessage += ', ' + mla.settings.bulkRedone + ': ' + mla.bulkMap.redone;
+			}
+			
 			spinner.show();
 			statusMessage = mla.settings.bulkWaiting + ': ' + mla.bulkMap.waiting
 				+ ', ' + mla.settings.bulkRunning + ': ' + mla.bulkMap.running
 				+ ', ' + mla.settings.bulkComplete + ': ' + mla.bulkMap.complete
+				+ statusMessage // skip and redone
 				+ ', ' + mla.settings.bulkUnchanged + ': ' + mla.bulkMap.unchanged
 				+ ', ' + mla.settings.bulkSuccess + ': ' + mla.bulkMap.success;
 			message.html( statusMessage ).show();
@@ -151,7 +204,7 @@ var jQuery,
 			}).always( function() {
 				spinner.hide();
 			}).done( function( response, status ) {
-					var responseData = 'no response.data', responseMessage;
+					var responseData = 'no response.data', responseMessage = '';
 					
 					if ( response ) {
 						if ( ! response.success ) {
@@ -181,8 +234,17 @@ var jQuery,
 								$( '#mla-progress-meter' ).css( 'width', percentComplete );
 								$( '#mla-progress-meter' ).html( percentComplete );
 	
+								if ( 0 < mla.bulkMap.skip ) {
+									responseMessage += ', ' + mla.settings.bulkSkip + ': ' + mla.bulkMap.skip;
+								}
+								
+								if ( 0 < mla.bulkMap.redone ) {
+									responseMessage += ', ' + mla.settings.bulkRedone + ': ' + mla.bulkMap.redone;
+								}
+								
 								responseMessage = mla.settings.bulkWaiting + ': ' + mla.bulkMap.waiting
 									+ ', ' + mla.settings.bulkComplete + ': ' + mla.bulkMap.complete
+									+ responseMessage // skip and redone
 									+ ', ' + mla.settings.bulkUnchanged + ': ' + mla.bulkMap.unchanged
 									+ ', ' + mla.settings.bulkSuccess + ': ' + mla.bulkMap.success;
 							}
@@ -195,6 +257,8 @@ var jQuery,
 					
 					if ( mla.bulkMap.doCancel ) {
 						message.html( mla.settings.bulkCanceled + '. ' +  responseMessage ).show();
+						$( '#mla-progress-resume' ).show();
+						$( '#mla-progress-offset' ).val( mla.bulkMap.complete ).show();
 					} else {
 						if ( mla.bulkMap.waiting ) {
 							mla.inlineMapAttachment.bulkPost();

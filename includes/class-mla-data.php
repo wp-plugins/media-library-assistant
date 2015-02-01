@@ -5211,6 +5211,22 @@ class MLAData {
 			} elseif ( is_string( $text ) ) {
 				$text = self::_bin_to_utf8( $text );
 			}
+		} elseif ( 'ALL_IPTC' == $iptc_key ) {
+			$clean_data = array();
+			foreach ( $item_metadata['mla_iptc_metadata'] as $key => $value ) {
+				if ( is_array( $value ) ) {
+					foreach ($value as $text_key => $text )
+						$value[ $text_key ] = self::_bin_to_utf8( $text );
+
+					$clean_data[ $key ] = 'ARRAY(' . implode( ',', $value ) . ')';
+				} elseif ( is_string( $value ) ) {
+					$clean_data[ $key ] = self::_bin_to_utf8( substr( $value, 0, 256 ) );
+				} else {
+					$clean_data[ $key ] = self::_bin_to_utf8( $value );
+				}
+			}
+
+			$text = var_export( $clean_data, true);
 		}
 
 		return $text;
