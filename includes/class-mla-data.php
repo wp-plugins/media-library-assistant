@@ -527,7 +527,18 @@ class MLAData {
 				}
 
 				$index += strlen( $template_content ) - 1;
-			} else { // nested template
+			} // nested template
+			elseif ( '[' == $byte ) {
+				$match_count = preg_match( '/\[\+.+?\+\]/', $tpl, $matches, 0, $index - 1 );
+				if ( $match_count ) {
+					// found substitution parameter
+					$output .= $matches[0];
+					$index += strlen( $matches[0] ) - 1;
+				} else {
+					$output .= $byte;
+				}
+			} // maybe substitution parameter
+			else {
 				$output .= $byte;
 			}
 		} // $index < $max_length
@@ -676,7 +687,6 @@ class MLAData {
 						$results .= self::_evaluate_template_node( $value, $markup_values );
 				} // array of nodes
 
-//error_log( __LINE__ . " _evaluate_template_node [{$node_value}] results = " . var_export( $results, true ), 0 );
 				if ( false === strpos( $results, '[+' ) ) {
 					return $results;
 				}
@@ -787,6 +797,86 @@ class MLAData {
 	}
 
 	/**
+	 * Process an argument list within a field-level parameter format specification
+	 *
+	 * @since 2.02
+	 *
+	 * @param	string	arguments, e.g., ('d/m/Y H:i:s' , "arg, \" two" ) without parens
+	 *
+	 * @return	array	individual arguments, e.g. array( 0 => 'd/m/Y H:i:s', 1 => 'arg, \" two' )
+	 */
+	private static function _parse_arguments( $argument_string ) {
+		$argument_string = trim( $argument_string, " \n\t\r\0\x0B," );
+		$arguments = array();
+		
+		while ( strlen( $argument_string ) ) {
+			$argument = '';
+			$index = 0;
+			
+			// Check for enclosing quotes
+			$delimiter = $argument_string[0];
+			if ( '\'' == $delimiter || '"' == $delimiter ) {
+				$index++;
+			} else {
+				$delimiter = '';
+			}
+			
+			while ( $index < strlen( $argument_string ) ) {
+				$byte = $argument_string[ $index++ ];
+				if ( '\\' == $byte ) {
+					switch ( $source_string[ $index ] ) {
+						case 'n':
+							$argument .= chr( 0x0A );
+							break;
+						case 'r':
+							$argument .= chr( 0x0D );
+							break;
+						case 't':
+							$argument .= chr( 0x09 );
+							break;
+						case 'b':
+							$argument .= chr( 0x08 );
+							break;
+						case 'f':
+							$argument .= chr( 0x0C );
+							break;
+						default: // could be a 1- to 3-digit octal value
+							$digit_limit = $index + 3;
+							$digit_index = $index;
+							while ( $digit_index < $digit_limit ) {
+								if ( ! ctype_digit( $argument_string[ $digit_index ] ) ) {
+									break;
+								} else {
+									$digit_index++;
+								}
+							}
+	
+							if ( $digit_count = $digit_index - $index ) {
+								$argument .= chr( octdec( substr( $argument_string, $index, $digit_count ) ) );
+								$index += $digit_count - 1;
+							} else { // accept the character following the backslash
+								$argument .= $argument_string[ $index ];
+							}
+					} // switch
+	
+					$index++;
+				} else { // backslash
+					if ( $delimiter == $byte ) {
+						break;
+					}
+	
+					$argument .= $byte;
+				} // just another 8-bit value, but check for closing delimiter
+			} // index < strlen
+
+			$arguments[] = $argument;
+			$argument_string = trim( substr( $argument_string, $index ), " \n\t\r\0\x0B," );
+		} // strlen( $argument_string )
+		
+		return $arguments;
+	}
+
+	/**
 	 * Analyze a template, expanding Field-level Markup Substitution Parameters
 	 *
 	 * Field-level parameters must have one of the following prefix values:
@@ -825,7 +915,6 @@ class MLAData {
 					$template_count++;
 					break;
 				case 'meta':
-//error_log( __LINE__ . " mla_expand_field_level_parameters [{$key}] = " . var_export( $value, true ), 0 );
 					if ( is_null( $item_metadata ) ) {
 						if ( 0 < $post_id ) {
 							$item_metadata = get_metadata( 'post', $post_id, '_wp_attachment_metadata', true );
@@ -833,10 +922,8 @@ class MLAData {
 							break;
 						}
 					}
-//error_log( __LINE__ . " mla_expand_field_level_parameters [{$post_id}] item_metadata = " . var_export( $item_metadata, true ), 0 );
 
 					$markup_values[ $key ] = self::mla_find_array_element( $value['value'], $item_metadata, $value['option'] );
-//error_log( __LINE__ . " mla_expand_field_level_parameters [{$key}] markup_values = " . var_export( $markup_values[ $key ], true ), 0 );
 					break;
 				case 'query':
 					if ( isset( $query ) && isset( $query[ $value['value'] ] ) ) {
@@ -1028,9 +1115,7 @@ class MLAData {
 				default:
 					// ignore anything else
 			} // switch
-//error_log( __LINE__ . " mla_expand_field_level_parameters [{$key}] markup_values = " . var_export( $markup_values[ $key ], true ), 0 );
 			
-//error_log( __LINE__ . " mla_expand_field_level_parameters [{$key}] value = " . var_export( $value, true ), 0 );
 			if ( isset( $markup_values[ $key ] ) ) {
 				if ( 'attr' == $value['format'] ) {
 					$markup_values[ $key ] = esc_attr( $markup_values[ $key ] );
@@ -1043,8 +1128,6 @@ class MLAData {
 					 * date "Returns a string formatted according to the given format string using the given integer"
 					 */
 					$format = empty( $value['args'] ) ? 'd/m/Y H:i:s' : $value['args'];
-//error_log( __LINE__ . " mla_expand_field_level_parameters [{$key}] format = " . var_export( date( $format , (integer) $markup_values[ $key ] ), true ), 0 );
-//error_log( __LINE__ . " mla_expand_field_level_parameters [{$key}] date = " . var_export( date( $format , (integer) $markup_values[ $key ] ), true ), 0 );
 					$markup_values[ $key ] = date( $format , (integer) $markup_values[ $key ] );
 				} elseif ( 'date' == $value['format'] ) {
 					/*
@@ -1059,17 +1142,26 @@ class MLAData {
 					$show_fractions = true;
 					if ( ! empty( $value['args'] ) ) {
 						if ( is_array( $value['args'] ) ) {
-							$format = '%1$+.' . absint( $value['args'][0] ) . 'f';
+							if ( is_numeric( $value['args'][0] ) ) {
+								$format = '%1$+.' . absint( $value['args'][0] ) . 'f';
+							} else {
+								$format = $value['args'][0];
+							}
+							
 							$show_fractions = ( 'false' !== strtolower( trim( $value['args'][1] ) ) );
 						} else {
-							$format = '%1$+.' . absint( $value['args'] ) . 'f';
+							if ( is_numeric( $value['args'] ) ) {
+								$format = '%1$+.' . absint( $value['args'] ) . 'f';
+							} else {
+								$format = $value['args'];
+							}
 						}
 					} else {
 						$format = '%1$+.2f';
 					}
 					
 					$fragments = array_map( 'intval', explode( '/', $markup_values[ $key ] ) );
-					if ( is_null( $fragments[1] ) ) {
+					if ( 1 == count( $fragments ) ) {
 						$value = trim( $markup_values[ $key ] );
 						if ( ! empty( $value ) ) {
 							$markup_values[ $key ] = $value;
@@ -1089,7 +1181,6 @@ class MLAData {
 						} // non-zero numerator
 					} // valid denominator
 				} 
-//error_log( __LINE__ . " mla_expand_field_level_parameters markup_values [{$key}] = " . var_export( $markup_values[ $key ], true ), 0 );
 			} // isset( $markup_values[ $key ] )
 		} // foreach placeholder
 
@@ -1097,7 +1188,6 @@ class MLAData {
 			$markup_values['[+template_count+]'] = $template_count;
 		}
 
-//error_log( __LINE__ . " mla_expand_field_level_parameters markup_values = " . var_export( $markup_values, true ), 0 );
 		return $markup_values;
 	}
 
@@ -1152,7 +1242,7 @@ class MLAData {
 			$tpl = substr_replace( $tpl, '', $template_offset, $template_length );
 		} // found a template
 
-		$match_count = preg_match_all( '/\[\+[^+]+\+\]/', $tpl, $matches );
+		$match_count = preg_match_all( '/\[\+.+?\+\]/', $tpl, $matches );
 		if ( ( $match_count == false ) || ( $match_count == 0 ) ) {
 			return $results;
 		}
@@ -1160,7 +1250,7 @@ class MLAData {
 		foreach ( $matches[0] as $match ) {
 			$key = substr( $match, 2, (strlen( $match ) - 4 ) );
 			$result = array( 'prefix' => '', 'value' => '', 'option' => $default_option, 'format' => 'native' );
-			$match_count = preg_match( '/\[\+(.+):(.+)/', $match, $matches );
+			$match_count = preg_match( '/\[\+([^:]+):(.+)/', $match, $matches );
 			if ( 1 == $match_count ) {
 				$result['prefix'] = $matches[1];
 				$tail = $matches[2];
@@ -1172,10 +1262,19 @@ class MLAData {
 			if ( 1 == $match_count ) {
 				$result['value'] = $matches[1];
 				if ( ! empty( $matches[5] ) ) {
-					$args = explode( ',', trim( $matches[5], " \n\t\r\0\x0B," ) );
+					/* $args =  array_map( 'trim', explode( ',', trim( $matches[5], " \n\t\r\0\x0B," ) ) );
 					foreach ( $args as $index => $arg ) {
-						$args[ $index ] = trim( $arg, "\'\"" );
-					}
+						// trim exactly one pair of balanced quotes, if present 
+						$length = strlen( $arg );
+						if ( $length > 1 ) {
+							$first = $arg[0];
+							$last = $arg[ $length - 1 ];
+							if ( $first === $last && in_array( $first, array ( '\'', '"' ) ) ) {
+								$args[ $index ] = ( 2 < $length ) ? substr( $arg, 1, $length - 2 ) : '';;
+							}
+						}
+					} */
+					$args = self::_parse_arguments( $matches[5] );
 					
 					if ( 1 == count( $args ) ) {
 						$args = $args[0];
@@ -5353,6 +5452,47 @@ class MLAData {
 	}
 
 	/**
+	 * Convert an EXIF rational value to a formatted string
+	 * 
+	 * @since 2.02
+	 *
+	 * @param	string	numerator/denominator
+	 * @param	string	format for integer values
+	 * @param	string	format for fractional values from -1 to +1
+	 * @param	string	format for integer.fraction values 
+	 *
+	 * @return	mixed	formatted value or boolean false if no value available
+	 */
+	private static function _rational_to_string( $rational, $integer_format, $fraction_format, $mixed_format ) {
+		$fragments = array_map( 'intval', explode( '/', $rational ) );
+		if ( 1 == count( $fragments ) ) {
+			$value = trim( $rational );
+			if ( ! empty( $value ) ) {
+				return $value;
+			}
+		} else {
+			if ( $fragments[0] ) {
+				if ( 1 == $fragments[1] ) {
+					return sprintf( $integer_format, $fragments[0] );
+				} elseif ( 0 != $fragments[1] ) {
+					$value = $fragments[0] / $fragments[1];
+						if ( ( -1 <= $value ) && ( 1 >= $value ) ) {
+							return sprintf( $fraction_format, $fragments[0], $fragments[1] );
+						} else {
+							if ( $value == intval( $value ) ) {
+								return sprintf( $integer_format, $value );
+							}else {
+								return sprintf( $mixed_format, $value );
+							}
+						} // mixed value
+				} // fractional or mixed value
+			} // non-zero numerator
+		} // valid denominator
+		
+		return false;
+	}
+
+	/**
 	 * Passes IPTC/EXIF parse errors between mla_IPTC_EXIF_error_handler
 	 * and mla_fetch_attachment_image_metadata
 	 *
@@ -5485,49 +5625,36 @@ class MLAData {
 		 */
 		$new_data = array();
 		if ( isset( $exif_data['FNumber'] ) ) {
-			$fragments = array_map( 'intval', explode( '/', $exif_data['FNumber'] ) );
-			if ( is_null( $fragments[1] ) ) {
-				$value = trim( $exif_data['FNumber'] );
-				if ( ! empty( $value ) ) {
-					$new_data['FNumber'] = $value;
-				}
-			} else {
-				if ( $fragments[0] ) {
-					if ( 1 == $fragments[1] ) {
-						$new_data['FNumber'] = sprintf( '%1$d', $fragments[0] );
-					} elseif ( 0 != $fragments[1] ) {
-						$value = $fragments[0] / $fragments[1];
-						if ( 1 > $value ) {
-							$new_data['FNumber'] = sprintf( '%1$d/%2$d', $fragments[0], $fragments[1] );
-						} else {
-							$new_data['FNumber'] = sprintf( '%1$.1f', $value );
-						}
-					} // fractional value
-				} // non-zero numerator
-			} // valid denominator
+			if ( false !== ( $value = self::_rational_to_string( $exif_data['FNumber'], '%1$d', '%1$d/%2$d', '%1$.1f' ) ) ) {
+				$new_data['FNumber'] = $value;
+			}
 		} // FNumber
 		
 		if ( isset( $exif_data['ExposureBiasValue'] ) ) {
 			$fragments = array_map( 'intval', explode( '/', $exif_data['ExposureBiasValue'] ) );
-			if ( is_null( $fragments[1] ) ) {
-				$value = trim( $exif_data['ExposureBiasValue'] );
-				if ( ! empty( $value ) ) {
-					$new_data['ExposureBiasValue'] = $value;
+			if ( ! is_null( $fragments[1] ) ) {
+				$numerator = $fragments[0];
+				$denominator = $fragments[1];
+				
+				// Clean up some common format issues, e.g. 4/6, 2/4
+				while ( ( 0 == ( $numerator & 0x1 ) ) && ( 0 == ( $denominator & 0x1 ) ) ) {
+					$numerator = ( $numerator >> 1 );
+					$denominator = ( $denominator >> 1 );
 				}
-			} else {
-				if ( $fragments[0] ) {
-					if ( 1 == $fragments[1] ) {
-						$new_data['ExposureBiasValue'] = sprintf( '%1$+d', $fragments[0] );
-					} elseif ( 0 != $fragments[1] ) {
-						$value = $fragments[0] / $fragments[1];
-						if ( ( -1 <= $value ) && ( 1 >= $value ) ) {
-							$new_data['ExposureBiasValue'] = sprintf( '%1$+d/%2$d', $fragments[0], $fragments[1] );
-						} else {
-							$new_data['ExposureBiasValue'] = sprintf( '%1$+.2f', $value );
-						}
-					} // fractional value
-				} // non-zero numerator
-			} // valid denominator
+				
+				// Remove excess precision
+				if ( ( $denominator > $numerator) && ( 1000 < $numerator ) && ( 1000 < $denominator ) ) {
+					$exif_data['ExposureBiasValue'] = sprintf( '%1$+.3f', ( $numerator/$denominator ) );
+				} else {
+					$fragments[0] = $numerator;
+					$fragments[1] = $denominator;
+					$exif_data['ExposureBiasValue'] = $numerator . '/' . $denominator;
+				}
+			}
+			
+			if ( false !== ( $value = self::_rational_to_string( $exif_data['ExposureBiasValue'], '%1$+d', '%1$+d/%2$d', '%1$+.2f' ) ) ) {
+				$new_data['ExposureBiasValue'] = $value;
+			}
 		} // ExposureBiasValue
 		
 		if ( isset( $exif_data['Flash'] ) ) {
@@ -5540,69 +5667,99 @@ class MLAData {
 		} // Flash
 		
 		if ( isset( $exif_data['FocalLength'] ) ) {
-			$fragments = array_map( 'intval', explode( '/', $exif_data['FocalLength'] ) );
-			if ( is_null( $fragments[1] ) ) {
-				$value = trim( $exif_data['FocalLength'] );
-				if ( ! empty( $value ) ) {
-					$new_data['FocalLength'] = $value;
-				}
-			} else {
-				if ( $fragments[0] ) {
-					if ( 1 == $fragments[1] ) {
-						$new_data['FocalLength'] = sprintf( '%1$d', $fragments[0] );
-					} elseif ( 0 != $fragments[1] ) {
-						$value = $fragments[0] / $fragments[1];
-						if ( ( 1 > $value ) ) {
-							$new_data['FocalLength'] = sprintf( '%1$d/%2$d', $fragments[0], $fragments[1] );
-						} else {
-							if ( $value == intval( $value ) ) {
-								$new_data['FocalLength'] = sprintf( '%1$d', $value );
-							}else {
-								$new_data['FocalLength'] = sprintf( '%1$.2f', $value );
-							}
-						}
-					} // fractional value
-				} // non-zero numerator
-			} // valid denominator
+			if ( false !== ( $value = self::_rational_to_string( $exif_data['FocalLength'], '%1$d', '%1$d/%2$d', '%1$.2f' ) ) ) {
+				$new_data['FocalLength'] = $value;
+			}
 		} // FocalLength
 		
+		if ( isset( $exif_data['ExposureTime'] ) ) {
+			if ( false !== ( $value = self::_rational_to_string( $exif_data['ExposureTime'], '%1$d', '%1$d/%2$d', '%1$.2f' ) ) ) {
+				$new_data['ExposureTime'] = $value;
+			}
+		} // ExposureTime
+		
 		/*
-		 * ExposureTime
+		 * ShutterSpeed in "1/" format, from ExposureTime
+		 * Special logic for "fractional shutter speed" values 1.3, 1.5, 1.6, 2.5
 		 */
 		if ( isset( $exif_data['ExposureTime'] ) ) {
 			$fragments = array_map( 'intval', explode( '/', $exif_data['ExposureTime'] ) );
-			if ( is_null( $fragments[1] ) ) {
-				$value = trim( $exif_data['ExposureTime'] );
-				if ( ! empty( $value ) ) {
-					$new_data['ExposureTime'] = $value;
-				}
-			} else {
-				if ( $fragments[0] ) {
-					if ( 1 == $fragments[1] ) {
-						$new_data['ShutterSpeed'] = $new_data['ExposureTime'] = sprintf( '%1$d', $fragments[0] );
-					} elseif ( 0 != $fragments[1] ) {
-						$value = $fragments[0] / $fragments[1];
-						if ( 1 > $value ) {
-							$new_data['ExposureTime'] = sprintf( '%1$d/%2$d', $fragments[0], $fragments[1] );
-							
-							// Convert to "1/" value for shutter speed
-							if ( 1 == $fragments[0] ) {
-								$new_data['ShutterSpeed'] = $new_data['ExposureTime'];
-							} else {
-								$test = (float) number_format( 1.0 / $value, 1, '.', '');
-								if ( in_array( $test, array( 1.3, 1.5, 1.6, 2.5 ) ) ) {
-									$new_data['ShutterSpeed'] = '1/' . number_format( 1.0 / $value, 1, '.', '' );
-								} else {
-									$new_data['ShutterSpeed'] = '1/' .  number_format( 1.0 / $value, 0, '.', '' );
-								}
-							}
+			if ( ! is_null( $fragments[1] && $fragments[0] ) ) {
+				if ( 1 == $fragments[1] ) {
+					$new_data['ShutterSpeed'] = $new_data['ExposureTime'] = sprintf( '%1$d', $fragments[0] );
+				} elseif ( 0 != $fragments[1] ) {
+					$value = $fragments[0] / $fragments[1];
+					if ( 1 > $value ) {
+						// Convert to "1/" value for shutter speed
+						if ( 1 == $fragments[0] ) {
+							$new_data['ShutterSpeed'] = $new_data['ExposureTime'];
 						} else {
-							$new_data['ShutterSpeed'] = $new_data['ExposureTime'] = sprintf( '%1$.2f', $value );
+							$test = (float) number_format( 1.0 / $value, 1, '.', '');
+							if ( in_array( $test, array( 1.3, 1.5, 1.6, 2.5 ) ) ) {
+								$new_data['ShutterSpeed'] = '1/' . number_format( 1.0 / $value, 1, '.', '' );
+							} else {
+								$new_data['ShutterSpeed'] = '1/' .  number_format( 1.0 / $value, 0, '.', '' );
+							}
 						}
-					} // fractional value
-				} // non-zero numerator
-			} // valid denominator
-		} // ExposureTime
+					} else {
+						$new_data['ShutterSpeed'] = $new_data['ExposureTime'] = sprintf( '%1$.2f', $value );
+					}
+				} // fractional value
+			} // valid denominator and non-zero numerator
+		} // ShutterSpeed
+
+		if ( isset( $exif_data['UndefinedTag:0xA420'] ) ) {
+			$new_data['ImageUniqueID'] = $exif_data['UndefinedTag:0xA420'];
+		}
+		
+		if ( isset( $exif_data['UndefinedTag:0xA430'] ) ) {
+			$new_data['CameraOwnerName'] = $exif_data['UndefinedTag:0xA430'];
+		}
+		
+		if ( isset( $exif_data['UndefinedTag:0xA431'] ) ) {
+			$new_data['BodySerialNumber'] = $exif_data['UndefinedTag:0xA431'];
+		}
+		
+		if ( isset( $exif_data['UndefinedTag:0xA432'] ) && is_array( $exif_data['UndefinedTag:0xA432'] ) ) {
+			$array = $new_data['LensSpecification'] = $exif_data['UndefinedTag:0xA432'];
+
+			if ( isset ( $array[0] ) ) {
+				if ( false !== ( $value = self::_rational_to_string( $array[0], '%1$d', '%1$d/%2$d', '%1$.2f' ) ) ) {
+					$new_data['LensMinFocalLength'] = $value;
+				}
+			}
+			
+			if ( isset ( $array[1] ) ) {
+				if ( false !== ( $value = self::_rational_to_string( $array[1], '%1$d', '%1$d/%2$d', '%1$.2f' ) ) ) {
+					$new_data['LensMaxFocalLength'] = $value;
+				}
+			}
+			
+			if ( isset ( $array[2] ) ) {
+				if ( false !== ( $value = self::_rational_to_string( $array[2], '%1$d', '%1$d/%2$d', '%1$.1f' ) ) ) {
+					$new_data['LensMinFocalLengthFN'] = $value;
+				}
+			}
+			
+			if ( isset ( $array[3] ) ) {
+				if ( false !== ( $value = self::_rational_to_string( $array[3], '%1$d', '%1$d/%2$d', '%1$.1f' ) ) ) {
+					$new_data['LensMaxFocalLengthFN'] = $value;
+				}
+			}
+			
+		}
+		
+		if ( isset( $exif_data['UndefinedTag:0xA433'] ) ) {
+			$new_data['LensMake'] = $exif_data['UndefinedTag:0xA433'];
+		}
+		
+		if ( isset( $exif_data['UndefinedTag:0xA434'] ) ) {
+			$new_data['LensModel'] = $exif_data['UndefinedTag:0xA434'];
+		}
+		
+		if ( isset( $exif_data['UndefinedTag:0xA435'] ) ) {
+			$new_data['LensSerialNumber'] = $exif_data['UndefinedTag:0xA435'];
+		}
 		
 		if ( ! empty( $new_data ) ) {
 			$results['mla_exif_metadata']['CAMERA'] = $new_data;
