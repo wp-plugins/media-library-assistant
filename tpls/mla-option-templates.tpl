@@ -4,22 +4,25 @@
           <table class="taxonomytable">
 		  <thead>
 		  <tr>
-		    <th scope="col" style="text-align:center">
+		    <th scope="col" style="padding: 0px 5px 0px 5px; text-align:center; border-right: 1px solid">
 			[+Support+]
 			</th>
-		    <th scope="col" style="text-align:center">
+		    <th scope="col" style="padding: 0px 5px 0px 5px; text-align:center; border-right: 1px solid">
 			[+Inline Edit+]
 			</th>
-		    <th scope="col" style="text-align:center">
-			[+Checklist+]
-			</th>
-		    <th scope="col" style="text-align:center">
+		    <th scope="col" style="padding: 0px 5px 0px 5px; text-align:center; border-right: 1px solid">
 			[+Term Search+]
 			</th>
-		    <th scope="col" style="text-align:center">
+		    <th scope="col" style="padding: 0px 5px 0px 5px; text-align:center; border-right: 1px solid">
+			[+Checklist+]
+			</th>
+		    <th scope="col" style="padding: 0px 5px 0px 5px; text-align:center; border-right: 1px solid">
+			[+Checked On Top+]
+			</th>
+		    <th scope="col" style="padding: 0px 5px 0px 5px; text-align:center; border-right: 1px solid">
 			[+List Filter+]
 			</th>
-		    <th scope="col" style="text-align:left">
+		    <th scope="col" style="padding: 0px 5px 0px 5px; text-align:left">
 			[+Taxonomy+]
 			</th>
 			</tr>
@@ -40,10 +43,13 @@
             <input type="checkbox" name="tax_quick_edit[[+key+]]" id="tax_quick_edit_[+key+]" [+quick_edit_checked+] value="checked" />
         </td>
 		<td style="text-align:center;">
+            <input type="checkbox" name="tax_term_search[[+key+]]" id="tax_term_search_[+key+]" [+term_search_checked+] value="checked" />
+        </td>
+		<td style="text-align:center;">
             <input type="checkbox" name="tax_flat_checklist[[+key+]]" id="tax_flat_checklist_[+key+]" [+flat_checklist_checked+] [+flat_checklist_disabled+] value="[+flat_checklist_value+]" />
         </td>
 		<td style="text-align:center;">
-            <input type="checkbox" name="tax_term_search[[+key+]]" id="tax_term_search[+key+]" [+term_search_checked+] value="checked" />
+            <input type="checkbox" name="tax_checked_on_top[[+key+]]" id="tax_checked_on_top_[+key+]" [+checked_on_top_checked+] value="checked" />
         </td>
 		<td style="text-align:center;">
             <input type="radio" name="tax_filter" id="tax_filter_[+key+]" [+filter_checked+] value="[+key+]" />

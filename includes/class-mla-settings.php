@@ -2816,7 +2816,7 @@ class MLASettings {
 		}
 
 		$page_values = array(
-			'Mapping Progress' => __( 'Custom Field Mapping Progress', 'media-library-assistant' ),
+			'Mapping Progress' => __( 'IPTC &amp; EXIF Mapping Progress', 'media-library-assistant' ),
 			'DO NOT' => __( 'DO NOT DO THE FOLLOWING (they will cause mapping to fail)', 'media-library-assistant' ),
 			'DO NOT Close' => __( 'Close the window', 'media-library-assistant' ),
 			'DO NOT Reload' => __( 'Reload the page', 'media-library-assistant' ),
@@ -3772,11 +3772,14 @@ class MLASettings {
 						if ( ! isset( $_REQUEST['tax_quick_edit'] ) ) {
 							$_REQUEST['tax_quick_edit'] = array();
 						}
+						if ( ! isset( $_REQUEST['tax_term_search'] ) ) {
+							$_REQUEST['tax_term_search'] = array();
+						}
 						if ( ! isset( $_REQUEST['tax_flat_checklist'] ) ) {
 							$_REQUEST['tax_flat_checklist'] = array();
 						}
-						if ( ! isset( $_REQUEST['tax_term_search'] ) ) {
-							$_REQUEST['tax_term_search'] = array();
+						if ( ! isset( $_REQUEST['tax_checked_on_top'] ) ) {
+							$_REQUEST['tax_checked_on_top'] = array();
 						}
 						break;
 					case MLAOptions::MLA_SEARCH_MEDIA_FILTER_DEFAULTS:

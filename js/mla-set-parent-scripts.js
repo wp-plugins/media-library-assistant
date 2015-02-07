@@ -3,7 +3,7 @@
 var jQuery;
 
 /*
- * This script requires the global "mla"object to be defined and include the following:
+ * This script requires the global "mla" object to be defined and include the following:
  *
  * properties:
  *     mla.settings.useDashicons

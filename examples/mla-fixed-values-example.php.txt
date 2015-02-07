@@ -4,10 +4,10 @@ Plugin Name: MLA Fixed Values Example
 Plugin URI: http://fairtradejudaica.org/media-library-assistant-a-wordpress-plugin/
 Description: Provides an example of hooking the filters provided by the [mla_gallery] shortcode
 Author: David Lingren
-Version: 1.00
+Version: 1.01
 Author URI: http://fairtradejudaica.org/our-story/staff/
 
-Copyright 2013, 2014 David Lingren
+Copyright 2014, 2015 David Lingren
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -25,6 +25,9 @@ Copyright 2013, 2014 David Lingren
 
 /**
  * Class MLA Fixed Values Example hooks a few of the filters provided by the [mla_gallery] shortcode
+ *
+ * Thanks to "Harm10" for some improvements as part of this Support Topic:
+ * https://wordpress.org/support/topic/fixed-href-link-or-caption-text-per-id
  *
  * Call it anything you want, but give it an unlikely and hopefully unique name. Hiding everything
  * else inside a class means this is the only name you have to worry about.
@@ -55,11 +58,11 @@ class MLAFixedValuesExample {
     /**
      * MLA Gallery (Display) Attributes
      *
-     * This filter gives you an opportunity to record or modify the arguments passed in to the shortcode
+     * This filter lets you record or modify the arguments passed in to the shortcode
      * before they are merged with the default arguments used for the gallery display.
      *
-     * The $shortcode_attributes array is where you will find any of your own parameters that are coded in the
-     * shortcode, e.g., [mla_gallery my_parameter="my value"].
+     * The $shortcode_attributes array is where you will find your own parameters that
+	 * are coded in the shortcode, e.g., [mla_gallery mla_fixed_title="my title"].
      */
     public static function mla_gallery_attributes_filter( $shortcode_attributes ) {
         /*
@@ -81,38 +84,66 @@ class MLAFixedValuesExample {
      */
     public static function mla_gallery_item_values_filter( $item_values ) {
         /*
-         * We use a shortcode parameter of our own to apply our filters on a gallery-by-gallery basis,
-         * leaving other [mla_gallery] instances untouched. If the "fixed_values" parameter is not present,
-         * we have nothing to do. Here is an example of how the custom parameter can be used:
+         * We use shortcode parameters of our own to apply our filters on a
+		 * gallery-by-gallery basis, leaving other [mla_gallery] instances untouched.
+		 * If no "mla_fixed_" parameters are present, we have nothing to do. Here is
+		 * an example of how the custom parameter can be used:
          *
-         * [mla_gallery ids="2621,2622,2623" fixed_values="array('test1','test2','test3')" mla_caption="{+fixed_value+}"]
-         */        
-        if ( ! isset( self::$shortcode_attributes['fixed_values'] ) ) {
+         * [mla_gallery ids="2621,2622,2623" mla_fixed_caption="array('test1','test2','test3')" mla_caption="{+mla_fixed_caption+}"]
+		 *
+		 * You can have as many "mla_fixed_" parameters as you need for different values.
+		 * $mla_fixed_values stores the parameter(s) and values. If none are found, the
+		 * initialization code sets it to false so the logic is quickly bypassed.
+         */
+		static $mla_fixed_values = NULL;
+		
+        if ( false === $mla_fixed_values ) {
             return $item_values; // leave them unchanged
         }
 
         /*
-         * Evaluate the parameter value once per page load.
+         * Evaluate the parameter value(s) once per page load.
          */
-        static $fixed_values = NULL;
-        if ( NULL === $fixed_values ) {
-            $function = @create_function('', 'return ' . self::$shortcode_attributes['fixed_values'] . ';' );
-            if ( is_callable( $function ) ) {
-                $fixed_values = $function();
-            }
+        if ( NULL === $mla_fixed_values ) {
+			$mla_fixed_values = array();
+			foreach ( self::$shortcode_attributes as $parmkey => $parmvalue ) {
+                if ( 'mla_fixed_' == substr( $parmkey, 0, 10 ) ) {
+					if ( 'array(' == substr( $parmvalue, 0, 6 ) ) {
+	                    $function = @create_function( '', 'return ' . self::$shortcode_attributes[ $parmkey ] . ';' );
+    	                if ( is_callable( $function ) ) {
+        	                $mla_fixed_values[ $parmkey ] = $function();
+            	        }
+						
+	                    if ( ! is_array( $mla_fixed_values[ $parmkey ] ) ) {
+                            $mla_fixed_values[ $parmkey ] = array();
+                        }
+					} else {
+                        $mla_fixed_values[ $parmkey ] = explode( ",", $parmvalue );
+                        if ( false === $mla_fixed_values[ $parmkey ] ) {
+                            $mla_fixed_values[ $parmkey ] = array();
+                        }
+                    }
+                } // found mla_fixed_
+			} // foreach parameter
 
-            if ( ! is_array( $fixed_values ) ) {
-                $fixed_values = array();
-            }
-        }
+			if ( empty( $mla_fixed_values ) ) {
+				$mla_fixed_values = false;			
+	            return $item_values;
+			}
+        } // initialization code
 
         /*
          * Apply the appropriate value to the current item.
          */
-        if ( isset( $fixed_values[ $item_values['index'] - 1 ] ) ) {
-            $item_values['fixed_value'] = $fixed_values[ $item_values['index'] - 1 ];
+        foreach ( $mla_fixed_values as $mla_fixed_key => $mla_fixed_value ) {
+           /*
+            * Apply the appropriate value to the current item.
+            */
+            if ( isset( $mla_fixed_value[ $item_values['index'] - 1 ] ) ) {
+                $item_values[ $mla_fixed_key ] = $mla_fixed_value[ $item_values['index'] - 1 ];
+            }
         }
-        
+
         return $item_values;
     } // mla_gallery_item_values_filter
 } // Class MLAFixedValuesExample

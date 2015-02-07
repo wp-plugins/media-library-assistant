@@ -823,10 +823,10 @@ class MLAEdit {
 				?>
 				<ul id="<?php echo $tab_all_ul_id; ?>" data-wp-lists="list:<?php echo $taxonomy?>" class="categorychecklist form-no-clear">
 					<?php if ( $tax->hierarchical ): ?>
-					<?php wp_terms_checklist($post->ID, array( 'taxonomy' => $taxonomy, 'popular_cats' => $popular_ids ) ) ?>
+					<?php wp_terms_checklist($post->ID, array( 'taxonomy' => $taxonomy, 'popular_cats' => $popular_ids, 'checked_ontop'=> MLAOptions::mla_taxonomy_support( $taxonomy, 'checked-on-top' ) ) ) ?>
 					<?php else: ?>
                     <?php $checklist_walker = new MLA_Checklist_Walker; ?>
-					<?php wp_terms_checklist($post->ID, array( 'taxonomy' => $taxonomy, 'popular_cats' => $popular_ids, 'walker' => $checklist_walker ) ) ?>
+					<?php wp_terms_checklist($post->ID, array( 'taxonomy' => $taxonomy, 'popular_cats' => $popular_ids, 'checked_ontop'=> MLAOptions::mla_taxonomy_support( $taxonomy, 'checked-on-top' ), 'walker' => $checklist_walker ) ) ?>
 					<?php endif; ?>
 				</ul>
 			</div>

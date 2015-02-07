@@ -512,15 +512,15 @@ class MLAOptions {
 
 			self::MLA_TAXONOMY_SUPPORT =>
 				array('tab' => 'general',
-					'help' => __( 'Check the "Support" box to add the taxonomy to the Assistant and the Edit Media screen.', 'media-library-assistant' ) . '<br>' .
-						__( 'Check the "Inline Edit" box to display the taxonomy in the Quick Edit and Bulk Edit areas.', 'media-library-assistant' ) . '<br>' .
-						__( 'Check the "Checklist" box to enable the checklist-style meta box for a flat taxonomy.', 'media-library-assistant' ) . '<br>' .
-						__( 'You must also check the <strong>"Enable enhanced checklist taxonomies"</strong> box below to enable this feature.', 'media-library-assistant' ) . '<br>' .
-						__( 'Check the "Term Search" box to add the taxonomy to the "Search Media/Terms" list.', 'media-library-assistant' ) . 
+					'help' => __( 'Check the "<strong>Support</strong>" box to add the taxonomy to the Assistant and the Edit Media screen.', 'media-library-assistant' ) . '<br>' .
+						__( 'Check the "<strong>Inline Edit</strong>" box to display the taxonomy in the Quick Edit and Bulk Edit areas.', 'media-library-assistant' ) . '<br>' .
+						__( 'Check the "<strong>Term Search</strong>" box to add the taxonomy to the "Search Media/Terms" list.', 'media-library-assistant' ) . 
 						sprintf( ' %1$s <a href="%2$s">%3$s</a>.',  __( 'For complete documentation', 'media-library-assistant' ), admin_url( 'options-general.php?page=' . MLASettings::MLA_SETTINGS_SLUG . '-documentation&amp;mla_tab=documentation#terms_search' ), __( 'click here', 'media-library-assistant' ) )
  . '<br>' .
-						__( 'Check the "Inline Edit" box to display the taxonomy in the Quick Edit and Bulk Edit areas.', 'media-library-assistant' ) . '<br>' .
-						__( 'Use the "List Filter" option to select the taxonomy on which to filter the Assistant table listing.', 'media-library-assistant' ),
+						__( 'Check the "<strong>Checklist</strong>" box to enable the checklist-style meta box for a flat taxonomy.', 'media-library-assistant' ) . '&nbsp;' .
+						__( 'You must also check the <strong>"Enable enhanced checklist taxonomies"</strong> box below to enable this feature.', 'media-library-assistant' ) . '<br>' .
+						__( 'Check the "<strong>Checked On Top</strong>" box to moved checked terms to the top of the checklist-style meta box.', 'media-library-assistant' ) . '<br>' .
+						__( 'Use the "<strong>List Filter</strong>" option to select the taxonomy on which to filter the Assistant table listing.', 'media-library-assistant' ),
  					'std' =>  array (
 						'tax_support' => array (
 							'attachment_category' => 'checked',
@@ -530,11 +530,12 @@ class MLAOptions {
 							'attachment_category' => 'checked',
 							'attachment_tag' => 'checked',
 						),
-						'tax_flat_checklist' => array(),
 						'tax_term_search' => array (
 							'attachment_category' => 'checked',
 							'attachment_tag' => 'checked',
 						),
+						'tax_flat_checklist' => array(),
+						'tax_checked_on_top' => NULL, // default "true", handled in mla_initialize_tax_checked_on_top
 						'tax_filter' => 'attachment_category'
 						), 
 					'type' => 'custom',
@@ -1201,6 +1202,31 @@ class MLAOptions {
 	}
 
 	/**
+	 * Initialize "tax_checked_on_top" => "checked" default for all supported taxonomies
+	 *
+	 * Called after all taxonomies are registered, e.g., in MLAObjects::_build_taxonomies.
+	 *
+	 * @since 2.02
+	 *
+	 * @return	void
+	 */
+	public static function mla_initialize_tax_checked_on_top() {
+		if ( NULL === self::$mla_option_definitions[ self::MLA_TAXONOMY_SUPPORT ]['std']['tax_checked_on_top'] ) {
+			/*
+			 * WordPress default is 'checked_ontop' => true
+			 * Initialize tax_checked_on_top defaults to true for all supported taxonomies
+			 */		
+			$checked_on_top = array();
+			$taxonomies = self::mla_supported_taxonomies();
+			foreach ( $taxonomies as $new_key ) {
+				$checked_on_top[ $new_key ] = 'checked';
+			}
+			
+			self::$mla_option_definitions[ self::MLA_TAXONOMY_SUPPORT ]['std']['tax_checked_on_top'] = $checked_on_top;
+		}
+	}
+
+	/**
 	 * Fetch style or markup template from $mla_templates
 	 *
 	 * @since 0.80
@@ -1439,15 +1465,6 @@ class MLAOptions {
 
 				$tax_quick_edit = isset( $tax_options['tax_quick_edit'] ) ? $tax_options['tax_quick_edit'] : self::$mla_option_definitions[ self::MLA_TAXONOMY_SUPPORT ]['std']['tax_quick_edit'];
 				return array_key_exists( $tax_name, $tax_quick_edit );
-			case 'flat-checklist':
-				if ( !empty( $_REQUEST['mla-general-options-save'] ) ) {
-					return isset( $_REQUEST['tax_flat_checklist'][ $tax_name ] );
-				} elseif ( !empty( $_REQUEST['mla-general-options-reset'] ) ) {
-					return array_key_exists( $tax_name, self::$mla_option_definitions[ self::MLA_TAXONOMY_SUPPORT ]['std']['tax_flat_checklist'] );
-				}
-
-				$tax_flat_checklist = isset( $tax_options['tax_flat_checklist'] ) ? $tax_options['tax_flat_checklist'] : self::$mla_option_definitions[ self::MLA_TAXONOMY_SUPPORT ]['std']['tax_flat_checklist'];
-				return array_key_exists( $tax_name, $tax_flat_checklist );
 			case 'term-search':
 				if ( !empty( $_REQUEST['mla-general-options-save'] ) ) {
 					return isset( $_REQUEST['tax_term_search'][ $tax_name ] );
@@ -1457,6 +1474,24 @@ class MLAOptions {
 
 				$tax_term_search = isset( $tax_options['tax_term_search'] ) ? $tax_options['tax_term_search'] : self::$mla_option_definitions[ self::MLA_TAXONOMY_SUPPORT ]['std']['tax_term_search'];
 				return array_key_exists( $tax_name, $tax_term_search );
+			case 'flat-checklist':
+				if ( !empty( $_REQUEST['mla-general-options-save'] ) ) {
+					return isset( $_REQUEST['tax_flat_checklist'][ $tax_name ] );
+				} elseif ( !empty( $_REQUEST['mla-general-options-reset'] ) ) {
+					return array_key_exists( $tax_name, self::$mla_option_definitions[ self::MLA_TAXONOMY_SUPPORT ]['std']['tax_flat_checklist'] );
+				}
+
+				$tax_flat_checklist = isset( $tax_options['tax_flat_checklist'] ) ? $tax_options['tax_flat_checklist'] : self::$mla_option_definitions[ self::MLA_TAXONOMY_SUPPORT ]['std']['tax_flat_checklist'];
+				return array_key_exists( $tax_name, $tax_flat_checklist );
+			case 'checked-on-top':
+				if ( !empty( $_REQUEST['mla-general-options-save'] ) ) {
+					return isset( $_REQUEST['tax_checked_on_top'][ $tax_name ] );
+				} elseif ( !empty( $_REQUEST['mla-general-options-reset'] ) ) {
+					return array_key_exists( $tax_name, self::$mla_option_definitions[ self::MLA_TAXONOMY_SUPPORT ]['std']['tax_checked_on_top'] );
+				}
+
+				$tax_checked_on_top = isset( $tax_options['tax_checked_on_top'] ) ? $tax_options['tax_checked_on_top'] : self::$mla_option_definitions[ self::MLA_TAXONOMY_SUPPORT ]['std']['tax_checked_on_top'];
+				return array_key_exists( $tax_name, $tax_checked_on_top );
 			case 'filter':
 				$tax_filter = isset( $tax_options['tax_filter'] ) ? $tax_options['tax_filter'] : self::$mla_option_definitions[ self::MLA_TAXONOMY_SUPPORT ]['std']['tax_filter'];
 				if ( '' == $tax_name ) {
@@ -1504,14 +1539,6 @@ class MLAOptions {
 				}
 
 				return array_keys( isset( $tax_options['tax_quick_edit'] ) ? $tax_options['tax_quick_edit'] : self::$mla_option_definitions[ self::MLA_TAXONOMY_SUPPORT ]['std']['tax_quick_edit'] );
-			case 'flat-checklist':
-				if ( !empty( $_REQUEST['mla-general-options-save'] ) ) {
-					return isset( $_REQUEST['tax_flat_checklist'] ) ? array_keys( $_REQUEST['tax_flat_checklist'] ) : array();
-				} elseif ( !empty( $_REQUEST['mla-general-options-reset'] ) ) {
-					return array_keys( self::$mla_option_definitions[ self::MLA_TAXONOMY_SUPPORT ]['std']['tax_flat_checklist'] );
-				}
-
-				return array_keys( isset( $tax_options['tax_flat_checklist'] ) ? $tax_options['tax_flat_checklist'] : self::$mla_option_definitions[ self::MLA_TAXONOMY_SUPPORT ]['std']['tax_quick_edit'] );
 			case 'term-search':
 				if ( !empty( $_REQUEST['mla-general-options-save'] ) ) {
 					return isset( $_REQUEST['tax_term_search'] ) ? array_keys( $_REQUEST['tax_term_search'] ) : array();
@@ -1520,6 +1547,22 @@ class MLAOptions {
 				}
 
 				return array_keys( isset( $tax_options['tax_term_search'] ) ? $tax_options['tax_term_search'] : self::$mla_option_definitions[ self::MLA_TAXONOMY_SUPPORT ]['std']['tax_term_search'] );
+			case 'flat-checklist':
+				if ( !empty( $_REQUEST['mla-general-options-save'] ) ) {
+					return isset( $_REQUEST['tax_flat_checklist'] ) ? array_keys( $_REQUEST['tax_flat_checklist'] ) : array();
+				} elseif ( !empty( $_REQUEST['mla-general-options-reset'] ) ) {
+					return array_keys( self::$mla_option_definitions[ self::MLA_TAXONOMY_SUPPORT ]['std']['tax_flat_checklist'] );
+				}
+
+				return array_keys( isset( $tax_options['tax_flat_checklist'] ) ? $tax_options['tax_flat_checklist'] : self::$mla_option_definitions[ self::MLA_TAXONOMY_SUPPORT ]['std']['tax_flat_checklist'] );
+			case 'checked-on-top':
+				if ( !empty( $_REQUEST['mla-general-options-save'] ) ) {
+					return isset( $_REQUEST['tax_checked_on_top'] ) ? array_keys( $_REQUEST['tax_checked_on_top'] ) : array();
+				} elseif ( !empty( $_REQUEST['mla-general-options-reset'] ) ) {
+					return array_keys( self::$mla_option_definitions[ self::MLA_TAXONOMY_SUPPORT ]['std']['tax_checked_on_top'] );
+				}
+
+				return array_keys( isset( $tax_options['tax_checked_on_top'] ) ? $tax_options['tax_checked_on_top'] : self::$mla_option_definitions[ self::MLA_TAXONOMY_SUPPORT ]['std']['tax_checked_on_top'] );
 			case 'filter':
 				if ( !empty( $_REQUEST['mla-general-options-save'] ) ) {
 					return isset( $_REQUEST['tax_filter'] ) ? (array) $_REQUEST['tax_filter'] : array();
@@ -1617,8 +1660,9 @@ class MLAOptions {
 				$current_values = self::mla_get_option( $key );
 				$tax_support = isset( $current_values['tax_support'] ) ? $current_values['tax_support'] : self::$mla_option_definitions[ self::MLA_TAXONOMY_SUPPORT ]['std']['tax_support'];
 				$tax_quick_edit = isset( $current_values['tax_quick_edit'] ) ? $current_values['tax_quick_edit'] : self::$mla_option_definitions[ self::MLA_TAXONOMY_SUPPORT ]['std']['tax_quick_edit'];
-				$tax_flat_checklist = isset( $current_values['tax_flat_checklist'] ) ? $current_values['tax_flat_checklist'] : self::$mla_option_definitions[ self::MLA_TAXONOMY_SUPPORT ]['std']['tax_flat_checklist'];
 				$tax_term_search = isset( $current_values['tax_term_search'] ) ? $current_values['tax_term_search'] : self::$mla_option_definitions[ self::MLA_TAXONOMY_SUPPORT ]['std']['tax_term_search'];
+				$tax_flat_checklist = isset( $current_values['tax_flat_checklist'] ) ? $current_values['tax_flat_checklist'] : self::$mla_option_definitions[ self::MLA_TAXONOMY_SUPPORT ]['std']['tax_flat_checklist'];
+				$tax_checked_on_top = isset( $current_values['tax_checked_on_top'] ) ? $current_values['tax_checked_on_top'] : self::$mla_option_definitions[ self::MLA_TAXONOMY_SUPPORT ]['std']['tax_checked_on_top'];
 				$tax_filter = isset( $current_values['tax_filter'] ) ? $current_values['tax_filter'] : self::$mla_option_definitions[ self::MLA_TAXONOMY_SUPPORT ]['std']['tax_filter'];
 
 				/*
@@ -1665,10 +1709,11 @@ class MLAOptions {
 						'name' => $tax_object->labels->name,
 						'support_checked' => array_key_exists( $tax_name, $tax_support ) ? 'checked=checked' : '',
 						'quick_edit_checked' => array_key_exists( $tax_name, $tax_quick_edit ) ? 'checked=checked' : '',
-						'flat_checklist_checked' => array_key_exists( $tax_name, $tax_flat_checklist ) ? 'checked=checked' : '',
 						'term_search_checked' => array_key_exists( $tax_name, $tax_term_search ) ? 'checked=checked' : '',
+						'flat_checklist_checked' => array_key_exists( $tax_name, $tax_flat_checklist ) ? 'checked=checked' : '',
 						'flat_checklist_disabled' => '',
 						'flat_checklist_value' => 'checked',
+						'checked_on_top_checked' => array_key_exists( $tax_name, $tax_checked_on_top ) ? 'checked=checked' : '',
 						'filter_checked' => ( $tax_name == $tax_filter ) ? 'checked=checked' : ''
 					);
 
@@ -1684,8 +1729,9 @@ class MLAOptions {
 				$option_values = array (
 					'Support' => __( 'Support', 'media-library-assistant' ),
 					'Inline Edit' => __( 'Inline Edit', 'media-library-assistant' ),
-					'Checklist' => __( 'Checklist', 'media-library-assistant' ),
 					'Term Search' => __( 'Term Search', 'media-library-assistant' ),
+					'Checklist' => __( 'Checklist', 'media-library-assistant' ),
+					'Checked On Top' => __( 'Checked On Top', 'media-library-assistant' ),
 					'List Filter' => __( 'List Filter', 'media-library-assistant' ),
 					'Taxonomy' => __( 'Taxonomy', 'media-library-assistant' ),
 					'taxonomy_rows' => $row,
@@ -1697,8 +1743,9 @@ class MLAOptions {
 			case 'delete':
 				$tax_support = isset( $args['tax_support'] ) ? $args['tax_support'] : self::$mla_option_definitions[ self::MLA_TAXONOMY_SUPPORT ]['std']['tax_support'];
 				$tax_quick_edit = isset( $args['tax_quick_edit'] ) ? $args['tax_quick_edit'] : self::$mla_option_definitions[ self::MLA_TAXONOMY_SUPPORT ]['std']['tax_quick_edit'];
-				$tax_flat_checklist = isset( $args['tax_flat_checklist'] ) ? $args['tax_flat_checklist'] : self::$mla_option_definitions[ self::MLA_TAXONOMY_SUPPORT ]['std']['tax_flat_checklist'];
 				$tax_term_search = isset( $args['tax_term_search'] ) ? $args['tax_term_search'] : self::$mla_option_definitions[ self::MLA_TAXONOMY_SUPPORT ]['std']['tax_term_search'];
+				$tax_flat_checklist = isset( $args['tax_flat_checklist'] ) ? $args['tax_flat_checklist'] : self::$mla_option_definitions[ self::MLA_TAXONOMY_SUPPORT ]['std']['tax_flat_checklist'];
+				$tax_checked_on_top = isset( $args['tax_checked_on_top'] ) ? $args['tax_checked_on_top'] : self::$mla_option_definitions[ self::MLA_TAXONOMY_SUPPORT ]['std']['tax_checked_on_top'];
 				$tax_filter = isset( $args['tax_filter'] ) ? $args['tax_filter'] : self::$mla_option_definitions[ self::MLA_TAXONOMY_SUPPORT ]['std']['tax_filter'];
 
 				$msg = '';
@@ -1717,6 +1764,14 @@ class MLAOptions {
 					}
 				}
 
+				foreach ( $tax_term_search as $tax_name => $tax_value ) {
+					if ( !array_key_exists( $tax_name, $tax_support ) ) {
+						/* translators: 1: taxonomy name */
+						$msg .= '<br>' . sprintf( __( 'Term Search ignored; %1$s not supported.', 'media-library-assistant' ), $tax_name ) . "\r\n";
+						unset( $tax_term_search[ $tax_name ] );
+					}
+				}
+
 				foreach ( $tax_flat_checklist as $tax_name => $tax_value ) {
 					if ( 'disabled' == $tax_value ) {
 						unset( $tax_flat_checklist[ $tax_name ] );
@@ -1727,19 +1782,20 @@ class MLAOptions {
 					}
 				}
 
-				foreach ( $tax_term_search as $tax_name => $tax_value ) {
+				foreach ( $tax_checked_on_top as $tax_name => $tax_value ) {
 					if ( !array_key_exists( $tax_name, $tax_support ) ) {
 						/* translators: 1: taxonomy name */
-						$msg .= '<br>' . sprintf( __( 'Term Search ignored; %1$s not supported.', 'media-library-assistant' ), $tax_name ) . "\r\n";
-						unset( $tax_term_search[ $tax_name ] );
+						$msg .= '<br>' . sprintf( __( 'Checked On Top ignored; %1$s not supported.', 'media-library-assistant' ), $tax_name ) . "\r\n";
+						unset( $tax_checked_on_top[ $tax_name ] );
 					}
 				}
 
 				$value = array (
 					'tax_support' => $tax_support,
 					'tax_quick_edit' => $tax_quick_edit,
-					'tax_flat_checklist' => $tax_flat_checklist,
 					'tax_term_search' => $tax_term_search,
+					'tax_flat_checklist' => $tax_flat_checklist,
+					'tax_checked_on_top' => $tax_checked_on_top,
 					'tax_filter' => $tax_filter
 					);
 
