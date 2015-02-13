@@ -69,7 +69,8 @@ class MLAFixedValuesExample {
      * before they are merged with the default arguments used for the gallery display.
      *
      * The $shortcode_attributes array is where you will find your own parameters that
-	 * are coded in the shortcode, e.g., [mla_gallery mla_fixed_title="my title"].
+	 * are coded in the shortcode, e.g.:
+	 * [mla_gallery mla_fixed_caption="array('test1','test2')" mla_caption="{+mla_fixed_caption+}"].
      */
     public static function mla_gallery_attributes_filter( $shortcode_attributes ) {
         /*
@@ -96,7 +97,7 @@ class MLAFixedValuesExample {
 		 * If no "mla_fixed_" parameters are present, we have nothing to do. Here is
 		 * an example of how the custom parameter can be used:
          *
-         * [mla_gallery ids="2621,2622,2623" mla_fixed_caption="array('test1','test2','test3')" mla_caption="{+mla_fixed_caption+}"]
+         * [mla_gallery ids="2621,2622" mla_fixed_title="array('my title','my other title')" mla_image_attributes="title='{+mla_fixed_title+}'"]
 		 *
 		 * You can have as many "mla_fixed_" parameters as you need for different values.
          */
@@ -116,11 +117,13 @@ class MLAFixedValuesExample {
 	                    $function = @create_function( '', 'return ' . self::$shortcode_attributes[ $parmkey ] . ';' );
     	                if ( is_callable( $function ) ) {
         	                self::$mla_fixed_values[ $parmkey ] = $function();
-            	        }
-						
-	                    if ( ! is_array( self::$mla_fixed_values[ $parmkey ] ) ) {
+
+		                    if ( ! is_array( self::$mla_fixed_values[ $parmkey ] ) ) {
+    	                        self::$mla_fixed_values[ $parmkey ] = array();
+        	                }
+						} else {
                             self::$mla_fixed_values[ $parmkey ] = array();
-                        }
+						}
 					} else {
                         self::$mla_fixed_values[ $parmkey ] = explode( ",", $parmvalue );
                         if ( false === self::$mla_fixed_values[ $parmkey ] ) {

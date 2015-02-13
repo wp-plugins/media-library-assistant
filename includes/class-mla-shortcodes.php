@@ -877,6 +877,31 @@ class MLAShortcodes {
 				$image_alt = '';
 			}
 
+			/*
+			 * Look for alt= and class= attributes in $image_attributes. If found,
+			 * they override and completely replace the corresponding values.
+			 */
+			$class_replace = false;
+			if ( ! empty( $image_attributes ) ) {
+				$match_count = preg_match( '#alt=(([\'\"])([^\']+?)\2)#', $image_attributes, $matches, PREG_OFFSET_CAPTURE );
+				if ( 1 === $match_count ) {
+					$image_alt = $matches[3][0];
+					$image_attributes = substr_replace( $image_attributes, '', $matches[0][1], strlen( $matches[0][0] ) );
+				}
+
+				$match_count = preg_match( '#class=(([\'\"])([^\']+?)\2)#', $image_attributes, $matches, PREG_OFFSET_CAPTURE );
+				if ( 1 === $match_count ) {
+					$class_replace = true;
+					$image_class = $matches[3][0];
+					$image_attributes = substr_replace( $image_attributes, '', $matches[0][1], strlen( $matches[0][0] ) );
+				}
+
+				$image_attributes = trim( $image_attributes );
+				if ( ! empty( $image_attributes ) ) {
+					$image_attributes .= ' ';
+				}
+			}
+
 			if ( false !== strpos( $item_values['pagelink'], '<img ' ) ) {
 				if ( ! empty( $image_attributes ) ) {
 					$item_values['pagelink'] = str_replace( '<img ', '<img ' . $image_attributes, $item_values['pagelink'] );
@@ -888,7 +913,7 @@ class MLAShortcodes {
 				 */
 				if ( ! empty( $image_class ) ) {
 					$match_count = preg_match_all( '# class=\"([^\"]+)\" #', $item_values['pagelink'], $matches, PREG_OFFSET_CAPTURE );
-					if ( ! ( ( $match_count == false ) || ( $match_count == 0 ) ) ) {
+					if ( ! ( $class_replace || ( $match_count == false ) || ( $match_count == 0 ) ) ) {
 						$class = $matches[1][0][0] . ' ' . $image_class;
 					} else {
 						$class = $image_class;

@@ -347,32 +347,32 @@ Twelve <code>[mla_gallery]</code> parameters provide an easy way to control the 
 <td>completely replaces gallery output with links to the "previous" or "next" item/page or pagination links. Complete documentation is in the <a href="#mla_output_parameter"><strong>Support for Alternative Gallery Output, e.g., Pagination</strong></a> section below.</td>
 </tr>
 <tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">mla_rollover_text</td>
+<td>adds the HTML "title" attribute in the hyperlink for each gallery item. This is the attachment title text displayed when the mouse rolls or hovers over the gallery thumbnail. Note that as of WordPress 3.7 there is no default "title" attribute; for older WordPress versions this parameter will replace the default "title".</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">mla_target</td>
+<td>adds an HTML "target" attribute to the hyperlink for each gallery item; see below.</td>
+</tr>
+<tr>
 <td style="padding-right: 10px; vertical-align: top; font-weight:bold">mla_link_attributes</td>
-<td>adds one or more HTML attributes to the hyperlink for each gallery item; see below</td>
+<td>adds one or more HTML attributes to the hyperlink for each gallery item; see below.</td>
 </tr>
 <tr>
 <td style="padding-right: 10px; vertical-align: top; font-weight:bold">mla_link_class</td>
-<td><strong>adds</strong> one or more classes to any already defined for the hyperlink </td>
+<td>adds an HTML "class" attribute to the hyperlink for each gallery item.</td>
 </tr>
 <tr>
 <td style="padding-right: 10px; vertical-align: top; font-weight:bold">mla_link_href</td>
-<td>replaces the HTML "href" attribute in the hyperlink for each gallery item; see below</td>
+<td>replaces the HTML "href" attribute in the hyperlink for each gallery item; see below.</td>
 </tr>
 <tr>
 <td style="padding-right: 10px; vertical-align: top; font-weight:bold">mla_link_text</td>
-<td>replaces the thumbnail image or attachment title text displayed for each gallery item</td>
-</tr>
-<tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">mla_nolink_text</td>
-<td>replaces the empty string displayed when there are no gallery items or no pagination link </td>
-</tr>
-<tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">mla_rollover_text</td>
-<td>replaces the HTML "title" attribute in the hyperlink for each gallery item. This is the attachment title text displayed when the mouse rolls or hovers over the gallery thumbnail</td>
+<td>replaces the thumbnail image or attachment title text displayed for each gallery item.</td>
 </tr>
 <tr>
 <td style="padding-right: 10px; vertical-align: top; font-weight:bold">mla_image_attributes</td>
-<td>adds one or more HTML attributes to the "img" tag of the thumbnail image or icon displayed for each gallery item</td>
+<td>adds one or more HTML attributes to the "img" tag of the thumbnail image or icon displayed for each gallery item. Note that if you include an "alt" or "class" attribute in this parameter it will override and replace the corresponding attribute already present in the tag, including any "mla_image_class" or "mla_image_alt" value.</td>
 </tr>
 <tr>
 <td style="padding-right: 10px; vertical-align: top; font-weight:bold">mla_image_class</td>
@@ -380,17 +380,16 @@ Twelve <code>[mla_gallery]</code> parameters provide an easy way to control the 
 </tr>
 <tr>
 <td style="padding-right: 10px; vertical-align: top; font-weight:bold">mla_image_alt</td>
-<td>replaces the HTML "alt" attribute in the "img" tag of the thumbnail image or icon displayed for each gallery item</td>
+<td>replaces the HTML "alt" attribute in the "img" tag of the thumbnail image or icon displayed for each gallery item.</td>
 </tr>
 <tr>
 <td style="padding-right: 10px; vertical-align: top; font-weight:bold">mla_caption</td>
-<td>replaces the attachment caption text displayed beneath the thumbnail of each gallery item</td>
+<td>replaces the attachment caption text displayed beneath the thumbnail of each gallery item.</td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">mla_target</td>
-<td>adds an HTML "target" attribute to the hyperlink for each gallery item; see below</td>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">mla_nolink_text</td>
+<td>replaces the empty string displayed when there are no gallery items or no pagination link.</td>
 </tr>
-<tr>
 </table>
 <p>
 All but the "mla_target" parameter support the <a href="#mla_markup_parameters">Markup</a>, <a href="#mla_attachment_parameters">Attachment-specific</a>, <a href="#mla_variable_parameters">Field-level</a> and <a href="#mla_template_parameters">Content Template</a> substitution parameters defined for Markup Templates. For example, if you code "<code>mla_rollover_text='{+date+} : {+description+}'</code>, the rollover text will contain the upload date, a colon, and the full description of each gallery item. Simply add "{+" before the substitution parameter name and add "+}" after the name. Note that the enclosing delimiters are different than those used in the templates, since the WordPress shortcode parser reserves square brackets ("[" and "]") for its own use.
