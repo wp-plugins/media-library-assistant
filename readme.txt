@@ -154,12 +154,15 @@ All of the MLA source code has been annotated with "DocBlocks", a special type o
 
 = 2.02 =
 * New: The **"checked on top" option for checklist-style taxonomy meta boxes** can be set or cleared on the Settings/Media Library Assistant General tab.
-* New: An enhanced array of "CAMERA"-related fields is provided as part of the EXIF metadata. They contain more attractive and useful versions of "ExposureBiasValue", "ExposureTime", "Flash", "FNumber", "FocalLength" and "ShutterSpeed".
+* New: An enhanced array of "CAMERA"-related fields is provided as part of the EXIF metadata. They contain more attractive and useful versions of "ExposureBiasValue", "ExposureTime", "Flash", "FNumber", "FocalLength", "ShutterSpeed" and a number of "Other Tags".
 * New: For mapping rules and `[mla_gallery]`, **"timestamp", "date" and "fraction" format options** can be used to format IPTC/EXIF metadata values, custom fields and other Data Sources.
 * New: For `[mla_gallery]`, `parent_name` (slug) and `parent_permalink` have been added to the Attachment-specific substitution parameters for the markup template Item part.
 * New: For `[mla_gallery]`, the `mla_terms_taxonomies` parameter can be used for "Keyword(s) Search" to control which taxonomies are included if `mla_search_fields` includes "terms".
 * New: For **IPTC/EXIF and Custom Field mapping**, you can cancel and then resume mapping activity. You can also specify a starting offset for the resumes activity, allowing you to skip over previously-processed items or to re-process items.
 * New: For **IPTC/EXIF and Custom Field mapping**, `[+iptc:ALL_IPTC+]` is now a synonym for `[+exif:ALL_IPTC+]`.
+* New: Coverage of field-level substitution parameters in the Settings/Media LIbrary Assistant Documentation tab has been re-organized, clarified and expanded.
+* New: A reference to plugin translation and the MLA Internationalization Guide have been added to the Settings/Media Library Assistant Documentation tab.
+* Fix: For the Media Manager/Media Grid Enhancements, PHP notice messages are avoided when the WordPress "current_screen" value is not set by other themes and plugins, such as the "Total theme and Visual Composer".
 * Fix: Some of the "Creating a new Translation" instructions in the MLA Internationalization Guide have been improved.
 * Fix: For `[mla_gallery]`, any "alt=" and "class=" attributes coded in the `mla_image_attributes` parameter will override and replace the existing "alt=" and/or "class=" attributes in the "img" tag. This avoids the confusion of having two instances of the attribute(s) in the tag.
 * Fix: For `[mla_gallery]`, the **Google File Viewer (mla_viewer) has been replaced**. Recent changes by Google, beyond MLA control, have removed support for the original feature. The interim fix allows you to substitute an appropriate icon for non-image file types. See the Documentation tab for more information.
@@ -167,6 +170,7 @@ All of the MLA source code has been annotated with "DocBlocks", a special type o
 * Fix: For the Media/Assistant submenu table, column headers containing HTML reserved characters are now properly escaped for display purposes.
 * Fix: For the Media/Assistant submenu table, unnecessary processing and database access are avoided when all four "where-used" reporting options are disabled.
 * Fix: For `[mla_gallery]` and `[mla_tag_cloud]`, duplicate `mla_page_parameter` query arguments have been eliminated from links in the gallery or cloud.
+* Fix: For `[mla_gallery]` and `[mla_tag_cloud]`, damage caused by line-breaks between shortcode parameters is (usually) repaired.
 
 = 2.01 =
 * New: For **IPTC/EXIF mapping of taxonomy terms, significant performance improvements.** Explicit handling of special cases and new caching code for "map all" processing eliminates unnecessary database queries.

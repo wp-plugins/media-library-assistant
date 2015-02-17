@@ -58,16 +58,67 @@ class MLAShortcodes {
 	 *
 	 * @since 0.1
 	 *
-	 * @return	void	echoes HTML markup for the attachment list
+	 * @return	void	echoes HTML markup for the error message
 	 */
 	public static function mla_attachment_list_shortcode() {
-		global $wpdb;
-
 		/*
 		 * This shortcode is not documented and no longer supported.
 		 */
 		echo 'The [mla_attachment_list] shortcode is no longer supported.';
 		return;
+	}
+
+	/**
+	 * Make sure $attr is an array and repair line-break damage
+	 *
+	 * @since 2.02
+	 *
+	 * @parm	mixed	array or string containing shortcode attributes
+	 *
+	 * @return	array	clean attributes array
+	 */
+	private static function _validate_attributes( $attr ) {
+		if ( empty( $attr ) ) {
+			$attr = array();
+		} elseif ( is_string( $attr ) ) {
+			$attr = shortcode_parse_atts( $attr );
+		}
+
+		// Numeric keys indicate parse errors
+		$is_valid = true;
+		foreach ( $attr as $key => $value ) {
+			if ( is_numeric( $key ) ) {
+				$is_valid = false;
+				break;
+			}
+		}
+		
+		if ( $is_valid ) {
+			return $attr;
+		}
+		
+		/*
+		 * Found an error, e.g., line break(s) among the atttributes.
+		 * Try to reconstruct the input string without them.
+		 */
+		$new_attr = '';
+		foreach ( $attr as $key => $value ) {
+			$break_tag = strpos( $value, '<br' );
+			if ( ( false !== $break_tag ) && ( ($break_tag + 3) == strlen( $value ) ) ) {
+				$value = substr( $value, 0, ( strlen( $value ) - 3) );
+			}
+			
+			if ( is_numeric( $key ) ) {
+				if ( '/>' !== $value ) {
+					$new_attr .= $value . ' ';
+				}
+			} else {
+				$delimiter = ( false === strpos( $value, '"' ) ) ? '"' : "'";
+				$new_attr .= $key . '=' . $delimiter . $value . $delimiter . ' ';
+			}
+		}
+
+		return shortcode_parse_atts( $new_attr );
 	}
 
 	/**
@@ -104,7 +155,6 @@ class MLAShortcodes {
 	 */
 	public static function mla_gallery_shortcode( $attr, $content = NULL ) {
 		global $post;
-
 		/*
 		 * Some do_shortcode callers may not have a specific post in mind
 		 */
@@ -113,13 +163,10 @@ class MLAShortcodes {
 		}
 
 		/*
-		 * Make sure $attr is an array, even if it's empty
+		 * Make sure $attr is an array, even if it's empty,
+		 * and repair damage caused by link-breaks in the source text
 		 */
-		if ( empty( $attr ) ) {
-			$attr = array();
-		} elseif ( is_string( $attr ) ) {
-			$attr = shortcode_parse_atts( $attr );
-		}
+		$attr = self::_validate_attributes( $attr );
 
 		/*
 		 * Filter the attributes before $mla_page_parameter and "request:" prefix processing.
@@ -1956,13 +2003,10 @@ class MLAShortcodes {
 	 */
 	public static function mla_tag_cloud_shortcode( $attr ) {
 		/*
-		 * Make sure $attr is an array, even if it's empty
+		 * Make sure $attr is an array, even if it's empty,
+		 * and repair damage caused by link-breaks in the source text
 		 */
-		if ( empty( $attr ) ) {
-			$attr = array();
-		} elseif ( is_string( $attr ) ) {
-			$attr = shortcode_parse_atts( $attr );
-		}
+		$attr = self::_validate_attributes( $attr );
 
 		/*
 		 * The 'array' format makes no sense in a shortcode

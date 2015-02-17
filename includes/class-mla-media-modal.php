@@ -401,13 +401,12 @@ class MLAModal {
 		/*
 		 * If we know what screen we're on we can test our enabling options
 		 */
+		self::$mla_media_modal_settings['screen'] = 'modal';
 		if ( function_exists( 'get_current_screen' ) ) {
 			$screen = get_current_screen();
 			
-			if ( 'upload' == $screen->base ) {
+			if ( is_object( $screen) && 'upload' == $screen->base ) {
 				self::$mla_media_modal_settings['screen'] = 'grid';
-			} else {
-				self::$mla_media_modal_settings['screen'] = 'modal';
 			}
 		}
 
@@ -540,12 +539,14 @@ class MLAModal {
 		if ( function_exists( 'get_current_screen' ) ) {
 			$screen = get_current_screen();
 			
-			if ( 'upload' == $screen->base ) {
-				if ( 'checked' != MLAOptions::mla_get_option( MLAOptions::MLA_MEDIA_GRID_TOOLBAR ) ) {
+			if ( is_object( $screen ) ) {
+				if ( 'upload' == $screen->base ) {
+					if ( 'checked' != MLAOptions::mla_get_option( MLAOptions::MLA_MEDIA_GRID_TOOLBAR ) ) {
+						return;
+					}
+				} elseif ( 'checked' != MLAOptions::mla_get_option( MLAOptions::MLA_MEDIA_MODAL_TOOLBAR ) ) {
 					return;
 				}
-			} elseif ( 'checked' != MLAOptions::mla_get_option( MLAOptions::MLA_MEDIA_MODAL_TOOLBAR ) ) {
-				return;
 			}
 		}
 

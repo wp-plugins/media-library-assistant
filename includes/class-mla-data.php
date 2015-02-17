@@ -1134,9 +1134,10 @@ class MLAData {
 					 * strtotime will "Parse about any English textual datetime description into a Unix timestamp"
 					 * If it succeeds we can format the timestamp for display
 					 */
+					$format = empty( $value['args'] ) ? 'd/m/Y H:i:s' : $value['args'];
 					$timestamp = strtotime( $markup_values[ $key ] );
 					if( false !== $timestamp ) {
-						$markup_values[ $key ] = date( $value['args'], $timestamp );
+						$markup_values[ $key ] = date( $format, $timestamp );
 					}
 				} elseif ( 'fraction' == $value['format'] ) {
 					$show_fractions = true;

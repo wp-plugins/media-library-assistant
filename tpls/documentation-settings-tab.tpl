@@ -4,7 +4,6 @@
 <div style="float:left; margin-right: 15px;"><a href="#mla_gallery"><strong>MLA Gallery Shortcode</strong></a>
 <ul style="list-style-position:inside; list-style:disc; line-height: 15px; padding-left: 20px">
 <li><a href="#gallery_substitution">Substitution Parameters</a></li>
-<li><a href="#gallery_specific">Gallery-specific Substitution Parameters</a></li>
 <li><a href="#gallery_display_style">Gallery Display Style</a></li>
 <li><a href="#gallery_display_content">Gallery Display Content</a></li>
 <li><a href="#google_file_viewer_support">Google File Viewer Support</a></li>
@@ -58,21 +57,28 @@
 <a href="#mla_gallery_templates"><strong>Style and Markup Templates</strong></a>
 </li>
 <ul style="list-style-position:inside; list-style:disc; line-height: 15px; padding-left: 20px">
+<li><a href="#gallery_specific">Gallery-specific substitution parameters</a></li>
 <li><a href="#mla_style_parameters">Substitution parameters for style templates</a></li>
 <li><a href="#mla_markup_parameters">Substitution parameters for markup templates</a></li>
 <li><a href="#mla_attachment_parameters">Attachment-specific substitution parameters for the markup template Item part</a></li>
 </ul>
 <li>
-<a href="#mla_variable_parameters"><strong>Field-level markup substitution parameters</strong></a>
+<a href="#mla_table_example"><strong>A table-based Style and Markup template example</strong></a>
+</li>
+<li>
+<a href="#mla_variable_parameters"><strong>Field-level substitution parameters</strong></a>
 </li>
 <ul style="list-style-position:inside; list-style:disc; line-height: 15px; padding-left: 20px">
-<li><a href="#pdf_metadata">Metadata in PDF documents</a></li>
+<li><a href="#field_level_prefixes">Field-level prefix values</a></li>
+<li><a href="#field_level_formats">Field-level option/format values</a></li>
+<li><a href="#field_level_data_sources">Field-level data sources</a></li>
+<li><a href="#mla_iptc_identifiers">Field-level IPTC identifiers and friendly names</a>
+<li><a href="#mla_camera_values">Field-level Enhanced EXIF CAMERA values</a></li>
+<li><a href="#mla_gps_values">Field-level Enhanced EXIF GPS values</a></li>
+<li><a href="#pdf_metadata">Field-level metadata in PDF documents</a></li>
 </ul>
 <li>
 <a href="#mla_template_parameters"><strong>Content Templates</strong></a>
-<li>
-<a href="#mla_table_example"><strong>A table-based Style and Markup template example</strong></a>
-</li>
 <li>
 <a href="#mla_text_widget"><strong>The MLA Text Widget</strong></a>
 </li>
@@ -107,7 +113,6 @@
 <li><a href="#attachment_metadata_mapping">Adding or Changing Attachment Metadata</a></li>
 <li><a href="#custom_field_mapping_with_templates">Custom field mapping with Content Templates</a></li>
 <li><a href="#other_custom_field_mapping">Other mapping techniques</a></li>
-<li><a href="#mla_custom_field_parameters">Data sources for custom field mapping</a></li>
 </ul>
 <li>
 <a href="#mla_iptc_exif_mapping"><strong>IPTC &amp; EXIF Processing Options</strong></a>
@@ -120,13 +125,16 @@
 <li><a href="#pdf_iptc_exif_mapping">IPTC/EXIF Mapping for PDF Documents</a></li>
 <li><a href="#other_iptc_exif_mapping">Other mapping techniques</a></li>
 <li><a href="#wordpress_default_mapping">WordPress default title, slug and description mapping</a></li>
-<li><a href="#mla_gps_values">Enhanced GPS values</a></li>
-<li><a href="#mla_iptc_identifiers">IPTC identifiers and friendly names</a>
 </li>
 </ul>
 <li><a href="#mla_mapping_hooks"><strong>MLA Custom Field and IPTC/EXIF Mapping Actions and Filters (Hooks)</strong></a></li>
 <li><a href="#mla_list_table_hooks"><strong>Media/Assistant Submenu Actions and Filters (Hooks)</strong></a></li>
 </ul>
+<h3>Translating/Localizing the plugin</h3>
+<p>
+If you would like to localize MLA to see the admin screens in your own language,
+have a look at the <a title="MLA Internationalization Guide.pdf" href="[+translate_url+]" target="_blank" style="font-size:14px; font-weight:bold">MLA Internationalization Guide</a>. You are encouraged to share your translation with other MLA users; the Guide tells you how!
+</p>
 <h3>Plugin Code Documentation</h3>
 <p>
 If you are a developer interested in how this plugin is put together, you should
@@ -157,7 +165,7 @@ All of the options/parameters documented for the <code>[gallery]</code> shortcod
 </p>
 <h4>Substitution Parameters</h4>
 <p>
-Substitution parameters are a powerful way to add general and attachment-specific values to the cloud display. For example, if you code "<code>mla_rollover_text='{+date+} : {+description+}'</code>, the rollover text will contain the upload date, a colon, and the full description of each gallery item. There are dozens of parameter names like `date` and `description` divided in several categories:
+Substitution parameters are a powerful way to add general and attachment-specific values to the gallery display. For example, if you code "<code>mla_rollover_text='{+date+} : {+description+}'</code>, the rollover text will contain the upload date, a colon, and the full description of each gallery item. There are dozens of parameter names like `date` and `description` divided in several categories:
 <table>
 <tr>
 <td style="padding-right: 10px; vertical-align: top; font-weight:bold"><a href="#gallery_specific">Gallery-specific</a></td>
@@ -177,7 +185,7 @@ Substitution parameters are a powerful way to add general and attachment-specifi
 </tr>
 <tr>
 <td style="padding-right: 10px; vertical-align: top; font-weight:bold"><a href="#mla_variable_parameters">Field-level</a></td>
-<td>additional values from sources like query arguments, custom fields, taxonomy terms and attachment metadata</td>
+<td>values from sources like shortcode parameters, query arguments, custom fields, taxonomy terms and attachment metadata. There are many, many values to choose from as well as options to reformat values and select array elements. You are encouraged to explore them.</td>
 </tr>
 <tr>
 <td style="padding-right: 10px; vertical-align: top; font-weight:bold"><a href="#mla_template_parameters">Content Template</a></td>
@@ -189,84 +197,7 @@ Click on any of the category names in the above table to go to the Documentation
 </p>
 <p>
 To use a substitution parameter in your shortcode, simply add "{+" before the substitution parameter name and add "+}" after the name. Note that the enclosing delimiters are different than those used in Style and Markup templates, since the WordPress shortcode parser reserves square brackets ("[" and "]") for its own use. Also, because square brackets are reserved, <strong>you must substitute curly braces for square brackets</strong> if your parameter values require them. For example, if your shortcode parameter is <code>mla_link_attributes='rel="shadowbox{sbalbum-{+instance+}};player=img"'</code>, the actual attribute added to the link will be <code>rel="shadowbox[sbalbum-1];player=img"</code>. If you must code a curly brace in a parameter value, preface it with <strong>two backslash characters</strong>, e.g., "\\{" or "\\}".
-<a name="gallery_specific"></a>
-</p>
-<h4>Gallery-specific Substitution Parameters</h4>
-<p>
-Gallery-specific substitution parameters are known at the beginning of shortcode processing and they do not change during processing. They can be used, for example, in any of the data selection parameters to change the items selected for the gallery based on information about the post/page on which the gallery appears. The gallery-specific substitution parameters are:
-<table>
-<tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">site_url</td>
-<td>absolute URL to the site directory, without trailing slash</td>
-</tr>
-<tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">base_url</td>
-<td>absolute URL to the upload directory, without trailing slash</td>
-</tr>
-<tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">base_dir</td>
-<td>absolute (full) path to the upload directory, without trailing slash</td>
-</tr>
-<tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">instance</td>
-<td>starts at '1', incremented for each additional shortcode in the post/page</td>
-</tr>
-<tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">selector</td>
-<td>"mla_gallery-{$instance}", e.g., mla_gallery-1</td>
-</tr>
-<tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">page_ID,<br />id</td>
-<td style="vertical-align: top">the <code>ID</code> value of the post/page in which the gallery appears</td>
-</tr>
-<tr>
-<tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">page_author</td>
-<td>the <code>post_author</code> value of the post/page in which the gallery appears</td>
-</tr>
-<tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">page_date</td>
-<td>the <code>post_date</code> value of the post/page in which the gallery appears</td>
-</tr>
-<tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">page_content</td>
-<td>the <code>post_content</code> value of the post/page in which the gallery appears</td>
-</tr>
-<tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">page_title</td>
-<td>the <code>post_title</code> value of the post/page in which the gallery appears</td>
-</tr>
-<tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">page_excerpt</td>
-<td>the <code>post_excerpt</code> value of the post/page in which the gallery appears</td>
-</tr>
-<tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">page_status</td>
-<td>the <code>post_status</code> value of the post/page in which the gallery appears</td>
-</tr>
-<tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">page_name</td>
-<td>the <code>post_name</code> value of the post/page in which the gallery appears</td>
-</tr>
-<tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">page_modified</td>
-<td>the <code>post_modified</code> value of the post/page in which the gallery appears</td>
-</tr>
-<tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">page_guid</td>
-<td>the <code>post_guid</code> value of the post/page in which the gallery appears</td>
-</tr>
-<tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">page_type</td>
-<td>the <code>post_type</code> value of the post/page in which the gallery appears</td>
-</tr>
-<tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">page_url</td>
-<td>absolute URL to the page or post on which the gallery appears, if any, with trailing slash</td>
-</tr>
-</table>
 <a name="gallery_display_style"></a>
-&nbsp;<br />
 </p>
 <h4>Gallery Display Style</h4>
 <p>
@@ -1026,7 +957,7 @@ The traditional tag cloud output is a "heat map" of term names where larger name
 </tr>
 </table>
 <p>
-The "list" and "grid" formats can be extensively customized by using custom Style and Markup Templates. The <code>[mla_tag_cloud]</code> shortcode also supports pagination with "previous_link", "current_link", "next_link", "previous_page", "next_page" and "paginate_links" formats. These are essentially the same as those for the <code>[mla_gallery]</code> shortcode.
+The "list" and "grid" formats can be extensively customized by using custom <a href="#mla_gallery_templates"><strong>Style and Markup Templates</strong></a>. The <code>[mla_tag_cloud]</code> shortcode also supports pagination with "previous_link", "current_link", "next_link", "previous_page", "next_page" and "paginate_links" formats. These are essentially the same as those for the <code>[mla_gallery]</code> shortcode.
 <a name="tag_cloud_items"></a>
 </p>
 <h4>Tag Cloud Item Parameters</h4>
@@ -1311,7 +1242,7 @@ Substitution parameters are a powerful way to add general and attachment-specifi
 </tr>
 <tr>
 <td style="padding-right: 10px; vertical-align: top; font-weight:bold"><a href="#mla_variable_parameters">Field-level</a></td>
-<td>additional values from sources like query arguments and shortcode parameters</td>
+<td>additional values from sources like query arguments and shortcode parameters. The "request:" and "query:" field-level prefixes can be used in the cloud. The other prefixes are attachment-specific and have no meaning in a cloud</td>
 </tr>
 <tr>
 <td style="padding-right: 10px; vertical-align: top; font-weight:bold"><a href="#mla_template_parameters">Content Template</a></td>
@@ -2214,25 +2145,99 @@ The <a href="http://wordpress.org/extend/plugins/photonic/" title="Photonic Gall
 </p>
 <p>
 You can use the "Photonic" screen of the Insert Media dialog to build the display portion of your shortcode parameters. After you click "Insert into post", change the shortcode name from "gallery" to "mla_gallery" and add the query parameters you need to select the attachments for the gallery. The <code>[mla_gallery]</code> code will compile the list of attachments for your gallery, then hand control over to Photonic to format the results.
-</p>
 <a name="mla_gallery_templates"></a>
-&nbsp;
+</p>
 <p>
 <a href="#backtotop">Go to Top</a>
 </p>
-<h3>MLA Gallery Style and Markup Templates</h3>
+<h3>Style and Markup Templates</h3>
 <p>
-The Style and Markup templates give you great flexibility for the content and format of each <code>[mla_gallery]</code>. You can define as many templates as you need.
+The Style and Markup templates give you great flexibility for the content and format of each <code>[mla_gallery]</code> or <code>[mla_tag_cloud]</code> (list and grid formats). You can define as many templates as you need.
 </p>
 <p>
-Style templates provide gallery-specific CSS inline styles (you can code <code>mla_style=none</code> to suppress the addition of CSS inline styles entirely). Markup templates provide the HTML markup for 1) the beginning of the gallery, 2) the beginning of each row, 3) each gallery item, 4) the end of each row and 5) the end of the gallery. The attachment-specific markup parameters let you choose among most of the attachment fields, not just the caption.
+Style templates provide gallery-specific (or cloud-specific) CSS inline styles (you can code <code>mla_style=none</code> to suppress the addition of CSS inline styles entirely). Markup templates provide the HTML markup for 1) the beginning of the gallery, 2) the beginning of each row, 3) each gallery item, 4) the end of each row and 5) the end of the gallery. The attachment-specific markup parameters let you choose among most of the attachment fields, not just the caption.
 </p>
 <p>
 The MLA Gallery tab on the Settings page lets you add, change and delete custom templates. The default templates are also displayed on this tab for easy reference.
 </p>
 <p>
 In a template, substitution parameters are surrounded by opening ('[+') and closing ('+]') delimiters to separate them from the template text; see the default templates for many examples.
+<a name="gallery_specific"></a>
 </p>
+<h4>Gallery-specific Substitution Parameters</h4>
+<p>
+Gallery-specific substitution parameters are known at the beginning of shortcode processing and they do not change during processing. They can be used, for example, in any of the data selection parameters to change the items selected for the gallery based on information about the post/page on which the gallery appears. The gallery-specific substitution parameters are:
+<table>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">site_url</td>
+<td>absolute URL to the site directory, without trailing slash</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">base_url</td>
+<td>absolute URL to the upload directory, without trailing slash</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">base_dir</td>
+<td>absolute (full) path to the upload directory, without trailing slash</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">instance</td>
+<td>starts at '1', incremented for each additional shortcode in the post/page</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">selector</td>
+<td>"mla_gallery-{$instance}", e.g., mla_gallery-1</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">page_ID,<br />id</td>
+<td style="vertical-align: top">the <code>ID</code> value of the post/page in which the gallery appears</td>
+</tr>
+<tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">page_author</td>
+<td>the <code>post_author</code> value of the post/page in which the gallery appears</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">page_date</td>
+<td>the <code>post_date</code> value of the post/page in which the gallery appears</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">page_content</td>
+<td>the <code>post_content</code> value of the post/page in which the gallery appears</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">page_title</td>
+<td>the <code>post_title</code> value of the post/page in which the gallery appears</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">page_excerpt</td>
+<td>the <code>post_excerpt</code> value of the post/page in which the gallery appears</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">page_status</td>
+<td>the <code>post_status</code> value of the post/page in which the gallery appears</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">page_name</td>
+<td>the <code>post_name</code> value of the post/page in which the gallery appears</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">page_modified</td>
+<td>the <code>post_modified</code> value of the post/page in which the gallery appears</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">page_guid</td>
+<td>the <code>post_guid</code> value of the post/page in which the gallery appears</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">page_type</td>
+<td>the <code>post_type</code> value of the post/page in which the gallery appears</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">page_url</td>
+<td>absolute URL to the page or post on which the gallery appears, if any, with trailing slash</td>
+</tr>
+</table>
 <a name="mla_style_parameters"></a>
 &nbsp;
 <p>
@@ -2297,29 +2302,11 @@ All of the <a href="#gallery_specific">gallery-specific substitution parameters<
 </p>
 <h4>Attachment-specific substitution parameters for the markup template Item part</h4>
 <p>
-These substitution parameters are only available in the "Item" part of the markup template, since they require an attachment for their data source. In addition to the parameters in the list below, you can use any of the <a href="#mla_custom_field_parameters">Data sources for custom field mapping</a> (except "None", "Metadata" and "Template").
+These substitution parameters are only available in the "Item" part of the markup template, since they require an attachment for their data source. In addition to the parameters in the list below, you can use any of the <a href="#field_level_data_sources">Data sources for custom field mapping</a> (except "None", "Metadata" and "Template").
 </p>
 <p>
-You may need to append one of the format options to the name depending on the context in which the substitution parameter is used. If you need both the native format and the altered format, simply wrap the altered format in a content template, e.g., <code>[+template:([+width,commas+])+]</code>. The template will prevent the native value from being over-written with the formatted value. The format options are:
+You may need to append one of the <a href="#field_level_formats">format options</a> to the name depending on the context in which the substitution parameter is used. If you need both the native format and the altered format, simply wrap the altered format in a content template, e.g., <code>[+template:([+width,commas+])+]</code>. The template will prevent the native value from being over-written with the formatted value.
 </p>
-<table>
-<tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">,commas</td>
-<td>For numeric data source parameters such as "file_size" you can add the ",commas" option to format the value for display purposes.</td>
-</tr>
-<tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">,raw</td>
-<td>If you want to avoid filtering a value through the WordPress <code>sanitize_text_field()</code> function you can add the ",raw" option. This is helpful when, for example, you are using a field that contains HTML markup such as a hyperlink.</td>
-</tr>
-<tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">,attr</td>
-<td>If you use a substitution parameter in an HTML attribute such as the <code>title</code> attribute of a hyperlink (<code>a</code>) or <code>img</code> tag you can add the ",attr" option to encode the <, >, &, " and ' (less than, greater than, ampersand, double quote and single quote) characters.</td>
-</tr>
-<tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">,url</td>
-<td>If you use a substitution parameter in an HTML <code>href</code> attribute such as a hyperlink (<code>a</code>) or <code>img</code> tag you can add the ",url" option to convert special characters such as quotes, spaces and ampersands to their URL-encoded equivalents.</td>
-</tr>
-</table>
 <p>
 The item-level substitution parameter names are:
 </p>
@@ -2473,31 +2460,104 @@ The item-level substitution parameter names are:
 <td>for image/icon items, URL of the gallery image/icon</td>
 </tr>
 </table>
+<h4>Field-level substitution parameters for the markup template Item part</h4>
+<p>
+You can use the <a href="#mla_variable_parameters"><strong>field-level substitution parameters</strong></a> in the item part to draw data from a wide variety of sources and format it as required. See that section of the Documentation for more information.
+<a name="mla_table_example"></a>
+</p>
+<p>
+<a href="#backtotop">Go to Top</a>
+</p>
+<h3>A Table-based Style and Markup Template Example</h3>
+<p>
+Here's a small example that shows a gallery using <code>&lt;table&gt;</code> markup.
+The Item markup section shows how to use the "terms", "custom", "iptc" and "exif" substitution parameters.
+</p>
+<h4>Style Template</h4>
+<code>
+&lt;style type='text/css'&gt;<br />
+&nbsp;&nbsp;#[+selector+] {<br />
+&nbsp;&nbsp;&nbsp;&nbsp;margin: auto;<br />
+&nbsp;&nbsp;}<br />
+&nbsp;&nbsp;#[+selector+] .gallery-row {<br />
+&nbsp;&nbsp;&nbsp;&nbsp;float: [+float+];<br />
+&nbsp;&nbsp;&nbsp;&nbsp;margin-top: 10px;<br />
+&nbsp;&nbsp;&nbsp;&nbsp;border-top: 1px solid #ddd;<br />
+&nbsp;&nbsp;&nbsp;&nbsp;text-align: center;<br />
+&nbsp;&nbsp;&nbsp;&nbsp;width: [+itemwidth+]%;<br />
+&nbsp;&nbsp;}<br />
+&nbsp;&nbsp;#[+selector+] .gallery-row td.gallery-icon {<br />
+&nbsp;&nbsp;&nbsp;&nbsp;width: 60;<br />
+&nbsp;&nbsp;&nbsp;&nbsp;height: 60;<br />
+&nbsp;&nbsp;&nbsp;&nbsp;vertical-align: top;<br />
+&nbsp;&nbsp;}<br />
+&nbsp;&nbsp;#[+selector+] .gallery-row .gallery-icon img {<br />
+&nbsp;&nbsp;&nbsp;&nbsp;border: 2px solid #cfcfcf;<br />
+&nbsp;&nbsp;}<br />
+&nbsp;&nbsp;#[+selector+] .gallery-caption {<br />
+&nbsp;&nbsp;&nbsp;&nbsp;margin-left: 0;<br />
+&nbsp;&nbsp;&nbsp;&nbsp;vertical-align: top;<br />
+&nbsp;&nbsp;}<br />
+&lt;/style&gt;
+</code>
+<h4>Markup Template</h4>
+<table width="700" border="0" cellpadding="5">
+	<tr>
+		<td style="vertical-align: top; font-weight:bold">Open</td>
+		<td><code>&lt;table id='[+selector+]' class='gallery galleryid-[+id+]<br />gallery-columns-[+columns+] gallery-size-[+size_class+]'&gt;</code></td>
+	</tr>
+	<tr>
+		<td style="vertical-align: top; font-weight:bold">Row Open</td>
+		<td><code>&lt;tr class='gallery-row'&gt;</code></td>
+	</tr>
+	<tr>
+		<td style="vertical-align: top; font-weight:bold">Item</td>
+		<td><code>&lt;td class='gallery-icon'&gt;<br />
+		&nbsp;&nbsp;&nbsp;&nbsp;[+link+]<br />
+	&lt;/td&gt;<br />
+	&lt;td class='wp-caption-text gallery-caption'&gt;<br />
+		&nbsp;&nbsp;&nbsp;&nbsp;&lt;strong&gt;[+title+]&lt;/strong&gt;&lt;br /&gt;<br />
+		&nbsp;&nbsp;&nbsp;&nbsp;[+description+]&lt;br /&gt;<br />
+		&nbsp;&nbsp;&nbsp;&nbsp;[+date+]<br />
+		&nbsp;&nbsp;&nbsp;&nbsp;[+custom:client,single+]<br />
+		&nbsp;&nbsp;&nbsp;&nbsp;[+terms:category+]<br />
+		&nbsp;&nbsp;&nbsp;&nbsp;[+iptc:caption-or-abstract+]<br />
+		&nbsp;&nbsp;&nbsp;&nbsp;[+iptc:2#025,single+]<br />
+		&nbsp;&nbsp;&nbsp;&nbsp;[+exif:Artist+]
+	&lt;/td&gt;</code>
+</td>
+	</tr>
+	<tr>
+		<td style="vertical-align: top; font-weight:bold">Row Close</td>
+		<td><code>&lt;/tr&gt;</code></td>
+	</tr>
+	<tr>
+		<td style="vertical-align: top; font-weight:bold">Close</td>
+		<td><code>&lt;/table&gt;</code></td>
+	</tr>
+</table>
 <a name="mla_variable_parameters"></a>
 &nbsp;
 <p>
 <a href="#backtotop">Go to Top</a>
 </p>
-<h3>Field-level Markup Substitution Parameters</h3>
+<h3>Field-level Substitution Parameters</h3>
 <p>
-Field-level substitution parameters let you access query arguments, custom fields, taxonomy terms and attachment metadata for display in an MLA gallery. For these parameters, the value you code within the surrounding the ('[+') and ('+]') delimiters has three parts; the prefix, the field name (or template content) and, if desired, a formatting option.
+Field-level substitution parameters let you access query arguments, custom fields, taxonomy terms and attachment metadata for display in an MLA gallery or in an MLA tag cloud. You can also use them in IPTC/EXIF or Custom Field mapping rules. For field-level parameters, the value you code within the surrounding the ('[+' and '+]' or '{+' and '+}') delimiters has three parts; the prefix, the field name (or template content) and, if desired, an option/format value.
 </p>
 <p>
-The <strong>prefix</strong> defines which type of field-level data you are accessing. It must immediately follow the opening ('[+') delimiter and end with a colon (':'). There can be no spaces in this part of the parameter.
+The <strong>prefix</strong> defines which type of field-level data you are accessing. It must immediately follow the opening ('[+' or '{+') delimiter and end with a colon (':'). There can be no spaces in this part of the parameter.
 </p>
 <p>
 The <strong>field name</strong> defines which field-level data element you are accessing. It must immediately follow the colon (':'). There can be no spaces between the colon and the field name. Spaces are allowed within the field name to accommodate custom field names that contain them. <strong>Compound names</strong> are used to access elements within arrays, e.g., &quot;<strong>sizes.thumbnail.file</strong>&quot; is used to specify the file name for the thumbnail version of an image. For the "template" prefix, the field name is replaced by the template content; see the <a href="#mla_template_parameters">Content Templates</a> section for details.
 </p>
 <p>
-If no formatting option is present, fields with multiple values are formatted as a comma-delimited text list. The formatting option, if present, immediately follows the field name using a comma (,) separator and ends with the closing delimiter ('+]'). There can be no spaces in this part of the parameter.</p>
-<p>
-The <strong>",single" option</strong> defines how to handle fields with multiple values. If this option is present, only the first value of the field will be returned. Use this option to limit the data returned for a custom field, taxonomy or metadata field that can have many values. For example, if you code <code>[+meta:sizes.thumbnail,single+]</code> the result will be "20120313-ASK_5605-150x150.jpg".
+The <strong>option/format value</strong>, if present, immediately follows the field name using a comma (,) separator and ends with the closing delimiter ('+]' or '+}'). There can be no spaces in this part of the parameter.
+<a name="field_level_prefixes"></a>
 </p>
+<h4>Prefix values</h4>
 <p>
-The <strong>",export" option</strong> changes the display of array fields with multiple values. If this option is present, the PHP <code>var_export</code> function is used to return a string representation of all the elements in an array field. For example, if you code <code>[+meta:sizes.thumbnail,export+]</code> the result will be "array ('file' => '20120313-ASK_5605-150x150.jpg', 'width' => 150, 'height' => 150, 'mime-type' => 'image/jpeg'".
-</p>
-<p>
-There are nine prefix values for field-level data. Prefix values must be coded as shown; all lowercase letters.
+There are nine prefix values for field-level parameters. Prefix values must be coded as shown; all lowercase letters.
 </p>
 <table>
 	<tr>
@@ -2524,7 +2584,9 @@ There are nine prefix values for field-level data. Prefix values must be coded a
 	</tr>
 	<tr>
 		<td style="padding-right: 10px; vertical-align: top; font-weight:bold">meta</td>
-		<td>WordPress attachment metadata, if any, embedded in the image/audio/video file. For this category, you can code any of the field names embedded in the _wp_attachment_metadata array. The "Attachment Metadata" display in the Media/Edit Media screen will show you the names and values of these fields. Note that the fields available differ among image, audio and video attachments.</td>
+		<td>WordPress attachment metadata, if any, embedded in the image/audio/video file. For this category, you can code any of the field names embedded in the _wp_attachment_metadata array. The "Attachment Metadata" display in the Media/Edit Media screen will show you the names and values of these fields. Note that the fields available differ among image, audio and video attachments.<br />
+		&nbsp;<br />
+		The "image_meta" portion of the attachment metadata is of particular interest. This array contains some "extended image metadata" drawn from IPTC and EXIF fields by WordPress and improved a bit. You can find more information in the Codex <a href="http://codex.wordpress.org/Function_Reference/wp_read_image_metadata" title="Codex information for image_meta" target="_blank">Function Reference/wp read image metadata</a>. For example, to get the ISO speed rating for an image, code <code>[+meta:image_meta.iso+]</code>.</td>
 	</tr>
 	<tr>
 		<td style="padding-right: 10px; vertical-align: top; font-weight:bold">pdf</td>
@@ -2538,7 +2600,12 @@ There are nine prefix values for field-level data. Prefix values must be coded a
 		<td>
 		The IPTC (International Press Telecommunications Council) metadata, if any, embedded in the image file. For this category, you can code any of the IPTC DataSet tag and field identifiers, e.g., "2#025" for the Keywords field. You can also use the "friendly name" MLA defines for most of the IPTC fields; see the <a href="#mla_iptc_identifiers">table of identifiers and friendly names</a> below.<br />
 		&nbsp;<br />
-		You can find more IPTC information in the <a href="http://www.iptc.org/std/IIM/4.1/specification/IIMV4.1.pdf" title="IPTC-NAA Information Interchange Model Version No. 4.1 specification (PDF)" target="_blank">IPTC-NAA Information Interchange Model Version No. 4.1 specification (PDF document)</a>.<br />&nbsp;</td>
+		You can find more IPTC information in the <a href="http://www.iptc.org/std/IIM/4.1/specification/IIMV4.1.pdf" title="IPTC-NAA Information Interchange Model Version No. 4.1 specification (PDF)" target="_blank">IPTC-NAA Information Interchange Model Version No. 4.1 specification (PDF document)</a>.
+		<br />&nbsp;<br />
+		A special iptc "pseudo-value" is available; <strong>ALL_IPTC</strong> (<code>[+iptc:ALL_IPTC+]</code>). It returns a string representation of all IPTC data. You can use the pseudo-value to examine the metadata in an image, find field names and see what values are embedded in the image.
+		<br />&nbsp;<br />
+		The ALL_IPTC value is altered in two ways. First, values of more than 256 characters are truncated to 256 characters. This prevents large fields such as keyword arrays from dominating the display. Second, array values are shown once, at their expanded level.<br />&nbsp;
+		</td>
 	</tr>
 	<tr>
 		<td style="padding-right: 10px; vertical-align: top; font-weight:bold">exif</td>
@@ -2551,18 +2618,751 @@ There are nine prefix values for field-level data. Prefix values must be coded a
 		<br />&nbsp;<br />
 		MLA uses a standard PHP function, <a href="http://php.net/manual/en/function.exif-read-data.php" title="PHP Manual page for exif_read_data" target="_blank">exif_read_data</a>, to extract EXIF data from images. The function returns three arrays in addition to the raw EXIF data; COMPUTED, THUMBNAIL and COMMENT. You can access the array elements by prefacing the element you want with the array name. For example, the user comment text is available as "COMPUTED.UserComment" and "COMPUTED.UserCommentEncoding". You can also get "COMPUTED.Copyright" and its two parts (if present), "COMPUTED.Copyright.Photographer" and "COMPUTED.Copyright.Editor". The THUMBNAIL and COMMENT arrays work in a similar fashion.
 		<br />&nbsp;<br />
-		Two special exif "pseudo-values" are available; <strong>ALL_IPTC</strong> (<code>[+exif:ALL_IPTC+]</code>) and <strong>ALL_EXIF</strong> (<code>[+exif:ALL_EXIF+]</code>). These return a string representation of all IPTC or EXIF data respectively. You can use these pseudo-values to examine the metadata in an image, find field names and see what values are embedded in the image.
+		A special exif "pseudo-value" is available; <strong>ALL_EXIF</strong> (<code>[+exif:ALL_EXIF+]</code>). It returns a string representation of all EXIF data. You can use the pseudo-value to examine the metadata in an image, find field names and see what values are embedded in the image.
 		<br />&nbsp;<br />
-		The ALL_EXIF value is altered in two ways. First, values of more than 256 characters are truncated to 256 characters. This prevents large fields such as image thumbnails from dominating the display. Second, array values are shown once, at their expanded level. For example the "COMPUTED" array is displayed as 'COMPUTED' => '(ARRAY)' and then 'COMPUTED.Width' => "2816", etc.</td>
+		The ALL_EXIF value is altered in two ways. First, values of more than 256 characters are truncated to 256 characters. This prevents large fields such as image thumbnails from dominating the display. Second, array values are shown once, at their expanded level. For example the "COMPUTED" array is displayed as 'COMPUTED' => '(ARRAY)' and then 'COMPUTED.Width' => "2816", etc.<br />&nbsp;</td>
 	</tr>
 	<tr>
 		<td style="padding-right: 10px; vertical-align: top; font-weight:bold">template</td>
 		<td>A Content Template, which lets you compose a value from multiple substitution parameters and test for empty values, choosing among two or more alternatives or suppressing output entirely. See the <a href="#mla_template_parameters">Content Templates</a> section for details. Note that the formatting option is not supported for templates.</td>
 	</tr>
 </table>
-<a name="pdf_metadata"></a>
+<a name="field_level_formats"></a>
 &nbsp;<br />
-<h4>Metadata in PDF documents</h4>
+<h4>Field-level option/format values</h4>
+<p>
+You can use a field-level option or format value to specify the treatment of fields with multiple values or to change the format of a field for display/mapping purposes. If no option/format value is present, fields with multiple values are formatted as a comma-delimited text list. The option/format value, if present, immediately follows the field name using a comma (,) separator and ends with the closing delimiter ('+]' or '+}'). There can be no spaces in this part of the parameter.
+</p>
+<p>
+Two "option" values change the treatment of fields with multiple values:
+</p>
+<table>
+	<tr>
+		<td style="padding-right: 10px; vertical-align: top; font-weight:bold">,single</td>
+		<td>If this option is present, only the first value of the field will be returned. Use this option to limit the data returned for a custom field, taxonomy or metadata field that can have many values. For example, if you code <code>[+meta:sizes.thumbnail,single+]</code> the result will be "20120313-ASK_5605-150x150.jpg".
+		</td>
+	</tr>
+	<tr>
+		<td style="padding-right: 10px; vertical-align: top; font-weight:bold">,export</td>
+		<td>If this option is present, the PHP <code>var_export</code> function is used to return a string representation of all the elements in an array field. For example, if you code <code>[+meta:sizes.thumbnail,export+]</code> the result will be "array ('file' => '20120313-ASK_5605-150x150.jpg', 'width' => 150, 'height' => 150, 'mime-type' => 'image/jpeg'".
+		</td>
+	</tr>
+</table>
+<p>
+Seven "format" values help you reformat fields or encode them for use in HTML attributes and tags:
+</p>
+<table>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">,raw</td>
+<td>If you want to avoid filtering a value through the WordPress <code>sanitize_text_field()</code> function you can add the ",raw" option. This is helpful when, for example, you are using a field that contains HTML markup such as a hyperlink.</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">,commas</td>
+<td>For numeric data source parameters such as "file_size" you can add the ",commas" option to format the value for display purposes.</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">,attr</td>
+<td>If you use a substitution parameter in an HTML attribute such as the <code>title</code> attribute of a hyperlink (<code>a</code>) or <code>img</code> tag you can add the ",attr" option to encode the <, >, &, " and ' (less than, greater than, ampersand, double quote and single quote) characters.</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">,url</td>
+<td>If you use a substitution parameter in an HTML <code>href</code> attribute such as a hyperlink (<code>a</code>) or <code>img</code> tag you can add the ",url" option to convert special characters such as quotes, spaces and ampersands to their URL-encoded equivalents.</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">,fraction(f,s)</td>
+<td>Many of the EXIF metadata fields are expressed as "rational" quantities, i.e., separate numerator and denominator values separated by a slash. For example, <code>[+exif:ExposureTime+]</code> can be expressed as "1/200" seconds. The "fraction" format converts these to a more useful format.<br />&nbsp;<br />There two optional arguments; "f" (format_string)and "s" (show_fractions). The "format_string" (default "2") can either be the number of decimal places desired or a sprintf()-style format specification. For example, <code>[+exif:ExposureTime,fraction(4)+]</code> will display 7/6 as "+1.1667". A format specification such as '%1$.2f' will display 7/6 as "1.17". Numbers between -1 and +1, i.e. true fractions, will display in their original form, e.g., "1/6". If the optional "show_fractions" (default true) argument is "false" fractional values will convert to a decimal equivalent. For example, fraction(4,false) will display 1/6 as "+0.1667", and <code>[+exif:ExposureTime,fraction( '%1$.2f', false )+]</code> will display 1/6 as "0.17".</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">,timestamp(f)</td>
+<td>Many date and time values such as <code>[+meta:image_meta.created_timestamp+]</code> are stored as a UNIX timestamp. The ",timestamp" format converts a timestamp into a variety of date and/or time string formats, using the PHP date() function. Details on the format_string argument can be found at: <a href="http://php.net/manual/en/function.date.php" title="PHP Date format parameters" target="_blank">http://php.net/manual/en/function.date.php</a>.<br />&nbsp;<br />The default format string is "d/m/Y H:i:s", e.g., "31/12/2014 23:59:00" (just before midnight on new year's eve). You could code <code>[+meta:image_meta.created_timestamp,timestamp('j F, Y')+]</code> to display "31 December, 2014".</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">,date(f)</td>
+<td>Many EXIF date and time values such as DateTimeOriginal and DateTimeDigitized are stored as strings with a format of "YYYY:MM:DD HH:MM:SS". You can parse this format and just about any English textual datetime description into a Unix timestamp, then format the result by using the ",date" format. This format first uses the PHP strtotime() function, then the date() function. The "Supported Date and Time Formats" can be found at: <a href="http://php.net/manual/en/datetime.formats.php" title="PHP Supported Date and Time Formats" target="_blank">http://php.net/manual/en/datetime.formats.php</a>.<br />&nbsp;<br />The default format string is "d/m/Y H:i:s", e.g., "31/12/2014 23:59:00" (just before midnight on new year's eve). You could code <code>[+exif:DateTimeOriginal,date('j F, Y')+]</code> to display "31 December, 2014".</td>
+</tr>
+</table>
+<p>
+<a name="field_level_data_sources"></a>&nbsp;
+<p>
+<a href="#backtotop">Go to Top</a>
+</p>
+<h4>Field-level data sources</h4>
+Each Media Library attachment item has a row in the "posts" database table that records information such as the Title, Author and Parent post/page. It also has an "attached file" with attributes like the file name and file size. All of this information and more is available as "field-level data sources" that can be used for <code>[mla_gallery]</code> or mapping purposes. The data sources are:
+<table>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">post_id, ID</td>
+<td>the value stored in the attachment's "posts" database row.</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">post_author</td>
+<td>the value stored in the attachment's "posts" database row.</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">post_date</td>
+<td>the value stored in the attachment's "posts" database row.</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">post_date_gmt</td>
+<td>the value stored in the attachment's "posts" database row.</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">post_content</td>
+<td>the value stored in the attachment's "posts" database row.</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">post_title</td>
+<td>the value stored in the attachment's "posts" database row.</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">post_excerpt</td>
+<td>the value stored in the attachment's "posts" database row.</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">post_status</td>
+<td>the value stored in the attachment's "posts" database row.</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">comment_status</td>
+<td>the value stored in the attachment's "posts" database row.</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">ping_status</td>
+<td>the value stored in the attachment's "posts" database row.</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">post_name</td>
+<td>the value stored in the attachment's "posts" database row.</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">post_modified</td>
+<td>the value stored in the attachment's "posts" database row.</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">post_modified_gmt</td>
+<td>the value stored in the attachment's "posts" database row.</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">post_content_filtered</td>
+<td>the value stored in the attachment's "posts" database row.</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">parent,<br />post_parent</td>
+<td style="vertical-align: top">the value stored in the attachment's "posts" database row.</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">guid</td>
+<td>the value stored in the attachment's "posts" database row.</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">menu_order</td>
+<td>the value stored in the attachment's "posts" database row.</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">mime_type,<br />post_mime_type</td>
+<td style="vertical-align: top">the value stored in the attachment's "posts" database row.</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">comment_count</td>
+<td style="padding-bottom: 2em;">the value stored in the attachment's "posts" database row.</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">absolute_path</td>
+<td>complete path portion of the attachment file, e.g., C:/site/wordpress/wp-content/uploads/2012/11/</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">absolute_file_name</td>
+<td>complete path and file name of the attachment file, e.g., C:/site/wordpress/wp-content/uploads/2012/11/filename.ext</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">base_file</td>
+<td>relative path (within uploads directory) and file name of the attachment file, e.g., 2012/11/image.jpg</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">path</td>
+<td>path portion of the base_file value, e.g., 2012/11/</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">file_name</td>
+<td>file name and extension portion of the base_file value, e.g., image.jpg</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">name_only</td>
+<td>file name portion of the base_file value, e.g., image</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">extension</td>
+<td>extension portion of the base_file value, e.g., jpg</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">file_size</td>
+<td>file size in bytes</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">upload_date</td>
+<td style="padding-bottom: 2em;">date and time attachment was added to the Media Library</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">dimensions</td>
+<td>for image types, width x height, e.g., 1024x768</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">pixels</td>
+<td>for image types, size in pixels, e.g., 307200 for a 640x480 image</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">width</td>
+<td>for image types, width in pixels</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">height</td>
+<td>for image types, height in pixels</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">orientation</td>
+<td>"portrait" (height > width) or "landscape", for image types; empty for non-image types</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">hwstring_small</td>
+<td>HTML dimensions of a "small" image, i.e., 128 or less width, 96 or less height. Not computed for images uploaded in WordPress 3.5 and later.</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">size_keys</td>
+<td>image size names for thumbnail versions of the image, e.g., "thumbnail, medium, large"</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">size_names</td>
+<td>image file names for thumbnail versions of the image, e.g., "image-150x150.jpg, image-300x225.jpg, image-600x288.jpg"</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">size_bytes</td>
+<td>file size in bytes for thumbnail versions of the image, e.g., "5127, 11829, 33968"</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">size_pixels</td>
+<td>image size in pixels for thumbnail versions of the image, e.g., "22500, 67500, 172800"</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">size_dimensions</td>
+<td>image dimensions for thumbnail versions of the image, e.g., "150x150, 300x225, 600x288"</td>
+</tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">size_name[size]</td>
+<td>image file name for a specific thumbnail version, e.g., size_name[medium] = "image-300x225.jpg"; set to empty string if the specified size does not exist. There will be a [size] choice for every thumbnail version registered with WordPress for the site.</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">size_bytes[size]</td>
+<td>file size in bytes for a specific thumbnail version, e.g., size_bytes[medium] = "11829"</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">size_pixels[size]</td>
+<td>image size in pixels for a specific thumbnail version, e.g., size_pixels[medium] = "67500"</td>
+</tr>
+<tr>
+<tr>
+<td style="width: 12em; padding-right: 10px; vertical-align: top; font-weight:bold">size_dimensions[size]</td>
+<td style="padding-bottom: 2em;">image dimensions for a specific thumbnail version, e.g., size_dimensions[medium] = "300x225"; set to empty string if the specified size does not exist. There will be a [size] choice for every thumbnail version registered with WordPress for the site.</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">parent_date</td>
+<td>for "attached" (post_parent not zero) objects, "published on" date of the parent object</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">parent_type</td>
+<td>for "attached" (post_parent not zero) objects, post type of the parent object</td>
+</tr>
+<tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">parent_title</td>
+<td>for "attached" (post_parent not zero) objects, post title of the parent object</td>
+</tr>
+<tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">parent_issues</td>
+<td>summary of parent status (only) "issues", e.g., bad parent, invalid parent, unattached</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">reference_issues</td>
+<td>summary of all reference and parent status "issues", e.g., orphan, bad parent, invalid parent, unattached</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">featured_in</td>
+<td>the title, post/page type and id number of each post/page for which this item is the "featured image"</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">featured_in_title</td>
+<td>the title of each post/page for which this item is the "featured image"</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">inserted_in</td>
+<td>the title, post/page type and id number of each post/page where this item is inserted in the post/page content</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">inserted_in_title</td>
+<td>the title of each post/page where this item is inserted in the post/page content</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">gallery_in</td>
+<td>the title, post/page type and id number of each post/page where this item appears in a <code>[gallery]</code> shortcode</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">gallery_in_title</td>
+<td>the title of each post/page where this item appears in a <code>[gallery]</code> shortcode</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">mla_gallery_in</td>
+<td>the title, post/page type and id number of each post/page where this item appears in an <code>[mla_gallery]</code> shortcode</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">mla_gallery_in_title</td>
+<td style="padding-bottom: 2em;">the title of each post/page where this item appears in an <code>[mla_gallery]</code> shortcode</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">aperture</td>
+<td>for image types, the value stored in WordPress "image_meta" array</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">credit</td>
+<td>for image types, the value stored in WordPress "image_meta" array</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">camera</td>
+<td>for image types, the value stored in WordPress "image_meta" array</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">caption</td>
+<td>for image types, the value stored in WordPress "image_meta" array</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">created_timestamp</td>
+<td>for image types, the value stored in WordPress "image_meta" array</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">copyright</td>
+<td>for image types, the value stored in WordPress "image_meta" array</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">focal_length</td>
+<td>for image types, the value stored in WordPress "image_meta" array</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">iso</td>
+<td>for image types, the value stored in WordPress "image_meta" array</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">shutter_speed</td>
+<td>for image types, the value stored in WordPress "image_meta" array</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">title</td>
+<td>for image types, the value stored in WordPress "image_meta" array</td>
+</tr>
+</table>
+<a name="mla_iptc_identifiers"></a>
+&nbsp;
+<p>
+<a href="#backtotop">Go to Top</a>
+</p>
+<h4>Field-level IPTC Identifiers and Friendly Names</h4>
+<p>
+The IPTC specification defines all of the allowed fields and organizes them into "Records" and "DataSets" (fields). When you use the "iptc:" prefix to source a field-level substitution parameter you can specify the field you want in either of two ways. First you can use the Record number and DataSet tag, such as "2#005" for Record 2, DataSet 005; this is the "Object Name" DataSet. Second, you can use the Friendly Name, such as "object-name". The MLA Friendly Name values differ in some cases from the names in the IPTC specification but the table below should be easy to follow.
+</p>
+<table>
+<tr><td colspan="3" style="font-weight:bold">Envelope Record</td></tr>
+<tr><td style="padding-right: 10px; vertical-align: top; font-weight:bold">model-version</td><td style="padding-right: 10px; vertical-align: top">1#000</td><td style="padding-right: 10px; vertical-align: top">2 octet binary IIM version number</td></tr>
+<tr><td style="padding-right: 10px; vertical-align: top; font-weight:bold">destination</td><td style="padding-right: 10px; vertical-align: top">1#005</td><td style="padding-right: 10px; vertical-align: top">Max 1024 characters of Destination (ISO routing information); repeatable</td></tr>
+<tr><td style="padding-right: 10px; vertical-align: top; font-weight:bold">file-format</td><td style="padding-right: 10px; vertical-align: top">1#020</td><td style="padding-right: 10px; vertical-align: top">2 octet binary file format number, see IPTC-NAA V4 Appendix A</td></tr>
+<tr><td style="padding-right: 10px; vertical-align: top; font-weight:bold">file-format-version</td><td style="padding-right: 10px; vertical-align: top">1#022</td><td style="padding-right: 10px; vertical-align: top">2 octet binary file format version number</td></tr>
+<tr><td style="padding-right: 10px; vertical-align: top; font-weight:bold">service-identifier</td><td style="padding-right: 10px; vertical-align: top">1#030</td><td style="padding-right: 10px; vertical-align: top">Max 10 characters of Service Identifier and product</td></tr>
+<tr><td style="padding-right: 10px; vertical-align: top; font-weight:bold">envelope-number</td><td style="padding-right: 10px; vertical-align: top">1#040</td><td style="padding-right: 10px; vertical-align: top">8 Character Envelope Number</td></tr>
+<tr><td style="padding-right: 10px; vertical-align: top; font-weight:bold">product-id</td><td style="padding-right: 10px; vertical-align: top">1#050</td><td style="padding-right: 10px; vertical-align: top">Max 32 characters subset of provider's overall service; repeatable</td></tr>
+<tr><td style="padding-right: 10px; vertical-align: top; font-weight:bold">envelope-priority</td><td style="padding-right: 10px; vertical-align: top">1#060</td><td style="padding-right: 10px; vertical-align: top">1 numeric character of envelope handling priority (not urgency)</td></tr>
+<tr><td style="padding-right: 10px; vertical-align: top; font-weight:bold">date-sent</td><td style="padding-right: 10px; vertical-align: top">1#070</td><td style="padding-right: 10px; vertical-align: top">8 numeric characters of Date Sent by service - CCYYMMDD</td></tr>
+<tr><td style="padding-right: 10px; vertical-align: top; font-weight:bold">time-sent</td><td style="padding-right: 10px; vertical-align: top">1#080</td><td style="padding-right: 10px; vertical-align: top">11 characters of Time Sent by service - HHMMSS±HHMM</td></tr>
+<tr><td style="padding-right: 10px; vertical-align: top; font-weight:bold">coded-character-set</td><td style="padding-right: 10px; vertical-align: top">1#090</td><td style="padding-right: 10px; vertical-align: top">Max 32 characters of control functions, etc.</td></tr>
+<tr><td style="padding-right: 10px; vertical-align: top; font-weight:bold">uno</td><td style="padding-right: 10px; vertical-align: top">1#100</td><td style="padding-right: 10px; vertical-align: top">14 to 80 characters of eternal, globally unique identification for objects</td></tr>
+<tr><td style="padding-right: 10px; vertical-align: top; font-weight:bold">arm-identifier</td><td style="padding-right: 10px; vertical-align: top">1#120</td><td style="padding-right: 10px; vertical-align: top">2 octet binary Abstract Relationship Model Identifier</td></tr>
+<tr><td style="padding-right: 10px; vertical-align: top; font-weight:bold">arm-version</td><td style="padding-right: 10px; vertical-align: top">1#122</td><td style="padding-right: 10px; vertical-align: top">2 octet binary Abstract Relationship Model Version</td></tr>
+<tr><td colspan="3" style="font-weight:bold">&nbsp;<br />Application Record</td></tr>
+<tr><td style="padding-right: 10px; vertical-align: top; font-weight:bold">record-version</td><td style="padding-right: 10px; vertical-align: top">2#000</td><td style="padding-right: 10px; vertical-align: top">2 octet binary Information Interchange Model, Part II version number</td></tr>
+<tr><td style="padding-right: 10px; vertical-align: top; font-weight:bold">object-type-reference</td><td style="padding-right: 10px; vertical-align: top">2#003</td><td style="padding-right: 10px; vertical-align: top">3 to 67 Characters of Object Type Reference number and optional text</td></tr>
+<tr><td style="padding-right: 10px; vertical-align: top; font-weight:bold">object-attribute-reference</td><td style="padding-right: 10px; vertical-align: top">2#004</td><td style="padding-right: 10px; vertical-align: top">3 to 67 Characters of Object Attribute Reference number and optional text; repeatable</td></tr>
+<tr><td style="padding-right: 10px; vertical-align: top; font-weight:bold">object-name</td><td style="padding-right: 10px; vertical-align: top">2#005</td><td style="padding-right: 10px; vertical-align: top">Max 64 characters of the object name or shorthand reference</td></tr>
+<tr><td style="padding-right: 10px; vertical-align: top; font-weight:bold">edit-status</td><td style="padding-right: 10px; vertical-align: top">2#007</td><td style="padding-right: 10px; vertical-align: top">Max 64 characters of the status of the objectdata</td></tr>
+<tr><td style="padding-right: 10px; vertical-align: top; font-weight:bold">editorial-update</td><td style="padding-right: 10px; vertical-align: top">2#008</td><td style="padding-right: 10px; vertical-align: top">2 numeric characters of the type of update this object provides</td></tr>
+<tr><td style="padding-right: 10px; vertical-align: top; font-weight:bold">urgency</td><td style="padding-right: 10px; vertical-align: top">2#010</td><td style="padding-right: 10px; vertical-align: top">1 numeric character of the editorial urgency of content</td></tr>
+<tr><td style="padding-right: 10px; vertical-align: top; font-weight:bold">subject-reference</td><td style="padding-right: 10px; vertical-align: top">2#012</td><td style="padding-right: 10px; vertical-align: top">13 to 236 characters of a structured definition of the subject matter; repeatable</td></tr>
+<tr><td style="padding-right: 10px; vertical-align: top; font-weight:bold">category</td><td style="padding-right: 10px; vertical-align: top">2#015</td><td style="padding-right: 10px; vertical-align: top">Max 3 characters of the subject of the objectdata, DEPRECATED</td></tr>
+<tr><td style="padding-right: 10px; vertical-align: top; font-weight:bold">supplemental-category</td><td style="padding-right: 10px; vertical-align: top">2#020</td><td style="padding-right: 10px; vertical-align: top">Max 32 characters (each) of further refinement of subject, DEPRECATED; repeatable</td></tr>
+<tr><td style="padding-right: 10px; vertical-align: top; font-weight:bold">fixture-identifier</td><td style="padding-right: 10px; vertical-align: top">2#022</td><td style="padding-right: 10px; vertical-align: top">Max 32 characters identifying recurring, predictable content</td></tr>
+<tr><td style="padding-right: 10px; vertical-align: top; font-weight:bold">keywords</td><td style="padding-right: 10px; vertical-align: top">2#025</td><td style="padding-right: 10px; vertical-align: top">Max 64 characters (each) of tags; repeatable</td></tr>
+<tr><td style="padding-right: 10px; vertical-align: top; font-weight:bold">content-location-code</td><td style="padding-right: 10px; vertical-align: top">2#026</td><td style="padding-right: 10px; vertical-align: top">3 characters of ISO3166 country code or IPTC-assigned code; repeatable</td></tr>
+<tr><td style="padding-right: 10px; vertical-align: top; font-weight:bold">content-location-name</td><td style="padding-right: 10px; vertical-align: top">2#027</td><td style="padding-right: 10px; vertical-align: top">Max 64 characters of publishable country/geographical location name; repeatable</td></tr>
+
+<tr><td style="padding-right: 10px; vertical-align: top; font-weight:bold">release-date</td><td style="padding-right: 10px; vertical-align: top">2#030</td><td style="padding-right: 10px; vertical-align: top">8 numeric characters of Release Date (earliest use) - CCYYMMDD</td></tr>
+<tr><td style="padding-right: 10px; vertical-align: top; font-weight:bold">release-time</td><td style="padding-right: 10px; vertical-align: top">2#035</td><td style="padding-right: 10px; vertical-align: top">11 characters of Release Time (earliest use) - HHMMSS±HHMM</td></tr>
+<tr><td style="padding-right: 10px; vertical-align: top; font-weight:bold">expiration-date</td><td style="padding-right: 10px; vertical-align: top">2#037</td><td style="padding-right: 10px; vertical-align: top">8 numeric characters of Expiration Date (latest use) -  CCYYMDD</td></tr>
+<tr><td style="padding-right: 10px; vertical-align: top; font-weight:bold">expiration-time</td><td style="padding-right: 10px; vertical-align: top">2#038</td><td style="padding-right: 10px; vertical-align: top">11 characters of Expiration Time (latest use) - HHMMSS±HHMM</td></tr>
+<tr><td style="padding-right: 10px; vertical-align: top; font-weight:bold">special-instructions</td><td style="padding-right: 10px; vertical-align: top">2#040</td><td style="padding-right: 10px; vertical-align: top">Max 256 Characters of editorial instructions, e.g., embargoes and warnings</td></tr>
+<tr><td style="padding-right: 10px; vertical-align: top; font-weight:bold">action-advised</td><td style="padding-right: 10px; vertical-align: top">2#042</td><td style="padding-right: 10px; vertical-align: top">2 numeric characters of type of action this object provides to a previous object</td></tr>
+<tr><td style="padding-right: 10px; vertical-align: top; font-weight:bold">reference-service</td><td style="padding-right: 10px; vertical-align: top">2#045</td><td style="padding-right: 10px; vertical-align: top">Max 10 characters of the Service ID (1#030) of a prior envelope; repeatable</td></tr>
+<tr><td style="padding-right: 10px; vertical-align: top; font-weight:bold">reference-date</td><td style="padding-right: 10px; vertical-align: top">2#047</td><td style="padding-right: 10px; vertical-align: top">8 numeric characters of prior envelope Reference Date (1#070) - CCYYMMDD; repeatable</td></tr>
+<tr><td style="padding-right: 10px; vertical-align: top; font-weight:bold">reference-number</td><td style="padding-right: 10px; vertical-align: top">2#050</td><td style="padding-right: 10px; vertical-align: top">8 characters of prior envelope Reference Number (1#040); repeatable</td></tr>
+<tr><td style="padding-right: 10px; vertical-align: top; font-weight:bold">date-created</td><td style="padding-right: 10px; vertical-align: top">2#055</td><td style="padding-right: 10px; vertical-align: top">8 numeric characters of intellectual content Date Created - CCYYMMDD</td></tr>
+<tr><td style="padding-right: 10px; vertical-align: top; font-weight:bold">time-created</td><td style="padding-right: 10px; vertical-align: top">2#060</td><td style="padding-right: 10px; vertical-align: top">11 characters of intellectual content Time Created - HHMMSS±HHMM</td></tr>
+<tr><td style="padding-right: 10px; vertical-align: top; font-weight:bold">digital-creation-date</td><td style="padding-right: 10px; vertical-align: top">2#062</td><td style="padding-right: 10px; vertical-align: top">8 numeric characters of digital representation creation date - CCYYMMDD</td></tr>
+<tr><td style="padding-right: 10px; vertical-align: top; font-weight:bold">digital-creation-time</td><td style="padding-right: 10px; vertical-align: top">2#063</td><td style="padding-right: 10px; vertical-align: top">11 characters of digital representation creation time - HHMMSS±HHMM</td></tr>
+<tr><td style="padding-right: 10px; vertical-align: top; font-weight:bold">originating-program</td><td style="padding-right: 10px; vertical-align: top">2#065</td><td style="padding-right: 10px; vertical-align: top">Max 32 characters of the program used to create the objectdata</td></tr>
+<tr><td style="padding-right: 10px; vertical-align: top; font-weight:bold">program-version</td><td style="padding-right: 10px; vertical-align: top">2#070</td><td style="padding-right: 10px; vertical-align: top">Program Version - Max 10 characters of the version of the program used to create the objectdata</td></tr>
+<tr><td style="padding-right: 10px; vertical-align: top; font-weight:bold">object-cycle</td><td style="padding-right: 10px; vertical-align: top">2#075</td><td style="padding-right: 10px; vertical-align: top">1 character where a=morning, p=evening, b=both</td></tr>
+<tr><td style="padding-right: 10px; vertical-align: top; font-weight:bold">by-line</td><td style="padding-right: 10px; vertical-align: top">2#080</td><td style="padding-right: 10px; vertical-align: top">Max 32 Characters of the name of the objectdata creator, e.g., the writer, photographer; repeatable</td></tr>
+<tr><td style="padding-right: 10px; vertical-align: top; font-weight:bold">by-line-title</td><td style="padding-right: 10px; vertical-align: top">2#085</td><td style="padding-right: 10px; vertical-align: top">Max 32 characters of the title of the objectdata creator; repeatable</td></tr>
+<tr><td style="padding-right: 10px; vertical-align: top; font-weight:bold">city</td><td style="padding-right: 10px; vertical-align: top">2#090</td><td style="padding-right: 10px; vertical-align: top">Max 32 Characters of the city of objectdata origin</td></tr>
+<tr><td style="padding-right: 10px; vertical-align: top; font-weight:bold">sub-location</td><td style="padding-right: 10px; vertical-align: top">2#092</td><td style="padding-right: 10px; vertical-align: top">Max 32 Characters of the location within the city of objectdata origin</td></tr>
+<tr><td style="padding-right: 10px; vertical-align: top; font-weight:bold">province-or-state</td><td style="padding-right: 10px; vertical-align: top">2#095</td><td style="padding-right: 10px; vertical-align: top">Max 32 Characters of the objectdata origin Province or State</td></tr>
+<tr><td style="padding-right: 10px; vertical-align: top; font-weight:bold">country-or-primary-location-code</td><td style="padding-right: 10px; vertical-align: top">2#100</td><td style="padding-right: 10px; vertical-align: top">3 characters of ISO3166 or IPTC-assigned code for Country of objectdata origin</td></tr>
+<tr><td style="padding-right: 10px; vertical-align: top; font-weight:bold">country-or-primary-location-name</td><td style="padding-right: 10px; vertical-align: top">2#101</td><td style="padding-right: 10px; vertical-align: top">Max 64 characters of publishable country/geographical location name; repeatable</td></tr>
+<tr><td style="padding-right: 10px; vertical-align: top; font-weight:bold">original-transmission-reference</td><td style="padding-right: 10px; vertical-align: top">2#103</td><td style="padding-right: 10px; vertical-align: top">Max 32 characters of a code representing the location of original transmission</td></tr>
+<tr><td style="padding-right: 10px; vertical-align: top; font-weight:bold">headline</td><td style="padding-right: 10px; vertical-align: top">2#105</td><td style="padding-right: 10px; vertical-align: top">Max 256 Characters of a publishable entry providing a synopsis of the contents of the objectdata</td></tr>
+<tr><td style="padding-right: 10px; vertical-align: top; font-weight:bold">credit</td><td style="padding-right: 10px; vertical-align: top">2#110</td><td style="padding-right: 10px; vertical-align: top">Max 32 Characters that identifies the provider of the objectdata (Vs. the owner/creator)</td></tr>
+<tr><td style="padding-right: 10px; vertical-align: top; font-weight:bold">source</td><td style="padding-right: 10px; vertical-align: top">2#115</td><td style="padding-right: 10px; vertical-align: top">Max 32 Characters that identifies the original owner of the intellectual content</td></tr>
+<tr><td style="padding-right: 10px; vertical-align: top; font-weight:bold">copyright-notice</td><td style="padding-right: 10px; vertical-align: top">2#116</td><td style="padding-right: 10px; vertical-align: top">Max 128 Characters that contains any necessary copyright notice</td></tr>
+<tr><td style="padding-right: 10px; vertical-align: top; font-weight:bold">contact</td><td style="padding-right: 10px; vertical-align: top">2#118</td><td style="padding-right: 10px; vertical-align: top">Max 128 characters that identifies the person or organization which can provide further background information; repeatable</td></tr>
+<tr><td style="padding-right: 10px; vertical-align: top; font-weight:bold">caption-or-abstract</td><td style="padding-right: 10px; vertical-align: top">2#120</td><td style="padding-right: 10px; vertical-align: top">Max 2000 Characters of a textual description of the objectdata</td></tr>
+<tr><td style="padding-right: 10px; vertical-align: top; font-weight:bold">caption-writer-or-editor</td><td style="padding-right: 10px; vertical-align: top">2#122</td><td style="padding-right: 10px; vertical-align: top">Max 32 Characters that the identifies the person involved in the writing, editing or correcting the objectdata or caption/abstract; repeatable</td></tr>
+<tr><td style="padding-right: 10px; vertical-align: top; font-weight:bold">rasterized-caption</td><td style="padding-right: 10px; vertical-align: top">2#125</td><td style="padding-right: 10px; vertical-align: top">7360 binary octets of the rasterized caption - 1 bit per pixel, 460x128-pixel image</td></tr>
+<tr><td style="padding-right: 10px; vertical-align: top; font-weight:bold">image-type</td><td style="padding-right: 10px; vertical-align: top">2#130</td><td style="padding-right: 10px; vertical-align: top">2 characters of color composition type and information</td></tr>
+<tr><td style="padding-right: 10px; vertical-align: top; font-weight:bold">image-orientation</td><td style="padding-right: 10px; vertical-align: top">2#131</td><td style="padding-right: 10px; vertical-align: top">1 alphabetic character indicating the image area layout - P=portrait, L=landscape, S=square</td></tr>
+<tr><td style="padding-right: 10px; vertical-align: top; font-weight:bold">language-identifier</td><td style="padding-right: 10px; vertical-align: top">2#135</td><td style="padding-right: 10px; vertical-align: top">2 or 3 alphabetic characters containing the major national language of the object, according to the ISO 639:1988 codes</td></tr>
+<tr><td style="padding-right: 10px; vertical-align: top; font-weight:bold">audio-type</td><td style="padding-right: 10px; vertical-align: top">2#150</td><td style="padding-right: 10px; vertical-align: top">2 characters identifying monaural/stereo and exact type of audio content</td></tr>
+<tr><td style="padding-right: 10px; vertical-align: top; font-weight:bold">audio-sampling-rate</td><td style="padding-right: 10px; vertical-align: top">2#151</td><td style="padding-right: 10px; vertical-align: top">6 numeric characters representing the audio sampling rate in hertz (Hz)</td></tr>
+<tr><td style="padding-right: 10px; vertical-align: top; font-weight:bold">audio-sampling-resolution</td><td style="padding-right: 10px; vertical-align: top">2#152</td><td style="padding-right: 10px; vertical-align: top">2 numeric characters representing the number of bits in each audio sample</td></tr>
+<tr><td style="padding-right: 10px; vertical-align: top; font-weight:bold">audio-duration</td><td style="padding-right: 10px; vertical-align: top">2#153</td><td style="padding-right: 10px; vertical-align: top">6 numeric characters of the Audio Duration - HHMMSS</td></tr>
+<tr><td style="padding-right: 10px; vertical-align: top; font-weight:bold">audio-outcue</td><td style="padding-right: 10px; vertical-align: top">2#154</td><td style="padding-right: 10px; vertical-align: top">Max 64 characters of the content of the end of an audio objectdata</td></tr>
+<tr><td style="padding-right: 10px; vertical-align: top; font-weight:bold">objectdata-preview-file-format</td><td style="padding-right: 10px; vertical-align: top">2#200</td><td style="padding-right: 10px; vertical-align: top">2 octet binary file format of the ObjectData Preview</td></tr>
+<tr><td style="padding-right: 10px; vertical-align: top; font-weight:bold">objectdata-preview-file-format-version</td><td style="padding-right: 10px; vertical-align: top">2#201</td><td style="padding-right: 10px; vertical-align: top">2 octet binary particular version of the ObjectData Preview File Format</td></tr>
+<tr><td style="padding-right: 10px; vertical-align: top; font-weight:bold">objectdata-preview-data</td><td style="padding-right: 10px; vertical-align: top">2#202</td><td style="padding-right: 10px; vertical-align: top">Max 256000 binary octets containing the ObjectData Preview data</td></tr>
+<tr><td colspan="3" style="font-weight:bold">&nbsp;<br />Pre ObjectData Descriptor Record</td></tr>
+<tr><td style="padding-right: 10px; vertical-align: top; font-weight:bold">size-mode</td><td style="padding-right: 10px; vertical-align: top">7#010</td><td style="padding-right: 10px; vertical-align: top">1 numeric character - 0=objectdata size not known, 1=objectdata size known at beginning of transfer</td></tr>
+<tr><td style="padding-right: 10px; vertical-align: top; font-weight:bold">max-subfile-size</td><td style="padding-right: 10px; vertical-align: top">7#020</td><td style="padding-right: 10px; vertical-align: top">4 octet binary maximum subfile dataset(s) size</td></tr>
+<tr><td style="padding-right: 10px; vertical-align: top; font-weight:bold">objectdata-size-announced</td><td style="padding-right: 10px; vertical-align: top">7#090</td><td style="padding-right: 10px; vertical-align: top">4 octet binary objectdata size if known at beginning of transfer</td></tr>
+<tr><td style="padding-right: 10px; vertical-align: top; font-weight:bold">maximum-objectdata-size</td><td style="padding-right: 10px; vertical-align: top">7#095</td><td style="padding-right: 10px; vertical-align: top">4 octet binary largest possible objectdata size</td></tr>
+<tr><td colspan="3" style="font-weight:bold">&nbsp;<br />ObjectData</td></tr>
+<tr><td style="padding-right: 10px; vertical-align: top; font-weight:bold">subfile</td><td style="padding-right: 10px; vertical-align: top">8#010</td><td style="padding-right: 10px; vertical-align: top">Subfile DataSet containing the objectdata itself; repeatable</td></tr>
+<tr><td colspan="3" style="font-weight:bold">&nbsp;<br />Post ObjectData Descriptor Record</td></tr>
+<tr><td style="padding-right: 10px; vertical-align: top; font-weight:bold">confirmed-objectdata-size</td><td style="padding-right: 10px; vertical-align: top">9#010</td><td style="padding-right: 10px; vertical-align: top">4 octet binary total objectdata size</td></tr>
+</table>
+<a name="mla_camera_values"></a>&nbsp;
+<p>
+<a href="#backtotop">Go to Top</a>
+</p>
+<h4>Field-level enhanced EXIF CAMERA values</h4>
+<p>
+The EXIF specification defines many "Tags Relating to Picture-taking Conditions". Some of these are processed by WordPress and added to the "image_meta" array (as aperture, camera, focal_length, iso, shutter_speed). The field-level values in this section supplement those values and provide convenient access to additional values as well.
+</p>
+<p>
+The native format of this data is somewhat complicated, so MLA converts the most common elements into more convenient formats. For example, "rational" values are expressed as decimal equialents or converted to forms more often seen in photographic applications. You can use the enhanced values as-is or use them in a Content Template to compose the format(s) you need. You can access the native values with the names defined in the EXIF specification, e.g., "ExposureTime". The enhanced values are provided in the "CAMERA" array and accessed with compound names, e.g., "CAMERA.ExposureTime". The MLA enhanced values are:</p>
+<table>
+<tr style="font-weight: bold"><td>Field</td><td>Example</td><td>Content</td></tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">ExposureTime</td>
+<td style="padding-right: 10px; vertical-align: top">1.04, 1/250</td>
+<td style="padding-right: 10px; vertical-align: top">Exposure time, given in seconds.</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">ShutterSpeed from ExposureTime</td>
+<td style="padding-right: 10px; vertical-align: top">1.04, 1/250</td>
+<td style="padding-right: 10px; vertical-align: top">Derived from ExposureTime and more often converted to the more useful "one over something" format.</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">FNumber</td>
+<td style="padding-right: 10px; vertical-align: top">7.1, 8</td>
+<td style="padding-right: 10px; vertical-align: top">The F Number.</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">ExposureBiasValue</td>
+<td style="padding-right: 10px; vertical-align: top">-1, +1/3</td>
+<td style="padding-right: 10px; vertical-align: top">The exposure bias. The unit is the APEX value, usually in the range of -99.99 to 99.99.</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">Flash</td>
+<td style="padding-right: 10px; vertical-align: top">no, yes</td>
+<td style="padding-right: 10px; vertical-align: top">The "flash fired" portion of the flash status.</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">FocalLength</td>
+<td style="padding-right: 10px; vertical-align: top">420, 500</td>
+<td style="padding-right: 10px; vertical-align: top">The actual focal length of the lens, in mm. It is not converted to the focal length of a 35mm film camera.</td>
+</tr>
+</table>
+<p>
+The EXIF specification defines several "Other Tags" with more information about each image; these tags are not recognized by the PHP <code>exif_read_data()</code> function. 
+The MLA enhanced values for "Other Tags" are:</p>
+<table>
+<tr style="font-weight: bold"><td>Field</td><td>Example</td><td>Content</td></tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">ImageUniqueID</td>
+<td style="padding-right: 10px; vertical-align: top"></td>
+<td style="padding-right: 10px; vertical-align: top">an identifier assigned uniquely to each image. It is recorded as an ASCII string equivalent to hexadecimal notation and 128-bit fixed length.</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">CameraOwnerName</td>
+<td style="padding-right: 10px; vertical-align: top"></td>
+<td style="padding-right: 10px; vertical-align: top">records the owner of a camera used in photography as an ASCII string.</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">BodySerialNumber</td>
+<td style="padding-right: 10px; vertical-align: top">6033674</td>
+<td style="padding-right: 10px; vertical-align: top">the serial number of the camra body as an ASCII string.</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">LensSpecification</td>
+<td style="padding-right: 10px; vertical-align: top">"80/1, 400/1, 45/10, 56/10"</td>
+<td style="padding-right: 10px; vertical-align: top">a four-element array containing minimum focal length, maxinum focal length, minimum F number in the minimum focal length and minimum F number in the maximum focal length.</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">LensMinFocalLength</td>
+<td style="padding-right: 10px; vertical-align: top">80</td>
+<td style="padding-right: 10px; vertical-align: top">minimum focal length element of the LensSpecification array.</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">LensMaxFocalLength</td>
+<td style="padding-right: 10px; vertical-align: top">400</td>
+<td style="padding-right: 10px; vertical-align: top">maximum focal length element of the LensSpecification array.</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">LensMinFocalLengthFN</td>
+<td style="padding-right: 10px; vertical-align: top">4.5</td>
+<td style="padding-right: 10px; vertical-align: top">minimum F number in the minimum focal length element of the LensSpecification array.</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">LensMaxFocalLengthFN</td>
+<td style="padding-right: 10px; vertical-align: top">5.6</td>
+<td style="padding-right: 10px; vertical-align: top">minimum F number in the maximum focal length element of the LensSpecification array.</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">LensMake</td>
+<td style="padding-right: 10px; vertical-align: top">Canon</td>
+<td style="padding-right: 10px; vertical-align: top">the lens manufacturer as an ASCII string.</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">LensModel</td>
+<td style="padding-right: 10px; vertical-align: top">80.0-400.0 mm f/4.5-5.6</td>
+<td style="padding-right: 10px; vertical-align: top">the lens's model name and model number as an ASCII string.</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">LensSerialNumber</td>
+<td style="padding-right: 10px; vertical-align: top"></td>
+<td style="padding-right: 10px; vertical-align: top">the serial number of the interchangable lens as an ASCII string.</td>
+</tr>
+</table>
+<a name="mla_gps_values"></a>&nbsp;
+<p>
+<a href="#backtotop">Go to Top</a>
+</p>
+<h4>Field-level enhanced EXIF GPS values</h4>
+<p>
+There are three basic forms of writing geographic coordinates; they are explained in a Wikipedia article, <a href="http://en.wikipedia.org/wiki/Geographic_coordinate_conversion" title="Wikipedia on Geographic coordinate conversion" target="_blank">Geographic coordinate conversion</a>. The <a href="http://www.cipa.jp/english/hyoujunka/kikaku/pdf/DC-008-2010_E.pdf" title="EXIF Version 2.3 specification" target="_blank">Exif Standard version 2.3</a> (PDF) document explains the structure and defines the rules for 32 GPS elements.
+</p>
+<p>
+The native format of this data is somewhat complicated, so MLA converts the most common elements into a variety of convenient formats. You can use the enhanced values as-is or use them in a Content Template to compose the format(s) you need. You can access the native values with the names defined in the EXIF specification, e.g., "GPSLatitude". The enhanced values are provided in th "GPS" array and accessed with compound names, e.g., "GPS.Latitude". The MLA enhanced values are:</p>
+<table>
+<tr style="font-weight: bold"><td>Field</td><td>Example</td><td>Content</td></tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">Version</td>
+<td style="padding-right: 10px; vertical-align: top">2.2.0.0</td>
+<td style="padding-right: 10px; vertical-align: top">The version of the GPS Information specification</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">LatitudeRef</td>
+<td style="padding-right: 10px; vertical-align: top">N or S</td>
+<td style="padding-right: 10px; vertical-align: top">Indicates whether the latitude is north or south latitude</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">LatitudeRefS</td>
+<td style="padding-right: 10px; vertical-align: top">empty or "-"</td>
+<td style="padding-right: 10px; vertical-align: top">Blank for north, "-" for south</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">Latitude</td>
+<td style="padding-right: 10px; vertical-align: top">44d 7' 34.0167" N</td>
+<td style="padding-right: 10px; vertical-align: top">Latitude expressed as degrees, minutes and seconds</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">LatitudeD</td>
+<td style="padding-right: 10px; vertical-align: top">44</td>
+<td style="padding-right: 10px; vertical-align: top">Degree portion of Latitude</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">LatitudeM</td>
+<td style="padding-right: 10px; vertical-align: top">7</td>
+<td style="padding-right: 10px; vertical-align: top">Minute portion of Latitude</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">LatitudeS</td>
+<td style="padding-right: 10px; vertical-align: top">34.0167</td>
+<td style="padding-right: 10px; vertical-align: top">Second portion of Latitude</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">LatitudeSDM</td>
+<td style="padding-right: 10px; vertical-align: top">44 7.5669</td>
+<td style="padding-right: 10px; vertical-align: top">Latitude expressed as degrees and decimal minutes (MinDec),<br />with a leading "-" for Southern values</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">LatitudeSDD</td>
+<td style="padding-right: 10px; vertical-align: top">44.126116</td>
+<td style="padding-right: 10px; vertical-align: top">Latitude expressed as decimal degrees,<br />with a leading "-" for Southern values</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">LatitudeDM</td>
+<td style="padding-right: 10px; vertical-align: top">44 7.5669N</td>
+<td style="padding-right: 10px; vertical-align: top">Latitude expressed as degrees and decimal minutes (MinDec)</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">LatitudeDD</td>
+<td style="padding-right: 10px; vertical-align: top">44.126116N</td>
+<td style="padding-right: 10px; vertical-align: top">Latitude expressed as decimal degrees</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">LatitudeMinDec</td>
+<td style="padding-right: 10px; vertical-align: top">7.5669</td>
+<td style="padding-right: 10px; vertical-align: top">Decimal Minutes portion of Latitude</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">LatitudeDegDec</td>
+<td style="padding-right: 10px; vertical-align: top">.126116</td>
+<td style="padding-right: 10px; vertical-align: top">Decimal Degrees portion of Latitude</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">LongitudeRef</td>
+<td style="padding-right: 10px; vertical-align: top">E or W</td>
+<td style="padding-right: 10px; vertical-align: top">Indicates whether the Longitude is east or west longitude</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">LongitudeRefS</td>
+<td style="padding-right: 10px; vertical-align: top">empty or "-"</td>
+<td style="padding-right: 10px; vertical-align: top">Blank for east, "-" for west</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">Longitude</td>
+<td style="padding-right: 10px; vertical-align: top">145d 5' 9.2055" E</td>
+<td style="padding-right: 10px; vertical-align: top">Longitude expressed as degrees, minutes and seconds</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">LongitudeD</td>
+<td style="padding-right: 10px; vertical-align: top">145</td>
+<td style="padding-right: 10px; vertical-align: top">Degree portion of Longitude</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">LongitudeM</td>
+<td style="padding-right: 10px; vertical-align: top">5</td>
+<td style="padding-right: 10px; vertical-align: top">Minute portion of Longitude</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">LongitudeS</td>
+<td style="padding-right: 10px; vertical-align: top">9.2055</td>
+<td style="padding-right: 10px; vertical-align: top">Second portion of Longitude</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">LongitudeSDM</td>
+<td style="padding-right: 10px; vertical-align: top">145 5.1534</td>
+<td style="padding-right: 10px; vertical-align: top">Longitude expressed as degrees and decimal minutes (MinDec),<br />with a leading "-" for Western values</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">LongitudeSDD</td>
+<td style="padding-right: 10px; vertical-align: top">145.085890</td>
+<td style="padding-right: 10px; vertical-align: top">Longitude expressed as decimal degrees,<br />with a leading "-" for Western values</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">LongitudeDM</td>
+<td style="padding-right: 10px; vertical-align: top">145 5.1534E</td>
+<td style="padding-right: 10px; vertical-align: top">Longitude expressed as degrees and decimal minutes (MinDec)</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">LongitudeDD</td>
+<td style="padding-right: 10px; vertical-align: top">145.085890E</td>
+<td style="padding-right: 10px; vertical-align: top">Longitude expressed as decimal degrees</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">LongitudeMinDec</td>
+<td style="padding-right: 10px; vertical-align: top">5.1534</td>
+<td style="padding-right: 10px; vertical-align: top">Decimal Minutes portion of Longitude</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">LongitudeDegDec</td>
+<td style="padding-right: 10px; vertical-align: top">.085890</td>
+<td style="padding-right: 10px; vertical-align: top">Decimal Degrees portion of Longitude</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">AltitudeRef</td>
+<td style="padding-right: 10px; vertical-align: top">0 or 1</td>
+<td style="padding-right: 10px; vertical-align: top">0 = above sea level, 1 = below sea level</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">AltitudeRefS</td>
+<td style="padding-right: 10px; vertical-align: top">blank or "-"</td>
+<td style="padding-right: 10px; vertical-align: top">Blank above sea level, "-" below sea level</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">Altitude</td>
+<td style="padding-right: 10px; vertical-align: top">247.0825</td>
+<td style="padding-right: 10px; vertical-align: top">Altitude in meters</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">AltitudeFeet</td>
+<td style="padding-right: 10px; vertical-align: top">810.64</td>
+<td style="padding-right: 10px; vertical-align: top">Altitude in feet</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">TimeStamp</td>
+<td style="padding-right: 10px; vertical-align: top">01:00:34</td>
+<td style="padding-right: 10px; vertical-align: top">The time as UTC (Coordinated Universal Time)</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">TimeStampH</td>
+<td style="padding-right: 10px; vertical-align: top">01</td>
+<td style="padding-right: 10px; vertical-align: top">The hours portion of TimeStamp</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">TimeStampM</td>
+<td style="padding-right: 10px; vertical-align: top">00</td>
+<td style="padding-right: 10px; vertical-align: top">The minutes portion of TimeStamp</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">TimeStampS</td>
+<td style="padding-right: 10px; vertical-align: top">34</td>
+<td style="padding-right: 10px; vertical-align: top">The seconds portion of TimeStamp</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">DateStamp</td>
+<td style="padding-right: 10px; vertical-align: top">2013:08:09</td>
+<td style="padding-right: 10px; vertical-align: top">The date as UTC (Coordinated Universal Time)</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">DateStampY</td>
+<td style="padding-right: 10px; vertical-align: top">2013</td>
+<td style="padding-right: 10px; vertical-align: top">The year portion of DateStamp</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">DateStampM</td>
+<td style="padding-right: 10px; vertical-align: top">08</td>
+<td style="padding-right: 10px; vertical-align: top">The month portion of DateStamp</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">DateStampD</td>
+<td style="padding-right: 10px; vertical-align: top">09</td>
+<td style="padding-right: 10px; vertical-align: top">The day portion of DateStamp</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">MapDatum</td>
+<td style="padding-right: 10px; vertical-align: top">WGS-84</td>
+<td style="padding-right: 10px; vertical-align: top">The geodetic survey data used by the GPS receiver</td>
+</tr>
+</table>
+<a name="pdf_metadata"></a>
+&nbsp;
+<p>
+<a href="#backtotop">Go to Top</a>
+</p>
+<h4>Field-level metadata in PDF documents</h4>
 <p>
 Metadata in PDF documents comes from two sources. Early versions of the PDF specification defined a Document Information Dictionary (D.I.D.) containing up to nine (optional) fields:
 </p>
@@ -2675,8 +3475,7 @@ The conditional and choice elements are the key to templates' power, particularl
 </p>
 <p>
 Conditional, choice and template elements can be nested as needed. For example, a conditional element can have a choice element within it or a choice alternative could include a conditional. Here's an example:
-<p> 
-<code>[+template: Terms: (([+terms:category+], [+terms:post_tag+])|[+ terms: category +]|[+terms:post_tag +]|none)+]</code>
+<p><code>[+template: Terms: (([+terms:category+], [+terms:post_tag+])|[+ terms: category +]|[+terms:post_tag +]|none)+]</code>
 </p>
 <p>
 This template has a String, "Terms: " and a Conditional, "(([+terms: ... none)". This Conditional separates the "Terms: " literal from the first alternative in the Choice. Within the Conditional is a Choice having four alternatives. The first alternative is a Conditional, which will be empty unless both categories and tags are present.  The second and third alternatives handle the cases where one of the two taxonomies has terms, and the final alternative is used when neither categories nor tags are present.
@@ -2688,79 +3487,6 @@ In the Media/Assistant submenu table  Bulk Edit area and the IPTC/EXIF Standard 
 <p>
 The conditional and choice elements require delimiters, "(", ")" and "|". If you want to put any of these three characters in your template, preface them with two backslash characters, e.g., "\\(". If you need a backslash in your template, code it as four backslash characters, i.e., "\\\\". The doubling of backslash characters is required because of the way WordPress processes shortcode parameters.
 </p>
-<a name="mla_table_example"></a>
-&nbsp;
-<p>
-<a href="#backtotop">Go to Top</a>
-</p>
-<h3>A Table-based Style and Markup Template Example</h3>
-<p>
-Here's a small example that shows a gallery using <code>&lt;table&gt;</code> markup.
-The Item markup section shows how to use the "terms", "custom", "iptc" and "exif" substitution parameters.
-</p>
-<h4>Style Template</h4>
-<code>
-&lt;style type='text/css'&gt;<br />
-&nbsp;&nbsp;#[+selector+] {<br />
-&nbsp;&nbsp;&nbsp;&nbsp;margin: auto;<br />
-&nbsp;&nbsp;}<br />
-&nbsp;&nbsp;#[+selector+] .gallery-row {<br />
-&nbsp;&nbsp;&nbsp;&nbsp;float: [+float+];<br />
-&nbsp;&nbsp;&nbsp;&nbsp;margin-top: 10px;<br />
-&nbsp;&nbsp;&nbsp;&nbsp;border-top: 1px solid #ddd;<br />
-&nbsp;&nbsp;&nbsp;&nbsp;text-align: center;<br />
-&nbsp;&nbsp;&nbsp;&nbsp;width: [+itemwidth+]%;<br />
-&nbsp;&nbsp;}<br />
-&nbsp;&nbsp;#[+selector+] .gallery-row td.gallery-icon {<br />
-&nbsp;&nbsp;&nbsp;&nbsp;width: 60;<br />
-&nbsp;&nbsp;&nbsp;&nbsp;height: 60;<br />
-&nbsp;&nbsp;&nbsp;&nbsp;vertical-align: top;<br />
-&nbsp;&nbsp;}<br />
-&nbsp;&nbsp;#[+selector+] .gallery-row .gallery-icon img {<br />
-&nbsp;&nbsp;&nbsp;&nbsp;border: 2px solid #cfcfcf;<br />
-&nbsp;&nbsp;}<br />
-&nbsp;&nbsp;#[+selector+] .gallery-caption {<br />
-&nbsp;&nbsp;&nbsp;&nbsp;margin-left: 0;<br />
-&nbsp;&nbsp;&nbsp;&nbsp;vertical-align: top;<br />
-&nbsp;&nbsp;}<br />
-&lt;/style&gt;
-</code>
-<h4>Markup Template</h4>
-<table width="700" border="0" cellpadding="5">
-	<tr>
-		<td style="vertical-align: top; font-weight:bold">Open</td>
-		<td><code>&lt;table id='[+selector+]' class='gallery galleryid-[+id+]<br />gallery-columns-[+columns+] gallery-size-[+size_class+]'&gt;</code></td>
-	</tr>
-	<tr>
-		<td style="vertical-align: top; font-weight:bold">Row Open</td>
-		<td><code>&lt;tr class='gallery-row'&gt;</code></td>
-	</tr>
-	<tr>
-		<td style="vertical-align: top; font-weight:bold">Item</td>
-		<td><code>&lt;td class='gallery-icon'&gt;<br />
-		&nbsp;&nbsp;&nbsp;&nbsp;[+link+]<br />
-	&lt;/td&gt;<br />
-	&lt;td class='wp-caption-text gallery-caption'&gt;<br />
-		&nbsp;&nbsp;&nbsp;&nbsp;&lt;strong&gt;[+title+]&lt;/strong&gt;&lt;br /&gt;<br />
-		&nbsp;&nbsp;&nbsp;&nbsp;[+description+]&lt;br /&gt;<br />
-		&nbsp;&nbsp;&nbsp;&nbsp;[+date+]<br />
-		&nbsp;&nbsp;&nbsp;&nbsp;[+custom:client,single+]<br />
-		&nbsp;&nbsp;&nbsp;&nbsp;[+terms:category+]<br />
-		&nbsp;&nbsp;&nbsp;&nbsp;[+iptc:caption-or-abstract+]<br />
-		&nbsp;&nbsp;&nbsp;&nbsp;[+iptc:2#025,single+]<br />
-		&nbsp;&nbsp;&nbsp;&nbsp;[+exif:Artist+]
-	&lt;/td&gt;</code>
-</td>
-	</tr>
-	<tr>
-		<td style="vertical-align: top; font-weight:bold">Row Close</td>
-		<td><code>&lt;/tr&gt;</code></td>
-	</tr>
-	<tr>
-		<td style="vertical-align: top; font-weight:bold">Close</td>
-		<td><code>&lt;/table&gt;</code></td>
-	</tr>
-</table>
 <a name="mla_text_widget"></a>
 &nbsp;
 <p>
@@ -3097,9 +3823,8 @@ For your own research, I suggest starting with these resources:
 </ul>
 <p>
 Put on your boots and have a paddle handy - it's a swamp! Good luck.
-</p>
 <a name="mla_custom_field_mapping"></a>
-&nbsp;
+</p>
 <p>
 <a href="#backtotop">Go to Top</a>
 </p>
@@ -3119,8 +3844,8 @@ This is a powerful tool, but it comes at the price of additional database storag
 </ul>
 <p>
 If you just want to add a custom field to the Media/Assistant submenu, the quick edit area and/or the bulk edit area you can bypass the mapping logic by leaving the Data Source value as "-- None (select a value) --".
+<a name="custom_field_mapping_example"></a>
 </p>
-<a name="custom_field_mapping_example"></a>&nbsp;
 <p>
 <a href="#backtotop">Go to Top</a>
 </p>
@@ -3153,8 +3878,8 @@ The three parameters in the above example will select all of the images in your 
 </p>
 <p>
 Note the format of the <code>value</code> and <code>compare</code> parameters within the <code>meta_query</code>. Because the File Size custom field uses the "Commas" format, the values are stored as 15-character strings with leading spaces; this makes the values display and sort sensibly. You must use <code>'compare' => 'BETWEEN'</code> and give the lowest and highest values as an array in the <code>'value' => array( '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;', '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;82,168' )</code> parameter, padding each value out to exactly 15 characters wide.
-</p>
 <a name="custom_field_mapping_table"></a>&nbsp;
+</p>
 <p>
 <a href="#backtotop">Go to Top</a>
 </p>
@@ -3172,8 +3897,26 @@ Contains the name of the custom field or metadata element to which the rule appl
 </dd>
 <dt>Data Source dropdown</dt>
 <dd>
-Contains a list of data elements you can map to the custom field. You can also select "Metadata" or "Template" and use the text box below the dropdown to specify attachment metadata or a content template for the source. See the <a href="#mla_custom_field_parameters">Data sources for custom field mapping</a> section for definitions of the data elements you can select from.
-<br />&nbsp;<br />
+Contains a list of data elements you can map to the custom field. You can also select "Metadata" or "Template" and use the text box below the dropdown to specify attachment metadata or a content template for the source.
+<table>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">-- None (select a value) --</td>
+<td>nothing, i.e., no change to existing value (if any). Use this source if you just want to add a custom field to the Media/Assistant submenu and/or the inline edit areas.</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">--&nbsp;Metadata&nbsp;(see&nbsp;below)&nbsp;--</td>
+<td>WordPress attachment metadata, from the <em>_wp_attachment_metadata</em> array. Enter the field you want in the text box below the dropdown list. More coding guidelines are given in the "<a href="#attachment_metadata_mapping">Adding or changing Attachment Metadata</a>" section above.</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">--&nbsp;Template&nbsp;(see&nbsp;below)&nbsp;--</td>
+<td style="padding-bottom: 2em;">A Content Template; enter the template text (without the "template:" prefix) in the text box below the dropdown list. More coding guidelines are given in the "<a href="#custom_field_mapping_with_templates">Custom field mapping with Content Templates</a>" section above.</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">(other data source)</td>
+<td> See the <a href="#field_level_data_sources">Data sources for custom field mapping</a> section for definitions of the other data elements you can select from.
+</td>
+</tr>
+</table>
 If you just want to add a custom field to the Media/Assistant submenu, the quick edit area and/or the bulk edit area you can bypass the mapping logic by leaving the Data Source value as "-- None (select a value) --".
 <br />&nbsp;<br />
 Most of the data elements are static, i.e., they do not change after the attachment is added to the Media Library.
@@ -3425,291 +4168,6 @@ There are two other ways you can perform custom field mapping for one or more ex
 <dd>To perform mapping for a group of attachments you can use the Bulk Action facility on the main Assistant screen. Check the attachments you want to map, select "edit" from the Bulk Actions dropdown list and click "Apply". The bulk edit area will open with a list of the checked attachments in the left-hand column. You can click the "Map Custom Field metadata" button in the lower left corner of the area to apply the existing mapping rules to the attachments in the list.
 </dd>
 </dl>
-<a name="mla_custom_field_parameters"></a>&nbsp;
-<p>
-<a href="#backtotop">Go to Top</a>
-</p>
-<h4>Data sources for custom field mapping</h4>
-<table>
-<tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">-- None (select a value) --</td>
-<td>nothing, i.e., no change to existing value (if any). Use this source if you just want to add a custom field to the Media/Assistant submenu and/or the inline edit areas.</td>
-</tr>
-<tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">--&nbsp;Metadata&nbsp;(see&nbsp;below)&nbsp;--</td>
-<td>WordPress attachment metadata, from the <em>_wp_attachment_metadata</em> array. Enter the field you want in the text box below the dropdown list. More coding guidelines are given in the "<a href="#attachment_metadata_mapping">Adding or changing Attachment Metadata</a>" section above.</td>
-</tr>
-<tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">--&nbsp;Template&nbsp;(see&nbsp;below)&nbsp;--</td>
-<td style="padding-bottom: 2em;">A Content Template; enter the template text (without the "template:" prefix) in the text box below the dropdown list. More coding guidelines are given in the "<a href="#custom_field_mapping_with_templates">Custom field mapping with Content Templates</a>" section above.</td>
-</tr>
-<tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">post_id, ID</td>
-<td>the value stored in the attachment's "posts" database row.</td>
-</tr>
-<tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">post_author</td>
-<td>the value stored in the attachment's "posts" database row.</td>
-</tr>
-<tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">post_date</td>
-<td>the value stored in the attachment's "posts" database row.</td>
-</tr>
-<tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">post_date_gmt</td>
-<td>the value stored in the attachment's "posts" database row.</td>
-</tr>
-<tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">post_content</td>
-<td>the value stored in the attachment's "posts" database row.</td>
-</tr>
-<tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">post_title</td>
-<td>the value stored in the attachment's "posts" database row.</td>
-</tr>
-<tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">post_excerpt</td>
-<td>the value stored in the attachment's "posts" database row.</td>
-</tr>
-<tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">post_status</td>
-<td>the value stored in the attachment's "posts" database row.</td>
-</tr>
-<tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">comment_status</td>
-<td>the value stored in the attachment's "posts" database row.</td>
-</tr>
-<tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">ping_status</td>
-<td>the value stored in the attachment's "posts" database row.</td>
-</tr>
-<tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">post_name</td>
-<td>the value stored in the attachment's "posts" database row.</td>
-</tr>
-<tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">post_modified</td>
-<td>the value stored in the attachment's "posts" database row.</td>
-</tr>
-<tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">post_modified_gmt</td>
-<td>the value stored in the attachment's "posts" database row.</td>
-</tr>
-<tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">post_content_filtered</td>
-<td>the value stored in the attachment's "posts" database row.</td>
-</tr>
-<tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">parent,<br />post_parent</td>
-<td style="vertical-align: top">the value stored in the attachment's "posts" database row.</td>
-</tr>
-<tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">guid</td>
-<td>the value stored in the attachment's "posts" database row.</td>
-</tr>
-<tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">menu_order</td>
-<td>the value stored in the attachment's "posts" database row.</td>
-</tr>
-<tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">mime_type,<br />post_mime_type</td>
-<td style="vertical-align: top">the value stored in the attachment's "posts" database row.</td>
-</tr>
-<tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">comment_count</td>
-<td style="padding-bottom: 2em;">the value stored in the attachment's "posts" database row.</td>
-</tr>
-<tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">absolute_path</td>
-<td>complete path portion of the attachment file, e.g., C:/site/wordpress/wp-content/uploads/2012/11/</td>
-</tr>
-<tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">absolute_file_name</td>
-<td>complete path and file name of the attachment file, e.g., C:/site/wordpress/wp-content/uploads/2012/11/filename.ext</td>
-</tr>
-<tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">base_file</td>
-<td>relative path (within uploads directory) and file name of the attachment file, e.g., 2012/11/image.jpg</td>
-</tr>
-<tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">path</td>
-<td>path portion of the base_file value, e.g., 2012/11/</td>
-</tr>
-<tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">file_name</td>
-<td>file name and extension portion of the base_file value, e.g., image.jpg</td>
-</tr>
-<tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">name_only</td>
-<td>file name portion of the base_file value, e.g., image</td>
-</tr>
-<tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">extension</td>
-<td>extension portion of the base_file value, e.g., jpg</td>
-</tr>
-<tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">file_size</td>
-<td>file size in bytes</td>
-</tr>
-<tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">upload_date</td>
-<td style="padding-bottom: 2em;">date and time attachment was added to the Media Library</td>
-</tr>
-<tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">dimensions</td>
-<td>for image types, width x height, e.g., 1024x768</td>
-</tr>
-<tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">pixels</td>
-<td>for image types, size in pixels, e.g., 307200 for a 640x480 image</td>
-</tr>
-<tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">width</td>
-<td>for image types, width in pixels</td>
-</tr>
-<tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">height</td>
-<td>for image types, height in pixels</td>
-</tr>
-<tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">orientation</td>
-<td>"portrait" (height > width) or "landscape", for image types; empty for non-image types</td>
-</tr>
-<tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">hwstring_small</td>
-<td>HTML dimensions of a "small" image, i.e., 128 or less width, 96 or less height. Not computed for images uploaded in WordPress 3.5 and later.</td>
-</tr>
-<tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">size_keys</td>
-<td>image size names for thumbnail versions of the image, e.g., "thumbnail, medium, large"</td>
-</tr>
-<tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">size_names</td>
-<td>image file names for thumbnail versions of the image, e.g., "image-150x150.jpg, image-300x225.jpg, image-600x288.jpg"</td>
-</tr>
-<tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">size_bytes</td>
-<td>file size in bytes for thumbnail versions of the image, e.g., "5127, 11829, 33968"</td>
-</tr>
-<tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">size_pixels</td>
-<td>image size in pixels for thumbnail versions of the image, e.g., "22500, 67500, 172800"</td>
-</tr>
-<tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">size_dimensions</td>
-<td>image dimensions for thumbnail versions of the image, e.g., "150x150, 300x225, 600x288"</td>
-</tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">size_name[size]</td>
-<td>image file name for a specific thumbnail version, e.g., size_name[medium] = "image-300x225.jpg"; set to empty string if the specified size does not exist. There will be a [size] choice for every thumbnail version registered with WordPress for the site.</td>
-</tr>
-<tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">size_bytes[size]</td>
-<td>file size in bytes for a specific thumbnail version, e.g., size_bytes[medium] = "11829"</td>
-</tr>
-<tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">size_pixels[size]</td>
-<td>image size in pixels for a specific thumbnail version, e.g., size_pixels[medium] = "67500"</td>
-</tr>
-<tr>
-<tr>
-<td style="width: 12em; padding-right: 10px; vertical-align: top; font-weight:bold">size_dimensions[size]</td>
-<td style="padding-bottom: 2em;">image dimensions for a specific thumbnail version, e.g., size_dimensions[medium] = "300x225"; set to empty string if the specified size does not exist. There will be a [size] choice for every thumbnail version registered with WordPress for the site.</td>
-</tr>
-<tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">parent_date</td>
-<td>for "attached" (post_parent not zero) objects, "published on" date of the parent object</td>
-</tr>
-<tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">parent_type</td>
-<td>for "attached" (post_parent not zero) objects, post type of the parent object</td>
-</tr>
-<tr>
-<tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">parent_title</td>
-<td>for "attached" (post_parent not zero) objects, post title of the parent object</td>
-</tr>
-<tr>
-<tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">parent_issues</td>
-<td>summary of parent status (only) "issues", e.g., bad parent, invalid parent, unattached</td>
-</tr>
-<tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">reference_issues</td>
-<td>summary of all reference and parent status "issues", e.g., orphan, bad parent, invalid parent, unattached</td>
-</tr>
-<tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">featured_in</td>
-<td>the title, post/page type and id number of each post/page for which this item is the "featured image"</td>
-</tr>
-<tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">featured_in_title</td>
-<td>the title of each post/page for which this item is the "featured image"</td>
-</tr>
-<tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">inserted_in</td>
-<td>the title, post/page type and id number of each post/page where this item is inserted in the post/page content</td>
-</tr>
-<tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">inserted_in_title</td>
-<td>the title of each post/page where this item is inserted in the post/page content</td>
-</tr>
-<tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">gallery_in</td>
-<td>the title, post/page type and id number of each post/page where this item appears in a <code>[gallery]</code> shortcode</td>
-</tr>
-<tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">gallery_in_title</td>
-<td>the title of each post/page where this item appears in a <code>[gallery]</code> shortcode</td>
-</tr>
-<tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">mla_gallery_in</td>
-<td>the title, post/page type and id number of each post/page where this item appears in an <code>[mla_gallery]</code> shortcode</td>
-</tr>
-<tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">mla_gallery_in_title</td>
-<td style="padding-bottom: 2em;">the title of each post/page where this item appears in an <code>[mla_gallery]</code> shortcode</td>
-</tr>
-<tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">aperture</td>
-<td>for image types, the value stored in WordPress "image_meta" array</td>
-</tr>
-<tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">credit</td>
-<td>for image types, the value stored in WordPress "image_meta" array</td>
-</tr>
-<tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">camera</td>
-<td>for image types, the value stored in WordPress "image_meta" array</td>
-</tr>
-<tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">caption</td>
-<td>for image types, the value stored in WordPress "image_meta" array</td>
-</tr>
-<tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">created_timestamp</td>
-<td>for image types, the value stored in WordPress "image_meta" array</td>
-</tr>
-<tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">copyright</td>
-<td>for image types, the value stored in WordPress "image_meta" array</td>
-</tr>
-<tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">focal_length</td>
-<td>for image types, the value stored in WordPress "image_meta" array</td>
-</tr>
-<tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">iso</td>
-<td>for image types, the value stored in WordPress "image_meta" array</td>
-</tr>
-<tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">shutter_speed</td>
-<td>for image types, the value stored in WordPress "image_meta" array</td>
-</tr>
-<tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">title</td>
-<td>for image types, the value stored in WordPress "image_meta" array</td>
-</tr>
-</table>
 <a name="mla_iptc_exif_mapping"></a>&nbsp;
 <p>
 <a href="#backtotop">Go to Top</a>
@@ -3730,8 +4188,8 @@ You can define the rules for mapping metadata on the "IPTC/EXIF" tab of the Sett
 <p>If you click any of the three "Map All Attachments, ... Now" buttons, the rules currently displayed in that category will be immediately applied to <strong>all</strong> of the attachments in your site. Rule changes are <strong>not</strong> saved when you click any of these buttons.<strong>THERE IS NO UNDO FOR THESE ACTIONS!</strong></p>
 <p>
 If you just want to add a custom field to the Media/Assistant submenu, the quick edit area and/or the bulk edit area go to the "Custom Fields" tab and follow the instructions there.
+<a name="iptc_exif_mapping_example"></a>
 </p>
-<a name="iptc_exif_mapping_example"></a>&nbsp;
 <p>
 <a href="#backtotop">Go to Top</a>
 </p>
@@ -3903,7 +4361,7 @@ Click this button to update all of the existing rules at one time. This is handy
 If you code the "template:" prefix at the beginning of the EXIF/Template value you have all the power of Content Templates at your disposal. Do <strong>not</strong> add the "[+" and "+]" delimeters; the prefix is all you need.
 </p>
 <p>
-Within a template, all of the <a href="#mla_custom_field_parameters">Data sources for custom field mapping</a> are available. For example, you can code <code>[+pixels+]</code> or <code>[+size_keys,single+]</code>.
+Within a template, all of the <a href="#field_level_data_sources">Data sources for custom field mapping</a> are available. For example, you can code <code>[+pixels+]</code> or <code>[+size_keys,single+]</code>.
 </p>
 <p>
 You can use a template to compose a value from multiple data sources, e.g., "<code>Taken with [+meta:camera+] at [+dimensions+] using ISO [+exif:ISOSpeedRatings,single+] and [+exif:ExposureTime+] exposure time</code>".
@@ -4050,299 +4508,6 @@ The priority order for mapping the post_content value from non-blank IPTC/EXIF m
 <li>IPTC 2#120 "caption-or-abstract" (if different from post_title)</li>
 </ol>
 </p>
-<a name="mla_gps_values"></a>&nbsp;
-<p>
-<a href="#backtotop">Go to Top</a>
-</p>
-<h4>Enhanced GPS values</h4>
-<p>
-There are three basic forms of writing geographic coordinates; they are explained in a Wikipedia article, <a href="http://en.wikipedia.org/wiki/Geographic_coordinate_conversion" title="Wikipedia on Geographic coordinate conversion" target="_blank">Geographic coordinate conversion</a>. The <a href="http://www.cipa.jp/english/hyoujunka/kikaku/pdf/DC-008-2010_E.pdf" title="EXIF Version 2.3 specification" target="_blank">Exif Standard version 2.3</a> (PDF) document explains the structure and defines the rules for 32 GPS elements.
-</p>
-<p>
-The native format of this data is somewhat complicated, so MLA converts the most common elements into a variety of convenient formats. You can use the enhanced values as-is or use them in a Content Template to compose the format(s) you need. You can access the native values with the names defined in the EXIF specification, e.g., "GPSLatitude". The enhanced values are provided in th "GPS" array and accessed with compound names, e.g., "GPS.Latitude". The MLA enhanced values are:</p>
-<table>
-<tr style="font-weight: bold"><td>Field</td><td>Example</td><td>Content</td></tr>
-<tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">Version</td>
-<td style="padding-right: 10px; vertical-align: top">2.2.0.0</td>
-<td style="padding-right: 10px; vertical-align: top">The version of the GPS Information specification</td>
-</tr>
-<tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">LatitudeRef</td>
-<td style="padding-right: 10px; vertical-align: top">N or S</td>
-<td style="padding-right: 10px; vertical-align: top">Indicates whether the latitude is north or south latitude</td>
-</tr>
-<tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">LatitudeRefS</td>
-<td style="padding-right: 10px; vertical-align: top">empty or "-"</td>
-<td style="padding-right: 10px; vertical-align: top">Blank for north, "-" for south</td>
-</tr>
-<tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">Latitude</td>
-<td style="padding-right: 10px; vertical-align: top">44d 7' 34.0167" N</td>
-<td style="padding-right: 10px; vertical-align: top">Latitude expressed as degrees, minutes and seconds</td>
-</tr>
-<tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">LatitudeD</td>
-<td style="padding-right: 10px; vertical-align: top">44</td>
-<td style="padding-right: 10px; vertical-align: top">Degree portion of Latitude</td>
-</tr>
-<tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">LatitudeM</td>
-<td style="padding-right: 10px; vertical-align: top">7</td>
-<td style="padding-right: 10px; vertical-align: top">Minute portion of Latitude</td>
-</tr>
-<tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">LatitudeS</td>
-<td style="padding-right: 10px; vertical-align: top">34.0167</td>
-<td style="padding-right: 10px; vertical-align: top">Second portion of Latitude</td>
-</tr>
-<tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">LatitudeSDM</td>
-<td style="padding-right: 10px; vertical-align: top">44 7.5669</td>
-<td style="padding-right: 10px; vertical-align: top">Latitude expressed as degrees and decimal minutes (MinDec),<br />with a leading "-" for Southern values</td>
-</tr>
-<tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">LatitudeSDD</td>
-<td style="padding-right: 10px; vertical-align: top">44.126116</td>
-<td style="padding-right: 10px; vertical-align: top">Latitude expressed as decimal degrees,<br />with a leading "-" for Southern values</td>
-</tr>
-<tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">LatitudeDM</td>
-<td style="padding-right: 10px; vertical-align: top">44 7.5669N</td>
-<td style="padding-right: 10px; vertical-align: top">Latitude expressed as degrees and decimal minutes (MinDec)</td>
-</tr>
-<tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">LatitudeDD</td>
-<td style="padding-right: 10px; vertical-align: top">44.126116N</td>
-<td style="padding-right: 10px; vertical-align: top">Latitude expressed as decimal degrees</td>
-</tr>
-<tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">LatitudeMinDec</td>
-<td style="padding-right: 10px; vertical-align: top">7.5669</td>
-<td style="padding-right: 10px; vertical-align: top">Decimal Minutes portion of Latitude</td>
-</tr>
-<tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">LatitudeDegDec</td>
-<td style="padding-right: 10px; vertical-align: top">.126116</td>
-<td style="padding-right: 10px; vertical-align: top">Decimal Degrees portion of Latitude</td>
-</tr>
-<tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">LongitudeRef</td>
-<td style="padding-right: 10px; vertical-align: top">E or W</td>
-<td style="padding-right: 10px; vertical-align: top">Indicates whether the Longitude is east or west longitude</td>
-</tr>
-<tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">LongitudeRefS</td>
-<td style="padding-right: 10px; vertical-align: top">empty or "-"</td>
-<td style="padding-right: 10px; vertical-align: top">Blank for east, "-" for west</td>
-</tr>
-<tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">Longitude</td>
-<td style="padding-right: 10px; vertical-align: top">145d 5' 9.2055" E</td>
-<td style="padding-right: 10px; vertical-align: top">Longitude expressed as degrees, minutes and seconds</td>
-</tr>
-<tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">LongitudeD</td>
-<td style="padding-right: 10px; vertical-align: top">145</td>
-<td style="padding-right: 10px; vertical-align: top">Degree portion of Longitude</td>
-</tr>
-<tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">LongitudeM</td>
-<td style="padding-right: 10px; vertical-align: top">5</td>
-<td style="padding-right: 10px; vertical-align: top">Minute portion of Longitude</td>
-</tr>
-<tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">LongitudeS</td>
-<td style="padding-right: 10px; vertical-align: top">9.2055</td>
-<td style="padding-right: 10px; vertical-align: top">Second portion of Longitude</td>
-</tr>
-<tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">LongitudeSDM</td>
-<td style="padding-right: 10px; vertical-align: top">145 5.1534</td>
-<td style="padding-right: 10px; vertical-align: top">Longitude expressed as degrees and decimal minutes (MinDec),<br />with a leading "-" for Western values</td>
-</tr>
-<tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">LongitudeSDD</td>
-<td style="padding-right: 10px; vertical-align: top">145.085890</td>
-<td style="padding-right: 10px; vertical-align: top">Longitude expressed as decimal degrees,<br />with a leading "-" for Western values</td>
-</tr>
-<tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">LongitudeDM</td>
-<td style="padding-right: 10px; vertical-align: top">145 5.1534E</td>
-<td style="padding-right: 10px; vertical-align: top">Longitude expressed as degrees and decimal minutes (MinDec)</td>
-</tr>
-<tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">LongitudeDD</td>
-<td style="padding-right: 10px; vertical-align: top">145.085890E</td>
-<td style="padding-right: 10px; vertical-align: top">Longitude expressed as decimal degrees</td>
-</tr>
-<tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">LongitudeMinDec</td>
-<td style="padding-right: 10px; vertical-align: top">5.1534</td>
-<td style="padding-right: 10px; vertical-align: top">Decimal Minutes portion of Longitude</td>
-</tr>
-<tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">LongitudeDegDec</td>
-<td style="padding-right: 10px; vertical-align: top">.085890</td>
-<td style="padding-right: 10px; vertical-align: top">Decimal Degrees portion of Longitude</td>
-</tr>
-<tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">AltitudeRef</td>
-<td style="padding-right: 10px; vertical-align: top">0 or 1</td>
-<td style="padding-right: 10px; vertical-align: top">0 = above sea level, 1 = below sea level</td>
-</tr>
-<tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">AltitudeRefS</td>
-<td style="padding-right: 10px; vertical-align: top">blank or "-"</td>
-<td style="padding-right: 10px; vertical-align: top">Blank above sea level, "-" below sea level</td>
-</tr>
-<tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">Altitude</td>
-<td style="padding-right: 10px; vertical-align: top">247.0825</td>
-<td style="padding-right: 10px; vertical-align: top">Altitude in meters</td>
-</tr>
-<tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">AltitudeFeet</td>
-<td style="padding-right: 10px; vertical-align: top">810.64</td>
-<td style="padding-right: 10px; vertical-align: top">Altitude in feet</td>
-</tr>
-<tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">TimeStamp</td>
-<td style="padding-right: 10px; vertical-align: top">01:00:34</td>
-<td style="padding-right: 10px; vertical-align: top">The time as UTC (Coordinated Universal Time)</td>
-</tr>
-<tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">TimeStampH</td>
-<td style="padding-right: 10px; vertical-align: top">01</td>
-<td style="padding-right: 10px; vertical-align: top">The hours portion of TimeStamp</td>
-</tr>
-<tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">TimeStampM</td>
-<td style="padding-right: 10px; vertical-align: top">00</td>
-<td style="padding-right: 10px; vertical-align: top">The minutes portion of TimeStamp</td>
-</tr>
-<tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">TimeStampS</td>
-<td style="padding-right: 10px; vertical-align: top">34</td>
-<td style="padding-right: 10px; vertical-align: top">The seconds portion of TimeStamp</td>
-</tr>
-<tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">DateStamp</td>
-<td style="padding-right: 10px; vertical-align: top">2013:08:09</td>
-<td style="padding-right: 10px; vertical-align: top">The date as UTC (Coordinated Universal Time)</td>
-</tr>
-<tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">DateStampY</td>
-<td style="padding-right: 10px; vertical-align: top">2013</td>
-<td style="padding-right: 10px; vertical-align: top">The year portion of DateStamp</td>
-</tr>
-<tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">DateStampM</td>
-<td style="padding-right: 10px; vertical-align: top">08</td>
-<td style="padding-right: 10px; vertical-align: top">The month portion of DateStamp</td>
-</tr>
-<tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">DateStampD</td>
-<td style="padding-right: 10px; vertical-align: top">09</td>
-<td style="padding-right: 10px; vertical-align: top">The day portion of DateStamp</td>
-</tr>
-<tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">MapDatum</td>
-<td style="padding-right: 10px; vertical-align: top">WGS-84</td>
-<td style="padding-right: 10px; vertical-align: top">The geodetic survey data used by the GPS receiver</td>
-</tr>
-</table>
-<a name="mla_iptc_identifiers"></a>
-&nbsp;
-<p>
-<a href="#backtotop">Go to Top</a>
-</p>
-<h4>IPTC Identifiers and Friendly Names</h4>
-<table>
-<tr><td colspan="3" style="font-weight:bold">Envelope Record</td></tr>
-<tr><td style="padding-right: 10px; vertical-align: top; font-weight:bold">model-version</td><td style="padding-right: 10px; vertical-align: top">1#000</td><td style="padding-right: 10px; vertical-align: top">2 octet binary IIM version number</td></tr>
-<tr><td style="padding-right: 10px; vertical-align: top; font-weight:bold">destination</td><td style="padding-right: 10px; vertical-align: top">1#005</td><td style="padding-right: 10px; vertical-align: top">Max 1024 characters of Destination (ISO routing information); repeatable</td></tr>
-<tr><td style="padding-right: 10px; vertical-align: top; font-weight:bold">file-format</td><td style="padding-right: 10px; vertical-align: top">1#020</td><td style="padding-right: 10px; vertical-align: top">2 octet binary file format number, see IPTC-NAA V4 Appendix A</td></tr>
-<tr><td style="padding-right: 10px; vertical-align: top; font-weight:bold">file-format-version</td><td style="padding-right: 10px; vertical-align: top">1#022</td><td style="padding-right: 10px; vertical-align: top">2 octet binary file format version number</td></tr>
-<tr><td style="padding-right: 10px; vertical-align: top; font-weight:bold">service-identifier</td><td style="padding-right: 10px; vertical-align: top">1#030</td><td style="padding-right: 10px; vertical-align: top">Max 10 characters of Service Identifier and product</td></tr>
-<tr><td style="padding-right: 10px; vertical-align: top; font-weight:bold">envelope-number</td><td style="padding-right: 10px; vertical-align: top">1#040</td><td style="padding-right: 10px; vertical-align: top">8 Character Envelope Number</td></tr>
-<tr><td style="padding-right: 10px; vertical-align: top; font-weight:bold">product-id</td><td style="padding-right: 10px; vertical-align: top">1#050</td><td style="padding-right: 10px; vertical-align: top">Max 32 characters subset of provider's overall service; repeatable</td></tr>
-<tr><td style="padding-right: 10px; vertical-align: top; font-weight:bold">envelope-priority</td><td style="padding-right: 10px; vertical-align: top">1#060</td><td style="padding-right: 10px; vertical-align: top">1 numeric character of envelope handling priority (not urgency)</td></tr>
-<tr><td style="padding-right: 10px; vertical-align: top; font-weight:bold">date-sent</td><td style="padding-right: 10px; vertical-align: top">1#070</td><td style="padding-right: 10px; vertical-align: top">8 numeric characters of Date Sent by service - CCYYMMDD</td></tr>
-<tr><td style="padding-right: 10px; vertical-align: top; font-weight:bold">time-sent</td><td style="padding-right: 10px; vertical-align: top">1#080</td><td style="padding-right: 10px; vertical-align: top">11 characters of Time Sent by service - HHMMSS±HHMM</td></tr>
-<tr><td style="padding-right: 10px; vertical-align: top; font-weight:bold">coded-character-set</td><td style="padding-right: 10px; vertical-align: top">1#090</td><td style="padding-right: 10px; vertical-align: top">Max 32 characters of control functions, etc.</td></tr>
-<tr><td style="padding-right: 10px; vertical-align: top; font-weight:bold">uno</td><td style="padding-right: 10px; vertical-align: top">1#100</td><td style="padding-right: 10px; vertical-align: top">14 to 80 characters of eternal, globally unique identification for objects</td></tr>
-<tr><td style="padding-right: 10px; vertical-align: top; font-weight:bold">arm-identifier</td><td style="padding-right: 10px; vertical-align: top">1#120</td><td style="padding-right: 10px; vertical-align: top">2 octet binary Abstract Relationship Model Identifier</td></tr>
-<tr><td style="padding-right: 10px; vertical-align: top; font-weight:bold">arm-version</td><td style="padding-right: 10px; vertical-align: top">1#122</td><td style="padding-right: 10px; vertical-align: top">2 octet binary Abstract Relationship Model Version</td></tr>
-<tr><td colspan="3" style="font-weight:bold">&nbsp;<br />Application Record</td></tr>
-<tr><td style="padding-right: 10px; vertical-align: top; font-weight:bold">record-version</td><td style="padding-right: 10px; vertical-align: top">2#000</td><td style="padding-right: 10px; vertical-align: top">2 octet binary Information Interchange Model, Part II version number</td></tr>
-<tr><td style="padding-right: 10px; vertical-align: top; font-weight:bold">object-type-reference</td><td style="padding-right: 10px; vertical-align: top">2#003</td><td style="padding-right: 10px; vertical-align: top">3 to 67 Characters of Object Type Reference number and optional text</td></tr>
-<tr><td style="padding-right: 10px; vertical-align: top; font-weight:bold">object-attribute-reference</td><td style="padding-right: 10px; vertical-align: top">2#004</td><td style="padding-right: 10px; vertical-align: top">3 to 67 Characters of Object Attribute Reference number and optional text; repeatable</td></tr>
-<tr><td style="padding-right: 10px; vertical-align: top; font-weight:bold">object-name</td><td style="padding-right: 10px; vertical-align: top">2#005</td><td style="padding-right: 10px; vertical-align: top">Max 64 characters of the object name or shorthand reference</td></tr>
-<tr><td style="padding-right: 10px; vertical-align: top; font-weight:bold">edit-status</td><td style="padding-right: 10px; vertical-align: top">2#007</td><td style="padding-right: 10px; vertical-align: top">Max 64 characters of the status of the objectdata</td></tr>
-<tr><td style="padding-right: 10px; vertical-align: top; font-weight:bold">editorial-update</td><td style="padding-right: 10px; vertical-align: top">2#008</td><td style="padding-right: 10px; vertical-align: top">2 numeric characters of the type of update this object provides</td></tr>
-<tr><td style="padding-right: 10px; vertical-align: top; font-weight:bold">urgency</td><td style="padding-right: 10px; vertical-align: top">2#010</td><td style="padding-right: 10px; vertical-align: top">1 numeric character of the editorial urgency of content</td></tr>
-<tr><td style="padding-right: 10px; vertical-align: top; font-weight:bold">subject-reference</td><td style="padding-right: 10px; vertical-align: top">2#012</td><td style="padding-right: 10px; vertical-align: top">13 to 236 characters of a structured definition of the subject matter; repeatable</td></tr>
-<tr><td style="padding-right: 10px; vertical-align: top; font-weight:bold">category</td><td style="padding-right: 10px; vertical-align: top">2#015</td><td style="padding-right: 10px; vertical-align: top">Max 3 characters of the subject of the objectdata, DEPRECATED</td></tr>
-<tr><td style="padding-right: 10px; vertical-align: top; font-weight:bold">supplemental-category</td><td style="padding-right: 10px; vertical-align: top">2#020</td><td style="padding-right: 10px; vertical-align: top">Max 32 characters (each) of further refinement of subject, DEPRECATED; repeatable</td></tr>
-<tr><td style="padding-right: 10px; vertical-align: top; font-weight:bold">fixture-identifier</td><td style="padding-right: 10px; vertical-align: top">2#022</td><td style="padding-right: 10px; vertical-align: top">Max 32 characters identifying recurring, predictable content</td></tr>
-<tr><td style="padding-right: 10px; vertical-align: top; font-weight:bold">keywords</td><td style="padding-right: 10px; vertical-align: top">2#025</td><td style="padding-right: 10px; vertical-align: top">Max 64 characters (each) of tags; repeatable</td></tr>
-<tr><td style="padding-right: 10px; vertical-align: top; font-weight:bold">content-location-code</td><td style="padding-right: 10px; vertical-align: top">2#026</td><td style="padding-right: 10px; vertical-align: top">3 characters of ISO3166 country code or IPTC-assigned code; repeatable</td></tr>
-<tr><td style="padding-right: 10px; vertical-align: top; font-weight:bold">content-location-name</td><td style="padding-right: 10px; vertical-align: top">2#027</td><td style="padding-right: 10px; vertical-align: top">Max 64 characters of publishable country/geographical location name; repeatable</td></tr>
-<tr><td style="padding-right: 10px; vertical-align: top; font-weight:bold">release-date</td><td style="padding-right: 10px; vertical-align: top">2#030</td><td style="padding-right: 10px; vertical-align: top">8 numeric characters of Release Date (earliest use) - CCYYMMDD</td></tr>
-<tr><td style="padding-right: 10px; vertical-align: top; font-weight:bold">release-time</td><td style="padding-right: 10px; vertical-align: top">2#035</td><td style="padding-right: 10px; vertical-align: top">11 characters of Release Time (earliest use) - HHMMSS±HHMM</td></tr>
-<tr><td style="padding-right: 10px; vertical-align: top; font-weight:bold">expiration-date</td><td style="padding-right: 10px; vertical-align: top">2#037</td><td style="padding-right: 10px; vertical-align: top">8 numeric characters of Expiration Date (latest use) -  CCYYMDD</td></tr>
-<tr><td style="padding-right: 10px; vertical-align: top; font-weight:bold">expiration-time</td><td style="padding-right: 10px; vertical-align: top">2#038</td><td style="padding-right: 10px; vertical-align: top">11 characters of Expiration Time (latest use) - HHMMSS±HHMM</td></tr>
-<tr><td style="padding-right: 10px; vertical-align: top; font-weight:bold">special-instructions</td><td style="padding-right: 10px; vertical-align: top">2#040</td><td style="padding-right: 10px; vertical-align: top">Max 256 Characters of editorial instructions, e.g., embargoes and warnings</td></tr>
-<tr><td style="padding-right: 10px; vertical-align: top; font-weight:bold">action-advised</td><td style="padding-right: 10px; vertical-align: top">2#042</td><td style="padding-right: 10px; vertical-align: top">2 numeric characters of type of action this object provides to a previous object</td></tr>
-<tr><td style="padding-right: 10px; vertical-align: top; font-weight:bold">reference-service</td><td style="padding-right: 10px; vertical-align: top">2#045</td><td style="padding-right: 10px; vertical-align: top">Max 10 characters of the Service ID (1#030) of a prior envelope; repeatable</td></tr>
-<tr><td style="padding-right: 10px; vertical-align: top; font-weight:bold">reference-date</td><td style="padding-right: 10px; vertical-align: top">2#047</td><td style="padding-right: 10px; vertical-align: top">8 numeric characters of prior envelope Reference Date (1#070) - CCYYMMDD; repeatable</td></tr>
-<tr><td style="padding-right: 10px; vertical-align: top; font-weight:bold">reference-number</td><td style="padding-right: 10px; vertical-align: top">2#050</td><td style="padding-right: 10px; vertical-align: top">8 characters of prior envelope Reference Number (1#040); repeatable</td></tr>
-<tr><td style="padding-right: 10px; vertical-align: top; font-weight:bold">date-created</td><td style="padding-right: 10px; vertical-align: top">2#055</td><td style="padding-right: 10px; vertical-align: top">8 numeric characters of intellectual content Date Created - CCYYMMDD</td></tr>
-<tr><td style="padding-right: 10px; vertical-align: top; font-weight:bold">time-created</td><td style="padding-right: 10px; vertical-align: top">2#060</td><td style="padding-right: 10px; vertical-align: top">11 characters of intellectual content Time Created - HHMMSS±HHMM</td></tr>
-<tr><td style="padding-right: 10px; vertical-align: top; font-weight:bold">digital-creation-date</td><td style="padding-right: 10px; vertical-align: top">2#062</td><td style="padding-right: 10px; vertical-align: top">8 numeric characters of digital representation creation date - CCYYMMDD</td></tr>
-<tr><td style="padding-right: 10px; vertical-align: top; font-weight:bold">digital-creation-time</td><td style="padding-right: 10px; vertical-align: top">2#063</td><td style="padding-right: 10px; vertical-align: top">11 characters of digital representation creation time - HHMMSS±HHMM</td></tr>
-<tr><td style="padding-right: 10px; vertical-align: top; font-weight:bold">originating-program</td><td style="padding-right: 10px; vertical-align: top">2#065</td><td style="padding-right: 10px; vertical-align: top">Max 32 characters of the program used to create the objectdata</td></tr>
-<tr><td style="padding-right: 10px; vertical-align: top; font-weight:bold">program-version</td><td style="padding-right: 10px; vertical-align: top">2#070</td><td style="padding-right: 10px; vertical-align: top">Program Version - Max 10 characters of the version of the program used to create the objectdata</td></tr>
-<tr><td style="padding-right: 10px; vertical-align: top; font-weight:bold">object-cycle</td><td style="padding-right: 10px; vertical-align: top">2#075</td><td style="padding-right: 10px; vertical-align: top">1 character where a=morning, p=evening, b=both</td></tr>
-<tr><td style="padding-right: 10px; vertical-align: top; font-weight:bold">by-line</td><td style="padding-right: 10px; vertical-align: top">2#080</td><td style="padding-right: 10px; vertical-align: top">Max 32 Characters of the name of the objectdata creator, e.g., the writer, photographer; repeatable</td></tr>
-<tr><td style="padding-right: 10px; vertical-align: top; font-weight:bold">by-line-title</td><td style="padding-right: 10px; vertical-align: top">2#085</td><td style="padding-right: 10px; vertical-align: top">Max 32 characters of the title of the objectdata creator; repeatable</td></tr>
-<tr><td style="padding-right: 10px; vertical-align: top; font-weight:bold">city</td><td style="padding-right: 10px; vertical-align: top">2#090</td><td style="padding-right: 10px; vertical-align: top">Max 32 Characters of the city of objectdata origin</td></tr>
-<tr><td style="padding-right: 10px; vertical-align: top; font-weight:bold">sub-location</td><td style="padding-right: 10px; vertical-align: top">2#092</td><td style="padding-right: 10px; vertical-align: top">Max 32 Characters of the location within the city of objectdata origin</td></tr>
-<tr><td style="padding-right: 10px; vertical-align: top; font-weight:bold">province-or-state</td><td style="padding-right: 10px; vertical-align: top">2#095</td><td style="padding-right: 10px; vertical-align: top">Max 32 Characters of the objectdata origin Province or State</td></tr>
-<tr><td style="padding-right: 10px; vertical-align: top; font-weight:bold">country-or-primary-location-code</td><td style="padding-right: 10px; vertical-align: top">2#100</td><td style="padding-right: 10px; vertical-align: top">3 characters of ISO3166 or IPTC-assigned code for Country of objectdata origin</td></tr>
-<tr><td style="padding-right: 10px; vertical-align: top; font-weight:bold">country-or-primary-location-name</td><td style="padding-right: 10px; vertical-align: top">2#101</td><td style="padding-right: 10px; vertical-align: top">Max 64 characters of publishable country/geographical location name; repeatable</td></tr>
-<tr><td style="padding-right: 10px; vertical-align: top; font-weight:bold">original-transmission-reference</td><td style="padding-right: 10px; vertical-align: top">2#103</td><td style="padding-right: 10px; vertical-align: top">Max 32 characters of a code representing the location of original transmission</td></tr>
-<tr><td style="padding-right: 10px; vertical-align: top; font-weight:bold">headline</td><td style="padding-right: 10px; vertical-align: top">2#105</td><td style="padding-right: 10px; vertical-align: top">Max 256 Characters of a publishable entry providing a synopsis of the contents of the objectdata</td></tr>
-<tr><td style="padding-right: 10px; vertical-align: top; font-weight:bold">credit</td><td style="padding-right: 10px; vertical-align: top">2#110</td><td style="padding-right: 10px; vertical-align: top">Max 32 Characters that identifies the provider of the objectdata (Vs. the owner/creator)</td></tr>
-<tr><td style="padding-right: 10px; vertical-align: top; font-weight:bold">source</td><td style="padding-right: 10px; vertical-align: top">2#115</td><td style="padding-right: 10px; vertical-align: top">Max 32 Characters that identifies the original owner of the intellectual content</td></tr>
-<tr><td style="padding-right: 10px; vertical-align: top; font-weight:bold">copyright-notice</td><td style="padding-right: 10px; vertical-align: top">2#116</td><td style="padding-right: 10px; vertical-align: top">Max 128 Characters that contains any necessary copyright notice</td></tr>
-<tr><td style="padding-right: 10px; vertical-align: top; font-weight:bold">contact</td><td style="padding-right: 10px; vertical-align: top">2#118</td><td style="padding-right: 10px; vertical-align: top">Max 128 characters that identifies the person or organization which can provide further background information; repeatable</td></tr>
-<tr><td style="padding-right: 10px; vertical-align: top; font-weight:bold">caption-or-abstract</td><td style="padding-right: 10px; vertical-align: top">2#120</td><td style="padding-right: 10px; vertical-align: top">Max 2000 Characters of a textual description of the objectdata</td></tr>
-<tr><td style="padding-right: 10px; vertical-align: top; font-weight:bold">caption-writer-or-editor</td><td style="padding-right: 10px; vertical-align: top">2#122</td><td style="padding-right: 10px; vertical-align: top">Max 32 Characters that the identifies the person involved in the writing, editing or correcting the objectdata or caption/abstract; repeatable</td></tr>
-<tr><td style="padding-right: 10px; vertical-align: top; font-weight:bold">rasterized-caption</td><td style="padding-right: 10px; vertical-align: top">2#125</td><td style="padding-right: 10px; vertical-align: top">7360 binary octets of the rasterized caption - 1 bit per pixel, 460x128-pixel image</td></tr>
-<tr><td style="padding-right: 10px; vertical-align: top; font-weight:bold">image-type</td><td style="padding-right: 10px; vertical-align: top">2#130</td><td style="padding-right: 10px; vertical-align: top">2 characters of color composition type and information</td></tr>
-<tr><td style="padding-right: 10px; vertical-align: top; font-weight:bold">image-orientation</td><td style="padding-right: 10px; vertical-align: top">2#131</td><td style="padding-right: 10px; vertical-align: top">1 alphabetic character indicating the image area layout - P=portrait, L=landscape, S=square</td></tr>
-<tr><td style="padding-right: 10px; vertical-align: top; font-weight:bold">language-identifier</td><td style="padding-right: 10px; vertical-align: top">2#135</td><td style="padding-right: 10px; vertical-align: top">2 or 3 alphabetic characters containing the major national language of the object, according to the ISO 639:1988 codes</td></tr>
-<tr><td style="padding-right: 10px; vertical-align: top; font-weight:bold">audio-type</td><td style="padding-right: 10px; vertical-align: top">2#150</td><td style="padding-right: 10px; vertical-align: top">2 characters identifying monaural/stereo and exact type of audio content</td></tr>
-<tr><td style="padding-right: 10px; vertical-align: top; font-weight:bold">audio-sampling-rate</td><td style="padding-right: 10px; vertical-align: top">2#151</td><td style="padding-right: 10px; vertical-align: top">6 numeric characters representing the audio sampling rate in hertz (Hz)</td></tr>
-<tr><td style="padding-right: 10px; vertical-align: top; font-weight:bold">audio-sampling-resolution</td><td style="padding-right: 10px; vertical-align: top">2#152</td><td style="padding-right: 10px; vertical-align: top">2 numeric characters representing the number of bits in each audio sample</td></tr>
-<tr><td style="padding-right: 10px; vertical-align: top; font-weight:bold">audio-duration</td><td style="padding-right: 10px; vertical-align: top">2#153</td><td style="padding-right: 10px; vertical-align: top">6 numeric characters of the Audio Duration - HHMMSS</td></tr>
-<tr><td style="padding-right: 10px; vertical-align: top; font-weight:bold">audio-outcue</td><td style="padding-right: 10px; vertical-align: top">2#154</td><td style="padding-right: 10px; vertical-align: top">Max 64 characters of the content of the end of an audio objectdata</td></tr>
-<tr><td style="padding-right: 10px; vertical-align: top; font-weight:bold">objectdata-preview-file-format</td><td style="padding-right: 10px; vertical-align: top">2#200</td><td style="padding-right: 10px; vertical-align: top">2 octet binary file format of the ObjectData Preview</td></tr>
-<tr><td style="padding-right: 10px; vertical-align: top; font-weight:bold">objectdata-preview-file-format-version</td><td style="padding-right: 10px; vertical-align: top">2#201</td><td style="padding-right: 10px; vertical-align: top">2 octet binary particular version of the ObjectData Preview File Format</td></tr>
-<tr><td style="padding-right: 10px; vertical-align: top; font-weight:bold">objectdata-preview-data</td><td style="padding-right: 10px; vertical-align: top">2#202</td><td style="padding-right: 10px; vertical-align: top">Max 256000 binary octets containing the ObjectData Preview data</td></tr>
-<tr><td colspan="3" style="font-weight:bold">&nbsp;<br />Pre ObjectData Descriptor Record</td></tr>
-<tr><td style="padding-right: 10px; vertical-align: top; font-weight:bold">size-mode</td><td style="padding-right: 10px; vertical-align: top">7#010</td><td style="padding-right: 10px; vertical-align: top">1 numeric character - 0=objectdata size not known, 1=objectdata size known at beginning of transfer</td></tr>
-<tr><td style="padding-right: 10px; vertical-align: top; font-weight:bold">max-subfile-size</td><td style="padding-right: 10px; vertical-align: top">7#020</td><td style="padding-right: 10px; vertical-align: top">4 octet binary maximum subfile dataset(s) size</td></tr>
-<tr><td style="padding-right: 10px; vertical-align: top; font-weight:bold">objectdata-size-announced</td><td style="padding-right: 10px; vertical-align: top">7#090</td><td style="padding-right: 10px; vertical-align: top">4 octet binary objectdata size if known at beginning of transfer</td></tr>
-<tr><td style="padding-right: 10px; vertical-align: top; font-weight:bold">maximum-objectdata-size</td><td style="padding-right: 10px; vertical-align: top">7#095</td><td style="padding-right: 10px; vertical-align: top">4 octet binary largest possible objectdata size</td></tr>
-<tr><td colspan="3" style="font-weight:bold">&nbsp;<br />ObjectData</td></tr>
-<tr><td style="padding-right: 10px; vertical-align: top; font-weight:bold">subfile</td><td style="padding-right: 10px; vertical-align: top">8#010</td><td style="padding-right: 10px; vertical-align: top">Subfile DataSet containing the objectdata itself; repeatable</td></tr>
-<tr><td colspan="3" style="font-weight:bold">&nbsp;<br />Post ObjectData Descriptor Record</td></tr>
-<tr><td style="padding-right: 10px; vertical-align: top; font-weight:bold">confirmed-objectdata-size</td><td style="padding-right: 10px; vertical-align: top">9#010</td><td style="padding-right: 10px; vertical-align: top">4 octet binary total objectdata size</td></tr>
-</table>
 <a name="mla_mapping_hooks"></a>&nbsp;
 <p>
 <a href="#backtotop">Go to Top</a>

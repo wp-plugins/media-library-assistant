@@ -2892,6 +2892,7 @@ class MLASettings {
 	private static function _compose_documentation_tab( ) {
 		$page_template = MLAData::mla_load_template( 'documentation-settings-tab.tpl' );
 		$page_values = array(
+			'translate_url' => MLA_PLUGIN_URL . 'languages/MLA Internationalization Guide.pdf',
 			'phpDocs_url' => MLA_PLUGIN_URL . 'phpDocs/index.html',
 			'examples_url' => MLA_PLUGIN_URL . 'examples/'
 		);

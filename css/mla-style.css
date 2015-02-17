@@ -325,5 +325,9 @@ textarea[readonly] {
  
 ul.mla_settings { 
 	list-style-type: disc;
-	list-style-position: inside
+	list-style-position: outside;
+}
+
+ul.mla_settings li { 
+	margin-left: 2em;
 }
