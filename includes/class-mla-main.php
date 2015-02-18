@@ -1981,7 +1981,7 @@ class MLA {
 			return '';
 		}
 
-		if ( $authors = self::_authors_dropdown() ) {
+		if ( $authors = self::mla_authors_dropdown() ) {
 			$authors_dropdown  = '              <label class="inline-edit-author">' . "\n";
 			$authors_dropdown .= '                <span class="title">' . __( 'Author', 'media-library-assistant' ) . '</span>' . "\n";
 			$authors_dropdown .= $authors . "\n";
@@ -2083,7 +2083,7 @@ class MLA {
 			$bulk_right_column = MLAData::mla_parse_template( $page_template_array['tag_fieldset'], $page_values );
 		} // count( $flat_taxonomies )
 
-		if ( $authors = self::_authors_dropdown( -1 ) ) {
+		if ( $authors = self::mla_authors_dropdown( -1 ) ) {
 			$bulk_authors_dropdown  = '              <label class="inline-edit-author alignright">' . "\n";
 			$bulk_authors_dropdown .= '                <span class="title">' . __( 'Author', 'media-library-assistant' ) . '</span>' . "\n";
 			$bulk_authors_dropdown .= $authors . "\n";
@@ -2156,7 +2156,7 @@ class MLA {
 	 *
 	 * @return string|false HTML markup for the dropdown field or False
 	 */
-	private static function _authors_dropdown( $author = 0, $name = 'post_author', $class = 'authors' ) {
+	public static function mla_authors_dropdown( $author = 0, $name = 'post_author', $class = 'authors' ) {
 		$post_type_object = get_post_type_object('attachment');
 		if ( is_super_admin() || current_user_can( $post_type_object->cap->edit_others_posts ) ) {
 			$users_opt = array(
@@ -2311,7 +2311,7 @@ class MLA {
 			$parent_info = sprintf( '(%1$s) %2$s %3$s', $post_data['mla_references']['parent_type'], $post_data['mla_references']['parent_title'], $post_data['mla_references']['parent_errors'] );
 		}
 
-		if ( $authors = self::_authors_dropdown( $post_data['post_author'], 'attachments[' . $post_data['ID'] . '][post_author]' ) ) {
+		if ( $authors = self::mla_authors_dropdown( $post_data['post_author'], 'attachments[' . $post_data['ID'] . '][post_author]' ) ) {
 			$args = array (
 				'ID' => $post_data['ID'],
 				'Author' => __( 'Author', 'media-library-assistant' ),

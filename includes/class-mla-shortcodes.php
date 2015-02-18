@@ -73,7 +73,7 @@ class MLAShortcodes {
 	 *
 	 * @since 2.02
 	 *
-	 * @parm	mixed	array or string containing shortcode attributes
+	 * @param	mixed	array or string containing shortcode attributes
 	 *
 	 * @return	array	clean attributes array
 	 */

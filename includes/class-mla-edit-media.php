@@ -87,6 +87,14 @@ class MLAEdit {
 		add_post_type_support( 'attachment', apply_filters( 'mla_edit_media_support', array( 'custom-fields' ) ) );
 
 		/*
+		 * Check for Media/Add New bulk edit area updates
+		 */
+		if ( ! empty( $_REQUEST['mlaAddNewBulkEdit']['formString'] ) && ( 'checked' == MLAOptions::mla_get_option( MLAOptions::MLA_ADD_NEW_BULK_EDIT ) ) ) {
+			// Fires after MLA mapping in wp_update_attachment_metadata() processing.		  
+			add_filter( 'mla_update_attachment_metadata_postfilter', 'MLAEdit::mla_update_attachment_metadata_postfilter', 10, 3 );
+		}
+
+		/*
 		 * If there's no action variable, we have nothing more to do
 		 */
 		if ( ! isset( $_POST['action'] ) ) {
@@ -141,6 +149,47 @@ class MLAEdit {
 	 * @return	void
 	 */
 	public static function mla_admin_enqueue_scripts_action( $page_hook ) {
+		$suffix = defined('SCRIPT_DEBUG') && SCRIPT_DEBUG ? '' : '.min';
+		if ( 'media-new.php' == $page_hook && ( 'checked' == MLAOptions::mla_get_option( MLAOptions::MLA_ADD_NEW_BULK_EDIT ) ) ) {
+			wp_register_style( 'mla-add-new-bulk-edit', MLA_PLUGIN_URL . 'css/mla-add-new-bulk-edit.css', false, MLA::CURRENT_MLA_VERSION );
+			wp_enqueue_style( 'mla-add-new-bulk-edit' );
+	
+			wp_register_style( 'mla-add-new-bulk-edit' . '-set-parent', MLA_PLUGIN_URL . 'css/mla-style-set-parent.css', false, MLA::CURRENT_MLA_VERSION );
+			wp_enqueue_style( 'mla-add-new-bulk-edit' . '-set-parent' );
+	
+			// 'suggest' loads the script for flat taxonomy auto-complete/suggested matches
+			wp_enqueue_script( 'mla-add-new-bulk-edit-scripts', MLA_PLUGIN_URL . "js/mla-add-new-bulk-edit-scripts{$suffix}.js", 
+				array( 'suggest', 'jquery' ), MLA::CURRENT_MLA_VERSION, false );
+	
+			wp_enqueue_script( 'mla-add-new-bulk-edit-scripts' . '-set-parent', MLA_PLUGIN_URL . "js/mla-set-parent-scripts{$suffix}.js", 
+				array( 'mla-add-new-bulk-edit-scripts', 'jquery' ), MLA::CURRENT_MLA_VERSION, false );
+	
+			$script_variables = array(
+				'uploadTitle' => __( 'Upload New Media items', 'media-library-assistant' ),
+				'comma' => _x( ',', 'tag_delimiter', 'media-library-assistant' ),
+				'ajaxFailError' => __( 'An ajax.fail error has occurred. Please reload the page and try again.', 'media-library-assistant' ),
+				'ajaxDoneError' => __( 'An ajax.done error has occurred. Please reload the page and try again.', 'media-library-assistant' ),
+				'useDashicons' => false,
+				'toggleOpen' => __( 'Open Bulk Edit area', 'media-library-assistant' ),
+				'toggleClose' => __( 'Close Bulk Edit area', 'media-library-assistant' ),
+			);
+	
+			if ( version_compare( get_bloginfo( 'version' ), '3.8', '>=' ) ) {
+				$script_variables['useDashicons'] = true;
+			}
+	
+			wp_localize_script( 'mla-add-new-bulk-edit-scripts', 'mla_add_new_bulk_edit_vars', $script_variables );
+
+			// Filter the media upload post parameters.
+			// @param array $post_params An array of media upload parameters used by Plupload.
+			add_filter( 'upload_post_params', 'MLAEdit::mla_upload_post_params', 10, 1 );
+			
+			// Fires on the post upload UI screen; legacy (pre-3.5.0) upload interface.
+			add_action( 'post-upload-ui', 'MLAEdit::mla_post_upload_ui' );
+		
+			return;
+		} // media-new.php
+
 		if ( ( 'post.php' != $page_hook ) || ( ! isset( $_REQUEST['post'] ) ) || ( ! isset( $_REQUEST['action'] ) ) || ( 'edit' != $_REQUEST['action'] ) ) {
 			return;
 		}
@@ -159,7 +208,6 @@ class MLAEdit {
 		wp_register_style( self::JAVASCRIPT_EDIT_MEDIA_STYLES . '-set-parent', MLA_PLUGIN_URL . 'css/mla-style-set-parent.css', false, MLA::CURRENT_MLA_VERSION );
 		wp_enqueue_style( self::JAVASCRIPT_EDIT_MEDIA_STYLES . '-set-parent' );
 
-		$suffix = defined('SCRIPT_DEBUG') && SCRIPT_DEBUG ? '' : '.min';
 		wp_enqueue_script( self::JAVASCRIPT_EDIT_MEDIA_SLUG, MLA_PLUGIN_URL . "js/mla-edit-media-scripts{$suffix}.js", 
 			array( 'post', 'wp-lists', 'suggest', 'jquery' ), MLA::CURRENT_MLA_VERSION, false );
 
@@ -182,6 +230,243 @@ class MLAEdit {
 		wp_localize_script( self::JAVASCRIPT_EDIT_MEDIA_SLUG, self::JAVASCRIPT_EDIT_MEDIA_OBJECT, $script_variables );
 	}
 
+	/**
+	 * Filter the Media/Add New post parameters.
+	 *
+	 * @since 2.02
+	 *
+	 * @param	array	$post_parms An array of media upload parameters used by Plupload.
+	 */
+	public static function mla_upload_post_params( $post_parms ) {
+		/*
+		 * You can add elements to the array. It will end up in the client global
+		 * variable: wpUploaderInit.multipart_params and is then copied to
+		 * uploader.settings.multipart_params
+		 *
+		 * The elements of this array come back as $_REQUEST elements when the
+		 * upload is submitted.
+		 */
+		$post_parms['mlaAddNewBulkEdit'] = array ( 'formData' => array() );
+		return $post_parms;
+	}
+
+	/**
+	 * Echoes bulk edit area HTML to the Media/Add New screen
+	 *
+	 * Fires on the post upload UI screen; legacy (pre-3.5.0) upload interface.
+	 * Anything echoed here goes below the "Maximum upload file size" message
+	 * and above the id="media-items" div.
+	 *
+	 * @since 2.02
+	 *
+	 */
+	public static function mla_post_upload_ui() {
+		/*
+		 * Only add our form to the Media/Add New screen. In particular,
+		 * do NOT add it to the Media Manager Modal Window
+		 */
+		if ( function_exists( 'get_current_screen' ) ) {
+			$screen = get_current_screen();
+		} else {
+			$screen = NULL;
+		}
+
+		if ( is_object( $screen ) && ( 'add' != $screen->action || 'media' != $screen->base ) ) {
+			return;
+		}
+
+		$taxonomies = get_object_taxonomies( 'attachment', 'objects' );
+
+		$hierarchical_taxonomies = array();
+		$flat_taxonomies = array();
+		foreach ( $taxonomies as $tax_name => $tax_object ) {
+			if ( $tax_object->hierarchical && $tax_object->show_ui && MLAOptions::mla_taxonomy_support($tax_name, 'quick-edit') ) {
+				$hierarchical_taxonomies[$tax_name] = $tax_object;
+			} elseif ( $tax_object->show_ui && MLAOptions::mla_taxonomy_support($tax_name, 'quick-edit') ) {
+				$flat_taxonomies[$tax_name] = $tax_object;
+			}
+		}
+
+		$page_template_array = MLAData::mla_load_template( 'mla-add-new-bulk-edit.tpl' );
+		if ( ! is_array( $page_template_array ) ) {
+			/* translators: 1: function name 2: non-array value */
+			error_log( sprintf( _x( 'ERROR: %1$s non-array "%2$s"', 'error_log', 'media-library-assistant' ), 'MLAEdit::mla_post_upload_ui', var_export( $page_template_array, true ) ), 0 );
+			return;
+		}
+
+		/*
+		 * The left-hand column contains the hierarchical taxonomies,
+		 * e.g., Attachment Category
+		 */
+		$category_fieldset = '';
+
+		if ( count( $hierarchical_taxonomies ) ) {
+			$bulk_category_blocks = '';
+
+			foreach ( $hierarchical_taxonomies as $tax_name => $tax_object ) {
+				if ( current_user_can( $tax_object->cap->assign_terms ) ) {
+				  ob_start();
+				  wp_terms_checklist( NULL, array( 'taxonomy' => $tax_name ) );
+				  $tax_checklist = ob_get_contents();
+				  ob_end_clean();
+  
+				  $page_values = array(
+					  'tax_html' => esc_html( $tax_object->labels->name ),
+					  'more' => __( 'more', 'media-library-assistant' ),
+					  'less' => __( 'less', 'media-library-assistant' ),
+					  'tax_attr' => esc_attr( $tax_name ),
+					  'tax_checklist' => $tax_checklist,
+					  'Add' => __( 'Add', 'media-library-assistant' ),
+					  'Remove' => __( 'Remove', 'media-library-assistant' ),
+					  'Replace' => __( 'Replace', 'media-library-assistant' ),
+				  );
+				  $category_block = MLAData::mla_parse_template( $page_template_array['category_block'], $page_values );
+				  $taxonomy_options = MLAData::mla_parse_template( $page_template_array['taxonomy_options'], $page_values );
+  
+				  $bulk_category_blocks .= $category_block . $taxonomy_options;
+				} // current_user_can
+			} // foreach $hierarchical_taxonomies
+
+			$page_values = array(
+				'category_blocks' => $bulk_category_blocks
+			);
+			$category_fieldset = MLAData::mla_parse_template( $page_template_array['category_fieldset'], $page_values );
+		} // count( $hierarchical_taxonomies )
+
+		/*
+		 * The middle column contains the flat taxonomies,
+		 * e.g., Attachment Tag
+		 */
+		$tag_fieldset = '';
+
+		if ( count( $flat_taxonomies ) ) {
+			$bulk_tag_blocks = '';
+
+			foreach ( $flat_taxonomies as $tax_name => $tax_object ) {
+				if ( current_user_can( $tax_object->cap->assign_terms ) ) {
+					$page_values = array(
+						'tax_html' => esc_html( $tax_object->labels->name ),
+						'tax_attr' => esc_attr( $tax_name ),
+						'Add' => __( 'Add', 'media-library-assistant' ),
+						'Remove' => __( 'Remove', 'media-library-assistant' ),
+						'Replace' => __( 'Replace', 'media-library-assistant' ),
+					);
+					$tag_block = MLAData::mla_parse_template( $page_template_array['tag_block'], $page_values );
+					$taxonomy_options = MLAData::mla_parse_template( $page_template_array['taxonomy_options'], $page_values );
+
+				$bulk_tag_blocks .= $tag_block . $taxonomy_options;
+				} // current_user_can
+			} // foreach $flat_taxonomies
+
+			$page_values = array(
+				'tag_blocks' => $bulk_tag_blocks
+			);
+			$tag_fieldset = MLAData::mla_parse_template( $page_template_array['tag_fieldset'], $page_values );
+		} // count( $flat_taxonomies )
+
+		/*
+		 * The right-hand column contains the standard and custom fields
+		 */
+		if ( $authors = MLA::mla_authors_dropdown( -1 ) ) {
+			$authors_dropdown  = '              <label class="inline-edit-author alignright">' . "\n";
+			$authors_dropdown .= '                <span class="title">' . __( 'Author', 'media-library-assistant' ) . '</span>' . "\n";
+			$authors_dropdown .= $authors . "\n";
+			$authors_dropdown .= '              </label>' . "\n";
+		} else {
+			$authors_dropdown = '';
+		}
+
+		$custom_fields = '';
+		foreach (MLAOptions::mla_custom_field_support( 'bulk_edit' ) as $slug => $label ) {
+			  $page_values = array(
+				  'slug' => $slug,
+				  'label' => esc_attr( $label ),
+			  );
+			  $custom_fields .= MLAData::mla_parse_template( $page_template_array['custom_field'], $page_values );
+		}
+
+		$set_parent_form = MLA::mla_set_parent_form( false );
+
+		$page_values = array(
+			'Toggle' => __( 'Open Bulk Edit area', 'media-library-assistant' ),
+			'category_fieldset' => $category_fieldset,
+			'tag_fieldset' => $tag_fieldset,
+			'authors' => $authors_dropdown,
+			'Comments' => __( 'Comments', 'media-library-assistant' ),
+			'Pings' => __( 'Pings', 'media-library-assistant' ),
+			'No Change' => __( 'No Change', 'media-library-assistant' ),
+			'Allow' => __( 'Allow', 'media-library-assistant' ),
+			'Do not allow' => __( 'Do not allow', 'media-library-assistant' ),
+			'custom_fields' => $custom_fields,
+			'Title' => __( 'Title', 'media-library-assistant' ),
+			'Name/Slug' => __( 'Name/Slug', 'media-library-assistant' ),
+			'Caption' => __( 'Caption', 'media-library-assistant' ),
+			'Description' => __( 'Description', 'media-library-assistant' ),
+			'ALT Text' => __( 'ALT Text', 'media-library-assistant' ),
+			'Parent ID' => __( 'Parent ID', 'media-library-assistant' ),
+			'Select' => __( 'Select', 'media-library-assistant' ),
+			'set_parent_form' => $set_parent_form,
+		);
+		
+		echo MLAData::mla_parse_template( $page_template_array['page'], $page_values );
+	}
+
+	/**
+	 * Apply Media/Add New bulk edit area updates, if any
+	 *
+	 * This filter is called AFTER MLA mapping rules are applied during
+	 * wp_update_attachment_metadata() processing.
+	 *
+	 * @since 2.02
+	 *
+	 * @param	array	attachment metadata
+	 * @param	integer	The Post ID of the new/updated attachment
+	 * @param	array	Processing options, e.g., 'is_upload'
+	 *
+	 * @return	array	updated attachment metadata
+	 */
+	public static function mla_update_attachment_metadata_postfilter( $data, $post_id, $options ) {
+		if ( ( true == $options['is_upload'] ) && ! empty( $_REQUEST['mlaAddNewBulkEdit']['formString'] ) ) {
+			/*
+			 * Clean up the inputs, which have everythng from the enclosing <form>
+			 */
+			$args = wp_parse_args( stripslashes( urldecode( $_REQUEST['mlaAddNewBulkEdit']['formString'] ) ) );
+			unset( $args['parent'] );
+			unset( $args['children'] );
+			unset( $args['mla-set-parent-ajax-nonce'] );
+			unset( $args['mla_set_parent_search_text'] );
+			unset( $args['mla_set_parent_post_type'] );
+			unset( $args['mla_set_parent_count'] );
+			unset( $args['mla_set_parent_paged'] );
+			unset( $args['mla_set_parent_found'] );
+			unset( $args['post_id'] );
+			unset( $args['_wpnonce'] );
+			unset( $args['_wp_http_referer'] );
+
+			/*
+			 * The category taxonomy (edit screens) is a special case because 
+			 * post_categories_meta_box() changes the input name
+			 */
+			if ( !isset( $args['tax_input'] ) ) {
+				$args['tax_input'] = array();
+			}
+	
+			if ( isset( $args['post_category'] ) ) {
+				$args['tax_input']['category'] = $args['post_category'];
+				unset ( $args['post_category'] );
+			}
+
+			/*
+			 * Pass the ID
+			 */
+			$args['cb_attachment'] = array( $post_id );
+			
+			$item_content = MLA::mla_process_bulk_action( 'edit', $args );
+		}
+
+		return $data;
+	} // mla_update_attachment_metadata_postfilter
+	
 	/**
 	 * Adds mapping update messages for display at the top of the Edit Media screen.
 	 * Declared public because it is a filter.

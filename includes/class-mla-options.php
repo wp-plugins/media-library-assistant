@@ -147,6 +147,11 @@ class MLAOptions {
 	const MLA_EDIT_MEDIA_META_BOXES = 'edit_media_meta_boxes';
 
 	/**
+	 * Provides a unique name for the Media/Add New bulk edit option
+	 */
+	const MLA_ADD_NEW_BULK_EDIT = 'add_new_bulk_edit';
+
+	/**
 	 * Provides a unique name for the Media Grid toolbar option, which
 	 * also controls the ATTACHMENT DETAILS enhancements
 	 */
@@ -697,6 +702,18 @@ class MLAOptions {
 					'help' => __( 'Check this option to add "Parent Info", "Menu Order", "Attachment Metadata" and four "where-used" meta boxes to the Edit Media screen.', 'media-library-assistant' ) . '<br>&nbsp;&nbsp;' .
 						__( 'You can also use Filters to customize the meta boxes.', 'media-library-assistant' ) . 
 						sprintf( ' %1$s <a href="%2$s">%3$s</a>.',  __( 'For complete documentation', 'media-library-assistant' ), admin_url( 'options-general.php?page=' . MLASettings::MLA_SETTINGS_SLUG . '-documentation&amp;mla_tab=documentation#mla_edit_meta_boxes' ), __( 'click here', 'media-library-assistant' )  ) ),
+
+			'media_add_new_header' =>
+				array('tab' => 'general',
+					'name' => __( 'Media/Add New Enhancements', 'media-library-assistant' ),
+					'type' => 'header'),
+
+			self::MLA_ADD_NEW_BULK_EDIT =>
+				array('tab' => 'general',
+					'name' => __( 'Enable "bulk edit" area', 'media-library-assistant' ),
+					'type' => 'checkbox',
+					'std' => 'checked',
+					'help' => __( 'Check this option to enable the "Bulk Edit area" feature on the Media/Add New screen.', 'media-library-assistant' )),
 
 			'media_modal_header' =>
 				array('tab' => 'general',

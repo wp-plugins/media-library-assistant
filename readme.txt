@@ -153,6 +153,7 @@ All of the MLA source code has been annotated with "DocBlocks", a special type o
 == Changelog ==
 
 = 2.02 =
+* New: For the **Media/Add New screen, a new Bulk Edit area** lets you assign taxonomy terms and change standard or custom fields as new items are uploaded to the Media Library.
 * New: The **"checked on top" option for checklist-style taxonomy meta boxes** can be set or cleared on the Settings/Media Library Assistant General tab.
 * New: An enhanced array of "CAMERA"-related fields is provided as part of the EXIF metadata. They contain more attractive and useful versions of "ExposureBiasValue", "ExposureTime", "Flash", "FNumber", "FocalLength", "ShutterSpeed" and a number of "Other Tags".
 * New: For mapping rules and `[mla_gallery]`, **"timestamp", "date" and "fraction" format options** can be used to format IPTC/EXIF metadata values, custom fields and other Data Sources.
