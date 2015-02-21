@@ -71,6 +71,7 @@
 <li class="method public "><a href="#mla_get_markup_templates" title="mla_get_markup_templates :: Get ALL markup templates from $mla_templates, including 'default'"><span class="description">Get ALL markup templates from $mla_templates, including 'default'</span><pre>mla_get_markup_templates()</pre></a></li>
 <li class="method public "><a href="#mla_get_option" title="mla_get_option :: Return the stored value or default value of a defined MLA option"><span class="description">Return the stored value or default value of a defined MLA option</span><pre>mla_get_option()</pre></a></li>
 <li class="method public "><a href="#mla_get_style_templates" title="mla_get_style_templates :: Get ALL style templates from $mla_templates, including 'default'"><span class="description">Get ALL style templates from $mla_templates, including 'default'</span><pre>mla_get_style_templates()</pre></a></li>
+<li class="method public "><a href="#mla_initialize_tax_checked_on_top" title='mla_initialize_tax_checked_on_top :: Initialize "tax_checked_on_top" =&gt; "checked" default for all supported taxonomies'><span class="description">Initialize "tax_checked_on_top" =&gt; "checked" default for all supported taxonomies</span><pre>mla_initialize_tax_checked_on_top()</pre></a></li>
 <li class="method public "><a href="#mla_iptc_exif_option_handler" title="mla_iptc_exif_option_handler :: Render and manage iptc/exif support options"><span class="description">Render and manage iptc/exif support options</span><pre>mla_iptc_exif_option_handler()</pre></a></li>
 <li class="method public "><a href="#mla_is_data_source" title="mla_is_data_source :: Identify custom field mapping data source"><span class="description">Identify custom field mapping data source</span><pre>mla_is_data_source()</pre></a></li>
 <li class="method public "><a href="#mla_localize_option_definitions_array" title="mla_localize_option_definitions_array :: Localize $mla_option_definitions array"><span class="description">Localize $mla_option_definitions array</span><pre>mla_localize_option_definitions_array()</pre></a></li>
@@ -116,6 +117,7 @@ settings are being updated or reset.</span><pre>mla_taxonomy_support()</pre></a>
 <li class="property private "><a href="#%24mla_option_templates" title="$mla_option_templates :: Style and Markup templates"><span class="description">Style and Markup templates</span><pre>$mla_option_templates</pre></a></li>
 <li class="nav-header">
 <i class="icon-custom icon-constant"></i> Constants</li>
+<li class="constant  "><a href="#MLA_ADD_NEW_BULK_EDIT" title="MLA_ADD_NEW_BULK_EDIT :: Provides a unique name for the Media/Add New bulk edit option"><span class="description">Provides a unique name for the Media/Add New bulk edit option</span><pre>MLA_ADD_NEW_BULK_EDIT</pre></a></li>
 <li class="constant  "><a href="#MLA_BULK_CHUNK_SIZE" title="MLA_BULK_CHUNK_SIZE :: Provides a unique name for the Bulk Update and Map All chunk size option"><span class="description">Provides a unique name for the Bulk Update and Map All chunk size option</span><pre>MLA_BULK_CHUNK_SIZE</pre></a></li>
 <li class="constant  "><a href="#MLA_COUNT_TERM_ATTACHMENTS" title="MLA_COUNT_TERM_ATTACHMENTS :: Provides a unique name for the taxonomy count Attachments option"><span class="description">Provides a unique name for the taxonomy count Attachments option</span><pre>MLA_COUNT_TERM_ATTACHMENTS</pre></a></li>
 <li class="constant  "><a href="#MLA_DEFAULT_ORDER" title="MLA_DEFAULT_ORDER :: Provides a unique name for the default order option"><span class="description">Provides a unique name for the default order option</span><pre>MLA_DEFAULT_ORDER</pre></a></li>
@@ -313,7 +315,7 @@ and provides functions to get and put them from/to WordPress option variables</p
 <h3>Parameters</h3>
 <div class="subelement argument">
 <h4>$slug</h4>
-<code>string</code><p>slug, e.g., 'c_file-size' for the 'File Size' field</p>
+<code>string</code><p>slug, e.g., 'c_File Size' for the 'File Size' field</p>
 </div>
 <h3>Returns</h3>
 <div class="subelement response">
@@ -533,6 +535,18 @@ Isolates clients from changes to _evaluate_data_source().</p></p>
 <h3>Returns</h3>
 <div class="subelement response">
 <code>array</code><code>null</code>name => value for all style templates or null if no templates</div>
+</div></div>
+</div>
+<a name="mla_initialize_tax_checked_on_top" id="mla_initialize_tax_checked_on_top"></a><div class="element clickable method public mla_initialize_tax_checked_on_top" data-toggle="collapse" data-target=".mla_initialize_tax_checked_on_top .collapse">
+<h2>Initialize "tax_checked_on_top" =&gt; "checked" default for all supported taxonomies</h2>
+<pre>mla_initialize_tax_checked_on_top() : void</pre>
+<div class="labels"></div>
+<div class="row collapse"><div class="detail-description">
+<p class="long_description"><p>Called after all taxonomies are registered, e.g., in MLAObjects::_build_taxonomies.</p></p>
+<table class="table table-bordered"><tr>
+<th>since</th>
+<td>2.02</td>
+</tr></table>
 </div></div>
 </div>
 <a name="mla_iptc_exif_option_handler" id="mla_iptc_exif_option_handler"></a><div class="element clickable method public mla_iptc_exif_option_handler" data-toggle="collapse" data-target=".mla_iptc_exif_option_handler .collapse">
@@ -1363,6 +1377,12 @@ added to the Media Library.</p></p>
 </div>
 <h3>
 <i class="icon-custom icon-constant"></i> Constants</h3>
+<a name="MLA_ADD_NEW_BULK_EDIT" id="MLA_ADD_NEW_BULK_EDIT"> </a><div class="element clickable constant  MLA_ADD_NEW_BULK_EDIT" data-toggle="collapse" data-target=".MLA_ADD_NEW_BULK_EDIT .collapse">
+<h2>Provides a unique name for the Media/Add New bulk edit option</h2>
+<pre>MLA_ADD_NEW_BULK_EDIT </pre>
+<div class="labels"></div>
+<div class="row collapse"><div class="detail-description"><p class="long_description"></p></div></div>
+</div>
 <a name="MLA_BULK_CHUNK_SIZE" id="MLA_BULK_CHUNK_SIZE"> </a><div class="element clickable constant  MLA_BULK_CHUNK_SIZE" data-toggle="collapse" data-target=".MLA_BULK_CHUNK_SIZE .collapse">
 <h2>Provides a unique name for the Bulk Update and Map All chunk size option</h2>
 <pre>MLA_BULK_CHUNK_SIZE </pre>
@@ -1638,7 +1658,7 @@ also controls the ATTACHMENT DETAILS enhancements</h2>
 <div class="row"><footer class="span12">
             Template is built using <a href="http://twitter.github.com/bootstrap/">Twitter Bootstrap 2</a> and icons provided by <a href="http://glyphicons.com/">Glyphicons</a>.<br>
             Documentation is powered by <a href="http://www.phpdoc.org/">phpDocumentor 2.0.0a8</a> and<br>
-            generated on 2015-01-22T20:33:02-08:00.<br></footer></div>
+            generated on 2015-02-17T16:36:12-08:00.<br></footer></div>
 </div>
 </body>
 </html>

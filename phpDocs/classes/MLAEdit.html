@@ -73,6 +73,9 @@
 <li class="method public "><a href="#mla_mla_gallery_in_handler" title="mla_mla_gallery_in_handler :: Renders the MLA Gallery in meta box on the Edit Media page."><span class="description">Renders the MLA Gallery in meta box on the Edit Media page.</span><pre>mla_mla_gallery_in_handler()</pre></a></li>
 <li class="method public "><a href="#mla_parent_info_handler" title="mla_parent_info_handler :: Renders the Parent Info meta box on the Edit Media page."><span class="description">Renders the Parent Info meta box on the Edit Media page.</span><pre>mla_parent_info_handler()</pre></a></li>
 <li class="method public "><a href="#mla_post_updated_messages_filter" title="mla_post_updated_messages_filter :: Adds mapping update messages for display at the top of the Edit Media screen."><span class="description">Adds mapping update messages for display at the top of the Edit Media screen.</span><pre>mla_post_updated_messages_filter()</pre></a></li>
+<li class="method public "><a href="#mla_post_upload_ui" title="mla_post_upload_ui :: Echoes bulk edit area HTML to the Media/Add New screen"><span class="description">Echoes bulk edit area HTML to the Media/Add New screen</span><pre>mla_post_upload_ui()</pre></a></li>
+<li class="method public "><a href="#mla_update_attachment_metadata_postfilter" title="mla_update_attachment_metadata_postfilter :: Apply Media/Add New bulk edit area updates, if any"><span class="description">Apply Media/Add New bulk edit area updates, if any</span><pre>mla_update_attachment_metadata_postfilter()</pre></a></li>
+<li class="method public "><a href="#mla_upload_post_params" title="mla_upload_post_params :: Filter the Media/Add New post parameters."><span class="description">Filter the Media/Add New post parameters.</span><pre>mla_upload_post_params()</pre></a></li>
 <li class="nav-header private">» Private</li>
 <li class="method private "><a href="#_mla_ajax_add_flat_term" title='_mla_ajax_add_flat_term :: Add flat taxonomy term from "checklist" meta box on the Media Manager Modal Window'><span class="description">Add flat taxonomy term from "checklist" meta box on the Media Manager Modal Window</span><pre>_mla_ajax_add_flat_term()</pre></a></li>
 <li class="nav-header">
@@ -373,6 +376,64 @@ Output to the Media/Edit Media screen and to the Media Manager Modal Window.</p>
 <code>array</code>updated messages</div>
 </div></div>
 </div>
+<a name="mla_post_upload_ui" id="mla_post_upload_ui"></a><div class="element clickable method public mla_post_upload_ui" data-toggle="collapse" data-target=".mla_post_upload_ui .collapse">
+<h2>Echoes bulk edit area HTML to the Media/Add New screen</h2>
+<pre>mla_post_upload_ui() </pre>
+<div class="labels"></div>
+<div class="row collapse"><div class="detail-description">
+<p class="long_description"><p>Fires on the post upload UI screen; legacy (pre-3.5.0) upload interface.
+Anything echoed here goes below the "Maximum upload file size" message
+and above the id="media-items" div.</p></p>
+<table class="table table-bordered"><tr>
+<th>since</th>
+<td>2.02</td>
+</tr></table>
+</div></div>
+</div>
+<a name="mla_update_attachment_metadata_postfilter" id="mla_update_attachment_metadata_postfilter"></a><div class="element clickable method public mla_update_attachment_metadata_postfilter" data-toggle="collapse" data-target=".mla_update_attachment_metadata_postfilter .collapse">
+<h2>Apply Media/Add New bulk edit area updates, if any</h2>
+<pre>mla_update_attachment_metadata_postfilter(array $data, integer $post_id, array $options) : array</pre>
+<div class="labels"></div>
+<div class="row collapse"><div class="detail-description">
+<p class="long_description"><p>This filter is called AFTER MLA mapping rules are applied during
+wp_update_attachment_metadata() processing.</p></p>
+<table class="table table-bordered"><tr>
+<th>since</th>
+<td>2.02</td>
+</tr></table>
+<h3>Parameters</h3>
+<div class="subelement argument">
+<h4>$data</h4>
+<code>array</code><p>attachment metadata</p></div>
+<div class="subelement argument">
+<h4>$post_id</h4>
+<code>integer</code><p>The Post ID of the new/updated attachment</p>
+</div>
+<div class="subelement argument">
+<h4>$options</h4>
+<code>array</code><p>Processing options, e.g., 'is_upload'</p>
+</div>
+<h3>Returns</h3>
+<div class="subelement response">
+<code>array</code>updated attachment metadata</div>
+</div></div>
+</div>
+<a name="mla_upload_post_params" id="mla_upload_post_params"></a><div class="element clickable method public mla_upload_post_params" data-toggle="collapse" data-target=".mla_upload_post_params .collapse">
+<h2>Filter the Media/Add New post parameters.</h2>
+<pre>mla_upload_post_params(array $post_parms) </pre>
+<div class="labels"></div>
+<div class="row collapse"><div class="detail-description">
+<p class="long_description"></p>
+<table class="table table-bordered"><tr>
+<th>since</th>
+<td>2.02</td>
+</tr></table>
+<h3>Parameters</h3>
+<div class="subelement argument">
+<h4>$post_parms</h4>
+<code>array</code><p>An array of media upload parameters used by Plupload.</p></div>
+</div></div>
+</div>
 <a name="_mla_ajax_add_flat_term" id="_mla_ajax_add_flat_term"></a><div class="element clickable method private _mla_ajax_add_flat_term" data-toggle="collapse" data-target="._mla_ajax_add_flat_term .collapse">
 <h2>Add flat taxonomy term from "checklist" meta box on the Media Manager Modal Window</h2>
 <pre>_mla_ajax_add_flat_term(string $key) : void</pre>
@@ -450,7 +511,7 @@ The array is built once each page load and cached for subsequent calls.</p></p>
 <div class="row"><footer class="span12">
             Template is built using <a href="http://twitter.github.com/bootstrap/">Twitter Bootstrap 2</a> and icons provided by <a href="http://glyphicons.com/">Glyphicons</a>.<br>
             Documentation is powered by <a href="http://www.phpdoc.org/">phpDocumentor 2.0.0a8</a> and<br>
-            generated on 2015-01-22T20:33:02-08:00.<br></footer></div>
+            generated on 2015-02-17T16:36:12-08:00.<br></footer></div>
 </div>
 </body>
 </html>

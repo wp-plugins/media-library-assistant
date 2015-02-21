@@ -712,7 +712,7 @@ class MLAShortcodes {
 			$item_values['parent'] = $attachment->post_parent;
 			$item_values['parent_name'] = '';
 			$item_values['parent_type'] = '';
-			$item_values['parent_title'] = '(' . __( 'unattached', 'media-library-assistant' ) . ')';
+			$item_values['parent_title'] = '(' . __( 'Unattached', 'media-library-assistant' ) . ')';
 			$item_values['parent_date'] = '';
 			$item_values['parent_permalink'] = '';
 			$item_values['title'] = wptexturize( $attachment->post_title );
@@ -1434,7 +1434,7 @@ class MLAShortcodes {
 		 * Invalid taxonomy names return WP_Error
 		 */
 		if ( is_wp_error( $tags ) ) {
-			$cloud .=  '<strong>' . __( 'ERROR:', 'media-library-assistant' ) . ' ' . $tags->get_error_message() . '</strong>, ' . $tags->get_error_data( $tags->get_error_code() );
+			$cloud .=  '<strong>' . __( 'ERROR', 'media-library-assistant' ) . ': ' . $tags->get_error_message() . '</strong>, ' . $tags->get_error_data( $tags->get_error_code() );
 
 			if ( 'array' == $arguments['mla_output'] ) {
 				return array( $cloud );
@@ -1508,7 +1508,7 @@ class MLAShortcodes {
 			}
 
 			if ( is_wp_error( $link ) ) {
-				$cloud =  '<strong>' . __( 'ERROR:', 'media-library-assistant' ) . ' ' . $link->get_error_message() . '</strong>, ' . $link->get_error_data( $link->get_error_code() );
+				$cloud =  '<strong>' . __( 'ERROR', 'media-library-assistant' ) . ': ' . $link->get_error_message() . '</strong>, ' . $link->get_error_data( $link->get_error_code() );
 
 			if ( 'array' == $arguments['mla_output'] ) {
 				return array( $cloud );
@@ -2799,7 +2799,7 @@ class MLAShortcodes {
 							$query_arguments[ $key ] = $tax_query;
 							break; // Done - the tax_query overrides all other taxonomy parameters
 						} else {
-							return '<p>' . __( 'ERROR: Invalid mla_gallery', 'media-library-assistant' ) . ' tax_query = ' . var_export( $value, true ) . '</p>';
+							return '<p>' . __( 'ERROR', 'media-library-assistant' ) . ': ' . __( 'Invalid mla_gallery', 'media-library-assistant' ) . ' tax_query = ' . var_export( $value, true ) . '</p>';
 						}
 					} // not array
 				}  /* tax_query */ elseif ( array_key_exists( $key, $all_taxonomies ) ) {
@@ -3127,7 +3127,7 @@ class MLAShortcodes {
 						if ( is_array( $date_query ) ) {
 							$query_arguments[ $key ] = $date_query;
 						} else {
-							return '<p>' . __( 'ERROR: Invalid mla_gallery', 'media-library-assistant' ) . ' date_query = ' . var_export( $value, true ) . '</p>';
+							return '<p>' . __( 'ERROR', 'media-library-assistant' ) . ': ' . __( 'Invalid mla_gallery', 'media-library-assistant' ) . ' date_query = ' . var_export( $value, true ) . '</p>';
 						}
 					} // not array
 
@@ -3158,7 +3158,7 @@ class MLAShortcodes {
 						if ( is_array( $meta_query ) ) {
 							$query_arguments[ $key ] = $meta_query;
 						} else {
-							return '<p>' . __( 'ERROR: Invalid mla_gallery', 'media-library-assistant' ) . ' meta_query = ' . var_export( $value, true ) . '</p>';
+							return '<p>' . __( 'ERROR', 'media-library-assistant' ) . ': ' . __( 'Invalid mla_gallery', 'media-library-assistant' ) . ' meta_query = ' . var_export( $value, true ) . '</p>';
 						}
 					} // not array
 

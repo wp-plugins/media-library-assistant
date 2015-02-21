@@ -77,6 +77,7 @@
 <li class="method private "><a href="#_process_shortcode_parameter" title="_process_shortcode_parameter :: Handles brace/bracket escaping and parses template for a shortcode parameter"><span class="description">Handles brace/bracket escaping and parses template for a shortcode parameter</span><pre>_process_shortcode_parameter()</pre></a></li>
 <li class="method private "><a href="#_registered_dimensions" title="_registered_dimensions :: Computes image dimensions for scalable graphics, e.g., SVG"><span class="description">Computes image dimensions for scalable graphics, e.g., SVG</span><pre>_registered_dimensions()</pre></a></li>
 <li class="method private "><a href="#_sanitize_query_specification" title="_sanitize_query_specification :: Cleans up damage caused by the Visual Editor to the tax_query and meta_query specifications"><span class="description">Cleans up damage caused by the Visual Editor to the tax_query and meta_query specifications</span><pre>_sanitize_query_specification()</pre></a></li>
+<li class="method private "><a href="#_validate_attributes" title="_validate_attributes :: Make sure $attr is an array and repair line-break damage"><span class="description">Make sure $attr is an array and repair line-break damage</span><pre>_validate_attributes()</pre></a></li>
 <li class="method private "><a href="#_validate_sql_orderby" title="_validate_sql_orderby :: Translates query parameters to a valid SQL order by clause."><span class="description">Translates query parameters to a valid SQL order by clause.</span><pre>_validate_sql_orderby()</pre></a></li>
 <li class="nav-header">
 <i class="icon-custom icon-property"></i> Properties</li>
@@ -568,6 +569,25 @@ relevant children are already in the $terms argument.</p></p>
 <code>string</code>query specification with HTML escape sequences and line breaks removed</div>
 </div></div>
 </div>
+<a name="_validate_attributes" id="_validate_attributes"></a><div class="element clickable method private _validate_attributes" data-toggle="collapse" data-target="._validate_attributes .collapse">
+<h2>Make sure $attr is an array and repair line-break damage</h2>
+<pre>_validate_attributes(mixed $attr) : array</pre>
+<div class="labels"></div>
+<div class="row collapse"><div class="detail-description">
+<p class="long_description"></p>
+<table class="table table-bordered"><tr>
+<th>since</th>
+<td>2.02</td>
+</tr></table>
+<h3>Parameters</h3>
+<div class="subelement argument">
+<h4>$attr</h4>
+<code>mixed</code><p>array or string containing shortcode attributes</p></div>
+<h3>Returns</h3>
+<div class="subelement response">
+<code>array</code>clean attributes array</div>
+</div></div>
+</div>
 <a name="_validate_sql_orderby" id="_validate_sql_orderby"></a><div class="element clickable method private _validate_sql_orderby" data-toggle="collapse" data-target="._validate_sql_orderby .collapse">
 <h2>Translates query parameters to a valid SQL order by clause.</h2>
 <pre>_validate_sql_orderby(array $query_parameters, string $table_prefix, array $allowed_keys, array $binary_keys) : string | bool</pre>
@@ -687,7 +707,7 @@ any further logic required to translate those values is contained in the filter.
 <div class="row"><footer class="span12">
             Template is built using <a href="http://twitter.github.com/bootstrap/">Twitter Bootstrap 2</a> and icons provided by <a href="http://glyphicons.com/">Glyphicons</a>.<br>
             Documentation is powered by <a href="http://www.phpdoc.org/">phpDocumentor 2.0.0a8</a> and<br>
-            generated on 2015-01-22T20:33:02-08:00.<br></footer></div>
+            generated on 2015-02-17T16:36:13-08:00.<br></footer></div>
 </div>
 </body>
 </html>

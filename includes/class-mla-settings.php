@@ -551,8 +551,8 @@ class MLASettings {
 					'content' => $content 
 				);
 			} else {
-				/* translators: 1: function name 2: template key */
-				error_log( sprintf( _x( 'ERROR: %1$s discarding "%2$s"; no title/order', 'error_log', 'media-library-assistant' ), 'mla_add_help_tab_action', $id ), 0 );
+				/* translators: 1: ERROR tag 2: function name 3: template key */
+				error_log( sprintf( _x( '%1$s: %2$s discarding "%3$s"; no title/order', 'error_log', 'media-library-assistant' ), __( 'ERROR', 'media-library-assistant' ), 'mla_add_help_tab_action', $id ), 0 );
 			}
 		}
 
@@ -616,7 +616,7 @@ class MLASettings {
 		check_ajax_referer( MLA::MLA_ADMIN_NONCE, 'nonce' );
 
 		if ( empty( $_REQUEST['original_slug'] ) ) {
-			echo __( 'ERROR: No view slug found', 'media-library-assistant' );
+			echo __( 'ERROR', 'media-library-assistant' ) . ': ' . __( 'No view slug found', 'media-library-assistant' );
 			die();
 		}
 
@@ -630,7 +630,7 @@ class MLASettings {
 		$request['menu_order'] = $_REQUEST['menu_order'];
 		$results = MLAMime::mla_update_post_mime_type( $request );
 
-		if ( false === strpos( $results['message'], __( 'ERROR:', 'media-library-assistant' ) ) ) {
+		if ( false === strpos( $results['message'], __( 'ERROR', 'media-library-assistant' ) ) ) {
 			$new_item = (object) MLAMime::mla_get_post_mime_type( $_REQUEST['slug'] );
 		} else {
 			$new_item = (object) MLAMime::mla_get_post_mime_type( $_REQUEST['original_slug'] );
@@ -659,7 +659,7 @@ class MLASettings {
 		check_ajax_referer( MLA::MLA_ADMIN_NONCE, 'nonce' );
 
 		if ( empty( $_REQUEST['original_slug'] ) ) {
-			echo __( 'ERROR: No upload slug found', 'media-library-assistant' );
+			echo __( 'ERROR', 'media-library-assistant' ) . ': ' . __( 'No upload slug found', 'media-library-assistant' );
 			die();
 		}
 
@@ -670,7 +670,7 @@ class MLASettings {
 		$request['disabled'] = isset( $_REQUEST['disabled'] ) && ( '1' == $_REQUEST['disabled'] );
 		$results = MLAMime::mla_update_upload_mime( $request );
 
-		if ( false === strpos( $results['message'], __( 'ERROR:', 'media-library-assistant' ) ) ) {
+		if ( false === strpos( $results['message'], __( 'ERROR', 'media-library-assistant' ) ) ) {
 			$new_item = (object) MLAMime::mla_get_upload_mime( $_REQUEST['slug'] );
 		} else {
 			$new_item = (object) MLAMime::mla_get_upload_mime( $_REQUEST['original_slug'] );
@@ -760,7 +760,7 @@ class MLASettings {
 									
 									if ( 0 == $offset ) {
 										$page_content = self::_save_custom_field_settings( $settings );
-										if ( false !== strpos( $page_content['message'], __( 'ERROR:', 'media-library-assistant' ) ) ) {
+										if ( false !== strpos( $page_content['message'], __( 'ERROR', 'media-library-assistant' ) ) ) {
 											$page_content['processed'] = 0;
 											$page_content['unchanged'] = 0;
 											$page_content['success'] = 0;
@@ -894,7 +894,7 @@ class MLASettings {
 									
 									if ( 0 == $offset ) {
 										$page_content = self::_save_iptc_exif_custom_settings( $settings );
-										if ( false !== strpos( $page_content['message'], __( 'ERROR:', 'media-library-assistant' ) ) ) {
+										if ( false !== strpos( $page_content['message'], __( 'ERROR', 'media-library-assistant' ) ) ) {
 											$page_content['processed'] = 0;
 											$page_content['unchanged'] = 0;
 											$page_content['success'] = 0;
@@ -999,8 +999,8 @@ class MLASettings {
 				case 'hidden':
 					break;
 				default:
-					/* translators: 1: function name 2: option type, e.g., radio, select, text */
-					error_log( sprintf( _x( 'ERROR: %1$s unknown type = "%2$s"', 'error_log', 'media-library-assistant' ), '_save_settings(1)', var_export( $value, true ) ), 0 );
+					/* translators: 1: ERROR tag 2: function name 3: option type, e.g., radio, select, text */
+					error_log( sprintf( _x( '%1$s: %2$s unknown type = "%3$s"', 'error_log', 'media-library-assistant' ), __( 'ERROR', 'media-library-assistant' ), '_save_settings(1)', var_export( $value, true ) ), 0 );
 			} // $value['type']
 		}  // isset $key
 		else {
@@ -1031,8 +1031,8 @@ class MLASettings {
 				case 'hidden':
 					break;
 				default:
-					/* translators: 1: function name 2: option type, e.g., radio, select, text */
-					error_log( sprintf( _x( 'ERROR: %1$s unknown type = "%2$s"', 'error_log', 'media-library-assistant' ), '_save_settings(2)', var_export( $value, true ) ), 0 );
+					/* translators: 1: ERROR tag 2: function name 3: option type, e.g., radio, select, text */
+					error_log( sprintf( _x( '%1$s: %2$s unknown type = "%3$s"', 'error_log', 'media-library-assistant' ), __( 'ERROR', 'media-library-assistant' ), '_save_settings(2)', var_export( $value, true ) ), 0 );
 			} // $value['type']
 		}  // ! isset $key
 
@@ -1169,8 +1169,8 @@ class MLASettings {
 			case 'hidden':
 				break;
 			default:
-				/* translators: 1: function name 2: option type, e.g., radio, select, text */
-				error_log( sprintf( _x( 'ERROR: %1$s unknown type = "%2$s"', 'error_log', 'media-library-assistant' ), 'mla_render_settings_page', var_export( $value, true ) ), 0 );
+				/* translators: 1: ERROR tag 2: function name 3: option type, e.g., radio, select, text */
+				error_log( sprintf( _x( '%1$s: %2$s unknown type = "%3$s"', 'error_log', 'media-library-assistant' ), __( 'ERROR', 'media-library-assistant' ), 'mla_render_settings_page', var_export( $value, true ) ), 0 );
 		} //switch
 
 		return '';
@@ -1526,8 +1526,8 @@ class MLASettings {
 	private static function _compose_view_tab( ) {
 		$page_template_array = MLAData::mla_load_template( 'admin-display-settings-view-tab.tpl' );
 		if ( ! is_array( $page_template_array ) ) {
-			/* translators: 1: function name 2: non-array value */
-			error_log( sprintf( _x( 'ERROR: %1$s non-array "%2$s"', 'error_log', 'media-library-assistant' ), 'MLASettings::_compose_view_tab', var_export( $page_template_array, true ) ), 0 );
+			/* translators: 1: ERROR tag 2: function name 3: non-array value */
+			error_log( sprintf( _x( '%1$s: %2$s non-array "%3$s"', 'error_log', 'media-library-assistant' ), __( 'ERROR', 'media-library-assistant' ), 'MLASettings::_compose_view_tab', var_export( $page_template_array, true ) ), 0 );
 			return '';
 		}
 
@@ -1559,7 +1559,7 @@ class MLASettings {
 		} elseif ( !empty( $_REQUEST['mla-add-view-submit'] ) ) {
 			check_admin_referer( MLA::MLA_ADMIN_NONCE, '_wpnonce' );
 			$page_content = MLAMime::mla_add_post_mime_type( $_REQUEST['mla_view_item'] );
-			if ( false !== strpos( $page_content['message'], __( 'ERROR:', 'media-library-assistant' ) ) ) {
+			if ( false !== strpos( $page_content['message'], __( 'ERROR', 'media-library-assistant' ) ) ) {
 				$add_form_values = $_REQUEST['mla_view_item'];
 				$add_form_values['post_mime_type'] = $add_form_values['post_mime_type'] ? 'checked="checked"' : '';
 				$add_form_values['table_view'] = $add_form_values['table_view'] ? 'checked="checked"' : '';
@@ -1636,7 +1636,7 @@ class MLASettings {
 				case MLA::MLA_ADMIN_SINGLE_EDIT_UPDATE:
 					if ( !empty( $_REQUEST['update'] ) ) {
 						$page_content = MLAMime::mla_update_post_mime_type( $_REQUEST['mla_view_item'] );
-						if ( false !== strpos( $page_content['message'], __( 'ERROR:', 'media-library-assistant' ) ) ) {
+						if ( false !== strpos( $page_content['message'], __( 'ERROR', 'media-library-assistant' ) ) ) {
 							$message = $page_content['message'];
 							$page_content = self::_compose_edit_view_tab( $_REQUEST['mla_view_item'], $page_template_array['single-item-edit'] );
 							$page_content['message'] = $message;
@@ -1735,7 +1735,8 @@ class MLASettings {
 			's' => isset( $_REQUEST['s'] ) ? $_REQUEST['s'] : '',
 			'options_list' => $options_list,
 			'Save Changes' => __( 'Save Changes', 'media-library-assistant' ),
-			'Add New View' => __( 'Add New View', 'media-library-assistant' ),
+			/* translators: %s: add new View */
+			'Add New View' => sprintf( __( 'Add New %1$s', 'media-library-assistant' ), __( 'View', 'media-library-assistant' ) ),
 			'Slug' => __( 'Slug', 'media-library-assistant' ),
 			'The slug is' => __( 'The &#8220;slug&#8221; is the URL-friendly, unique key for the view. It must be all lowercase and contain only letters, numbers, periods (.), slashes (/) and hyphens (-). For &#8220;<strong>Post MIME Type</strong>&#8221; views, the slug is also the MIME type specification and <strong>must be a valid MIME</strong> type, e.g., &#8220;image&#8221; or &#8220;image/jpeg&#8221;.', 'media-library-assistant' ),
 			'Singular Label' => __( 'Singular Label', 'media-library-assistant' ),
@@ -1971,8 +1972,8 @@ class MLASettings {
 	private static function _compose_upload_tab( ) {
 		$page_template_array = MLAData::mla_load_template( 'admin-display-settings-upload-tab.tpl' );
 		if ( ! is_array( $page_template_array ) ) {
-			/* translators: 1: function name 2: non-array value */
-			error_log( sprintf( _x( 'ERROR: %1$s non-array "%2$s"', 'error_log', 'media-library-assistant' ), 'MLASettings::_compose_upload_tab', var_export( $page_template_array, true ) ), 0 );
+			/* translators: 1: ERROR tag 2: function name 3: non-array value */
+			error_log( sprintf( _x( '%1$s: %2$s non-array "%3$s"', 'error_log', 'media-library-assistant' ), __( 'ERROR', 'media-library-assistant' ), 'MLASettings::_compose_upload_tab', var_export( $page_template_array, true ) ), 0 );
 			return '';
 		}
 
@@ -2023,7 +2024,7 @@ class MLASettings {
 		} elseif ( !empty( $_REQUEST['mla-add-upload-submit'] ) ) {
 			check_admin_referer( MLA::MLA_ADMIN_NONCE, '_wpnonce' );
 			$page_content = MLAMime::mla_add_upload_mime( $_REQUEST['mla_upload_item'] );
-			if ( false !== strpos( $page_content['message'], __( 'ERROR:', 'media-library-assistant' ) ) ) {
+			if ( false !== strpos( $page_content['message'], __( 'ERROR', 'media-library-assistant' ) ) ) {
 				$add_form_values = $_REQUEST['mla_upload_item'];
 				$add_form_values['disabled'] = $add_form_values['disabled'] ? 'checked="checked"' : '';
 			}
@@ -2102,7 +2103,7 @@ class MLASettings {
 				case MLA::MLA_ADMIN_SINGLE_EDIT_UPDATE:
 					if ( !empty( $_REQUEST['update'] ) ) {
 						$page_content = MLAMime::mla_update_upload_mime( $_REQUEST['mla_upload_item'] );
-						if ( false !== strpos( $page_content['message'], __( 'ERROR:', 'media-library-assistant' ) ) ) {
+						if ( false !== strpos( $page_content['message'], __( 'ERROR', 'media-library-assistant' ) ) ) {
 							$message = $page_content['message'];
 							$page_content = self::_compose_edit_upload_tab( $_REQUEST['mla_upload_item'], $page_template_array );
 							$page_content['message'] = $message;
@@ -2200,7 +2201,8 @@ class MLASettings {
 			'_wpnonce' => wp_nonce_field( MLA::MLA_ADMIN_NONCE, '_wpnonce', true, false ),
 			'options_list' => $options_list,
 			'Save Changes' => __( 'Save Changes', 'media-library-assistant' ),
-			'Add New Upload' => __( 'Add New Upload MIME Type', 'media-library-assistant' ),
+			/* translators: %s: add new Upload MIME Type */
+			'Add New Upload' => sprintf( __( 'Add New %1$s', 'media-library-assistant' ), __( 'Upload MIME Type', 'media-library-assistant' ) ),
 			'To search database' => __( 'To search the database of over 1,500 known extension/type associations, click "Search Known Types" below the form.', 'media-library-assistant' ),
 			'Extension' => __( 'Extension', 'media-library-assistant' ),
 			'The extension is' => __( 'The &#8220;extension&#8221; is the file extension for this type, and unique key for the item. It must be all lowercase and contain only letters and numbers.', 'media-library-assistant' ),
@@ -2653,7 +2655,7 @@ class MLASettings {
 								case 'add_rule_map':
 								case 'add_field_map':
 									$page_content = self::_save_custom_field_settings( $settings );
-									if ( false === strpos( $page_content['message'], __( 'ERROR:', 'media-library-assistant' ) ) ) {
+									if ( false === strpos( $page_content['message'], __( 'ERROR', 'media-library-assistant' ) ) ) {
 										$current_values = MLAOptions::mla_get_option( 'custom_field_mapping' );
 										$settings = array( $value['name'] => $current_values[$value['name']] );
 										$map_content = self::_process_custom_field_mapping( $settings );
@@ -2795,7 +2797,7 @@ class MLASettings {
 								case 'add_rule_map':
 								case 'add_field_map':
 									$page_content = self::_save_iptc_exif_custom_settings( $settings );
-									if ( false === strpos( $page_content['message'], __( 'ERROR:', 'media-library-assistant' ) ) ) {
+									if ( false === strpos( $page_content['message'], __( 'ERROR', 'media-library-assistant' ) ) ) {
 										$current_values = MLAOptions::mla_get_option( 'iptc_exif_mapping' );
 										$settings = array( 'custom' => array( $value['name'] => $current_values['custom'][$value['name']] ) );
 										$map_content = self::_process_iptc_exif_custom( $settings );
@@ -2940,14 +2942,14 @@ class MLASettings {
 				$handler = $current_tab['render'];
 				$page_content = self::$handler(  );
 			} else {
-				$page_content = array( 'message' => __( 'ERROR: Cannot render content tab', 'media-library-assistant' ), 'body' => '' );
+				$page_content = array( 'message' => __( 'ERROR', 'media-library-assistant' ) . ': ' . __( 'Cannot render content tab', 'media-library-assistant' ), 'body' => '' );
 			}
 		} else {
-			$page_content = array( 'message' => __( 'ERROR: Unknown content tab', 'media-library-assistant' ), 'body' => '' );
+			$page_content = array( 'message' => __( 'ERROR', 'media-library-assistant' ) . ': ' . __( 'Unknown content tab', 'media-library-assistant' ), 'body' => '' );
 		}
 
 		if ( ! empty( $page_content['message'] ) ) {
-			if ( false !== strpos( $page_content['message'], __( 'ERROR:', 'media-library-assistant' ) ) ) {
+			if ( false !== strpos( $page_content['message'], __( 'ERROR', 'media-library-assistant' ) ) ) {
 				$messages_class = 'mla_errors';
 			} else {
 				$messages_class = 'mla_messages';
@@ -3033,14 +3035,14 @@ class MLASettings {
 				if ( '' == $new_slug ) {
 					continue;
 				} elseif ( 'blank' == $new_slug ) {
-					/* translators: 1: template name 2: template type */
-					$error_list .= '<br>' . sprintf( __( 'ERROR: Reserved name "%1$s", new %2$s discarded.', $new_slug, 'media-library-assistant' ), __( 'style template', 'media-library-assistant' ) );
+					/* translators: 1: ERROR tag 2: template name 3: template type */
+					$error_list .= '<br>' . sprintf( __( '%1$s: Reserved name "%2$s", new %3$s discarded.', 'media-library-assistant' ), __( 'ERROR', 'media-library-assistant' ), $new_slug, __( 'style template', 'media-library-assistant' ) );
 					continue;
 				}
 
 				if ( array_key_exists( $new_slug, $old_templates ) ) {
-					/* translators: 1: template name 2: template type */
-					$error_list .= '<br>' . sprintf( __( 'ERROR: Duplicate name "%1$s", new %2$s discarded.', $new_slug, 'media-library-assistant' ), __( 'style template', 'media-library-assistant' ) );
+					/* translators: 1: ERROR tag 2: template name 3: template type */
+					$error_list .= '<br>' . sprintf( __( '%1$s: Duplicate name "%2$s", new %3$s discarded.', 'media-library-assistant' ), __( 'ERROR', 'media-library-assistant' ), $new_slug, __( 'style template', 'media-library-assistant' ) );
 					continue;
 				} else {
 					/* translators: 1: template type 2: template name */
@@ -3053,16 +3055,15 @@ class MLASettings {
 			 * Handle name changes, check for duplicates
 			 */
 			if ( '' == $new_slug ) {
-				/* translators: 1: element name 3: old value */
-				$error_list .= '<br>' . sprintf( __( 'ERROR: Blank %1$s, reverting to "%3$s".', 'media-library-assistant' ), __( 'style template name', 'media-library-assistant' ), $name );
-				/* translators: 1: template name */
+				/* translators: 1: ERROR tag 2: element name 3: old value */
+				$error_list .= '<br>' . sprintf( __( '%1$s: Blank %2$s, reverting to "%3$s".', 'media-library-assistant' ), __( 'ERROR', 'media-library-assistant' ), __( 'style template name', 'media-library-assistant' ), $name );
 				$new_slug = $name;
 			}
 
 			if ( $new_slug != $name ) {
 				if ( array_key_exists( $new_slug, $old_templates ) ) {
-					/* translators: 1: element name 2: new value 3: old value */
-					$error_list .= '<br>' . sprintf( __( 'ERROR: Duplicate new %1$s "%2$s", reverting to "%3$s".', 'media-library-assistant' ), __( 'style template name', 'media-library-assistant' ), $new_slug, $name );
+					/* translators: 1: ERROR tag 2: element name 3: new value 4: old value */
+					$error_list .= '<br>' . sprintf( __( '%1$s: Duplicate new %2$s "%3$s", reverting to "%4$s".', 'media-library-assistant' ), __( 'ERROR', 'media-library-assistant' ), __( 'style template name', 'media-library-assistant' ), $new_slug, $name );
 					$new_slug = $name;
 				} elseif ( 'blank' != $name ) {
 					/* translators: 1: element name 2: old_value 3: new_value */
@@ -3083,8 +3084,8 @@ class MLASettings {
 		if ( $templates_changed ) {
 			$settings_changed = true;
 			if ( false == MLAOptions::mla_put_style_templates( $new_templates ) ) {
-				/* translators: 1: template type */
-				$error_list .= '<br>' . sprintf( __( 'ERROR: Update of %1$s failed.', 'media-library-assistant' ), __( 'style template', 'media-library-assistant' ) );
+				/* translators: 1: ERROR tag 2: template type */
+				$error_list .= '<br>' . sprintf( __( '%1$s: Update of %2$s failed.', 'media-library-assistant' ), __( 'ERROR', 'media-library-assistant' ), __( 'style template', 'media-library-assistant' ) );
 			}
 		}
 
@@ -3125,14 +3126,14 @@ class MLASettings {
 				}
 
 				if ( 'blank' == $new_slug ) {
-					/* translators: 1: template name 2: template type */
-					$error_list .= '<br>' . sprintf( __( 'ERROR: Reserved name "%1$s", new %2$s discarded.', $new_slug, 'media-library-assistant' ), __( 'markup template', 'media-library-assistant' ) );
+					/* translators: 1: ERROR tag 2: template name 3: template type */
+					$error_list .= '<br>' . sprintf( __( '%1$s: Reserved name "%2$s", new %3$s discarded.', 'media-library-assistant' ), __( 'ERROR', 'media-library-assistant' ), $new_slug, __( 'markup template', 'media-library-assistant' ) );
 					continue;
 				}
 
 				if ( array_key_exists( $new_slug, $old_templates ) ) {
-					/* translators: 1: template name 2: template type */
-					$error_list .= '<br>' . sprintf( __( 'ERROR: Duplicate name "%1$s", new %2$s discarded.', $new_slug, 'media-library-assistant' ), __( 'markup template', 'media-library-assistant' ) );
+					/* translators: 1: ERROR tag 2: template name 3: template type */
+					$error_list .= '<br>' . sprintf( __( '%1$s: Duplicate name "%2$s", new %3$s discarded.', 'media-library-assistant' ), __( 'ERROR', 'media-library-assistant' ), $new_slug, __( 'markup template', 'media-library-assistant' ) );
 					continue;
 				} else {
 					/* translators: 1: template type 2: template name */
@@ -3145,15 +3146,15 @@ class MLASettings {
 			 * Handle name changes, check for duplicates
 			 */
 			if ( '' == $new_slug ) {
-				/* translators: 1: element name 3: old value */
-				$error_list .= '<br>' . sprintf( __( 'ERROR: Blank %1$s, reverting to "%3$s".', 'media-library-assistant' ), __( 'markup template name', 'media-library-assistant' ), $name );
+				/* translators: 1: ERROR tag 2: element name 3: old value */
+				$error_list .= '<br>' . sprintf( __( '%1$s: Blank %2$s, reverting to "%3$s".', 'media-library-assistant' ), __( 'ERROR', 'media-library-assistant' ), __( 'markup template name', 'media-library-assistant' ), $name );
 				$new_slug = $name;
 			}
 
 			if ( $new_slug != $name ) {
 				if ( array_key_exists( $new_slug, $old_templates ) ) {
-					/* translators: 1: element name 2: new value 3: old value */
-					$error_list .= '<br>' . sprintf( __( 'ERROR: Duplicate new %1$s "%2$s", reverting to "%3$s".', 'media-library-assistant' ), __( 'markup template name', 'media-library-assistant' ), $new_slug, $name );
+					/* translators: 1: ERROR tag 2: element name 3: new value 4: old value */
+					$error_list .= '<br>' . sprintf( __( '%1$s: Duplicate new %2$s "%3$s", reverting to "%4$s".', 'media-library-assistant' ), __( 'ERROR', 'media-library-assistant' ), __( 'markup template name', 'media-library-assistant' ), $new_slug, $name );
 					$new_slug = $name;
 				} elseif ( 'blank' != $name ) {
 					/* translators: 1: element name 2: old_value 3: new_value */
@@ -3204,8 +3205,8 @@ class MLASettings {
 		if ( $templates_changed ) {
 			$settings_changed = true;
 			if ( false == MLAOptions::mla_put_markup_templates( $new_templates ) ) {
-				/* translators: 1: template type */
-				$error_list .= '<br>' . sprintf( __( 'ERROR: Update of %1$s failed.', 'media-library-assistant' ), __( 'markup template', 'media-library-assistant' ) );
+				/* translators: 1: ERROR tag 2: template type */
+				$error_list .= '<br>' . sprintf( __( '%1$s: Update of %2$s failed.', 'media-library-assistant' ), __( 'ERROR', 'media-library-assistant' ), __( 'markup template', 'media-library-assistant' ) );
 			}
 		}
 
@@ -3326,7 +3327,7 @@ class MLASettings {
 
 		if ( empty( $settings ) ) {
 			return array(
-				'message' => __( 'ERROR: No custom field mapping rules to process.', 'media-library-assistant' ),
+				'message' => __( 'ERROR', 'media-library-assistant' ) . ': ' . __( 'No custom field mapping rules to process.', 'media-library-assistant' ),
 				'body' => '' 
 			);
 		}
@@ -3390,8 +3391,9 @@ class MLASettings {
 
 		$count = count( $post_meta_ids );
 		if ( $count ) {
-			$count_text = sprintf( _n( '%s attachment', '%s attachments', $count, 'media-library-assistant' ), $count );
 			/* translators: 1: number of attachments */
+			$count_text = sprintf( _n( '%s attachment', '%s attachments', $count, 'media-library-assistant' ), $count );
+			/* translators: 1: singular/plural number of attachments */
 			return sprintf( __( 'Deleted custom field value from %1$s.', 'media-library-assistant' ) . '<br>', $count_text );
 		}
 
@@ -3455,8 +3457,8 @@ class MLASettings {
 	private static function _process_iptc_exif_standard( $offset = 0, $length = 0 ) {
 		if ( ! isset( $_REQUEST['iptc_exif_mapping']['standard'] ) ) {
 			return array(
-				/* translators: 1: field type */
-				'message' => sprintf( __( 'ERROR: No %1$s settings to process.', 'media-library-assistant' ), __( 'Standard field', 'media-library-assistant' ) ),
+				/* translators: 1: ERROR tag 2: field type */
+				'message' => sprintf( __( '%1$s: No %2$s settings to process.', 'media-library-assistant' ), __( 'ERROR', 'media-library-assistant' ), __( 'Standard field', 'media-library-assistant' ) ),
 				'body' => '' 
 			);
 		}
@@ -3526,8 +3528,8 @@ class MLASettings {
 	private static function _process_iptc_exif_taxonomy( $offset = 0, $length = 0 ) {
 		if ( ! isset( $_REQUEST['iptc_exif_mapping']['taxonomy'] ) ) {
 			return array(
-				/* translators: 1: field type */
-				'message' => sprintf( __( 'ERROR: No %1$s settings to process.', 'media-library-assistant' ), __( 'Taxonomy term', 'media-library-assistant' ) ),
+				/* translators: 1: ERROR tag 2: field type */
+				'message' => sprintf( __( '%1$s: No %2$s settings to process.', 'media-library-assistant' ), __( 'ERROR', 'media-library-assistant' ), __( 'Taxonomy term', 'media-library-assistant' ) ),
 				'body' => '' 
 			);
 		}
@@ -3612,8 +3614,8 @@ class MLASettings {
 		
 		if ( empty( $settings['custom'] ) ) {
 			return array(
-				/* translators: 1: field type */
-				'message' => sprintf( __( 'ERROR: No %1$s settings to process.', 'media-library-assistant' ), __( 'Custom field', 'media-library-assistant' ) ),
+				/* translators: 1: ERROR tag 2: field type */
+				'message' => sprintf( __( '%1$s: No %2$s settings to process.', 'media-library-assistant' ), __( 'ERROR', 'media-library-assistant' ), __( 'Custom field', 'media-library-assistant' ) ),
 				'body' => '' 
 			);
 		}
@@ -3946,12 +3948,12 @@ class MLASettings {
 		$filename = MLA_BACKUP_DIR . "{$prefix}_options_{$date}.txt";
 
 		if ( ! file_exists( MLA_BACKUP_DIR ) && ! @mkdir( MLA_BACKUP_DIR ) ) {
-			/* translators: 1: backup directory name */
-			$page_content['message'] = sprintf( __( 'ERROR: The settings directory ( %1$s ) cannot be created.', 'media-library-assistant' ), MLA_BACKUP_DIR );
+			/* translators: 1: ERROR tag 2: backup directory name */
+			$page_content['message'] = sprintf( __( '%1$s: The settings directory ( %2$s ) cannot be created.', 'media-library-assistant' ), __( 'ERROR', 'media-library-assistant' ), MLA_BACKUP_DIR );
 			return $page_content;
 		} elseif ( ! is_writable( MLA_BACKUP_DIR ) && ! @chmod( MLA_BACKUP_DIR , '0777') ) {
-			/* translators: 1: backup directory name */
-			$page_content['message'] = sprintf( __( 'ERROR: The settings directory ( %1$s ) is not writable.', 'media-library-assistant' ), MLA_BACKUP_DIR );
+			/* translators: 1: ERROR tag 2: backup directory name */
+			$page_content['message'] = sprintf( __( '%1$s: The settings directory ( %2$s ) is not writable.', 'media-library-assistant' ), __( 'ERROR', 'media-library-assistant' ), MLA_BACKUP_DIR );
 			return $page_content;
 		}
 
@@ -3961,15 +3963,15 @@ class MLASettings {
 
 		$file_handle = @fopen( $filename, 'w' );
 		if ( ! $file_handle ) {
-			/* translators: 1: backup file name */
-			$page_content['message'] = sprintf( __( 'ERROR: The settings file ( %1$s ) could not be opened.', 'media-library-assistant' ), $filename );
+			/* translators: 1: ERROR tag 2: backup file name */
+			$page_content['message'] = sprintf( __( '%1$s: The settings file ( %2$s ) could not be opened.', 'media-library-assistant' ), __( 'ERROR', 'media-library-assistant' ), $filename );
 			return $page_content;
 			}
 
 		if (false === @fwrite($file_handle, $settings)) {
 			$error_info = error_get_last();
-			/* translators: 1: PHP error information */
-			error_log( sprintf( _x( 'ERROR: _export_settings $error_info = "%1$s".', 'error_log', 'media-library-assistant' ), var_export( $error_info, true ) ), 0 );
+			/* translators: 1: ERROR tag 2: PHP error information */
+			error_log( sprintf( _x( '%1$s: _export_settings $error_info = "%2$s".', 'error_log', 'media-library-assistant' ), __( 'ERROR', 'media-library-assistant' ), var_export( $error_info, true ) ), 0 );
 
 			if ( false !== ( $tail = strpos( $error_info['message'], '</a>]: ' ) ) ) {
 				$php_errormsg = ':<br>' . substr( $error_info['message'], $tail + 7 );
@@ -3977,8 +3979,8 @@ class MLASettings {
 				$php_errormsg = '.';
 			}
 
-			/* translators: 1: backup file name 2: error message*/
-			$page_content['message'] = sprintf( __( 'ERROR: Writing the settings file ( %1$s ) "%2$s".', 'media-library-assistant' ), $filename, $php_errormsg );
+			/* translators: 1: ERROR tag 2: backup file name 3: error message*/
+			$page_content['message'] = sprintf( __( '%1$s: Writing the settings file ( %2$s ) "%3$s".', 'media-library-assistant' ), __( 'ERROR', 'media-library-assistant' ), $filename, $php_errormsg );
 		}
 
 		fclose($file_handle);
@@ -4015,15 +4017,15 @@ class MLASettings {
 				return $page_content;
 			}
 		} else {
-			$page_content['message'] = __( 'ERROR: The import settings dropdown selection is missing.', 'media-library-assistant' );
+			$page_content['message'] = __( 'ERROR', 'media-library-assistant' ) . ': ' . __( 'The import settings dropdown selection is missing.', 'media-library-assistant' );
 			return $page_content;
 		}
 
 		$settings = @file_get_contents( $filename, false );
 		if ( false === $settings ) {
 			$error_info = error_get_last();
-			/* translators: 1: PHP error information */
-			error_log( sprintf( _x( 'ERROR: _import_settings $error_info = "%1$s".', 'error_log', 'media-library-assistant' ), var_export( $error_info, true ) ), 0 );
+			/* translators: 1: ERROR tag 2: PHP error information */
+			error_log( sprintf( _x( '%1$s: _import_settings $error_info = "%2$s".', 'error_log', 'media-library-assistant' ), __( 'ERROR', 'media-library-assistant' ), var_export( $error_info, true ) ), 0 );
 
 			if ( false !== ( $tail = strpos( $error_info['message'], '</a>]: ' ) ) ) {
 				$php_errormsg = ':<br>' . substr( $error_info['message'], $tail + 7 );
@@ -4031,8 +4033,8 @@ class MLASettings {
 				$php_errormsg = '.';
 			}
 
-			/* translators: 1: backup file name 2: error message*/
-			$page_content['message'] = sprintf( __( 'ERROR: Reading the settings file ( %1$s ) "%2$s".', 'media-library-assistant' ), $filename, $php_errormsg );
+			/* translators: 1: ERROR tag 2: backup file name 3: error message*/
+			$page_content['message'] = sprintf( __( '%1$s: Reading the settings file ( %2$s ) "%3$s".', 'media-library-assistant' ), __( 'ERROR', 'media-library-assistant' ), $filename, $php_errormsg );
 			return $page_content;
 		}
 

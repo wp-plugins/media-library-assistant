@@ -109,6 +109,7 @@ and meta data for a single attachment</span><pre>mla_update_single_item()</pre><
 <li class="method private "><a href="#_find_pdf_indirect_dictionary" title="_find_pdf_indirect_dictionary :: Find the offset, length and contents of an indirect object containing a dictionary"><span class="description">Find the offset, length and contents of an indirect object containing a dictionary</span><pre>_find_pdf_indirect_dictionary()</pre></a></li>
 <li class="method private "><a href="#_find_template_substring" title="_find_template_substring :: Find a complete template, balancing opening and closing delimiters"><span class="description">Find a complete template, balancing opening and closing delimiters</span><pre>_find_template_substring()</pre></a></li>
 <li class="method private "><a href="#_find_test_substring" title="_find_test_substring :: Find a complete (test) element, balancing opening and closing delimiters"><span class="description">Find a complete (test) element, balancing opening and closing delimiters</span><pre>_find_test_substring()</pre></a></li>
+<li class="method private "><a href="#_parse_arguments" title="_parse_arguments :: Process an argument list within a field-level parameter format specification"><span class="description">Process an argument list within a field-level parameter format specification</span><pre>_parse_arguments()</pre></a></li>
 <li class="method private "><a href="#_parse_field_level_template" title='_parse_field_level_template :: Convert field-level "template:" string into its component parts'><span class="description">Convert field-level "template:" string into its component parts</span><pre>_parse_field_level_template()</pre></a></li>
 <li class="method private "><a href="#_parse_iso8601_date" title="_parse_iso8601_date :: Parse a ISO 8601 Timestamp"><span class="description">Parse a ISO 8601 Timestamp</span><pre>_parse_iso8601_date()</pre></a></li>
 <li class="method private "><a href="#_parse_pdf_LPD_dictionary" title="_parse_pdf_LPD_dictionary :: Parse a PDF Linearization Parameter Dictionary object"><span class="description">Parse a PDF Linearization Parameter Dictionary object</span><pre>_parse_pdf_LPD_dictionary()</pre></a></li>
@@ -123,6 +124,7 @@ and meta data for a single attachment</span><pre>mla_update_single_item()</pre><
 <li class="method private "><a href="#_prepare_list_table_query" title="_prepare_list_table_query :: Sanitize and expand query arguments from request variables"><span class="description">Sanitize and expand query arguments from request variables</span><pre>_prepare_list_table_query()</pre></a></li>
 <li class="method private "><a href="#_process_field_level_array" title="_process_field_level_array :: Process an markup field array value according to the supplied data-format option"><span class="description">Process an markup field array value according to the supplied data-format option</span><pre>_process_field_level_array()</pre></a></li>
 <li class="method private "><a href="#_rational_to_decimal" title="_rational_to_decimal :: Convert an EXIF GPS rational value to a PHP float value"><span class="description">Convert an EXIF GPS rational value to a PHP float value</span><pre>_rational_to_decimal()</pre></a></li>
+<li class="method private "><a href="#_rational_to_string" title="_rational_to_string :: Convert an EXIF rational value to a formatted string"><span class="description">Convert an EXIF rational value to a formatted string</span><pre>_rational_to_string()</pre></a></li>
 <li class="method private "><a href="#_remove_terms" title="_remove_terms :: Remove terms from an attachment's assignments"><span class="description">Remove terms from an attachment's assignments</span><pre>_remove_terms()</pre></a></li>
 <li class="method private "><a href="#_search_mla_galleries" title="_search_mla_galleries :: Search the $mla_galleries or $galleries array"><span class="description">Search the $mla_galleries or $galleries array</span><pre>_search_mla_galleries()</pre></a></li>
 <li class="method private "><a href="#_set_array_element" title="_set_array_element :: Adds or replaces the value of a key in a possibly nested array structure"><span class="description">Adds or replaces the value of a key in a possibly nested array structure</span><pre>_set_array_element()</pre></a></li>
@@ -1255,6 +1257,26 @@ This is required because Adobe Acrobat does NOT increment the generation number 
 <code>string</code>'' or template string starting with '(' and ending with the matching ')'</div>
 </div></div>
 </div>
+<a name="_parse_arguments" id="_parse_arguments"></a><div class="element clickable method private _parse_arguments" data-toggle="collapse" data-target="._parse_arguments .collapse">
+<h2>Process an argument list within a field-level parameter format specification</h2>
+<pre>_parse_arguments(string $argument_string) : array</pre>
+<div class="labels"></div>
+<div class="row collapse"><div class="detail-description">
+<p class="long_description"></p>
+<table class="table table-bordered"><tr>
+<th>since</th>
+<td>2.02</td>
+</tr></table>
+<h3>Parameters</h3>
+<div class="subelement argument">
+<h4>$argument_string</h4>
+<code>string</code><p>arguments, e.g., ('d/m/Y H:i:s' , "arg, \" two" ) without parens</p>
+</div>
+<h3>Returns</h3>
+<div class="subelement response">
+<code>array</code>individual arguments, e.g. array( 0 => 'd/m/Y H:i:s', 1 => 'arg, \" two' )</div>
+</div></div>
+</div>
 <a name="_parse_field_level_template" id="_parse_field_level_template"></a><div class="element clickable method private _parse_field_level_template" data-toggle="collapse" data-target="._parse_field_level_template .collapse">
 <h2>Convert field-level "template:" string into its component parts</h2>
 <pre>_parse_field_level_template(string $tpl) : array</pre>
@@ -1582,6 +1604,36 @@ Modeled after wp_edit_attachments_query in wp-admin/post.php</p></p>
 <h3>Returns</h3>
 <div class="subelement response">
 <code>float</code>numerator/denominator</div>
+</div></div>
+</div>
+<a name="_rational_to_string" id="_rational_to_string"></a><div class="element clickable method private _rational_to_string" data-toggle="collapse" data-target="._rational_to_string .collapse">
+<h2>Convert an EXIF rational value to a formatted string</h2>
+<pre>_rational_to_string(string $rational, string $integer_format, string $fraction_format, string $mixed_format) : mixed</pre>
+<div class="labels"></div>
+<div class="row collapse"><div class="detail-description">
+<p class="long_description"></p>
+<table class="table table-bordered"><tr>
+<th>since</th>
+<td>2.02</td>
+</tr></table>
+<h3>Parameters</h3>
+<div class="subelement argument">
+<h4>$rational</h4>
+<code>string</code><p>numerator/denominator</p>
+</div>
+<div class="subelement argument">
+<h4>$integer_format</h4>
+<code>string</code><p>format for integer values</p></div>
+<div class="subelement argument">
+<h4>$fraction_format</h4>
+<code>string</code><p>format for fractional values from -1 to +1</p>
+</div>
+<div class="subelement argument">
+<h4>$mixed_format</h4>
+<code>string</code><p>format for integer.fraction values</p></div>
+<h3>Returns</h3>
+<div class="subelement response">
+<code>mixed</code>formatted value or boolean false if no value available</div>
 </div></div>
 </div>
 <a name="_remove_terms" id="_remove_terms"></a><div class="element clickable method private _remove_terms" data-toggle="collapse" data-target="._remove_terms .collapse">
@@ -1915,7 +1967,7 @@ ALT Text and custom field columns.</p></p>
 <div class="row"><footer class="span12">
             Template is built using <a href="http://twitter.github.com/bootstrap/">Twitter Bootstrap 2</a> and icons provided by <a href="http://glyphicons.com/">Glyphicons</a>.<br>
             Documentation is powered by <a href="http://www.phpdoc.org/">phpDocumentor 2.0.0a8</a> and<br>
-            generated on 2015-01-22T20:33:02-08:00.<br></footer></div>
+            generated on 2015-02-17T16:36:12-08:00.<br></footer></div>
 </div>
 </body>
 </html>

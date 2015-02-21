@@ -289,8 +289,8 @@ class MLAEdit {
 
 		$page_template_array = MLAData::mla_load_template( 'mla-add-new-bulk-edit.tpl' );
 		if ( ! is_array( $page_template_array ) ) {
-			/* translators: 1: function name 2: non-array value */
-			error_log( sprintf( _x( 'ERROR: %1$s non-array "%2$s"', 'error_log', 'media-library-assistant' ), 'MLAEdit::mla_post_upload_ui', var_export( $page_template_array, true ) ), 0 );
+			/* translators: 1: ERROR tag 2: function name 3: non-array value */
+			error_log( sprintf( _x( '%1$s: %2$s non-array "%3$s"', 'error_log', 'media-library-assistant' ), __( 'ERROR', 'media-library-assistant' ), 'MLAEdit::mla_post_upload_ui', var_export( $page_template_array, true ) ), 0 );
 			return;
 		}
 
@@ -654,8 +654,8 @@ class MLAEdit {
 					'content' => $content 
 				);
 			} else {
-				/* translators: 1: function name 2: template key */
-				error_log( sprintf( _x( 'ERROR: %1$s discarding "%2$s"; no title/order', 'error_log', 'media-library-assistant' ), 'mla_edit_add_help_tab', $id ), 0 );
+				/* translators: 1: ERROR tag 2: function name 3: template key */
+				error_log( sprintf( _x( '%1$s: %2$s discarding "%3$s"; no title/order', 'error_log', 'media-library-assistant' ), __( 'ERROR', 'media-library-assistant' ), 'mla_edit_add_help_tab', $id ), 0 );
 			}
 		}
 

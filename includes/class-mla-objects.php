@@ -42,7 +42,8 @@ class MLAObjects {
 				'parent_item_colon' => __( 'Parent Att. Category', 'media-library-assistant' ) . ':',
 				'edit_item' => __( 'Edit Att. Category', 'media-library-assistant' ),
 				'update_item' => __( 'Update Att. Category', 'media-library-assistant' ),
-				'add_new_item' => __( 'Add New Att. Category', 'media-library-assistant' ),
+				/* translators: %s: add new taxonomy label */
+				'add_new_item' => sprintf( __( 'Add New %1$s', 'media-library-assistant' ), __( 'Att. Category', 'media-library-assistant' ) ),
 				'new_item_name' => __( 'New Att. Category Name', 'media-library-assistant' ),
 				'menu_name' => __( 'Att. Category', 'media-library-assistant' ) 
 			);
@@ -71,7 +72,8 @@ class MLAObjects {
 				'parent_item_colon' => __( 'Parent Att. Tag', 'media-library-assistant' ) . ':',
 				'edit_item' => __( 'Edit Att. Tag', 'media-library-assistant' ),
 				'update_item' => __( 'Update Att. Tag', 'media-library-assistant' ),
-				'add_new_item' => __( 'Add New Att. Tag', 'media-library-assistant' ),
+				/* translators: %s: add new taxonomy label */
+				'add_new_item' => sprintf( __( 'Add New %1$s', 'media-library-assistant' ), __( 'Att. Tag', 'media-library-assistant' ) ),
 				'new_item_name' => __( 'New Att. Tag Name', 'media-library-assistant' ),
 				'menu_name' => __( 'Att. Tag', 'media-library-assistant' ) 
 			);
@@ -195,8 +197,8 @@ class MLAObjects {
 			$term = get_term( $term_id, $taxonomy );
 
 			if ( is_wp_error( $term ) ) {
-				/* translators: 1: taxonomy 2: error message */
-				error_log( sprintf( _x( 'ERROR: mla_taxonomy_column_filter( "%1$s" ) - get_term failed: "%2$s"', 'error_log', 'media-library-assistant' ), $taxonomy, $term->get_error_message() ), 0 );
+				/* translators: 1: ERROR tag 2: taxonomy 3: error message */
+				error_log( sprintf( _x( '%1$s: mla_taxonomy_column_filter( "%2$s" ) - get_term failed: "%3$s"', 'error_log', 'media-library-assistant' ), __( 'ERROR', 'media-library-assistant' ), $taxonomy, $term->get_error_message() ), 0 );
 				return 0;
 			} elseif ($count_terms ) {
 				$column_text = number_format_i18n( 0 );

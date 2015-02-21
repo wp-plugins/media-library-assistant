@@ -479,8 +479,8 @@ class MLAMime {
 		 * sanitize or validate them.
 		 */
 		if ( ! is_array( $raw_request ) ) {
-			/* translators: 1: function name 2: non-array value */
-			error_log( sprintf( _x( 'ERROR: %1$s non-array "%2$s"', 'error_log', 'media-library-assistant' ), 'MLAMime::_prepare_view_items_query', var_export( $raw_request, true ) ), 0 );
+			/* translators: 1: ERROR tag 2: function name 3: non-array value */
+			error_log( sprintf( _x( '%1$s: %2$s non-array "%3$s"', 'error_log', 'media-library-assistant' ), __( 'ERROR', 'media-library-assistant' ), 'MLAMime::_prepare_view_items_query', var_export( $raw_request, true ) ), 0 );
 			return NULL;
 		}
 
@@ -902,18 +902,18 @@ class MLAMime {
 					$no_wildcards = str_replace( '*', 'X', $raw_mime_type );
 					$clean_mime_type = sanitize_mime_type( $no_wildcards );
 					if ( $clean_mime_type != $no_wildcards ) {
-						/* translators: 1: raw_mime_type */
-						$result['error'] = '<br>' . sprintf( __( 'ERROR: Bad specification part "%1$s"', 'media-library-assistant' ), $raw_mime_type );
+						/* translators: 1: ERROR tag 2: raw_mime_type */
+						$result['error'] = '<br>' . sprintf( __( '%1$s: Bad specification part "%2$s"', 'media-library-assistant' ), __( 'ERROR', 'media-library-assistant' ), $raw_mime_type );
 					}
 				} // foreach
 			} elseif ( 'custom' == $result['prefix'] ) {
 				if ( ! in_array( $result['option'], array( '', 'any', 'match', 'null' ) ) ) {
-					/* translators: 1: option, e.g., any, match, null */
-					$result['error'] = '<br>' . sprintf( __( 'ERROR: Bad specification option "%1$s"', 'media-library-assistant' ), $specification['option'] );
+					/* translators: 1: ERROR tag 2: option, e.g., any, match, null */
+					$result['error'] = '<br>' . sprintf( __( '%1$s: Bad specification option "%2$s"', 'media-library-assistant' ), __( 'ERROR', 'media-library-assistant' ), $specification['option'] );
 				}
 			} else {
-				/* translators: 1: prefix, e.g., custom */
-				$result['error'] = '<br>' . sprintf( __( 'ERROR: Bad specification prefix "%1$s"', 'media-library-assistant' ), $specification['prefix'] );
+				/* translators: 1: ERROR tag 2: prefix, e.g., custom */
+				$result['error'] = '<br>' . sprintf( __( '%1$s: Bad specification prefix "%2$s"', 'media-library-assistant' ), __( 'ERROR', 'media-library-assistant' ), $specification['prefix'] );
 			}
 
 		return $result;
@@ -957,8 +957,8 @@ class MLAMime {
 		 * Make sure new slug is unique
 		 */
 		if ( isset( self::$mla_post_mime_templates[ $slug ] ) ) {
-				/* translators: 1: slug */
-			$errors .= '<br>' . sprintf( __( 'ERROR: Could not add Slug "%1$s"; value already exists', 'media-library-assistant' ), $slug );
+				/* translators: 1: ERROR tag 2: slug */
+			$errors .= '<br>' . sprintf( __( '%1$s: Could not add Slug "%2$s"; value already exists', 'media-library-assistant' ), __( 'ERROR', 'media-library-assistant' ), $slug );
 		}
 
 		/*
@@ -1045,8 +1045,8 @@ class MLAMime {
 			 * Make sure new slug is unique
 			 */
 			if ( isset( self::$mla_post_mime_templates[ $slug ] ) ) {
-				/* translators: 1: slug */
-				$errors .= '<br>' . sprintf( __( 'ERROR: Could not add new Slug "%1$s"; value already exists', 'media-library-assistant' ), $slug );
+				/* translators: 1: ERROR tag 2: slug */
+				$errors .= '<br>' . sprintf( __( '%1$s: Could not add Slug "%2$s"; value already exists', 'media-library-assistant' ), __( 'ERROR', 'media-library-assistant' ), $slug );
 			} else {
 				/* translators: 1: element name 2: old_value 3: new_value */
 				$messages .= sprintf( '<br>' . __( 'Changing %1$s from "%2$s" to "%3$s"', 'media-library-assistant' ), __( 'Slug', 'media-library-assistant' ), $original_slug, $slug );
@@ -1191,8 +1191,8 @@ class MLAMime {
 		}
 
 		return array(
-			/* translators: 1: slug */
-			'message' => sprintf( __( 'ERROR: Did not find view "%1$s"', 'media-library-assistant' ), $slug ),
+			/* translators: 1: ERROR tag 2: slug */
+			'message' => sprintf( __( '%1$s: Did not find view "%2$s"', 'media-library-assistant' ), __( 'ERROR', 'media-library-assistant' ), $slug ),
 			'body' => ''
 		);
 	}
@@ -1214,8 +1214,8 @@ class MLAMime {
 		 * sanitize or validate them.
 		 */
 		if ( ! is_array( $raw_request ) ) {
-			/* translators: 1: function name 2: non-array value */
-			error_log( sprintf( _x( 'ERROR: %1$s non-array "%2$s"', 'error_log', 'media-library-assistant' ), 'MLAMime::_prepare_upload_items_query', var_export( $raw_request, true ) ), 0 );
+			/* translators: 1: ERROR tag 2: function name 3: non-array value */
+			error_log( sprintf( _x( '%1$s: %2$s non-array "%3$s"', 'error_log', 'media-library-assistant' ), __( 'ERROR', 'media-library-assistant' ), 'MLAMime::_prepare_upload_items_query', var_export( $raw_request, true ) ), 0 );
 			return NULL;
 		}
 
@@ -1969,7 +1969,7 @@ class MLAMime {
 			$errors = '';
 		} else {
 			return array(
-				'message' => __( 'ERROR: Cannot load Upload MIME Types', 'media-library-assistant' ),
+				'message' => __( 'ERROR', 'media-library-assistant' ) . ': ' . __( 'Cannot load Upload MIME Types', 'media-library-assistant' ),
 				'body' => ''
 			);
 		}
@@ -1980,7 +1980,7 @@ class MLAMime {
 		 * Sanitize slug value
 		 */
 		if ( empty( $request['slug'] ) ) {
-			$errors .= '<br>' . __( 'ERROR: Extension is required', 'media-library-assistant' );
+			$errors .= '<br>' . __( 'ERROR', 'media-library-assistant' ) . ': ' . __( 'Extension is required', 'media-library-assistant' );
 		} else {
 			$slug = pathinfo( 'X.' . strtolower( trim( $request['slug'] ) ), PATHINFO_EXTENSION );
 			if ( $slug != $request['slug'] ) {
@@ -1992,8 +1992,8 @@ class MLAMime {
 			 * Make sure new slug is unique
 			 */
 			if ( isset( self::$mla_upload_mime_templates[ $slug ] ) ) {
-				/* translators: 1: slug */
-				$errors .= '<br>' . sprintf( __( 'ERROR: Could not add extension "%1$s"; value already exists', 'media-library-assistant' ), $slug );
+				/* translators: 1: ERROR tag 2: slug */
+				$errors .= '<br>' . sprintf( __( '%1$s: Could not add extension "%2$s"; value already exists', 'media-library-assistant' ), __( 'ERROR', 'media-library-assistant' ), $slug );
 			}
 		}
 
@@ -2001,12 +2001,12 @@ class MLAMime {
 		 * Validate mime_type
 		 */
 		if ( empty( $request['mime_type'] ) ) {
-			$errors .= '<br>' . __( 'ERROR: MIME type is required', 'media-library-assistant' );
+			$errors .= '<br>' . __( 'ERROR', 'media-library-assistant' ) . ': ' . __( 'MIME type is required', 'media-library-assistant' );
 		} else {
 			$clean_mime_type = sanitize_mime_type( $request['mime_type'] );
 			if ( $clean_mime_type != $request['mime_type'] ) {
-				/* translators: 1: clean_mime_type */
-				$errors .= '<br>' . sprintf( __( 'ERROR: Bad MIME type; try "%1$s"', 'media-library-assistant' ), $clean_mime_type );
+				/* translators: 1: ERROR tag 2: clean_mime_type */
+				$errors .= '<br>' . sprintf( __( '%1$s: Bad MIME type; try "%2$s"', 'media-library-assistant' ), __( 'ERROR', 'media-library-assistant' ), $clean_mime_type );
 			}
 		}
 
@@ -2049,7 +2049,7 @@ class MLAMime {
 		}
 
 		return array(
-			'message' => __( 'ERROR: Cannot update Upload MIME Types', 'media-library-assistant' ),
+			'message' => __( 'ERROR', 'media-library-assistant' ) . ': ' . __( 'Cannot update Upload MIME Types', 'media-library-assistant' ),
 			'body' => ''
 		);
 	}
@@ -2068,7 +2068,7 @@ class MLAMime {
 			$errors = '';
 		} else {
 			return array(
-				'message' => __( 'ERROR: Cannot load Upload MIME Types', 'media-library-assistant' ),
+				'message' => __( 'ERROR', 'media-library-assistant' ) . ': ' . __( 'Cannot load Upload MIME Types', 'media-library-assistant' ),
 				'body' => ''
 			);
 		}
@@ -2118,8 +2118,8 @@ class MLAMime {
 			 * Make sure new slug is unique
 			 */
 			if ( isset( self::$mla_upload_mime_templates[ $slug ] ) ) {
-				/* translators: 1: slug */
-				$errors .= '<br>' . sprintf( __( 'ERROR: Could not add new extension "%1$s"; value already exists', 'media-library-assistant' ), $slug );
+				/* translators: 1: ERROR tag 2: slug */
+				$errors .= '<br>' . sprintf( __( '%1$s: Could not add new extension "%2$s"; value already exists', 'media-library-assistant' ), __( 'ERROR', 'media-library-assistant' ), $slug );
 			} else {
 				/* translators: 1: element name 2: old_value 3: new_value */
 				$messages .= sprintf( '<br>' . __( 'Changing %1$s from "%2$s" to "%3$s"', 'media-library-assistant' ), __( 'extension', 'media-library-assistant' ), $original_slug, $slug );
@@ -2152,8 +2152,8 @@ class MLAMime {
 		} else {
 			$clean_mime_type = sanitize_mime_type( $request['mime_type'] );
 			if ( $clean_mime_type != $request['mime_type'] ) {
-				/* translators: 1: clean_mime_type */
-				$errors .= '<br>' . sprintf( __( 'ERROR: Bad MIME type; try "%1$s"', 'media-library-assistant' ), $clean_mime_type );
+				/* translators: 1: ERROR tag 2: clean_mime_type */
+				$errors .= '<br>' . sprintf( __( '%1$s: Bad MIME type; try "%2$s"', 'media-library-assistant' ), __( 'ERROR', 'media-library-assistant' ), $clean_mime_type );
 			}
 		}
 
@@ -2238,7 +2238,7 @@ class MLAMime {
 		}
 
 		return array(
-			'message' => __( 'ERROR: Cannot update Upload MIME Types', 'media-library-assistant' ),
+			'message' => __( 'ERROR', 'media-library-assistant' ) . ': ' . __( 'Cannot update Upload MIME Types', 'media-library-assistant' ),
 			'body' => ''
 		);
 	}
@@ -2317,7 +2317,7 @@ class MLAMime {
 					}
 				} else {
 					return array(
-						'message' => __( 'ERROR: Cannot update Upload MIME Types', 'media-library-assistant' ),
+						'message' => __( 'ERROR', 'media-library-assistant' ) . ': ' . __( 'Cannot update Upload MIME Types', 'media-library-assistant' ),
 						'body' => ''
 					);
 				}
@@ -2325,8 +2325,8 @@ class MLAMime {
 		}
 
 		return array(
-			/* translators: 1: slug */
-			'message' => sprintf( __( 'ERROR: Did not find Upload type "%1$s"', 'media-library-assistant' ), $slug ),
+			/* translators: 1: ERROR tag 2: slug */
+			'message' => sprintf( __( '%1$s: Did not find Upload type "%2$s"', 'media-library-assistant' ), __( 'ERROR', 'media-library-assistant' ), $slug ),
 			'body' => ''
 		);
 	}
@@ -2357,8 +2357,8 @@ class MLAMime {
 		 * sanitize or validate them.
 		 */
 		if ( ! is_array( $raw_request ) ) {
-			/* translators: 1: function name 2: non-array value */
-			error_log( sprintf( _x( 'ERROR: %1$s non-array "%2$s"', 'error_log', 'media-library-assistant' ), 'MLAMime::_prepare_optional_upload_items_query', var_export( $raw_request, true ) ), 0 );
+			/* translators: 1: ERROR tag 2: function name 3: non-array value */
+			error_log( sprintf( _x( '%1$s: %2$s non-array "%3$s"', 'error_log', 'media-library-assistant' ), __( 'ERROR', 'media-library-assistant' ), 'MLAMime::_prepare_optional_upload_items_query', var_export( $raw_request, true ) ), 0 );
 			return NULL;
 		}
 

@@ -97,8 +97,8 @@ class MLAData {
 
 				$template = file_get_contents( $source, true );
 				if ( $template == false ) {
-					/* translators: 1: path and file name */
-					error_log( sprintf( _x( 'ERROR: mla_load_template file "%1$s" not found.', 'error_log', 'media-library-assistant' ), var_export( $source, true ) ), 0 );
+					/* translators: 1: ERROR tag 2: path and file name */
+					error_log( sprintf( _x( '%1$s: mla_load_template file "%2$s" not found.', 'error_log', 'media-library-assistant' ), __( 'ERROR', 'media-library-assistant' ), var_export( $source, true ) ), 0 );
 					return NULL;
 				}
 				break;
@@ -115,8 +115,8 @@ class MLAData {
 				}
 				break;
 			default:
-				/* translators: 1: path and file name 2: source type, e.g., file, option, string */
-				error_log( sprintf( _x( 'ERROR: mla_load_template file "%1$s" bad source type "%2$s".', 'error_log', 'media-library-assistant' ), $source, $type ), 0 );
+				/* translators: 1: ERROR tag 2: path and file name 3: source type, e.g., file, option, string */
+				error_log( sprintf( _x( '%1$s: mla_load_template file "%2$s" bad source type "%3$s".', 'error_log', 'media-library-assistant' ), __( 'ERROR', 'media-library-assistant' ), $source, $type ), 0 );
 				return NULL;
 		}
 
@@ -194,8 +194,8 @@ class MLAData {
 			do {
 				$template_end = strpos( $tpl, '+]', $nest );
 				if ( false === $template_end ) {
-					/* translators: 1: template excerpt */
-					error_log( sprintf( _x( 'ERROR: _find_template_substring no template end delimiter, tail = "%1$s".', 'error_log', 'media-library-assistant' ), substr( $tpl, $offset ) ), 0 );
+					/* translators: 1: ERROR tag 2: template excerpt */
+					error_log( sprintf( _x( '%1$s: _find_template_substring no template end delimiter, tail = "%2$s".', 'error_log', 'media-library-assistant' ), __( 'ERROR', 'media-library-assistant' ), substr( $tpl, $offset ) ), 0 );
 					return '';
 				}
 
@@ -253,8 +253,8 @@ class MLAData {
 				$offset = $start + $template_length;
 			} else { // found template
 				if ( false === $end = strpos( $tpl, '+]', $offset ) ) {
-					/* translators: 1: template excerpt */
-					error_log( sprintf( _x( 'ERROR: mla_parse_array_template no template end delimiter, tail = "%1$s".', 'error_log', 'media-library-assistant' ), substr( $tpl, $offset ) ), 0 );
+					/* translators: 1: ERROR tag 2: template excerpt */
+					error_log( sprintf( _x( '%1$s: mla_parse_array_template no template end delimiter, tail = "%2$s".', 'error_log', 'media-library-assistant' ), __( 'ERROR', 'media-library-assistant' ), substr( $tpl, $offset ) ), 0 );
 					return $tpl;
 				} // no end delimiter
 
@@ -341,8 +341,8 @@ class MLAData {
 					$offset = $start;
 				} else { // found template
 					if ( false === $end = strpos( $tpl, '+]', $offset ) ) {
-					/* translators: 1: template excerpt */
-					error_log( sprintf( _x( 'ERROR: mla_parse_template no end delimiter, tail = "%1$s".', 'error_log', 'media-library-assistant' ), substr( $tpl, $offset ) ), 0 );
+					/* translators: 1: ERROR tag 2: template excerpt */
+					error_log( sprintf( _x( '%1$s: mla_parse_template no end delimiter, tail = "%2$s".', 'error_log', 'media-library-assistant' ), __( 'ERROR', 'media-library-assistant' ), substr( $tpl, $offset ) ), 0 );
 						return $tpl;
 					} // no end delimiter
 
@@ -385,8 +385,8 @@ class MLAData {
 			do {
 				$test_end = strpos( $tpl, ')', $nest );
 				if ( false === $test_end ) {
-					/* translators: 1: template string */
-					error_log( sprintf( _x( 'ERROR: _find_test_substring no end delimiter, tail = "%1$s".', 'error_log', 'media-library-assistant' ), substr( $tpl, $nest ) ), 0 );
+					/* translators: 1: ERROR tag 2: template string */
+					error_log( sprintf( _x( '%1$s: _find_test_substring no end delimiter, tail = "%2$s".', 'error_log', 'media-library-assistant' ), __( 'ERROR', 'media-library-assistant' ), substr( $tpl, $nest ) ), 0 );
 					return '';
 				}
 
@@ -489,7 +489,7 @@ class MLAData {
 				elseif ( 2 == $test_length ) {
 					$index++; // empty test string
 				} else {
-					$test_content = __( 'ERROR: Test; no closing parenthesis ', 'media-library-assistant' );
+					$test_content = __( 'ERROR', 'media-library-assistant' ) . ': ' . __( 'Test; no closing parenthesis ', 'media-library-assistant' );
 					$output_values[] = array( 'type' => 'string', 'value' => $test_content, 'length' => strlen( $test_content ) );
 				} // bad test string
 			} // (test) element
@@ -644,8 +644,8 @@ class MLAData {
 
 					break;
 				default:
-					/* translators: 1: node type, e.g., template */
-					error_log( sprintf( _x( 'ERROR: _evaluate_template_array_node unknown type "%1$s".', 'error_log', 'media-library-assistant' ), $node ), 0 );
+					/* translators: 1: ERROR tag 2: node type, e.g., template */
+					error_log( sprintf( _x( '%1$s: _evaluate_template_array_node unknown type "%2$s".', 'error_log', 'media-library-assistant' ), __( 'ERROR', 'media-library-assistant' ), $node ), 0 );
 			} // node type
 		} // isset node type
 
@@ -707,8 +707,8 @@ class MLAData {
 
 				return $results;
 			default:
-				/* translators: 1: node type, e.g., template */
-				error_log( sprintf( _x( 'ERROR: _evaluate_template_node unknown type "%1$s".', 'error_log', 'media-library-assistant' ), $node ), 0 );
+				/* translators: 1: ERROR tag 2: node type, e.g., template */
+				error_log( sprintf( _x( '%1$s: _evaluate_template_node unknown type "%2$s".', 'error_log', 'media-library-assistant' ), __( 'ERROR', 'media-library-assistant' ), $node ), 0 );
 		} // node type
 
 		return '';				
@@ -1216,8 +1216,8 @@ class MLAData {
 			do {
 				$template_end = strpos( $tpl, '+]', $nest );
 				if ( false === $template_end ) {
-					/* translators: 1: template excerpt */
-					error_log( sprintf( _x( 'ERROR: mla_get_template_placeholders no template-end delimiter dump = "%1$s".', 'error_log', 'media-library-assistant' ), self::_hex_dump( substr( $tpl, $template_offset, 128 ), 128, 16 ) ), 0 );
+					/* translators: 1: ERROR tag 2: template excerpt */
+					error_log( sprintf( _x( '%1$s: mla_get_template_placeholders no template-end delimiter dump = "%2$s".', 'error_log', 'media-library-assistant' ), __( 'ERROR', 'media-library-assistant' ), self::_hex_dump( substr( $tpl, $template_offset, 128 ), 128, 16 ) ), 0 );
 					return array();
 				}
 
@@ -1486,8 +1486,8 @@ class MLAData {
 		 * sanitize or validate them.
 		 */
 		if ( ! is_array( $raw_request ) ) {
-			/* translators: 1: function name 2: non-array value */
-			error_log( sprintf( _x( 'ERROR: %1$s non-array "%2$s"', 'error_log', 'media-library-assistant' ), 'MLAData::_prepare_list_table_query', var_export( $raw_request, true ) ), 0 );
+			/* translators: 1: ERROR tag 2: function name 3: non-array value */
+			error_log( sprintf( _x( '%1$s: %2$s non-array "%3$s"', 'error_log', 'media-library-assistant' ), __( 'ERROR', 'media-library-assistant' ), 'MLAData::_prepare_list_table_query', var_export( $raw_request, true ) ), 0 );
 			return null;
 		}
 
@@ -1920,11 +1920,11 @@ class MLAData {
 			$debug_array = array( 'posts_search' => $wp_filter['posts_search'], 'posts_join' => $wp_filter['posts_join'], 'posts_where' => $wp_filter['posts_where'], 'posts_orderby' => $wp_filter['posts_orderby'] );
 
 			if ( 'console' == self::$query_parameters['debug'] ) {
-				/* translators: 1: query filter details */
-				trigger_error( sprintf( __( '_execute_list_table_query $wp_filter = "%1$s".', 'media-library-assistant' ), var_export( $debug_array, true ) ), E_USER_WARNING );
+				/* translators: 1: DEBUG tag 2: query filter details */
+				trigger_error( sprintf( __( '%1$s: _execute_list_table_query $wp_filter = "%2$s".', 'media-library-assistant' ), __( 'DEBUG', 'media-library-assistant' ), var_export( $debug_array, true ) ), E_USER_WARNING );
 			} else {
-				/* translators: 1: query filter details */
-				error_log( sprintf( _x( 'DEBUG: _execute_list_table_query $wp_filter = "%1$s".', 'error_log', 'media-library-assistant' ), var_export( $debug_array, true ) ), 0 );
+				/* translators: 1: DEBUG tag 2: query filter details */
+				error_log( sprintf( _x( '%1$s: _execute_list_table_query $wp_filter = "%2$s".', 'error_log', 'media-library-assistant' ), __( 'DEBUG', 'media-library-assistant' ), var_export( $debug_array, true ) ), 0 );
 			}
 
 			add_filter( 'posts_clauses', 'MLAData::mla_query_posts_clauses_filter', 0x7FFFFFFF, 1 );
@@ -1940,15 +1940,15 @@ class MLAData {
 			$debug_array = array( 'request' => $request, 'query_parameters' => self::$query_parameters, 'post_count' => $results->post_count, 'found_posts' => $results->found_posts );
 
 			if ( 'console' == self::$query_parameters['debug'] ) {
-				/* translators: 1: query details */
-				trigger_error( sprintf( __( '_execute_list_table_query WP_Query = "%1$s".', 'media-library-assistant' ), var_export( $debug_array, true ) ), E_USER_WARNING );
-				/* translators: 1: SQL statement */
-				trigger_error( sprintf( __( '_execute_list_table_query SQL_request = "%1$s".', 'media-library-assistant' ), var_export( $results->request, true ) ), E_USER_WARNING );
+				/* translators: 1: DEBUG tag 2: query details */
+				trigger_error( sprintf( __( '%1$s: _execute_list_table_query WP_Query = "%2$s".', 'media-library-assistant' ), __( 'DEBUG', 'media-library-assistant' ), var_export( $debug_array, true ) ), E_USER_WARNING );
+				/* translators: 1: DEBUG tag 2: SQL statement */
+				trigger_error( sprintf( __( '%1$s: _execute_list_table_query SQL_request = "%2$s".', 'media-library-assistant' ), __( 'DEBUG', 'media-library-assistant' ), var_export( $results->request, true ) ), E_USER_WARNING );
 			} else {
-				/* translators: 1: query details */
-				error_log( sprintf( _x( 'DEBUG: _execute_list_table_query WP_Query = "%1$s".', 'error_log', 'media-library-assistant' ), var_export( $debug_array, true ) ), 0 );
-				/* translators: 1: SQL statement */
-				error_log( sprintf( _x( 'DEBUG: _execute_list_table_query SQL_request = "%1$s".', 'error_log', 'media-library-assistant' ), var_export( $results->request, true ) ), 0 );
+				/* translators: 1: DEBUG tag 2: query details */
+				error_log( sprintf( _x( '%1$s: _execute_list_table_query WP_Query = "%2$s".', 'error_log', 'media-library-assistant' ), __( 'DEBUG', 'media-library-assistant' ), var_export( $debug_array, true ) ), 0 );
+				/* translators: 1: DEBUG tag 2: SQL statement */
+				error_log( sprintf( _x( '%1$s: _execute_list_table_query SQL_request = "%2$s".', 'error_log', 'media-library-assistant' ), __( 'DEBUG', 'media-library-assistant' ), var_export( $results->request, true ) ), 0 );
 			}
 		} // debug
 
@@ -2243,11 +2243,11 @@ class MLAData {
 			if ( 'shortcode' == self::$search_parameters['debug'] ) {
 				self::$search_parameters['mla_debug_messages'] = '<p><strong>mla_debug posts_search filter</strong> = ' . var_export( $debug_array, true ) . '</p>';
 			} elseif ( 'console' == self::$search_parameters['debug'] ) {
-				/* translators: 1: search filter details */
-				trigger_error( sprintf( __( 'mla_query_posts_search_filter = "%1$s".', 'media-library-assistant' ), var_export( $debug_array, true ) ), E_USER_WARNING );
+				/* translators: 1: DEBUG tag 2: search filter details */
+				trigger_error( sprintf( __( '%1$s: mla_query_posts_search_filter = "%2$s".', 'media-library-assistant' ), __( 'DEBUG', 'media-library-assistant' ), var_export( $debug_array, true ) ), E_USER_WARNING );
 			} else {
-				/* translators: 1: search filter details */
-				error_log( sprintf( _x( 'DEBUG: mla_query_posts_search_filter = "%1$s".', 'error_log', 'media-library-assistant' ), var_export( $debug_array, true ) ), 0 );
+				/* translators: 1: DEBUG tag 2: search filter details */
+				error_log( sprintf( _x( '%1$s: mla_query_posts_search_filter = "%2$s".', 'error_log', 'media-library-assistant' ), __( 'DEBUG', 'media-library-assistant' ), var_export( $debug_array, true ) ), 0 );
 			}
 		} // debug
 
@@ -2312,11 +2312,11 @@ class MLAData {
 			$debug_array['where_clause'] = $where_clause;
 
 			if ( 'console' == self::$query_parameters['debug'] ) {
-				/* translators: 1: where filter details */
-				trigger_error( sprintf( __( 'mla_query_posts_where_filter = "%1$s".', 'media-library-assistant' ), var_export( $debug_array, true ) ), E_USER_WARNING );
+				/* translators: 1: DEBUG tag 2: where filter details */
+				trigger_error( sprintf( __( '%1$s: mla_query_posts_where_filter = "%2$s".', 'media-library-assistant' ), __( 'DEBUG', 'media-library-assistant' ), var_export( $debug_array, true ) ), E_USER_WARNING );
 			} else {
-				/* translators: 1: where filter details */
-				error_log( sprintf( _x( 'DEBUG: mla_query_posts_where_filter = "%1$s".', 'error_log', 'media-library-assistant' ), var_export( $debug_array, true ) ), 0 );
+				/* translators: 1: DEBUG tag 2: where filter details */
+				error_log( sprintf( _x( '%1$s: mla_query_posts_where_filter = "%2$s".', 'error_log', 'media-library-assistant' ), __( 'DEBUG', 'media-library-assistant' ), var_export( $debug_array, true ) ), 0 );
 			}
 		} // debug
 
@@ -2366,11 +2366,11 @@ class MLAData {
 			$debug_array['join_clause'] = $join_clause;
 
 			if ( 'console' == self::$query_parameters['debug'] ) {
-				/* translators: 1: join filter details */
-				trigger_error( sprintf( __( 'mla_query_posts_join_filter = "%1$s".', 'media-library-assistant' ), var_export( $debug_array, true ) ), E_USER_WARNING );
+				/* translators: 1: DEBUG tag 2: join filter details */
+				trigger_error( sprintf( __( '%1$s: mla_query_posts_join_filter = "%2$s".', 'media-library-assistant' ), __( 'DEBUG', 'media-library-assistant' ), var_export( $debug_array, true ) ), E_USER_WARNING );
 			} else {
-				/* translators: 1: join filter details */
-				error_log( sprintf( _x( 'DEBUG: mla_query_posts_join_filter = "%1$s".', 'error_log', 'media-library-assistant' ), var_export( $debug_array, true ) ), 0 );
+				/* translators: 1: DEBUG tag 2: join filter details */
+				error_log( sprintf( _x( '%1$s: mla_query_posts_join_filter = "%2$s".', 'error_log', 'media-library-assistant' ), __( 'DEBUG', 'media-library-assistant' ), var_export( $debug_array, true ) ), 0 );
 			}
 		} // debug
 
@@ -2468,11 +2468,11 @@ class MLAData {
 			$debug_array['orderby_clause'] = $orderby_clause;
 
 			if ( 'console' == self::$query_parameters['debug'] ) {
-				/* translators: 1: orderby details details */
-				trigger_error( sprintf( __( 'mla_query_posts_orderby_filter = "%1$s".', 'media-library-assistant' ), var_export( $debug_array, true ) ), E_USER_WARNING );
+				/* translators: 1: DEBUG tag 2: orderby details details */
+				trigger_error( sprintf( __( '%1$s: mla_query_posts_orderby_filter = "%2$s".', 'media-library-assistant' ), __( 'DEBUG', 'media-library-assistant' ), var_export( $debug_array, true ) ), E_USER_WARNING );
 			} else {
-				/* translators: 1: orderby details details */
-				error_log( sprintf( _x( 'DEBUG: mla_query_posts_orderby_filter = "%1$s".', 'error_log', 'media-library-assistant' ), var_export( $debug_array, true ) ), 0 );
+				/* translators: 1: DEBUG tag 2: orderby details details */
+				error_log( sprintf( _x( '%1$s: mla_query_posts_orderby_filter = "%2$s".', 'error_log', 'media-library-assistant' ), __( 'DEBUG', 'media-library-assistant' ), var_export( $debug_array, true ) ), 0 );
 			}
 		} // debug
 
@@ -2507,11 +2507,11 @@ class MLAData {
 	 */
 	public static function mla_query_posts_clauses_filter( $pieces ) {
 		if ( 'console' == self::$query_parameters['debug'] ) {
-			/* translators: 1: SQL clauses */
-			trigger_error( sprintf( __( 'mla_query_posts_clauses_filter = "%1$s".', 'media-library-assistant' ), var_export( $pieces, true ) ), E_USER_WARNING );
+			/* translators: 1: DEBUG tag 2: SQL clauses */
+			trigger_error( sprintf( __( '%1$s: mla_query_posts_clauses_filter = "%2$s".', 'media-library-assistant' ), __( 'DEBUG', 'media-library-assistant' ), var_export( $pieces, true ) ), E_USER_WARNING );
 		} else {
-			/* translators: 1: SQL clauses */
-			error_log( sprintf( _x( 'DEBUG: mla_query_posts_clauses_filter = "%1$s".', 'error_log', 'media-library-assistant' ), var_export( $pieces, true ) ), 0 );
+			/* translators: 1: DEBUG tag 2: SQL clauses */
+			error_log( sprintf( _x( '%1$s: mla_query_posts_clauses_filter = "%2$s".', 'error_log', 'media-library-assistant' ), __( 'DEBUG', 'media-library-assistant' ), var_export( $pieces, true ) ), 0 );
 		}
 
 		return $pieces;
@@ -2531,11 +2531,11 @@ class MLAData {
 	 */
 	public static function mla_query_posts_clauses_request_filter( $pieces ) {
 		if ( 'console' == self::$query_parameters['debug'] ) {
-			/* translators: 1: SQL clauses */
-			trigger_error( sprintf( __( 'mla_query_posts_clauses_request_filter = "%1$s".', 'media-library-assistant' ), var_export( $pieces, true ) ), E_USER_WARNING );
+			/* translators: 1: DEBUG tag 2: SQL clauses */
+			trigger_error( sprintf( __( '%1$s: mla_query_posts_clauses_request_filter = "%2$s".', 'media-library-assistant' ), __( 'DEBUG', 'media-library-assistant' ), var_export( $pieces, true ) ), E_USER_WARNING );
 		} else {
-			/* translators: 1: SQL clauses */
-			error_log( sprintf( _x( 'DEBUG: mla_query_posts_clauses_request_filter = "%1$s".', 'error_log', 'media-library-assistant' ), var_export( $pieces, true ) ), 0 );
+			/* translators: 1: DEBUG tag 2: SQL clauses */
+			error_log( sprintf( _x( '%1$s: mla_query_posts_clauses_request_filter = "%2$s".', 'error_log', 'media-library-assistant' ), __( 'DEBUG', 'media-library-assistant' ), var_export( $pieces, true ) ), 0 );
 		}
 
 		return $pieces;
@@ -2568,14 +2568,14 @@ class MLAData {
 
 		$item = get_post( $post_id );
 		if ( empty( $item ) ) {
-			/* translators: 1: post ID */
-			error_log( sprintf( _x( 'ERROR: mla_get_attachment_by_id(%1$d) not found.', 'error_log', 'media-library-assistant' ), $post_id ), 0 );
+			/* translators: 1: ERROR tag 2: post ID */
+			error_log( sprintf( _x( '%1$s: mla_get_attachment_by_id(%2$d) not found.', 'error_log', 'media-library-assistant' ), __( 'ERROR', 'media-library-assistant' ), $post_id ), 0 );
 			return NULL;
 		}
 
 		if ( $item->post_type != 'attachment' ) {
-			/* translators: 1: post ID 2: post_type */
-			error_log( sprintf( _x( 'ERROR: mla_get_attachment_by_id(%1$d) wrong post_type "%2$s".', 'error_log', 'media-library-assistant' ), $post_id, $item->post_type ), 0 );
+			/* translators: 1: ERROR tag 2: post ID 3: post_type */
+			error_log( sprintf( _x( '%1$s: mla_get_attachment_by_id(%2$d) wrong post_type "%3$s".', 'error_log', 'media-library-assistant' ), __( 'ERROR', 'media-library-assistant' ), $post_id, $item->post_type ), 0 );
 			return NULL;
 		}
 
@@ -3947,8 +3947,8 @@ class MLAData {
 			} elseif ( 'stream' == substr( $matches[0][ $index ][0], 0, 6 ) ) {
 				$is_stream = true;
 			} else {
-				/* translators: 1: index */
-				error_log( sprintf( _x( 'ERROR: _build_pdf_indirect_objects bad value at $index = "%1$d".', 'error_log', 'media-library-assistant' ), $index ), 0 );
+				/* translators: 1: ERROR tag 2: index */
+				error_log( sprintf( _x( '%1$s: _build_pdf_indirect_objects bad value at $index = "%2$d".', 'error_log', 'media-library-assistant' ), __( 'ERROR', 'media-library-assistant' ), $index ), 0 );
 			}
 		} // for each match
 	}
@@ -4272,10 +4272,10 @@ class MLAData {
 		do {
 			$dictionary_end = strpos( $source_string, '>>', $nest );
 			if ( false === $dictionary_end ) {
-					/* translators: 1: source offset 2: nest level */
-				error_log( sprintf( _x( 'ERROR: _parse_pdf_dictionary offset = %1$d, nest = %2$d.', 'error_log', 'media-library-assistant' ), $offset, $nest ), 0 );
-					/* translators: 1: dictionary excerpt */
-				error_log( sprintf( _x( 'ERROR: _parse_pdf_dictionary no end delimiter dump = %1$s.', 'error_log', 'media-library-assistant' ), self::_hex_dump( substr( $source_string, $offset, 128 ), 128, 16 ) ), 0 );
+					/* translators: 1: ERROR tag 2: source offset 3: nest level */
+				error_log( sprintf( _x( '%1$s: _parse_pdf_dictionary offset = %2$d, nest = %3$d.', 'error_log', 'media-library-assistant' ), __( 'ERROR', 'media-library-assistant' ), $offset, $nest ), 0 );
+					/* translators: 1: ERROR tag 2: dictionary excerpt */
+				error_log( sprintf( _x( '%1$s: _parse_pdf_dictionary no end delimiter dump = %2$s.', 'error_log', 'media-library-assistant' ), __( 'ERROR', 'media-library-assistant' ), self::_hex_dump( substr( $source_string, $offset, 128 ), 128, 16 ) ), 0 );
 				return array( '/length' => 0 );
 			}
 
@@ -4320,8 +4320,8 @@ class MLAData {
 				$length = strlen( $value );
 				$dictionary[ $name ]['value'] = $value;
 				if ( ! isset( $value[0] ) ) {
-					/* translators: 1: entry name 2: value excerpt */
-					error_log( sprintf( _x( 'ERROR: _parse_pdf_dictionary bad value [ %1$s ] dump = %2$s', 'error_log', 'media-library-assistant' ), $name, self::_hex_dump( $value, 32, 16 ) ), 0 );
+					/* translators: 1: ERROR tag 2: entry name 3: value excerpt */
+					error_log( sprintf( _x( '%1$s: _parse_pdf_dictionary bad value [ %2$s ] dump = %3$s', 'error_log', 'media-library-assistant' ), __( 'ERROR', 'media-library-assistant' ), $name, self::_hex_dump( $value, 32, 16 ) ), 0 );
 					continue;
 				}
 
@@ -4435,10 +4435,10 @@ class MLAData {
 		$xml_parser = xml_parser_create('UTF-8');
 		if ( xml_parser_set_option( $xml_parser, XML_OPTION_SKIP_WHITE, 0 ) && xml_parser_set_option( $xml_parser, XML_OPTION_CASE_FOLDING, 0 ) ) {
 			if (xml_parse_into_struct( $xml_parser, $xmp_string, $xmp_values ) == 0) {
-				error_log( _x( 'ERROR: _parse_xmp_metadata xml_parse_into_struct failed.', 'error_log', 'media-library-assistant' ), 0 );
+				error_log( __( 'ERROR', 'media-library-assistant' ) . ': ' . _x( '_parse_xmp_metadata xml_parse_into_struct failed.', 'error_log', 'media-library-assistant' ), 0 );
 			}
 		} else {
-			error_log( _x( 'ERROR: _parse_xmp_metadata set option failed.', 'error_log', 'media-library-assistant' ), 0 );
+			error_log( __( 'ERROR', 'media-library-assistant' ) . ': ' . _x( '_parse_xmp_metadata set option failed.', 'error_log', 'media-library-assistant' ), 0 );
 		}
 
 		xml_parser_free($xml_parser);
@@ -4794,8 +4794,8 @@ class MLAData {
 		 */
 		$match_count = preg_match_all( '/startxref[\x00-\x20]+(\d+)[\x00-\x20]+\%\%EOF/', $tail, $matches, PREG_OFFSET_CAPTURE );
 		if ( 0 == $match_count ) {
-			/* translators: 1: path and file */
-			error_log( sprintf( _x( 'ERROR: File "%1$s", startxref not found.', 'error_log', 'media-library-assistant' ), $path ), 0 );
+			/* translators: 1: ERROR tag 2: path and file */
+			error_log( sprintf( _x( '%1$s: File "%2$s", startxref not found.', 'error_log', 'media-library-assistant' ), __( 'ERROR', 'media-library-assistant' ), $path ), 0 );
 			return $metadata;
 		}
 
@@ -5582,7 +5582,7 @@ class MLAData {
 					if ( ! empty( MLAData::$mla_IPTC_EXIF_errors ) ) {
 						$results['mla_iptc_errors'] = MLAData::$mla_IPTC_EXIF_errors;
 						MLAData::$mla_IPTC_EXIF_errors = array();
-						error_log( 'ERROR: $results[mla_iptc_errors] = ' . var_export( $results['mla_exif_errors'], true ), 0 );
+						error_log( __( 'ERROR', 'media-library-assistant' ) . ': ' . '$results[mla_iptc_errors] = ' . var_export( $results['mla_exif_errors'], true ), 0 );
 					}
 
 					if ( ! is_array( $iptc_values ) ) {
@@ -5609,7 +5609,7 @@ class MLAData {
 				if ( ! empty( MLAData::$mla_IPTC_EXIF_errors ) ) {
 					$results['mla_exif_errors'] = MLAData::$mla_IPTC_EXIF_errors;
 					MLAData::$mla_IPTC_EXIF_errors = array();
-					error_log( 'ERROR: $results[mla_exif_errors] = ' . var_export( $results['mla_exif_errors'], true ), 0 );
+					error_log( __( 'ERROR', 'media-library-assistant' ) . ': ' . '$results[mla_exif_errors] = ' . var_export( $results['mla_exif_errors'], true ), 0 );
 				}
 			}
 		}
@@ -5661,9 +5661,9 @@ class MLAData {
 		if ( isset( $exif_data['Flash'] ) ) {
 			$value = ( absint( $exif_data['Flash'] ) );
 			if ( $value & 0x1 ) {
-				$new_data['Flash'] = __( 'yes', 'media-library-assistant' );
+				$new_data['Flash'] = __( 'Yes', 'media-library-assistant' );
 			} else {
-				$new_data['Flash'] = __( 'no', 'media-library-assistant' );
+				$new_data['Flash'] = __( 'No', 'media-library-assistant' );
 			}
 		} // Flash
 		
@@ -5921,10 +5921,10 @@ class MLAData {
 				if ( empty( $value ) ) {
 					if ( self::_unset_array_element( $key, $current_values ) ) {
 						/* translators: 1: meta_key */
-						$message .= sprintf( __( 'Deleting meta:%1$s', 'media-library-assistant' ) . '<br>', $key );
+						$message .= sprintf( __( 'Deleting %1$s', 'media-library-assistant' ) . '<br>', $key );
 					} else {
-						/* translators: 1: meta_key */
-						$message .= sprintf( __( 'ERROR: meta:%1$s not found', 'media-library-assistant' ) . '<br>', $key );
+						/* translators: 1: ERROR tag 2: meta_key */
+						$message .= sprintf( __( '%1$s: meta:%2$s not found', 'media-library-assistant' ) . '<br>', __( 'ERROR', 'media-library-assistant' ), $key );
 					}
 
 					continue;
@@ -5933,11 +5933,11 @@ class MLAData {
 				if ( ! empty( $value ) ) {
 					if ( self::_set_array_element( $key, $value, $current_values ) ) {
 						/* translators: 1: meta_key 2: meta_value */
-						$message .= sprintf( __( 'Adding meta:%1$s = %2$s', 'media-library-assistant' ) . '<br>', $key,
+						$message .= sprintf( __( 'Adding %1$s = %2$s', 'media-library-assistant' ) . '<br>', $key,
 							( is_array( $value ) ) ? var_export( $value, true ) : $value );
 					} else {
-						/* translators: 1: meta_key */
-						$message .= sprintf( __( 'ERROR: Adding meta:%1$s; not found', 'media-library-assistant' ) . '<br>', $key );
+						/* translators: 1: ERROR tag 2: meta_key */
+						$message .= sprintf( __( '%1$s: Adding meta:%2$s; not found', 'media-library-assistant' ) . '<br>', __( 'ERROR', 'media-library-assistant' ), $key );
 					}
 
 					continue;
@@ -5958,8 +5958,8 @@ class MLAData {
 						( is_array( $old_value ) ) ? var_export( $old_value, true ) : $old_value,
 						( is_array( $value ) ) ? var_export( $value, true ) : $value );
 				} else {
-					/* translators: 1: meta_key */
-					$message .= sprintf( __( 'ERROR: Changing meta:%1$s; not found', 'media-library-assistant' ) . '<br>', $key );
+					/* translators: 1: ERROR tag 2: meta_key */
+					$message .= sprintf( __( '%1$s: Changing meta:%2$s; not found', 'media-library-assistant' ) . '<br>', __( 'ERROR', 'media-library-assistant' ), $key );
 				}
 			}
 		} // foreach new_meta
@@ -6030,7 +6030,7 @@ class MLAData {
 						foreach ( $meta_value as $new_value ) {
 							if ( add_post_meta( $post_id, $meta_key, $new_value ) ) {
 								/* translators: 1: meta_key 2: new_value */
-								$message .= sprintf( __( 'Adding %1$s = [%2$s]', 'media-library-assistant' ) . '<br>', $meta_key, $new_value );
+								$message .= sprintf( __( 'Adding %1$s = %2$s', 'media-library-assistant' ) . '<br>', $meta_key, '[' . $new_value . ']' );
 							}
 						}
 					} else {
@@ -6148,7 +6148,7 @@ class MLAData {
 		$post_data = self::mla_get_attachment_by_id( $post_id, false );
 		if ( !isset( $post_data ) ) {
 			return array(
-				'message' => __( 'ERROR: Could not retrieve Attachment.', 'media-library-assistant' ),
+				'message' =>  __( 'ERROR', 'media-library-assistant' ) . ': ' . __( 'Could not retrieve Attachment.', 'media-library-assistant' ),
 				'body' => '' 
 			);
 		}
@@ -6188,8 +6188,8 @@ class MLAData {
 					$my_posts = get_posts( $args );
 
 					if ( $my_posts ) {
-						/* translators: 1: old_value */
-						$message .= sprintf( __( 'ERROR: Could not change Name/Slug "%1$s"; name already exists', 'media-library-assistant' ) . '<br>', $value );
+						/* translators: 1: ERROR tag 2: old_value */
+						$message .= sprintf( __( '%1$s: Could not change Name/Slug "%2$s"; name already exists', 'media-library-assistant' ) . '<br>', __( 'ERROR', 'media-library-assistant' ), $value );
 					} else {
 						/* translators: 1: element name 2: old_value 3: new_value */
 						$message .= sprintf( __( 'Changing %1$s from "%2$s" to "%3$s"', 'media-library-assistant' ) . '<br>', __( 'Name/Slug', 'media-library-assistant' ), esc_attr( $post_data[ $key ] ), esc_attr( $value ) );
@@ -6220,16 +6220,16 @@ class MLAData {
 							/* translators: 1: old_value */
 							$message .= sprintf( __( 'Deleting ALT Text, was "%1$s"', 'media-library-assistant' ) . '<br>', esc_attr( $post_data[ $key ] ) );
 						} else {
-							/* translators: 1: old_value */
-							$message .= sprintf( __( 'ERROR: Could not delete ALT Text, remains "%1$s"', 'media-library-assistant' ) . '<br>', esc_attr( $post_data[ $key ] ) );
+							/* translators: 1: ERROR tag 2: old_value */
+							$message .= sprintf( __( '%1$s: Could not delete ALT Text, remains "%2$s"', 'media-library-assistant' ) . '<br>', __( 'ERROR', 'media-library-assistant' ), esc_attr( $post_data[ $key ] ) );
 						}
 					} else {
 						if ( update_post_meta( $post_id, '_wp_attachment_image_alt', $value ) ) {
 							/* translators: 1: element name 2: old_value 3: new_value */
 							$message .= sprintf( __( 'Changing %1$s from "%2$s" to "%3$s"', 'media-library-assistant' ) . '<br>', __( 'ALT Text', 'media-library-assistant' ), esc_attr( $post_data[ $key ] ), esc_attr( $value ) );
 						} else {
-							/* translators: 1: old_value 2: new_value */
-							$message .= sprintf( __( 'ERROR: Could not change ALT Text from "%1$s" to "%2$s"', 'media-library-assistant' ) . '<br>', esc_attr( $post_data[ $key ] ), esc_attr( $value ) );
+							/* translators: 1: ERROR tag 2: old_value 3: new_value */
+							$message .= sprintf( __( '%1$s: Could not change ALT Text from "%2$s" to "%3$s"', 'media-library-assistant' ) . '<br>', __( 'ERROR', 'media-library-assistant' ), esc_attr( $post_data[ $key ] ), esc_attr( $value ) );
 						}
 					}
 					break;
@@ -6407,8 +6407,8 @@ class MLAData {
 				);
 			} else {
 				return array(
-					/* translators: 1: post ID */
-					'message' => sprintf( __( 'ERROR: Item %1$d update failed.', 'media-library-assistant' ), $post_id ),
+					/* translators: 1: ERROR tag 2: post ID */
+					'message' => sprintf( __( '%1$s: Item %2$d update failed.', 'media-library-assistant' ), __( 'ERROR', 'media-library-assistant' ), $post_id ),
 					'body' => '' 
 				);
 			}

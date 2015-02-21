@@ -600,8 +600,8 @@ class MLA {
 					'content' => $content 
 				);
 			} else {
-				/* translators: 1: function name 2: template key */
-				error_log( sprintf( _x( 'ERROR: %1$s discarding "%2$s"; no title/order', 'error_log', 'media-library-assistant' ), 'mla_add_help_tab', $id ), 0 );
+				/* translators: 1: ERROR tag 2: function name 3: template key */
+				error_log( sprintf( _x( '%1$s: %2$s discarding "%3$s"; no title/order', 'error_log', 'media-library-assistant' ), __( 'ERROR', 'media-library-assistant' ), 'mla_add_help_tab', $id ), 0 );
 			}
 		}
 
@@ -792,7 +792,7 @@ class MLA {
 			
 			exit();
 		} else {
-			$message = 'ERROR: download argument(s) not set.';
+			$message = __( 'ERROR', 'media-library-assistant' ) . ': ' . 'download argument(s) not set.';
 		}
 		
 		echo '<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">';
@@ -892,7 +892,7 @@ class MLA {
 
 			foreach ( $request['cb_attachment'] as $index => $post_id ) {
 				if ( ! current_user_can( 'edit_post', $post_id ) ) {
-					$page_content['message'] .= __( 'ERROR: You are not allowed to edit Attachment: ', 'media-library-assistant' ) . $post_id . '<br>';
+					$page_content['message'] .= __( 'ERROR', 'media-library-assistant' ) . ': ' . __( 'You are not allowed to edit Attachment: ', 'media-library-assistant' ) . $post_id . '<br>';
 					continue;
 				}
 
@@ -1127,7 +1127,8 @@ class MLA {
 	
 							if ( is_null( $item_content ) ) {
 								$prevent_default = false;
-								$custom_message = sprintf( __( 'ERROR: Unknown bulk action %1$s', 'media-library-assistant' ), $bulk_action );
+								/* translators: 1: ERROR tag 2: bulk action */
+								$custom_message = sprintf( __( '%1$s: Unknown bulk action %2$s', 'media-library-assistant' ), __( 'ERROR', 'media-library-assistant' ), $bulk_action );
 							} else {
 								$prevent_default = isset( $item_content['prevent_default'] ) ? $item_content['prevent_default'] : false;
 							}
@@ -1152,7 +1153,7 @@ class MLA {
 						if ( false !== strpos( $item_content['message'], __( 'no changes detected', 'media-library-assistant' ) ) ) {
 							$page_content['unchanged'] += 1;
 							$page_content['item_results'][ $post_id ]['result'] = 'unchanged';
-						} elseif (	 false !== strpos( $item_content['message'], __( 'ERROR:', 'media-library-assistant' ) ) ) {
+						} elseif (	 false !== strpos( $item_content['message'], __( 'ERROR', 'media-library-assistant' ) ) ) {
 							$page_content['failure'] += 1;
 							$page_content['item_results'][ $post_id ]['result'] = 'failure';
 						} else {
@@ -1304,7 +1305,7 @@ class MLA {
 			foreach ( $ids as $post_id ) {
 				$item_content = self::_delete_single_item( $post_id );
 
-				if ( false !== strpos( $item_content['message'], __( 'ERROR:', 'media-library-assistant' ) ) ) {
+				if ( false !== strpos( $item_content['message'], __( 'ERROR', 'media-library-assistant' ) ) ) {
 					$page_content['message'] .= $item_content['message'] . '<br>';
 				} else {
 					$delete_count++;
@@ -1312,6 +1313,7 @@ class MLA {
 			}
 
 			if ( $delete_count ) {
+				/* translators: 1: number of items */
 				$page_content['message'] .= sprintf( _nx( '%s item deleted.', '%s items deleted.', $delete_count, 'deleted items', 'media-library-assistant' ), number_format_i18n( $delete_count ) );
 			} else {
 				$page_content['message'] .= __( 'No items deleted.', 'media-library-assistant' );
@@ -1415,7 +1417,7 @@ class MLA {
 
 		if ( !empty( $page_content['body'] ) ) {
 			if ( !empty( $page_content['message'] ) ) {
-				if ( false !== strpos( $page_content['message'], __( 'ERROR:', 'media-library-assistant' ) ) ) {
+				if ( false !== strpos( $page_content['message'], __( 'ERROR', 'media-library-assistant' ) ) ) {
 					$messages_class = 'mla_errors';
 				} else {
 					$messages_class = 'mla_messages';
@@ -1446,7 +1448,7 @@ class MLA {
 			}
 
 			if ( !empty( $page_content['message'] ) ) {
-				if ( false !== strpos( $page_content['message'], __( 'ERROR:', 'media-library-assistant' ) ) ) {
+				if ( false !== strpos( $page_content['message'], __( 'ERROR', 'media-library-assistant' ) ) ) {
 					$messages_class = 'mla_errors';
 				} else {
 					$messages_class = 'mla_messages';
@@ -1673,18 +1675,18 @@ class MLA {
 		check_ajax_referer( self::MLA_ADMIN_NONCE, 'nonce' );
 
 		if ( empty( $_REQUEST['post_ID'] ) ) {
-			echo __( 'ERROR: No post ID found', 'media-library-assistant' );
+			echo __( 'ERROR', 'media-library-assistant' ) . ': ' . __( 'No post ID found', 'media-library-assistant' );
 			die();
 		} else {
 			$post_id = $_REQUEST['post_ID'];
 		}
 
 		if ( ! current_user_can( 'edit_post', $post_id ) ) {
-			wp_die( __( 'You are not allowed to edit this Attachment.', 'media-library-assistant' ) );
+			wp_die( __( 'ERROR', 'media-library-assistant' ) . ': ' . __( 'You are not allowed to edit this Attachment.', 'media-library-assistant' ) );
 		}
 
 		$results = MLAData::mla_update_single_item( $post_id, $_REQUEST );
-		if ( false !== strpos( $results['message'], __( 'ERROR:', 'media-library-assistant' ) ) ) {
+		if ( false !== strpos( $results['message'], __( 'ERROR', 'media-library-assistant' ) ) ) {
 			wp_die( $results['message'] );
 		}
 
@@ -1754,14 +1756,14 @@ class MLA {
 		}
 
 		if ( empty( $_REQUEST['post_ID'] ) ) {
-			echo __( 'ERROR: No post ID found', 'media-library-assistant' );
+			echo __( 'ERROR', 'media-library-assistant' ) . ': ' . __( 'No post ID found', 'media-library-assistant' );
 			die();
 		} else {
 			$post_id = $_REQUEST['post_ID'];
 		}
 
 		if ( ! current_user_can( 'edit_post', $post_id ) ) {
-			wp_die( __( 'You are not allowed to edit this Attachment.', 'media-library-assistant' ) );
+			wp_die( __( 'ERROR', 'media-library-assistant' ) . ': ' . __( 'You are not allowed to edit this Attachment.', 'media-library-assistant' ) );
 		}
 
 		/*
@@ -1901,8 +1903,8 @@ class MLA {
 	public static function mla_set_parent_form( $return_form = true ) {
 		$set_parent_template = MLAData::mla_load_template( 'admin-set-parent-form.tpl' );
 		if ( ! is_array( $set_parent_template ) ) {
-			/* translators: 1: function name 2: non-array value */
-			error_log( sprintf( _x( 'ERROR: %1$s non-array "%2$s"', 'error_log', 'media-library-assistant' ), 'MLA::_build_inline_edit_form', var_export( $set_parent_template, true ) ), 0 );
+			/* translators: 1: ERROR tag 2: function name 3: non-array value */
+			error_log( sprintf( _x( '%1$s: %2$s non-array "%3$s"', 'error_log', 'media-library-assistant' ), __( 'ERROR', 'media-library-assistant' ), 'MLA::_build_inline_edit_form', var_export( $set_parent_template, true ) ), 0 );
 			return '';
 		}
 
@@ -1976,8 +1978,8 @@ class MLA {
 
 		$page_template_array = MLAData::mla_load_template( 'admin-inline-edit-form.tpl' );
 		if ( ! is_array( $page_template_array ) ) {
-			/* translators: 1: function name 2: non-array value */
-			error_log( sprintf( _x( 'ERROR: %1$s non-array "%2$s"', 'error_log', 'media-library-assistant' ), 'MLA::_build_inline_edit_form', var_export( $page_template_array, true ) ), 0 );
+			/* translators: 1: ERROR tag 2: function name 3: non-array value */
+			error_log( sprintf( _x( '%1$s: %2$s non-array "%3$s"', 'error_log', 'media-library-assistant' ), __( 'ERROR', 'media-library-assistant' ), 'MLA::_build_inline_edit_form', var_export( $page_template_array, true ) ), 0 );
 			return '';
 		}
 
@@ -2224,15 +2226,15 @@ class MLA {
 	private static function _delete_single_item( $post_id ) {
 		if ( !current_user_can( 'delete_post', $post_id ) ) {
 			return array(
-				'message' => __( 'ERROR: You are not allowed to delete this item.', 'media-library-assistant' ),
+				'message' => __( 'ERROR', 'media-library-assistant' ) . ': ' . __( 'You are not allowed to delete this item.', 'media-library-assistant' ),
 				'body' => '' 
 			);
 		}
 
 		if ( !wp_delete_attachment( $post_id, true ) ) {
 			return array(
-				/* translators: 1: post ID */
-				'message' => sprintf( __( 'ERROR: Item %1$d could NOT be deleted.', 'media-library-assistant' ), $post_id ),
+				/* translators: 1: ERROR tag 2: post ID */
+				'message' => sprintf( __( '%1$s: Item %2$d could NOT be deleted.', 'media-library-assistant' ), __( 'ERROR', 'media-library-assistant' ), $post_id ),
 				'body' => '' 
 			);
 		}
@@ -2265,7 +2267,7 @@ class MLA {
 		$post_data = MLAData::mla_get_attachment_by_id( $post_id );
 		if ( !isset( $post_data ) ) {
 			return array(
-				'message' => __( 'ERROR: Could not retrieve Attachment.', 'media-library-assistant' ),
+				'message' => __( 'ERROR', 'media-library-assistant' ) . ': ' . __( 'Could not retrieve Attachment.', 'media-library-assistant' ),
 				'body' => '' 
 			);
 		}
@@ -2298,8 +2300,8 @@ class MLA {
 			$authors_template = $page_template_array['authors'];
 			$postbox_template = $page_template_array['postbox'];
 		} else {
-			/* translators: 1: page_template_array */
-			error_log( sprintf( _x( 'ERROR: MLA::_display_single_item \$page_template_array = "%1$s"', 'error_log', 'media-library-assistant' ), var_export( $page_template_array, true ) ), 0 );
+			/* translators: 1: ERROR tag 2: page_template_array */
+			error_log( sprintf( _x( '%1$s: MLA::_display_single_item \$page_template_array = "%2$s"', 'error_log', 'media-library-assistant' ), __( 'ERROR', 'media-library-assistant' ), var_export( $page_template_array, true ) ), 0 );
 			$page_template = $page_template_array;
 			$authors_template = '';
 			$postbox_template = '';
@@ -2540,15 +2542,15 @@ class MLA {
 	private static function _restore_single_item( $post_id ) {
 		if ( !current_user_can( 'delete_post', $post_id ) ) {
 			return array(
-				'message' => __( 'ERROR: You are not allowed to move this item out of the Trash.', 'media-library-assistant' ),
+				'message' => __( 'ERROR', 'media-library-assistant' ) . ': ' . __( 'You are not allowed to move this item out of the Trash.', 'media-library-assistant' ),
 				'body' => '' 
 			);
 		}
 
 		if ( !wp_untrash_post( $post_id ) ) {
 			return array(
-				/* translators: 1: post ID */
-				'message' => sprintf( __( 'ERROR: Item %1$d could NOT be restored from Trash.', 'media-library-assistant' ), $post_id ),
+				/* translators: 1: ERROR tag 2: post ID */
+				'message' => sprintf( __( '%1$s: Item %2$d could NOT be restored from Trash.', 'media-library-assistant' ), __( 'ERROR', 'media-library-assistant' ), $post_id ),
 				'body' => '' 
 			);
 		}
@@ -2580,15 +2582,15 @@ class MLA {
 	private static function _trash_single_item( $post_id ) {
 		if ( !current_user_can( 'delete_post', $post_id ) ) {
 			return array(
-				'message' => __( 'ERROR: You are not allowed to move this item to the Trash.', 'media-library-assistant' ),
+				'message' => __( 'ERROR', 'media-library-assistant' ) . ': ' . __( 'You are not allowed to move this item to the Trash.', 'media-library-assistant' ),
 				'body' => '' 
 			);
 		}
 
 		if ( !wp_trash_post( $post_id, false ) ) {
 			return array(
-				/* translators: 1: post ID */
-				'message' => sprintf( __( 'ERROR: Item %1$d could NOT be moved to Trash.', 'media-library-assistant' ), $post_id ),
+				/* translators: 1: ERROR tag 2: post ID */
+				'message' => sprintf( __( '%1$s: Item %2$d could NOT be moved to Trash.', 'media-library-assistant' ), __( 'ERROR', 'media-library-assistant' ), $post_id ),
 				'body' => '' 
 			);
 		}

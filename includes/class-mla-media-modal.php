@@ -1182,8 +1182,8 @@ class MLAModal {
 	public static function mla_terms_search_form() {
 		$page_template_array = MLAData::mla_load_template( 'admin-terms-search-form.tpl' );
 		if ( ! is_array( $page_template_array ) ) {
-			/* translators: 1: function name 2: non-array value */
-			error_log( sprintf( _x( 'ERROR: %1$s non-array "%2$s"', 'error_log', 'media-library-assistant' ), 'MLA::_build_terms_search_form', var_export( $page_template_array, true ) ), 0 );
+			/* translators: 1: ERROR tag 2: function name 3: non-array value */
+			error_log( sprintf( _x( '%1$s: %2$s non-array "%3$s"', 'error_log', 'media-library-assistant' ), __( 'ERROR', 'media-library-assistant' ), 'MLA::_build_terms_search_form', var_export( $page_template_array, true ) ), 0 );
 			return '';
 		}
 

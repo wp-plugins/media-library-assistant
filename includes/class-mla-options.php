@@ -1652,8 +1652,8 @@ class MLAOptions {
 				update_option( $key, '' );
 				return $msg;
 			default:
-				/* translators: 1: option name 2: action, e.g., update, delete, reset */
-				return '<br>' . sprintf( __( 'ERROR: Custom %1$s unknown action "%2$s"', 'media-library-assistant' ), $key, $action ) . "\r\n";
+				/* translators: 1: ERROR tag 2: option name 3: action, e.g., update, delete, reset */
+				return '<br>' . sprintf( __( '%1$s: Custom %2$s unknown action "%3$s"', 'media-library-assistant' ), __( 'ERROR', 'media-library-assistant' ), $key, $action ) . "\r\n";
 		}
 	} // mla_attachment_display_settings_option_handler
 
@@ -1829,8 +1829,8 @@ class MLAOptions {
 				/* translators: 1: option name, e.g., taxonomy_support */
 				return '<br>' . sprintf( __( 'Reset custom %1$s', 'media-library-assistant' ), $key ) . "\r\n";
 			default:
-				/* translators: 1: option name 2: action, e.g., update, delete, reset */
-				return '<br>' . sprintf( __( 'ERROR: Custom %1$s unknown action "%2$s"', 'media-library-assistant' ), $key, $action ) . "\r\n";
+				/* translators: 1: ERROR tag 2: option name 3: action, e.g., update, delete, reset */
+				return '<br>' . sprintf( __( '%1$s: Custom %2$s unknown action "%3$s"', 'media-library-assistant' ), __( 'ERROR', 'media-library-assistant' ), $key, $action ) . "\r\n";
 		}
 	} // mla_taxonomy_option_handler
 
@@ -1905,8 +1905,8 @@ class MLAOptions {
 				/* translators: 1: option name, e.g., taxonomy_support */
 				return '<br>' . sprintf( __( 'Reset custom %1$s', 'media-library-assistant' ), $key ) . "\r\n";
 			default:
-				/* translators: 1: option name 2: action, e.g., update, delete, reset */
-				return '<br>' . sprintf( __( 'ERROR: Custom %1$s unknown action "%2$s"', 'media-library-assistant' ), $key, $action ) . "\r\n";
+				/* translators: 1: ERROR tag 2: option name 3: action, e.g., update, delete, reset */
+				return '<br>' . sprintf( __( '%1$s: Custom %2$s unknown action "%3$s"', 'media-library-assistant' ), __( 'ERROR', 'media-library-assistant' ), $key, $action ) . "\r\n";
 		}
 	} // mla_search_option_handler
 	/**
@@ -3203,8 +3203,8 @@ class MLAOptions {
 				}
 
 				if ( in_array( $new_key, $custom_field_names ) ) {
-					/* translators: 1: custom field name */
-					$error_list .= '<br>' . sprintf( __( 'ERROR: New field %1$s already exists.', 'media-library-assistant' ), esc_html( $new_key ) ) . "\r\n";
+					/* translators: 1: ERROR tag 2: custom field name */
+					$error_list .= '<br>' . sprintf( __( '%1$s: New field %2$s already exists.', 'media-library-assistant' ), __( 'ERROR', 'media-library-assistant' ), esc_html( $new_key ) ) . "\r\n";
 					continue;
 				}
 
@@ -3360,7 +3360,7 @@ class MLAOptions {
 			if ( $old_values['no_null'] != $boolean_value ) {
 				$any_setting_changed = true;
 				/* translators: 1: custom field name 2: attribute 3: old value 'to' new value */
-				$message_list .= '<br>' . sprintf( __( '%1$s changing %2$s value from %3$s.', 'media-library-assistant' ), esc_html( $old_values['name'] ), __( 'Delete NULL', 'media-library-assistant' ), $boolean_text ) . "\r\n";
+				$message_list .= '<br>' . sprintf( __( '%1$s changing %2$s value from %3$s.', 'media-library-assistant' ), esc_html( $old_values['name'] ), __( 'Delete NULL values', 'media-library-assistant' ), $boolean_text ) . "\r\n";
 				$old_values['no_null'] = $boolean_value;
 			}
 
@@ -3646,7 +3646,7 @@ class MLAOptions {
 					if ( $settings_changed ) {
 						$results = __( 'Custom field mapping rules updated.', 'media-library-assistant' ) . "\r\n";
 					} else {
-						$results = __( 'ERROR: Custom field mapping rules update failed.', 'media-library-assistant' ) . "\r\n";
+						$results = __( 'ERROR', 'media-library-assistant' ) . ': ' . __( 'Custom field mapping rules update failed.', 'media-library-assistant' ) . "\r\n";
 					}
 				} else {
 					$results = __( 'Custom field no mapping rule changes detected.', 'media-library-assistant' ) . "\r\n";
@@ -3659,11 +3659,11 @@ class MLAOptions {
 				if ( $settings_changed ) {
 					return __( 'Custom field mapping settings saved.', 'media-library-assistant' ) . "\r\n";
 				} else {
-					return __( 'ERROR: Custom field mapping settings reset failed.', 'media-library-assistant' ) . "\r\n";
+					return __( 'ERROR', 'media-library-assistant' ) . ': ' . __( 'Custom field mapping settings reset failed.', 'media-library-assistant' ) . "\r\n";
 				}
 			default:
-				/* translators: 1: option name 2: action, e.g., update, delete, reset */
-				return '<br>' . sprintf( __( 'ERROR: Custom %1$s unknown action "%2$s"', 'media-library-assistant' ), $key, $action ) . "\r\n";
+				/* translators: 1: ERROR tag 2: option name 3: action, e.g., update, delete, reset */
+				return '<br>' . sprintf( __( '%1$s: Custom %2$s unknown action "%3$s"', 'media-library-assistant' ), __( 'ERROR', 'media-library-assistant' ), $key, $action ) . "\r\n";
 		} // switch $action
 	} // mla_custom_field_option_handler
 
@@ -4188,8 +4188,8 @@ class MLAOptions {
 				$old_values = $current_values['standard'][ $new_key ];
 				$any_setting_changed = false;
 			} else {
-				/* translators: 1: custom field name */
-				$error_list .= '<br>' . sprintf( __( 'ERROR: No old values for %1$s.', 'media-library-assistant' ), esc_html( $new_key ) ) . "\r\n";
+				/* translators: 1: ERROR tag 2: custom field name */
+				$error_list .= '<br>' . sprintf( __( '%1$s: No old values for %2$s.', 'media-library-assistant' ), __( 'ERROR', 'media-library-assistant' ), esc_html( $new_key ) ) . "\r\n";
 				continue;
 			}
 
@@ -4408,8 +4408,8 @@ class MLAOptions {
 				}
 
 				if ( in_array( $new_key, $custom_field_names ) ) {
-					/* translators: 1: custom field name */
-					$error_list .= '<br>' . sprintf( __( 'ERROR: New field %1$s already exists.', 'media-library-assistant' ), esc_html( $new_key ) ) . "\r\n";
+					/* translators: 1: ERROR tag 2: custom field name */
+					$error_list .= '<br>' . sprintf( __( '%1$s: New field %2$s already exists.', 'media-library-assistant' ), __( 'ERROR', 'media-library-assistant' ), esc_html( $new_key ) ) . "\r\n";
 					continue;
 				}
 
@@ -4847,8 +4847,8 @@ class MLAOptions {
 
 						return MLAData::mla_parse_template( self::$mla_option_templates['iptc-exif-custom-table'], $option_values );
 					default:
-						/* translators: 1: option name */
-						return '<br>' . sprintf( __( 'ERROR: Render unknown custom %1$s.', 'media-library-assistant' ), $key ) . "\r\n";
+						/* translators: 1: ERROR tag 2: option name */
+						return '<br>' . sprintf( __( '%1$s: Render unknown custom %2$s.', 'media-library-assistant' ), __( 'ERROR', 'media-library-assistant' ), $key ) . "\r\n";
 				} // switch $key
 			case 'update':
 			case 'delete':
@@ -4891,8 +4891,8 @@ class MLAOptions {
 						$settings_changed |= $results['changed'];
 						break;
 					default:
-						/* translators: 1: option name */
-						return '<br>' . sprintf( __( 'ERROR: Update/delete unknown custom %1$s.', 'media-library-assistant' ), $key ) . "\r\n";
+						/* translators: 1: ERROR tag 2: option name */
+						return '<br>' . sprintf( __( '%1$s: Update/delete unknown custom %2$s.', 'media-library-assistant' ), __( 'ERROR', 'media-library-assistant' ), $key ) . "\r\n";
 				} // switch $key
 
 			if ( $settings_changed ) {
@@ -4900,7 +4900,7 @@ class MLAOptions {
 				if ( $settings_changed ) {
 					$results = __( 'IPTC/EXIF mapping settings updated.', 'media-library-assistant' ) . "\r\n";
 				} else {
-					$results = __( 'ERROR: IPTC/EXIF settings update failed.', 'media-library-assistant' ) . "\r\n";
+					$results = __( 'ERROR', 'media-library-assistant' ) . ': ' . __( 'IPTC/EXIF settings update failed.', 'media-library-assistant' ) . "\r\n";
 				}
 			} else {
 				$results = __( 'IPTC/EXIF no mapping changes detected.', 'media-library-assistant' ) . "\r\n";
@@ -4916,8 +4916,8 @@ class MLAOptions {
 							/* translators: 1: field type */
 							return sprintf( __( '%1$s settings saved.', 'media-library-assistant' ), 'IPTC/EXIF ' . __( 'Standard field', 'media-library-assistant' ) ) . "\r\n";
 						} else {
-							/* translators: 1: field type */
-							return sprintf( __( 'ERROR: IPTC/EXIF %1$s settings update failed.', 'media-library-assistant' ), __( 'Standard field', 'media-library-assistant' ) ) . "\r\n";
+							/* translators: 1: ERROR tag 2: field type */
+							return sprintf( __( '%1$s: IPTC/EXIF %2$s settings update failed.', 'media-library-assistant' ), __( 'ERROR', 'media-library-assistant' ), __( 'Standard field', 'media-library-assistant' ) ) . "\r\n";
 						}
 					case 'iptc_exif_taxonomy_mapping':
 						$current_values['taxonomy'] = self::$mla_option_definitions['iptc_exif_mapping']['std']['taxonomy'];
@@ -4926,8 +4926,8 @@ class MLAOptions {
 							/* translators: 1: field type */
 							return sprintf( __( '%1$s settings saved.', 'media-library-assistant' ), 'IPTC/EXIF ' . __( 'Taxonomy term', 'media-library-assistant' ) ) . "\r\n";
 						} else {
-							/* translators: 1: field type */
-							return sprintf( __( 'ERROR: IPTC/EXIF %1$s settings update failed.', 'media-library-assistant' ), __( 'Taxonomy term', 'media-library-assistant' ) ) . "\r\n";
+							/* translators: 1: ERROR tag 2: field type */
+							return sprintf( __( '%1$s: IPTC/EXIF %2$s settings update failed.', 'media-library-assistant' ), __( 'ERROR', 'media-library-assistant' ), __( 'Taxonomy term', 'media-library-assistant' ) ) . "\r\n";
 						}
 					case 'iptc_exif_custom_mapping':
 						$current_values['custom'] = self::$mla_option_definitions['iptc_exif_mapping']['std']['custom'];
@@ -4936,20 +4936,20 @@ class MLAOptions {
 							/* translators: 1: field type */
 							return sprintf( __( '%1$s settings saved.', 'media-library-assistant' ), 'IPTC/EXIF ' . __( 'Custom field', 'media-library-assistant' ) ) . "\r\n";
 						} else {
-							/* translators: 1: field type */
-							return sprintf( __( 'ERROR: IPTC/EXIF %1$s settings update failed.', 'media-library-assistant' ), __( 'Custom field', 'media-library-assistant' ) ) . "\r\n";
+							/* translators: 1: ERROR tag 2: field type */
+							return sprintf( __( '%1$s: IPTC/EXIF %2$s settings update failed.', 'media-library-assistant' ), __( 'ERROR', 'media-library-assistant' ), __( 'Custom field', 'media-library-assistant' ) ) . "\r\n";
 						}
 					case 'iptc_exif_mapping':
 						self::mla_delete_option( $key );
 						/* translators: 1: option name, e.g., taxonomy_support */
 						return '<br>' . sprintf( __( 'Reset custom %1$s', 'media-library-assistant' ), $key ) . "\r\n";
 					default:
-						/* translators: 1: option name, e.g., taxonomy_support */
-						return '<br>' . sprintf( __( 'ERROR: Reset unknown custom %1$s', 'media-library-assistant' ), $key ) . "\r\n";
+						/* translators: 1: ERROR tag 2: option name, e.g., taxonomy_support */
+						return '<br>' . sprintf( __( '%1$s: Reset unknown custom %2$s', 'media-library-assistant' ), __( 'ERROR', 'media-library-assistant' ), $key ) . "\r\n";
 				} // switch $key
 			default:
-				/* translators: 1: option name 2: action, e.g., update, delete, reset */
-				return '<br>' . sprintf( __( 'ERROR: Custom %1$s unknown action "%2$s"', 'media-library-assistant' ), $key, $action ) . "\r\n";
+				/* translators: 1: ERROR tag 2: option name 3: action, e.g., update, delete, reset */
+				return '<br>' . sprintf( __( '%1$s: Custom %2$s unknown action "%3$s"', 'media-library-assistant' ), __( 'ERROR', 'media-library-assistant' ), $key, $action ) . "\r\n";
 		} // switch $action
 	} // mla_iptc_exif_option_handler
 } // class MLAOptions

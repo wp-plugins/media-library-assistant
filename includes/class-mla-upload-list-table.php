@@ -412,9 +412,9 @@ class MLA_Upload_List_Table extends WP_List_Table {
 	 */
 	function column_status( $item ) {
 		if ( $item->disabled ) {
-			return __( 'inactive', 'media-library-assistant' );
+			return __( 'Inactive', 'media-library-assistant' );
 		} else {
-			return __( 'active', 'media-library-assistant' );
+			return __( 'Active', 'media-library-assistant' );
 		}
 	}
 
