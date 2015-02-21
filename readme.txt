@@ -165,6 +165,7 @@ All of the MLA source code has been annotated with "DocBlocks", a special type o
 * New: A reference to plugin translation and the MLA Internationalization Guide have been added to the Settings/Media Library Assistant Documentation tab.
 * Fix: For the Media Manager/Media Grid Enhancements, PHP notice messages are avoided when the WordPress "current_screen" value is not set by other themes and plugins, such as the "Total theme and Visual Composer".
 * Fix: Some of the "Creating a new Translation" instructions in the MLA Internationalization Guide have been improved.
+* Fix: many of the translation strings have been re-organized to simplify translation efforts.
 * Fix: For `[mla_gallery]`, any "alt=" and "class=" attributes coded in the `mla_image_attributes` parameter will override and replace the existing "alt=" and/or "class=" attributes in the "img" tag. This avoids the confusion of having two instances of the attribute(s) in the tag.
 * Fix: For `[mla_gallery]`, the **Google File Viewer (mla_viewer) has been replaced**. Recent changes by Google, beyond MLA control, have removed support for the original feature. The interim fix allows you to substitute an appropriate icon for non-image file types. See the Documentation tab for more information.
 * Fix: For **IPTC/EXIF and Custom Field mapping**, custom field names with mixed case, spaces and punctuation characters are now properly handled. Custom field names with HTML reserved characters such as quotes and angle brackerts are properly escaped for display purposes.
