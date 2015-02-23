@@ -3,8 +3,8 @@ Contributors: dglingren
 Donate link: http://fairtradejudaica.org/make-a-difference/donate/
 Tags: attachment, attachments, documents, gallery, image, images, media, library, media library, tag cloud, media-tags, media tags, tags, media categories, categories, IPTC, EXIF, GPS, PDF, meta, metadata, photo, photos, photograph, photographs, photoblog, photo albums, lightroom, photoshop, MIME, mime-type, icon, upload, file extensions
 Requires at least: 3.5.0
-Tested up to: 4.1
-Stable tag: 2.01
+Tested up to: 4.1.1
+Stable tag: 2.02
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -28,15 +28,24 @@ The Media Library Assistant provides several enhancements for managing the Media
 
 * **Integrates with Photonic Gallery, Jetpack and other plugins**, so you can add slideshows, thumbnail strips and special effects to your `[mla_gallery]` galleries.
 
-* **Enhanced Search Media box**. Search can be extended to the name/slug, ALT text and caption fields. The connector between search terms can be "and" or "or". Search by attachment ID is supported.
+* **Enhanced Search Media box**. Search can be extended to the name/slug, ALT text and caption fields. The connector between search terms can be "and" or "or". Search by attachment ID or Parent ID is supported, and you can search on keywords in the taxonomy terms assigned to Media Library items. Works in the Media Manager Modal Window, too.
 
 * **Where-used reporting** shows which posts use a media item as the "featured image", an inserted image or link, an entry in a `[gallery]` and/or an entry in an `[mla_gallery]`.
+
 * **Complete support for ALL taxonomies**, including the standard Categories and Tags, your custom taxonomies and the Assistant's pre-defined Att. Categories and Att. Tags. You can add taxonomy columns to the Assistant listing, filter on any taxonomy, assign terms and list the attachments for a term.
-* An inline **"Bulk Edit"** area; update author, parent and custom fields, add, remove or replace taxonomy terms for several attachments at once
+
+* Taxonomy and custom field support in the ATTACHMENT DETAILS pane of the Media Manager Modal Window.
+
+* An inline **"Bulk Edit"** area; update author, parent and custom fields, add, remove or replace taxonomy terms for several attachments at once. Works on the Media/Add New screen as well.
+
 * An inline **"Quick Edit"** action for many common fields and for custom fields
-* Displays more attachment information such as parent information, file URL and image metadata. Uses and enhances the new Edit Media screen for WordPress 3.5 and above.
+
+* Displays more attachment information such as parent information, file URL and image metadata.
+
 * Allows you to edit the post_parent, the menu_order and to "unattach" items
+
 * Provides additional view filters for MIME types and taxonomies
+
 * Provides many more listing columns (more than 20) to choose from
 
 The Assistant is designed to work like the standard Media Library pages, so the learning curve is short and gentle. Contextual help is provided on every new screen to highlight new features.
@@ -46,14 +55,21 @@ This plugin was inspired by my work on the WordPress web site for our nonprofit,
 == Installation ==
 
 1. Upload `media-library-assistant` and its subfolders to your `/wp-content/plugins/` directory, **OR** Visit the Plugins/Add New page and search for "Media Library Assistant"; click "Install Now" to upload it
+
 1. Activate the plugin through the "Plugins" menu in WordPress
 
 1. Visit the Settings/Media Library Assistant page to customize taxonomy (e.g., category and tag) support
+
 1. Visit the Settings/Media Library Assistant Custom Fields and IPTC/EXIF tabs to map metadata to attachment fields
+
 1. Visit the "Assistant" submenu in the Media admin section
+
 1. Click the Screen Options link to customize the display
+
 1. Use the enhanced Edit, Quick Edit and Bulk Edit pages to assign categories and tags
+
 1. Use the `[mla_gallery]` shortcode to add galleries of images, documents and more to your posts and pages
+
 1. Use the `[mla_tagcloud]` shortcode to add clickable lists of taxonomy terms to your posts and pages
 
 == Frequently Asked Questions ==
@@ -154,19 +170,21 @@ All of the MLA source code has been annotated with "DocBlocks", a special type o
 
 = 2.02 =
 * New: For the **Media/Add New screen, a new Bulk Edit area** lets you assign taxonomy terms and change standard or custom fields as new items are uploaded to the Media Library.
-* New: The **"checked on top" option for checklist-style taxonomy meta boxes** can be set or cleared on the Settings/Media Library Assistant General tab.
-* New: An enhanced array of "CAMERA"-related fields is provided as part of the EXIF metadata. They contain more attractive and useful versions of "ExposureBiasValue", "ExposureTime", "Flash", "FNumber", "FocalLength", "ShutterSpeed" and a number of "Other Tags".
-* New: For mapping rules and `[mla_gallery]`, **"timestamp", "date" and "fraction" format options** can be used to format IPTC/EXIF metadata values, custom fields and other Data Sources.
+* New: An enhanced array of **"CAMERA"-related fields is provided as part of the EXIF metadata**. They contain more attractive and useful versions of "ExposureBiasValue", "ExposureTime", "Flash", "FNumber", "FocalLength", "ShutterSpeed" and a number of "Other Tags". See the [Other Notes section](http://wordpress.org/extend/plugins/media-library-assistant/other_notes/ "Click here, then scroll down") section or the Settings/Media Library Assistant Documentation tab for more information.
+* New: For **IPTC/EXIF and Custom Field mapping**, you can **cancel and then resume mapping activity**. You can also specify a starting offset for the resumes activity, allowing you to skip over previously-processed items or to re-process items.
+* New: For mapping rules and `[mla_gallery]`, **"timestamp", "date" and "fraction" format options** can be used to format IPTC/EXIF metadata values, custom fields and other Data Sources. See the [Other Notes section](http://wordpress.org/extend/plugins/media-library-assistant/other_notes/ "Click here, then scroll down") section or the Settings/Media Library Assistant Documentation tab for more information.
 * New: For `[mla_gallery]`, `parent_name` (slug) and `parent_permalink` have been added to the Attachment-specific substitution parameters for the markup template Item part.
 * New: For `[mla_gallery]`, the `mla_terms_taxonomies` parameter can be used for "Keyword(s) Search" to control which taxonomies are included if `mla_search_fields` includes "terms".
-* New: For **IPTC/EXIF and Custom Field mapping**, you can cancel and then resume mapping activity. You can also specify a starting offset for the resumes activity, allowing you to skip over previously-processed items or to re-process items.
+* New: The **"checked on top" option for checklist-style taxonomy meta boxes** can be set or cleared on the Settings/Media Library Assistant General tab.
 * New: For **IPTC/EXIF and Custom Field mapping**, `[+iptc:ALL_IPTC+]` is now a synonym for `[+exif:ALL_IPTC+]`.
-* New: Coverage of field-level substitution parameters in the Settings/Media LIbrary Assistant Documentation tab has been re-organized, clarified and expanded.
+* New: Coverage of field-level substitution parameters in the Settings/Media Library Assistant Documentation tab has been re-organized, clarified and expanded.
 * New: A reference to plugin translation and the MLA Internationalization Guide have been added to the Settings/Media Library Assistant Documentation tab.
 * Fix: For the Media Manager/Media Grid Enhancements, PHP notice messages are avoided when the WordPress "current_screen" value is not set by other themes and plugins, such as the "Total theme and Visual Composer".
+* Fix: Multiple ALT Text (_wp_attachment_image_alt) values no longer cause PHP Warning messages; only the first value is used for `[mla_gallery]` and the Quick Edit area.
 * Fix: Some of the "Creating a new Translation" instructions in the MLA Internationalization Guide have been improved.
 * Fix: many of the translation strings have been re-organized to simplify translation efforts.
 * Fix: For `[mla_gallery]`, any "alt=" and "class=" attributes coded in the `mla_image_attributes` parameter will override and replace the existing "alt=" and/or "class=" attributes in the "img" tag. This avoids the confusion of having two instances of the attribute(s) in the tag.
+* Fix: For `[mla_gallery]`, documentation of a **WordPress 4.0+ change** that affects taxonomy, date and custom field (meta) queries has been added, including a work-around to **avoid "Invalid mla_gallery tax_query"** errors.
 * Fix: For `[mla_gallery]`, the **Google File Viewer (mla_viewer) has been replaced**. Recent changes by Google, beyond MLA control, have removed support for the original feature. The interim fix allows you to substitute an appropriate icon for non-image file types. See the Documentation tab for more information.
 * Fix: For **IPTC/EXIF and Custom Field mapping**, custom field names with mixed case, spaces and punctuation characters are now properly handled. Custom field names with HTML reserved characters such as quotes and angle brackerts are properly escaped for display purposes.
 * Fix: For the Media/Assistant submenu table, column headers containing HTML reserved characters are now properly escaped for display purposes.
@@ -262,7 +280,7 @@ All of the MLA source code has been annotated with "DocBlocks", a special type o
 == Upgrade Notice ==
 
 = 2.02 =
-Google File Viewer (mla_viewer) disabled. IPTC/EXIF mapping performance gains. Four other enhancements, five fixes.
+Bulk Edit on Media/Add New, pause/restart IPTC/EXIF mapping, EXIF CAMERA fields, "timestamp", "date" and "fraction" format options. Six other enhancements, twelve fixes.
 
 == Other Notes ==
 
@@ -274,7 +292,105 @@ In this section, scroll down to see highlights from the documentation, including
 
 Media Library Assistant includes many images drawn (with permission) from the [Crystal Project Icons](http://www.softicons.com/free-icons/system-icons/crystal-project-icons-by-everaldo-coelho), created by [Everaldo Coelho](http://www.everaldo.com), founder of [Yellowicon](http://www.yellowicon.com).
 
-<h4>NEW! Enhanced keyword(s) search for the [mla_gallery] shortcode</h4>
+<h3>Field-level Substitution Parameters</h3>
+
+Field-level substitution parameters let you access query arguments, custom fields, taxonomy terms and attachment metadata for display in an MLA gallery or in an MLA tag cloud. You can also use them in IPTC/EXIF or Custom Field mapping rules. For field-level parameters, the value you code within the surrounding the ('[+' and '+]' or '{+' and '+}') delimiters has three parts; the prefix, the field name (or template content) and, if desired, an option/format value.
+
+The <strong>prefix</strong> defines which type of field-level data you are accessing. It must immediately follow the opening ('[+' or '{+') delimiter and end with a colon (':'). There can be no spaces in this part of the parameter.
+
+The <strong>field name</strong> defines which field-level data element you are accessing. It must immediately follow the colon (':'). There can be no spaces between the colon and the field name. Spaces are allowed within the field name to accommodate custom field names that contain them. <strong>Compound names</strong> are used to access elements within arrays, e.g., &quot;<strong>sizes.thumbnail.file</strong>&quot; is used to specify the file name for the thumbnail version of an image. For the "template" prefix, the field name is replaced by the template content; see the Content Templates section for details.
+
+The <strong>option/format value</strong>, if present, immediately follows the field name using a comma (,) separator and ends with the closing delimiter ('+]' or '+}'). There can be no spaces in this part of the parameter.
+<a name="field_level_prefixes"></a>
+
+<h4>Prefix values</h4>
+
+There are nine prefix values for field-level parameters. Prefix values must be coded as shown; all lowercase letters.
+
+* <strong>request</strong> - The parameters defined in the <code>$_REQUEST</code> array; the "query strings" sent from the browser. The PHP $_REQUEST variable is a superglobal Array that contains the contents of both $_GET, $_POST, and $_COOKIE arrays. It can be used to collect data sent with both the GET and POST methods. For example, if the URL is <code>http://www.mysite.com/mypage?myarg=myvalue</code> you can access the query string as <code>[+request:myarg+]</code>, which has the value "myvalue".
+* <strong>query</strong> - The parameters defined in the <code>[mla_gallery]</code> shortcode. For example, if your shortcode is <code>[mla_gallery attachment_tag=my-tag div-class=some_class]</code> you can access the parameters as <code>[+query:attachment_tag+]</code> and <code>[+query:div-class+]</code> respectively. Only the parameters actually present in the shortcode are accessible; default values for parameters not actually present are not available. You can define your own parameters, e.g., "div-class"; they will be accessible as field-level data but will otherwise be ignored.
+* <strong>custom</strong> - WordPress Custom Fields, which you can define and populate on the Edit Media screen or map from various sources on the Settings/Media Library Assistant Custom and IPTC/EXIF tabs. The field name, or key, can contain spaces and some punctuation characters. You <strong><em>cannot use the plus sign ('+')</em></strong> in a field name you want to use with <code>[mla_gallery]</code>. Custom field names are case-sensitive; "client" and "Client" are not the same.
+		<br />&nbsp;<br />
+		For custom fields only, the <strong>",raw" option</strong> bypasses the code to sanitize the returned value. Use this option to allow HTML tags to be returned from a custom field.
+		<br />&nbsp;<br />
+		One special custom "pseudo-value" is available; <strong>ALL_CUSTOM</strong> (<code>[+custom:ALL_CUSTOM+]</code>). This returns a string representation of all custom field values. You can use this pseudo-values to quickly examine which fields are populated for a given Media Library item and what its values are.
+		<br />&nbsp;<br />
+		The ALL_CUSTOM value is altered in two ways. First, values of more than 256 characters are truncated to 256 characters. This prevents large fields from dominating the display. Second, array values are shown '(ARRAY)'.
+* <strong>terms</strong> - WordPress Category, tag or custom taxonomy terms. For this category, you code the name of the taxonomy as the field name. The term(s) associated with the attachment will be displayed in the <code>[mla_gallery]</code>. Note that you must use the name/slug string for taxonomy, not the "title" string. For example, use "attachment_category" or "attachment_tag", not "Att. Category" or "Attachment Category".
+* <strong>meta</strong> - WordPress attachment metadata, if any, embedded in the image/audio/video file. For this category, you can code any of the field names embedded in the _wp_attachment_metadata array. The "Attachment Metadata" display in the Media/Edit Media screen will show you the names and values of these fields. Note that the fields available differ among image, audio and video attachments.<br />
+		&nbsp;<br />
+		The "image_meta" portion of the attachment metadata is of particular interest. This array contains some "extended image metadata" drawn from IPTC and EXIF fields by WordPress and improved a bit. You can find more information in the Codex <a href="http://codex.wordpress.org/Function_Reference/wp_read_image_metadata" title="Codex information for image_meta" target="_blank">Function Reference/wp read image metadata</a>. For example, to get the ISO speed rating for an image, code <code>[+meta:image_meta.iso+]</code>.
+* <strong>pdf</strong> - The Document Information Dictionary (D.I.D.)and XMP metadata, if any, embedded in a PDF file. For this category, you can code any of the nine D.I.D. entries (Title, Author, Subject, Keywords, Creator, Producer, CreationDate, ModDate, Trapped). For many documents there is also a rich collection of additional metadata stored in XMP Metadata Streams; see the section for details on accessing PDF metadata.<br />
+		&nbsp;<br />
+		You can find more PDF information at the <a href="http://www.adobe.com/devnet/pdf.html" title="Adobe PDF Technology Center" target="_blank">Adobe PDF Technology Center</a>.
+* <strong>iptc</strong> - The IPTC (International Press Telecommunications Council) metadata, if any, embedded in the image file. For this category, you can code any of the IPTC DataSet tag and field identifiers, e.g., "2#025" for the Keywords field. You can also use the "friendly name" MLA defines for most of the IPTC fields; see the table of identifiers and friendly names.<br />
+		&nbsp;<br />
+		You can find more IPTC information in the <a href="http://www.iptc.org/std/IIM/4.1/specification/IIMV4.1.pdf" title="IPTC-NAA Information Interchange Model Version No. 4.1 specification (PDF)" target="_blank">IPTC-NAA Information Interchange Model Version No. 4.1 specification (PDF document)</a>.
+		<br />&nbsp;<br />
+		A special iptc "pseudo-value" is available; <strong>ALL_IPTC</strong> (<code>[+iptc:ALL_IPTC+]</code>). It returns a string representation of all IPTC data. You can use the pseudo-value to examine the metadata in an image, find field names and see what values are embedded in the image.
+		<br />&nbsp;<br />
+		The ALL_IPTC value is altered in two ways. First, values of more than 256 characters are truncated to 256 characters. This prevents large fields such as keyword arrays from dominating the display. Second, array values are shown once, at their expanded level.
+* <strong>exif</strong> - The EXIF (EXchangeable Image File) metadata, if any, embedded in a JPEG DCT or TIFF Rev 6.0 image file. 
+		Though the specification is not currently maintained by any industry or standards organization, almost all camera manufacturers use it. It is also supported by many image editing programs such as Adobe PhotoShop.
+		For this category, you can code any of the field names embedded in the image by the camera or editing software. There is no official list of standard field names, so you just have to know the names your camera and software use; field names are case-sensitive.
+		<br />&nbsp;<br />
+		You can find more information in the <a href="http://en.wikipedia.org/wiki/Exchangeable_image_file_format" title="Exchangeable image file format Wikipedia article" target="_blank">Exchangeable image file format</a> article on Wikipedia. You can find External Links to EXIF standards and tag listings at the end of the Wikipedia article.
+		<br />&nbsp;<br />
+		MLA uses a standard PHP function, <a href="http://php.net/manual/en/function.exif-read-data.php" title="PHP Manual page for exif_read_data" target="_blank">exif_read_data</a>, to extract EXIF data from images. The function returns three arrays in addition to the raw EXIF data; COMPUTED, THUMBNAIL and COMMENT. You can access the array elements by prefacing the element you want with the array name. For example, the user comment text is available as "COMPUTED.UserComment" and "COMPUTED.UserCommentEncoding". You can also get "COMPUTED.Copyright" and its two parts (if present), "COMPUTED.Copyright.Photographer" and "COMPUTED.Copyright.Editor". The THUMBNAIL and COMMENT arrays work in a similar fashion.
+		<br />&nbsp;<br />
+		A special exif "pseudo-value" is available; <strong>ALL_EXIF</strong> (<code>[+exif:ALL_EXIF+]</code>). It returns a string representation of all EXIF data. You can use the pseudo-value to examine the metadata in an image, find field names and see what values are embedded in the image.
+		<br />&nbsp;<br />
+		The ALL_EXIF value is altered in two ways. First, values of more than 256 characters are truncated to 256 characters. This prevents large fields such as image thumbnails from dominating the display. Second, array values are shown once, at their expanded level. For example the "COMPUTED" array is displayed as 'COMPUTED' => '(ARRAY)' and then 'COMPUTED.Width' => "2816", etc.
+* <strong>template</strong> - A Content Template, which lets you compose a value from multiple substitution parameters and test for empty values, choosing among two or more alternatives or suppressing output entirely. See the Content Templates section for details. Note that the formatting option is not supported for templates.
+
+<h4>NEW! Field-level option/format values</h4>
+
+You can use a field-level option or format value to specify the treatment of fields with multiple values or to change the format of a field for display/mapping purposes. If no option/format value is present, fields with multiple values are formatted as a comma-delimited text list. The option/format value, if present, immediately follows the field name using a comma (,) separator and ends with the closing delimiter ('+]' or '+}'). There can be no spaces in this part of the parameter.
+
+Two "option" values change the treatment of fields with multiple values:
+
+* <strong>,single</strong> - If this option is present, only the first value of the field will be returned. Use this option to limit the data returned for a custom field, taxonomy or metadata field that can have many values. For example, if you code <code>[+meta:sizes.thumbnail,single+]</code> the result will be "20120313-ASK_5605-150x150.jpg".
+* <strong>,export</strong> - If this option is present, the PHP <code>var_export</code> function is used to return a string representation of all the elements in an array field. For example, if you code <code>[+meta:sizes.thumbnail,export+]</code> the result will be "array ('file' => '20120313-ASK_5605-150x150.jpg', 'width' => 150, 'height' => 150, 'mime-type' => 'image/jpeg'".
+
+Seven "format" values help you reformat fields or encode them for use in HTML attributes and tags:
+
+* <strong>,raw</strong> - If you want to avoid filtering a value through the WordPress <code>sanitize_text_field()</code> function you can add the ",raw" option. This is helpful when, for example, you are using a field that contains HTML markup such as a hyperlink.
+* <strong>,commas</strong> - For numeric data source parameters such as "file_size" you can add the ",commas" option to format the value for display purposes.
+* <strong>,attr</strong> - If you use a substitution parameter in an HTML attribute such as the <code>title</code> attribute of a hyperlink (<code>a</code>) or <code>img</code> tag you can add the ",attr" option to encode the <, >, &, " and ' (less than, greater than, ampersand, double quote and single quote) characters.
+* <strong>,url</strong> - If you use a substitution parameter in an HTML <code>href</code> attribute such as a hyperlink (<code>a</code>) or <code>img</code> tag you can add the ",url" option to convert special characters such as quotes, spaces and ampersands to their URL-encoded equivalents.
+* <strong>,fraction(f,s)</strong> - Many of the EXIF metadata fields are expressed as "rational" quantities, i.e., separate numerator and denominator values separated by a slash. For example, <code>[+exif:ExposureTime+]</code> can be expressed as "1/200" seconds. The "fraction" format converts these to a more useful format.<br />&nbsp;<br />There two optional arguments; "f" (format_string)and "s" (show_fractions). The "format_string" (default "2") can either be the number of decimal places desired or a sprintf()-style format specification. For example, <code>[+exif:ExposureTime,fraction(4)+]</code> will display 7/6 as "+1.1667". A format specification such as '%1$.2f' will display 7/6 as "1.17". Numbers between -1 and +1, i.e. true fractions, will display in their original form, e.g., "1/6". If the optional "show_fractions" (default true) argument is "false" fractional values will convert to a decimal equivalent. For example, fraction(4,false) will display 1/6 as "+0.1667", and <code>[+exif:ExposureTime,fraction( '%1$.2f', false )+]</code> will display 1/6 as "0.17".* <strong>,timestamp(f)</strong> - Many date and time values such as <code>[+meta:image_meta.created_timestamp+]</code> are stored as a UNIX timestamp. The ",timestamp" format converts a timestamp into a variety of date and/or time string formats, using the PHP date() function. Details on the format_string argument can be found at: <a href="http://php.net/manual/en/function.date.php" title="PHP Date format parameters" target="_blank">http://php.net/manual/en/function.date.php</a>.<br />&nbsp;<br />The default format string is "d/m/Y H:i:s", e.g., "31/12/2014 23:59:00" (just before midnight on new year's eve). You could code <code>[+meta:image_meta.created_timestamp,timestamp('j F, Y')+]</code> to display "31 December, 2014".
+* <strong>,fraction(f,s)</strong> - Many of the EXIF metadata fields are expressed as "rational" quantities, i.e., separate numerator and denominator values separated by a slash. For example, <code>[+exif:ExposureTime+]</code> can be expressed as "1/200" seconds. The "fraction" format converts these to a more useful format.<br />&nbsp;<br />There two optional arguments; "f" (format_string)and "s" (show_fractions). The "format_string" (default "2") can either be the number of decimal places desired or a sprintf()-style format specification. For example, <code>[+exif:ExposureTime,fraction(4)+]</code> will display 7/6 as "+1.1667". A format specification such as '%1$.2f' will display 7/6 as "1.17". Numbers between -1 and +1, i.e. true fractions, will display in their original form, e.g., "1/6". If the optional "show_fractions" (default true) argument is "false" fractional values will convert to a decimal equivalent. For example, fraction(4,false) will display 1/6 as "+0.1667", and <code>[+exif:ExposureTime,fraction( '%1$.2f', false )+]</code> will display 1/6 as "0.17".
+* <strong>,date(f)</strong> - Many EXIF date and time values such as DateTimeOriginal and DateTimeDigitized are stored as strings with a format of "YYYY:MM:DD HH:MM:SS". You can parse this format and just about any English textual datetime description into a Unix timestamp, then format the result by using the ",date" format. This format first uses the PHP strtotime() function, then the date() function. The "Supported Date and Time Formats" can be found at: <a href="http://php.net/manual/en/datetime.formats.php" title="PHP Supported Date and Time Formats" target="_blank">http://php.net/manual/en/datetime.formats.php</a>.<br />&nbsp;<br />The default format string is "d/m/Y H:i:s", e.g., "31/12/2014 23:59:00" (just before midnight on new year's eve). You could code <code>[+exif:DateTimeOriginal,date('j F, Y')+]</code> to display "31 December, 2014".
+
+<h4>NEW! Field-level enhanced EXIF CAMERA values</h4>
+
+The EXIF specification defines many "Tags Relating to Picture-taking Conditions". Some of these are processed by WordPress and added to the "image_meta" array (as aperture, camera, focal_length, iso, shutter_speed). The field-level values in this section supplement those values and provide convenient access to additional values as well.
+
+The native format of this data is somewhat complicated, so MLA converts the most common elements into more convenient formats. For example, "rational" values are expressed as decimal equialents or converted to forms more often seen in photographic applications. You can use the enhanced values as-is or use them in a Content Template to compose the format(s) you need. You can access the native values with the names defined in the EXIF specification, e.g., "ExposureTime". The enhanced values are provided in the "CAMERA" array and accessed with compound names, e.g., "CAMERA.ExposureTime". The MLA enhanced values are:
+
+* <strong>ExposureTime</strong> - Exposure time, given in seconds.
+* <strong>ShutterSpeed from ExposureTime</strong> - Derived from ExposureTime and more often converted to the more useful "one over something" format.
+* <strong>FNumber</strong> - The F Number.
+* <strong>ExposureBiasValue</strong> - The exposure bias. The unit is the APEX value, usually in the range of -99.99 to 99.99.
+* <strong>Flash</strong> - The "flash fired" portion of the flash status.
+* <strong>FocalLength</strong> - The actual focal length of the lens, in mm. It is not converted to the focal length of a 35mm film camera.
+
+The EXIF specification defines several "Other Tags" with more information about each image; these tags are not recognized by the PHP <code>exif_read_data()</code> function. 
+The MLA enhanced values for "Other Tags" are:
+
+* <strong>ImageUniqueID</strong> - an identifier assigned uniquely to each image. It is recorded as an ASCII string equivalent to hexadecimal notation and 128-bit fixed length.
+* <strong>CameraOwnerName</strong> - records the owner of a camera used in photography as an ASCII string.* 
+<strong>BodySerialNumber</strong> - the serial number of the camra body as an ASCII string.
+* <strong>LensSpecification</strong> - a four-element array containing minimum focal length, maxinum focal length, minimum F number in the minimum focal length and minimum F number in the maximum focal length.
+* <strong>LensMinFocalLength</strong> - minimum focal length element of the LensSpecification array.
+* <strong>LensMaxFocalLength</strong> - maximum focal length element of the LensSpecification array.
+* <strong>LensMinFocalLengthFN</strong> - minimum F number in the minimum focal length element of the LensSpecification array.
+* <strong>LensMaxFocalLengthFN</strong> - minimum F number in the maximum focal length element of the LensSpecification array.
+* <strong>LensMake</strong> - the lens manufacturer as an ASCII string.
+* <strong>LensModel</strong> - the lens's model name and model number as an ASCII string.
+* <strong>LensSerialNumber</strong> - the serial number of the interchangable lens as an ASCII string.
+
+<h4>Enhanced keyword(s) search for the [mla_gallery] shortcode</h4>
 The search parameter ("s=keyword") will perform a keyword search. By default, the search includes the "post_title" and "post_content" (Description) fields but not the "post_excerpt" (Caption) field. All of the words you enter in the parameter must match for the search to succeed. An SQL "LIKE" clause for each word is composed and added to the search criteria. 
 
 You can match on multi-word phrases in a variety of ways. These are described in detail, with examples, in the "Entering Words and Phrases" portion of the "Terms Search - filtering on taxonomy term names" section below. You can also use the `sentence=true` and `exact=true` parameters to change the matching logic used in the `[mla_gallery]` shortcode. 
@@ -289,7 +405,7 @@ You can use the `mla_search_connector` and `mla_search_fields` parameters to ext
 
 The `mla_search_fields=terms` feature is a simple way to extend the search to the terms assigned to Media Library items. If searching on taxonomy terms is your primary goal, consider the more powerful "Taxonomy term keyword(s) search" parameters discussed in the next section. 
 
-<h4>NEW! Taxonomy term keyword(s) search for the [mla_gallery] shortcode</h4>
+<h4>Taxonomy term keyword(s) search for the [mla_gallery] shortcode</h4>
 Searching for keywords within the names of taxonomy terms is a completely different way to find items based on taxonomy information. Instead of matching on a slug or term-id value you can match on all or part of the term Title. The shortcode parameters in this section give you all the power of the "Terms Search" feature on the Media/Assistant submenu table, as described in the "Terms Search - filtering on taxonomy term names" section below. Here are the shortcode parameters that correspond to the controls on the "Search Terms" popup window. 
 
 * <strong>mla_terms_phrases</strong> - The word(s) or phrase(s) you are searching for. 

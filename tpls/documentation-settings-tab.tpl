@@ -21,9 +21,9 @@
 <li><a href="#post_mime_type_parameter">Post MIME Type</a></li>
 <li><a href="#post_type_post_status">Post Type, Post Status</a></li>
 <li><a href="#pagination_parameters">Pagination Parameters</a></li>
-<li><a href="#time_parameters">Date and Time Parameters</a></li>
+<li><a href="#time_parameters">Date and Time Parameters, the "date query"</a></li>
 <li><a href="#custom_field_parameters">Simple Custom Field Parameters</a></li>
-<li><a href="#custom_field_queries">Custom Field Queries, "meta_query"</a></li>
+<li><a href="#custom_field_queries">Custom Field Queries, the "meta_query"</a></li>
 <li><a href="#search_keywords">Keyword(s) Search</a></li>
 <li><a href="#cache_parameters">Caching Parameters</a></li>
 <li><a href="#debugging_output">Debugging Output</a></li>
@@ -648,6 +648,9 @@ The first example is equivalent to the simple query <code>attachment_tag=artisan
 When embedding the shortcode in the body of a post, be very careful when coding the tax_query; it must be a valid PHP array specification. Splitting your query over multiple lines or using the "Visual" editor will introduce HTML markup and escape sequences that can render your query invalid. MLA will clean up most of the damage, but if your query fails use the "mla_debug=true" parameter to see if your query has been corrupted. 
 </p>
 <p>
+<strong>IMPORTANT:</strong> Beginning with version 4.0, WordPress changed the way it handles shortcode parameters. Using the <code>=></code> characters in the first shortcode on a post/page will return "Invalid mla_gallery tax_query" errors. There are two ways to prevent this: 1) add "&lt;code&gt;&lt;/code&gt;" tags around your shortcode, or 2) use the "=&amp;gt;" escape sequence in your query.
+</p>
+<p>
 Remember to use <code>post_parent=current</code> if you want to restrict your query to items attached to the current post.
 <a name="taxonomy_keyword_search"></a>
 </p>
@@ -727,7 +730,7 @@ Pagination parameters let you divide your <code>[mla_gallery]</code> display int
 The task of dividing a large <code>[mla_gallery]</code> into two or more pages is supported by MLA's <a href="#mla_output_parameter"><strong>Support for Alternative Gallery Output, e.g., Pagination</strong></a>. For more information and examples, go to that section of the Documentation. 
 <a name="time_parameters"></a>
 </p>
-<h4>Date and Time Parameters</h4>
+<h4>Date and Time Parameters, the "date query"</h4>
 <p>
 The <code>[mla_gallery]</code> shortcode supports the "<a href="http://codex.wordpress.org/Class_Reference/WP_Query#Date_Parameters" title="WordPress Codex Documentation for date_query" target="_blank">date_query</a>" parameter introduced in WordPress Version 3.7. You can use a date_query to filter your gallery based on the 'post_date', 'post_date_gmt', 'post_modified', 'post_modified_gmt', 'comment_date', or 'comment_date_gmt' database columns (although the column names include "post", the same columns are used for attachments).
 </p>
@@ -736,6 +739,9 @@ As the <a href="http://codex.wordpress.org/Class_Reference/WP_Query#Date_Paramet
 </p>
 <p>
 When embedding the shortcode in the body of a post, be very careful when coding the date_query; it must be a valid PHP array specification. Splitting your query over multiple lines or using the "Visual" editor will introduce HTML markup and escape sequences that can render your query invalid. MLA will clean up most of the damage, but if your query fails use the "mla_debug=true" parameter to see if your query has been corrupted. 
+</p>
+<p>
+<strong>IMPORTANT:</strong> Beginning with version 4.0, WordPress changed the way it handles shortcode parameters. Using the <code>=></code> characters in the first shortcode on a post/page will return "Invalid mla_gallery tax_query" errors. There are two ways to prevent this: 1) add "&lt;code&gt;&lt;/code&gt;" tags around your shortcode, or 2) use the "=&amp;gt;" escape sequence in your query.
 </p>
 <p>
 Remember to use <code>post_parent=current</code> if you want to restrict your query to items attached to the current post.<a name="custom_field_parameters"></a>
@@ -761,15 +767,21 @@ The <code>[mla_gallery]</code> shortcode supports the simple custom field parame
 </tr>
 </table>
 <p>
+<strong>IMPORTANT:</strong> Beginning with version 4.0, WordPress changed the way it handles shortcode parameters. Using the <code>></code> character in the first shortcode on a post/page will return "Invalid mla_gallery tax_query" errors. To prevent this, add "&lt;code&gt;&lt;/code&gt;" tags around your shortcode.
+</p>
+<p>
 Remember to use <code>post_parent=current</code> if you want to restrict your query to items attached to the current post.
 <a name="custom_field_queries"></a>
 </p>
-<h4>Custom Field Queries, "meta_query"</h4>
+<h4>Custom Field Queries, the "meta_query"</h4>
 <p>
 The <code>[mla_gallery]</code> shortcode supports the more powerful <a href="http://codex.wordpress.org/Class_Reference/WP_Query#Custom_Field_Parameters" title="WordPress Codex documentation for meta_query" target="_blank">"WP_Query meta_query"</a> parameters made available as of WordPress 3.1.
 </p>
 <p>
 When embedding the shortcode in the body of a post, be very careful when coding the meta_query; it must be a valid PHP array specification. In particular, code the query on one line; splitting it across lines can insert HTML <br> tags and corrupt your query. MLA will clean up most of the damage, but if your query fails use the <code>mla_debug=true</code> parameter to see if your query has been corrupted. 
+</p>
+<p>
+<strong>IMPORTANT:</strong> Beginning with version 4.0, WordPress changed the way it handles shortcode parameters. Using the <code>=></code> characters in the first shortcode on a post/page will return "Invalid mla_gallery tax_query" errors. There are two ways to prevent this: 1) add "&lt;code&gt;&lt;/code&gt;" tags around your shortcode, or 2) use the "=&amp;gt;" escape sequence in your query.
 </p>
 <p>
 Remember to use <code>post_parent=current</code> if you want to restrict your query to items attached to the current post.

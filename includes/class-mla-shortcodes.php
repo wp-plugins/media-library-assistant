@@ -763,7 +763,11 @@ class MLAShortcodes {
 			}
 
 			if ( !empty( $post_meta['mla_wp_attachment_image_alt'] ) ) {
-				$item_values['image_alt'] = wptexturize( $post_meta['mla_wp_attachment_image_alt'] );
+				if ( is_array( $post_meta['mla_wp_attachment_image_alt'] ) ) {
+					$item_values['image_alt'] = wptexturize( $post_meta['mla_wp_attachment_image_alt'][0] );
+				} else {
+					$item_values['image_alt'] = wptexturize( $post_meta['mla_wp_attachment_image_alt'] );
+				}
 			}
 
 			if ( ! empty( $base_file ) ) {

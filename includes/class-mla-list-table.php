@@ -875,11 +875,17 @@ class MLA_List_Table extends WP_List_Table {
 		$inline_data .= '	<div class="post_content">' . esc_attr( $item->post_content ) . "</div>\r\n";
 
 		if ( !empty( $item->mla_wp_attachment_metadata ) ) {
+			$inline_data .= '	<div class="image_alt">';
+			
 			if ( isset( $item->mla_wp_attachment_image_alt ) ) {
-				$inline_data .= '	<div class="image_alt">' . esc_attr( $item->mla_wp_attachment_image_alt ) . "</div>\r\n";
-			} else {
-				$inline_data .= '	<div class="image_alt">' . "</div>\r\n";
+				if ( is_array( $item->mla_wp_attachment_image_alt ) ) {
+					$inline_data .= esc_attr( $item->mla_wp_attachment_image_alt[0] );
+				} else {
+					$inline_data .= esc_attr( $item->mla_wp_attachment_image_alt );
+				}
 			}
+			
+			$inline_data .= "</div>\r\n";
 		}
 
 		$inline_data .= '	<div class="post_parent">' . $item->post_parent . "</div>\r\n";
