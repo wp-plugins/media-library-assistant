@@ -3,7 +3,7 @@
  * Provides an example of hooking the filters provided by the MLA_List_Table class
  *
  * @package MLA List Table Hooks Example
- * @version 1.01
+ * @version 1.02
  */
 
 /*
@@ -11,10 +11,10 @@ Plugin Name: MLA List Table Hooks Example
 Plugin URI: http://fairtradejudaica.org/media-library-assistant-a-wordpress-plugin/
 Description: Provides an example of hooking the filters provided by the MLA_List_Table class
 Author: David Lingren
-Version: 1.01
+Version: 1.02
 Author URI: http://fairtradejudaica.org/our-story/staff/
 
-Copyright 2014 David Lingren
+Copyright 2014 - 2015 David Lingren
 
 	This program is free software; you can redistribute it and/or modify
 	it under the terms of the GNU General Public License as published by
@@ -84,7 +84,10 @@ class MLAListTableHooksExample {
 		add_filter( 'mla_list_table_inline_fields', 'MLAListTableHooksExample::mla_list_table_inline_fields', 10, 1 );
 		add_filter( 'mla_list_table_inline_action', 'MLAListTableHooksExample::mla_list_table_inline_action', 10, 2 );
 
+		add_filter( 'mla_list_table_bulk_action_initial_request', 'MLAListTableHooksExample::mla_list_table_bulk_action_initial_request', 10, 2 );
 		add_filter( 'mla_list_table_begin_bulk_action', 'MLAListTableHooksExample::mla_list_table_begin_bulk_action', 10, 2 );
+
+		add_filter( 'mla_list_table_bulk_action_item_request', 'MLAListTableHooksExample::mla_list_table_bulk_action_item_request', 10, 3 );
 		add_filter( 'mla_list_table_bulk_action', 'MLAListTableHooksExample::mla_list_table_bulk_action', 10, 3 );
 		add_filter( 'mla_list_table_custom_bulk_action', 'MLAListTableHooksExample::mla_list_table_custom_bulk_action', 10, 3 );
 		add_filter( 'mla_list_table_end_bulk_action', 'MLAListTableHooksExample::mla_list_table_end_bulk_action', 10, 2 );
@@ -135,7 +138,7 @@ class MLAListTableHooksExample {
 	public static function views_media_page_mla_menu( $views ) {
 		//error_log( 'MLAListTableHooksExample::views_media_page_mla_menu $views = ' . var_export( $views, true ), 0 );
 		return $views;
-	} // views_media_page_mla_menu_filter
+	} // views_media_page_mla_menu
 
 	/**
 	 * Filter the list table Bulk Actions drop-down
@@ -152,7 +155,7 @@ class MLAListTableHooksExample {
 	public static function bulk_actions_media_page_mla_menu( $actions ) {
 		//error_log( 'MLAListTableHooksExample::bulk_actions_media_page_mla_menu $actions = ' . var_export( $actions, true ), 0 );
 		return $actions;
-	} // bulk_actions_media_page_mla_menu_filter
+	} // bulk_actions_media_page_mla_menu
 
 	/**
 	 * Filter the 'Months' drop-down results
@@ -170,7 +173,7 @@ class MLAListTableHooksExample {
 	public static function months_dropdown_results( $months, $post_type ) {
 		//error_log( "MLAListTableHooksExample::months_dropdown_results ({$post_type}) \$months = " . var_export( $months[0], true ), 0 );
 		return $months;
-	} // months_dropdown_results_filter
+	} // months_dropdown_results
 
 	/**
 	 * Filter the number of items to be displayed on each page of the list table
@@ -187,7 +190,7 @@ class MLAListTableHooksExample {
 	public static function mla_entries_per_page( $per_page ) {
 		//error_log( 'MLAListTableHooksExample::mla_entries_per_page $per_page = ' . var_export( $per_page, true ), 0 );
 		return $per_page;
-	} // mla_entries_per_page_filter
+	} // mla_entries_per_page
 	
 	/**
 	 * Filter the list table sortable columns for a specific screen
@@ -272,7 +275,7 @@ class MLAListTableHooksExample {
 		}
 
 		return $inner_clause;
-	} // mla_list_table_search_filter_fields
+	} // mla_list_table_search_filter_inner_clause
 
 	/**
 	 * Process the "where-used" reference reporting results 
@@ -343,11 +346,36 @@ class MLAListTableHooksExample {
 	} // mla_list_table_inline_action
 
 	/**
+	 * Pre-filter MLA_List_Table bulk action request parameters
+	 *
+	 * This filter gives you an opportunity to pre-process the request parameters for a bulk action
+	 * before the action begins. DO NOT assume parameters come from the $_REQUEST super array!
+	 *
+	 * @since 1.02
+	 *
+	 * @param	array	$request		bulk action request parameters, including ['mla_bulk_action_do_cleanup'].
+	 * @param	string	$bulk_action	the requested action.
+	 * @param	array	$custom_field_map	[ slug => field_name ]
+	 *
+	 * @return	array	updated bulk action request parameters
+	 */
+	public static function mla_list_table_bulk_action_initial_request( $request, $bulk_action, $custom_field_map ) {
+		//error_log( 'MLAListTableHooksExample::mla_list_table_bulk_action_initial_request $request = ' . var_export( $request, true ), 0 );
+		//error_log( 'MLAListTableHooksExample::mla_list_table_bulk_action_initial_request $bulk_action = ' . var_export( $bulk_action, true ), 0 );
+		//error_log( 'MLAListTableHooksExample::mla_list_table_bulk_action_initial_request $custom_field_map = ' . var_export( $custom_field_map, true ), 0 );
+		/*
+		 * $request['mla_bulk_action_do_cleanup'] is true on input if the parameters come from $_REQUEST.
+		 * If it is true on output the bulk action request parameters will be removed from $_REQUEST.
+		 */ 
+		return $request;
+	} // mla_list_table_bulk_action_initial_request
+
+	/**
 	 * Begin an MLA_List_Table bulk action
 	 *
-	 * This filter gives you an opportunity to pre-process an MLA_List_Table page-level
-	 * or single-item action, standard or custom, before the MLA handler.
-	 * The filter is called once before any of the items in $_REQUEST['cb_attachment'] are processed.
+	 * This filter gives you an opportunity to pre-process an MLA_List_Table bulk action,
+	 * standard or custom, before the MLA handler. The filter is called once before any
+	 * of the items in $_REQUEST['cb_attachment'] are processed.
 	 *
 	 * @since 1.01
 	 *
@@ -365,10 +393,35 @@ class MLAListTableHooksExample {
 	} // mla_list_table_begin_bulk_action
 
 	/**
+	 * Filter MLA_List_Table bulk action request parameters for each item
+	 *
+	 * This filter gives you an opportunity to pre-process the request parameters for each item
+	 * During a bulk action. DO NOT assume parameters come from the $_REQUEST super array!
+	 *
+	 * @since 1.02
+	 *
+	 * @param	array	$request		bulk action request parameters, including ['mla_bulk_action_do_cleanup'].
+	 * @param	string	$bulk_action	the requested action.
+	 * @param	integer	$post_id		the affected attachment.
+	 * @param	array	$custom_field_map	[ slug => field_name ]
+	 *
+	 * @return	object	updated $item_content. NULL if no handler, otherwise
+	 *					( 'message' => error or status message(s), 'body' => '',
+	 *					  'prevent_default' => true to bypass the MLA handler )
+	 */
+	public static function mla_list_table_bulk_action_item_request( $request, $bulk_action, $post_id, $custom_field_map ) {
+		//error_log( 'MLAListTableHooksExample::mla_list_table_bulk_action_item_request $request = ' . var_export( $request, true ), 0 );
+		//error_log( 'MLAListTableHooksExample::mla_list_table_bulk_action_item_request $bulk_action = ' . var_export( $bulk_action, true ), 0 );
+		//error_log( 'MLAListTableHooksExample::mla_list_table_bulk_action_item_request $post_id = ' . var_export( $post_id, true ), 0 );
+		//error_log( 'MLAListTableHooksExample::mla_list_table_bulk_action_item_request $custom_field_map = ' . var_export( $custom_field_map, true ), 0 );
+		return $request;
+	} // mla_list_table_bulk_action_item_request
+
+	/**
 	 * Process an MLA_List_Table bulk action
 	 *
-	 * This filter gives you an opportunity to pre-process an MLA_List_Table page-level
-	 * or single-item action, standard or custom, before the MLA handler.
+	 * This filter gives you an opportunity to pre-process an MLA_List_Table bulk action,
+	 * standard or custom, before the MLA handler.
 	 * The filter is called once for each of the items in $_REQUEST['cb_attachment'].
 	 *
 	 * @since 1.00
@@ -415,9 +468,9 @@ class MLAListTableHooksExample {
 	/**
 	 * End an MLA_List_Table bulk action
 	 *
-	 * This filter gives you an opportunity to post-process an MLA_List_Table page-level
-	 * or single-item action, standard or custom.
-	 * The filter is called once after all of the items in $_REQUEST['cb_attachment'] are processed.
+	 * This filter gives you an opportunity to post-process an MLA_List_Table bulk action,
+	 * standard or custom. The filter is called once after all of the items in
+	 * $_REQUEST['cb_attachment'] are processed.
 	 *
 	 * @since 1.01
 	 *
@@ -432,7 +485,7 @@ class MLAListTableHooksExample {
 		//error_log( 'MLAListTableHooksExample::mla_list_table_end_bulk_action $item_content = ' . var_export( $item_content, true ), 0 );
 		//error_log( 'MLAListTableHooksExample::mla_list_table_end_bulk_action $bulk_action = ' . var_export( $bulk_action, true ), 0 );
 		return $item_content;
-	} // mla_list_table_begin_bulk_action
+	} // mla_list_table_end_bulk_action
 
 	/**
 	 * Process an MLA_List_Table single action
@@ -563,7 +616,7 @@ class MLAListTableHooksExample {
 		//error_log( 'MLAListTableHooksExample::mla_list_table_inline_parse $item_template = ' . var_export( $item_template, true ), 0 );
 		//error_log( 'MLAListTableHooksExample::mla_list_table_inline_parse $item_values = ' . var_export( $item_values, true ), 0 );
 		return $html_markup;
-	} // mla_gallery_item_parse_filter
+	} // mla_list_table_inline_parse
 	
 	/**
 	 * Filter the MLA_List_Table columns
@@ -580,7 +633,7 @@ class MLAListTableHooksExample {
 	public static function mla_list_table_get_columns( $columns ) {
 		//error_log( 'MLAListTableHooksExample::mla_list_table_get_columns $columns = ' . var_export( $columns, true ), 0 );
 		return $columns;
-	} // mla_list_table_get_columns_filter
+	} // mla_list_table_get_columns
 
 	/**
 	 * Filter the MLA_List_Table hidden columns
@@ -597,7 +650,7 @@ class MLAListTableHooksExample {
 	public static function mla_list_table_get_hidden_columns( $hidden_columns ) {
 		//error_log( 'MLAListTableHooksExample::mla_list_table_get_hidden_columns $hidden_columns = ' . var_export( $hidden_columns, true ), 0 );
 		return $hidden_columns;
-	} // mla_list_table_get_hidden_columns_filter
+	} // mla_list_table_get_hidden_columns
 
 	/**
 	 * Filter the MLA_List_Table sortable columns
@@ -618,7 +671,7 @@ class MLAListTableHooksExample {
 	public static function mla_list_table_get_sortable_columns( $sortable_columns ) {
 		//error_log( 'MLAListTableHooksExample::mla_list_table_get_sortable_columns $sortable_columns = ' . var_export( $sortable_columns, true ), 0 );
 		return $sortable_columns;
-	} // mla_list_table_get_sortable_columns_filter
+	} // mla_list_table_get_sortable_columns
 
 	/**
 	 * Filter the MLA_List_Table bulk actions
@@ -653,7 +706,7 @@ class MLAListTableHooksExample {
 	public static function mla_list_table_column_default( $content, $item, $column_name ) {
 		//error_log( "MLAListTableHooksExample::mla_list_table_column_default ({$column_name}) \$item = " . var_export( $item, true ), 0 );
 		return $content;
-	} // mla_list_table_column_default_filter
+	} // mla_list_table_column_default
 
 	/**
 	 * Filter the "sticky" submenu URL parameters
@@ -691,7 +744,7 @@ class MLAListTableHooksExample {
 		//error_log( 'MLAListTableHooksExample::mla_list_table_prepare_items_pagination $pagination = ' . var_export( $pagination, true ), 0 );
 		//error_log( 'MLAListTableHooksExample::mla_list_table_prepare_items_pagination $mla_list_table->get_pagenum() = ' . var_export( $mla_list_table->get_pagenum(), true ), 0 );
 		return $pagination;
-	} // mla_list_table_prepare_items_pagination_filter
+	} // mla_list_table_prepare_items_pagination
 
 	/**
 	 * Filter the total items count for prepare_items()
@@ -710,7 +763,7 @@ class MLAListTableHooksExample {
 		//error_log( 'MLAListTableHooksExample::mla_list_table_prepare_items_total_items $total_items = ' . var_export( $total_items, true ), 0 );
 		//error_log( 'MLAListTableHooksExample::mla_list_table_prepare_items_total_items $mla_list_table->get_pagenum() = ' . var_export( $mla_list_table->get_pagenum(), true ), 0 );
 		return $total_items;
-	} // mla_list_table_prepare_items_total_items_filter
+	} // mla_list_table_prepare_items_total_items
 	
 	/**
 	 * Filter the items returned by prepare_items()
@@ -729,7 +782,7 @@ class MLAListTableHooksExample {
 		//error_log( 'MLAListTableHooksExample::mla_list_table_prepare_items_the_items $items = ' . var_export( $items, true ), 0 );
 		//error_log( 'MLAListTableHooksExample::mla_list_table_prepare_items_the_items $mla_list_table->get_pagenum() = ' . var_export( $mla_list_table->get_pagenum(), true ), 0 );
 		return $items;
-	} // mla_list_table_prepare_items_the_items_filter
+	} // mla_list_table_prepare_items_the_items
 	
 	/**
 	 * Inspect or modify the results of prepare_items()
@@ -766,7 +819,7 @@ class MLAListTableHooksExample {
 		//error_log( "MLAListTableHooksExample::mla_list_table_build_rollover_actions ({$column}) \$actions = " . var_export( $actions, true ), 0 );
 		//error_log( "MLAListTableHooksExample::mla_list_table_build_rollover_actions ({$column}) \$item = " . var_export( $item, true ), 0 );
 		return $actions;
-	} // mla_list_table_build_rollover_actions_filter
+	} // mla_list_table_build_rollover_actions
 
 	/**
 	 * Define the fields for inline (Quick) editing
@@ -802,7 +855,7 @@ class MLAListTableHooksExample {
 		//error_log( 'MLAListTableHooksExample::mla_list_table_build_inline_data $inline_data = ' . var_export( $inline_data, true ), 0 );
 		//error_log( 'MLAListTableHooksExample::mla_list_table_build_inline_data $item = ' . var_export( $item, true ), 0 );
 		return $inline_data;
-	} // mla_list_table_build_inline_data_filter
+	} // mla_list_table_build_inline_data
 
 	/**
 	 * Views for the "upload" page when WPML is active
@@ -819,7 +872,7 @@ class MLAListTableHooksExample {
 	public static function views_upload( $views ) {
 		//error_log( 'MLAListTableHooksExample::views_upload $views = ' . var_export( $views, true ), 0 );
 		return $views;
-	} // views_upload_filter
+	} // views_upload
 } // Class MLAListTableHooksExample
 
 /*

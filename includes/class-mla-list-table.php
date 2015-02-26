@@ -404,7 +404,7 @@ class MLA_List_Table extends WP_List_Table {
 			}
 		}
 
-		return apply_filters( 'mla_list_table_submenu_arguments', $submenu_arguments, $include_filters );
+		return $submenu_arguments = apply_filters( 'mla_list_table_submenu_arguments', $submenu_arguments, $include_filters );
 	}
 
 	/**
@@ -766,14 +766,17 @@ class MLA_List_Table extends WP_List_Table {
 	protected function _format_post_status( $post_status ) {
 		$flag = ',<br>';
 		switch ( $post_status ) {
+			case 'draft' :
+				$flag .= __('Draft');
+				break;
 			case 'future' :
 				$flag .= __('Scheduled');
 				break;
 			case 'pending' :
 				$flag .= _x('Pending', 'post state');
 				break;
-			case 'draft' :
-				$flag .= __('Draft');
+			case 'trash' :
+				$flag .= __('Trash');
 				break;
 			default:
 				$flag = '';

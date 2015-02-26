@@ -856,13 +856,20 @@ class MLA {
 	 */
 	public static function mla_process_bulk_action( $bulk_action, $request = NULL ) {
 		$page_content = array( 'message' => '', 'body' => '', 'unchanged' => 0, 'success' => 0, 'failure' => 0, 'item_results' => array() );
+		$custom_field_map = MLAOptions::mla_custom_field_support( 'bulk_edit' );
 		
+		/*
+		 * do_cleanup will remove the bulk edit elements from the $_REQUEST super array.
+		 * It is passed in the $request so it can be filtered.
+		 */
 		if ( NULL == $request ) {
 			$request = $_REQUEST;
-			$do_cleanup = true;
+			$request['mla_bulk_action_do_cleanup'] = true;
 		} else {
-			$do_cleanup = false;
+			$request['mla_bulk_action_do_cleanup'] = false;
 		}
+		
+		$request = apply_filters( 'mla_list_table_bulk_action_initial_request', $request, $bulk_action, $custom_field_map );
 		
 		if ( isset( $request['cb_attachment'] ) ) {
 			$item_content = apply_filters( 'mla_list_table_begin_bulk_action', NULL, $bulk_action );
@@ -896,6 +903,8 @@ class MLA {
 					continue;
 				}
 
+				$request = apply_filters( 'mla_list_table_bulk_action_item_request', $request, $bulk_action, $post_id, $custom_field_map );
+		
 				$item_content = apply_filters( 'mla_list_table_bulk_action', NULL, $bulk_action, $post_id );
 				if ( is_null( $item_content ) ) {
 					$prevent_default = false;
@@ -997,7 +1006,7 @@ class MLA {
 							 * Custom field support
 							 */
 							$custom_fields = array();
-							foreach (MLAOptions::mla_custom_field_support( 'bulk_edit' ) as $slug => $label ) {
+							foreach ( $custom_field_map as $slug => $label ) {
 								if ( isset( $request[ $slug ] ) ) {
 									$test_value = self::_process_bulk_value( $post_id, $request[ $slug ] );
 									if ( ! empty( $test_value ) ) {
@@ -1177,7 +1186,7 @@ class MLA {
 				$page_content['body'] = $item_content['body'];
 			}
 
-			if ( $do_cleanup ) {
+			if ( $request['mla_bulk_action_do_cleanup'] ) {
 				unset( $_REQUEST['post_title'] );
 				unset( $_REQUEST['post_excerpt'] );
 				unset( $_REQUEST['post_content'] );
@@ -1199,7 +1208,7 @@ class MLA {
 			$page_content['message'] = sprintf( __( 'Bulk Action %1$s - no items selected.', 'media-library-assistant' ), $bulk_action );
 		}
 
-		if ( $do_cleanup ) {
+		if ( $request['mla_bulk_action_do_cleanup'] ) {
 			unset( $_REQUEST['action'] );
 			unset( $_REQUEST['bulk_custom_field_map'] );
 			unset( $_REQUEST['bulk_map'] );
@@ -1246,7 +1255,7 @@ class MLA {
 		echo "<h2>{$page_title}"; // trailing </h2> is action-specific
 
 		if ( !current_user_can( 'upload_files' ) ) {
-			echo " - Error</h2>\n";
+			echo ' - ' . __( 'ERROR', 'media-library-assistant' ) . "</h2>\n";
 			wp_die( __( 'You do not have permission to manage attachments.', 'media-library-assistant' ) );
 		}
 
@@ -1798,8 +1807,7 @@ class MLA {
 			 * Flat taxonomy strings must be cleaned up and duplicates removed
 			 */
 			$tax_output = array();
-			$tax_input = $_REQUEST['tax_input'];
-			foreach ( $tax_input as $tax_name => $tax_value ) {
+			foreach ( $_REQUEST['tax_input'] as $tax_name => $tax_value ) {
 				if ( ! is_array( $tax_value ) ) {
 					$comma = _x( ',', 'tag_delimiter', 'media-library-assistant' );
 					if ( ',' != $comma ) {
@@ -1824,10 +1832,10 @@ class MLA {
 				} // ! array( $tax_value )
 
 				$tax_output[$tax_name] = $tax_value;
-			} // foreach $tax_input
-		} else { // ! empty( $_REQUEST['tax_input'] )
-			$tax_output = NULL;
-		}
+			} // foreach tax_input
+			
+			$_REQUEST['tax_input'] = $tax_output;
+		} // ! empty( $_REQUEST['tax_input'] )
 
 		$item_content = apply_filters( 'mla_list_table_inline_action', NULL, $post_id );
 		if ( is_null( $item_content ) ) {
@@ -1839,7 +1847,7 @@ class MLA {
 		}
 
 		if ( ! $prevent_default ) {
-			$results = MLAData::mla_update_single_item( $post_id, $_REQUEST, $tax_output );
+			$results = MLAData::mla_update_single_item( $post_id, $_REQUEST, $_REQUEST['tax_input'] );
 		}
 	
 		$new_item = (object) MLAData::mla_get_attachment_by_id( $post_id );

@@ -6,7 +6,7 @@
  * It is a good example of tailoring custom field handling in the Media/Assistant submenu table.
  *
  * @package MLA Image Source Control Example
- * @version 1.00
+ * @version 1.01
  */
 
 /*
@@ -14,7 +14,7 @@ Plugin Name: MLA Image Source Control Example
 Plugin URI: http://fairtradejudaica.org/media-library-assistant-a-wordpress-plugin/
 Description: Provides an example of hooking the filters provided by the MLA_List_Table class
 Author: David Lingren
-Version: 1.00
+Version: 1.01
 Author URI: http://fairtradejudaica.org/our-story/staff/
 
 Copyright 2014 David Lingren
@@ -69,6 +69,7 @@ class MLAImageSourceControlExample {
 		  * Defined in /media-library-assistant/includes/class-mla-main.php
 		  */
 		add_filter( 'mla_list_table_inline_action', 'MLAImageSourceControlExample::mla_list_table_inline_action', 10, 2 );
+		add_filter( 'mla_list_table_bulk_action_initial_request', 'MLAImageSourceControlExample::mla_list_table_bulk_action_initial_request', 10, 3 );
 		add_filter( 'mla_list_table_bulk_action', 'MLAImageSourceControlExample::mla_list_table_bulk_action', 10, 3 );
 		add_filter( 'mla_list_table_inline_values', 'MLAImageSourceControlExample::mla_list_table_inline_values', 10, 1 );
 
@@ -81,15 +82,6 @@ class MLAImageSourceControlExample {
 		add_filter( 'mla_list_table_column_default', 'MLAImageSourceControlExample::mla_list_table_column_default', 10, 3 );
 		add_filter( 'mla_list_table_build_inline_data', 'MLAImageSourceControlExample::mla_list_table_build_inline_data', 10, 2 );
 	}
-
-	/**
-	 * Records the list of active search fields
-	 *
-	 * @since 1.00
-	 *
-	 * @var	array
-	 */
-	private static $search_fields = array();
 
 	/**
 	 * Process an MLA_List_Table inline action, i.e., Quick Edit 
@@ -107,10 +99,9 @@ class MLAImageSourceControlExample {
 	 *					  'prevent_default' => true to bypass the MLA handler )
 	 */
 	public static function mla_list_table_inline_action( $item_content, $post_id ) {
-		//error_log( 'MLAImageSourceControlExample::mla_list_table_inline_action $item_content = ' . var_export( $item_content, true ), 0 );
-		//error_log( 'MLAImageSourceControlExample::mla_list_table_inline_action $post_id = ' . var_export( $post_id, true ), 0 );
-		//error_log( 'MLAImageSourceControlExample::mla_list_table_inline_action $_REQUEST = ' . var_export( $_REQUEST, true ), 0 );
-		
+		/*
+		 * Translate the "friendly" yes/no value back to the internal ISC value
+		 */
 		if ( isset( $_REQUEST['custom_updates'] ) && isset( $_REQUEST['custom_updates']['isc_image_source_own'] ) ) {
 			if ( 'yes' == trim( strtolower( $_REQUEST['custom_updates']['isc_image_source_own'] ) ) ) {
 				$_REQUEST['custom_updates']['isc_image_source_own'] = 1;
@@ -123,6 +114,44 @@ class MLAImageSourceControlExample {
 	} // mla_list_table_inline_action
 
 	/**
+	 * Pre-filter MLA_List_Table bulk action request parameters
+	 *
+	 * This filter gives you an opportunity to pre-process the request parameters for a bulk action
+	 * before the action begins. DO NOT assume parameters come from the $_REQUEST super array!
+	 *
+	 * @since 1.01
+	 *
+	 * @param	array	$request			bulk action request parameters, including ['mla_bulk_action_do_cleanup'].
+	 * @param	string	$bulk_action		the requested action.
+	 * @param	array	$custom_field_map	[ slug => field_name ]
+	 *
+	 * @return	array	updated bulk action request parameters
+	 */
+	public static function mla_list_table_bulk_action_initial_request( $request, $bulk_action, $custom_field_map ) {
+		/*
+		 * If the field is present, save the field value for our own update process and remove it
+		 * from the $request array to prevent MLA's default update processing.
+		 */
+		if ( false !== $slug = array_search( 'isc_image_source_own', $custom_field_map ) ) {
+			if ( ! empty( $request[ $slug ] ) ) {
+				self::$isc_image_source_own_value = trim( $request[ $slug ] );
+				$request[ $slug ] = '';
+			}
+		}
+		
+		return $request;
+	} // mla_list_table_bulk_action_initial_request
+
+	/**
+	 * Holds the new ISC checkbox value for the duration of a Bulk Edit action
+	 *
+	 * @since 1.01
+	 *
+	 * @var	string
+	 */
+	private static $isc_image_source_own_value = NULL;
+
+	/**
 	 * Process an MLA_List_Table bulk action
 	 *
 	 * This filter gives you an opportunity to pre-process an MLA_List_Table page-level
@@ -131,41 +160,29 @@ class MLAImageSourceControlExample {
 	 *
 	 * @since 1.00
 	 *
-	 * @param	array	$item_content	NULL, to indicate no handler.
-	 * @param	string	$bulk_action	the requested action.
-	 * @param	integer	$post_id		the affected attachment.
+	 * @param	array	$item_content		NULL, to indicate no handler.
+	 * @param	string	$bulk_action		the requested action.
+	 * @param	integer	$post_id			the affected attachment.
+	 * @param	array	$custom_field_map	[ slug => field_name ]
 	 *
 	 * @return	object	updated $item_content. NULL if no handler, otherwise
 	 *					( 'message' => error or status message(s), 'body' => '',
 	 *					  'prevent_default' => true to bypass the MLA handler )
 	 */
 	public static function mla_list_table_bulk_action( $item_content, $bulk_action, $post_id ) {
-		static $isc_image_source_own_value = NULL;
-		
-		//error_log( 'MLAImageSourceControlExample::mla_list_table_bulk_action $item_content = ' . var_export( $item_content, true ), 0 );
-		//error_log( 'MLAImageSourceControlExample::mla_list_table_bulk_action $bulk_action = ' . var_export( $bulk_action, true ), 0 );
-		//error_log( 'MLAImageSourceControlExample::mla_list_table_bulk_action $post_id = ' . var_export( $post_id, true ), 0 );
-		//error_log( 'MLAImageSourceControlExample::mla_list_table_inline_action $_REQUEST = ' . var_export( $_REQUEST, true ), 0 );
-		
-		if ( ! empty( $_REQUEST['c_isc_image_source_own'] ) ) {
-			if ( is_null( $isc_image_source_own_value ) ) {
-				$isc_image_source_own_value = trim( strtolower( $_REQUEST['c_isc_image_source_own'] ) );
-			}
-			
-			$_REQUEST['c_isc_image_source_own'] = '';
-		}
-		
-		if ( ! empty( $isc_image_source_own_value ) ) {
-			if ( 'yes' == $isc_image_source_own_value ) {
+		/*
+		 * If the field is present, apply our own update process.
+		 */
+		if ( ! empty( self::$isc_image_source_own_value ) ) {
+			if ( 'yes' == self::$isc_image_source_own_value ) {
 				update_post_meta( $post_id, 'isc_image_source_own', 1 );
-				$item_content = array( 'message' => sprintf( __( 'Adding %1$s = %2$s', 'media-library-assistant' ) . '<br>', 'isc_image_source_own', $isc_image_source_own_value ) );
+				$item_content = array( 'message' => sprintf( __( 'Adding %1$s = %2$s', 'media-library-assistant' ) . '<br>', 'isc_image_source_own', self::$isc_image_source_own_value ) );
 			} else {
 				delete_post_meta( $post_id, 'isc_image_source_own' );
 				$item_content = array( 'message' => sprintf( __( 'Deleting %1$s', 'media-library-assistant' ) . '<br>', 'isc_image_source_own' ) );
 			}
 		}
-		
-		//error_log( 'MLAImageSourceControlExample::mla_list_table_inline_action final $_REQUEST = ' . var_export( $_REQUEST, true ), 0 );
+
 		return $item_content;
 	} // mla_list_table_bulk_action
 
@@ -182,8 +199,9 @@ class MLAImageSourceControlExample {
 	 * @return	array	updated substitution parameter name => value pairs
 	 */
 	public static function mla_list_table_inline_values( $item_values ) {
-		//error_log( 'MLAImageSourceControlExample::mla_list_table_inline_values $item_values = ' . var_export( $item_values, true ), 0 );
-		
+		/*
+		 * Replace the custom field names with more friendly labels
+		 */
 		$item_values['custom_fields'] = str_replace( '>isc_image_source<', '>Source<', $item_values['custom_fields'] );
 		$item_values['bulk_custom_fields'] = str_replace( '>isc_image_source<', '>Source<', $item_values['bulk_custom_fields'] );
 		
@@ -195,6 +213,15 @@ class MLAImageSourceControlExample {
 
 		return $item_values;
 	} // mla_list_table_inline_values
+
+	/**
+	 * Holds the ISC custom field name to column "slug" mapping values
+	 *
+	 * @since 1.01
+	 *
+	 * @var	array
+	 */
+	private static $field_slugs = array();
 
 	/**
 	 * Filter the MLA_List_Table columns
@@ -209,23 +236,40 @@ class MLAImageSourceControlExample {
 	 * @return	array	updated array of columns.
 	 */
 	public static function mla_list_table_get_columns( $columns ) {
-		//error_log( 'MLAImageSourceControlExample::mla_list_table_get_columns $columns = ' . var_export( $columns, true ), 0 );
-		if ( isset( $columns['c_isc_image_source'] ) ) {
-			unset( $columns['c_isc_image_source'] );
-			$columns['my_isc_image_source'] = 'Source';
+		/*
+		 * The Quick and Bulk Edit forms substitute arbitrary "slugs" for the
+		 * custom field names. Remember them for table column and bulk update processing.
+		 */
+		if ( false !== $slug = array_search( 'isc_image_source', $columns ) ) {
+			self::$field_slugs['isc_image_source'] = $slug;
+			$columns[ $slug ] = 'Source';
 		}
 		
-		if ( isset( $columns['c_isc_image_source_own'] ) ) {
-			unset( $columns['c_isc_image_source_own'] );
-			$columns['my_isc_image_source_own'] = 'Own';
+		if ( false !== $slug = array_search( 'isc_image_source_own', $columns ) ) {
+			self::$field_slugs['isc_image_source_own'] = $slug;
+			
+			/*
+			 * Change the column slug so we can provide our own friendly content.
+			 * Replace the entry for the column we're capturing, preserving its place in the list
+			 */
+			$new_columns = array();
+					
+			foreach ( $columns as $key => $value ) {
+				if ( $key == $slug ) {
+					$new_columns['isc_image_source_own'] = 'Own';
+				} else {
+					$new_columns[ $key ] = $value;
+				}
+			} // foreach column
+					
+			$columns = $new_columns;
 		}
 		
-		if ( isset( $columns['c_isc_image_source_url'] ) ) {
-			unset( $columns['c_isc_image_source_url'] );
-			$columns['my_isc_image_source_url'] = 'Source URL';
+		if ( false !== $slug = array_search( 'isc_image_source_url', $columns ) ) {
+			self::$field_slugs['isc_image_source_url'] = $slug;
+			$columns[ $slug ] = 'Source URL';
 		}
-		
-		//error_log( 'MLAImageSourceControlExample::mla_list_table_get_columns final $columns = ' . var_export( $columns, true ), 0 );
+
 		return $columns;
 	} // mla_list_table_get_columns_filter
 
@@ -242,24 +286,16 @@ class MLAImageSourceControlExample {
 	 * @return	array	updated array of columns.
 	 */
 	public static function mla_list_table_get_hidden_columns( $hidden_columns ) {
-		//error_log( 'MLAImageSourceControlExample::mla_list_table_get_hidden_columns $hidden_columns = ' . var_export( $hidden_columns, true ), 0 );
-
-		$index = array_search( 'c_isc_image_source', $hidden_columns );
-		if ( false !== $index ) {
-			$hidden_columns[ $index ] = 'my_isc_image_source';
+		/*
+		 * Replace the slug for the column we've captured
+		 */
+		if ( isset( self::$field_slugs['isc_image_source_own'] ) ) {
+			$index = array_search( self::$field_slugs['isc_image_source_own'], $hidden_columns );
+			if ( false !== $index ) {
+				$hidden_columns[ $index ] = 'isc_image_source_own';
+			}
 		}
 		
-		$index = array_search( 'c_isc_image_source_own', $hidden_columns );
-		if ( false !== $index ) {
-			$hidden_columns[ $index ] = 'my_isc_image_source_own';
-		}
-		
-		$index = array_search( 'c_isc_image_source_url', $hidden_columns );
-		if ( false !== $index ) {
-			$hidden_columns[ $index ] = 'my_isc_image_source_url';
-		}
-		
-		//error_log( 'MLAImageSourceControlExample::mla_list_table_get_hidden_columns final $hidden_columns = ' . var_export( $hidden_columns, true ), 0 );
 		return $hidden_columns;
 	} // mla_list_table_get_hidden_columns_filter
 
@@ -280,24 +316,26 @@ class MLAImageSourceControlExample {
 	 * @return	array	updated array of columns.
 	 */
 	public static function mla_list_table_get_sortable_columns( $sortable_columns ) {
-		//error_log( 'MLAImageSourceControlExample::mla_list_table_get_sortable_columns $sortable_columns = ' . var_export( $sortable_columns, true ), 0 );
+		/*
+		 * Replace the slug for the column we've captured, preserving its place in the list
+		 */
+		if ( isset( self::$field_slugs['isc_image_source_own'] ) ) {
+			$slug = self::$field_slugs['isc_image_source_own'];
+			if ( isset( $sortable_columns[ $slug ] ) ) {
+				$new_columns = array();
+				
+				foreach ( $sortable_columns as $key => $value ) {
+					if ( $key == $slug ) {
+						$new_columns['isc_image_source_own'] = $value;
+					} else {
+						$new_columns[ $key ] = $value;
+					}
+				} // foreach column
+				
+				$sortable_columns = $new_columns;
+			} // slug found
+		} // slug exists
 
-		if ( isset( $sortable_columns['c_isc_image_source'] ) ) {
-			$sortable_columns['my_isc_image_source'] = $sortable_columns['c_isc_image_source'];
-			unset( $sortable_columns['c_isc_image_source'] );
-		}
-
-		if ( isset( $sortable_columns['c_isc_image_source_own'] ) ) {
-			$sortable_columns['my_isc_image_source_own'] = $sortable_columns['c_isc_image_source_own'];
-			unset( $sortable_columns['c_isc_image_source_own'] );
-		}
-
-		if ( isset( $sortable_columns['c_isc_image_source_url'] ) ) {
-			$sortable_columns['my_isc_image_source_url'] = $sortable_columns['c_isc_image_source_url'];
-			unset( $sortable_columns['c_isc_image_source_url'] );
-		}
-
-		//error_log( 'MLAImageSourceControlExample::mla_list_table_get_sortable_columns final $sortable_columns = ' . var_export( $sortable_columns, true ), 0 );
 		return $sortable_columns;
 	} // mla_list_table_get_sortable_columns_filter
 
@@ -314,23 +352,16 @@ class MLAImageSourceControlExample {
 	 * @return	string	Text or HTML to be placed inside the column
 	 */
 	public static function mla_list_table_column_default( $content, $item, $column_name ) {
-		//error_log( "MLAImageSourceControlExample::mla_list_table_column_default ({$column_name}) \$item = " . var_export( $item, true ), 0 );
-		
-		if ( 'my_isc_image_source' == $column_name ) {
-			return isset( $item->mla_item_isc_image_source ) ? $item->mla_item_isc_image_source : '';
-		}
-		
-		if ( 'my_isc_image_source_own' == $column_name ) {
+		/*
+		 * Replace the ISC internal value with a "friendly" value
+		 */
+		if ( 'isc_image_source_own' == $column_name ) {
 			$values = isset( $item->mla_item_isc_image_source_own ) ? $item->mla_item_isc_image_source_own : '';
 			if ( empty( $values ) ) {
 				return 'no';
 			} else {
 				return 'yes';
 			}
-		}
-		
-		if ( 'my_isc_image_source_url' == $column_name ) {
-			return isset( $item->mla_item_isc_image_source_url ) ? $item->mla_item_isc_image_source_url : '';
 		}
 		
 		return $content;
@@ -350,10 +381,17 @@ class MLAImageSourceControlExample {
 	 * @return	string	updated HTML markup for inline data.
 	 */
 	public static function mla_list_table_build_inline_data( $inline_data, $item ) {
-		//error_log( 'MLAImageSourceControlExample::mla_list_table_build_inline_data $inline_data = ' . var_export( $inline_data, true ), 0 );
-		//error_log( 'MLAImageSourceControlExample::mla_list_table_build_inline_data $item = ' . var_export( $item, true ), 0 );
-		
-		$match_count = preg_match_all( '/\<div class="c_isc_image_source_own"\>(.*)\<\/div\>/', $inline_data, $matches, PREG_OFFSET_CAPTURE );
+		/*
+		 * See if the field is present
+		 */
+		if ( ! isset( self::$field_slugs['isc_image_source_own'] ) ) {
+			return $inline_data;
+		}
+			
+		/*
+		 * Replace the ISC internal value with a "friendly" value
+		 */
+		$match_count = preg_match_all( '/\<div class="' . self::$field_slugs['isc_image_source_own'] . '"\>(.*)\<\/div\>/', $inline_data, $matches, PREG_OFFSET_CAPTURE );
 		if ( ( $match_count == false ) || ( $match_count == 0 ) ) {
 			return $inline_data;
 		}

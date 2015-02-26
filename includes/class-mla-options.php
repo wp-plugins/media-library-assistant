@@ -3186,13 +3186,14 @@ class MLAOptions {
 		$message_list = '';
 		$settings_changed = false;
 		$custom_field_names = self::_get_custom_field_names();
+		$new_values = stripslashes_deep( $new_values );
 
 		foreach ( $new_values as $the_key => $new_value ) {
 			$any_setting_changed = false;
 			/*
 			 * Replace index with field name
 			 */
-			$new_key = trim( stripslashes( $new_value['name'] ) );
+			$new_key = trim( $new_value['name'] );
 
 			/*
 			 * Check for the addition of a new rule or field
@@ -3220,8 +3221,6 @@ class MLAOptions {
 				$message_list .= '<br>' . sprintf( __( 'Adding new rule for %1$s.', 'media-library-assistant' ), esc_html( $new_key ) ) . "\r\n";
 				$any_setting_changed = true;
 			}
-
-			$new_value = stripslashes_deep( $new_value );
 
 			if ( isset( $current_values[ $new_key ] ) ) {
 				$old_values = $current_values[ $new_key ];
@@ -4182,6 +4181,7 @@ class MLAOptions {
 		$error_list = '';
 		$message_list = '';
 		$settings_changed = false;
+		$new_values = stripslashes_deep( $new_values );
 
 		foreach ( $new_values['standard'] as $new_key => $new_value ) {
 			if ( isset( $current_values['standard'][ $new_key ] ) ) {
@@ -4275,6 +4275,7 @@ class MLAOptions {
 		$error_list = '';
 		$message_list = '';
 		$settings_changed = false;
+		$new_values = stripslashes_deep( $new_values );
 
 		/*
 		 * Remove rules for taxonomies that no longer exist
@@ -4294,7 +4295,7 @@ class MLAOptions {
 				$old_values = $current_values['taxonomy'][ $new_key ];
 			} else {
 				$old_values = array(
-					'name' => stripslashes( $new_value['name'] ),
+					'name' => $new_value['name'],
 					'hierarchical' => $new_value['hierarchical'],
 					'iptc_value' => 'none',
 					'exif_value' => '',
@@ -4391,13 +4392,14 @@ class MLAOptions {
 		$message_list = '';
 		$settings_changed = false;
 		$custom_field_names = self::_get_custom_field_names();
+		$new_values = stripslashes_deep( $new_values );
 
 		foreach ( $new_values['custom'] as $the_key => $new_value ) {
 			$any_setting_changed = false;
 			/*
 			 * Replace index with field name
 			 */
-			$new_key = trim( stripslashes( $new_value['name'] ) );
+			$new_key = trim( $new_value['name'] );
 
 			/*
 			 * Check for the addition of a new field or new rule
@@ -4426,7 +4428,7 @@ class MLAOptions {
 				$any_setting_changed = true;
 			}
 
-			$new_value = stripslashes_deep( $new_value );
+			$new_value = $new_value;
 
 			if ( isset( $current_values['custom'][ $new_key ] ) ) {
 				$old_values = $current_values['custom'][ $new_key ];
@@ -4652,7 +4654,7 @@ class MLAOptions {
 							if ( array_key_exists( $row_name, $current_values['taxonomy'] ) ) {
 								$current_value = $current_values['taxonomy'][ $row_name ];
 								$row_values['iptc_field_options'] = self::_compose_iptc_option_list( $current_value['iptc_value'] );
-								$row_values['exif_text'] = $current_value['exif_value'];
+								$row_values['exif_text'] = esc_attr( $current_value['exif_value'] );
 
 								if ( $current_value['iptc_first'] ) {
 									$row_values['iptc_selected'] = 'selected="selected"';

@@ -3345,9 +3345,8 @@ class MLASettings {
 		do_action( 'mla_begin_mapping', $source, NULL );
 		foreach ( $post_ids as $key => $post_id ) {
 			$updates = MLAOptions::mla_evaluate_custom_field_mapping( (integer) $post_id, 'custom_field_mapping', $settings );
-
 			$examine_count += 1;
-			if ( ! empty( $updates ) ) {
+			if ( ! empty( $updates ) && isset( $updates['custom_updates'] ) ) {
 				$results = MLAData::mla_update_item_postmeta( (integer) $post_id, $updates['custom_updates'] );
 				if ( ! empty( $results ) ) {
 					$update_count += 1;

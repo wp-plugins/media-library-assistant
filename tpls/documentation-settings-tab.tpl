@@ -4715,12 +4715,20 @@ The following hooks are defined in <code>/media-library-assistant/includes/class
 <td>Gives you an opportunity to pre-process an MLA_List_Table "Quick Edit" action before the MLA handler.</td>
 </tr>
 <tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">mla_list_table_bulk_action_initial_request</td>
+<td>Gives you an opportunity to pre-process the request parameters for a bulk action before the action begins. DO NOT assume parameters come from the $_REQUEST super array!</td>
+</tr>
+<tr>
 <td style="padding-right: 10px; vertical-align: top; font-weight:bold">mla_list_table_begin_bulk_action</td>
-<td>Gives you an opportunity to pre-process an MLA_List_Table page-level or single-item action, standard or custom, before the MLA handler. The filter is called once before any of the items in $_REQUEST['cb_attachment'] are processed.</td>
+<td>Gives you an opportunity to pre-process an MLA_List_Table bulk action, standard or custom, before the MLA handler. The filter is called once before any of the items in $_REQUEST['cb_attachment'] are processed.</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">mla_list_table_bulk_action_item_request</td>
+<td>Gives you an opportunity to pre-process the request parameters for each item during a bulk action. DO NOT assume parameters come from the $_REQUEST super array!</td>
 </tr>
 <tr>
 <td style="padding-right: 10px; vertical-align: top; font-weight:bold">mla_list_table_bulk_action</td>
-<td>Gives you an opportunity to pre-process an MLA_List_Table page-level or single-item action, standard or custom, before the MLA handler. The filter is called once for each of the items in $_REQUEST['cb_attachment'].</td>
+<td>Gives you an opportunity to pre-process an MLA_List_Table bulk action, standard or custom, before the MLA handler. The filter is called once for each of the items in $_REQUEST['cb_attachment'].</td>
 </tr>
 <tr>
 <td style="padding-right: 10px; vertical-align: top; font-weight:bold">mla_list_table_custom_bulk_action</td>
@@ -4728,7 +4736,7 @@ The following hooks are defined in <code>/media-library-assistant/includes/class
 </tr>
 <tr>
 <td style="padding-right: 10px; vertical-align: top; font-weight:bold">mla_list_table_end_bulk_action</td>
-<td>Gives you an opportunity to post-process an MLA_List_Table page-level or single-item action, standard or custom. The filter is called once after all of the items in $_REQUEST['cb_attachment'] are processed.</td>
+<td>Gives you an opportunity to post-process an MLA_List_Table bulk action, standard or custom. The filter is called once after all of the items in $_REQUEST['cb_attachment'] are processed.</td>
 </tr>
 <tr>
 <td style="padding-right: 10px; vertical-align: top; font-weight:bold">mla_list_table_single_action</td>
