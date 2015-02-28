@@ -15,7 +15,7 @@
  * 
  *
  * @package MLA ACF Checkbox Example
- * @version 1.00
+ * @version 1.01
  */
 
 /*
@@ -23,10 +23,10 @@ Plugin Name: MLA ACF Checkbox Example
 Plugin URI: http://fairtradejudaica.org/media-library-assistant-a-wordpress-plugin/
 Description: Provides an example of hooking the filters provided by the MLA_List_Table class
 Author: David Lingren
-Version: 1.00
+Version: 1.01
 Author URI: http://fairtradejudaica.org/our-story/staff/
 
-Copyright 2014 David Lingren
+Copyright 2014 - 2015 David Lingren
 
 	This program is free software; you can redistribute it and/or modify
 	it under the terms of the GNU General Public License as published by
@@ -78,6 +78,7 @@ class MLAACFCheckboxExample {
 		  * Defined in /media-library-assistant/includes/class-mla-main.php
 		  */
 		add_filter( 'mla_list_table_inline_action', 'MLAACFCheckboxExample::mla_list_table_inline_action', 10, 2 ); //
+		add_filter( 'mla_list_table_bulk_action_initial_request', 'MLAACFCheckboxExample::mla_list_table_bulk_action_initial_request', 10, 3 );
 		add_filter( 'mla_list_table_bulk_action', 'MLAACFCheckboxExample::mla_list_table_bulk_action', 10, 3 ); //
 		add_filter( 'mla_list_table_inline_values', 'MLAACFCheckboxExample::mla_list_table_inline_values', 10, 1 ); //
 
@@ -130,6 +131,44 @@ class MLAACFCheckboxExample {
 	} // mla_list_table_inline_action
 
 	/**
+	 * Pre-filter MLA_List_Table bulk action request parameters
+	 *
+	 * This filter gives you an opportunity to pre-process the request parameters for a bulk action
+	 * before the action begins. DO NOT assume parameters come from the $_REQUEST super array!
+	 *
+	 * @since 1.01
+	 *
+	 * @param	array	$request		bulk action request parameters, including ['mla_bulk_action_do_cleanup'].
+	 * @param	string	$bulk_action	the requested action.
+	 * @param	array	$custom_field_map	[ slug => field_name ]
+	 *
+	 * @return	array	updated bulk action request parameters
+	 */
+	public static function mla_list_table_bulk_action_initial_request( $request, $bulk_action, $custom_field_map ) {
+		/*
+		 * If the field is present, save the field value for our own update process and remove it
+		 * from the $request array to prevent MLA's default update processing.
+		 */
+		if ( false !== $slug = array_search( 'acf_checkbox', $custom_field_map ) ) {
+			if ( ! empty( $request[ $slug ] ) ) {
+				self::$acf_checkbox_value = trim( $request[ $slug ] );
+				$request[ $slug ] = '';
+			}
+		}
+		
+		return $request;
+	} // mla_list_table_bulk_action_initial_request
+
+	/**
+	 * Holds the new ACF checkbox value for the duration of a Bulk Edit action
+	 *
+	 * @since 1.01
+	 *
+	 * @var	string
+	 */
+	private static $acf_checkbox_value = NULL;
+
+	/**
 	 * Process an MLA_List_Table bulk action
 	 *
 	 * This filter gives you an opportunity to pre-process an MLA_List_Table page-level
@@ -147,32 +186,17 @@ class MLAACFCheckboxExample {
 	 *					  'prevent_default' => true to bypass the MLA handler )
 	 */
 	public static function mla_list_table_bulk_action( $item_content, $bulk_action, $post_id ) {
-		static $acf_checkbox_value = NULL;
-
 		/*
-		 * If the field is present and this is the first time we've been called,
-		 * save the field value for our own update process and remove it from the
-		 * $_REQUEST array to prevent MLA's default update processing.
-		 */
-		if ( ! empty( $_REQUEST['c_acf_checkbox'] ) ) {
-			if ( is_null( $acf_checkbox_value ) ) {
-				$acf_checkbox_value = trim( $_REQUEST['c_acf_checkbox'] );
-			}
-			
-			$_REQUEST['c_acf_checkbox'] = '';
-		}
-		
-		/*
-		 * If the field is present,apply our own update process. Note the
+		 * If the field is present, apply our own update process. Note the
 		 * special 'empty' value to bulk-delete the custom field entirely.
 		 */
-		if ( ! empty( $acf_checkbox_value ) ) {
-			if ( 'empty' == $acf_checkbox_value ) {
+		if ( ! empty( self::$acf_checkbox_value ) ) {
+			if ( 'empty' == self::$acf_checkbox_value ) {
 				delete_post_meta( $post_id, 'acf_checkbox' );
 				$item_content = array( 'message' => sprintf( __( 'Deleting %1$s', 'media-library-assistant' ) . '<br>', 'acf_checkbox' ) );
 			} else {
-				update_post_meta( $post_id, 'acf_checkbox', explode( ',', $acf_checkbox_value ) );
-				$item_content = array( 'message' => sprintf( __( 'Adding %1$s = %2$s', 'media-library-assistant' ) . '<br>', 'acf_checkbox', $acf_checkbox_value ) );
+				update_post_meta( $post_id, 'acf_checkbox', explode( ',', self::$acf_checkbox_value ) );
+				$item_content = array( 'message' => sprintf( __( 'Adding %1$s = %2$s', 'media-library-assistant' ) . '<br>', 'acf_checkbox', self::$acf_checkbox_value ) );
 			}
 		}
 		
@@ -202,6 +226,15 @@ class MLAACFCheckboxExample {
 	} // mla_list_table_inline_values
 
 	/**
+	 * Holds the ISC custom field name to column "slug" mapping values
+	 *
+	 * @since 1.01
+	 *
+	 * @var	array
+	 */
+	private static $field_slugs = array();
+
+	/**
 	 * Filter the MLA_List_Table columns
 	 *
 	 * This MLA-specific filter gives you an opportunity to filter the list table columns.
@@ -215,11 +248,27 @@ class MLAACFCheckboxExample {
 	 */
 	public static function mla_list_table_get_columns( $columns ) {
 		/*
-		 * Replace the MLA custom field slug with our own slug value
+		 * The Quick and Bulk Edit forms substitute arbitrary "slugs" for the
+		 * custom field names. Remember them for table column and bulk update processing.
 		 */
-		if ( isset( $columns['c_acf_checkbox'] ) ) {
-			unset( $columns['c_acf_checkbox'] );
-			$columns['my_acf_checkbox'] = 'ACF Checkbox';
+		if ( false !== $slug = array_search( 'acf_checkbox', $columns ) ) {
+			self::$field_slugs['acf_checkbox'] = $slug;
+			
+			/*
+			 * Change the column slug so we can provide our own friendly content.
+			 * Replace the entry for the column we're capturing, preserving its place in the list
+			 */
+			$new_columns = array();
+					
+			foreach ( $columns as $key => $value ) {
+				if ( $key == $slug ) {
+					$new_columns['acf_checkbox'] = 'acf_checkbox';
+				} else {
+					$new_columns[ $key ] = $value;
+				}
+			} // foreach column
+					
+			$columns = $new_columns;
 		}
 		
 		return $columns;
@@ -241,9 +290,11 @@ class MLAACFCheckboxExample {
 		/*
 		 * Replace the MLA custom field slug with our own slug value
 		 */
-		$index = array_search( 'c_acf_checkbox', $hidden_columns );
-		if ( false !== $index ) {
-			$hidden_columns[ $index ] = 'my_acf_checkbox';
+		if ( isset( self::$field_slugs['acf_checkbox'] ) ) {
+			$index = array_search( self::$field_slugs['acf_checkbox'], $hidden_columns );
+			if ( false !== $index ) {
+				$hidden_columns[ $index ] = 'acf_checkbox';
+			}
 		}
 		
 		return $hidden_columns;
@@ -267,12 +318,24 @@ class MLAACFCheckboxExample {
 	 */
 	public static function mla_list_table_get_sortable_columns( $sortable_columns ) {
 		/*
-		 * Replace the MLA custom field slug with our own slug value
+		 * Replace the slug for the column we've captured, preserving its place in the list
 		 */
-		if ( isset( $sortable_columns['c_acf_checkbox'] ) ) {
-			$sortable_columns['my_acf_checkbox'] = $sortable_columns['c_acf_checkbox'];
-			unset( $sortable_columns['c_acf_checkbox'] );
-		}
+		if ( isset( self::$field_slugs['acf_checkbox'] ) ) {
+			$slug = self::$field_slugs['acf_checkbox'];
+			if ( isset( $sortable_columns[ $slug ] ) ) {
+				$new_columns = array();
+				
+				foreach ( $sortable_columns as $key => $value ) {
+					if ( $key == $slug ) {
+						$new_columns['acf_checkbox'] = $value;
+					} else {
+						$new_columns[ $key ] = $value;
+					}
+				} // foreach column
+				
+				$sortable_columns = $new_columns;
+			} // slug found
+		} // slug exists
 
 		return $sortable_columns;
 	} // mla_list_table_get_sortable_columns_filter
@@ -294,7 +357,7 @@ class MLAACFCheckboxExample {
 		 * Convert the ACF-compatible array to a comma-delimited list of
 		 * "checked" checkbox values.
 		 */
-		if ( 'my_acf_checkbox' == $column_name ) {
+		if ( 'acf_checkbox' == $column_name ) {
 			$values = isset( $item->mla_item_acf_checkbox ) ? $item->mla_item_acf_checkbox : '';
 			if ( empty( $values ) ) {
 				return '';
@@ -323,10 +386,17 @@ class MLAACFCheckboxExample {
 	 */
 	public static function mla_list_table_build_inline_data( $inline_data, $item ) {
 		/*
+		 * See if the field is present
+		 */
+		if ( ! isset( self::$field_slugs['acf_checkbox'] ) ) {
+			return $inline_data;
+		}
+			
+		/*
 		 * Convert the ACF-compatible array to a comma-delimited list of
 		 * "checked" checkbox values.
 		 */
-		$match_count = preg_match_all( '/\<div class="c_acf_checkbox"\>(.*)\<\/div\>/', $inline_data, $matches, PREG_OFFSET_CAPTURE );
+		$match_count = preg_match_all( '/\<div class="' . self::$field_slugs['acf_checkbox'] . '"\>(.*)\<\/div\>/', $inline_data, $matches, PREG_OFFSET_CAPTURE );
 		if ( ( $match_count == false ) || ( $match_count == 0 ) ) {
 			return $inline_data;
 		}

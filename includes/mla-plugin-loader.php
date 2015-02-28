@@ -56,6 +56,7 @@ if ( ! empty( $mla_plugin_loader_error_messages ) ) {
 	 */
 	require_once( MLA_PLUGIN_PATH . 'includes/class-mla-data.php' );
 	add_action( 'init', 'MLAData::initialize', 0x7FFFFFFF );
+	require_once( MLA_PLUGIN_PATH . 'includes/class-mla-data-pdf.php' );
 
 	/*
 	 * Custom Taxonomies and WordPress objects.

@@ -2569,7 +2569,7 @@ The <strong>option/format value</strong>, if present, immediately follows the fi
 </p>
 <h4>Prefix values</h4>
 <p>
-There are nine prefix values for field-level parameters. Prefix values must be coded as shown; all lowercase letters.
+There are ten prefix values for field-level parameters. Prefix values must be coded as shown; all lowercase letters.
 </p>
 <table>
 	<tr>
@@ -2633,6 +2633,40 @@ There are nine prefix values for field-level parameters. Prefix values must be c
 		A special exif "pseudo-value" is available; <strong>ALL_EXIF</strong> (<code>[+exif:ALL_EXIF+]</code>). It returns a string representation of all EXIF data. You can use the pseudo-value to examine the metadata in an image, find field names and see what values are embedded in the image.
 		<br />&nbsp;<br />
 		The ALL_EXIF value is altered in two ways. First, values of more than 256 characters are truncated to 256 characters. This prevents large fields such as image thumbnails from dominating the display. Second, array values are shown once, at their expanded level. For example the "COMPUTED" array is displayed as 'COMPUTED' => '(ARRAY)' and then 'COMPUTED.Width' => "2816", etc.<br />&nbsp;</td>
+	</tr>
+	<tr>
+		<td style="padding-right: 10px; vertical-align: top; font-weight:bold">xmp</td>
+		<td>
+Data defined by the <a href="https://www.adobe.com/products/xmp/" title="Adobe XMP site" target="_blank">Extensible Metadata Platform (XMP)</a> framework, if present. XMP metadata varies from image to image but is often extensive. MLA provides access to this data in three ways:
+<ol>
+<li>
+MLA will copy appropriate values from the XMP data into the nine "<a href="#pdf_metadata">PDF Document Information Dictionary</a>" fields to populate them as often as possible. For example, the "creator" value(s) in the "dc" namespace ("dc.creator") might be copied to an empty "Author" field, or the "dc.subject" value(s) might be copied to an empty Keywords field.
+</li>
+<li>
+Additional values in the "xmp", "xmpMM", "xmpRights", "xap", "xapMM" and "dc" namespaces are copied up to the root level for easier access. For example, the "xmp.ModifyDate" value can be accessed as "ModifyDate", without the "xmp." portion of the compound name.
+</li>
+<li>
+Other namespaces in the document are copied to arrays at the root level. For example, some documents contain information in the "photoshop" namespace, such as "photoshop.CaptionWriter" and "photoshop.AuthorsPosition". The native values of some fields, e.g., "dc.creator", can be an array.
+</li>
+</ol>
+MLA adds three fields of its own to the XMP metadata information:
+<br />&nbsp;<br />
+<table>
+	<tr>
+		<td style="padding-right: 10px; vertical-align: top; font-weight:bold">xmptk</td>
+		<td>the XMP software used to create the metadata</td>
+	</tr>
+	<tr>
+		<td style="padding-right: 10px; vertical-align: top; font-weight:bold">xmlns</td>
+		<td>an array of the namespaces found in the document, such as <code>'dc' => 'http://purl.org/dc/elements/1.1/'</code></td>
+	</tr>
+	<tr>
+		<td style="padding-right: 10px; vertical-align: top; font-weight:bold">ALL_XMP</td>
+		<td>a special "pseudo value" that returns a string representation of all the metadata. You can use this pseudo-value to examine the metadata in a document, find field names and see what values are present.</td>
+	</tr>
+</table>
+		The ALL_XMP value is altered in two ways. First, values of more than 256 characters are truncated to 256 characters. This prevents large fields such as image thumbnails from dominating the display. Second, array values are shown once, at their expanded level. For example the "dc" array is displayed as 'dc' => '(ARRAY)' and then 'dc.creator' => "Author's name", etc.
+		<br />&nbsp;</td>
 	</tr>
 	<tr>
 		<td style="padding-right: 10px; vertical-align: top; font-weight:bold">template</td>
@@ -3417,7 +3451,7 @@ Metadata in PDF documents comes from two sources. Early versions of the PDF spec
 	</tr>
 </table>
 <p>
-More recent versions of the specification add a second source of metadata, Metadata Streams, holding data defined by the <a href="https://www.adobe.com/products/xmp/" title="Adobe XMP site" target="_blank">Extensible Metadata Platform (XMP)</a> framework. XMP metadata varies from document to document but is often extensive. MLA provides access to this data in three ways:
+More recent versions of the specification add a second source of metadata, Metadata Streams, holding data defined by the <a href="https://www.adobe.com/products/xmp/" title="Adobe XMP site" target="_blank">Extensible Metadata Platform (XMP)</a> framework. XMP metadata varies from document to document but is often extensive. MLA provides access to this data in four ways:
 <ol>
 <li>
 If a D.I.D. field is not stored in the document, MLA will copy appropriate values from the XMP data into the empty field to populate it as often as possible. For example, the "creator" value(s) in the "dc" namespace ("dc.creator") might be copied to an empty "Author" field, or the "dc.subject" value(s) might be copied to an empty Keywords field.
@@ -3427,6 +3461,9 @@ Additional values in the "xmp", "xmpMM", "xmpRights", "xap", "xapMM", "dc", "pdf
 </li>
 <li>
 Other namespaces in the document are copied to arrays at the root level. For example, some documents contain information in the "photoshop" namespace, such as "photoshop.CaptionWriter" and "photoshop.AuthorsPosition". The native values of some fields, e.g., "dc.creator", can be an array.
+</li>
+<li>
+For consistency with other file types, all XMP data found in a PDF document is also available with the "xmp:" prefix.
 </li>
 </ol>
 </p>
@@ -3439,7 +3476,7 @@ MLA adds five fields of its own to the metadata information:
 		<td>the version of the PDF specification to which the file conforms. For a file conforming to PDF 1.7, this would be PDF−1.7</td>
 	</tr>
 	<tr>
-		<td style="padding-right: 10px; vertical-align: top; font-weight:bold">PDF_Version</td>
+		<td style="padding-right: 10px; vertical-align: top; font-weight:bold">PDF_VersionNumber</td>
 		<td>the numeric portion of the PDF_Version. For a file conforming to PDF 1.7, this would be 1.7</td>
 	</tr>
 	<tr>
