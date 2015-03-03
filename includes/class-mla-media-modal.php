@@ -1222,6 +1222,8 @@ class MLAModal {
 				'All terms' => __( 'All terms', 'media-library-assistant' ),
 				'terms_or_checked' => 'checked="checked"',
 				'Any term' => __( 'Any term', 'media-library-assistant' ),
+				'exact_checked' => '',
+				'Exact' => __( 'Exact', 'media-library-assistant' ),
 				'mla_terms_search_taxonomies' => $taxonomy_list,
 			);
 			$terms_search_tpl = MLAData::mla_parse_template( $page_template_array['mla-terms-search-div'], $page_values );

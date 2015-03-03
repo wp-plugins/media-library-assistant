@@ -105,19 +105,21 @@
 
 #mla-terms-search-radio-div {
 	border: 1px solid #dfdfdf;
-	width: 220px;
+	width: 100%; /*360px;*/
 }
 
-#mla-terms-search-radio-phrases-div {
+#mla-terms-search-radio-phrases-div,
+#mla-terms-search-radio-terms-div {
 	display:inline-block;
 	margin-right: 10px;
 	padding: 0px 10px;
 	border-right: 1px solid #dfdfdf;
 }
 
-#mla-terms-search-radio-terms-div {
+#mla-terms-search-exact-div {
 	display:inline-block;
 	padding-right: 10px;
+	vertical-align:top
 }
 
 #mla-terms-search-buttons-div {

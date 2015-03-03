@@ -55,6 +55,14 @@
 						</li>
 					</ul>
 				</div>
+				<div id="mla-terms-search-exact-div">
+					<ul class="mla-terms-search-options">
+						<li>
+							<input name="mla_terms_search[exact]" id="mla-terms-search-exact" type="checkbox" value="exact" [+exact_checked+] />
+							[+Exact+]
+						</li>
+					</ul>
+				</div>
 			</div>
 			<div class="clear"></div>
 			<div id="mla-terms-search-taxonomies-div">

@@ -2180,7 +2180,7 @@ class MLAOptions {
 				case 'default_sortable_columns':
 					if ( $value['mla_column'] ) {
 						// columns without NULL values should sort descending
-						$results[ $slug ] = array( esc_html( $value['name'] ), $value['no_null'] );
+						$results[ $slug ] = array( $slug, $value['no_null'] );
 					}
 					break;
 				case 'quick_edit':

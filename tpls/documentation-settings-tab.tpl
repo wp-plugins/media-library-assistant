@@ -3588,7 +3588,13 @@ You can enter one or more words/phrases in the Search Media or Search Terms text
 <li>' "man bites dog" ' is one three-word phrase</li>
 </ul>
 <p>
-The first example would match each word separately. The second would match "man" and "bites dog" separately, with exactly one space between "bites" and "dog". The search is further defined by the connector used between multiple phrases:
+The first example would match each word separately. The second would match "man" and "bites dog" separately, with exactly one space between "bites" and "dog". 
+</p>
+<p>
+Quote marks have another effect on the search; they restrict the match to a word boundary. For example, if you enter 'man' without enclosing quotes it will match "man" or "woman", because "<strong>man</strong>" appears as a part of "wo<strong>man</strong>". If you add quotes, i.e., ' "man" ', it will match "man" or "big man" but it will not match the "man" portion of "woman".
+</p>
+<h4>Connecting multiple phrases</h4>
+The search is further defined by the connector used between multiple phrases:
 </p>
 <ul class="mla_settings">
 <li>'and'/'All phrases' - all of the phrases must appear in the search field/term name.</li>
@@ -3614,6 +3620,10 @@ If you choose the 'or'/'Any phrase' connector and enter 'man "bites dog"' in the
 <li>'dog bites man' will match because "man" is present.</li>
 <li>'dog bites another dog' will not match.</li>
 </ul>
+<h4>Exact phrase matching</h4>
+<p>
+The Search Terms popup window has an additional capability, "Exact match" and a checkbox to activate it. When you check the "Exact" box, each phrase must match the entire text of a term name. For example, if you check "Exact", the phrase "man" will match a term of the same name but not a term named "big man". If you check "Exact" and enter "big man" you will match terms named "big" or "man" <strong>but not</strong> "big man". If you want an exact match on a multi-word term such as "big man", put quotes around the name, i.e., ' "big man" '.
+</p>
 <h4>Entering multiple terms</h4>
 <p>
 The Search Terms popup window has an additional capability and another control to refine it. The additional capability lets you search for multiple terms and the control sets the connector between terms. For example, consider two taxonomies, each with several terms:

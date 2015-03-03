@@ -172,6 +172,9 @@ All of the MLA source code has been annotated with "DocBlocks", a special type o
 * New: **XMP metadata can be extracted from JPEG and TIFF images** and used in `[mla_gallery]` shortcodes and IPTC/EXIF or Custom Field mapping rules.
 * New: A Media/Assistant submenu table **custom view example plugin**, `mla-custom-view-example.php.txt` has been added to the `/media-library-assistant/examples/` directory. The example adds two custom views for "Attached" items and "Unpublished" items that are attached to a parent whose `post_status` is 'draft', 'future', 'pending' or 'trash' .
 * New: Two new filters for the "Media/Assistant Submenu Hooks" allow you to record or modify the new values for Bulk Edit fields. The `/media-library-assistant/examples/mla-list-table-hooks-example.php.txt` example plugin has been updated with the new filters.
+* New: A **Terms Search "exact"** option has been added to eliminate false matches such as "man" within "woman".
+* Fix: **Terms Search performance** has been improved by eliminating redundant table joins.
+* Fix: For the Media/Assistant submenu table, **sorting on custom fields** now works correctly.
 * Fix: The `/media-library-assistant/examples/mla-acf-checkbox-example.php.txt` example plugin has been re-written to use the new filters and to confrom to changes made in MLA version 2.01.
 * Fix: The `/media-library-assistant/examples/mla-image-source-control-example.php.txt` example plugin has been re-written to use the new filters and to confrom to changes made in MLA version 2.01.
 * Fix: Where-used reporting now identifies posts and pages in the Trash.

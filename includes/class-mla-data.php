@@ -1559,8 +1559,8 @@ class MLAData {
 						 */
 						$sortable_columns = MLAOptions::mla_custom_field_support( 'custom_sortable_columns' );
 						foreach ($sortable_columns as $sort_key => $sort_value ) {
-							if ( $value == $sort_value[0] ) {
-								$orderby = 'c_' . $value;
+							if ( $value == $sort_key ) {
+								$orderby = 'c_' . $sort_value[0];
 								break;
 							}
 						} // foreach
@@ -1579,6 +1579,7 @@ class MLAData {
 							$clean_request[ $key ] = $orderby;
 						}
 					}
+
 					break;
 				/*
 				 * ids allows hooks to supply a persistent list of items
@@ -2002,6 +2003,43 @@ class MLAData {
 	}
 
 	/**
+	 * Isolates keyword match results to word boundaries
+	 * 
+	 * Eliminates matches such as "man" in "woman".
+	 *
+	 * @since 2.11
+	 *
+	 * @param	string	the quoted phrase (without enclosing quotes)
+	 * @param	string	the entire term
+	 *
+	 * @return	boolean	$needle is a word match within $haystack
+	 */
+	private static function _match_quoted_phrase( $needle, $haystack ) {
+//error_log( __LINE__ . ' _match_quoted_phrase needle = ' . var_export( $needle, true ), 0 );
+//error_log( __LINE__ . ' _match_quoted_phrase haystack = ' . var_export( $haystack, true ), 0 );
+		$haystack = strtolower( html_entity_decode( $haystack ) );
+		$needle = strtolower( html_entity_decode( $needle ) );
+		
+		// Escape the PCRE meta-characters
+		$safe_needle = '';
+		for ( $index = 0; $index < strlen( $needle ); $index++ ) {
+			$chr = $needle[ $index ];
+			if ( false !== strpos( '\\^$.[]()?*+{}/', $chr ) ) {
+				$safe_needle .= '\\';
+			}
+			$safe_needle .= $chr;
+		}
+		
+		$pattern = '/^' . $safe_needle . '$|^' . $safe_needle . '\s+|\s+' . $safe_needle . '\s+|\s+' . $safe_needle . '$/';
+//error_log( __LINE__ . ' _match_quoted_phrase pattern = ' . var_export( $pattern, true ), 0 );
+//error_log( __LINE__ . ' _match_quoted_phrase haystack = ' . var_export( $haystack, true ), 0 );
+		$match_count = preg_match_all($pattern, $haystack, $matches);
+//error_log( __LINE__ . ' _match_quoted_phrase match_count = ' . var_export( $match_count, true ), 0 );
+//error_log( __LINE__ . ' _match_quoted_phrase matches = ' . var_export( $matches, true ), 0 );
+		return 0 < $match_count;
+	}
+
+	/**
 	 * Adds a keyword search to the WHERE clause, if required
 	 * 
 	 * Defined as public because it's a filter.
@@ -2026,7 +2064,9 @@ class MLAData {
 		 * Process the Terms Search arguments, if present.
 		 */
 		if ( isset( self::$search_parameters['mla_terms_search']['phrases'] ) ) {
-			$terms = array_map( 'trim', explode( ',', self::$search_parameters['mla_terms_search']['phrases'] ) );
+//error_log( __LINE__ . ' search_parameters mla_terms_search = ' . var_export( self::$search_parameters['mla_terms_search'], true ), 0 );
+			$terms_search_parameters = self::$search_parameters['mla_terms_search'];
+			$terms = array_map( 'trim', explode( ',', $terms_search_parameters['phrases'] ) );
 			if ( 1 < count( $terms ) ) {
 				$terms_connector = '(';			
 			} else {
@@ -2034,13 +2074,45 @@ class MLAData {
 			}
 
 			foreach ( $terms as $term ) {
-				preg_match_all('/".*?("|$)|((?<=[\t ",+])|^)[^\t ",+]+/', $term, $matches);
+				preg_match_all('/".*?("|$)|\'.*?(\'|$)|((?<=[\t ",+])|^)[^\t ",+]+/', $term, $matches);
 				$phrases = array_map('MLAData::mla_search_terms_tidy', $matches[0]);
+				
+				/*
+				 * Find the quoted phrases for a word-boundary check
+				 */
+				$quoted = array();
+				foreach ( $phrases as $index => $phrase ) {
+					$quoted[ $index ] = ( '"' == $matches[1][$index] ) || ( "'" == $matches[2][$index] );
+				}
+				
+//error_log( __LINE__ . ' search_parameters matches = ' . var_export( $matches, true ), 0 );
+//error_log( __LINE__ . ' search_parameters phrases = ' . var_export( $phrases, true ), 0 );
+//error_log( __LINE__ . ' search_parameters quoted = ' . var_export( $quoted, true ), 0 );
 
 				$tax_terms = array();
 				$tax_counts = array();
-				foreach ( $phrases as $phrase ) {
-					$the_terms = get_terms( self::$search_parameters['mla_terms_search']['taxonomies'], array( 'name__like' => $phrase, 'fields' => 'all', 'hide_empty' => false ) );
+				foreach ( $phrases as $index => $phrase ) {
+					if ( isset( $terms_search_parameters['exact'] ) ) {
+						$the_terms = array();
+						foreach( $terms_search_parameters['taxonomies'] as $taxonomy ) {
+							$the_term = get_term_by( 'name', $phrase, $taxonomy );
+							if ( false !== $the_term ) {
+								$the_terms[] = $the_term;
+							}
+						}
+					} else {
+						$the_terms = get_terms( $terms_search_parameters['taxonomies'], array( 'name__like' => $phrase, 'fields' => 'all', 'hide_empty' => false ) );
+						if ( $quoted[ $index ] ) {
+//error_log( __LINE__ . ' search_parameters the_terms = ' . var_export( $the_terms, true ), 0 );
+							foreach ( $the_terms as $term_index => $the_term ) {
+								if ( ! self::_match_quoted_phrase( $phrase, $the_term->name ) ) {
+									unset( $the_terms[ $term_index ]);
+								}
+							}
+						} // quoted phrase
+					} // not exact
+//error_log( __LINE__ . ' search_parameters the_terms = ' . var_export( $the_terms, true ), 0 );
+					
 					foreach( $the_terms as $the_term ) {
 						$tax_terms[ $the_term->taxonomy ][ $the_term->term_id ] = (integer) $the_term->term_taxonomy_id;
 
@@ -2051,11 +2123,12 @@ class MLAData {
 						}
 					}
 				} // foreach phrase
+//error_log( __LINE__ . ' tax_counts = ' . var_export( $tax_counts, true ), 0 );
 
 				/*
 				 * For the AND connector, a taxonomy term must have all of the search terms within it
 				 */
-				if ( 'AND' == self::$search_parameters['mla_terms_search']['radio_phrases'] ) {
+				if ( 'AND' == $terms_search_parameters['radio_phrases'] ) {
 					$search_term_count = count( $phrases );
 					foreach ($tax_terms as $taxonomy => $term_ids ) {
 						foreach ( $term_ids as $term_id => $term_taxonomy_id ) {
@@ -2073,16 +2146,23 @@ class MLAData {
 				} // AND (i.e., All phrases)
 
 				if ( ! empty( $tax_terms ) ) {
+//error_log( __LINE__ . ' tax_terms = ' . var_export( $tax_terms, true ), 0 );
 					$inner_connector = '';
 
 					$tax_clause .= $terms_connector;
 					foreach( $tax_terms as $tax_term ) {
-						$prefix = 'mlatt' . $tax_index++;
+						if ( 'AND' == $terms_search_parameters['radio_terms'] ) {
+							$prefix = 'mlatt' . $tax_index++;
+						} else {
+							$prefix = 'mlatt0';
+							$tax_index = 1; // only one JOIN needed for the "Any Term" case
+						}
+						
 						$tax_clause .= sprintf( '%1$s %2$s.term_taxonomy_id IN (%3$s)', $inner_connector, $prefix, implode( ',', $tax_term ) );
 						$inner_connector = ' OR';
 					} // foreach tax_term
 
-					$terms_connector = ' ) ' . self::$search_parameters['mla_terms_search']['radio_terms'] . ' (';
+					$terms_connector = ' ) ' . $terms_search_parameters['radio_terms'] . ' (';
 				} // tax_terms present
 			} // foreach term
 
@@ -2090,6 +2170,7 @@ class MLAData {
 				$tax_clause .= ')';
 			}
 
+//error_log( __LINE__ . ' tax_clause = ' . var_export( $tax_clause, true ), 0 );
 			if ( empty( $tax_clause ) ) {
 				$tax_clause = '1=0';
 			} else {
@@ -2368,6 +2449,7 @@ class MLAData {
 		}
 
 		if ( isset( self::$search_parameters['tax_terms_count'] ) ) {
+//error_log( __LINE__ . ' self::$search_parameters = ' . var_export( self::$search_parameters, true ), 0 );
 			$tax_index = 0;
 			$tax_clause = '';
 
