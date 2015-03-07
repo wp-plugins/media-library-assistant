@@ -2460,7 +2460,7 @@ class MLAOptions {
 	private static function _evaluate_data_source( $post_id, $category, $data_value, $attachment_metadata = NULL ) {
 		global $wpdb;
 		static $upload_dir, $intermediate_sizes = NULL, $wp_attached_files = NULL, $wp_attachment_metadata = NULL;
-		static $current_id = 0, $file_info = NULL, $parent_info = NULL, $references = NULL;
+		static $current_id = 0, $file_info = NULL, $parent_info = NULL, $references = NULL, $alt_text = NULL;
 
 		if ( 'none' == $data_value['data_source'] ) {
 			return '';
@@ -2494,10 +2494,15 @@ class MLAOptions {
 			$current_id = $post_id;
 			$parent_info = NULL;
 			$references = NULL;
-
+			$alt_text = NULL;
+			
 			if ( 'single_attachment_mapping' == $category ) {
-				$meta_value = get_metadata( 'post', $post_id, '_wp_attached_file' );
-				$wp_attached_files = array( $post_id => (object) array( 'post_id' => $post_id, 'meta_value' =>  $meta_value[0] ) );
+				$metadata = get_metadata( 'post', $post_id, '_wp_attached_file' );
+				if ( isset( $metadata[0] ) ) {
+					$wp_attached_files = array( $post_id => (object) array( 'post_id' => $post_id, 'meta_value' =>  $metadata[0] ) );
+				} else {
+					$wp_attached_files = array();
+				}
 
 				if ( NULL == $attachment_metadata ) {
 					$metadata = get_metadata( 'post', $post_id, '_wp_attachment_metadata' );
@@ -2505,11 +2510,11 @@ class MLAOptions {
 						$attachment_metadata = $metadata[0];
 					}
 				}
-
+	
 				if ( empty( $attachment_metadata ) ) {
 					$attachment_metadata = array();
 				}
-
+	
 				$wp_attachment_metadata = array( $post_id => (object) array( 'post_id' => $post_id, 'meta_value' => serialize( $attachment_metadata ) ) );
 			}
 
@@ -2577,6 +2582,25 @@ class MLAOptions {
 			case 'menu_order':
 			case 'comment_count':
 				$result = absint( self::_evaluate_post_information( $post_id, $category, $data_source ) );
+				break;
+			case 'alt_text':
+				if ( NULL == $alt_text ) {
+					$metadata = get_metadata( 'post', $post_id, '_wp_attachment_image_alt' );
+					if ( is_array( $metadata ) ) {
+						if ( count( $metadata ) == 1 ) {
+							$alt_text = maybe_unserialize( $metadata[0] );
+						} else {
+							$alt_text = array();
+							foreach ( $metadata as $single_key => $single_value ) {
+								$alt_text[ $single_key ] = maybe_unserialize( $single_value );
+							}
+						}
+					}
+				}
+
+				if ( ! empty( $alt_text ) ) {
+					$result = self::_evaluate_array_result( $alt_text, $data_value['option'], $data_value['keep_existing'] );
+				}
 				break;
 			case 'mime_type': 
 				$data_source = 'post_mime_type';
@@ -3054,7 +3078,8 @@ class MLAOptions {
 		'mime_type',
 		'post_mime_type', 
 		'comment_count',
-
+		'alt_text',
+		
 		'absolute_path',
 		'absolute_file_name',
 		'base_file',

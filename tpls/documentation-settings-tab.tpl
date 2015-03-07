@@ -2400,7 +2400,7 @@ The item-level substitution parameter names are:
 </tr>
 <tr>
 <td style="padding-right: 10px; vertical-align: top; font-weight:bold">image_alt</td>
-<td>ALT text, for image types</td>
+<td>ALT text, for image types. If there are multiple values (unlikely) only the first value is available. If you need to process multiple values, use the field-level data source "alt_text".</td>
 </tr>
 <tr>
 <td style="padding-right: 10px; vertical-align: top; font-weight:bold">base_file</td>
@@ -2809,7 +2809,11 @@ Each Media Library attachment item has a row in the "posts" database table that 
 </tr>
 <tr>
 <td style="padding-right: 10px; vertical-align: top; font-weight:bold">comment_count</td>
-<td style="padding-bottom: 2em;">the value stored in the attachment's "posts" database row.</td>
+<td>the value stored in the attachment's "posts" database row.</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">alt_text</td>
+<td style="padding-bottom: 2em;">ALT text, for image types. If there are multiple values (unlikely) they will be returned as a comma-separated list. You can use the ",single" or ",export" option values to change that.</td>
 </tr>
 <tr>
 <td style="padding-right: 10px; vertical-align: top; font-weight:bold">absolute_path</td>

@@ -36,7 +36,7 @@ Copyright 2014 David Lingren
 /**
  * Class MLA Meta Box Hooks Example hooks all of the filters provided by the "Edit Media additional meta boxes" feature
  *
- * Call it anything you want, but give it an unlikely and hopefully unique name. Hiding enerything
+ * Call it anything you want, but give it an unlikely and hopefully unique name. Hiding everything
  * else inside a class means this is the only name you have to worry about.
  *
  * @package MLA Meta Box Hooks Example

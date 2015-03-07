@@ -35,7 +35,7 @@ Copyright 2014 David Lingren
 /**
  * Class MLA Media Modal Hooks Example hooks all of the filters provided by the "Media Manager Enhancements" feature
  *
- * Call it anything you want, but give it an unlikely and hopefully unique name. Hiding enerything
+ * Call it anything you want, but give it an unlikely and hopefully unique name. Hiding everything
  * else inside a class means this is the only name you have to worry about.
  *
  * @package MLA Media Modal Hooks Example

@@ -1118,7 +1118,7 @@ class MLAData {
 							'data_source' => $candidate,
 							'keep_existing' => false,
 							'format' => 'raw',
-							'option' => 'text' );
+							'option' => $value['option'] ); // single, export, text for array values, e.g., alt_text
 
 						$markup_values[ $key ] =  MLAOptions::mla_get_data_source( $post_id, 'single_attachment_mapping', $data_value );
 					} elseif ( isset( $markup_values[ $value['value'] ] ) ) {
@@ -1280,18 +1280,6 @@ class MLAData {
 			if ( 1 == $match_count ) {
 				$result['value'] = $matches[1];
 				if ( ! empty( $matches[5] ) ) {
-					/* $args =  array_map( 'trim', explode( ',', trim( $matches[5], " \n\t\r\0\x0B," ) ) );
-					foreach ( $args as $index => $arg ) {
-						// trim exactly one pair of balanced quotes, if present 
-						$length = strlen( $arg );
-						if ( $length > 1 ) {
-							$first = $arg[0];
-							$last = $arg[ $length - 1 ];
-							if ( $first === $last && in_array( $first, array ( '\'', '"' ) ) ) {
-								$args[ $index ] = ( 2 < $length ) ? substr( $arg, 1, $length - 2 ) : '';;
-							}
-						}
-					} */
 					$args = self::_parse_arguments( $matches[5] );
 					
 					if ( 1 == count( $args ) ) {
@@ -1760,6 +1748,10 @@ class MLAData {
 			if ( in_array( 'alt-text', self::$search_parameters['mla_search_fields'] ) ) {
 			  self::$query_parameters['use_postmeta_view'] = true;
 			  self::$query_parameters['postmeta_key'] = '_wp_attachment_image_alt';
+			}
+
+			if ( in_array( 'terms', self::$search_parameters['mla_search_fields'] ) ) {
+				self::$search_parameters['mla_search_taxonomies'] = MLAOptions::mla_supported_taxonomies( 'term-search' );
 			}
 
 			unset( $clean_request['s'] );
@@ -2479,7 +2471,7 @@ class MLAData {
 	/**
 	 * Adds a GROUPBY clause, if required
 	 * 
-	 * Taxonomy text queries require a GROUPBY clause.
+	 * Taxonomy text queries and postmeta queries can return multiple results for the same ID.
 	 * Defined as public because it's a filter.
 	 *
 	 * @since 1.90
@@ -2491,7 +2483,7 @@ class MLAData {
 	public static function mla_query_posts_groupby_filter( $groupby_clause ) {
 		global $wpdb;
 
-		if ( isset( self::$search_parameters['tax_terms_count'] ) ) {
+		if ( self::$query_parameters['use_postmeta_view'] || isset( self::$search_parameters['tax_terms_count'] ) ) {
 			$groupby_clause = "{$wpdb->posts}.ID";
 		}
 
@@ -5029,6 +5021,9 @@ class MLAData {
 			} // exif_read_data
 			
 			$results['mla_xmp_metadata'] = self::mla_parse_xmp_metadata( $path, 0 );
+			if ( NULL == $results['mla_xmp_metadata'] ) {
+				$results['mla_xmp_metadata'] = array();
+			}
 		}
 
 		/*
@@ -5641,6 +5636,14 @@ class MLAData {
 							$message .= sprintf( __( '%1$s: Could not delete ALT Text, remains "%2$s"', 'media-library-assistant' ) . '<br>', __( 'ERROR', 'media-library-assistant' ), esc_attr( $post_data[ $key ] ) );
 						}
 					} else {
+						/*
+						 * ALT Text isn't supposed to have multiple values, but it happens.
+						 * Delete multiple values and start over.
+						 */
+						if ( is_array( $post_data[ $key ] ) ) {
+							delete_post_meta( $post_id, '_wp_attachment_image_alt' );
+						}
+						
 						if ( update_post_meta( $post_id, '_wp_attachment_image_alt', $value ) ) {
 							/* translators: 1: element name 2: old_value 3: new_value */
 							$message .= sprintf( __( 'Changing %1$s from "%2$s" to "%3$s"', 'media-library-assistant' ) . '<br>', __( 'ALT Text', 'media-library-assistant' ), esc_attr( $post_data[ $key ] ), esc_attr( $value ) );
