@@ -2695,7 +2695,7 @@ Two "option" values change the treatment of fields with multiple values:
 	</tr>
 </table>
 <p>
-Seven "format" values help you reformat fields or encode them for use in HTML attributes and tags:
+Eight "format" values help you reformat fields or encode them for use in HTML attributes and tags:
 </p>
 <table>
 <tr>
@@ -2715,15 +2715,19 @@ Seven "format" values help you reformat fields or encode them for use in HTML at
 <td>If you use a substitution parameter in an HTML <code>href</code> attribute such as a hyperlink (<code>a</code>) or <code>img</code> tag you can add the ",url" option to convert special characters such as quotes, spaces and ampersands to their URL-encoded equivalents.</td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">,fraction(f,s)</td>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold; white-space:nowrap">,substr(s,l)</td>
+<td>If you need to limit the length of a value or extract a portion of it the ",substr" option will return part of the value. This option accepts one or two parameters, "start" (s) and "length" (l). The first character in the value is at position zero (0) so, for example, ",substr(2,3)" would return "cde" from a value of "abcdef". You can find complete information on "start" and "length", including the effect of negative values, at: <a href="http://php.net/manual/en/function.substr.php" title="PHP substr parameters" target="_blank">http://php.net/manual/en/function.substr.php</a>.</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold; white-space:nowrap">,fraction(f,s)</td>
 <td>Many of the EXIF metadata fields are expressed as "rational" quantities, i.e., separate numerator and denominator values separated by a slash. For example, <code>[+exif:ExposureTime+]</code> can be expressed as "1/200" seconds. The "fraction" format converts these to a more useful format.<br />&nbsp;<br />There two optional arguments; "f" (format_string)and "s" (show_fractions). The "format_string" (default "2") can either be the number of decimal places desired or a sprintf()-style format specification. For example, <code>[+exif:ExposureTime,fraction(4)+]</code> will display 7/6 as "+1.1667". A format specification such as '%1$.2f' will display 7/6 as "1.17". Numbers between -1 and +1, i.e. true fractions, will display in their original form, e.g., "1/6". If the optional "show_fractions" (default true) argument is "false" fractional values will convert to a decimal equivalent. For example, fraction(4,false) will display 1/6 as "+0.1667", and <code>[+exif:ExposureTime,fraction( '%1$.2f', false )+]</code> will display 1/6 as "0.17".</td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">,timestamp(f)</td>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold; white-space:nowrap">,timestamp(f)</td>
 <td>Many date and time values such as <code>[+meta:image_meta.created_timestamp+]</code> are stored as a UNIX timestamp. The ",timestamp" format converts a timestamp into a variety of date and/or time string formats, using the PHP date() function. Details on the format_string argument can be found at: <a href="http://php.net/manual/en/function.date.php" title="PHP Date format parameters" target="_blank">http://php.net/manual/en/function.date.php</a>.<br />&nbsp;<br />The default format string is "d/m/Y H:i:s", e.g., "31/12/2014 23:59:00" (just before midnight on new year's eve). You could code <code>[+meta:image_meta.created_timestamp,timestamp('j F, Y')+]</code> to display "31 December, 2014".</td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">,date(f)</td>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold; white-space:nowrap">,date(f)</td>
 <td>Many EXIF date and time values such as DateTimeOriginal and DateTimeDigitized are stored as strings with a format of "YYYY:MM:DD HH:MM:SS". You can parse this format and just about any English textual datetime description into a Unix timestamp, then format the result by using the ",date" format. This format first uses the PHP strtotime() function, then the date() function. The "Supported Date and Time Formats" can be found at: <a href="http://php.net/manual/en/datetime.formats.php" title="PHP Supported Date and Time Formats" target="_blank">http://php.net/manual/en/datetime.formats.php</a>.<br />&nbsp;<br />The default format string is "d/m/Y H:i:s", e.g., "31/12/2014 23:59:00" (just before midnight on new year's eve). You could code <code>[+exif:DateTimeOriginal,date('j F, Y')+]</code> to display "31 December, 2014".</td>
 </tr>
 </table>

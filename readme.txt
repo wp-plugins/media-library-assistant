@@ -174,6 +174,10 @@ All of the MLA source code has been annotated with "DocBlocks", a special type o
 * New: Two new filters for the "Media/Assistant Submenu Hooks" allow you to record or modify the new values for Bulk Edit fields. The `/media-library-assistant/examples/mla-list-table-hooks-example.php.txt` example plugin has been updated with the new filters.
 * New: A **Terms Search "exact"** option has been added to eliminate false matches such as "man" within "woman".
 * New: A new **field-level data source, "alt_text"** is available for use in shortcodes and mapping rules.
+* New: A new **field-level option value, "substr(s,l)"** is available for use in shortcodes and mapping rules. It uses the PHP substr() function to extract a portion of a field-level value.
+* New: If you add `define( 'MLA_DEBUG_LEVEL', 1 );` to your `wp-config.php` file a new Settings/Media Library Assistant **Debug tab** is available. The new tab lets you view, download and reset (empty) the PHP error log file.
+* New: The Development Version date and MLA debug level, if applicable, are now added to the title of the Settings/Media library Assistant submenu.
+* Fix: If 'Enable "bulk edit" area' is checked, bulk edit on Add New uploads will be run even if all four "enable mapping" options are disabled.
 * Fix: **Terms Search performance** has been improved by eliminating redundant table joins.
 * Fix: For the Media/Assistant submenu table, **sorting on custom fields** now works correctly.
 * Fix: For the Media/Assistant submenu table, **Search Media with the terms option** now works correctly.
@@ -181,6 +185,7 @@ All of the MLA source code has been annotated with "DocBlocks", a special type o
 * Fix: The `/media-library-assistant/examples/mla-image-source-control-example.php.txt` example plugin has been re-written to use the new filters and to confrom to changes made in MLA version 2.01.
 * Fix: Where-used reporting now identifies posts and pages in the Trash.
 * Fix: For IPTC/EXIF mapping, single/double quotes in the EXIF/Template Value field are now handled correctly, without adding backslash characters to the new values.
+* Fix: Field-level option values containing multiple arguments are now parsed correctly.
 
 = 2.02 =
 * New: For the **Media/Add New screen, a new Bulk Edit area** lets you assign taxonomy terms and change standard or custom fields as new items are uploaded to the Media Library.

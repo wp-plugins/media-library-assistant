@@ -2295,40 +2295,40 @@ class MLAOptions {
 	 * @param	string 	category/scope to evaluate against: custom_field_mapping or single_attachment_mapping
 	 * @param	string	data source name ( post_date or post_parent )
 	 *
-	 * @return	mixed	'post_date' => (string) upload date, 'post_parent' => (integer) ID of parent or zero )
+	 * @return	mixed	(string)/'' or (integer)/0 depending on $data_source type
 	 */
 	private static function _evaluate_post_information( $post_id, $category, $data_source ) {
 		global $wpdb;
 		static $post_info = NULL;
 		
 		if ( 0 == $post_id ) {
-			return false;
-		}
-		
-		/*
-		 * Check for $post_id match
-		 */
-		if ( 'single_attachment_mapping' == $category && ! isset( $post_info[$post_id] ) ) {
-			$post_info = NULL;
-		}
-		
-		if ( NULL == $post_info ) {
-			if ( 'custom_field_mapping' == $category ) {
-				$post_info = $wpdb->get_results( "SELECT * FROM {$wpdb->posts} WHERE post_type = 'attachment'", OBJECT_K );
-			} else {
-				$post_info = $wpdb->get_results( "SELECT * FROM {$wpdb->posts} WHERE ID = '{$post_id}'", OBJECT_K );
-			}
-		}
-
-		if ( 'post_id' == $data_source ) {
-			$data_source = 'ID';
-		}
-		
-		if ( isset( $post_info[$post_id] ) && property_exists( $post_info[$post_id], $data_source ) ) {
-			$post_array = (array) $post_info[$post_id];
-			$value = $post_array[ $data_source ];
+			$value = NULL;
 		} else {
-			return false;
+			/*
+			 * Check for $post_id match
+			 */
+			if ( 'single_attachment_mapping' == $category && ! isset( $post_info[$post_id] ) ) {
+				$post_info = NULL;
+			}
+			
+			if ( NULL == $post_info ) {
+				if ( 'custom_field_mapping' == $category ) {
+					$post_info = $wpdb->get_results( "SELECT * FROM {$wpdb->posts} WHERE post_type = 'attachment'", OBJECT_K );
+				} else {
+					$post_info = $wpdb->get_results( "SELECT * FROM {$wpdb->posts} WHERE ID = '{$post_id}'", OBJECT_K );
+				}
+			}
+	
+			if ( 'post_id' == $data_source ) {
+				$data_source = 'ID';
+			}
+			
+			if ( isset( $post_info[$post_id] ) && property_exists( $post_info[$post_id], $data_source ) ) {
+				$post_array = (array) $post_info[$post_id];
+				$value = $post_array[ $data_source ];
+			} else {
+				$value = NULL;
+			}
 		}
 
 		switch ( $data_source ) {
@@ -2554,8 +2554,10 @@ class MLAOptions {
 					if ( empty( $placeholder['prefix'] ) ) {
 						$field_value = $data_value;
 						$field_value['data_source'] = $placeholder['value'];
+						$field_value['meta_name'] = '';
 						$field_value['option'] = $placeholder['option'];
-						$item_values[ $key ] = self::_evaluate_data_source( $post_id, $category, $field_value, $attachment_metadata );
+						$field_value = self::_evaluate_data_source( $post_id, $category, $field_value, $attachment_metadata );
+						$item_values[ $key ] = MLAData::mla_apply_field_level_format( $field_value, $placeholder );
 					} // Data Source
 				} // foreach placeholder
 

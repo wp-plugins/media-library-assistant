@@ -11,11 +11,18 @@
 
 defined( 'ABSPATH' ) or die();
 
-if (!defined('MLA_OPTION_PREFIX')) {
+if ( ! defined('MLA_OPTION_PREFIX') ) {
 	/**
 	 * Gives a unique prefix for plugin options; can be set in wp-config.php
 	 */
 	define('MLA_OPTION_PREFIX', 'mla_');
+}
+
+if ( ! defined('MLA_DEBUG_LEVEL') ) {
+	/**
+	 * Activates debug options; can be set in wp-config.php
+	 */
+	define('MLA_DEBUG_LEVEL', 0);
 }
 
 /**

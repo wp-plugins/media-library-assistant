@@ -5,7 +5,7 @@
 <div id="icon-options-general" class="icon32"><br/></div>
 <div id="donate-button-div" style="text-align: center; width: 100px; height: 40px; float: right; clear:right; margin-top: 5px">
 <a href="http://fairtradejudaica.org/make-a-difference/donate/" title="Support our work" target="_blank" style="border: none;"><img border="0" src="[+donateURL+]" width="100" height="40" alt="Donate"></a></div>
-<h2>[+Media Library Assistant+] [+version+] [+Settings+]</h2>
+<h2>[+Media Library Assistant+] [+version+][+development+][+debug+] [+Settings+]</h2>
 [+messages+]
 [+tablist+]
 [+tab_content+]
@@ -289,6 +289,32 @@
 	</table>
     <p class="submit" style="padding-bottom: 0;">
         <input name="iptc-exif-options-save" class="button-primary" id="iptc-exif-options-save" type="submit" value="[+Save Changes+]" />
+	<div style="font-size:8pt;padding-bottom:5px;">[+Click Save Changes+]</div>
+    </p>
+[+_wpnonce+]
+[+_wp_http_referer+]
+</form>
+
+<!-- template="debug-tab" -->
+<h3>[+Debug Options+]</h3>
+<form action="[+form_url+]" method="post" class="mla-display-settings-page" id="mla-display-settings-debug-tab">
+&nbsp;<br />
+[+options_list+]
+<h4>[+Error Log+]</h4>
+    <table>
+        <tr>
+            <td>
+                <textarea name="" id="mla-error-log-display" rows="24" cols="100" readonly="readonly">[+error_log_text+]</textarea>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                [+download_link+]&nbsp;[+reset_link+]
+            </td>
+        </tr>
+	</table>
+    <p class="submit" style="padding-bottom: 0;">
+        <input name="mla-debug-options-save" class="button-primary" id="mla-debug-options-save" type="submit" value="[+Save Changes+]" />
 	<div style="font-size:8pt;padding-bottom:5px;">[+Click Save Changes+]</div>
     </p>
 [+_wpnonce+]

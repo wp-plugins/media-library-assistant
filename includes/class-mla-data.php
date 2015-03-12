@@ -861,7 +861,7 @@ class MLAData {
 	
 					$index++;
 				} else { // backslash
-					if ( $delimiter == $byte ) {
+					if ( $delimiter == $byte || ',' == $byte ) {
 						break;
 					}
 	
@@ -874,6 +874,105 @@ class MLAData {
 		} // strlen( $argument_string )
 		
 		return $arguments;
+	}
+
+	/**
+	 * Apply fleid-level format options to field-level content
+	 *
+	 * @since 2.10
+	 *
+	 * @param	string	field-level content
+	 * @param	array	format code and aguments
+	 *
+	 * @return	string	formatted field-level content
+	 */
+	public static function mla_apply_field_level_format( $value, $args ) {
+		if ( 'attr' == $args['format'] ) {
+			$value = esc_attr( $value );
+		} elseif ( 'url' == $args['format'] ) {
+			$value = urlencode( $value );
+		} elseif ( ( 'commas' == $args['format'] ) && is_numeric( $value ) ) {
+			$value = number_format( (float)$value );
+		} elseif ( 'timestamp' == $args['format'] && is_numeric( $value ) ) {
+			/*
+			 * date "Returns a string formatted according to the given format string using the given integer"
+			 */
+			$format = empty( $args['args'] ) ? 'd/m/Y H:i:s' : $args['args'];
+			$value = date( $format , (integer) $value );
+		} elseif ( 'date' == $args['format'] ) {
+			/*
+			 * strtotime will "Parse about any English textual datetime description into a Unix timestamp"
+			 * If it succeeds we can format the timestamp for display
+			 */
+			$format = empty( $args['args'] ) ? 'd/m/Y H:i:s' : $args['args'];
+			$timestamp = strtotime( $value );
+			if( false !== $timestamp ) {
+				$value = date( $format, $timestamp );
+			}
+		} elseif ( 'fraction' == $args['format'] ) {
+			$show_fractions = true;
+			if ( ! empty( $args['args'] ) ) {
+				if ( is_array( $args['args'] ) ) {
+					if ( is_numeric( $args['args'][0] ) ) {
+						$format = '%1$+.' . absint( $args['args'][0] ) . 'f';
+					} else {
+						$format = $args['args'][0];
+					}
+					
+					$show_fractions = ( 'false' !== strtolower( trim( $args['args'][1] ) ) );
+				} else {
+					if ( is_numeric( $args['args'] ) ) {
+						$format = '%1$+.' . absint( $args['args'] ) . 'f';
+					} else {
+						$format = $args['args'];
+					}
+				}
+			} else {
+				$format = '%1$+.2f';
+			}
+			
+			$fragments = array_map( 'intval', explode( '/', $value ) );
+			if ( 1 == count( $fragments ) ) {
+				$value = trim( $value );
+				if ( ! empty( $value ) ) {
+					$value = $value;
+				}
+			} else {
+				if ( $fragments[0] ) {
+					if ( 1 == $fragments[1] ) {
+						$value = sprintf( '%1$+d', $fragments[0] );
+					} elseif ( 0 != $fragments[1] ) {
+						$value = $fragments[0] / $fragments[1];
+						if ( $show_fractions && ( -1 <= $value ) && ( 1 >= $value ) ) {
+							$value = sprintf( '%1$+d/%2$d', $fragments[0], $fragments[1] );
+						} else {
+							$value = sprintf( $format, $value );
+						}
+					} // fractional value
+				} // non-zero numerator
+			} // valid denominator
+		} elseif ( 'substr' == $args['format'] ) {
+			$start = 0;
+			$length = strlen( $value );
+			
+			if ( ! empty( $args['args'] ) ) {
+				if ( is_array( $args['args'] ) ) {
+					$start = intval( $args['args'][0] );
+					
+					if ( 1 < count( $args['args'] ) ) {
+						$length = intval( $args['args'][1] );
+					}
+				} else {
+					$start = intval( $args['args'] );
+				}
+			}
+			
+			if ( false === $value = substr( $value, $start, $length ) ) {
+				$value = '';
+			}
+		} 
+
+		return $value;
 	}
 
 	/**
@@ -1134,71 +1233,7 @@ class MLAData {
 			} // switch
 			
 			if ( isset( $markup_values[ $key ] ) ) {
-				if ( 'attr' == $value['format'] ) {
-					$markup_values[ $key ] = esc_attr( $markup_values[ $key ] );
-				} elseif ( 'url' == $value['format'] ) {
-					$markup_values[ $key ] = urlencode( $markup_values[ $key ] );
-				} elseif ( ( 'commas' == $value['format'] ) && is_numeric( $markup_values[ $key ] ) ) {
-					$markup_values[ $key ] = number_format( (float)$markup_values[ $key ] );
-				} elseif ( 'timestamp' == $value['format'] && is_numeric( $markup_values[ $key ] ) ) {
-					/*
-					 * date "Returns a string formatted according to the given format string using the given integer"
-					 */
-					$format = empty( $value['args'] ) ? 'd/m/Y H:i:s' : $value['args'];
-					$markup_values[ $key ] = date( $format , (integer) $markup_values[ $key ] );
-				} elseif ( 'date' == $value['format'] ) {
-					/*
-					 * strtotime will "Parse about any English textual datetime description into a Unix timestamp"
-					 * If it succeeds we can format the timestamp for display
-					 */
-					$format = empty( $value['args'] ) ? 'd/m/Y H:i:s' : $value['args'];
-					$timestamp = strtotime( $markup_values[ $key ] );
-					if( false !== $timestamp ) {
-						$markup_values[ $key ] = date( $format, $timestamp );
-					}
-				} elseif ( 'fraction' == $value['format'] ) {
-					$show_fractions = true;
-					if ( ! empty( $value['args'] ) ) {
-						if ( is_array( $value['args'] ) ) {
-							if ( is_numeric( $value['args'][0] ) ) {
-								$format = '%1$+.' . absint( $value['args'][0] ) . 'f';
-							} else {
-								$format = $value['args'][0];
-							}
-							
-							$show_fractions = ( 'false' !== strtolower( trim( $value['args'][1] ) ) );
-						} else {
-							if ( is_numeric( $value['args'] ) ) {
-								$format = '%1$+.' . absint( $value['args'] ) . 'f';
-							} else {
-								$format = $value['args'];
-							}
-						}
-					} else {
-						$format = '%1$+.2f';
-					}
-					
-					$fragments = array_map( 'intval', explode( '/', $markup_values[ $key ] ) );
-					if ( 1 == count( $fragments ) ) {
-						$value = trim( $markup_values[ $key ] );
-						if ( ! empty( $value ) ) {
-							$markup_values[ $key ] = $value;
-						}
-					} else {
-						if ( $fragments[0] ) {
-							if ( 1 == $fragments[1] ) {
-								$markup_values[ $key ] = sprintf( '%1$+d', $fragments[0] );
-							} elseif ( 0 != $fragments[1] ) {
-								$value = $fragments[0] / $fragments[1];
-								if ( $show_fractions && ( -1 <= $value ) && ( 1 >= $value ) ) {
-									$markup_values[ $key ] = sprintf( '%1$+d/%2$d', $fragments[0], $fragments[1] );
-								} else {
-									$markup_values[ $key ] = sprintf( $format, $value );
-								}
-							} // fractional value
-						} // non-zero numerator
-					} // valid denominator
-				} 
+				$markup_values[ $key ] = self::mla_apply_field_level_format( $markup_values[ $key ], $value );
 			} // isset( $markup_values[ $key ] )
 		} // foreach placeholder
 
@@ -1276,7 +1311,7 @@ class MLAData {
 				$tail = substr( $match, 2);
 			}
 
-			$match_count = preg_match( '/([^,]+)(,(text|single|export|array|multi|commas|raw|attr|url|timestamp|date|fraction))(\(([^)]+)\))*\+\]/', $tail, $matches );
+			$match_count = preg_match( '/([^,]+)(,(text|single|export|array|multi|commas|raw|attr|url|timestamp|date|fraction|substr))(\(([^)]+)\))*\+\]/', $tail, $matches );
 			if ( 1 == $match_count ) {
 				$result['value'] = $matches[1];
 				if ( ! empty( $matches[5] ) ) {
@@ -1312,6 +1347,10 @@ class MLAData {
 				} elseif ( 'fraction' == $matches[3] ) {		
 					$result['option'] = 'text';
 					$result['format'] = 'fraction';
+					$result['args'] = $args;
+				} elseif ( 'substr' == $matches[3] ) {		
+					$result['option'] = 'text';
+					$result['format'] = 'substr';
 					$result['args'] = $args;
 				} else {
 					$result['option'] = $matches[3];
@@ -2007,8 +2046,6 @@ class MLAData {
 	 * @return	boolean	$needle is a word match within $haystack
 	 */
 	private static function _match_quoted_phrase( $needle, $haystack ) {
-//error_log( __LINE__ . ' _match_quoted_phrase needle = ' . var_export( $needle, true ), 0 );
-//error_log( __LINE__ . ' _match_quoted_phrase haystack = ' . var_export( $haystack, true ), 0 );
 		$haystack = strtolower( html_entity_decode( $haystack ) );
 		$needle = strtolower( html_entity_decode( $needle ) );
 		
@@ -2023,11 +2060,7 @@ class MLAData {
 		}
 		
 		$pattern = '/^' . $safe_needle . '$|^' . $safe_needle . '\s+|\s+' . $safe_needle . '\s+|\s+' . $safe_needle . '$/';
-//error_log( __LINE__ . ' _match_quoted_phrase pattern = ' . var_export( $pattern, true ), 0 );
-//error_log( __LINE__ . ' _match_quoted_phrase haystack = ' . var_export( $haystack, true ), 0 );
 		$match_count = preg_match_all($pattern, $haystack, $matches);
-//error_log( __LINE__ . ' _match_quoted_phrase match_count = ' . var_export( $match_count, true ), 0 );
-//error_log( __LINE__ . ' _match_quoted_phrase matches = ' . var_export( $matches, true ), 0 );
 		return 0 < $match_count;
 	}
 
@@ -2056,7 +2089,6 @@ class MLAData {
 		 * Process the Terms Search arguments, if present.
 		 */
 		if ( isset( self::$search_parameters['mla_terms_search']['phrases'] ) ) {
-//error_log( __LINE__ . ' search_parameters mla_terms_search = ' . var_export( self::$search_parameters['mla_terms_search'], true ), 0 );
 			$terms_search_parameters = self::$search_parameters['mla_terms_search'];
 			$terms = array_map( 'trim', explode( ',', $terms_search_parameters['phrases'] ) );
 			if ( 1 < count( $terms ) ) {
@@ -2077,10 +2109,6 @@ class MLAData {
 					$quoted[ $index ] = ( '"' == $matches[1][$index] ) || ( "'" == $matches[2][$index] );
 				}
 				
-//error_log( __LINE__ . ' search_parameters matches = ' . var_export( $matches, true ), 0 );
-//error_log( __LINE__ . ' search_parameters phrases = ' . var_export( $phrases, true ), 0 );
-//error_log( __LINE__ . ' search_parameters quoted = ' . var_export( $quoted, true ), 0 );
-
 				$tax_terms = array();
 				$tax_counts = array();
 				foreach ( $phrases as $index => $phrase ) {
@@ -2095,7 +2123,6 @@ class MLAData {
 					} else {
 						$the_terms = get_terms( $terms_search_parameters['taxonomies'], array( 'name__like' => $phrase, 'fields' => 'all', 'hide_empty' => false ) );
 						if ( $quoted[ $index ] ) {
-//error_log( __LINE__ . ' search_parameters the_terms = ' . var_export( $the_terms, true ), 0 );
 							foreach ( $the_terms as $term_index => $the_term ) {
 								if ( ! self::_match_quoted_phrase( $phrase, $the_term->name ) ) {
 									unset( $the_terms[ $term_index ]);
@@ -2103,7 +2130,6 @@ class MLAData {
 							}
 						} // quoted phrase
 					} // not exact
-//error_log( __LINE__ . ' search_parameters the_terms = ' . var_export( $the_terms, true ), 0 );
 					
 					foreach( $the_terms as $the_term ) {
 						$tax_terms[ $the_term->taxonomy ][ $the_term->term_id ] = (integer) $the_term->term_taxonomy_id;
@@ -2115,7 +2141,6 @@ class MLAData {
 						}
 					}
 				} // foreach phrase
-//error_log( __LINE__ . ' tax_counts = ' . var_export( $tax_counts, true ), 0 );
 
 				/*
 				 * For the AND connector, a taxonomy term must have all of the search terms within it
@@ -2138,7 +2163,6 @@ class MLAData {
 				} // AND (i.e., All phrases)
 
 				if ( ! empty( $tax_terms ) ) {
-//error_log( __LINE__ . ' tax_terms = ' . var_export( $tax_terms, true ), 0 );
 					$inner_connector = '';
 
 					$tax_clause .= $terms_connector;
@@ -2162,7 +2186,6 @@ class MLAData {
 				$tax_clause .= ')';
 			}
 
-//error_log( __LINE__ . ' tax_clause = ' . var_export( $tax_clause, true ), 0 );
 			if ( empty( $tax_clause ) ) {
 				$tax_clause = '1=0';
 			} else {
@@ -2441,7 +2464,6 @@ class MLAData {
 		}
 
 		if ( isset( self::$search_parameters['tax_terms_count'] ) ) {
-//error_log( __LINE__ . ' self::$search_parameters = ' . var_export( self::$search_parameters, true ), 0 );
 			$tax_index = 0;
 			$tax_clause = '';
 

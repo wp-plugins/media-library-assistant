@@ -90,8 +90,20 @@ class MLAEdit {
 		 * Check for Media/Add New bulk edit area updates
 		 */
 		if ( ! empty( $_REQUEST['mlaAddNewBulkEdit']['formString'] ) && ( 'checked' == MLAOptions::mla_get_option( MLAOptions::MLA_ADD_NEW_BULK_EDIT ) ) ) {
-			// Fires after MLA mapping in wp_update_attachment_metadata() processing.		  
-			add_filter( 'mla_update_attachment_metadata_postfilter', 'MLAEdit::mla_update_attachment_metadata_postfilter', 10, 3 );
+			/*
+			 * If any of the mapping rule options is enabled, use the MLA filter so this
+			 * filter is called after mapping rules have run. If none are enabled,
+			 * use the WordPress filter directly.
+			 */
+			if ( ( 'checked' == MLAOptions::mla_get_option( 'enable_iptc_exif_mapping' ) ) ||
+				( 'checked' == MLAOptions::mla_get_option( 'enable_custom_field_mapping' ) ) ||
+				( 'checked' == MLAOptions::mla_get_option( 'enable_iptc_exif_update' ) ) ||
+				( 'checked' == MLAOptions::mla_get_option( 'enable_custom_field_update' ) ) ) {
+				// Fires after MLA mapping in wp_update_attachment_metadata() processing.
+				add_filter( 'mla_update_attachment_metadata_postfilter', 'MLAEdit::mla_update_attachment_metadata_postfilter', 10, 3 );
+			} else {
+				add_filter( 'wp_update_attachment_metadata', 'MLAEdit::mla_update_attachment_metadata_postfilter', 0x7FFFFFFF, 2 );
+			}
 		}
 
 		/*
@@ -415,7 +427,9 @@ class MLAEdit {
 	 * Apply Media/Add New bulk edit area updates, if any
 	 *
 	 * This filter is called AFTER MLA mapping rules are applied during
-	 * wp_update_attachment_metadata() processing.
+	 * wp_update_attachment_metadata() processing. If none of the mapping rules
+	 * is enabled it is called from the 'wp_update_attachment_metadata' filter
+	 * with just two arguments.
 	 *
 	 * @since 2.02
 	 *
@@ -425,7 +439,7 @@ class MLAEdit {
 	 *
 	 * @return	array	updated attachment metadata
 	 */
-	public static function mla_update_attachment_metadata_postfilter( $data, $post_id, $options ) {
+	public static function mla_update_attachment_metadata_postfilter( $data, $post_id, $options = array( 'is_upload' => true ) ) {
 		if ( ( true == $options['is_upload'] ) && ! empty( $_REQUEST['mlaAddNewBulkEdit']['formString'] ) ) {
 			/*
 			 * Clean up the inputs, which have everythng from the enclosing <form>
