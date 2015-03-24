@@ -38,7 +38,7 @@ class MLA {
 	 *
 	 * @var	string
 	 */
-	const MLA_DEVELOPMENT_VERSION = '20150312';
+	const MLA_DEVELOPMENT_VERSION = '20150324';
 
 	/**
 	 * Slug for registering and enqueueing plugin style sheet
@@ -255,16 +255,6 @@ class MLA {
 	 */
 	public static function mla_admin_init_action() {
 //error_log( 'DEBUG: MLA::mla_admin_init_action $_REQUEST = ' . var_export( $_REQUEST, true ), 0 );
-		/*
-		 * Process mla_viewer image stream requests
-		 */
-		if ( false && isset( $_REQUEST['mla_stream_file'] ) ) {
-error_log( 'DEBUG: MLA::mla_admin_init_action $_REQUEST = ' . var_export( $_REQUEST, true ), 0 );
-			check_admin_referer( self::MLA_ADMIN_NONCE );
-			self::_process_mla_stream_image();
-			exit();
-		}
-
 		/*
 		 * Process secure file download requests
 		 */
@@ -826,81 +816,6 @@ error_log( 'DEBUG: MLA::mla_admin_init_action $_REQUEST = ' . var_export( $_REQU
 		echo '</body>';
 		echo '</html> ';
 		exit();
-	}
-
-	/**
-	 * Process Imagick image stream request, e.g., for a PDF thumbnail
-	 *
-	 * Requires _wpnonce and mla_stream_file (relative to wp_upload_dir ) in $_REQUEST; optional parameters are:
-	 * 		mla_stream_width, mla_stream_height, mla_stream_frame, mla_stream_type
-	 *
-	 * @since 2.10
-	 *
-	 * @return	void	echos image content and calls exit();
-	 */
-	private static function _process_mla_stream_image() {
-		if ( isset( $_REQUEST['mla_stream_file'] ) ) {
-			if( ini_get( 'zlib.output_compression' ) ) { 
-				ini_set( 'zlib.output_compression', 'Off' );
-			}
-			
-			$file = stripslashes( $_REQUEST['mla_stream_file'] );
-			$width = isset( $_REQUEST['mla_stream_width'] ) ? absint( $_REQUEST['mla_stream_width'] ) : false;
-			$height = isset( $_REQUEST['mla_stream_height'] ) ? absint( $_REQUEST['mla_stream_height'] ) : false;
-			$frame = isset( $_REQUEST['mla_stream_frame'] ) ? absint( $_REQUEST['mla_stream_frame'] ) : 1;
-			$type = isset( $_REQUEST['mla_stream_type'] ) ? stripslashes( $_REQUEST['mla_stream_type'] ) : 'image/jpeg';
-
-			$upload_dir = wp_upload_dir();
-			$file = $upload_dir['basedir'] . '/' . $file;
-
-			if ( ! file_exists( $file ) ) {
-				wp_die( 'File not found', '', array( 'response' => 404 ) );
-			}
-			
-			/*
-			 * Supplementary Imagick functions for the image editor
-			 */
-			require_once( MLA_PLUGIN_PATH . 'includes/class-mla-image-editor.php' );
-
-			try {
-				$image_editor = new MLA_Image_Editor( $file );
-				$loaded = $editor->load();
-				if ( is_wp_error( $loaded ) ) {
-error_log( 'Image load failure = ' . var_export( $loaded->get_error_messages(), true ), 0 );
-					wp_die( 'File not loaded', '', array( 'response' => 404 ) );
-				}
-				
-				// Select the frame/page
-				if ( is_callable( array( $image_editor, 'setIteratorIndex' ) ) ) {
-					$image_editor->setIteratorIndex( $frame );
-				} else {
-error_log( 'setIteratorIndex not callable', 0 );
-				}
-		
-error_log( 'Image load output format = ' . var_export( $image_editor->get_output_format(), true ), 0 );
-				}
-			catch ( Exception $e ) {
-error_log( 'Image load Exception = ' . var_export( $e->getMessage(), true ), 0 );
-				wp_die( 'Image load exception', '', array( 'response' => 404 ) );
-			}
-
-/* $item_values['thumbnail_content'] = sprintf( '<img %1$ssrc="http://docs.google.com/viewer?url=%2$s&a=bi&pagenumber=%3$d&w=%4$d"%5$s%6$s>', $image_attributes, $item_values['filelink_url'], $arguments['mla_viewer_page'], $arguments['mla_viewer_width'], $image_class, $image_alt ); */
-
-			try {
-				$image_editor->stream( $type );
-			}
-			catch ( Exception $e ) {
-error_log( 'stream Exception = ' . var_export( $e->getMessage(), true ), 0 );
-				wp_die( 'Image stream exception', '', array( 'response' => 404 ) );
-			}
-			
-			exit();
-		} else {
-			wp_die( 'mla_stream_file not set', '', array( 'response' => 404 ) );
-		}
-
-		// Should not be possible
-		wp_die( '_process_mla_stream_image error', '', array( 'response' => 500 ) );
 	}
 
 	/**
@@ -1827,7 +1742,7 @@ error_log( 'stream Exception = ' . var_export( $e->getMessage(), true ), 0 );
 		 */
 		switch ( $_REQUEST['bulk_action'] ) {
 			case 'bulk_custom_field_map':
-				$_REQUEST['bulk_custom_field_map'] = __( 'Map Custom Field Metadata', 'media-library-assistant' );
+				$_REQUEST['bulk_custom_field_map'] = __( 'Map Custom Field metadata', 'media-library-assistant' );
 				break;
 			case 'bulk_map':
 				$_REQUEST['bulk_map'] = __( 'Map IPTC/EXIF metadata', 'media-library-assistant' );
@@ -2235,7 +2150,7 @@ error_log( 'stream Exception = ' . var_export( $e->getMessage(), true ), 0 );
 			'Do not allow' => __( 'Do not allow', 'media-library-assistant' ),
 			'bulk_custom_fields' => $bulk_custom_fields,
 			'Map IPTC/EXIF metadata' =>  __( 'Map IPTC/EXIF metadata', 'media-library-assistant' ),
-			'Map Custom Field metadata' =>  __( 'Map Custom Field Metadata', 'media-library-assistant' ),
+			'Map Custom Field metadata' =>  __( 'Map Custom Field metadata', 'media-library-assistant' ),
 			'Bulk Waiting' =>  __( 'Waiting', 'media-library-assistant' ),
 			'Bulk Running' =>  __( 'In-process', 'media-library-assistant' ),
 			'Bulk Complete' =>  __( 'Complete', 'media-library-assistant' ),

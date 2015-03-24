@@ -84,7 +84,12 @@ class MLAEdit {
 	public static function mla_admin_init_action( ) {
 //error_log( 'DEBUG: MLAEdit::mla_admin_init_action() $_REQUEST = ' . var_export( $_REQUEST, true ), 0 );
 
-		add_post_type_support( 'attachment', apply_filters( 'mla_edit_media_support', array( 'custom-fields' ) ) );
+		$edit_media_support = array( 'custom-fields' );
+		if ( ( 'checked' == MLAOptions::mla_get_option( 'enable_featured_image' ) ) && current_theme_supports( 'post-thumbnails', 'attachment' ) ) {
+			$edit_media_support[] = 'thumbnail';
+		}
+		
+		add_post_type_support( 'attachment', apply_filters( 'mla_edit_media_support', $edit_media_support ) );
 
 		/*
 		 * Check for Media/Add New bulk edit area updates
@@ -525,9 +530,9 @@ class MLAEdit {
 
 		echo '<span id="mla_metadata_links" style="font-weight: bold; line-height: 2em">';
 
-		echo '<a href="' . add_query_arg( $view_args, wp_nonce_url( 'upload.php?mla_admin_action=' . MLA::MLA_ADMIN_SINGLE_CUSTOM_FIELD_MAP, MLA::MLA_ADMIN_NONCE ) ) . '" title="' . __( 'Map Custom Field metadata for this item', 'media-library-assistant' ) . '">' . __( 'Map Custom Field Metadata', 'media-library-assistant' ) . '</a><br>';
+		echo '<a href="' . add_query_arg( $view_args, wp_nonce_url( 'upload.php?mla_admin_action=' . MLA::MLA_ADMIN_SINGLE_CUSTOM_FIELD_MAP, MLA::MLA_ADMIN_NONCE ) ) . '" title="' . __( 'Map Custom Field metadata for this item', 'media-library-assistant' ) . '">' . __( 'Map Custom Field metadata', 'media-library-assistant' ) . '</a><br>';
 
-		echo '<a href="' . add_query_arg( $view_args, wp_nonce_url( 'upload.php?mla_admin_action=' . MLA::MLA_ADMIN_SINGLE_MAP, MLA::MLA_ADMIN_NONCE ) ) . '" title="' . __( 'Map IPTC/EXIF metadata for this item', 'media-library-assistant' ) . '">' . __( 'Map IPTC/EXIF Metadata', 'media-library-assistant' ) . '</a>';
+		echo '<a href="' . add_query_arg( $view_args, wp_nonce_url( 'upload.php?mla_admin_action=' . MLA::MLA_ADMIN_SINGLE_MAP, MLA::MLA_ADMIN_NONCE ) ) . '" title="' . __( 'Map IPTC/EXIF metadata for this item', 'media-library-assistant' ) . '">' . __( 'Map IPTC/EXIF metadata', 'media-library-assistant' ) . '</a>';
 
 		echo "</span>\n";
 		echo "</div><!-- .misc-pub-section -->\n";
@@ -708,6 +713,8 @@ class MLAEdit {
 			self::$mla_references = MLAData::mla_fetch_attachment_references( $post->ID, $post->post_parent );
 		}
 
+//error_log( __LINE__ . " mla_parent_info_handler [{$post->ID}] acf = " . var_export( get_field( 'acf_image', $post->ID ), true ), 0 );
+//error_log( __LINE__ . " mla_parent_info_handler [{$post->ID}] acf = " . var_export( get_field( 'acf_image', $post->post_parent ), true ), 0 );
 		if ( is_array( self::$mla_references ) ) {
 			if ( empty(self::$mla_references['parent_title'] ) ) {
 				$parent_info = self::$mla_references['parent_errors'];
@@ -1141,7 +1148,7 @@ class MLAEdit {
 						&nbsp;&nbsp;
 						<a id="<?php echo $link_search_id; ?>" href="#<?php echo $link_search_p_id; ?>" class="hide-if-no-js">
 							<?php
-								echo __( '?&nbsp;Search', 'media-library-assistant' );
+								echo '?&nbsp;' . __( 'Search', 'media-library-assistant' );
 							?>
 						</a>
 					</h4>

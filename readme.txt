@@ -170,6 +170,7 @@ All of the MLA source code has been annotated with "DocBlocks", a special type o
 
 = 2.10 =
 * New: **XMP metadata can be extracted from JPEG and TIFF images** and used in `[mla_gallery]` shortcodes and IPTC/EXIF or Custom Field mapping rules.
+* New: For the `[mla_gallery]` shortcode, the **Google File Viewer (mla_viewer) has been replaced** by two new featues. First, **a "Featured Image" can be assigned to Media Library items**; it will replace the MIME type icon as the thumbnail for the item. Second, **PDF documents can generate a thumbnail image** for the item if Imagemagick, Imagick and Ghostscript are available on the server. See the [Other Notes section](http://wordpress.org/extend/plugins/media-library-assistant/other_notes/ "Click here, then scroll down") section or the Settings/Media Library Assistant Documentation tab for more information.
 * New: A Media/Assistant submenu table **custom view example plugin**, `mla-custom-view-example.php.txt` has been added to the `/media-library-assistant/examples/` directory. The example adds two custom views for "Attached" items and "Unpublished" items that are attached to a parent whose `post_status` is 'draft', 'future', 'pending' or 'trash' .
 * New: Two new filters for the "Media/Assistant Submenu Hooks" allow you to record or modify the new values for Bulk Edit fields. The `/media-library-assistant/examples/mla-list-table-hooks-example.php.txt` example plugin has been updated with the new filters.
 * New: A **Terms Search "exact"** option has been added to eliminate false matches such as "man" within "woman".
@@ -186,6 +187,7 @@ All of the MLA source code has been annotated with "DocBlocks", a special type o
 * Fix: Where-used reporting now identifies posts and pages in the Trash.
 * Fix: For IPTC/EXIF mapping, single/double quotes in the EXIF/Template Value field are now handled correctly, without adding backslash characters to the new values.
 * Fix: Field-level option values containing multiple arguments are now parsed correctly.
+* Fix: Several changes to the Translation/Localization strings to reduce translation effort.
 
 = 2.02 =
 * New: For the **Media/Add New screen, a new Bulk Edit area** lets you assign taxonomy terms and change standard or custom fields as new items are uploaded to the Media Library.
@@ -311,6 +313,36 @@ In this section, scroll down to see highlights from the documentation, including
 
 Media Library Assistant includes many images drawn (with permission) from the [Crystal Project Icons](http://www.softicons.com/free-icons/system-icons/crystal-project-icons-by-everaldo-coelho), created by [Everaldo Coelho](http://www.everaldo.com), founder of [Yellowicon](http://www.yellowicon.com).
 
+<h4>NEW! Thumbnail Substitution Support</h4>
+
+<strong>NOTE: Google has discontinued the File Viewer support for thumbnail images.</strong>
+This solution supports dynamic thumbnail image generation for PDF documents on your site's server. It uses the WordPress <code>WP_Image_Editor</code> and <code>WP_Image_editor_Imagick</code> classes, which require Imagemagick, Imagick and Ghostscript to be installed on your server.  If you need help installing them, look at this <a href="https://wordpress.org/support/topic/nothing-but-error-messages" title="Help with installation" target="_blank">PDF Thumbnails support topic</a>.
+
+You can also assign a "Featured Image" to any Media Library item. For non-image items such as Microsoft Office documents the featured image will replace the MIME-type icon or document title in an <code>[mla_gallery]</code> display. Simply go to the Media/Edit Media screen, scroll down to the "Featured Image" meta box and select an image as you would for a post or page.
+
+Nine <code>[mla_gallery]</code> parameters provide an easy way to simulate thumbnail images for the non-image file types.
+
+* <strong>mla_viewer</strong> - must be "true" to enable thumbnail substitution.
+* <strong>mla_viewer_extensions</strong> - a comma-delimited list of the file extensions to be processed; the default is "pdf" (do not include the dot (".") preceding the file extension). You may add or remove extensions (when support for additional types becomes available).
+* <strong>mla_viewer_limit</strong> - the upper limit in megabytes (default none) on the size of the file to be processed. You can set this to avoid processing large documents if performance becomes an issue.
+* <strong>mla_viewer_width</strong> - the maxinum width in pixels (default "150") of the thumbnail image. The height (unless also specified) will be adjusted to maintain the page proportions.
+* <strong>mla_viewer_height</strong> - the maxinum width in pixels (default "0") of the thumbnail image. The width (unless also specified) will be adjusted to maintain the page proportions.
+* <strong>mla_viewer_best_fit</strong> - retain page proportions (default "false") when both height and width are explicitly stated. If "false", the image will be stretched as required to exactly fit the height and width. If "true", the image will be reduced in size to fit within the bounds, but proportions will be preserved. For example, a typical page is 612 pixels wide and 792 pixels tall. If you set width and height to 300 and set best_fit to true, the thumbnail will be reduced to 231 pixels wide by 300 pixels tall.
+* <strong>mla_viewer_page</strong> - the page number (default "1") to be used for the thumbnail image. If the page does not exist for a particular document the first page will be used instead.
+* <strong>mla_viewer_resolution</strong> - the pixels/inch resolution (default 72) of the page before reduction. If you set this to a higher number, such as 300, you will improve thumbnail quality at the expense of additional processing time.
+* <strong>mla_viewer_type</strong> - the MIME type (default image/jpeg) of the final thumbnail. You can, for example, set this to "image/png" to retain a transparent background instead of the white jpeg background.</td>
+
+When this feature is active, gallery items for which WordPress can generate a thumbnail image are not altered. If WordPress generation fails, the "Featured Image" will be used, if one is specified for the item. If the item does not have a Featured Image, supported file/MIME types (PDF for now) will have a gallery thumbnail generated dynamically. If all else fails, the thumbnail is replaced by an "img" html tag whose "src" attribute contains a url reference to the appropriate icon for the file/MIME type.
+
+Three options in the Settings/Media Library Assistant MLA Gallery tab allow control over mla_viewer operation:
+
+* <strong>Enable thumbnail substitution</strong><br />
+Check this option to allow the "mla_viewer" to generate thumbnail images for PDF documents. Thumbnails are generated dynamically, each time the item appears in an <code>[mla_gallery]</code> display.
+* <strong>Enable explicit Ghostscript check</strong><br />
+Check this option to enable the explicit check for Ghostscript support required for thumbnail generation. If your Ghostscript software is in a non-standard location, unchecking this option bypasses the check. Bad things can happen if Ghostscript is missing but Imagemagick is present, so leave this option checked unless you know it is safe to turn it off.
+* <strong>Enable Featured Images</strong><br />
+Check this option to extend Featured Image support to all Media Library items. The Featured Image can be used as a thumbnail image for the item in an <code>[mla_gallery]</code> display.
+
 <h3>Field-level Substitution Parameters</h3>
 
 Field-level substitution parameters let you access query arguments, custom fields, taxonomy terms and attachment metadata for display in an MLA gallery or in an MLA tag cloud. You can also use them in IPTC/EXIF or Custom Field mapping rules. For field-level parameters, the value you code within the surrounding the ('[+' and '+]' or '{+' and '+}') delimiters has three parts; the prefix, the field name (or template content) and, if desired, an option/format value.
@@ -362,7 +394,7 @@ There are nine prefix values for field-level parameters. Prefix values must be c
 		The ALL_EXIF value is altered in two ways. First, values of more than 256 characters are truncated to 256 characters. This prevents large fields such as image thumbnails from dominating the display. Second, array values are shown once, at their expanded level. For example the "COMPUTED" array is displayed as 'COMPUTED' => '(ARRAY)' and then 'COMPUTED.Width' => "2816", etc.
 * <strong>template</strong> - A Content Template, which lets you compose a value from multiple substitution parameters and test for empty values, choosing among two or more alternatives or suppressing output entirely. See the Content Templates section for details. Note that the formatting option is not supported for templates.
 
-<h4>NEW! Field-level option/format values</h4>
+<h4>Field-level option/format values</h4>
 
 You can use a field-level option or format value to specify the treatment of fields with multiple values or to change the format of a field for display/mapping purposes. If no option/format value is present, fields with multiple values are formatted as a comma-delimited text list. The option/format value, if present, immediately follows the field name using a comma (,) separator and ends with the closing delimiter ('+]' or '+}'). There can be no spaces in this part of the parameter.
 
@@ -381,7 +413,7 @@ Seven "format" values help you reformat fields or encode them for use in HTML at
 * <strong>,fraction(f,s)</strong> - Many of the EXIF metadata fields are expressed as "rational" quantities, i.e., separate numerator and denominator values separated by a slash. For example, <code>[+exif:ExposureTime+]</code> can be expressed as "1/200" seconds. The "fraction" format converts these to a more useful format.<br />&nbsp;<br />There two optional arguments; "f" (format_string)and "s" (show_fractions). The "format_string" (default "2") can either be the number of decimal places desired or a sprintf()-style format specification. For example, <code>[+exif:ExposureTime,fraction(4)+]</code> will display 7/6 as "+1.1667". A format specification such as '%1$.2f' will display 7/6 as "1.17". Numbers between -1 and +1, i.e. true fractions, will display in their original form, e.g., "1/6". If the optional "show_fractions" (default true) argument is "false" fractional values will convert to a decimal equivalent. For example, fraction(4,false) will display 1/6 as "+0.1667", and <code>[+exif:ExposureTime,fraction( '%1$.2f', false )+]</code> will display 1/6 as "0.17".
 * <strong>,date(f)</strong> - Many EXIF date and time values such as DateTimeOriginal and DateTimeDigitized are stored as strings with a format of "YYYY:MM:DD HH:MM:SS". You can parse this format and just about any English textual datetime description into a Unix timestamp, then format the result by using the ",date" format. This format first uses the PHP strtotime() function, then the date() function. The "Supported Date and Time Formats" can be found at: <a href="http://php.net/manual/en/datetime.formats.php" title="PHP Supported Date and Time Formats" target="_blank">http://php.net/manual/en/datetime.formats.php</a>.<br />&nbsp;<br />The default format string is "d/m/Y H:i:s", e.g., "31/12/2014 23:59:00" (just before midnight on new year's eve). You could code <code>[+exif:DateTimeOriginal,date('j F, Y')+]</code> to display "31 December, 2014".
 
-<h4>NEW! Field-level enhanced EXIF CAMERA values</h4>
+<h4>Field-level enhanced EXIF CAMERA values</h4>
 
 The EXIF specification defines many "Tags Relating to Picture-taking Conditions". Some of these are processed by WordPress and added to the "image_meta" array (as aperture, camera, focal_length, iso, shutter_speed). The field-level values in this section supplement those values and provide convenient access to additional values as well.
 

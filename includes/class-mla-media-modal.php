@@ -410,7 +410,7 @@ class MLAModal {
 			}
 		}
 
-		self::$mla_media_modal_settings['comma'] = _x( ',', 'tag delimiter' );
+		self::$mla_media_modal_settings['comma'] = _x( ',', 'tag_delimiter', 'media-library-assistant' );
 		self::$mla_media_modal_settings['ajaxNonce'] = wp_create_nonce( MLA::MLA_ADMIN_NONCE );
 		self::$mla_media_modal_settings['mimeTypes'] = MLAMime::mla_pluck_table_views();
 		self::$mla_media_modal_settings['mimeTypes']['detached'] = MLAOptions::$mla_option_definitions[ MLAOptions::MLA_POST_MIME_TYPES ]['std']['unattached']['plural'];

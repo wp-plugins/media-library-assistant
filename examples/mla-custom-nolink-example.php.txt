@@ -3,7 +3,7 @@
  * Replaces gallery item hyperlinks with simple <img> tags when nolink=true
  *
  * @package MLA Custom Nolink Example
- * @version 1.00
+ * @version 1.01
  */
 
 /*
@@ -11,7 +11,7 @@ Plugin Name: MLA Custom Nolink Example
 Plugin URI: http://fairtradejudaica.org/media-library-assistant-a-wordpress-plugin/
 Description: Replaces gallery item hyperlinks with simple <img> tags when nolink=true
 Author: David Lingren
-Version: 1.00
+Version: 1.01
 Author URI: http://fairtradejudaica.org/our-story/staff/
 
 Copyright 2014 - 2015 David Lingren
@@ -72,10 +72,19 @@ class MLACustomNolinkExample {
 	 * @return	string	Filtered gallery output HTML
 	 */
 	public static function post_gallery( $html, $atts ) {
-		
+		//error_log( 'post_gallery $html = ' . var_export( $html, true ), 0 );
+		//error_log( 'post_gallery $atts = ' . var_export( $atts, true ), 0 );
+
 		// Look for our custom parameter, nolink=true
 		if ( isset( $atts['nolink'] ) && 'true' == strtolower( trim( $atts['nolink'] ) ) ) {
 			
+			// Disable Jetpack Carousel, which always runs with Jetpack installed even if not activated
+			$start = strpos( $html, 'data-carousel-extra' );
+			if ( false !== $start ) {
+				$length = strlen( 'data-carousel-extra' );
+				$html = substr_replace( $html, 'data-carousel-disabled', $start, $length );
+			}
+	
 			// Find all the hyperlinks in the gallery
 			$match_count = preg_match_all( '!(<a [^>]*?>)(<img [^>]*?>)(</a>)!', $html, $matches, PREG_OFFSET_CAPTURE );
 			if ( $match_count ) {

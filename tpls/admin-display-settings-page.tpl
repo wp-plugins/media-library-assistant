@@ -4,7 +4,7 @@
 <div class="wrap">
 <div id="icon-options-general" class="icon32"><br/></div>
 <div id="donate-button-div" style="text-align: center; width: 100px; height: 40px; float: right; clear:right; margin-top: 5px">
-<a href="http://fairtradejudaica.org/make-a-difference/donate/" title="Support our work" target="_blank" style="border: none;"><img border="0" src="[+donateURL+]" width="100" height="40" alt="Donate"></a></div>
+<a href="http://fairtradejudaica.org/make-a-difference/donate/" title="Support our work" target="_blank" style="border: none;"><img border="0" src="[+donateURL+]" width="100" height="40" alt="[+Donate+]"></a></div>
 <h2>[+Media Library Assistant+] [+version+][+development+][+debug+] [+Settings+]</h2>
 [+messages+]
 [+tablist+]
@@ -192,11 +192,12 @@
 
 <!-- template="mla-gallery-tab" -->
 <h3>[+MLA Gallery Options+]</h3>
+<p><a href="#style">[+Go to Style Templates+]</a></p>
 <p><a href="#markup">[+Go to Markup Templates+]</a></p>
 <p>[+In this tab+]</p>
 <form action="[+form_url+]" method="post" class="mla-display-settings-page" id="mla-display-settings-mla-gallery-tab">
 [+options_list+]
-<h4>[+Style Templates+]</h4>
+<a name="style">&nbsp;<br /></a><h4>[+Style Templates+]</h4>
     <table class="optiontable">
 [+style_options_list+]
 	</table>

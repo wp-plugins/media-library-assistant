@@ -640,7 +640,7 @@ class MLA_List_Table extends WP_List_Table {
 
 				return join( ', ', $list );
 			} else { // if !is_wp_error
-				return __( 'not supported', 'media-library-assistant' );
+				return __( 'Not Supported', 'media-library-assistant' );
 			}
 		} // 't_'
 		elseif ( 'c_' == substr( $column_name, 0, 2 ) ) {
@@ -755,7 +755,7 @@ class MLA_List_Table extends WP_List_Table {
 	}
 
 	/**
-	 * Translate post_status 'future', 'pending' and 'draft' to label
+	 * Translate post_status 'future', 'pending', 'draft' and 'trash' to label
 	 *
 	 * @since 2.01
 	 * 
@@ -972,7 +972,7 @@ class MLA_List_Table extends WP_List_Table {
 				$parent_title = sprintf( '%1$d %2$s', $item->post_parent, __( '(no title)', 'media-library-assistant' ) );
 			}
 
-			$parent = sprintf( '<a href="%1$s" title="' . __( 'Filter by Parent ID', 'media-library-assistant' ) . '">(parent:%2$s)</a>', esc_url( add_query_arg( array_merge( self::mla_submenu_arguments( false ), array(
+			$parent = sprintf( '<a href="%1$s" title="' . __( 'Filter by', 'media-library-assistant' ) . ' ' . __( 'Parent ID', 'media-library-assistant' ) . '">(parent:%2$s)</a>', esc_url( add_query_arg( array_merge( self::mla_submenu_arguments( false ), array(
 					'page' => MLA::ADMIN_PAGE_SLUG,
 					'parent' => $item->post_parent,
 					'heading_suffix' => urlencode( __( 'Parent', 'media-library-assistant' ) . ': ' .  $parent_title ) 
@@ -1064,7 +1064,7 @@ class MLA_List_Table extends WP_List_Table {
 				$parent_title = __( '(no title: bad ID)', 'media-library-assistant' );
 			}
 
-			return sprintf( '<a href="%1$s" title="' . __( 'Filter by Parent ID', 'media-library-assistant' ) . '">%2$s</a>', esc_url( add_query_arg( array_merge( self::mla_submenu_arguments( false ), array(
+			return sprintf( '<a href="%1$s" title="' . __( 'Filter by', 'media-library-assistant' ) . ' ' . __( 'Parent ID', 'media-library-assistant' ) . '">%2$s</a>', esc_url( add_query_arg( array_merge( self::mla_submenu_arguments( false ), array(
 				'page' => MLA::ADMIN_PAGE_SLUG,
 				'parent' => $item->post_parent,
 				'heading_suffix' => urlencode( __( 'Parent', 'media-library-assistant' ) . ': ' .  $parent_title ) 
@@ -1447,7 +1447,7 @@ class MLA_List_Table extends WP_List_Table {
 		$user = get_user_by( 'id', $item->post_author );
 
 		if ( isset( $user->data->display_name ) ) {
-			return sprintf( '<a href="%s" title="' . __( 'Filter by Author ID', 'media-library-assistant' ) . '">%s</a>', esc_url( add_query_arg( array_merge( self::mla_submenu_arguments( false ), array(
+			return sprintf( '<a href="%s" title="' . __( 'Filter by', 'media-library-assistant' ) . ' ' . __( 'Author', 'media-library-assistant' ) . '">%s</a>', esc_url( add_query_arg( array_merge( self::mla_submenu_arguments( false ), array(
 				 'page' => MLA::ADMIN_PAGE_SLUG,
 				'author' => $item->post_author,
 				'heading_suffix' => urlencode( __( 'Author', 'media-library-assistant' ) . ': ' . $user->data->display_name ) 
@@ -1486,7 +1486,7 @@ class MLA_List_Table extends WP_List_Table {
 
 			$parent =  sprintf( '%1$s<br>%2$s<br>%3$s', /*%1$s*/ $parent_title, /*%2$s*/ mysql2date( __( 'Y/m/d', 'media-library-assistant' ), $parent_date ), /*%3$s*/ $parent_type ); // . "<br>\r\n";
 		} else {
-			$parent = '(' . _x( 'Unattached', 'post_mime_types_singular', 'media-library-assistant' ) . ')';
+			$parent = '(' . _x( 'Unattached', 'table_view_singular', 'media-library-assistant' ) . ')';
 		}
 
 		$set_parent = sprintf( '<a class="hide-if-no-js" id="mla-child-%2$s" onclick="mla.inlineEditAttachment.tableParentOpen( \'%1$s\',\'%2$s\',\'%3$s\' ); return false;" href="#the-list">%4$s</a><br>', /*%1$s*/ $item->post_parent, /*%2$s*/ $item->ID, /*%3$s*/ esc_attr( $item->post_title ), /*%4$s*/ __( 'Set Parent', 'media-library-assistant' ) );

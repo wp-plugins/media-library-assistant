@@ -6,7 +6,7 @@
 <li><a href="#gallery_substitution">Substitution Parameters</a></li>
 <li><a href="#gallery_display_style">Gallery Display Style</a></li>
 <li><a href="#gallery_display_content">Gallery Display Content</a></li>
-<li><a href="#google_file_viewer_support">Google File Viewer Support</a></li>
+<li><a href="#thumbnail_substitution">Thumbnail Substitution Support</a></li>
 <li><a href="#order_orderby">Order, Orderby</a></li>
 <li><a href="#size">Size</a></li>
 <li><a href="#link">Link</a></li>
@@ -333,37 +333,70 @@ The "mla_link_attributes" and "mla_image_attributes" parameters accept any value
 </p>
 <p>
 The "mla_target" parameter accepts any value and adds an HTML "target" attribute to the hyperlink with that value. For example, if you code <code>mla_target="_blank"</code> the item will open in a new window or tab. You can also use "_self", "_parent", "_top" or the "<em>framename</em>" of a named frame.
-<a name="google_file_viewer_support"></a>
+<a name="thumbnail_substitution"></a>
 </p>
-<h4>Google File Viewer Support</h4>
+<h4>Thumbnail Substitution Support</h4>
 <p>
 <strong>NOTE: Google has discontinued the File Viewer support for thumbnail images.</strong>
-This is an interim solution; better thumbnail image generation is under investigation for a future MLA version.
-Thanks for your understanding and your patience!
+This solution supports dynamic thumbnail image generation for PDF documents on your site's server. It uses the WordPress <code>WP_Image_Editor</code> and <code>WP_Image_editor_Imagick</code> classes, which require Imagemagick, Imagick and Ghostscript to be installed on your server.  If you need help installing them, look at this <a href="https://wordpress.org/support/topic/nothing-but-error-messages" title="Help with installation" target="_blank">PDF Thumbnails support topic</a>.
 </p>
 <p>
-Four <code>[mla_gallery]</code> parameters provide an easy way to simulate thumbnail images for the non-image file types.
+You can also assign a "Featured Image" to any Media Library item. For non-image items such as Microsoft Office documents the featured image will replace the MIME-type icon or document title in an <code>[mla_gallery]</code> display. Simply go to the Media/Edit Media screen, scroll down to the "Featured Image" meta box and select an image as you would for a post or page.
+</p>
+<p>
+Nine <code>[mla_gallery]</code> parameters provide an easy way to simulate thumbnail images for the non-image file types.
 </p>
 <table>
 <tr>
 <td style="padding-right: 10px; vertical-align: top; font-weight:bold">mla_viewer</td>
-<td>must be "true" to enable thumbnail simulation.</td>
+<td>must be "true" to enable thumbnail substitution.</td>
 </tr>
 <tr>
 <td style="padding-right: 10px; vertical-align: top; font-weight:bold">mla_viewer_extensions</td>
-<td>a comma-delimited list of the file extensions to be processed; the default is "pdf,txt,doc,xls,ppt" (do not include the dot (".") preceding the file extension). You may add or remove extensions.</td>
+<td>a comma-delimited list of the file extensions to be processed; the default is "pdf" (do not include the dot (".") preceding the file extension). You may add or remove extensions (when support for additional types becomes available).</td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">mla_viewer_page</td>
-<td>the page number (default "1") to be used for the thumbnail image. <strong>Not currently implemented</strong>.</td>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">mla_viewer_limit</td>
+<td>the upper limit in megabytes (default none) on the size of the file to be processed. You can set this to avoid processing large documents if performance becomes an issue.</td>
 </tr>
 <tr>
 <td style="padding-right: 10px; vertical-align: top; font-weight:bold">mla_viewer_width</td>
-<td>the width in pixels (default "150") of the simulated thumbnail image. The height will be set to the same value and cannot be specified.</td>
+<td>the maxinum width in pixels (default "150") of the thumbnail image. The height (unless also specified) will be adjusted to maintain the page proportions.</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">mla_viewer_height</td>
+<td>the maxinum width in pixels (default "0") of the thumbnail image. The width (unless also specified) will be adjusted to maintain the page proportions.</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">mla_viewer_best_fit</td>
+<td>retain page proportions (default "false") when both height and width are explicitly stated. If "false", the image will be stretched as required to exactly fit the height and width. If "true", the image will be reduced in size to fit within the bounds, but proportions will be preserved. For example, a typical page is 612 pixels wide and 792 pixels tall. If you set width and height to 300 and set best_fit to true, the thumbnail will be reduced to 231 pixels wide by 300 pixels tall.</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">mla_viewer_page</td>
+<td>the page number (default "1") to be used for the thumbnail image. If the page does not exist for a particular document the first page will be used instead.</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">mla_viewer_resolution</td>
+<td>the pixels/inch resolution (default 72) of the page before reduction. If you set this to a higher number, such as 300, you will improve thumbnail quality at the expense of additional processing time.</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">mla_viewer_type</td>
+<td>the MIME type (default image/jpeg) of the final thumbnail. You can, for example, set this to "image/png" to retain a transparent background instead of the white jpeg background.</td>
 </tr>
 </table>
 <p>
-When this feature is active, gallery items for which WordPress can generate a thumbnail image are not altered. If WordPress generation fails, the gallery thumbnail is replaced by an "img" html tag whose "src" attribute contains a url reference to the appropriate icon for the file/MIME type.
+When this feature is active, gallery items for which WordPress can generate a thumbnail image are not altered. If WordPress generation fails, the "Featured Image" will be used, if one is specified for the item. If the item does not have a Featured Image, supported file/MIME types (PDF for now) will have a gallery thumbnail generated dynamically. If all else fails, the thumbnail is replaced by an "img" html tag whose "src" attribute contains a url reference to the appropriate icon for the file/MIME type.
+</p>
+<p>
+Three options in the Settings/Media Library Assistant MLA Gallery tab allow control over mla_viewer operation:
+<ul class="mla_settings">
+<li><strong>Enable thumbnail substitution</strong><br />
+Check this option to allow the "mla_viewer" to generate thumbnail images for PDF documents. Thumbnails are generated dynamically, each time the item appears in an <code>[mla_gallery]</code> display.</li>
+<li><strong>Enable explicit Ghostscript check</strong><br />
+Check this option to enable the explicit check for Ghostscript support required for thumbnail generation. If your Ghostscript software is in a non-standard location, unchecking this option bypasses the check. Bad things can happen if Ghostscript is missing but Imagemagick is present, so leave this option checked unless you know it is safe to turn it off.</li>
+<li><strong>Enable Featured Images</strong><br />
+Check this option to extend Featured Image support to all Media Library items. The Featured Image can be used as a thumbnail image for the item in an <code>[mla_gallery]</code> display.</li>
+</ul>
 <a name="order_orderby"></a>
 </p>
 <h4>Order, Orderby</h4>
@@ -2140,7 +2173,7 @@ You can also use the "enclosing shortcode" form if the alternate shortcode, such
 <code>
 [mla_gallery ids="1,2,3" mla_alt_shortcode=fsg_link mla_alt_ids_name=include class=button]View the gallery[/mla_gallery]
 </code>
-<p>If you mix the self-closing and enclosing versions of [mla_gallery] on one post/page you must use the "xhtml-style closing shortcodes like [mla_gallery /]" for the self-closing shortcodes.
+<p>If you mix the self-closing and enclosing versions of <code>[mla_gallery]</code> on one post/page you must use the "xhtml-style closing shortcodes like [mla_gallery /]" for the self-closing shortcodes.
 </p>
 <p>
 <strong>NOTE:</strong> When you use "mla_alt_shortcode" to pass format/display responsibility off to another shortcode you will lose the <code>[mla_gallery]</code> Gallery Display Style (e.g. "mla_float") and Gallery Display Content (e.g. "mla_caption") parameters. There is no reliable way for <code>[mla_gallery]</code> to pass this information on to the other shortcode you've specified.
@@ -3935,7 +3968,7 @@ Here is a simple example of mapping the items' file size to a custom field, so y
 <p>
 On the Media/Assistant screen you can now display a File Size column. If you don't see the column, pull down the Screen Options (upper-right corner) and check the box next to File Size. Each of the terms in the column is a link; click on a value to get a list filtered by that value. You can also sort the table on File Size by clicking on the column header.</p>
 <p>
-You can use the meta_key, orderby and order parameters to sort an [mla_gallery] by your custom field. For example:<br />
+You can use the meta_key, orderby and order parameters to sort an <code>[mla_gallery]</code> by your custom field. For example:<br />
 &nbsp;<br />
 <code>[mla_gallery post_parent=all meta_key="File Size" orderby=meta_value order=DESC]</code><br />
 &nbsp;<br />
@@ -4286,7 +4319,7 @@ You can go to the Settings/Media Library Assistant IPTC/EXIF tab and define a ru
 If you are feeling confident you can click the "Add Rule/Field and Map All Attachments" button to save your rule and map all of the attachments in your Media Library in one step. If you want to test your work first, you can go to the Media/Assistant submenu table and click the "Edit" rollover action for an image you know has keywords. Click the "Map IPTC/EXIF Metadata" link in the upper right "Save" area of the screen, then look down at the Caption meta box and see if your value is correct. Once you've got your rule working you can update individual images, use the Bulk Edit area to update groups of images or use the "Map All Attachments" button below your rule to process all of your images.
 </p>
 <p>
-You can use the meta_key, orderby and order parameters to sort an [mla_gallery] by your custom field. For example:<br />
+You can use the meta_key, orderby and order parameters to sort an <code>[mla_gallery]</code> by your custom field. For example:<br />
 &nbsp;<br />
 <code>[mla_gallery post_parent=all meta_key="Date Time Created" orderby=meta_value order=DESC]</code><br />
 &nbsp;<br />

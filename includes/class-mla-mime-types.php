@@ -1451,28 +1451,28 @@ class MLAMime {
 
 		$upload_items = array(
 			'all' => array(
-				'singular' => _x( 'All', 'upload_list_table_view_singular', 'media_library-assistant' ),
-				'plural' => _x( 'All', 'upload_list_table_view_plural', 'media_library-assistant' ),
+				'singular' => _x( 'All', 'table_view_singular', 'media_library-assistant' ),
+				'plural' => _x( 'All', 'table_view_plural', 'media_library-assistant' ),
 				'count' => 0 ),
 			'active' => array(
-				'singular' => _x( 'Active', 'upload_list_table_view_singular', 'media_library-assistant' ),
-				'plural' => _x( 'Active', 'upload_list_table_view_plural', 'media_library-assistant' ),
+				'singular' => _x( 'Active', 'table_view_singular', 'media_library-assistant' ),
+				'plural' => _x( 'Active', 'table_view_plural', 'media_library-assistant' ),
 				'count' => 0 ),
 			'inactive' => array(
-				'singular' => _x( 'Inactive', 'upload_list_table_view_singular', 'media_library-assistant' ),
-				'plural' => _x( 'Inactive', 'upload_list_table_view_plural', 'media_library-assistant' ),
+				'singular' => _x( 'Inactive', 'table_view_singular', 'media_library-assistant' ),
+				'plural' => _x( 'Inactive', 'table_view_plural', 'media_library-assistant' ),
 				'count' => 0 ),
 			'core' => array(
-				'singular' => _x( 'WordPress', 'upload_list_table_view_singular', 'media_library-assistant' ),
-				'plural' => _x( 'WordPress', 'upload_list_table_view_plural', 'media_library-assistant' ),
+				'singular' => _x( 'WordPress', 'table_view_singular', 'media_library-assistant' ),
+				'plural' => _x( 'WordPress', 'table_view_plural', 'media_library-assistant' ),
 				'count' => 0 ),
 			'mla' => array(
-				'singular' => _x( 'MLA', 'upload_list_table_view_singular', 'media_library-assistant' ),
-				'plural' => _x( 'MLA', 'upload_list_table_view_plural', 'media_library-assistant' ),
+				'singular' => _x( 'MLA', 'table_view_singular', 'media_library-assistant' ),
+				'plural' => _x( 'MLA', 'table_view_plural', 'media_library-assistant' ),
 				'count' => 0 ),
 			'custom' => array(
-				'singular' => _x( 'Custom', 'upload_list_table_view_singular', 'media_library-assistant' ),
-				'plural' => _x( 'Custom', 'upload_list_table_view_plural', 'media_library-assistant' ),
+				'singular' => _x( 'Custom', 'table_view_singular', 'media_library-assistant' ),
+				'plural' => _x( 'Custom', 'table_view_plural', 'media_library-assistant' ),
 				'count' => 0 ),
 		);
 
@@ -1985,7 +1985,7 @@ class MLAMime {
 			$slug = pathinfo( 'X.' . strtolower( trim( $request['slug'] ) ), PATHINFO_EXTENSION );
 			if ( $slug != $request['slug'] ) {
 				/* translators: 1: element name 2: bad_value 3: good_value */
-				$messages .= sprintf( __( '<br>' . 'Changing %1$s "%2$s" to valid value "%3$s"', 'media-library-assistant' ), __( 'extension', 'media-library-assistant' ), $request['slug'], $slug );
+				$messages .= sprintf( __( '<br>' . 'Changing %1$s "%2$s" to valid value "%3$s"', 'media-library-assistant' ), __( 'Extension', 'media-library-assistant' ), $request['slug'], $slug );
 			}
 
 			/*
@@ -2111,7 +2111,7 @@ class MLAMime {
 		if ( $slug != $original_slug ) {
 			if ( $slug != $request['slug'] ) {
 				/* translators: 1: element name 2: bad_value 3: good_value */
-				$messages .= sprintf( __( '<br>' . 'Changing new %1$s "%2$s" to valid value "%3$s"', 'media-library-assistant' ), __( 'extension', 'media-library-assistant' ), $request['slug'], $slug );
+				$messages .= sprintf( __( '<br>' . 'Changing new %1$s "%2$s" to valid value "%3$s"', 'media-library-assistant' ), __( 'Extension', 'media-library-assistant' ), $request['slug'], $slug );
 			}
 
 			/*
@@ -2122,7 +2122,7 @@ class MLAMime {
 				$errors .= '<br>' . sprintf( __( '%1$s: Could not add new extension "%2$s"; value already exists', 'media-library-assistant' ), __( 'ERROR', 'media-library-assistant' ), $slug );
 			} else {
 				/* translators: 1: element name 2: old_value 3: new_value */
-				$messages .= sprintf( '<br>' . __( 'Changing %1$s from "%2$s" to "%3$s"', 'media-library-assistant' ), __( 'extension', 'media-library-assistant' ), $original_slug, $slug );
+				$messages .= sprintf( '<br>' . __( 'Changing %1$s from "%2$s" to "%3$s"', 'media-library-assistant' ), __( 'Extension', 'media-library-assistant' ), $original_slug, $slug );
 			}
 
 			/*

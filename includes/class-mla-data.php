@@ -2505,7 +2505,7 @@ class MLAData {
 	public static function mla_query_posts_groupby_filter( $groupby_clause ) {
 		global $wpdb;
 
-		if ( self::$query_parameters['use_postmeta_view'] || isset( self::$search_parameters['tax_terms_count'] ) ) {
+		if ( ( isset( self::$query_parameters['use_postmeta_view'] ) && self::$query_parameters['use_postmeta_view'] ) || isset( self::$search_parameters['tax_terms_count'] ) ) {
 			$groupby_clause = "{$wpdb->posts}.ID";
 		}
 

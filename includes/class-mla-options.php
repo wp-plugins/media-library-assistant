@@ -824,7 +824,7 @@ class MLAOptions {
 				array('tab' => 'general',
 					'name' => __( 'Alignment', 'media-library-assistant' ),
 					/* translators: 1: option name, e.g., Alignment, Link To or Size */
-					'help' => __( sprintf( 'Select a value for the default %1$s option in the Attachment Display Settings.', __( 'Alignment', 'media-library-assistant' ) ), 'media-library-assistant' ),
+					'help' => sprintf( __( 'Select a value for the default %1$s option in the Attachment Display Settings.', 'media-library-assistant' ), __( 'Alignment', 'media-library-assistant' ) ),
 					'std' =>  'default', 
 					'options' => array('default', 'left', 'center', 'right', 'none'),
 					'texts' => array('&mdash; ' . __( 'Media Manager Default', 'media-library-assistant' ) . ' &mdash;', __( 'Left', 'media-library-assistant' ), __( 'Center', 'media-library-assistant' ), __( 'Right', 'media-library-assistant' ), __( 'None', 'media-library-assistant' )),
@@ -838,7 +838,7 @@ class MLAOptions {
 				array('tab' => 'general',
 					'name' => __( 'Link To', 'media-library-assistant' ),
 					/* translators: 1: option name, e.g., Alignment, Link To or Size */
-					'help' => __( sprintf( 'Select a value for the default %1$s option in the Attachment Display Settings.', __( 'Link To', 'media-library-assistant' ) ), 'media-library-assistant' ),
+					'help' => sprintf( __( 'Select a value for the default %1$s option in the Attachment Display Settings.', 'media-library-assistant' ), __( 'Link To', 'media-library-assistant' ) ),
 					'std' =>  'default', 
 					'options' => array('default', 'file', 'post', 'custom', 'none'),
 					'texts' => array('&mdash; ' . __( 'Media Manager Default', 'media-library-assistant' ) . ' &mdash;', __( 'Media File', 'media-library-assistant' ), __( 'Attachment Page', 'media-library-assistant' ), __( 'Custom URL', 'media-library-assistant' ), __( 'None', 'media-library-assistant' )),
@@ -852,7 +852,7 @@ class MLAOptions {
 				array('tab' => 'general',
 					'name' => __( 'Size', 'media-library-assistant' ),
 					/* translators: 1: option name, e.g., Alignment, Link To or Size */
-					'help' => __( sprintf( 'Select a value for the default %1$s option in the Attachment Display Settings.', __( 'Size', 'media-library-assistant' ) ), 'media-library-assistant' ),
+					'help' => sprintf( __( 'Select a value for the default %1$s option in the Attachment Display Settings.', 'media-library-assistant' ), __( 'Size', 'media-library-assistant' ) ),
 					'std' =>  'default', 
 					'options' => array('default', 'thumbnail', 'medium', 'large', 'full'),
 					'texts' => array('&mdash; ' . __( 'Media Manager Default', 'media-library-assistant' ) . ' &mdash;', __( 'Thumbnail', 'media-library-assistant' ), __( 'Medium', 'media-library-assistant' ), __( 'Large', 'media-library-assistant' ), __( 'Full Size', 'media-library-assistant' )),
@@ -875,7 +875,7 @@ class MLAOptions {
 					'options' => array(),
 					'texts' => array(),
 					/* translators: 1: template type 2: shortcode */
-					'help' => sprintf( __( 'Select the default %1$s for your %2$s shortcodes.', 'media-library-assistant' ), __( 'style template', 'media-library-assistant' ), '[mla_tag_cloud]' ) ),
+					'help' => sprintf( __( 'Select the default %1$s for your %2$s shortcodes.', 'media-library-assistant' ), __( 'Style Template', 'media-library-assistant' ), '[mla_tag_cloud]' ) ),
 
 			'default_tag_cloud_markup' =>
 				array('tab' => '',
@@ -919,7 +919,7 @@ class MLAOptions {
 					'options' => array(),
 					'texts' => array(),
 					/* translators: 1: template type 2: shortcode */
-					'help' => sprintf( __( 'Select the default %1$s for your %2$s shortcodes.', 'media-library-assistant' ), __( 'style template', 'media-library-assistant' ), '[mla_gallery]' ) ),
+					'help' => sprintf( __( 'Select the default %1$s for your %2$s shortcodes.', 'media-library-assistant' ), __( 'Style Template', 'media-library-assistant' ), '[mla_gallery]' ) ),
 
 			'default_markup' =>
 				array('tab' => 'mla_gallery',
@@ -954,6 +954,27 @@ class MLAOptions {
 					'std' => 'calculate',
 					'size' => 10,
 					'help' => __( 'Enter the CSS "width" property value, in length (px, em, pt, etc.), percent (%), "auto" or "inherit".<br>&nbsp;&nbsp;Enter "calculate" (the default) to calculate the value taking the "margin" value into account.<br>&nbsp;&nbsp;Enter "exact" to calculate the value without considering the "margin" value.<br>&nbsp;&nbsp;Enter "none" to remove the property entirely.', 'media-library-assistant' )),
+
+			'enable_mla_viewer' =>
+				array('tab' => 'mla_gallery',
+					'name' => __( 'Enable thumbnail substitution', 'media-library-assistant' ),
+					'type' => 'checkbox',
+					'std' => 'checked',
+					'help' => __( 'Check this option to allow the "mla_viewer" to generate thumbnail images for PDF  documents. Thumbnails are generated dynamically, each time the item appears in an [mla_gallery] display.', 'media-library-assistant' )),
+
+			'enable_ghostscript_check' =>
+				array('tab' => 'mla_gallery',
+					'name' => __( 'Enable explicit Ghostscript check', 'media-library-assistant' ),
+					'type' => 'checkbox',
+					'std' => 'checked',
+					'help' => __( 'Check this option to enable the explicit check for Ghostscript support required for thumbnail generation. If your Ghostscript software is in a non-standard location, unchecking this option bypasses the check. Bad things can happen if Ghostscript is missing but Imagemagick is present, so leave this option checked unless you know it is safe to turn it off.', 'media-library-assistant' )),
+
+			'enable_featured_image' =>
+				array('tab' => 'mla_gallery',
+					'name' => __( 'Enable Featured Images', 'media-library-assistant' ),
+					'type' => 'checkbox',
+					'std' => 'checked',
+					'help' => __( 'Check this option to extend Featured Image support to all Media Library items. The Featured Image can be used as a thumbnail image for the item in an [mla_gallery] display.', 'media-library-assistant' )),
 
 			/*
 			 * Managed by mla_get_style_templates and mla_put_style_templates
@@ -1108,8 +1129,8 @@ class MLAOptions {
 					'help' => __( 'Post MIME Types help.', 'media-library-assistant' ),
 					'std' => array(
 						'all' => array(
-							'singular' => _x( 'All', 'post_mime_types_singular', 'media-library-assistant' ),
-							'plural' => _x( 'All', 'post_mime_types_plural', 'media-library-assistant' ),
+							'singular' => _x( 'All', 'table_view_singular', 'media-library-assistant' ),
+							'plural' => _x( 'All', 'table_view_plural', 'media-library-assistant' ),
 							'specification' => '',
 							'post_mime_type' => false,
 							'table_view' => true,
@@ -1117,8 +1138,8 @@ class MLAOptions {
 							'description' => _x( 'Built-in view', 'post_mime_types_description', 'media-library-assistant' )
 						),
 						'image' => array(
-							'singular' => _x( 'Image', 'post_mime_types_singular', 'media-library-assistant' ),
-							'plural' => _x( 'Images', 'post_mime_types_plural', 'media-library-assistant' ),
+							'singular' => _x( 'Image', 'table_view_singular', 'media-library-assistant' ),
+							'plural' => _x( 'Images', 'table_view_plural', 'media-library-assistant' ),
 							'specification' => '',
 							'post_mime_type' => true,
 							'table_view' => true,
@@ -1126,8 +1147,8 @@ class MLAOptions {
 							'description' => _x( 'All image subtypes', 'post_mime_types_description', 'media-library-assistant' )
 						),
 						'audio' => array(
-							'singular' => _x( 'Audio', 'post_mime_types_singular', 'media-library-assistant' ),
-							'plural' => _x( 'Audio', 'post_mime_types_plural', 'media-library-assistant' ),
+							'singular' => _x( 'Audio', 'table_view_singular', 'media-library-assistant' ),
+							'plural' => _x( 'Audio', 'table_view_plural', 'media-library-assistant' ),
 							'specification' => '',
 							'post_mime_type' => true,
 							'table_view' => true,
@@ -1135,8 +1156,8 @@ class MLAOptions {
 							'description' => _x( 'All audio subtypes', 'post_mime_types_description', 'media-library-assistant' )
 						),
 						'video' => array(
-							'singular' => _x( 'Video', 'post_mime_types_singular', 'media-library-assistant' ),
-							'plural' => _x( 'Video', 'post_mime_types_plural', 'media-library-assistant' ),
+							'singular' => _x( 'Video', 'table_view_singular', 'media-library-assistant' ),
+							'plural' => _x( 'Video', 'table_view_plural', 'media-library-assistant' ),
 							'specification' => '',
 							'post_mime_type' => true,
 							'table_view' => true,
@@ -1144,8 +1165,8 @@ class MLAOptions {
 							'description' => _x( 'All video subtypes', 'post_mime_types_description', 'media-library-assistant' )
 						),
 						'text' => array(
-							'singular' => _x( 'Text', 'post_mime_types_singular', 'media-library-assistant' ),
-							'plural' => _x( 'Text', 'post_mime_types_plural', 'media-library-assistant' ),
+							'singular' => _x( 'Text', 'table_view_singular', 'media-library-assistant' ),
+							'plural' => _x( 'Text', 'table_view_plural', 'media-library-assistant' ),
 							'specification' => '',
 							'post_mime_type' => true,
 							'table_view' => true,
@@ -1153,8 +1174,8 @@ class MLAOptions {
 							'description' => _x( 'All text subtypes', 'post_mime_types_description', 'media-library-assistant' )
 						),
 						'application' => array(
-							'singular' => _x( 'Application', 'post_mime_types_singular', 'media-library-assistant' ),
-							'plural' => _x( 'Applications', 'post_mime_types_plural', 'media-library-assistant' ),
+							'singular' => _x( 'Application', 'table_view_singular', 'media-library-assistant' ),
+							'plural' => _x( 'Applications', 'table_view_plural', 'media-library-assistant' ),
 							'specification' => '',
 							'post_mime_type' => true,
 							'table_view' => true,
@@ -1162,8 +1183,8 @@ class MLAOptions {
 							'description' => _x( 'All application subtypes', 'post_mime_types_description', 'media-library-assistant' )
 						),
 						'unattached' => array(
-							'singular' => _x( 'Unattached', 'post_mime_types_singular', 'media-library-assistant' ),
-							'plural' => _x( 'Unattached', 'post_mime_types_plural', 'media-library-assistant' ),
+							'singular' => _x( 'Unattached', 'table_view_singular', 'media-library-assistant' ),
+							'plural' => _x( 'Unattached', 'table_view_plural', 'media-library-assistant' ),
 							'specification' => '',
 							'post_mime_type' => false,
 							'table_view' => true,
@@ -1171,8 +1192,8 @@ class MLAOptions {
 							'description' => _x( 'Built-in view', 'post_mime_types_description', 'media-library-assistant' )
 						),
 						'trash' => array(
-							'singular' => _x( 'Trash', 'post_mime_types_singular', 'media-library-assistant' ),
-							'plural' => _x( 'Trash', 'post_mime_types_plural', 'media-library-assistant' ),
+							'singular' => _x( 'Trash', 'table_view_singular', 'media-library-assistant' ),
+							'plural' => _x( 'Trash', 'table_view_plural', 'media-library-assistant' ),
 							'specification' => '',
 							'post_mime_type' => false,
 							'table_view' => true,

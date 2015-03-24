@@ -69,6 +69,77 @@ class MLAShortcodes {
 	}
 
 	/**
+	 * Verify the presence of Ghostscript for mla_viewer
+	 *
+	 * @since 2.10
+	 *
+	 * @return	boolean	true if Ghostscript available else false
+	 */
+	private static function _ghostscript_present() {
+		static $ghostscript_present = NULL;
+		
+		if ( isset( $ghostscript_present ) ) {
+			return $ghostscript_present;
+		}
+
+		if ( 'checked' != MLAOptions::mla_get_option( 'enable_ghostscript_check' ) ) {
+			return $ghostscript_present = true;
+		}
+
+		/*
+		 * Look for exec() - from http://stackoverflow.com/a/12980534/866618
+		 */
+		if ( ini_get('safe_mode') ) {
+			return $ghostscript_present = false;
+		}
+		
+		$blacklist = preg_split( '/,\s*/', ini_get('disable_functions') . ',' . ini_get('suhosin.executor.func.blacklist') );
+		if ( in_array('exec', $blacklist) ) {
+//error_log( __LINE__ . '_ghostscript_present in blacklist', 0 );
+			return $ghostscript_present = false;
+		}
+
+		if ( 'WIN' === strtoupper( substr( PHP_OS, 0, 3) ) ) {
+			if ( getenv('GSC') ) {
+//error_log( __LINE__ . '_ghostscript_present found environment variable', 0 );
+				return $ghostscript_present = true;
+			}
+			
+			$return = exec('where gswin*c.exe');
+			if ( ! empty( $return ) ) {
+//error_log( __LINE__ . '_ghostscript_present found in path', 0 );
+				return $ghostscript_present = true;
+			}
+			
+			$return = exec('dir /o:n/s/b "C:\Program Files\gs\*gswin*c.exe"');
+			if ( ! empty( $return ) ) {
+//error_log( __LINE__ . '_ghostscript_present found in Program Files', 0 );
+				return $ghostscript_present = true;
+			}
+			
+			$return = exec('dir /o:n/s/b "C:\Program Files (x86)\gs\*gswin32c.exe"');
+			if ( ! empty( $return ) ) {
+//error_log( __LINE__ . '_ghostscript_present found in Program Files (x86)', 0 );
+				return $ghostscript_present = true;
+			}
+
+//error_log( __LINE__ . '_ghostscript_present not found on Windows', 0 );
+			return $ghostscript_present = false;
+		}
+			
+		$return = exec('which gs');
+		if ( ! empty( $return ) ) {
+//error_log( __LINE__ . '_ghostscript_present found with which gs', 0 );
+			return $ghostscript_present = true;
+		}
+		
+		exec('test -e /usr/bin/gs', $dummy, $return);
+//error_log( __LINE__ . "_ghostscript_present exec test returns '{$return}'", 0 );
+		
+		return $ghostscript_present = ( 0 === $return );
+	}
+
+	/**
 	 * Make sure $attr is an array and repair line-break damage
 	 *
 	 * @since 2.02
@@ -219,10 +290,17 @@ class MLAShortcodes {
 			'mla_margin' => MLAOptions::mla_get_option('mla_gallery_margin'),
 			'mla_target' => '',
 			'mla_debug' => false,
+			
 			'mla_viewer' => false,
-			'mla_viewer_extensions' => 'doc,xls,ppt,pdf,txt',
+			'mla_viewer_extensions' => 'pdf',
+			'mla_viewer_limit' => '0',
+			'mla_viewer_width' => '0',
+			'mla_viewer_height' => '0',
+			'mla_viewer_best_fit' => NULL,
 			'mla_viewer_page' => '1',
-			'mla_viewer_width' => '150',
+			'mla_viewer_resolution' => '0',
+			'mla_viewer_type' => '',
+			
 			'mla_alt_shortcode' => NULL,
 			'mla_alt_ids_name' => 'ids',
 
@@ -446,13 +524,28 @@ class MLAShortcodes {
 		}
 
 		/*
-		 * Check for Google File Viewer arguments
+		 * Check for Imagick thumbnail generation arguments
 		 */
-		$arguments['mla_viewer'] = !empty( $arguments['mla_viewer'] ) && ( 'true' == strtolower( $arguments['mla_viewer'] ) );
+		if ( 'checked' == MLAOptions::mla_get_option( 'enable_mla_viewer' ) ) {
+			$arguments['mla_viewer'] = !empty( $arguments['mla_viewer'] ) && ( 'true' == strtolower( $arguments['mla_viewer'] ) );
+		} else {
+			$arguments['mla_viewer'] = false;
+		}
+		
 		if ( $arguments['mla_viewer'] ) {
 			$arguments['mla_viewer_extensions'] = array_filter( array_map( 'trim', explode( ',', $arguments['mla_viewer_extensions'] ) ) );
-			$arguments['mla_viewer_page'] = absint( $arguments['mla_viewer_page'] );
+			// convert limit (in MB) to float
+			$arguments['mla_viewer_limit'] = abs( 0.0 + $arguments['mla_viewer_limit'] );
+			
 			$arguments['mla_viewer_width'] = absint( $arguments['mla_viewer_width'] );
+			$arguments['mla_viewer_height'] = absint( $arguments['mla_viewer_height'] );
+			$arguments['mla_viewer_page'] = absint( $arguments['mla_viewer_page'] );
+			
+			if ( isset( $arguments['mla_viewer_best_fit'] ) ) {
+				$arguments['mla_viewer_best_fit'] = 'true' == strtolower( $arguments['mla_viewer_best_fit'] );
+			}
+			
+			$arguments['mla_viewer_resolution'] = absint( $arguments['mla_viewer_resolution'] );
 		}
 
 		/*
@@ -1041,9 +1134,10 @@ class MLAShortcodes {
 				$link_href = '';
 			}
 
-			$match_count = preg_match_all( '#\<a [^\>]+\>(.*)\</a\>#', $item_values['link'], $matches, PREG_OFFSET_CAPTURE );
+			$match_count = preg_match_all( '#(\<a [^\>]+\>)(.*)\</a\>#', $item_values['link'], $matches, PREG_OFFSET_CAPTURE );
 			if ( ! ( ( $match_count == false ) || ( $match_count == 0 ) ) ) {
-				$item_values['thumbnail_content'] = $matches[1][0][0];
+				$link_tag = $matches[1][0][0];
+				$item_values['thumbnail_content'] = $matches[2][0][0];
 			} else {
 				$item_values['thumbnail_content'] = '';
 			}
@@ -1057,6 +1151,23 @@ class MLAShortcodes {
 				$item_values['thumbnail_width'] = '';
 				$item_values['thumbnail_height'] = '';
 				$item_values['thumbnail_url'] = '';
+
+				if ( 'checked' == MLAOptions::mla_get_option( 'enable_featured_image' ) ) {
+					/*
+					 * Look for the "Featured Image" as an alternate thumbnail for PDFs, etc.
+					 */
+					$feature = get_the_post_thumbnail( $attachment->ID, $size, array( 'class' => 'attachment-thumbnail' ) );
+					if ( ! empty( $feature ) ) {
+						$match_count = preg_match_all( '# width=\"([^\"]+)\" height=\"([^\"]+)\" src=\"([^\"]+)\" #', $feature, $matches, PREG_OFFSET_CAPTURE );
+						if ( ! ( ( $match_count == false ) || ( $match_count == 0 ) ) ) {
+							$item_values['link'] = $link_tag . $feature . '</a>';
+							$item_values['thumbnail_content'] = $feature;
+							$item_values['thumbnail_width'] = $matches[1][0][0];
+							$item_values['thumbnail_height'] = $matches[2][0][0];
+							$item_values['thumbnail_url'] = $matches[3][0][0];
+						}
+					}
+				} // enable_featured_image
 			}
 
 			/*
@@ -1069,18 +1180,72 @@ class MLAShortcodes {
 			}
 
 			/*
-			 * Check for "Google file viewer" substitution, uses above-defined
+			 * Check for Imagick thumbnail generation, uses above-defined
 			 * $link_attributes (includes target), $rollover_text, $link_href (link only),
 			 * $image_attributes, $image_class, $image_alt
-			 *
-			 * Since Google File Viewer has been discontinued, uses the MIME type icon for a thumbnail.
 			 */
 			if ( $arguments['mla_viewer'] && empty( $item_values['thumbnail_url'] ) ) {
+				/*
+				 * Check for a match on file extension
+				 */
 				$last_dot = strrpos( $item_values['file'], '.' );
 				if ( !( false === $last_dot) ) {
 					$extension = substr( $item_values['file'], $last_dot + 1 );
 					if ( in_array( $extension, $arguments['mla_viewer_extensions'] ) ) {
+						/*
+						 * Default to an icon if thumbnail generation is not available
+						 */
 						$icon_url = wp_mime_type_icon( $attachment->ID );
+						$args = array(
+							'page' => MLA::ADMIN_PAGE_SLUG,
+							'mla_stream_file' => urlencode( $item_values['base_file'] ),
+						);
+						
+						if ( $arguments['mla_viewer_width'] ) {
+							$args['mla_stream_width'] = $arguments['mla_viewer_width'];
+						}
+						
+						if ( $arguments['mla_viewer_height'] ) {
+							$args['mla_stream_height'] = $arguments['mla_viewer_height'];
+						}
+
+						if ( isset( $arguments['mla_viewer_best_fit'] ) ) {
+							$args['mla_stream_fit'] = $arguments['mla_viewer_best_fit'] ? '1' : '0';;
+						}
+
+						if ( wp_image_editor_supports( array( 'mime_type' => $item_values['mime_type'] ) ) && self::_ghostscript_present() ) {
+							/*
+							 * Optional upper limit (in MB) on file size
+							 */
+							if ( $limit = ( 1024 * 1024 ) * $arguments['mla_viewer_limit'] ) {
+								$file_size = 0 + @filesize( $item_values['base_dir'] . '/' . $item_values['base_file'] );
+								if ( ( 0 < $file_size ) && ( $file_size > $limit ) ) {
+									$file_size = 0;
+								}
+							} else {
+								$file_size = 1;
+							}
+							
+							/*
+							 * Generate "real" thumbnail
+							 */
+							if ( $file_size ) {
+								$frame = ( 0 < $arguments['mla_viewer_page'] ) ? $arguments['mla_viewer_page'] - 1 : 0;
+								if ( $frame ) {
+									$args['mla_stream_frame'] = $frame;
+								}
+								
+								if ( $arguments['mla_viewer_resolution'] ) {
+									$args['mla_stream_resolution'] = $arguments['mla_viewer_resolution'];
+								}
+								
+								if ( ! empty( $arguments['mla_viewer_type'] ) ) {
+									$args['mla_stream_type'] = $arguments['mla_viewer_type'];
+								}
+
+								$icon_url = add_query_arg( $args, wp_nonce_url( admin_url(  'upload.php' ), MLA::MLA_ADMIN_NONCE ) );
+							}
+						}
 
 						/*
 						 * <img> tag (thumbnail_text)
@@ -1095,8 +1260,7 @@ class MLAShortcodes {
 							$image_alt = ' alt="' . $item_values['caption'] . '"';
 						}
 
-						$item_values['thumbnail_content'] = sprintf( 
-'<img %1$swidth="%2$s" height="%2$s" src="%3$s"%4$s%5$s>', $image_attributes, $arguments['mla_viewer_width'], $icon_url, $image_class, $image_alt );
+						$item_values['thumbnail_content'] = sprintf( '<img %1$ssrc="%2$s"%3$s%4$s>', $image_attributes, $icon_url, $image_class, $image_alt );
 
 						/*
 						 * Filelink, pagelink and link.
@@ -2698,7 +2862,7 @@ class MLAShortcodes {
 		self::$query_parameters = array();
 
 		/*
-		 * Parameters passed to the posts_search filter function
+		 * Parameters passed to the posts_search filter function in MLAData
 		 */
 		MLAData::$search_parameters = array( 'debug' => 'none' );
 

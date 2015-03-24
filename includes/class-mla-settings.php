@@ -439,7 +439,7 @@ class MLASettings {
 		 }
 
 		$tab = self::mla_get_options_tablist( $tab ) ? '-' . $tab : '-general';
-		self::$current_page_hook = add_submenu_page( 'options-general.php', __( 'Media Library Assistant Settings', 'media-library-assistant' ), __( 'Media Library Assistant', 'media-library-assistant' ), 'manage_options', self::MLA_SETTINGS_SLUG . $tab, 'MLASettings::mla_render_settings_page' );
+		self::$current_page_hook = add_submenu_page( 'options-general.php', __( 'Media Library Assistant', 'media-library-assistant' ) . ' ' . __( 'Settings', 'media-library-assistant' ), __( 'Media Library Assistant', 'media-library-assistant' ), 'manage_options', self::MLA_SETTINGS_SLUG . $tab, 'MLASettings::mla_render_settings_page' );
 		add_action( 'load-' . self::$current_page_hook, 'MLASettings::mla_add_menu_options_action' );
 		add_action( 'load-' . self::$current_page_hook, 'MLASettings::mla_add_help_tab_action' );
 		add_filter( 'plugin_action_links', 'MLASettings::mla_add_plugin_settings_link_filter', 10, 2 );
@@ -2283,6 +2283,7 @@ class MLASettings {
 
 		$page_values = array(
 			'MLA Gallery Options' => __( 'MLA Gallery Options', 'media-library-assistant' ),
+			'Go to Style Templates' => __( 'Go to Style Templates', 'media-library-assistant' ),
 			'Go to Markup Templates' => __( 'Go to Markup Templates', 'media-library-assistant' ),
 			'In this tab' => __( 'In this tab you can view the default style and markup templates. You can also define additional templates and use the <code>mla_style</code> and <code>mla_markup</code> parameters to apply them in your <code>[mla_gallery]</code> shortcodes. <strong>NOTE:</strong> template additions and changes will not be made permanent until you click "Save Changes" at the bottom of this page.', 'media-library-assistant' ),
 			'form_url' => admin_url( 'options-general.php' ) . '?page=mla-settings-menu-mla_gallery&mla_tab=mla_gallery',
@@ -3006,6 +3007,8 @@ class MLASettings {
 			/* translators: 1: ERROR tag 2: file type 3: file name 4: error message*/
 			$page_content['message'] = sprintf( __( '%1$s: Reading the %2$s file ( %3$s ) "%4$s".', 'media-library-assistant' ), __( 'ERROR', 'media-library-assistant' ), __( 'Error Log', 'media-library-assistant' ), $error_log_name, $php_errormsg );
 			$error_log_contents = '';
+		} else {
+			//$error_log_contents = esc_html( $error_log_contents );
 		}
 
 		if ( current_user_can( 'upload_files' ) ) {
@@ -3057,7 +3060,7 @@ class MLASettings {
 	 */
 	public static function mla_render_settings_page( ) {
 		if ( !current_user_can( 'manage_options' ) ) {
-			echo __( 'Media Library Assistant - Error', 'media-library-assistant' ) . "</h2>\r\n";
+			echo __( 'Media Library Assistant', 'media-library-assistant' ) . ' - ' . __( 'ERROR', 'media-library-assistant' ) . "</h2>\r\n";
 			wp_die( __( 'You do not have permission to manage plugin settings.', 'media-library-assistant' ) );
 		}
 
@@ -3072,6 +3075,7 @@ class MLASettings {
 		$current_tab = self::mla_get_options_tablist( $current_tab_slug );
 		$page_values = array(
 			'donateURL' => MLA_PLUGIN_URL . 'images/DonateButton.jpg',
+			'Donate' => __( 'Donate', 'media-library-assistant' ),
 			'version' => 'v' . MLA::CURRENT_MLA_VERSION,
 			'development' => $development_version,
 			'debug' => $debug_level,
@@ -3148,8 +3152,20 @@ class MLASettings {
 						$settings_changed = true;
 						$message_list .= self::_update_option_row( $key, $value );
 					}
-				} // text
-			} // mla_gallery
+				} elseif ( 'checkbox' == $value['type'] ) {
+					$old_value = MLAOptions::mla_get_option( $key );
+					if ( isset( $_REQUEST[ MLA_OPTION_PREFIX . $key ] ) ) {
+						$checkbox_changed = "checked" != $old_value;
+					} else {
+						$checkbox_changed = "unchecked" != $old_value;
+					}
+					
+					if ( $checkbox_changed ) {
+						$settings_changed = true;
+						$message_list .= self::_update_option_row( $key, $value );
+					}
+				}
+			} // mla_gallery option
 		} // foreach mla_options
 
 		/*
@@ -3173,7 +3189,7 @@ class MLASettings {
 
 			if ( array_key_exists( $name, $new_deletes ) ) {
 				/* translators: 1: template type 2: template name */
-				$message_list .= '<br>' . sprintf( _x( 'Deleting %1$s "%2$s".', 'message_list', 'media-library-assistant' ), __( 'style template', 'media-library-assistant' ), $name );
+				$message_list .= '<br>' . sprintf( _x( 'Deleting %1$s "%2$s".', 'message_list', 'media-library-assistant' ), __( 'Style Template', 'media-library-assistant' ), $name );
 				$templates_changed = true;
 				continue;
 			}
@@ -3184,17 +3200,17 @@ class MLASettings {
 					continue;
 				} elseif ( 'blank' == $new_slug ) {
 					/* translators: 1: ERROR tag 2: template name 3: template type */
-					$error_list .= '<br>' . sprintf( __( '%1$s: Reserved name "%2$s", new %3$s discarded.', 'media-library-assistant' ), __( 'ERROR', 'media-library-assistant' ), $new_slug, __( 'style template', 'media-library-assistant' ) );
+					$error_list .= '<br>' . sprintf( __( '%1$s: Reserved name "%2$s", new %3$s discarded.', 'media-library-assistant' ), __( 'ERROR', 'media-library-assistant' ), $new_slug, __( 'Style Template', 'media-library-assistant' ) );
 					continue;
 				}
 
 				if ( array_key_exists( $new_slug, $old_templates ) ) {
 					/* translators: 1: ERROR tag 2: template name 3: template type */
-					$error_list .= '<br>' . sprintf( __( '%1$s: Duplicate name "%2$s", new %3$s discarded.', 'media-library-assistant' ), __( 'ERROR', 'media-library-assistant' ), $new_slug, __( 'style template', 'media-library-assistant' ) );
+					$error_list .= '<br>' . sprintf( __( '%1$s: Duplicate name "%2$s", new %3$s discarded.', 'media-library-assistant' ), __( 'ERROR', 'media-library-assistant' ), $new_slug, __( 'Style Template', 'media-library-assistant' ) );
 					continue;
 				} else {
 					/* translators: 1: template type 2: template name */
-					$message_list .= '<br>' . sprintf( _x( 'Adding new %1$s "%2$s".', 'message_list', 'media-library-assistant' ), __( 'style template', 'media-library-assistant' ), $new_slug );
+					$message_list .= '<br>' . sprintf( _x( 'Adding new %1$s "%2$s".', 'message_list', 'media-library-assistant' ), __( 'Style Template', 'media-library-assistant' ), $new_slug );
 					$templates_changed = true;
 				}
 			} // 'blank' - reserved name
@@ -3222,7 +3238,7 @@ class MLASettings {
 
 			if ( ( 'blank' != $name ) && ( $new_values[ $name ] != $old_templates[ $name ] ) ) {
 				/* translators: 1: template type 2: template name */
-				$message_list .= '<br>' . sprintf( _x( 'Updating contents of %1$s "%2$s".', 'message_list', 'media-library-assistant' ), __( 'style template', 'media-library-assistant' ), $new_slug );
+				$message_list .= '<br>' . sprintf( _x( 'Updating contents of %1$s "%2$s".', 'message_list', 'media-library-assistant' ), __( 'Style Template', 'media-library-assistant' ), $new_slug );
 				$templates_changed = true;
 			}
 
@@ -3233,7 +3249,7 @@ class MLASettings {
 			$settings_changed = true;
 			if ( false == MLAOptions::mla_put_style_templates( $new_templates ) ) {
 				/* translators: 1: ERROR tag 2: template type */
-				$error_list .= '<br>' . sprintf( __( '%1$s: Update of %2$s failed.', 'media-library-assistant' ), __( 'ERROR', 'media-library-assistant' ), __( 'style template', 'media-library-assistant' ) );
+				$error_list .= '<br>' . sprintf( __( '%1$s: Update of %2$s failed.', 'media-library-assistant' ), __( 'ERROR', 'media-library-assistant' ), __( 'Style Template', 'media-library-assistant' ) );
 			}
 		}
 
