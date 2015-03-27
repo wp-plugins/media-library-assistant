@@ -45,6 +45,15 @@
 </ul></div>
 <ul style="list-style-position:inside; list-style:disc; line-height: 18px; clear:both">
 <li>
+<a href="#gallery_examples">MLA Gallery Examples</a>
+</li>
+<ul style="list-style-position:inside; list-style:disc; line-height: 15px; padding-left: 20px">
+<li><a href="#simple_examples">Simple Examples</a></li>
+<li><a href="#paginated_gallery">A Paginated Gallery</a></li>
+<li><a href="#cloud_and_gallery">Tag Cloud and Gallery</a></li>
+<li><a href="#search_form_and_gallery">Search Form and Gallery</a></li>
+</ul>
+<li>
 <a href="#mla_output_parameter"><strong>Support for Alternative Gallery Output, e.g., Pagination</strong></a>
 </li>
 <li>
@@ -159,6 +168,9 @@ The <code>[mla_gallery]</code> shortcode is used in a post, page or custom post 
 </li>
 </ul>
 <h4>Option/Parameter Documentation Sources</h4>
+<p>
+If you're new to Media Library Assistant and the <code>[mla_gallery]</code> shortcode you should read through the material in the <a href="#gallery_examples">MLA Gallery Examples</a> section.
+</p>
 <p>
 All of the options/parameters documented for the <code>[gallery]</code> shortcode are supported by the <code>[mla_gallery]</code> shortcode; you can find them in the <a href="http://codex.wordpress.org/Gallery_Shortcode" title="WordPress Codex link" target="_blank">WordPress Codex</a>. Most of the parameters documented for the WP_Query class are also supported; see the <a href="http://codex.wordpress.org/Class_Reference/WP_Query" title="WordPress Codex link" target="_blank">Codex WP_Query class reference</a>. Because the <code>[mla_gallery]</code> shortcode is designed to work with Media Library items, there are some parameter differences and extensions; these are documented below.
 <a name="gallery_substitution"></a>
@@ -1812,8 +1824,126 @@ The example code documents each hook with comments in the filter/action function
 <td>for manipulating the "Close" part of the Markup template used in a "list" or "grid" cloud.</td>
 </tr>
 </table>
-<a name="mla_output_parameter"></a>
+<a name="gallery_examples"></a>
 &nbsp;
+<p>
+<a href="#backtotop">Go to Top</a>
+</p>
+<h3>MLA Gallery Examples</h3>
+<p>
+As you can tell from the number of parameters available, the <code>[mla_gallery]</code> shortcode is powerful, but it can be complex. The examples in this section show several of the more popular applications, taken from topics in the MLA Support Forum.
+<a name="simple_examples"></a>
+</p>
+<h4>Simple Examples</h4>
+<p>
+<ul style="list-style-position:inside; list-style:disc; line-height: 15px; padding-left: 20px">
+<li><code>[mla_gallery]</code> - will display all the images "attached" to the current post/page.</li>
+<li><code>[mla_gallery ids="1,3,2,4"]</code> - will display specific images on any post/page. The numbers are the ID values of the images. You can use the "Add Media..." popup window and "Create Gallery" to get the list, then change the shortcode name to "mla_gallery" if you want to add other <code>[mla_gallery]</code> specific parameters.</li>
+<li><code>[mla_gallery post_parent=all]</code> - will display all the images in your Media Library.</li>
+<li><code>[mla_gallery post_parent=all post_mime_type=application/pdf]</code> - will display all the PDF documents in your Media Library. Since PDF documents are not images, the title of the document will display in place of the thumbnail image.</li>
+<li><code>[mla_gallery post_parent=all post_mime_type="audio,video"]</code> - will display all the audio and video documents in your Media Library.</li>
+<li><code>[mla_gallery post_parent=all post_mime_type=application/pdf size=icon link=file]</code> - will display all the PDF documents in your Media Library. The "PDF icon" will display in place of the thumbnail. When the icon is clicked, the document itself will be displayed in the browser.</li>
+</ul>
+</p>
+<p>
+Perhaps the most popular Media Library Assistant feature is the ability to assign category and tag values to Media LIbrary Items and use the values to filter a gallery display. "Categories" and "Tags" are built-in WordPress "taxonomies" and have been used for a long time to organize posts and pages. WordPress does not have built-in support for using them with attachments, and that was one of the original motivations for MLA.
+</p>
+<p>
+With MLA you can extend Categories and Tags support to attachments. MLA also provides two additional taxonomies for your convenience, Att. Categories and Att. Tags. Because of the way WordPress works, using Categories and Tags for attachments as well as posts and pages can be complicated, so many people find that using the separate Att. Categories and Att. Tags is more convenient.
+</p>
+<p>
+To use a taxonomy you must create one or more "terms" within it. For example, you could create terms in the Category taxonomy like "Big Dog" and "Little Dog". For each term, WordPress automatically creates a "slug", e.g., "big-dog" and "little-dog" for the previous examples. Removing capital letters, spaces and punctuation makes it easier to organize and search the database. It's the slug you can use in [mla_gallery] shortcodes. To "<em>display the attachments that have been assigned to a single category/tag</em>", use the term's slug; for the four taxonomies we've discussed:
+</p>
+<ul style="list-style-position:inside; list-style:disc; line-height: 15px; padding-left: 20px">
+<li>Categories: <code>[mla_gallery category_name=big-dog]</code></li>
+<li>Tags: <code>[mla_gallery tag=big-dog]</code></li>
+<li>Att. Categories: <code>[mla_gallery attachment_category=big-dog]</code></li>
+<li>Att. Tags: <code>[mla_gallery attachment_tag=big-dog]</code></li>
+</ul>
+<p>
+The category_name example does not follow the general rule of "taxonomy-slug = term-slug" because it was created long ago, when Categories and Tags were the only taxonomies allowed. The tag example does not follow the rule, either, since the actual taxonomy-slug is "post_tag", not "tag".
+<a name="paginated_gallery"></a>
+</p>
+<h4>A Paginated Gallery</h4>
+<p>
+If your gallery display includes a large number of items it may be useful to divide the display into "pages" with a fixed upper limit of items per page. The <a href="#mla_output_parameter"><strong>Support for Alternative Gallery Output, e.g., Pagination</strong></a> section explains several ways to do that; here is one example:
+<blockquote>
+<code>[mla_gallery attachment_category=big-dog posts_per_page=12]</code><br />
+&nbsp;<br />
+<code>[mla_gallery attachment_category=big-dog posts_per_page=12 mla_output="paginate_links,prev_next"]</code>
+</blockquote>
+</p>
+<p>
+Put both of these shortcodes on a post or page to display a paginated gallery. The first <code>[mla_gallery]</code> displays the images assigned to <code>attachment_category=big-dog</code> and displays a maximum of 12 images at once. The second <code>[mla_gallery]</code> has <strong>exactly the same</strong> data selection parameter and posts per page parameter; that's essential to match up with the first shortcode. It adds one more parameter, <code>mla_output</code>. This parameter changes the display from a set of images to a set of pagination controls.
+</p>
+<p>
+MLA will add and manage a "current page" parameter of its own so the two shortcodes stay in synch as you navigate from page to page. That's all there is to it.
+<a name="cloud_and_gallery"></a>
+</p>
+<h4>Tag Cloud and Gallery</h4>
+<p>
+Adding the "taxonomy=term" parameter to your shortcode is all well and good, but letting the viewer choose a term when they view the post/page is often better. One easy way to do this is to add the <code>[mla_tag_cloud]</code> shortcode. Here is a simple combination of a cloud and a gallery display:
+<blockquote>
+<code>[mla_tag_cloud taxonomy=attachment_category number=0 mla_link_href="{+page_url+}?term_slug={+slug+}"]</code><br />
+&nbsp;<br />
+<code>[mla_gallery attachment_category="{+template:({+request:term_slug+}|a-bad-term)+}" mla_nolink_text="Click a term to display the gallery."]</code>
+</blockquote>
+</p>
+<p>
+The <code>[mla_tag_cloud]</code> displays Att. Categories terms in the familiar cloud format. The <code>number=0</code> parameter ensures that all of the terms are displayed. The <code>mla_link_href</code> parameter links each term back to the current page (<code>{+page_url}</code>) and passes a variable back with the term selection (<code>?term_slug={+slug+}</code>). If you put the <code>[mla_tag_cloud]</code> shortcode on another page or in a widget you will have to hard-code the URL portion of the link.
+</p>
+<p>
+The <code>[mla_gallery]</code> displays the images assigned to the selected attachment_category term. The <code>mla_nolink_text</code> parameter gives the text to display when the gallery is empty, e.g., before you click on a term. In this shortcode:
+</p>
+<ul style="list-style-position:inside; list-style:disc; line-height: 15px; padding-left: 20px">
+<li>The <code>template:</code> prefix says that this is a Content Template</li>
+<li>The parentheses "()" around the two elements are used to group them into a list of alternatives</li>
+<li>The vertical bar "|" between the two elements means "stop when you get a non-empty alternative"</li>
+<li><code>{+request:term_slug+}</code> will be empty unless there is a term_slug in the URL</li>
+<li><code>a-bad-term</code> is a literal value (and thus never empty) which does not match any term in the attachment_category taxonomy, so the gallery will be empty if this alternative is used</li>
+</ul>
+<p>
+You can read more about templates in the <a href="#mla_template_parameters">Content Templates</a> section. You can paginate your gallery by adding a third shortcode to the post/page. Put the new shortcode between the cloud and gallery so the pagination controls will appear above the gallery display:
+<blockquote>
+<code>[mla_tag_cloud taxonomy=attachment_category number=0 mla_link_href="{+page_url+}?term_slug={+slug+}"]</code><br />
+&nbsp;<br />
+<code>[mla_gallery attachment_category="{+template:({+request:term_slug+}|a-bad-term)+} posts_per_page=12" mla_output="paginate_links,prev_next" mla_link_href="{+page_url+}?term_slug={+request:term_slug+}"]</code><br />
+&nbsp;<br />
+<code>[mla_gallery attachment_category="{+template:({+request:term_slug+}|a-bad-term)+}" posts_per_page=12 mla_nolink_text="Click a term to display the gallery."]</code>
+</blockquote>
+</p>
+<p>
+The <code>posts_per_page=12</code> parameter has been added to the gallery display shortcode (the third shortcode). A new <code>[mla_gallery]</code> is added to display the pagination controls. The data selection parameter and <code>posts_per_page=12</code> parameter match the gallery display shortcode below it. The <code>mla_output</code> parameter displays the pagination controls. Finally, the <code>mla_link_href="{+page_url+}?term_slug={+request:term_slug+}"</code> parameter is added so the pagination controls pass the <code>term_slug</code> from page to page.
+<a name="search_form_and_gallery"></a>
+</p>
+<h4>Search Form and Gallery</h4>
+<p>
+A common alternative to the taxonomy filtering in the previous examples is a keyword-based search. This example shows a simple HTML form with a text box and a button to run the search. The user can enter one or more words to search for in the Title or Description of Media Library items, then click "Search" to display a gallery of matching images:
+<blockquote>
+<code>&lt;form id="mla-search-form" action="." method="post"><br />
+&lt;input id="mla-search-box" name="search-string" type="text" value="" />&amp;nbsp;&lt;input id="submit" name="submit" type="submit" value="Search" /><br />
+&lt;/form></code><br />
+&nbsp;<br />
+<code>[mla_gallery s="{+template:({+request:search-string+}|a-bad-term)+}" mla_nolink_text="Enter a search value above to display gallery."]</code>
+</blockquote>
+</p>
+<p>
+In this example the <code>name="search-string"</code> parameter is passed from the form to the <code>s="{+request:search-string+}</code>... parameter in the shortcode. As in the Cloud and Gallery example a Content Template is used to supply <code>a-bad-term</code> before the form is completed, which displays an empty gallery because it doesn't match anything. You can find more information on the <code>s=</code> parameter and other search parameters in the <a href="#search_keywords">Keyword(s) Search</a> section.
+<p>
+As in the Cloud and Gallery example, paginating your gallery display requires a slight modification of the <code>[mla_gallery]</code> shortcode (at the bottom of the next example) and adding a second <code>[mla_gallery]</code> shortcode (in the middle of the next example) to display the pagination controls:
+<blockquote>
+<code>&lt;form id="mla-search-form" action="." method="post"><br />
+&lt;input id="mla-search-box" name="search-string" type="text" value="" />&amp;nbsp;&lt;input id="submit" name="submit" type="submit" value="Search" /><br />
+&lt;/form></code><br />
+&nbsp;<br />
+<code>[mla_gallery s="{+template:({+request:search-string+}|a-bad-term)+}" posts_per_page=12 mla_output="paginate_links,prev_next" mla_link_href="{+page_url+}?search-string={+request:search-string+}"]</code><br />
+&nbsp;<br />
+<code>[mla_gallery s="{+template:({+request:search-string+}|a-bad-term)+}" mla_nolink_text="Enter a search value above to display gallery." posts_per_page=12]</code>
+</blockquote>
+</p>
+<p>
+The <code>posts_per_page=12</code> parameter has been added to the gallery display shortcode (the third shortcode). A new <code>[mla_gallery]</code> is added to display the pagination controls. The data selection parameter (<code>s="{+request:search-string+}</code>...) and <code>posts_per_page=12</code> parameter match the gallery display shortcode below it. The <code>mla_output</code> parameter displays the pagination controls. Finally, the <code>mla_link_href="{+page_url+}?search-string={+request:search-string+}"</code> parameter is added so the pagination controls pass the <code>search-string</code> from page to page.
+<a name="mla_output_parameter"></a>
 <p>
 <a href="#backtotop">Go to Top</a>
 </p>

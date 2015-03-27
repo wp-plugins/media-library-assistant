@@ -36,6 +36,7 @@ class MLATest {
 		/*
 		 * This is the earliest effective place to add E_STRICT to error_reporting
 		 */
+		//error_reporting( E_ALL | E_STRICT | E_DEPRECATED | E_USER_DEPRECATED | E_USER_ERROR | E_USER_WARNING );
 		//error_reporting( E_ALL | E_STRICT );
 	}
 

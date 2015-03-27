@@ -91,7 +91,7 @@ class MLAStreamImage {
 			$type = isset( $_REQUEST['mla_stream_type'] ) ? stripslashes( $_REQUEST['mla_stream_type'] ) : 'image/jpeg';
 
 			/*
-			 * Frame, resolution and fit are handled in the load() function, which we
+			 * Frame and resolution are handled in the load() function, which we
 			 * can't explicitly pass parameters to.
 			 */
 			if ( isset( $_REQUEST['mla_stream_frame'] ) ) {
@@ -100,10 +100,6 @@ class MLAStreamImage {
 			
 			if ( isset( $_REQUEST['mla_stream_resolution'] ) ) {
 				self::$mla_imagick_args['resolution'] = absint( $_REQUEST['mla_stream_resolution'] );
-			}
-			
-			if ( isset( $_REQUEST['mla_stream_fit'] ) ) {
-				self::$mla_imagick_args['best_fit'] = ( '1' == $_REQUEST['mla_stream_fit'] );
 			}
 			
 			$upload_dir = wp_upload_dir();
@@ -135,7 +131,13 @@ error_log( 'Image load failure = ' . var_export( $image_editor->get_error_messag
 				/*
 				 * Prepare the output image; resize and flatten, if necessary
 				 */
-				$image_editor->mla_prepare_image( $width, $height, $type );
+				if ( isset( $_REQUEST['mla_stream_fit'] ) ) {
+					$best_fit = ( '1' == $_REQUEST['mla_stream_fit'] );
+				} else {
+					$best_fit = false;
+				}
+				
+				$image_editor->mla_prepare_image( $width, $height, $best_fit, $type );
 				}
 			catch ( Exception $e ) {
 error_log( 'Image load Exception = ' . var_export( $e->getMessage(), true ), 0 );

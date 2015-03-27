@@ -116,21 +116,15 @@ class MLA_Image_Editor extends WP_Image_Editor_Imagick {
 	 *
 	 * @param	integer	zero or new width
 	 * @param	integer	zero or new height
+	 * @param	boolean	proportional fit (true) or exact fit (false)
 	 * @param	string	output MIME type
 	 *
 	 * @return void
 	 */
-	public function mla_prepare_image( $width, $height, $type ) {
-		if ( class_exists( 'MLAStreamImage' ) ) {
-			$mla_imagick_args = MLAStreamImage::$mla_imagick_args;
-		} else {
-			$mla_imagick_args = array();
-		}
-		
+	public function mla_prepare_image( $width, $height, $best_fit, $type ) {
 		if ( is_callable( array( $this->image, 'scaleImage' ) ) ) {
 			if ( 0 < $width && 0 < $height ) {
 				// Both are set; use them as-is
-				$best_fit = isset( $mla_imagick_args['best_fit'] ) ? $mla_imagick_args['best_fit'] : false;
 				$this->image->scaleImage( $width, $height, $best_fit );
 				$this->update_size();
 			} elseif ( 0 < $width || 0 < $height ) {
@@ -146,9 +140,16 @@ class MLA_Image_Editor extends WP_Image_Editor_Imagick {
 			}
 		}
 
-		if ( 'image/jpeg' == $type && is_callable( array( $this->image, 'setImageBackgroundColor' ) ) && is_callable( array( $this->image, 'thumbnailImage' ) ) ) {				
-			$this->image->setImageBackgroundColor('white');
-			$this->image = $this->image->flattenImages();
+		if ( 'image/jpeg' == $type ) {				
+			if ( is_callable( array( $this->image, 'setImageBackgroundColor' ) ) ) {				
+				$this->image->setImageBackgroundColor('white');
+			}
+			
+			if ( is_callable( array( $this->image, 'mergeImageLayers' ) ) ) {
+				$this->image = $this->image->mergeImageLayers( imagick::LAYERMETHOD_FLATTEN );
+			} elseif ( is_callable( array( $this->image, 'flattenImages' ) ) ) {				
+				$this->image = $this->image->flattenImages();
+			}
 		}
 	}
 

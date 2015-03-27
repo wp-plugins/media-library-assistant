@@ -169,8 +169,9 @@ All of the MLA source code has been annotated with "DocBlocks", a special type o
 == Changelog ==
 
 = 2.10 =
-* New: **XMP metadata can be extracted from JPEG and TIFF images** and used in `[mla_gallery]` shortcodes and IPTC/EXIF or Custom Field mapping rules.
 * New: For the `[mla_gallery]` shortcode, the **Google File Viewer (mla_viewer) has been replaced** by two new featues. First, **a "Featured Image" can be assigned to Media Library items**; it will replace the MIME type icon as the thumbnail for the item. Second, **PDF documents can generate a thumbnail image** for the item if Imagemagick, Imagick and Ghostscript are available on the server. See the [Other Notes section](http://wordpress.org/extend/plugins/media-library-assistant/other_notes/ "Click here, then scroll down") section or the Settings/Media Library Assistant Documentation tab for more information.
+* New: **XMP metadata can be extracted from JPEG and TIFF images** and used in `[mla_gallery]` shortcodes and IPTC/EXIF or Custom Field mapping rules.
+* New: Several **simple MLA Gallery examples** have been added to the Documentation tab.
 * New: A Media/Assistant submenu table **custom view example plugin**, `mla-custom-view-example.php.txt` has been added to the `/media-library-assistant/examples/` directory. The example adds two custom views for "Attached" items and "Unpublished" items that are attached to a parent whose `post_status` is 'draft', 'future', 'pending' or 'trash' .
 * New: Two new filters for the "Media/Assistant Submenu Hooks" allow you to record or modify the new values for Bulk Edit fields. The `/media-library-assistant/examples/mla-list-table-hooks-example.php.txt` example plugin has been updated with the new filters.
 * New: A **Terms Search "exact"** option has been added to eliminate false matches such as "man" within "woman".
