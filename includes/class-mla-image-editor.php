@@ -14,6 +14,124 @@
  * @uses WP_Image_Editor_Imagick Extends class
  */
 class MLA_Image_Editor extends WP_Image_Editor_Imagick {
+	/**
+	 * Direct Ghostscript file conversion
+	 *
+	 * @since 2.10
+	 *
+	 * @return	boolean	true if conversion succeeds else false
+	 */
+	private function _ghostscript_convert( $file, $frame, $resolution, $output_type ) {
+//error_log( __LINE__ . ' _ghostscript_convert entered', 0 );
+		/*
+		 * Look for exec() - from http://stackoverflow.com/a/12980534/866618
+		 */
+		if ( ini_get('safe_mode') ) {
+//error_log( __LINE__ . ' _ghostscript_convert safe_mode', 0 );
+			return false;
+		}
+		
+		$blacklist = preg_split( '/,\s*/', ini_get('disable_functions') . ',' . ini_get('suhosin.executor.func.blacklist') );
+		if ( in_array('exec', $blacklist) ) {
+//error_log( __LINE__ . ' _ghostscript_convert blacklist', 0 );
+			return false;
+		}
+
+		/*
+		 * Look for the Ghostscript executable
+		 */
+		$ghostscript_path = NULL;
+		do {
+			
+			if ( 'WIN' === strtoupper( substr( PHP_OS, 0, 3) ) ) {
+				if ( $ghostscript_path = getenv('GSC') ) {
+//error_log( __LINE__ . ' _ghostscript_convert found environment variable', 0 );
+					break;
+				}
+				
+				$ghostscript_path = exec('where gswin*c.exe');
+				if ( ! empty( $ghostscript_path ) ) {
+//error_log( __LINE__ . ' _ghostscript_convert found in path', 0 );
+					break;
+				}
+				
+				$ghostscript_path = exec('dir /o:n/s/b "C:\Program Files\gs\*gswin*c.exe"');
+				if ( ! empty( $ghostscript_path ) ) {
+//error_log( __LINE__ . ' _ghostscript_convert found in Program Files', 0 );
+					break;
+				}
+				
+				$ghostscript_path = exec('dir /o:n/s/b "C:\Program Files (x86)\gs\*gswin32c.exe"');
+				if ( ! empty( $ghostscript_path ) ) {
+//error_log( __LINE__ . ' _ghostscript_convert found in Program Files (x86)', 0 );
+					break;
+				}
+	
+//error_log( __LINE__ . ' _ghostscript_convert not found on Windows', 0 );
+				$ghostscript_path = NULL;
+				break;
+			} // Windows platform
+				
+			$ghostscript_path = exec('which gs');
+			if ( ! empty( $ghostscript_path ) ) {
+//error_log( __LINE__ . ' _ghostscript_convert found with which gs', 0 );
+				break;
+			}
+			
+			$test_path = '/usr/bin/gs';
+			exec('test -e ' . $test_path, $dummy, $ghostscript_path);
+//error_log( __LINE__ . " _ghostscript_convert exec test returns '{$ghostscript_path}'", 0 );
+			
+			if ( $test_path !== $ghostscript_path ) {
+				$ghostscript_path = NULL;
+			}
+		} while ( false );
+//error_log( __LINE__ . " ghostscript path =  '{$ghostscript_path}'", 0 );
+
+		if ( isset( $ghostscript_path ) ) {
+			if ( 'image/jpeg' == $output_type ) {
+				$device = 'jpeg';
+				$extension = '.jpg';
+			} else {
+				$device = 'png16m';
+				$extension = '.png';
+			}
+			
+			/*
+			 * Generate a unique temporary file name
+			 */
+			$output_path = get_temp_dir();
+			$output_file = $output_path . wp_unique_filename( $output_path, 'mla-ghostscript' . $extension);
+//error_log( __LINE__ . " exec output_path =  " . var_export( $output_path, true ), 0 );
+//error_log( __LINE__ . " exec output_file =  " . var_export( $output_file, true ), 0 );
+			
+			$cmd = escapeshellarg( $ghostscript_path ) . ' -sDEVICE=%1$s -r%2$dx%2$d -dFirstPage=%3$d -dLastPage=%3$d -dPDFFitPage -o %4$s %5$s 2>&1';
+			$cmd = sprintf( $cmd, $device, $resolution, ( $frame + 1 ), escapeshellarg( $output_file ), escapeshellarg( $file ) );
+//error_log( __LINE__ . " exec input =  " . var_export( $cmd, true ), 0 );
+			exec( $cmd, $stdout, $return );
+			if ( 0 != $return ) {
+				error_log( __LINE__ . " _ghostscript_convert exec returned '{$return}, cmd = " . var_export( $cmd, true ), 0 );
+				error_log( __LINE__ . " _ghostscript_convert exec returned '{$return}, details = " . var_export( $stdout, true ), 0 );
+				return false;
+			}
+			
+			try {
+//error_log( __LINE__ . " readImage =  " . var_export( $output_file, true ), 0 );
+				$this->image->readImage( $output_file );
+			}
+			catch ( Exception $e ) {
+error_log( __LINE__ . " _ghostscript_convert readImage Exception = " . var_export( $e->getMessage(), true ), 0 );
+				return false;
+			}
+			
+			$this->file = $output_file;
+			@unlink( $output_file );
+			return true;
+		} // found Ghostscript
+
+		return false;
+	}
+
 
 	/**
 	 * Loads image from $this->file into new Imagick Object.
@@ -56,17 +174,34 @@ class MLA_Image_Editor extends WP_Image_Editor_Imagick {
 				if ( $resolution ) {
 					$this->image->setResolution( $resolution, $resolution );
 				}
+			} else {
+				$resolution = 72;
 			}
 			
 			if ( isset( $mla_imagick_args['frame'] ) ) {
+				$frame = $mla_imagick_args['frame'];
+			} else {
+				$frame = 0;
+			}
+			
+			if ( isset( $mla_imagick_args['type'] ) ) {
+				$type = $mla_imagick_args['type'];
+			} else {
+				$type = 'image/jpeg';
+			}
+			
+			//$result = false;
+			$result = $this->_ghostscript_convert( $this->file, $frame, $resolution, $type );
+			
+			if ( false === $result ) {
 				try {
-					$this->image->readImage( $this->file . '[' . $mla_imagick_args['frame'] . ']' );
+					$this->image->readImage( $this->file . '[' . $frame . ']' );
 				}
 				catch ( Exception $e ) {
 					$this->image->readImage( $this->file . '[0]' );
 				}
-			} else {
-				$this->image->readImage( $this->file . '[0]' );
+
+				$this->image->setImageFormat( strtoupper( $this->get_extension( $type ) ) );
 			}
 
 			if( ! $this->image->valid() )
@@ -82,9 +217,9 @@ class MLA_Image_Editor extends WP_Image_Editor_Imagick {
 			return new WP_Error( 'invalid_image', $e->getMessage(), $this->file );
 		}
 
-		$updated_size = $this->update_size();
-		if ( is_wp_error( $updated_size ) ) {
-			return $updated_size;
+		$result = $this->update_size();
+		if ( is_wp_error( $result ) ) {
+			return $result;
 		}
 
 		return $this->set_quality();
@@ -118,28 +253,35 @@ class MLA_Image_Editor extends WP_Image_Editor_Imagick {
 	 * @param	integer	zero or new height
 	 * @param	boolean	proportional fit (true) or exact fit (false)
 	 * @param	string	output MIME type
+	 * @param	integer	compression quality; 1 - 100
 	 *
 	 * @return void
 	 */
-	public function mla_prepare_image( $width, $height, $best_fit, $type ) {
+	public function mla_prepare_image( $width, $height, $best_fit, $type, $quality ) {
 		if ( is_callable( array( $this->image, 'scaleImage' ) ) ) {
 			if ( 0 < $width && 0 < $height ) {
 				// Both are set; use them as-is
 				$this->image->scaleImage( $width, $height, $best_fit );
-				$this->update_size();
 			} elseif ( 0 < $width || 0 < $height ) {
 				// One is set; scale the other one proportionally if reducing
 				$image_size = $this->get_size();
 				if ( $width && isset( $image_size['width'] ) && $width < $image_size['width'] ) {
 					$this->image->scaleImage( $width, 0 );
-					$this->update_size();
 				} elseif ( isset( $image_size['height'] ) && $height < $image_size['height'] ) {
 					$this->image->scaleImage( 0, $height );
-					$this->update_size();
 				}
+			} else {
+				// Neither is specified, apply defaults
+				$this->image->scaleImage( 150, 0 );
 			}
+			
+			$this->update_size();
 		}
 
+		if ( 0 < $quality && 101 > $quality ) {
+			$this->set_quality( $quality );
+		}
+		
 		if ( 'image/jpeg' == $type ) {				
 			if ( is_callable( array( $this->image, 'setImageBackgroundColor' ) ) ) {				
 				$this->image->setImageBackgroundColor('white');
@@ -154,21 +296,24 @@ class MLA_Image_Editor extends WP_Image_Editor_Imagick {
 	}
 
 	/**
-	 * Return the output format
+	 * Streams current image to browser.
 	 *
 	 * @since 2.10
 	 * @access public
 	 *
-	 * @param	string	$filename
-	 * @param	string	$mime_type
-	 *
-	 * @return	array { filename|null, extension, mime-type }
+	 * @param string $mime_type
+	 * @return boolean|WP_Error
 	 */
-	public function mla_output_format( $filename = null, $mime_type = null ) {
-		if ( is_callable( array( $this, 'get_output_format' ) ) ) {
-			return $this->get_output_format( $filename, $mime_type );
+	public function stream( $mime_type = null ) {
+		try {
+			// Output stream of image content
+			header( "Content-Type: $mime_type" );
+			print $this->image->getImageBlob();
+		}
+		catch ( Exception $e ) {
+			return new WP_Error( 'image_stream_error', $e->getMessage() );
 		}
 
-		return false;
+		return true;
 	}
 }

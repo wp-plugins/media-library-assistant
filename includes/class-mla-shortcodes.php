@@ -299,6 +299,7 @@ class MLAShortcodes {
 			'mla_viewer_best_fit' => NULL,
 			'mla_viewer_page' => '1',
 			'mla_viewer_resolution' => '0',
+			'mla_viewer_quality' => '0',
 			'mla_viewer_type' => '',
 			
 			'mla_alt_shortcode' => NULL,
@@ -546,6 +547,7 @@ class MLAShortcodes {
 			}
 			
 			$arguments['mla_viewer_resolution'] = absint( $arguments['mla_viewer_resolution'] );
+			$arguments['mla_viewer_quality'] = absint( $arguments['mla_viewer_quality'] );
 		}
 
 		/*
@@ -1237,6 +1239,10 @@ class MLAShortcodes {
 								
 								if ( $arguments['mla_viewer_resolution'] ) {
 									$args['mla_stream_resolution'] = $arguments['mla_viewer_resolution'];
+								}
+								
+								if ( $arguments['mla_viewer_quality'] ) {
+									$args['mla_stream_quality'] = $arguments['mla_viewer_quality'];
 								}
 								
 								if ( ! empty( $arguments['mla_viewer_type'] ) ) {
