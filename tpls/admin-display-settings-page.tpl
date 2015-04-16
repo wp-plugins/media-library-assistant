@@ -197,11 +197,13 @@
 <p>[+In this tab+]</p>
 <form action="[+form_url+]" method="post" class="mla-display-settings-page" id="mla-display-settings-mla-gallery-tab">
 [+options_list+]
-<a name="style">&nbsp;<br /></a><h4>[+Style Templates+]</h4>
+<a name="style">&nbsp;<br />&nbsp;<br /><a href="#backtotop">[+Go to Top+]</a>
+<h4>[+Style Templates+]</h4>
     <table class="optiontable">
 [+style_options_list+]
 	</table>
-<a name="markup">&nbsp;<br /></a><h4>[+Markup Templates+]</h4>
+<a name="markup">&nbsp;<br />&nbsp;<br /><a href="#backtotop">[+Go to Top+]</a>
+<h4>[+Markup Templates+]</h4>
     <table class="optiontable">
 [+markup_options_list+]
 	</table>

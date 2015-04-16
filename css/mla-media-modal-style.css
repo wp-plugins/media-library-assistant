@@ -13,6 +13,12 @@
 
 .media-toolbar-secondary {
 	width: 50%;
+	max-width: 50%;
+}
+
+.media-toolbar-primary {
+	width: 50%;
+	max-width: 50%;
 }
 
 /** === Search Options */

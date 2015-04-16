@@ -179,6 +179,8 @@ All of the MLA source code has been annotated with "DocBlocks", a special type o
 * New: A new **field-level option value, "substr(s,l)"** is available for use in shortcodes and mapping rules. It uses the PHP substr() function to extract a portion of a field-level value.
 * New: If you add `define( 'MLA_DEBUG_LEVEL', 1 );` to your `wp-config.php` file a new Settings/Media Library Assistant **Debug tab** is available. The new tab lets you view, download and reset (empty) the PHP error log file.
 * New: The Development Version date and MLA debug level, if applicable, are now added to the title of the Settings/Media library Assistant submenu.
+* Fix: Text and Textarea option settings containing backslashes are now cleaned up with `stripslashes`.
+* Fix: In the Media Manager Modal Window, CSS styles have been updated to improve the layout of the toolbar.
 * Fix: If 'Enable "bulk edit" area' is checked, bulk edit on Add New uploads will be run even if all four "enable mapping" options are disabled.
 * Fix: **Terms Search performance** has been improved by eliminating redundant table joins.
 * Fix: For the Media/Assistant submenu table, **sorting on custom fields** now works correctly.

@@ -6,7 +6,7 @@
 <li><a href="#gallery_substitution">Substitution Parameters</a></li>
 <li><a href="#gallery_display_style">Gallery Display Style</a></li>
 <li><a href="#gallery_display_content">Gallery Display Content</a></li>
-<li><a href="#thumbnail_substitution">Thumbnail Substitution Support</a></li>
+<li><a href="#thumbnail_substitution">Thumbnail Substitution Support, mla_viewer</a></li>
 <li><a href="#order_orderby">Order, Orderby</a></li>
 <li><a href="#size">Size</a></li>
 <li><a href="#link">Link</a></li>
@@ -347,25 +347,25 @@ The "mla_link_attributes" and "mla_image_attributes" parameters accept any value
 The "mla_target" parameter accepts any value and adds an HTML "target" attribute to the hyperlink with that value. For example, if you code <code>mla_target="_blank"</code> the item will open in a new window or tab. You can also use "_self", "_parent", "_top" or the "<em>framename</em>" of a named frame.
 <a name="thumbnail_substitution"></a>
 </p>
-<h4>Thumbnail Substitution Support</h4>
+<h4>Thumbnail Substitution Support, mla_viewer</h4>
 <p>
 <strong>NOTE: Google has discontinued the File Viewer support for thumbnail images.</strong>
-This solution supports dynamic thumbnail image generation for PDF documents on your site's server. It uses the WordPress <code>WP_Image_Editor</code> and <code>WP_Image_editor_Imagick</code> classes, which require Imagemagick, Imagick and Ghostscript to be installed on your server.  If you need help installing them, look at this <a href="https://wordpress.org/support/topic/nothing-but-error-messages" title="Help with installation" target="_blank">PDF Thumbnails support topic</a>.
+This solution supports dynamic thumbnail image generation for PDF and Postscript documents on your site's server. You can also assign a "Featured Image" to any Media Library item. For non-image items such as Microsoft Office documents the featured image will replace the MIME-type icon or document title in an <code>[mla_gallery]</code> display. Simply go to the Media/Edit Media screen, scroll down to the "Featured Image" meta box and select an image as you would for a post or page.
 </p>
 <p>
-You can also assign a "Featured Image" to any Media Library item. For non-image items such as Microsoft Office documents the featured image will replace the MIME-type icon or document title in an <code>[mla_gallery]</code> display. Simply go to the Media/Edit Media screen, scroll down to the "Featured Image" meta box and select an image as you would for a post or page.
+The dynamic thumbnail image generation for PDF and Postscript documents uses the PHP <code>Imagick</code> class, which <strong>requires Imagemagick and Ghostscript</strong> to be installed on your server.  If you need help installing them, look at this <a href="https://wordpress.org/support/topic/nothing-but-error-messages" title="Help with installation" target="_blank">PDF Thumbnails support topic</a>. If you don't have them on your server you can still use the Featured Image support to supply thumbnails for  your non-image items.
 </p>
 <p>
-Nine <code>[mla_gallery]</code> parameters provide an easy way to simulate thumbnail images for the non-image file types.
+Ten <code>[mla_gallery]</code> parameters provide an easy way to simulate thumbnail images for the non-image file types.
 </p>
 <table>
 <tr>
 <td style="padding-right: 10px; vertical-align: top; font-weight:bold">mla_viewer</td>
-<td>must be "true" to enable thumbnail substitution.</td>
+<td>must be "true" or "single" to enable thumbnail substitution. Use "true" unless you experience generation failures due to memory limitations on your server. Use "single" to generate one thumbnail at a time, which may be slower but requires less mempry.</td>
 </tr>
 <tr>
 <td style="padding-right: 10px; vertical-align: top; font-weight:bold">mla_viewer_extensions</td>
-<td>a comma-delimited list of the file extensions to be processed; the default is "pdf" (do not include the dot (".") preceding the file extension). You may add or remove extensions (when support for additional types becomes available).</td>
+<td>a comma-delimited list of the file extensions to be processed; the default is "ai,eps,pdf,ps" (do not include the dot (".") preceding the file extension). You may add or remove extensions (when support for additional types becomes available).</td>
 </tr>
 <tr>
 <td style="padding-right: 10px; vertical-align: top; font-weight:bold">mla_viewer_limit</td>
@@ -397,21 +397,23 @@ Nine <code>[mla_gallery]</code> parameters provide an easy way to simulate thumb
 </tr>
 <tr>
 <td style="padding-right: 10px; vertical-align: top; font-weight:bold">mla_viewer_type</td>
-<td>the MIME type (default image/jpeg) of the final thumbnail. You can, for example, set this to "image/png" to retain a transparent background instead of the white jpeg background.</td>
+<td>the MIME type, "image/jpeg" or "image/png", (default image/jpeg) of the final thumbnail. You can, for example, set this to "image/png" to retain a transparent background instead of the white jpeg background.</td>
 </tr>
 </table>
 <p>
-When this feature is active, gallery items for which WordPress can generate a thumbnail image are not altered. If WordPress generation fails, the "Featured Image" will be used, if one is specified for the item. If the item does not have a Featured Image, supported file/MIME types (PDF for now) will have a gallery thumbnail generated dynamically. If all else fails, the thumbnail is replaced by an "img" html tag whose "src" attribute contains a url reference to the appropriate icon for the file/MIME type.
+When this feature is active, gallery items for which WordPress can generate a thumbnail image are not altered. If WordPress generation fails, the "Featured Image" will be used, if one is specified for the item. If the item does not have a Featured Image, supported file/MIME types (see <code>mla_viewer_extensions</code>) will have a gallery thumbnail generated dynamically. If all else fails, the thumbnail is replaced by an "img" html tag whose "src" attribute contains a url reference to the appropriate icon for the file/MIME type.
 </p>
 <p>
-Three options in the Settings/Media Library Assistant MLA Gallery tab allow control over mla_viewer operation:
+Four options in the Settings/Media Library Assistant MLA Gallery tab allow control over mla_viewer operation:
 <ul class="mla_settings">
 <li><strong>Enable thumbnail substitution</strong><br />
 Check this option to allow the "mla_viewer" to generate thumbnail images for PDF documents. Thumbnails are generated dynamically, each time the item appears in an <code>[mla_gallery]</code> display.</li>
-<li><strong>Enable explicit Ghostscript check</strong><br />
-Check this option to enable the explicit check for Ghostscript support required for thumbnail generation. If your Ghostscript software is in a non-standard location, unchecking this option bypasses the check. Bad things can happen if Ghostscript is missing but Imagemagick is present, so leave this option checked unless you know it is safe to turn it off.</li>
 <li><strong>Enable Featured Images</strong><br />
 Check this option to extend Featured Image support to all Media Library items. The Featured Image can be used as a thumbnail image for the item in an <code>[mla_gallery]</code> display.</li>
+<li><strong>Enable explicit Ghostscript check</strong><br />
+Check this option to enable the explicit check for Ghostscript support required for thumbnail generation. If your Ghostscript software is in a non-standard location, unchecking this option bypasses the check. Bad things can happen if Ghostscript is missing but Imagemagick is present, so leave this option checked unless you know it is safe to turn it off.</li>
+<li><strong>Ghostscript path</strong><br />
+If your Ghostscript software is in a non-standard location, enter the full path and name of the executable here. The value you enter will be used as-is and the search for Ghostscript in the usual locations will be bypassed.</li>
 </ul>
 <a name="order_orderby"></a>
 </p>

@@ -988,10 +988,10 @@ class MLASettings {
 					MLAOptions::mla_update_option( $key, $_REQUEST[ MLA_OPTION_PREFIX . $key ] );
 					break;
 				case 'text':
-					MLAOptions::mla_update_option( $key, trim( $_REQUEST[ MLA_OPTION_PREFIX . $key ] ) );
+					MLAOptions::mla_update_option( $key, stripslashes( trim( $_REQUEST[ MLA_OPTION_PREFIX . $key ] ) ) );
 					break;
 				case 'textarea':
-					MLAOptions::mla_update_option( $key, trim( $_REQUEST[ MLA_OPTION_PREFIX . $key ] ) );
+					MLAOptions::mla_update_option( $key, stripslashes( trim( $_REQUEST[ MLA_OPTION_PREFIX . $key ] ) ) );
 					break;
 				case 'custom':
 					$message = MLAOptions::$value['update']( 'update', $key, $value, $_REQUEST );
@@ -2288,6 +2288,7 @@ class MLASettings {
 			'In this tab' => __( 'In this tab you can view the default style and markup templates. You can also define additional templates and use the <code>mla_style</code> and <code>mla_markup</code> parameters to apply them in your <code>[mla_gallery]</code> shortcodes. <strong>NOTE:</strong> template additions and changes will not be made permanent until you click "Save Changes" at the bottom of this page.', 'media-library-assistant' ),
 			'form_url' => admin_url( 'options-general.php' ) . '?page=mla-settings-menu-mla_gallery&mla_tab=mla_gallery',
 			'options_list' => '',
+			'Go to Top' => __( 'Go to Top', 'media-library-assistant' ),
 			'Style Templates' => __( 'Style Templates', 'media-library-assistant' ),
 			'style_options_list' => '',
 			'Markup Templates' => __( 'Markup Templates', 'media-library-assistant' ),

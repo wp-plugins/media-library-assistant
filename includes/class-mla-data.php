@@ -3984,6 +3984,7 @@ class MLAData {
 		$array_name = '';
 		$array_index = -1;
 		foreach ( $xmp_values as $value ) {
+//error_log( __LINE__ . " mla_parse_xmp_metadata \$value = " . var_export( $value, true ), 0 );
 			$language = 'x-default';
 			if ( isset( $value['attributes'] ) ) {
 				foreach ( $value['attributes'] as $att_tag => $att_value ) {
@@ -5006,6 +5007,7 @@ class MLAData {
 				if ( ! empty( $info['APP13'] ) ) {
 					//set_error_handler( 'MLAData::mla_IPTC_EXIF_error_handler' );
 					$iptc_values = iptcparse( $info['APP13'] );
+//error_log( __LINE__ . ' mla_fetch_attachment_image_metadata $iptc_values = ' . var_export( $iptc_values, true ), 0 );
 					//restore_error_handler();
 
 					if ( ! empty( MLAData::$mla_IPTC_EXIF_errors ) ) {
@@ -5043,6 +5045,7 @@ class MLAData {
 			} // exif_read_data
 			
 			$results['mla_xmp_metadata'] = self::mla_parse_xmp_metadata( $path, 0 );
+//error_log( __LINE__ . ' mla_fetch_attachment_image_metadata $mla_xmp_metadata = ' . var_export( $results['mla_xmp_metadata'], true ), 0 );
 			if ( NULL == $results['mla_xmp_metadata'] ) {
 				$results['mla_xmp_metadata'] = array();
 			}

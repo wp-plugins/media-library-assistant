@@ -962,6 +962,13 @@ class MLAOptions {
 					'std' => 'checked',
 					'help' => __( 'Check this option to allow the "mla_viewer" to generate thumbnail images for PDF  documents. Thumbnails are generated dynamically, each time the item appears in an [mla_gallery] display.', 'media-library-assistant' )),
 
+			'enable_featured_image' =>
+				array('tab' => 'mla_gallery',
+					'name' => __( 'Enable Featured Images', 'media-library-assistant' ),
+					'type' => 'checkbox',
+					'std' => 'checked',
+					'help' => __( 'Check this option to extend Featured Image support to all Media Library items. The Featured Image can be used as a thumbnail image for the item in an [mla_gallery] display.', 'media-library-assistant' )),
+
 			'enable_ghostscript_check' =>
 				array('tab' => 'mla_gallery',
 					'name' => __( 'Enable explicit Ghostscript check', 'media-library-assistant' ),
@@ -969,12 +976,13 @@ class MLAOptions {
 					'std' => 'checked',
 					'help' => __( 'Check this option to enable the explicit check for Ghostscript support required for thumbnail generation. If your Ghostscript software is in a non-standard location, unchecking this option bypasses the check. Bad things can happen if Ghostscript is missing but Imagemagick is present, so leave this option checked unless you know it is safe to turn it off.', 'media-library-assistant' )),
 
-			'enable_featured_image' =>
+			'ghostscript_path' =>
 				array('tab' => 'mla_gallery',
-					'name' => __( 'Enable Featured Images', 'media-library-assistant' ),
-					'type' => 'checkbox',
-					'std' => 'checked',
-					'help' => __( 'Check this option to extend Featured Image support to all Media Library items. The Featured Image can be used as a thumbnail image for the item in an [mla_gallery] display.', 'media-library-assistant' )),
+					'name' => __( 'Ghostscript path', 'media-library-assistant' ),
+					'type' => 'text',
+					'std' => '',
+					'size' => 20,
+					'help' => __( 'If your &ldquo;gs&rdquo; executable is in a non-standard location, enter the full path and filename here, e.g., &ldquo;/usr/bin/gs&rdquo;. It will override the search for Ghostscript in other places.', 'media-library-assistant' )),
 
 			/*
 			 * Managed by mla_get_style_templates and mla_put_style_templates
@@ -3784,6 +3792,7 @@ class MLAOptions {
 		}
 
 		$settings = apply_filters( 'mla_mapping_settings', $settings, $post->ID, $category, $attachment_metadata );
+//error_log( __LINE__ . ' mla_evaluate_iptc_exif_mapping $settings = ' . var_export( $settings, true ), 0 );
 
 		if ( $update_all || ( 'iptc_exif_standard_mapping' == $category ) ) {
 			foreach ( $settings['standard'] as $setting_key => $setting_value ) {
@@ -3799,6 +3808,7 @@ class MLAOptions {
 				}
 
 				$iptc_value = apply_filters( 'mla_mapping_iptc_value', $iptc_value, $setting_key, $post->ID, 'iptc_exif_standard_mapping', $attachment_metadata );
+//error_log( __LINE__ . " mla_evaluate_iptc_exif_mapping [{$setting_key}] \$iptc_value = " . var_export( $iptc_value, true ), 0 );
 
 				if ( 'template:[+empty+]' == $setting_value['exif_value'] ) {
 					$exif_value =  NULL;
@@ -3817,6 +3827,7 @@ class MLAOptions {
 				}
 
 				$exif_value = apply_filters( 'mla_mapping_exif_value', $exif_value, $setting_key, $post->ID, 'iptc_exif_standard_mapping', $attachment_metadata );
+//error_log( __LINE__ . " mla_evaluate_iptc_exif_mapping [{$setting_key}] \$exif_value = " . var_export( $exif_value, true ), 0 );
 
 				$keep_existing = (boolean) $setting_value['keep_existing'];
 
@@ -3852,6 +3863,7 @@ class MLAOptions {
 				 * valid range.
 				 */
 				$new_text = trim( convert_chars( $new_text ) );
+//error_log( __LINE__ . " mla_evaluate_iptc_exif_mapping [{$setting_key}] \$new_text = " . var_export( $new_text, true ), 0 );
 				if ( !empty( $new_text ) ) {
 					switch ( $setting_key ) {
 						case 'post_title':

@@ -73,9 +73,12 @@ class MLAShortcodes {
 	 *
 	 * @since 2.10
 	 *
+	 * @param	string	Non-standard location to override default search, e.g.,
+	 *					'C:\Program Files (x86)\gs\gs9.15\bin\gswin32c.exe'
+	 *
 	 * @return	boolean	true if Ghostscript available else false
 	 */
-	private static function _ghostscript_present() {
+	private static function _ghostscript_present( $explicit_path = '' ) {
 		static $ghostscript_present = NULL;
 		
 		if ( isset( $ghostscript_present ) ) {
@@ -95,48 +98,67 @@ class MLAShortcodes {
 		
 		$blacklist = preg_split( '/,\s*/', ini_get('disable_functions') . ',' . ini_get('suhosin.executor.func.blacklist') );
 		if ( in_array('exec', $blacklist) ) {
-//error_log( __LINE__ . '_ghostscript_present in blacklist', 0 );
+//error_log( __LINE__ . ' _ghostscript_present in blacklist', 0 );
 			return $ghostscript_present = false;
 		}
 
 		if ( 'WIN' === strtoupper( substr( PHP_OS, 0, 3) ) ) {
-			if ( getenv('GSC') ) {
-//error_log( __LINE__ . '_ghostscript_present found environment variable', 0 );
+			if ( ! empty( $explicit_path ) ) {
+				$return = exec( 'dir /o:n/s/b "' . $explicit_path . '"' );
+				if ( ! empty( $return ) ) {
+//error_log( __LINE__ . " _ghostscript_present found in explicit path '{$return}'", 0 );
+					return $ghostscript_present = true;
+				} else {
+//error_log( __LINE__ . " _ghostscript_present NOT found in explicit path '{$explicit_path}'", 0 );
+					return $ghostscript_present = false;
+				}
+			}
+			
+			$return = getenv('GSC');
+			if ( ! empty( $return ) ) {
+//error_log( __LINE__ . " _ghostscript_present found environment variable '{$return}'", 0 );
 				return $ghostscript_present = true;
 			}
 			
 			$return = exec('where gswin*c.exe');
 			if ( ! empty( $return ) ) {
-//error_log( __LINE__ . '_ghostscript_present found in path', 0 );
+//error_log( __LINE__ . " _ghostscript_present found in path '{$return}'", 0 );
 				return $ghostscript_present = true;
 			}
 			
 			$return = exec('dir /o:n/s/b "C:\Program Files\gs\*gswin*c.exe"');
 			if ( ! empty( $return ) ) {
-//error_log( __LINE__ . '_ghostscript_present found in Program Files', 0 );
+//error_log( __LINE__ . " _ghostscript_present found in Program Files '{$return}'", 0 );
 				return $ghostscript_present = true;
 			}
 			
 			$return = exec('dir /o:n/s/b "C:\Program Files (x86)\gs\*gswin32c.exe"');
 			if ( ! empty( $return ) ) {
-//error_log( __LINE__ . '_ghostscript_present found in Program Files (x86)', 0 );
+//error_log( __LINE__ . " _ghostscript_present found in Program Files (x86) '{$return}'", 0 );
 				return $ghostscript_present = true;
 			}
 
-//error_log( __LINE__ . '_ghostscript_present not found on Windows', 0 );
+//error_log( __LINE__ . ' _ghostscript_present not found on Windows', 0 );
 			return $ghostscript_present = false;
+		} // Windows platform
+
+		if ( ! empty( $explicit_path ) ) {
+			exec( 'test -e ' . $explicit_path, $dummy, $ghostscript_path );
+//error_log( __LINE__ . ' _ghostscript_present explicit path = ' . var_export( $ghostscript_path, true ), 0 );
+			return ( $explicit_path === $ghostscript_path );
 		}
 			
 		$return = exec('which gs');
 		if ( ! empty( $return ) ) {
-//error_log( __LINE__ . '_ghostscript_present found with which gs', 0 );
+//error_log( __LINE__ . ' _ghostscript_present found with which gs', 0 );
 			return $ghostscript_present = true;
 		}
 		
-		exec('test -e /usr/bin/gs', $dummy, $return);
-//error_log( __LINE__ . "_ghostscript_present exec test returns '{$return}'", 0 );
+		$test_path = '/usr/bin/gs';
+		exec('test -e ' . $test_path, $dummy, $ghostscript_path);
+//error_log( __LINE__ . " _ghostscript_present exec test returns '{$ghostscript_path}'", 0 );
 		
-		return $ghostscript_present = ( 0 === $return );
+		return $ghostscript_present = ( $test_path === $ghostscript_path );
 	}
 
 	/**
@@ -292,7 +314,8 @@ class MLAShortcodes {
 			'mla_debug' => false,
 			
 			'mla_viewer' => false,
-			'mla_viewer_extensions' => 'pdf',
+			'mla_single_thread' => false,
+			'mla_viewer_extensions' => 'ai,eps,pdf,ps',
 			'mla_viewer_limit' => '0',
 			'mla_viewer_width' => '0',
 			'mla_viewer_height' => '0',
@@ -528,6 +551,11 @@ class MLAShortcodes {
 		 * Check for Imagick thumbnail generation arguments
 		 */
 		if ( 'checked' == MLAOptions::mla_get_option( 'enable_mla_viewer' ) ) {
+			if ( ! empty( $arguments['mla_viewer'] ) && ( 'single' == strtolower( $arguments['mla_viewer'] ) ) ) {
+				$arguments['mla_single_thread'] = true;	
+				$arguments['mla_viewer'] = 'true';
+			}
+			
 			$arguments['mla_viewer'] = !empty( $arguments['mla_viewer'] ) && ( 'true' == strtolower( $arguments['mla_viewer'] ) );
 		} else {
 			$arguments['mla_viewer'] = false;
@@ -1198,10 +1226,15 @@ class MLAShortcodes {
 						 * Default to an icon if thumbnail generation is not available
 						 */
 						$icon_url = wp_mime_type_icon( $attachment->ID );
+						$upload_dir = wp_upload_dir();
 						$args = array(
 							'page' => MLA::ADMIN_PAGE_SLUG,
-							'mla_stream_file' => urlencode( $item_values['base_file'] ),
+							'mla_stream_file' => urlencode( $upload_dir['basedir'] . '/' . $item_values['base_file'] ),
 						);
+						
+						if ( $arguments['mla_single_thread'] ) {
+							$args['mla_single_thread'] = 'true';
+						}
 						
 						if ( $arguments['mla_viewer_width'] ) {
 							$args['mla_stream_width'] = $arguments['mla_viewer_width'];
@@ -1212,10 +1245,22 @@ class MLAShortcodes {
 						}
 
 						if ( isset( $arguments['mla_viewer_best_fit'] ) ) {
-							$args['mla_stream_fit'] = $arguments['mla_viewer_best_fit'] ? '1' : '0';;
+							$args['mla_stream_fit'] = $arguments['mla_viewer_best_fit'] ? '1' : '0';
 						}
+						
+						/*
+						 * Non-standard location, if not empty. Write the value to a file that can be
+						 * found by the stand-alone (no WordPress) image stream processor.
+						 */
+						$ghostscript_path = MLAOptions::mla_get_option( 'ghostscript_path' );
+						if ( ! empty( $ghostscript_path ) ) {
+							if ( false !== @file_put_contents( dirname( __FILE__ ) . '/' . 'mla-ghostscript-path.txt', $ghostscript_path ) ) {
+								$args['mla_ghostscript_path'] = 'custom';
+							}
+						}
+//error_log( __LINE__ . " ghostscript path =  '{$ghostscript_path}', ", 0 );
 
-						if ( wp_image_editor_supports( array( 'mime_type' => $item_values['mime_type'] ) ) && self::_ghostscript_present() ) {
+						if ( self::_ghostscript_present( $ghostscript_path ) ) {
 							/*
 							 * Optional upper limit (in MB) on file size
 							 */
@@ -1249,7 +1294,8 @@ class MLAShortcodes {
 									$args['mla_stream_type'] = $arguments['mla_viewer_type'];
 								}
 
-								$icon_url = add_query_arg( $args, wp_nonce_url( admin_url(  'upload.php' ), MLA::MLA_ADMIN_NONCE ) );
+								//$icon_url = add_query_arg( $args, wp_nonce_url( admin_url(  'upload.php' ), MLA::MLA_ADMIN_NONCE ) );
+								$icon_url = add_query_arg( $args, wp_nonce_url( MLA_PLUGIN_URL . 'includes/mla-stream-image.php', MLA::MLA_ADMIN_NONCE ) );
 							}
 						}
 

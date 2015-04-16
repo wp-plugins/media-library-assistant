@@ -1581,7 +1581,7 @@ class MLA_List_Table extends WP_List_Table {
 	 * 
 	 * @return	string | false	HTML for link to display the view, false if count = zero
 	 */
-	function _get_view( $view_slug, $current_view ) {
+	private static function _get_view( $view_slug, $current_view ) {
 		global $wpdb;
 		static $mla_types = NULL, $posts_per_type, $post_mime_types, $avail_post_mime_types, $matches, $num_posts;
 
