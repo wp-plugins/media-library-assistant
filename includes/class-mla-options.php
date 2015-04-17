@@ -3792,7 +3792,6 @@ class MLAOptions {
 		}
 
 		$settings = apply_filters( 'mla_mapping_settings', $settings, $post->ID, $category, $attachment_metadata );
-//error_log( __LINE__ . ' mla_evaluate_iptc_exif_mapping $settings = ' . var_export( $settings, true ), 0 );
 
 		if ( $update_all || ( 'iptc_exif_standard_mapping' == $category ) ) {
 			foreach ( $settings['standard'] as $setting_key => $setting_value ) {
@@ -3808,7 +3807,6 @@ class MLAOptions {
 				}
 
 				$iptc_value = apply_filters( 'mla_mapping_iptc_value', $iptc_value, $setting_key, $post->ID, 'iptc_exif_standard_mapping', $attachment_metadata );
-//error_log( __LINE__ . " mla_evaluate_iptc_exif_mapping [{$setting_key}] \$iptc_value = " . var_export( $iptc_value, true ), 0 );
 
 				if ( 'template:[+empty+]' == $setting_value['exif_value'] ) {
 					$exif_value =  NULL;
@@ -3827,7 +3825,6 @@ class MLAOptions {
 				}
 
 				$exif_value = apply_filters( 'mla_mapping_exif_value', $exif_value, $setting_key, $post->ID, 'iptc_exif_standard_mapping', $attachment_metadata );
-//error_log( __LINE__ . " mla_evaluate_iptc_exif_mapping [{$setting_key}] \$exif_value = " . var_export( $exif_value, true ), 0 );
 
 				$keep_existing = (boolean) $setting_value['keep_existing'];
 
@@ -3863,7 +3860,6 @@ class MLAOptions {
 				 * valid range.
 				 */
 				$new_text = trim( convert_chars( $new_text ) );
-//error_log( __LINE__ . " mla_evaluate_iptc_exif_mapping [{$setting_key}] \$new_text = " . var_export( $new_text, true ), 0 );
 				if ( !empty( $new_text ) ) {
 					switch ( $setting_key ) {
 						case 'post_title':

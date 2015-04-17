@@ -713,8 +713,6 @@ class MLAEdit {
 			self::$mla_references = MLAData::mla_fetch_attachment_references( $post->ID, $post->post_parent );
 		}
 
-//error_log( __LINE__ . " mla_parent_info_handler [{$post->ID}] acf = " . var_export( get_field( 'acf_image', $post->ID ), true ), 0 );
-//error_log( __LINE__ . " mla_parent_info_handler [{$post->ID}] acf = " . var_export( get_field( 'acf_image', $post->post_parent ), true ), 0 );
 		if ( is_array( self::$mla_references ) ) {
 			if ( empty(self::$mla_references['parent_title'] ) ) {
 				$parent_info = self::$mla_references['parent_errors'];

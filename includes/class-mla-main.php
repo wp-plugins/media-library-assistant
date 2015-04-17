@@ -290,9 +290,7 @@ class MLA {
 				case self::MLA_ADMIN_SINGLE_MAP:
 					$item = get_post( $_REQUEST['mla_item_ID'] );
 					do_action( 'mla_begin_mapping', 'single_iptc_exif', $_REQUEST['mla_item_ID'] );
-//error_log( __LINE__ . ' MLA_ADMIN_SINGLE_MAP item = ' . var_export( $item, true ), 0 );
 					$updates = MLAOptions::mla_evaluate_iptc_exif_mapping( $item, 'iptc_exif_mapping' );
-//error_log( __LINE__ . ' MLA_ADMIN_SINGLE_MAP updates = ' . var_export( $updates, true ), 0 );
 					do_action( 'mla_end_mapping' );
 					$page_content = MLAData::mla_update_single_item( $_REQUEST['mla_item_ID'], $updates );
 

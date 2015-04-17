@@ -1184,13 +1184,7 @@ class MLAData {
 						}
 					}
 
-					$record = self::mla_xmp_metadata_value( $value['value'], $attachment_metadata );
-					if ( is_array( $record ) ) {
-						$markup_values[ $key ] = self::_process_field_level_array( $record, $value['option'], $keep_existing );
-					} else {
-						$markup_values[ $key ] = $record;
-					}
-
+					$markup_values[ $key ] = self::mla_xmp_metadata_value( $value['value'], $value['option'], $keep_existing, $attachment_metadata['mla_xmp_metadata'] );
 					break;
 				case 'pdf':
 					if ( is_null( $attachment_metadata ) ) {
@@ -2847,15 +2841,41 @@ class MLAData {
 		$key_array = explode( '.', $needle );
 		if ( is_array( $key_array ) ) {
 			foreach ( $key_array as $key ) {
-				if ( is_array( $haystack ) ) {
-					if ( isset( $haystack[ $key ] ) ) {
-						$haystack = $haystack[ $key ];
-					} else {
-						$haystack = '';
-					}
+				/*
+				 * The '*' key means:
+				 * 1) needle.* => accept any value, or 
+				 * 2) needle.*.tail => search each sub-array using "tail"
+				 *    and build an array of results.
+				 */
+				if ( '*' == $key ) {
+					if ( false !== ( $tail = strpos( $needle, '*.' ) ) ) { 
+						$tail = substr( $needle, $tail + 2 );
+						if ( ! empty( $tail ) ) {
+							if ( is_array( $haystack ) ) {
+								$results = array();
+								foreach ( $haystack as $substack ) {
+									$results[] = self::mla_find_array_element( $tail, $substack, $option, $keep_existing );
+								}
+
+								$haystack = $results;
+							} else {
+								$haystack = '';
+							}
+						} // found tail
+					} // found .*.
+					
+					break;
 				} else {
-					$haystack = '';
-				}
+					if ( is_array( $haystack ) ) {
+					  if ( isset( $haystack[ $key ] ) ) {
+						  $haystack = $haystack[ $key ];
+					  } else {
+						  $haystack = '';
+					  }
+					} else {
+					  $haystack = '';
+					}
+				} // * != key
 			} // foreach $key
 		} else {
 			$haystack = '';
@@ -2877,7 +2897,7 @@ class MLAData {
 					return $haystack;
 					break;
 				default:
-					$haystack = implode( ', ', $haystack );
+					$haystack = @implode( ', ', $haystack );
 			} // $option
 		}
 
@@ -3894,7 +3914,7 @@ class MLAData {
 	 * @return	string	formatted date string YYYY-MM-DD HH:mm:SS
 	 */
 	private static function _parse_iso8601_date( $source_string ) {
-		if ( 1 == preg_match( '/^\\d\\d\\d\\d-\\d\\d-\\d\\dT\\d\\d:\\d\\d:\\d\\d-\\d\\d:\\d\\d/', $source_string ) ) {
+		if ( 1 == preg_match( '/^\\d\\d\\d\\d-\\d\\d-\\d\\dT\\d\\d:\\d\\d:\\d\\d(Z|[+-]\\d\\d:\\d\\d)/', $source_string ) ) {
 			return sprintf( '%1$s-%2$s-%3$s %4$s:%5$s:%6$s',
 				substr( $source_string, 0, 4),
 				substr( $source_string, 5, 2),
@@ -3905,6 +3925,46 @@ class MLAData {
 		}
 
 		return $source_string;
+	}
+
+	/**
+	 * Parse an XMP array value, stripping namespace prefixes and Seq/Alt/Bag arrays
+	 * 
+	 * @since 2.10
+	 *
+	 * @param	array	XMP multi-valued element
+	 *
+	 * @return	mixed	Simplified array or string value
+	 */
+	private static function _parse_xmp_array( $values ) {
+		if ( isset( $values['rdf:Alt'] ) ) {
+			return self::_parse_xmp_array( $values['rdf:Alt'] );
+		}
+		
+		if ( isset( $values['rdf:Bag'] ) ) {
+			return self::_parse_xmp_array( $values['rdf:Bag'] );
+		}
+		
+		if ( isset( $values['rdf:Seq'] ) ) {
+			return self::_parse_xmp_array( $values['rdf:Seq'] );
+		}
+		
+		$results = array();
+		foreach( $values as $key => $value ) {
+			if ( false !== ($colon = strpos( $key, ':' ) ) ) {
+				$new_key = substr( $key, $colon + 1 );
+			} else {
+				$new_key = $key;
+			}
+		
+			if ( is_array( $value ) ) {
+				$results[ $new_key ] = self::_parse_xmp_array( $value );
+			} else {
+				$results[ $new_key ] = self::_parse_iso8601_date( $value );
+			}
+		}
+		
+		return $results;
 	}
 
 	/**
@@ -3978,16 +4038,17 @@ class MLAData {
 			return NULL;
 		}
 
+		$levels = array();
+		$current_level = 0;
 		$results = array();
 		$xmlns = array();
-		$attributes = array();
-		$array_name = '';
-		$array_index = -1;
 		foreach ( $xmp_values as $value ) {
-//error_log( __LINE__ . " mla_parse_xmp_metadata \$value = " . var_export( $value, true ), 0 );
 			$language = 'x-default';
+			$node_attributes = array();
 			if ( isset( $value['attributes'] ) ) {
 				foreach ( $value['attributes'] as $att_tag => $att_value ) {
+					$att_value = self::_bin_to_utf8( $att_value );
+					
 					if ( 'xmlns:' == substr( $att_tag, 0, 6 ) ) {
 						$xmlns[ substr( $att_tag, 6 ) ] = $att_value;
 					} elseif ( 'x:xmptk' == $att_tag ) {
@@ -4011,78 +4072,58 @@ class MLAData {
 								break;
 						} // count
 						
-						/*
-						 * Filter out tag-local attributes
-						 */
-						if ( ! in_array( $att_ns, array( 'rdf', 'stEvt', 'stRef' ) ) ) {
-							$attributes[ $att_ns ][ $att_name ] = $att_value;
+						if ( ! in_array( $att_tag, array( 'rdf:about', 'rdf:parseType' ) ) ) {
+							$node_attributes[ $att_tag ] = $att_value;
 						}
 					}
 				}
 			} // attributes
 
-			switch ( $value['tag'] ) {
-				case 'x:xmpmeta':
-				case 'rdf:RDF':
-				case 'rdf:Description':
-				case 'rdf:ID':
-				case 'rdf:nodeID':
+			switch ( $value['type'] ) {
+				case 'open':
+					$levels[ ++$current_level ] = array( 'key' => $value['tag'], 'values' => $node_attributes );
 					break;
-				case 'rdf:li':
-					if ( $value['type'] == 'complete' ) {
-						if ( 'x-default' != $language ) {
-							break;
+				case 'close':
+					if ( 0 < --$current_level ) {
+						$top_level = array_pop( $levels );
+						if ( 'rdf:li' == $top_level['key'] ) {
+							$levels[ $current_level ]['values'][] = $top_level['values'];
+						} else {
+							$levels[ $current_level ]['values'][ $top_level['key'] ] = $top_level['values'];
 						}
-
-						if ( ! empty ( $array_name ) ) {
-							if ( isset( $value['attributes'] ) ) {
-								unset( $value['attributes']['xml:lang'] );
-								
-								if ( ! empty( $value['attributes'] ) ) {
-									$results[ $array_name ][ $array_index++ ] = $value['attributes'];
-									break;
-								}
-							}
-							
-							if ( isset( $value['value'] ) ) {
-								$results[ $array_name ][ $array_index++ ] = $value['value'];
-							} else {
-								$results[ $array_name ][ $array_index++ ] = '';
-							}
-						}
-					} // complete
-
+					}
 					break;
-				case 'rdf:Seq':
-				case 'rdf:Bag':
-				case 'rdf:Alt':
-					switch ( $value['type'] ) {
-						case 'open':
-							$array_index = 0;
-							break;
-						case 'close':
-							$array_index = -1;
+				case 'complete':
+					if ( 'x-default' != $language ) {
+						break;
 					}
 
-					break;
-				default:
-					switch ( $value['type'] ) {
-						case 'open':
-							$array_name = $value['tag'];
-							break;
-						case 'close':
-							$array_name = '';
-							break;
-						case 'complete':
-							if ( isset( $value['attributes'] ) ) {
-								$results[ $value['tag'] ] = $value['attributes'];
-							} elseif ( isset( $value['value'] ) ) {
-								$results[ $value['tag'] ] = $value['value'];
-							} else {
-								$results[ $value['tag'] ] = '';
+					$complete_value = NULL;
+					if ( isset( $value['attributes'] ) ) {
+						unset( $value['attributes']['xml:lang'] );
+						
+						if ( ! empty( $value['attributes'] ) ) {
+							$complete_value = array();
+							foreach ( $value['attributes'] as $attr_key => $attr_value ) {
+								$complete_value[ $attr_key ] = self::_bin_to_utf8( $attr_value );
 							}
-					} // type
-			} // switch tag
+						}
+					}
+					
+					if ( empty( $complete_value ) ) {
+						if ( isset( $value['value'] ) ) {
+							$complete_value = self::_bin_to_utf8( $value['value'] );
+						} else {
+							$complete_value = '';
+						}
+					}
+					
+					if ( 'rdf:li' == $value['tag'] ) {
+						$levels[ $current_level ]['values'][] = $complete_value;
+					} else {
+						$levels[ $current_level ]['values'][ $value['tag'] ] = $complete_value;
+					}
+			} // switch on type
 		} // foreach value
 
 		/*
@@ -4092,9 +4133,11 @@ class MLAData {
 		 * code name for XMP; the names have been preserved for compatibility purposes.
 		 */
 		$namespace_arrays = array();
-		foreach ( $results as $key => $value ) {
+		foreach ( $levels[1]['values']['rdf:RDF']['rdf:Description'] as $key => $value ) {
 			if ( is_string( $value ) ) {
 				$value = self::_parse_iso8601_date( self::mla_parse_pdf_date( $value ) );
+			} elseif ( is_array( $value ) ) {
+				$value = self::_parse_xmp_array( $value );
 			}
 
 			if ( false !== ($colon = strpos( $key, ':' ) ) ) {
@@ -4102,27 +4145,14 @@ class MLAData {
 				$array_index = substr( $key, $colon + 1 );
 				$namespace_arrays[ $array_name ][ $array_index ] = $value;
 
-				if ( ! isset( $results[ $array_index ] ) && in_array( $array_name, array( 'xmp', 'xmpMM', 'xmpRights', 'xap', 'xapMM', 'dc', 'pdf', 'pdfx' ) ) ) {
+				if ( ! isset( $results[ $array_index ] ) && in_array( $array_name, array( 'xmp', 'xmpMM', 'xmpRights', 'xap', 'xapMM', 'dc', 'pdf', 'pdfx', 'mwg-rs' ) ) ) {
 					if ( is_array( $value ) && 1 == count( $value ) && isset( $value[0] ) ) {
 						$results[ $array_index ] = $value[0];
 					} else {
 						$results[ $array_index ] = $value;
 					}
 				}
-
-				unset( $results[ $key ] );
-			}
-		}
-
-		/*
-		 * Merge the attributes with the namespace_arrays
-		 */
-		foreach( $attributes as $key => $value ) {
-			if ( isset( $namespace_arrays[ $key ] ) ) {
-				$namespace_arrays[ $key ] = array_merge( $value, $namespace_arrays[ $key ] );
-			} else {
-				$namespace_arrays[ $key ] = $value;
-			}
+			} // found namespace
 		}
 
 		/*
@@ -4783,28 +4813,16 @@ class MLAData {
 	 * @since 2.XX
 	 *
 	 * @param	string	field name
-	 * @param	string	metadata array containing iptc, exif, xmp and pdf metadata arrays
+	 * @param	string	data option  'text'|'single'|'export'|'array'|'multi'
+	 * @param	boolean	Optional: for option 'multi', retain existing values
+	 * @param	string	XMP metadata array
 	 *
 	 * @return	mixed	string/array representation of metadata value or an empty string
 	 */
-	public static function mla_xmp_metadata_value( $xmp_key, $item_metadata ) {
-		$text = '';
-		if ( array_key_exists( $xmp_key, $item_metadata['mla_xmp_metadata'] ) ) {
-			$text = $item_metadata['mla_xmp_metadata'][ $xmp_key ];
-			if ( is_array( $text ) ) {
-				foreach ($text as $key => $value ) {
-					if ( is_array( $value ) ) {
-						$text[ $key ] = self::_bin_to_utf8( var_export( $value, true ) );
-					} else {
-						$text[ $key ] = self::_bin_to_utf8( $value );
-					}
-				}
-			} elseif ( is_string( $text ) ) {
-				$text = self::_bin_to_utf8( $text );
-			}
-		} elseif ( 'ALL_XMP' == $xmp_key ) {
+	public static function mla_xmp_metadata_value( $xmp_key, $option, $keep_existing, $xmp_metadata ) {
+		if ( 'ALL_XMP' == $xmp_key ) {
 			$clean_data = array();
-			foreach ( $item_metadata['mla_xmp_metadata'] as $key => $value ) {
+			foreach ( $xmp_metadata as $key => $value ) {
 				if ( is_array( $value ) ) {
 					$clean_data[ $key ] = '(ARRAY)';
 				} elseif ( is_string( $value ) ) {
@@ -4815,6 +4833,8 @@ class MLAData {
 			}
 
 			$text = var_export( $clean_data, true);
+		} else {
+			$text = self::mla_find_array_element($xmp_key, $xmp_metadata, $option, $keep_existing );
 		}
 
 		return $text;
@@ -5007,7 +5027,6 @@ class MLAData {
 				if ( ! empty( $info['APP13'] ) ) {
 					//set_error_handler( 'MLAData::mla_IPTC_EXIF_error_handler' );
 					$iptc_values = iptcparse( $info['APP13'] );
-//error_log( __LINE__ . ' mla_fetch_attachment_image_metadata $iptc_values = ' . var_export( $iptc_values, true ), 0 );
 					//restore_error_handler();
 
 					if ( ! empty( MLAData::$mla_IPTC_EXIF_errors ) ) {
@@ -5045,7 +5064,6 @@ class MLAData {
 			} // exif_read_data
 			
 			$results['mla_xmp_metadata'] = self::mla_parse_xmp_metadata( $path, 0 );
-//error_log( __LINE__ . ' mla_fetch_attachment_image_metadata $mla_xmp_metadata = ' . var_export( $results['mla_xmp_metadata'], true ), 0 );
 			if ( NULL == $results['mla_xmp_metadata'] ) {
 				$results['mla_xmp_metadata'] = array();
 			}
