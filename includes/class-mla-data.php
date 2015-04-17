@@ -5149,7 +5149,7 @@ class MLAData {
 					$new_data['ShutterSpeed'] = $new_data['ExposureTime'] = sprintf( '%1$d', $fragments[0] );
 				} elseif ( 0 != $fragments[1] ) {
 					$value = $fragments[0] / $fragments[1];
-					if ( 1 > $value ) {
+					if ( ( 0 < $value ) && ( 1 > $value ) ) {
 						// Convert to "1/" value for shutter speed
 						if ( 1 == $fragments[0] ) {
 							$new_data['ShutterSpeed'] = $new_data['ExposureTime'];
