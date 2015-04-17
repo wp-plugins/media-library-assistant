@@ -2856,8 +2856,12 @@ class MLAData {
 								foreach ( $haystack as $substack ) {
 									$results[] = self::mla_find_array_element( $tail, $substack, $option, $keep_existing );
 								}
-
-								$haystack = $results;
+								
+								if ( 1 == count( $results ) ) {
+									$haystack =  $results[0];
+								} else {
+									$haystack = $results;
+								}
 							} else {
 								$haystack = '';
 							}
