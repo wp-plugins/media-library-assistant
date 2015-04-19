@@ -19,6 +19,11 @@ class MLA_Image_Editor extends WP_Image_Editor_Imagick {
 	 *
 	 * @since 2.10
 	 *
+	 * @param	string	$file Input file, e.g., a PDF document
+	 * @param	string	$frame Page/frame within the file, zero-based
+	 * @param	string	$resolution Output file DPI. Default 72.
+	 * @param	string	$output_type Output MIME type; 'image/jpeg' or 'image/png'.
+	 *
 	 * @return	boolean	true if conversion succeeds else false
 	 */
 	private function _ghostscript_convert( $file, $frame, $resolution, $output_type ) {

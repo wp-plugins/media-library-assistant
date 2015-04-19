@@ -26,11 +26,13 @@ MLAStreamImage::_mla_die( 'mla_stream_file not set', __LINE__, 500 );
  */
 class MLAStreamImage {
 	/**
-	 * Generate a unique, writable file
+	 * Generate a unique, writable file in the temporary directory
 	 *
 	 * @since 2.10
 	 *
-	 * @return string Writable path and file name.
+	 * @param	string	$extension File extension for the temporary file
+	 *
+	 * @return	string	Writable path and file name.
 	 */
 	private static function _get_temp_file( $extension = '.tmp' ) {
 		static $temp = NULL;
@@ -71,9 +73,13 @@ class MLAStreamImage {
 	}
 
 	/**
+	 * Imagick object for the image to be streamed
+	 *
+	 * @since 2.10
+	 *
 	 * @var Imagick
 	 */
-	protected static $image; // Imagick Object
+	protected static $image;
 
 	/**
 	 * Direct Ghostscript file conversion
@@ -402,14 +408,70 @@ error_log( __LINE__ . " _mla_die( '{$message}', '{$title}', '{$response}' )", 0 
 	}
 } // Class MLAStreamImage
 
+/**
+ * Class MLA (Media Library Assistant) Mutex provides a simple "mutual exclusion" semaphore
+ * for the [mla_gallery] mla_viewer=single option
+ *
+ * Adapted from the example by mr.smaon@gmail.com in the PHP Manual "Semaphore Functions" page. 
+ *
+ * @package Media Library Assistant
+ * @since 2.10
+ */
 class MLAMutex {
-	private $id;
+	/**
+	 * Semaphore identifier returned by sem_get()
+	 *
+	 * @since 2.10
+	 *
+	 * @var resource
+	 */
 	private $sem_id;
+	
+	/**
+	 * True if the semaphore has been acquired
+	 *
+	 * @since 2.10
+	 *
+	 * @var boolean
+	 */
 	private $is_acquired = false;
+	
+	/**
+	 * True if using a file lock instead of a semaphore
+	 *
+	 * @since 2.10
+	 *
+	 * @var boolean
+	 */
 	private $use_file_lock = false;
+	
+	/**
+	 * Name of the (locked) file used as a semaphore 
+	 *
+	 * @since 2.10
+	 *
+	 * @var string
+	 */
 	private $filename = '';
+	
+	/**
+	 * File system pointer resource of the (locked) file used as a semaphore 
+	 *
+	 * @since 2.10
+	 *
+	 * @var resource
+	 */
 	private $filepointer;
 
+	/**
+	 * Initializes the choice of semaphore Vs file lock
+	 *
+	 * @since 2.10
+	 *
+	 * @param	boolean	$use_lock True to force use of file locking
+	 *
+	 * @return	void
+	 */
 	function __construct( $use_lock = false ) 	{
 		/*
 		 * If sem_ functions are not available require file locking
@@ -423,8 +485,17 @@ class MLAMutex {
 		}
 	}
 
+	/**
+	 * Creates the semaphore or sets the (lock) file name
+	 *
+	 * @since 2.10
+	 *
+	 * @param	integer	$id Key to identify the semaphore
+	 * @param	string	$filename Absolute path and name of the file for locking
+	 *
+	 * @return	boolean	True if the initialization succeeded
+	 */
 	public function init( $id, $filename = '' ) {
-		$this->id = $id;
 
 		if( $this->use_file_lock ) {
 			if( empty( $filename ) ) {
@@ -433,7 +504,7 @@ class MLAMutex {
 				$this->filename = $filename;
 			}
 		} else {
-			if( ! ( $this->sem_id = sem_get( $this->id, 1) ) ) {
+			if( ! ( $this->sem_id = sem_get( $id, 1) ) ) {
 				return false;
 			}
 		}
@@ -441,6 +512,13 @@ class MLAMutex {
 		return true;
 	}
 
+	/**
+	 * Acquires the semaphore or opens and locks the file
+	 *
+	 * @since 2.10
+	 *
+	 * @return	boolean	True if the acquisition succeeded
+	 */
 	public function acquire() {
 		if( $this->use_file_lock ) {
 			if ( empty( $this->filename ) ) {
@@ -464,6 +542,13 @@ class MLAMutex {
 		return true;
 	}
 
+	/**
+	 * Releases the semaphore or unlocks and closes (but does not unlink) the file
+	 *
+	 * @since 2.10
+	 *
+	 * @return	boolean	True if the release succeeded
+	 */
 	public function release() {
 		if( ! $this->is_acquired ) {
 			return true;
@@ -485,6 +570,13 @@ class MLAMutex {
 		return true;
 	}
 
+	/**
+	 * Returns the semaphore identifier, if it exists, else NULL
+	 *
+	 * @since 2.10
+	 *
+	 * @return	resource	Semaphore identifier or NULL
+	 */
 	public function getId() {
 		return $this->sem_id;
 	}

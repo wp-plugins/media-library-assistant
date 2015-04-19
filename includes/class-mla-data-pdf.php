@@ -3,14 +3,14 @@
  * Meta data parsing functions for PDF documents
  *
  * @package Media Library Assistant
- * @since 2.XX
+ * @since 2.10
  */
 
 /**
  * Class MLA (Media Library Assistant) PDF extracts legacy and XMP meta data from PDF files
  *
  * @package Media Library Assistant
- * @since 2.XX
+ * @since 2.10
  */
 class MLAPDF {
 	/**
@@ -20,7 +20,7 @@ class MLAPDF {
 	 * The array key is ( object ID * 1000 ) + object generation.
 	 * The array value is array( number, generation, start, optional /length )
 	 *
-	 * @since 2.XX
+	 * @since 2.10
 	 *
 	 * @var	array
 	 */
@@ -30,7 +30,7 @@ class MLAPDF {
 	 * Parse a cross-reference table subsection into the array of indirect object definitions
 	 * 
 	 * A cross-reference subsection is a sequence of 20-byte entries, each with offset and generation values.
-	 * @since 2.XX
+	 * @since 2.10
 	 *
 	 * @param	string	buffer containing the subsection
 	 * @param	integer	offset within the buffer of the first entry
@@ -64,7 +64,7 @@ class MLAPDF {
 	 * Parse a cross-reference table section into the array of indirect object definitions
 	 * 
 	 * Creates the array of indirect object offsets and lengths
-	 * @since 2.XX
+	 * @since 2.10
 	 *
 	 * @param	string	full path and file name
 	 * @param	integer	offset within the file of the xref id and count entry
@@ -97,7 +97,7 @@ class MLAPDF {
 	 * Parse a cross-reference steam into the array of indirect object definitions
 	 * 
 	 * Creates the array of indirect object offsets and lengths
-	 * @since 2.XX
+	 * @since 2.10
 	 *
 	 * @param	string	full path and file name
 	 * @param	integer	offset within the file of the xref id and count entry
@@ -178,7 +178,7 @@ class MLAPDF {
 	 * Build an array of indirect object definitions
 	 * 
 	 * Creates the array of indirect object offsets and lengths
-	 * @since 2.XX
+	 * @since 2.10
 	 *
 	 * @param	string	The entire PDF document, passsed by reference
 	 *
@@ -224,7 +224,7 @@ class MLAPDF {
 	 * The function searches the entire file, if necessary, to find the last/most recent copy of the object.
 	 * This is required because Adobe Acrobat does NOT increment the generation number when it reuses an object.
 	 * 
-	 * @since 2.XX
+	 * @since 2.10
 	 *
 	 * @param	string	full path and file name
 	 * @param	integer	The object number
@@ -323,7 +323,7 @@ class MLAPDF {
 	/**
 	 * Parse a PDF Unicode (16-bit Big Endian) object
 	 * 
-	 * @since 2.XX
+	 * @since 2.10
 	 *
 	 * @param	string	PDF string of 16-bit characters
 	 *
@@ -351,7 +351,7 @@ class MLAPDF {
 	 * Returns an array with one dictionary entry. The array also has a '/length' element containing
 	 * the number of bytes occupied by the string in the source string, including the enclosing parentheses. 
 	 *
-	 * @since 2.XX
+	 * @since 2.10
 	 *
 	 * @param	string	data within which the string occurs
 	 * @param	integer	offset within the source string of the opening '(' character.
@@ -445,7 +445,7 @@ class MLAPDF {
 	 * indirect (object), name, array, dictionary, stream, and null.
 	 * The array also has a '/length' element containing the number of bytes occupied by the
 	 * dictionary in the source string, excluding the enclosing delimiters, if passed in.
-	 * @since 2.XX
+	 * @since 2.10
 	 *
 	 * @param	string	data within which the object occurs, typically the start of a PDF document
 	 * @param	integer	filesize of the PDF document, for validation purposes, or zero (0) to ignore filesize
@@ -470,7 +470,8 @@ class MLAPDF {
 	 * indirect (object), name, array, dictionary, stream, and null.
 	 * The array also has a '/length' element containing the number of bytes occupied by the
 	 * dictionary in the source string, excluding the enclosing delimiters.
-	 * @since 2.XX
+	 *
+	 * @since 2.10
 	 *
 	 * @param	string	data within which the string occurs
 	 * @param	integer	offset within the source string of the opening '<<' characters or the first content character.
@@ -598,7 +599,7 @@ class MLAPDF {
 	/**
 	 * Extract dictionary from traditional cross-reference + trailer documents
 	 * 
-	 * @since 2.XX
+	 * @since 2.10
 	 *
 	 * @param	string	full path to the desired file
 	 * @param	integer	offset within file of the cross-reference table
@@ -685,7 +686,7 @@ class MLAPDF {
 	/**
 	 * Extract Metadata from a PDF file
 	 * 
-	 * @since 2.XX
+	 * @since 2.10
 	 *
 	 * @param	string	full path to the desired file
 	 *

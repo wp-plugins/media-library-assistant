@@ -3,7 +3,7 @@
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <meta name="viewport" content="width=device-width; initial-scale=1.0; maximum-scale=1.0; user-scalable=0;">
 <meta charset="utf-8">
-<title>Media Library Assistant » \MLAObjects</title>
+<title>Media Library Assistant » \MLA_Image_Editor</title>
 <meta name="author" content="Mike van Riel">
 <meta name="description" content="">
 <link href="../css/template.css" rel="stylesheet" media="all">
@@ -57,112 +57,182 @@
 <ul class="side-nav nav nav-list">
 <li class="nav-header">
 <i class="icon-custom icon-method"></i> Methods</li>
-<li class="method public "><a href="#initialize" title="initialize :: Initialization function, similar to __construct()"><span class="description">Initialization function, similar to __construct()</span><pre>initialize()</pre></a></li>
-<li class="method public "><a href="#mla_taxonomy_column_filter" title='mla_taxonomy_column_filter :: WordPress Filter for edit taxonomy "Attachments" column,
-which returns a count of the attachments assigned a given term'><span class="description">WordPress Filter for edit taxonomy "Attachments" column,
-which returns a count of the attachments assigned a given term</span><pre>mla_taxonomy_column_filter()</pre></a></li>
-<li class="method public "><a href="#mla_taxonomy_get_columns_filter" title='mla_taxonomy_get_columns_filter :: WordPress Filter for edit taxonomy "Attachments" column,
-which replaces the "Posts" column with an equivalent "Attachments" column.'><span class="description">WordPress Filter for edit taxonomy "Attachments" column,
-which replaces the "Posts" column with an equivalent "Attachments" column.</span><pre>mla_taxonomy_get_columns_filter()</pre></a></li>
+<li class="method public "><a href="#load" title="load :: Loads image from $this-&gt;file into new Imagick Object."><span class="description">Loads image from $this-&gt;file into new Imagick Object.</span><pre>load()</pre></a></li>
+<li class="method public "><a href="#mla_prepare_image" title="mla_prepare_image :: Prepare the image for output, scaling and flattening as required"><span class="description">Prepare the image for output, scaling and flattening as required</span><pre>mla_prepare_image()</pre></a></li>
+<li class="method public "><a href="#mla_setIteratorIndex" title="mla_setIteratorIndex :: Set the iterator position"><span class="description">Set the iterator position</span><pre>mla_setIteratorIndex()</pre></a></li>
+<li class="method public "><a href="#stream" title="stream :: Streams current image to browser."><span class="description">Streams current image to browser.</span><pre>stream()</pre></a></li>
 <li class="nav-header private">» Private</li>
-<li class="method private "><a href="#_build_taxonomies" title="_build_taxonomies :: Registers Attachment Categories and Attachment Tags custom taxonomies, adds taxonomy-related filters"><span class="description">Registers Attachment Categories and Attachment Tags custom taxonomies, adds taxonomy-related filters</span><pre>_build_taxonomies()</pre></a></li>
+<li class="method private "><a href="#_ghostscript_convert" title="_ghostscript_convert :: Direct Ghostscript file conversion"><span class="description">Direct Ghostscript file conversion</span><pre>_ghostscript_convert()</pre></a></li>
 </ul>
 </div>
 <div class="span8">
-<a name="%5CMLAObjects" id="\MLAObjects"></a><ul class="breadcrumb">
+<a name="%5CMLA_Image_Editor" id="\MLA_Image_Editor"></a><ul class="breadcrumb">
 <li>
 <a href="../index.html"><i class="icon-custom icon-class"></i></a><span class="divider">\</span>
 </li>
 <li><a href="../namespaces/global.html">global</a></li>
 <li class="active">
-<span class="divider">\</span><a href="../classes/MLAObjects.html">MLAObjects</a>
+<span class="divider">\</span><a href="../classes/MLA_Image_Editor.html">MLA_Image_Editor</a>
 </li>
 </ul>
-<div href="../classes/MLAObjects.html" class="element class">
-<p class="short_description">Class MLA (Media Library Assistant) Objects defines and manages custom taxonomies for Attachment Categories and Tags</p>
+<div href="../classes/MLA_Image_Editor.html" class="element class">
+<p class="short_description">MLA Image Editor Class for Image Manipulation through Imagick PHP Module</p>
 <div class="details">
 <p class="long_description"></p>
 <table class="table table-bordered">
+<tr>
+<th>since</th>
+<td>2.10</td>
+</tr>
 <tr>
 <th>package</th>
 <td><a href="../packages/Media%20Library%20Assistant.html">Media Library Assistant</a></td>
 </tr>
 <tr>
-<th>since</th>
-<td>0.20</td>
+<th>uses</th>
+<td>\global\WP_Image_Editor_Imagick</td>
 </tr>
 </table>
 <h3>
 <i class="icon-custom icon-method"></i> Methods</h3>
-<a name="initialize" id="initialize"></a><div class="element clickable method public initialize" data-toggle="collapse" data-target=".initialize .collapse">
-<h2>Initialization function, similar to __construct()</h2>
-<pre>initialize() : void</pre>
+<a name="load" id="load"></a><div class="element clickable method public load" data-toggle="collapse" data-target=".load .collapse">
+<h2>Loads image from $this-&gt;file into new Imagick Object.</h2>
+<pre>load() : boolean | \WP_Error</pre>
 <div class="labels"></div>
 <div class="row collapse"><div class="detail-description">
-<p class="long_description"></p>
-<table class="table table-bordered"><tr>
+<p class="long_description"><p>Sets image resolution and frame from $imagick_args before loading the file.</p></p>
+<table class="table table-bordered">
+<tr>
 <th>since</th>
-<td>0.20</td>
-</tr></table>
+<td>2.10</td>
+</tr>
+<tr>
+<th>access</th>
+<td>protected</td>
+</tr>
+</table>
+<h3>Returns</h3>
+<div class="subelement response">
+<code>boolean</code><code>\WP_Error</code>True if loaded; WP_Error on failure.</div>
 </div></div>
 </div>
-<a name="mla_taxonomy_column_filter" id="mla_taxonomy_column_filter"></a><div class="element clickable method public mla_taxonomy_column_filter" data-toggle="collapse" data-target=".mla_taxonomy_column_filter .collapse">
-<h2>WordPress Filter for edit taxonomy "Attachments" column,
-which returns a count of the attachments assigned a given term</h2>
-<pre>mla_taxonomy_column_filter(string $place_holder, array $column_name, array $term_id) : array</pre>
+<a name="mla_prepare_image" id="mla_prepare_image"></a><div class="element clickable method public mla_prepare_image" data-toggle="collapse" data-target=".mla_prepare_image .collapse">
+<h2>Prepare the image for output, scaling and flattening as required</h2>
+<pre>mla_prepare_image(integer $width, integer $height, boolean $best_fit, string $type, integer $quality) : void</pre>
+<div class="labels"></div>
+<div class="row collapse"><div class="detail-description">
+<p class="long_description"></p>
+<table class="table table-bordered">
+<tr>
+<th>since</th>
+<td>2.10</td>
+</tr>
+<tr>
+<th>access</th>
+<td>public</td>
+</tr>
+</table>
+<h3>Parameters</h3>
+<div class="subelement argument">
+<h4>$width</h4>
+<code>integer</code><p>zero or new width</p></div>
+<div class="subelement argument">
+<h4>$height</h4>
+<code>integer</code><p>zero or new height</p></div>
+<div class="subelement argument">
+<h4>$best_fit</h4>
+<code>boolean</code><p>proportional fit (true) or exact fit (false)</p>
+</div>
+<div class="subelement argument">
+<h4>$type</h4>
+<code>string</code><p>output MIME type</p></div>
+<div class="subelement argument">
+<h4>$quality</h4>
+<code>integer</code><p>compression quality; 1 - 100</p>
+</div>
+</div></div>
+</div>
+<a name="mla_setIteratorIndex" id="mla_setIteratorIndex"></a><div class="element clickable method public mla_setIteratorIndex" data-toggle="collapse" data-target=".mla_setIteratorIndex .collapse">
+<h2>Set the iterator position</h2>
+<pre>mla_setIteratorIndex(integer $index) : boolean</pre>
+<div class="labels"></div>
+<div class="row collapse"><div class="detail-description">
+<p class="long_description"></p>
+<table class="table table-bordered">
+<tr>
+<th>since</th>
+<td>2.10</td>
+</tr>
+<tr>
+<th>access</th>
+<td>public</td>
+</tr>
+</table>
+<h3>Parameters</h3>
+<div class="subelement argument">
+<h4>$index</h4>
+<code>integer</code><p>frame/page number</p>
+</div>
+<h3>Returns</h3>
+<div class="subelement response">
+<code>boolean</code>success/failure</div>
+</div></div>
+</div>
+<a name="stream" id="stream"></a><div class="element clickable method public stream" data-toggle="collapse" data-target=".stream .collapse">
+<h2>Streams current image to browser.</h2>
+<pre>stream(string $mime_type) : boolean | \WP_Error</pre>
+<div class="labels"></div>
+<div class="row collapse"><div class="detail-description">
+<p class="long_description"></p>
+<table class="table table-bordered">
+<tr>
+<th>since</th>
+<td>2.10</td>
+</tr>
+<tr>
+<th>access</th>
+<td>public</td>
+</tr>
+</table>
+<h3>Parameters</h3>
+<div class="subelement argument">
+<h4>$mime_type</h4>
+<code>string</code>
+</div>
+<h3>Returns</h3>
+<div class="subelement response">
+<code>boolean</code><code>\WP_Error</code>
+</div>
+</div></div>
+</div>
+<a name="_ghostscript_convert" id="_ghostscript_convert"></a><div class="element clickable method private _ghostscript_convert" data-toggle="collapse" data-target="._ghostscript_convert .collapse">
+<h2>Direct Ghostscript file conversion</h2>
+<pre>_ghostscript_convert(string $file, string $frame, string $resolution, string $output_type) : boolean</pre>
 <div class="labels"></div>
 <div class="row collapse"><div class="detail-description">
 <p class="long_description"></p>
 <table class="table table-bordered"><tr>
 <th>since</th>
-<td>0.30</td>
+<td>2.10</td>
 </tr></table>
 <h3>Parameters</h3>
 <div class="subelement argument">
-<h4>$place_holder</h4>
-<code>string</code><p>current column value; always ''</p>
+<h4>$file</h4>
+<code>string</code><p>Input file, e.g., a PDF document</p></div>
+<div class="subelement argument">
+<h4>$frame</h4>
+<code>string</code><p>Page/frame within the file, zero-based</p>
 </div>
 <div class="subelement argument">
-<h4>$column_name</h4>
-<code>array</code><p>name of the column</p></div>
+<h4>$resolution</h4>
+<code>string</code><p>Output file DPI. Default 72.</p></div>
 <div class="subelement argument">
-<h4>$term_id</h4>
-<code>array</code><p>ID of the term for which the count is desired</p></div>
+<h4>$output_type</h4>
+<code>string</code><p>Output MIME type; 'image/jpeg' or 'image/png'.</p>
+</div>
 <h3>Returns</h3>
 <div class="subelement response">
-<code>array</code>HTML markup for the column content; number of attachments in the category and alink to retrieve a list of them</div>
-</div></div>
-</div>
-<a name="mla_taxonomy_get_columns_filter" id="mla_taxonomy_get_columns_filter"></a><div class="element clickable method public mla_taxonomy_get_columns_filter" data-toggle="collapse" data-target=".mla_taxonomy_get_columns_filter .collapse">
-<h2>WordPress Filter for edit taxonomy "Attachments" column,
-which replaces the "Posts" column with an equivalent "Attachments" column.</h2>
-<pre>mla_taxonomy_get_columns_filter(array $columns) : array</pre>
-<div class="labels"></div>
-<div class="row collapse"><div class="detail-description">
-<p class="long_description"></p>
-<table class="table table-bordered"><tr>
-<th>since</th>
-<td>0.30</td>
-</tr></table>
-<h3>Parameters</h3>
-<div class="subelement argument">
-<h4>$columns</h4>
-<code>array</code><p>column definitions for the edit taxonomy list table</p></div>
-<h3>Returns</h3>
-<div class="subelement response">
-<code>array</code>updated column definitions for the edit taxonomy list table</div>
-</div></div>
-</div>
-<a name="_build_taxonomies" id="_build_taxonomies"></a><div class="element clickable method private _build_taxonomies" data-toggle="collapse" data-target="._build_taxonomies .collapse">
-<h2>Registers Attachment Categories and Attachment Tags custom taxonomies, adds taxonomy-related filters</h2>
-<pre>_build_taxonomies() : void</pre>
-<div class="labels"></div>
-<div class="row collapse"><div class="detail-description">
-<p class="long_description"></p>
-<table class="table table-bordered"><tr>
-<th>since</th>
-<td>0.1</td>
-</tr></table>
+<code>boolean</code>true if conversion succeeds else false</div>
 </div></div>
 </div>
 </div>

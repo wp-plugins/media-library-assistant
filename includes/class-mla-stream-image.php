@@ -48,6 +48,8 @@ class MLAStreamImage {
 	 *
 	 * @since 2.10
 	 *
+	 * @param	array	$editors	List of the implemented image editor classes
+	 *
 	 * @return	void	echos image content and calls exit();
 	 */
 	public static function _wp_image_editors_filter( $editors ) {
@@ -185,34 +187,103 @@ error_log( 'stream Exception = ' . var_export( $e->getMessage(), true ), 0 );
 	}
 } // Class MLAStreamImage
 
+/**
+ * Class MLA (Media Library Assistant) Mutex provides a simple "mutual exclusion" semaphore
+ * for the [mla_gallery] mla_viewer=single option
+ *
+ * Adapted from the example by mr.smaon@gmail.com in the PHP Manual "Semaphore Functions" page. 
+ *
+ * @package Media Library Assistant
+ * @since 2.10
+ */
 class MLAMutex {
-	private $id;
+	/**
+	 * Semaphore identifier returned by sem_get()
+	 *
+	 * @since 2.10
+	 *
+	 * @var resource
+	 */
 	private $sem_id;
+	
+	/**
+	 * True if the semaphore has been acquired
+	 *
+	 * @since 2.10
+	 *
+	 * @var boolean
+	 */
 	private $is_acquired = false;
-	private $is_windows = false;
+	
+	/**
+	 * True if using a file lock instead of a semaphore
+	 *
+	 * @since 2.10
+	 *
+	 * @var boolean
+	 */
+	private $use_file_lock = false;
+	
+	/**
+	 * Name of the (locked) file used as a semaphore 
+	 *
+	 * @since 2.10
+	 *
+	 * @var string
+	 */
 	private $filename = '';
+	
+	/**
+	 * File system pointer resource of the (locked) file used as a semaphore 
+	 *
+	 * @since 2.10
+	 *
+	 * @var resource
+	 */
 	private $filepointer;
 
-	function __construct() 	{
-		// sem_ functions not available, always use file locking
-		if ( true || 'WIN' == substr( PHP_OS, 0, 3 ) ) {
-			$this->is_windows = true;
+	/**
+	 * Initializes the choice of semaphore Vs file lock
+	 *
+	 * @since 2.10
+	 *
+	 * @param	boolean	$use_lock True to force use of file locking
+	 *
+	 * @return	void
+	 */
+	function __construct( $use_lock = false ) 	{
+		/*
+		 * If sem_ functions are not available require file locking
+		 */
+		if ( ! is_callable( 'sem_get' ) ) {
+			$use_lock = true;
+		}
+
+		if ( $use_lock || 'WIN' == substr( PHP_OS, 0, 3 ) ) {
+			$this->use_file_lock = true;
 		}
 	}
 
+	/**
+	 * Creates the semaphore or sets the (lock) file name
+	 *
+	 * @since 2.10
+	 *
+	 * @param	integer	$id Key to identify the semaphore
+	 * @param	string	$filename Absolute path and name of the file for locking
+	 *
+	 * @return	boolean	True if the initialization succeeded
+	 */
 	public function init( $id, $filename = '' ) {
-		$this->id = $id;
 
-		if( $this->is_windows ) {
+		if( $this->use_file_lock ) {
 			if( empty( $filename ) ) {
-				error_log( __LINE__ . ' MLAMutex::init no Windows filename specified', 0 );
 				return false;
 			} else {
 				$this->filename = $filename;
 			}
 		} else {
-			if( ! ( $this->sem_id = sem_get( $this->id, 1) ) ) {
-				error_log( __LINE__ . ' MLAMutex::init error getting semaphore', 0 );
+			if( ! ( $this->sem_id = sem_get( $id, 1) ) ) {
 				return false;
 			}
 		}
@@ -220,24 +291,28 @@ class MLAMutex {
 		return true;
 	}
 
+	/**
+	 * Acquires the semaphore or opens and locks the file
+	 *
+	 * @since 2.10
+	 *
+	 * @return	boolean	True if the acquisition succeeded
+	 */
 	public function acquire() {
-		if( $this->is_windows ) {
+		if( $this->use_file_lock ) {
 			if ( empty( $this->filename ) ) {
 				return true;
 			}
 
 			if( false == ( $this->filepointer = @fopen( $this->filename, "w+" ) ) ) {
-				error_log( __LINE__ . ' MLAMutex::acquire error opening mutex file', 0 );
 				return false;
 			}
 
 			if( false == flock( $this->filepointer, LOCK_EX ) ) {
-				error_log( __LINE__ . ' MLAMutex::acquire error locking mutex file', 0 );
 				return false;
 			}
 		} else {
 			if ( ! sem_acquire( $this->sem_id ) ) {
-				error_log( __LINE__ . ' MLAMutex::acquire error acquiring semaphore', 0 );
 				return false;
 			}
 		}
@@ -246,21 +321,26 @@ class MLAMutex {
 		return true;
 	}
 
+	/**
+	 * Releases the semaphore or unlocks and closes (but does not unlink) the file
+	 *
+	 * @since 2.10
+	 *
+	 * @return	boolean	True if the release succeeded
+	 */
 	public function release() {
 		if( ! $this->is_acquired ) {
 			return true;
 		}
 
-		if( $this->is_windows ) {
+		if( $this->use_file_lock ) {
 			if( false == flock( $this->filepointer, LOCK_UN ) ) {
-				error_log( __LINE__ . ' MLAMutex::release error unlocking mutex file', 0 );
 				return false;
 			}
 
 			fclose( $this->filepointer );
 		} else {
 			if ( ! sem_release( $this->sem_id ) ) {
-				error_log( __LINE__ . ' MLAMutex::release error releasing semaphore', 0 );
 				return false;
 			}
 		}
@@ -269,6 +349,13 @@ class MLAMutex {
 		return true;
 	}
 
+	/**
+	 * Returns the semaphore identifier, if it exists, else NULL
+	 *
+	 * @since 2.10
+	 *
+	 * @return	resource	Semaphore identifier or NULL
+	 */
 	public function getId() {
 		return $this->sem_id;
 	}

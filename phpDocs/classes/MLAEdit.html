@@ -396,7 +396,9 @@ and above the id="media-items" div.</p></p>
 <div class="labels"></div>
 <div class="row collapse"><div class="detail-description">
 <p class="long_description"><p>This filter is called AFTER MLA mapping rules are applied during
-wp_update_attachment_metadata() processing.</p></p>
+wp_update_attachment_metadata() processing. If none of the mapping rules
+is enabled it is called from the 'wp_update_attachment_metadata' filter
+with just two arguments.</p></p>
 <table class="table table-bordered"><tr>
 <th>since</th>
 <td>2.02</td>
@@ -511,7 +513,7 @@ The array is built once each page load and cached for subsequent calls.</p></p>
 <div class="row"><footer class="span12">
             Template is built using <a href="http://twitter.github.com/bootstrap/">Twitter Bootstrap 2</a> and icons provided by <a href="http://glyphicons.com/">Glyphicons</a>.<br>
             Documentation is powered by <a href="http://www.phpdoc.org/">phpDocumentor 2.0.0a8</a> and<br>
-            generated on 2015-02-17T16:36:12-08:00.<br></footer></div>
+            generated on 2015-04-19T11:52:22-07:00.<br></footer></div>
 </div>
 </body>
 </html>

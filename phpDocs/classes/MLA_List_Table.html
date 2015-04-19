@@ -60,7 +60,6 @@
 <li class="method public "><a href="#__construct" title="__construct :: Initializes some properties from $_REQUEST variables, then
 calls the parent constructor to set some default configs."><span class="description">Initializes some properties from $_REQUEST variables, then
 calls the parent constructor to set some default configs.</span><pre>__construct()</pre></a></li>
-<li class="method public "><a href="#_get_view" title="_get_view :: Returns HTML markup for one view that can be used with this table"><span class="description">Returns HTML markup for one view that can be used with this table</span><pre>_get_view()</pre></a></li>
 <li class="method public "><a href="#column_ID_parent" title="column_ID_parent :: Supply the content for a custom column"><span class="description">Supply the content for a custom column</span><pre>column_ID_parent()</pre></a></li>
 <li class="method public "><a href="#column_alt_text" title="column_alt_text :: Supply the content for a custom column"><span class="description">Supply the content for a custom column</span><pre>column_alt_text()</pre></a></li>
 <li class="method public "><a href="#column_attached_to" title="column_attached_to :: Supply the content for a custom column"><span class="description">Supply the content for a custom column</span><pre>column_attached_to()</pre></a></li>
@@ -116,7 +115,9 @@ and the value is db column (or other criteria) to sort by.</span><pre>get_sortab
 <li class="method protected "><a href="#_build_rollover_actions" title="_build_rollover_actions :: Add rollover actions to exactly one of the following displayed columns:
 'ID_parent', 'title_name', 'post_title', 'post_name'"><span class="description">Add rollover actions to exactly one of the following displayed columns:
 'ID_parent', 'title_name', 'post_title', 'post_name'</span><pre>_build_rollover_actions()</pre></a></li>
-<li class="method protected "><a href="#_format_post_status" title="_format_post_status :: Translate post_status 'future', 'pending' and 'draft' to label"><span class="description">Translate post_status 'future', 'pending' and 'draft' to label</span><pre>_format_post_status()</pre></a></li>
+<li class="method protected "><a href="#_format_post_status" title="_format_post_status :: Translate post_status 'future', 'pending', 'draft' and 'trash' to label"><span class="description">Translate post_status 'future', 'pending', 'draft' and 'trash' to label</span><pre>_format_post_status()</pre></a></li>
+<li class="nav-header private">» Private</li>
+<li class="method private "><a href="#_get_view" title="_get_view :: Returns HTML markup for one view that can be used with this table"><span class="description">Returns HTML markup for one view that can be used with this table</span><pre>_get_view()</pre></a></li>
 <li class="nav-header">
 <i class="icon-custom icon-property"></i> Properties</li>
 <li class="nav-header protected">» Protected</li>
@@ -164,28 +165,6 @@ calls the parent constructor to set some default configs.</h2>
 <th>since</th>
 <td>0.1</td>
 </tr></table>
-</div></div>
-</div>
-<a name="_get_view" id="_get_view"></a><div class="element clickable method public _get_view" data-toggle="collapse" data-target="._get_view .collapse">
-<h2>Returns HTML markup for one view that can be used with this table</h2>
-<pre>_get_view(string $view_slug, string $current_view) : string</pre>
-<div class="labels"></div>
-<div class="row collapse"><div class="detail-description">
-<p class="long_description"></p>
-<table class="table table-bordered"><tr>
-<th>since</th>
-<td>1.40</td>
-</tr></table>
-<h3>Parameters</h3>
-<div class="subelement argument">
-<h4>$view_slug</h4>
-<code>string</code><p>View slug, key to MLA_POST_MIME_TYPES array</p></div>
-<div class="subelement argument">
-<h4>$current_view</h4>
-<code>string</code><p>Slug for current view</p></div>
-<h3>Returns</h3>
-<div class="subelement response">
-<code>string</code>| false HTML for link to display the view, false if count = zero</div>
 </div></div>
 </div>
 <a name="column_ID_parent" id="column_ID_parent"></a><div class="element clickable method public column_ID_parent" data-toggle="collapse" data-target=".column_ID_parent .collapse">
@@ -1085,7 +1064,7 @@ but uses the output of wp_count_attachments() as input.</p></p>
 </div></div>
 </div>
 <a name="_format_post_status" id="_format_post_status"></a><div class="element clickable method protected _format_post_status" data-toggle="collapse" data-target="._format_post_status .collapse">
-<h2>Translate post_status 'future', 'pending' and 'draft' to label</h2>
+<h2>Translate post_status 'future', 'pending', 'draft' and 'trash' to label</h2>
 <pre>_format_post_status(string $post_status) : string</pre>
 <div class="labels"></div>
 <div class="row collapse"><div class="detail-description">
@@ -1101,6 +1080,28 @@ but uses the output of wp_count_attachments() as input.</p></p>
 <h3>Returns</h3>
 <div class="subelement response">
 <code>string</code>Status label or empty string</div>
+</div></div>
+</div>
+<a name="_get_view" id="_get_view"></a><div class="element clickable method private _get_view" data-toggle="collapse" data-target="._get_view .collapse">
+<h2>Returns HTML markup for one view that can be used with this table</h2>
+<pre>_get_view(string $view_slug, string $current_view) : string</pre>
+<div class="labels"></div>
+<div class="row collapse"><div class="detail-description">
+<p class="long_description"></p>
+<table class="table table-bordered"><tr>
+<th>since</th>
+<td>1.40</td>
+</tr></table>
+<h3>Parameters</h3>
+<div class="subelement argument">
+<h4>$view_slug</h4>
+<code>string</code><p>View slug, key to MLA_POST_MIME_TYPES array</p></div>
+<div class="subelement argument">
+<h4>$current_view</h4>
+<code>string</code><p>Slug for current view</p></div>
+<h3>Returns</h3>
+<div class="subelement response">
+<code>string</code>| false HTML for link to display the view, false if count = zero</div>
 </div></div>
 </div>
 <h3>
@@ -1196,7 +1197,7 @@ MLA_List_Table::mla_admin_init_action.</p></p>
 <div class="row"><footer class="span12">
             Template is built using <a href="http://twitter.github.com/bootstrap/">Twitter Bootstrap 2</a> and icons provided by <a href="http://glyphicons.com/">Glyphicons</a>.<br>
             Documentation is powered by <a href="http://www.phpdoc.org/">phpDocumentor 2.0.0a8</a> and<br>
-            generated on 2015-02-17T16:36:12-08:00.<br></footer></div>
+            generated on 2015-04-19T11:52:22-07:00.<br></footer></div>
 </div>
 </body>
 </html>

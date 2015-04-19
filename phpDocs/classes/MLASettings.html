@@ -81,6 +81,7 @@ add settings link in the Plugins section entry for MLA.</span><pre>mla_admin_men
 <li class="method public "><a href="#mla_set_screen_option_filter" title='mla_set_screen_option_filter :: Save the "Views/Uploads per page" option set by this user'><span class="description">Save the "Views/Uploads per page" option set by this user</span><pre>mla_set_screen_option_filter()</pre></a></li>
 <li class="nav-header private">» Private</li>
 <li class="method private "><a href="#_compose_custom_field_tab" title="_compose_custom_field_tab :: Compose the Custom Field tab content for the Settings subpage"><span class="description">Compose the Custom Field tab content for the Settings subpage</span><pre>_compose_custom_field_tab()</pre></a></li>
+<li class="method private "><a href="#_compose_debug_tab" title="_compose_debug_tab :: Compose the Debug tab content for the Settings subpage"><span class="description">Compose the Debug tab content for the Settings subpage</span><pre>_compose_debug_tab()</pre></a></li>
 <li class="method private "><a href="#_compose_documentation_tab" title="_compose_documentation_tab :: Compose the Documentation tab content for the Settings subpage"><span class="description">Compose the Documentation tab content for the Settings subpage</span><pre>_compose_documentation_tab()</pre></a></li>
 <li class="method private "><a href="#_compose_edit_upload_tab" title="_compose_edit_upload_tab :: Compose the Edit Upload type tab content for the Settings subpage"><span class="description">Compose the Edit Upload type tab content for the Settings subpage</span><pre>_compose_edit_upload_tab()</pre></a></li>
 <li class="method private "><a href="#_compose_edit_view_tab" title="_compose_edit_view_tab :: Compose the Edit View tab content for the Settings subpage"><span class="description">Compose the Edit View tab content for the Settings subpage</span><pre>_compose_edit_view_tab()</pre></a></li>
@@ -112,6 +113,7 @@ without saving the settings to the mla_option</span><pre>_process_iptc_exif_taxo
 <li class="method private "><a href="#_process_optional_upload_mime" title="_process_optional_upload_mime :: Process an Optional Upload MIME Type selection"><span class="description">Process an Optional Upload MIME Type selection</span><pre>_process_optional_upload_mime()</pre></a></li>
 <li class="method private "><a href="#_reset_general_settings" title="_reset_general_settings :: Delete saved settings, restoring default values"><span class="description">Delete saved settings, restoring default values</span><pre>_reset_general_settings()</pre></a></li>
 <li class="method private "><a href="#_save_custom_field_settings" title="_save_custom_field_settings :: Save custom field settings to the options table"><span class="description">Save custom field settings to the options table</span><pre>_save_custom_field_settings()</pre></a></li>
+<li class="method private "><a href="#_save_debug_settings" title="_save_debug_settings :: Save Debug settings to the options table"><span class="description">Save Debug settings to the options table</span><pre>_save_debug_settings()</pre></a></li>
 <li class="method private "><a href="#_save_gallery_settings" title="_save_gallery_settings :: Save MLA Gallery settings to the options table"><span class="description">Save MLA Gallery settings to the options table</span><pre>_save_gallery_settings()</pre></a></li>
 <li class="method private "><a href="#_save_general_settings" title="_save_general_settings :: Save General settings to the options table"><span class="description">Save General settings to the options table</span><pre>_save_general_settings()</pre></a></li>
 <li class="method private "><a href="#_save_iptc_exif_custom_settings" title="_save_iptc_exif_custom_settings :: Save IPTC/EXIF custom field settings to the options table"><span class="description">Save IPTC/EXIF custom field settings to the options table</span><pre>_save_iptc_exif_custom_settings()</pre></a></li>
@@ -448,6 +450,27 @@ in the "public static" array definition itself.</p></p>
 <tr>
 <th>since</th>
 <td>1.10</td>
+</tr>
+<tr>
+<th>uses</th>
+<td>\global\$page_template_array</td>
+</tr>
+</table>
+<h3>Returns</h3>
+<div class="subelement response">
+<code>array</code>'message' => status/error messages, 'body' => tab content</div>
+</div></div>
+</div>
+<a name="_compose_debug_tab" id="_compose_debug_tab"></a><div class="element clickable method private _compose_debug_tab" data-toggle="collapse" data-target="._compose_debug_tab .collapse">
+<h2>Compose the Debug tab content for the Settings subpage</h2>
+<pre>_compose_debug_tab() : array</pre>
+<div class="labels"></div>
+<div class="row collapse"><div class="detail-description">
+<p class="long_description"></p>
+<table class="table table-bordered">
+<tr>
+<th>since</th>
+<td>2.10</td>
 </tr>
 <tr>
 <th>uses</th>
@@ -952,6 +975,27 @@ without saving the settings to the mla_option</h2>
 <code>array</code>Message(s) reflecting the results of the operation</div>
 </div></div>
 </div>
+<a name="_save_debug_settings" id="_save_debug_settings"></a><div class="element clickable method private _save_debug_settings" data-toggle="collapse" data-target="._save_debug_settings .collapse">
+<h2>Save Debug settings to the options table</h2>
+<pre>_save_debug_settings() : array</pre>
+<div class="labels"></div>
+<div class="row collapse"><div class="detail-description">
+<p class="long_description"></p>
+<table class="table table-bordered">
+<tr>
+<th>since</th>
+<td>2.10</td>
+</tr>
+<tr>
+<th>uses</th>
+<td>\global\$_REQUEST</td>
+</tr>
+</table>
+<h3>Returns</h3>
+<div class="subelement response">
+<code>array</code>Message(s) reflecting the results of the operation</div>
+</div></div>
+</div>
 <a name="_save_gallery_settings" id="_save_gallery_settings"></a><div class="element clickable method private _save_gallery_settings" data-toggle="collapse" data-target="._save_gallery_settings .collapse">
 <h2>Save MLA Gallery settings to the options table</h2>
 <pre>_save_gallery_settings() : array</pre>
@@ -1290,7 +1334,7 @@ because Localization calls cannot be placed in the "public static" array definit
 <div class="row"><footer class="span12">
             Template is built using <a href="http://twitter.github.com/bootstrap/">Twitter Bootstrap 2</a> and icons provided by <a href="http://glyphicons.com/">Glyphicons</a>.<br>
             Documentation is powered by <a href="http://www.phpdoc.org/">phpDocumentor 2.0.0a8</a> and<br>
-            generated on 2015-02-17T16:36:13-08:00.<br></footer></div>
+            generated on 2015-04-19T11:52:22-07:00.<br></footer></div>
 </div>
 </body>
 </html>

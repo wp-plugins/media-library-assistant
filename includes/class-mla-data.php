@@ -877,7 +877,7 @@ class MLAData {
 	}
 
 	/**
-	 * Apply fleid-level format options to field-level content
+	 * Apply field-level format options to field-level content
 	 *
 	 * @since 2.10
 	 *
@@ -3941,6 +3941,10 @@ class MLAData {
 	 * @return	mixed	Simplified array or string value
 	 */
 	private static function _parse_xmp_array( $values ) {
+		if ( is_scalar( $values ) ) {
+			return $values;
+		}
+		
 		if ( isset( $values['rdf:Alt'] ) ) {
 			return self::_parse_xmp_array( $values['rdf:Alt'] );
 		}
@@ -3972,13 +3976,9 @@ class MLAData {
 	}
 
 	/**
-	 * Parse an XMP object
+	 * Extract XMP meta data from a file
 	 * 
-	 * Returns an array of dictionary contents, classified by object type: boolean, numeric, string, hex (string),
-	 * indirect (object), name, array, dictionary, stream, and null.
-	 * The array also has a '/length' element containing the number of bytes occupied by the
-	 * dictionary in the source string, excluding the enclosing delimiters, if passed in.
-	 * @since 1.50
+	 * @since 2.10
 	 *
 	 * @param	string	full path and file name
 	 * @param	integer	offset within the file of the search start point
@@ -4814,7 +4814,7 @@ class MLAData {
 	 * 
 	 * Also handles the special pseudo-value 'ALL_XMP'.
 	 *
-	 * @since 2.XX
+	 * @since 2.10
 	 *
 	 * @param	string	field name
 	 * @param	string	data option  'text'|'single'|'export'|'array'|'multi'

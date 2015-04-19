@@ -71,6 +71,7 @@
 <li class="method public "><a href="#mla_tag_cloud" title="mla_tag_cloud :: The MLA Tag Cloud support function."><span class="description">The MLA Tag Cloud support function.</span><pre>mla_tag_cloud()</pre></a></li>
 <li class="method public "><a href="#mla_tag_cloud_shortcode" title="mla_tag_cloud_shortcode :: The MLA Tag Cloud shortcode."><span class="description">The MLA Tag Cloud shortcode.</span><pre>mla_tag_cloud_shortcode()</pre></a></li>
 <li class="nav-header private">» Private</li>
+<li class="method private "><a href="#_ghostscript_present" title="_ghostscript_present :: Verify the presence of Ghostscript for mla_viewer"><span class="description">Verify the presence of Ghostscript for mla_viewer</span><pre>_ghostscript_present()</pre></a></li>
 <li class="method private "><a href="#_pad_term_counts" title="_pad_term_counts :: Add count of children to parent count."><span class="description">Add count of children to parent count.</span><pre>_pad_term_counts()</pre></a></li>
 <li class="method private "><a href="#_paginate_links" title="_paginate_links :: Handles pagnation output types 'previous_page', 'next_page', and 'paginate_links'"><span class="description">Handles pagnation output types 'previous_page', 'next_page', and 'paginate_links'</span><pre>_paginate_links()</pre></a></li>
 <li class="method private "><a href="#_process_pagination_output_types" title="_process_pagination_output_types :: Handles pagnation output types 'previous_page', 'next_page', and 'paginate_links'"><span class="description">Handles pagnation output types 'previous_page', 'next_page', and 'paginate_links'</span><pre>_process_pagination_output_types()</pre></a></li>
@@ -412,6 +413,26 @@ options to customize the hyperlink behind each term.</p></p>
 <code>string</code>HTML content to display the tag cloud.</div>
 </div></div>
 </div>
+<a name="_ghostscript_present" id="_ghostscript_present"></a><div class="element clickable method private _ghostscript_present" data-toggle="collapse" data-target="._ghostscript_present .collapse">
+<h2>Verify the presence of Ghostscript for mla_viewer</h2>
+<pre>_ghostscript_present(string $explicit_path) : boolean</pre>
+<div class="labels"></div>
+<div class="row collapse"><div class="detail-description">
+<p class="long_description"></p>
+<table class="table table-bordered"><tr>
+<th>since</th>
+<td>2.10</td>
+</tr></table>
+<h3>Parameters</h3>
+<div class="subelement argument">
+<h4>$explicit_path</h4>
+<code>string</code><p>Non-standard location to override default search, e.g., 'C:\Program Files (x86)\gs\gs9.15\bin\gswin32c.exe'</p>
+</div>
+<h3>Returns</h3>
+<div class="subelement response">
+<code>boolean</code>true if Ghostscript available else false</div>
+</div></div>
+</div>
 <a name="_pad_term_counts" id="_pad_term_counts"></a><div class="element clickable method private _pad_term_counts" data-toggle="collapse" data-target="._pad_term_counts .collapse">
 <h2>Add count of children to parent count.</h2>
 <pre>_pad_term_counts(array $terms, string $taxonomy, array $post_types, array $post_stati) : null</pre>
@@ -707,7 +728,7 @@ any further logic required to translate those values is contained in the filter.
 <div class="row"><footer class="span12">
             Template is built using <a href="http://twitter.github.com/bootstrap/">Twitter Bootstrap 2</a> and icons provided by <a href="http://glyphicons.com/">Glyphicons</a>.<br>
             Documentation is powered by <a href="http://www.phpdoc.org/">phpDocumentor 2.0.0a8</a> and<br>
-            generated on 2015-02-17T16:36:13-08:00.<br></footer></div>
+            generated on 2015-04-19T11:52:22-07:00.<br></footer></div>
 </div>
 </body>
 </html>
