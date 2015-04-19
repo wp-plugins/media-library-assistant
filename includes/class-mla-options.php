@@ -960,7 +960,7 @@ class MLAOptions {
 					'name' => __( 'Enable thumbnail substitution', 'media-library-assistant' ),
 					'type' => 'checkbox',
 					'std' => 'checked',
-					'help' => __( 'Check this option to allow the "mla_viewer" to generate thumbnail images for PDF  documents. Thumbnails are generated dynamically, each time the item appears in an [mla_gallery] display.', 'media-library-assistant' )),
+					'help' => __( 'Check this option to allow the "mla_viewer" to generate thumbnail images for PDF  documents. Thumbnails are generated dynamically, each time the item appears in an [mla_gallery] display.<br>&nbsp;&nbsp;<strong>IMPORTANT: both Ghostscript and Imagick/Imagemagick must be installed for this feature.</strong>', 'media-library-assistant' )),
 
 			'enable_featured_image' =>
 				array('tab' => 'mla_gallery',
@@ -974,7 +974,7 @@ class MLAOptions {
 					'name' => __( 'Enable explicit Ghostscript check', 'media-library-assistant' ),
 					'type' => 'checkbox',
 					'std' => 'checked',
-					'help' => __( 'Check this option to enable the explicit check for Ghostscript support required for thumbnail generation. If your Ghostscript software is in a non-standard location, unchecking this option bypasses the check. Bad things can happen if Ghostscript is missing but Imagemagick is present, so leave this option checked unless you know it is safe to turn it off.', 'media-library-assistant' )),
+					'help' => __( 'Check this option to enable the explicit check for Ghostscript support required for thumbnail generation. If your Ghostscript software is in a non-standard location, unchecking this option bypasses the check. Bad things can happen if Ghostscript is missing but Imagick/Imagemagick is present, so leave this option checked unless you know it is safe to turn it off.', 'media-library-assistant' )),
 
 			'ghostscript_path' =>
 				array('tab' => 'mla_gallery',
@@ -1267,7 +1267,7 @@ class MLAOptions {
 			foreach ( $taxonomies as $new_key ) {
 				$checked_on_top[ $new_key ] = 'checked';
 			}
-			
+
 			self::$mla_option_definitions[ self::MLA_TAXONOMY_SUPPORT ]['std']['tax_checked_on_top'] = $checked_on_top;
 		}
 	}
@@ -1959,13 +1959,13 @@ class MLAOptions {
 			if ( !function_exists( 'wp_read_image_metadata' ) ) {
 				require_once( ABSPATH . 'wp-admin/includes/image.php' );
 			}
-	
+
 			$image_metadata =  MLAData::mla_fetch_attachment_image_metadata( 0, $file['tmp_name'] );
 			$image_metadata['mla_exif_metadata']['FileName'] = $file['name'];
 			$image_metadata['wp_image_metadata'] = wp_read_image_metadata( $file['tmp_name'] );
 			$file = apply_filters( 'mla_upload_prefilter', $file, $image_metadata );
 		}
-		
+
 		return $file;
  	} // mla_wp_handle_upload_prefilter_filter
 
@@ -1990,12 +1990,12 @@ class MLAOptions {
 			if ( ! class_exists( 'getID3' ) ) {
 				require( ABSPATH . WPINC . '/ID3/getid3.php' );
 			}
-	
+
 			$id3 = new getID3();
 			$id3_data = $id3->analyze( $file['file'] );
 			$file = apply_filters( 'mla_upload_filter', $file, $id3_data );
 		}
-		
+
 		return $file;
  	} // mla_wp_handle_upload_filter
 
@@ -2090,7 +2090,7 @@ class MLAOptions {
 			if ( $options['enable_iptc_exif_mapping'] || $options['enable_custom_field_mapping'] ) {
 				do_action( 'mla_begin_mapping', 'create_metadata', $post_id );
 			}
-			
+
 			if ( $options['enable_iptc_exif_mapping'] ) {
 				$item = get_post( $post_id );
 				$updates = MLAOptions::mla_evaluate_iptc_exif_mapping( $item, 'iptc_exif_mapping', NULL, $data, true );
@@ -2117,7 +2117,7 @@ class MLAOptions {
 			if ( $options['enable_iptc_exif_update'] || $options['enable_custom_field_update'] ) {
 				do_action( 'mla_begin_mapping', 'update_metadata', $post_id );
 			}
-			
+
 			if ( $options['enable_iptc_exif_update'] ) {
 				$item = get_post( $post_id );
 				$updates = MLAOptions::mla_evaluate_iptc_exif_mapping( $item, 'iptc_exif_mapping', NULL, $data );
@@ -2180,7 +2180,7 @@ class MLAOptions {
 		$option_values = self::mla_get_option( 'custom_field_mapping' );
 		$results = array();
 		$index = 0;
-		
+
 		foreach ( $option_values as $key => $value ) {
 			$slug = 'c_' . $index++; // sanitize_title( $key ); Didn't handle HTML in name, e.g., "R><B"
 
@@ -2329,7 +2329,7 @@ class MLAOptions {
 	private static function _evaluate_post_information( $post_id, $category, $data_source ) {
 		global $wpdb;
 		static $post_info = NULL;
-		
+
 		if ( 0 == $post_id ) {
 			$value = NULL;
 		} else {
@@ -2339,7 +2339,7 @@ class MLAOptions {
 			if ( 'single_attachment_mapping' == $category && ! isset( $post_info[$post_id] ) ) {
 				$post_info = NULL;
 			}
-			
+
 			if ( NULL == $post_info ) {
 				if ( 'custom_field_mapping' == $category ) {
 					$post_info = $wpdb->get_results( "SELECT * FROM {$wpdb->posts} WHERE post_type = 'attachment'", OBJECT_K );
@@ -2347,11 +2347,11 @@ class MLAOptions {
 					$post_info = $wpdb->get_results( "SELECT * FROM {$wpdb->posts} WHERE ID = '{$post_id}'", OBJECT_K );
 				}
 			}
-	
+
 			if ( 'post_id' == $data_source ) {
 				$data_source = 'ID';
 			}
-			
+
 			if ( isset( $post_info[$post_id] ) && property_exists( $post_info[$post_id], $data_source ) ) {
 				$post_array = (array) $post_info[$post_id];
 				$value = $post_array[ $data_source ];
@@ -2524,7 +2524,7 @@ class MLAOptions {
 			$parent_info = NULL;
 			$references = NULL;
 			$alt_text = NULL;
-			
+
 			if ( 'single_attachment_mapping' == $category ) {
 				$metadata = get_metadata( 'post', $post_id, '_wp_attached_file' );
 				if ( isset( $metadata[0] ) ) {
@@ -2539,11 +2539,11 @@ class MLAOptions {
 						$attachment_metadata = $metadata[0];
 					}
 				}
-	
+
 				if ( empty( $attachment_metadata ) ) {
 					$attachment_metadata = array();
 				}
-	
+
 				$wp_attachment_metadata = array( $post_id => (object) array( 'post_id' => $post_id, 'meta_value' => serialize( $attachment_metadata ) ) );
 			}
 
@@ -3061,7 +3061,7 @@ class MLAOptions {
 		foreach ( $blacklist as $value ) {
 			$blacklist_names[] = $value['name'];
 		}
-		
+
 		$custom_field_names = self::_get_custom_field_names();
 		foreach ( $custom_field_names as $value ) {
 			if ( in_array( $value, $blacklist_names ) ) {
@@ -3110,7 +3110,7 @@ class MLAOptions {
 		'post_mime_type', 
 		'comment_count',
 		'alt_text',
-		
+
 		'absolute_path',
 		'absolute_file_name',
 		'base_file',
@@ -3470,7 +3470,7 @@ class MLAOptions {
 					$sorted_keys[ $current_value['name'] ] = $current_value['name'];
 				}
 				natcasesort( $sorted_keys );
-				
+
 				$sorted_names = array();
 				foreach ( $sorted_keys as $row_name ) {
 					$sorted_names[ $row_name ] = array();
@@ -3527,13 +3527,13 @@ class MLAOptions {
 							'Update Rule' => __( 'Update Rule', 'media-library-assistant' ),
 							'Map All Attachments' => __( 'Map All Attachments', 'media-library-assistant' ),
 						);
-	
+
 						if ( $current_value['keep_existing'] ) {
 							$row_values['keep_selected'] = 'selected="selected"';
 						} else {
 							$row_values['replace_selected'] = 'selected="selected"';
 						}
-	
+
 						switch( $current_value['format'] ) {
 							case 'native':
 								$row_values['native_format'] = 'selected="selected"';
@@ -3547,19 +3547,19 @@ class MLAOptions {
 							default:
 								$row_values['native_format'] = 'selected="selected"';
 						} // format
-	
+
 						if ( $current_value['mla_column'] ) {
 							$row_values['mla_column_checked'] = 'checked="checked"';
 						}
-	
+
 						if ( $current_value['quick_edit'] ) {
 							$row_values['quick_edit_checked'] = 'checked="checked"';
 						}
-	
+
 						if ( $current_value['bulk_edit'] ) {
 							$row_values['bulk_edit_checked'] = 'checked="checked"';
 						}
-	
+
 						switch( $current_value['option'] ) {
 							case 'single':
 								$row_values['single_option'] = 'selected="selected"';
@@ -3576,11 +3576,11 @@ class MLAOptions {
 							default:
 								$row_values['text_option'] = 'selected="selected"';
 						} // option
-	
+
 						if ( $current_value['no_null'] ) {
 							$row_values['no_null_checked'] = 'checked="checked"';
 						}
-	
+
 						$table_rows .= MLAData::mla_parse_template( $row_template, $row_values );
 					} // foreach current_value
 				} // foreach sorted_name
@@ -3736,11 +3736,11 @@ class MLAOptions {
 	 */
 	private static function _get_term_id( $term_name, $term_parent, $taxonomy, &$post_terms ) {
 		static $term_cache = array();
-		
+
 		if ( isset( $term_cache[ $taxonomy ] ) && isset( $term_cache[ $taxonomy ][ $term_parent ] ) && isset( $term_cache[ $taxonomy ][ $term_parent ][ $term_name ] ) ) {
 			return $term_cache[ $taxonomy ][ $term_parent ][ $term_name ];
 		}
-		
+
 		if ( is_array( $post_terms ) ) {
 			$term_id = 0;
 			foreach( $post_terms as $post_term ) {
@@ -3749,24 +3749,24 @@ class MLAOptions {
 					$term_id = $post_term->term_id;
 				}
 			}
-			
+
 			if ( 0 < $term_id ) {
 				return $term_id;
 			}
 		}
-		
+
 		$post_term = term_exists( $term_name, $taxonomy, $term_parent );
 		if ( $post_term !== 0 && $post_term !== NULL ) {
 			$term_cache[ $taxonomy ][ $term_parent ][ $term_name ] = $post_term['term_id'];
 			return $post_term['term_id'];
 		}
-		
+
 		$post_term = wp_insert_term( $term_name, $taxonomy, array( 'parent' => $term_parent ) );
 		if ( ( ! is_wp_error( $post_term ) ) && isset( $post_term['term_id'] ) ) {
 			$term_cache[ $taxonomy ][ $term_parent ][ $term_name ] = $post_term['term_id'];
 			return $post_term['term_id'];
 		}
-		
+
 		return 0;
 	} // _get_term_id
 
@@ -3851,7 +3851,7 @@ class MLAOptions {
 					$updates[ $setting_key ] = '';
 					continue;
 				}
-				
+
 				/*
 				 * See /wp-includes/formatting.php, function convert_chars()
 				 *
@@ -3983,7 +3983,7 @@ class MLAOptions {
 				if ( empty( $new_text ) ) {
 					continue;
 				}
-				
+
 				$current_terms = array();
 				if ( ! $is_upload ) {
 					$post_terms = get_object_term_cache( $post->ID, $setting_key );
@@ -3991,7 +3991,7 @@ class MLAOptions {
 						$post_terms = wp_get_object_terms( $post->ID, $setting_key );
 						wp_cache_add( $post->ID, $post_terms, $setting_key . '_relationships' );
 					}
-	
+
 					foreach( $post_terms as $new_term ) {
 						if ( $hierarchical ) {
 							$current_terms[ $new_term->term_id ] =  $new_term->term_id;
@@ -4030,7 +4030,7 @@ class MLAOptions {
 							break; // not a match; stop checking
 						}
 					}
-					
+
 					$do_update = ! empty( $current_terms );
 				} else {
 					/*
@@ -4041,10 +4041,10 @@ class MLAOptions {
 							unset( $new_terms[ $index ] );
 						}
 					}
-					
+
 					$do_update = ! empty( $new_terms );
 				}
-				
+
 				if ( $do_update ) {
 					$tax_inputs[ $setting_key ] = $new_terms;
 					$tax_actions[ $setting_key ] = $tax_action;
@@ -4788,7 +4788,7 @@ class MLAOptions {
 							$sorted_keys[ $current_value['name'] ] = $current_value['name'];
 						}
 						natcasesort( $sorted_keys );
-						
+
 						$sorted_names = array();
 						foreach ( $sorted_keys as $row_name ) {
 							$sorted_names[ $row_name ] = array();
@@ -4826,19 +4826,19 @@ class MLAOptions {
 									'Update Rule' => __( 'Update Rule', 'media-library-assistant' ),
 									'Map All Attachments' => __( 'Map All Attachments', 'media-library-assistant' ),
 								);
-	
+
 								if ( $current_value['iptc_first'] ) {
 									$row_values['iptc_selected'] = 'selected="selected"';
 								} else {
 									$row_values['exif_selected'] = 'selected="selected"';
 								}
-	
+
 								if ( $current_value['keep_existing'] ) {
 									$row_values['keep_selected'] = 'selected="selected"';
 								} else {
 									$row_values['replace_selected'] = 'selected="selected"';
 								}
-	
+
 								$table_rows .= MLAData::mla_parse_template( $row_template, $row_values );
 							} // foreach current_values key
 						} // foreach sorted_name

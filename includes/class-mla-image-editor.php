@@ -22,18 +22,15 @@ class MLA_Image_Editor extends WP_Image_Editor_Imagick {
 	 * @return	boolean	true if conversion succeeds else false
 	 */
 	private function _ghostscript_convert( $file, $frame, $resolution, $output_type ) {
-//error_log( __LINE__ . ' _ghostscript_convert entered', 0 );
 		/*
 		 * Look for exec() - from http://stackoverflow.com/a/12980534/866618
 		 */
 		if ( ini_get('safe_mode') ) {
-//error_log( __LINE__ . ' _ghostscript_convert safe_mode', 0 );
 			return false;
 		}
-		
+
 		$blacklist = preg_split( '/,\s*/', ini_get('disable_functions') . ',' . ini_get('suhosin.executor.func.blacklist') );
 		if ( in_array('exec', $blacklist) ) {
-//error_log( __LINE__ . ' _ghostscript_convert blacklist', 0 );
 			return false;
 		}
 
@@ -42,51 +39,43 @@ class MLA_Image_Editor extends WP_Image_Editor_Imagick {
 		 */
 		$ghostscript_path = NULL;
 		do {
-			
+
 			if ( 'WIN' === strtoupper( substr( PHP_OS, 0, 3) ) ) {
 				if ( $ghostscript_path = getenv('GSC') ) {
-//error_log( __LINE__ . ' _ghostscript_convert found environment variable', 0 );
 					break;
 				}
-				
+
 				$ghostscript_path = exec('where gswin*c.exe');
 				if ( ! empty( $ghostscript_path ) ) {
-//error_log( __LINE__ . ' _ghostscript_convert found in path', 0 );
 					break;
 				}
-				
+
 				$ghostscript_path = exec('dir /o:n/s/b "C:\Program Files\gs\*gswin*c.exe"');
 				if ( ! empty( $ghostscript_path ) ) {
-//error_log( __LINE__ . ' _ghostscript_convert found in Program Files', 0 );
 					break;
 				}
-				
+
 				$ghostscript_path = exec('dir /o:n/s/b "C:\Program Files (x86)\gs\*gswin32c.exe"');
 				if ( ! empty( $ghostscript_path ) ) {
-//error_log( __LINE__ . ' _ghostscript_convert found in Program Files (x86)', 0 );
 					break;
 				}
-	
-//error_log( __LINE__ . ' _ghostscript_convert not found on Windows', 0 );
+
 				$ghostscript_path = NULL;
 				break;
 			} // Windows platform
-				
+
 			$ghostscript_path = exec('which gs');
 			if ( ! empty( $ghostscript_path ) ) {
-//error_log( __LINE__ . ' _ghostscript_convert found with which gs', 0 );
 				break;
 			}
-			
+
 			$test_path = '/usr/bin/gs';
 			exec('test -e ' . $test_path, $dummy, $ghostscript_path);
-//error_log( __LINE__ . " _ghostscript_convert exec test returns '{$ghostscript_path}'", 0 );
-			
+
 			if ( $test_path !== $ghostscript_path ) {
 				$ghostscript_path = NULL;
 			}
 		} while ( false );
-//error_log( __LINE__ . " ghostscript path =  '{$ghostscript_path}'", 0 );
 
 		if ( isset( $ghostscript_path ) ) {
 			if ( 'image/jpeg' == $output_type ) {
@@ -96,34 +85,30 @@ class MLA_Image_Editor extends WP_Image_Editor_Imagick {
 				$device = 'png16m';
 				$extension = '.png';
 			}
-			
+
 			/*
 			 * Generate a unique temporary file name
 			 */
 			$output_path = get_temp_dir();
 			$output_file = $output_path . wp_unique_filename( $output_path, 'mla-ghostscript' . $extension);
-//error_log( __LINE__ . " exec output_path =  " . var_export( $output_path, true ), 0 );
-//error_log( __LINE__ . " exec output_file =  " . var_export( $output_file, true ), 0 );
-			
+
 			$cmd = escapeshellarg( $ghostscript_path ) . ' -sDEVICE=%1$s -r%2$dx%2$d -dFirstPage=%3$d -dLastPage=%3$d -dPDFFitPage -o %4$s %5$s 2>&1';
 			$cmd = sprintf( $cmd, $device, $resolution, ( $frame + 1 ), escapeshellarg( $output_file ), escapeshellarg( $file ) );
-//error_log( __LINE__ . " exec input =  " . var_export( $cmd, true ), 0 );
 			exec( $cmd, $stdout, $return );
 			if ( 0 != $return ) {
-				error_log( __LINE__ . " _ghostscript_convert exec returned '{$return}, cmd = " . var_export( $cmd, true ), 0 );
-				error_log( __LINE__ . " _ghostscript_convert exec returned '{$return}, details = " . var_export( $stdout, true ), 0 );
+				error_log( "ERROR: _ghostscript_convert exec returned '{$return}, cmd = " . var_export( $cmd, true ), 0 );
+				error_log( "ERROR: _ghostscript_convert exec returned '{$return}, details = " . var_export( $stdout, true ), 0 );
 				return false;
 			}
-			
+
 			try {
-//error_log( __LINE__ . " readImage =  " . var_export( $output_file, true ), 0 );
 				$this->image->readImage( $output_file );
 			}
 			catch ( Exception $e ) {
-error_log( __LINE__ . " _ghostscript_convert readImage Exception = " . var_export( $e->getMessage(), true ), 0 );
+				error_log( "ERROR: _ghostscript_convert readImage Exception = " . var_export( $e->getMessage(), true ), 0 );
 				return false;
 			}
-			
+
 			$this->file = $output_file;
 			@unlink( $output_file );
 			return true;
@@ -162,7 +147,7 @@ error_log( __LINE__ . " _ghostscript_convert readImage Exception = " . var_expor
 			} else {
 				$mla_imagick_args = array();
 			}
-			
+
 			/*
 			 * this must be called before reading the image, otherwise has no effect - 
 			 * "-density {$x_resolution}x{$y_resolution}"
@@ -177,22 +162,22 @@ error_log( __LINE__ . " _ghostscript_convert readImage Exception = " . var_expor
 			} else {
 				$resolution = 72;
 			}
-			
+
 			if ( isset( $mla_imagick_args['frame'] ) ) {
 				$frame = $mla_imagick_args['frame'];
 			} else {
 				$frame = 0;
 			}
-			
+
 			if ( isset( $mla_imagick_args['type'] ) ) {
 				$type = $mla_imagick_args['type'];
 			} else {
 				$type = 'image/jpeg';
 			}
-			
+
 			//$result = false;
 			$result = $this->_ghostscript_convert( $this->file, $frame, $resolution, $type );
-			
+
 			if ( false === $result ) {
 				try {
 					$this->image->readImage( $this->file . '[' . $frame . ']' );
@@ -274,19 +259,19 @@ error_log( __LINE__ . " _ghostscript_convert readImage Exception = " . var_expor
 				// Neither is specified, apply defaults
 				$this->image->scaleImage( 150, 0 );
 			}
-			
+
 			$this->update_size();
 		}
 
 		if ( 0 < $quality && 101 > $quality ) {
 			$this->set_quality( $quality );
 		}
-		
+
 		if ( 'image/jpeg' == $type ) {				
 			if ( is_callable( array( $this->image, 'setImageBackgroundColor' ) ) ) {				
 				$this->image->setImageBackgroundColor('white');
 			}
-			
+
 			if ( is_callable( array( $this->image, 'mergeImageLayers' ) ) ) {
 				$this->image = $this->image->mergeImageLayers( imagick::LAYERMETHOD_FLATTEN );
 			} elseif ( is_callable( array( $this->image, 'flattenImages' ) ) ) {				

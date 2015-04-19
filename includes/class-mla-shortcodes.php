@@ -49,7 +49,7 @@ class MLAShortcodes {
 			$no_texturize_shortcodes[] = 'mla_gallery';
 			$no_texturize_shortcodes[] = 'mla_tag_cloud';
 		}
-		
+
 		return $no_texturize_shortcodes;
 	}
 
@@ -80,7 +80,7 @@ class MLAShortcodes {
 	 */
 	private static function _ghostscript_present( $explicit_path = '' ) {
 		static $ghostscript_present = NULL;
-		
+
 		if ( isset( $ghostscript_present ) ) {
 			return $ghostscript_present;
 		}
@@ -90,15 +90,21 @@ class MLAShortcodes {
 		}
 
 		/*
+		 * Imagick must be installed as well
+		 */
+		if ( ! class_exists( 'Imagick' ) ) {
+			return $ghostscript_present = false;
+		}
+
+		/*
 		 * Look for exec() - from http://stackoverflow.com/a/12980534/866618
 		 */
 		if ( ini_get('safe_mode') ) {
 			return $ghostscript_present = false;
 		}
-		
+
 		$blacklist = preg_split( '/,\s*/', ini_get('disable_functions') . ',' . ini_get('suhosin.executor.func.blacklist') );
 		if ( in_array('exec', $blacklist) ) {
-//error_log( __LINE__ . ' _ghostscript_present in blacklist', 0 );
 			return $ghostscript_present = false;
 		}
 
@@ -106,58 +112,47 @@ class MLAShortcodes {
 			if ( ! empty( $explicit_path ) ) {
 				$return = exec( 'dir /o:n/s/b "' . $explicit_path . '"' );
 				if ( ! empty( $return ) ) {
-//error_log( __LINE__ . " _ghostscript_present found in explicit path '{$return}'", 0 );
 					return $ghostscript_present = true;
 				} else {
-//error_log( __LINE__ . " _ghostscript_present NOT found in explicit path '{$explicit_path}'", 0 );
 					return $ghostscript_present = false;
 				}
 			}
-			
+
 			$return = getenv('GSC');
 			if ( ! empty( $return ) ) {
-//error_log( __LINE__ . " _ghostscript_present found environment variable '{$return}'", 0 );
-				return $ghostscript_present = true;
-			}
-			
-			$return = exec('where gswin*c.exe');
-			if ( ! empty( $return ) ) {
-//error_log( __LINE__ . " _ghostscript_present found in path '{$return}'", 0 );
-				return $ghostscript_present = true;
-			}
-			
-			$return = exec('dir /o:n/s/b "C:\Program Files\gs\*gswin*c.exe"');
-			if ( ! empty( $return ) ) {
-//error_log( __LINE__ . " _ghostscript_present found in Program Files '{$return}'", 0 );
-				return $ghostscript_present = true;
-			}
-			
-			$return = exec('dir /o:n/s/b "C:\Program Files (x86)\gs\*gswin32c.exe"');
-			if ( ! empty( $return ) ) {
-//error_log( __LINE__ . " _ghostscript_present found in Program Files (x86) '{$return}'", 0 );
 				return $ghostscript_present = true;
 			}
 
-//error_log( __LINE__ . ' _ghostscript_present not found on Windows', 0 );
+			$return = exec('where gswin*c.exe');
+			if ( ! empty( $return ) ) {
+				return $ghostscript_present = true;
+			}
+
+			$return = exec('dir /o:n/s/b "C:\Program Files\gs\*gswin*c.exe"');
+			if ( ! empty( $return ) ) {
+				return $ghostscript_present = true;
+			}
+
+			$return = exec('dir /o:n/s/b "C:\Program Files (x86)\gs\*gswin32c.exe"');
+			if ( ! empty( $return ) ) {
+				return $ghostscript_present = true;
+			}
+
 			return $ghostscript_present = false;
 		} // Windows platform
 
 		if ( ! empty( $explicit_path ) ) {
 			exec( 'test -e ' . $explicit_path, $dummy, $ghostscript_path );
-//error_log( __LINE__ . ' _ghostscript_present explicit path = ' . var_export( $ghostscript_path, true ), 0 );
 			return ( $explicit_path === $ghostscript_path );
 		}
-			
+
 		$return = exec('which gs');
 		if ( ! empty( $return ) ) {
-//error_log( __LINE__ . ' _ghostscript_present found with which gs', 0 );
 			return $ghostscript_present = true;
 		}
-		
+
 		$test_path = '/usr/bin/gs';
 		exec('test -e ' . $test_path, $dummy, $ghostscript_path);
-//error_log( __LINE__ . " _ghostscript_present exec test returns '{$ghostscript_path}'", 0 );
-		
 		return $ghostscript_present = ( $test_path === $ghostscript_path );
 	}
 
@@ -185,11 +180,11 @@ class MLAShortcodes {
 				break;
 			}
 		}
-		
+
 		if ( $is_valid ) {
 			return $attr;
 		}
-		
+
 		/*
 		 * Found an error, e.g., line break(s) among the atttributes.
 		 * Try to reconstruct the input string without them.
@@ -200,7 +195,7 @@ class MLAShortcodes {
 			if ( ( false !== $break_tag ) && ( ($break_tag + 3) == strlen( $value ) ) ) {
 				$value = substr( $value, 0, ( strlen( $value ) - 3) );
 			}
-			
+
 			if ( is_numeric( $key ) ) {
 				if ( '/>' !== $value ) {
 					$new_attr .= $value . ' ';
@@ -312,7 +307,7 @@ class MLAShortcodes {
 			'mla_margin' => MLAOptions::mla_get_option('mla_gallery_margin'),
 			'mla_target' => '',
 			'mla_debug' => false,
-			
+
 			'mla_viewer' => false,
 			'mla_single_thread' => false,
 			'mla_viewer_extensions' => 'ai,eps,pdf,ps',
@@ -324,7 +319,7 @@ class MLAShortcodes {
 			'mla_viewer_resolution' => '0',
 			'mla_viewer_quality' => '0',
 			'mla_viewer_type' => '',
-			
+
 			'mla_alt_shortcode' => NULL,
 			'mla_alt_ids_name' => 'ids',
 
@@ -555,25 +550,25 @@ class MLAShortcodes {
 				$arguments['mla_single_thread'] = true;	
 				$arguments['mla_viewer'] = 'true';
 			}
-			
+
 			$arguments['mla_viewer'] = !empty( $arguments['mla_viewer'] ) && ( 'true' == strtolower( $arguments['mla_viewer'] ) );
 		} else {
 			$arguments['mla_viewer'] = false;
 		}
-		
+
 		if ( $arguments['mla_viewer'] ) {
 			$arguments['mla_viewer_extensions'] = array_filter( array_map( 'trim', explode( ',', $arguments['mla_viewer_extensions'] ) ) );
 			// convert limit (in MB) to float
 			$arguments['mla_viewer_limit'] = abs( 0.0 + $arguments['mla_viewer_limit'] );
-			
+
 			$arguments['mla_viewer_width'] = absint( $arguments['mla_viewer_width'] );
 			$arguments['mla_viewer_height'] = absint( $arguments['mla_viewer_height'] );
 			$arguments['mla_viewer_page'] = absint( $arguments['mla_viewer_page'] );
-			
+
 			if ( isset( $arguments['mla_viewer_best_fit'] ) ) {
 				$arguments['mla_viewer_best_fit'] = 'true' == strtolower( $arguments['mla_viewer_best_fit'] );
 			}
-			
+
 			$arguments['mla_viewer_resolution'] = absint( $arguments['mla_viewer_resolution'] );
 			$arguments['mla_viewer_quality'] = absint( $arguments['mla_viewer_quality'] );
 		}
@@ -914,15 +909,15 @@ class MLAShortcodes {
 				if ( isset( $parent_info['parent_name'] ) ) {
 					$item_values['parent_name'] = $parent_info['parent_name'];
 				}
-	
+
 				if ( isset( $parent_info['parent_type'] ) ) {
 					$item_values['parent_type'] = wptexturize( $parent_info['parent_type'] );
 				}
-	
+
 				if ( isset( $parent_info['parent_title'] ) ) {
 					$item_values['parent_title'] = wptexturize( $parent_info['parent_title'] );
 				}
-	
+
 				if ( isset( $parent_info['parent_date'] ) ) {
 					$item_values['parent_date'] = wptexturize( $parent_info['parent_date'] );
 				}
@@ -1231,15 +1226,15 @@ class MLAShortcodes {
 							'page' => MLA::ADMIN_PAGE_SLUG,
 							'mla_stream_file' => urlencode( $upload_dir['basedir'] . '/' . $item_values['base_file'] ),
 						);
-						
+
 						if ( $arguments['mla_single_thread'] ) {
 							$args['mla_single_thread'] = 'true';
 						}
-						
+
 						if ( $arguments['mla_viewer_width'] ) {
 							$args['mla_stream_width'] = $arguments['mla_viewer_width'];
 						}
-						
+
 						if ( $arguments['mla_viewer_height'] ) {
 							$args['mla_stream_height'] = $arguments['mla_viewer_height'];
 						}
@@ -1247,7 +1242,7 @@ class MLAShortcodes {
 						if ( isset( $arguments['mla_viewer_best_fit'] ) ) {
 							$args['mla_stream_fit'] = $arguments['mla_viewer_best_fit'] ? '1' : '0';
 						}
-						
+
 						/*
 						 * Non-standard location, if not empty. Write the value to a file that can be
 						 * found by the stand-alone (no WordPress) image stream processor.
@@ -1258,7 +1253,6 @@ class MLAShortcodes {
 								$args['mla_ghostscript_path'] = 'custom';
 							}
 						}
-//error_log( __LINE__ . " ghostscript path =  '{$ghostscript_path}', ", 0 );
 
 						if ( self::_ghostscript_present( $ghostscript_path ) ) {
 							/*
@@ -1272,7 +1266,7 @@ class MLAShortcodes {
 							} else {
 								$file_size = 1;
 							}
-							
+
 							/*
 							 * Generate "real" thumbnail
 							 */
@@ -1281,15 +1275,15 @@ class MLAShortcodes {
 								if ( $frame ) {
 									$args['mla_stream_frame'] = $frame;
 								}
-								
+
 								if ( $arguments['mla_viewer_resolution'] ) {
 									$args['mla_stream_resolution'] = $arguments['mla_viewer_resolution'];
 								}
-								
+
 								if ( $arguments['mla_viewer_quality'] ) {
 									$args['mla_stream_quality'] = $arguments['mla_viewer_quality'];
 								}
-								
+
 								if ( ! empty( $arguments['mla_viewer_type'] ) ) {
 									$args['mla_stream_type'] = $arguments['mla_viewer_type'];
 								}
@@ -1565,7 +1559,7 @@ class MLAShortcodes {
 		if ( isset( $arguments[ $mla_page_parameter ] ) ) {
 			$arguments['offset'] = $arguments['limit'] * ( $arguments[ $mla_page_parameter ] - 1);
 		}
-		
+
 		/*
 		 * Clean up the current_item to separate term_id from slug
 		 */
@@ -2047,7 +2041,7 @@ class MLAShortcodes {
 					}
 				}
 			}
-			
+
 			/*
 			 * Add item_specific field-level substitution parameters
 			 */
@@ -2568,14 +2562,14 @@ class MLAShortcodes {
 		}
 
 		$markup_values['http_host'] = $_SERVER['HTTP_HOST'];
-		
+
 		if ( 0 < $new_page ) {
 			$new_uri = remove_query_arg( $mla_page_parameter, $_SERVER['REQUEST_URI'] );
 			$markup_values['request_uri'] = add_query_arg( array(  $mla_page_parameter  => $new_page ), $new_uri );	
 		} else {
 			$markup_values['request_uri'] = $_SERVER['REQUEST_URI'];	
 		}
-		
+
 		$markup_values['new_url'] = set_url_scheme( $markup_values['scheme'] . $markup_values['http_host'] . $markup_values['request_uri'] );
 
 		/*
@@ -2583,7 +2577,7 @@ class MLAShortcodes {
 		 * which can contain request: and query: arguments.
 		 */
 		$pagination_arguments = array( 'mla_nolink_text', 'mla_link_class', 'mla_rollover_text', 'mla_link_attributes', 'mla_link_href', 'mla_link_text', 'mla_prev_text', 'mla_next_text' );
-		
+
 		$new_text = '';
 		foreach( $pagination_arguments as $value ) {
 			$new_text .= str_replace( '{+', '[+', str_replace( '+}', '+]', $arguments[ $value ] ) );
@@ -2705,7 +2699,7 @@ class MLAShortcodes {
 		$order = isset( $query_parameters['order'] ) ? ' ' . $query_parameters['order'] : '';
 		$orderby = isset( $query_parameters['orderby'] ) ? $query_parameters['orderby'] : '';
 		$meta_key = isset( $query_parameters['meta_key'] ) ? $query_parameters['meta_key'] : '';
-		
+
 		if ( is_null( $table_prefix ) ) {
 			$table_prefix = $wpdb->posts . '.';
 		}
@@ -2757,7 +2751,7 @@ class MLAShortcodes {
 				}
 			}
 		}
-		
+
 		if ( ! empty( $meta_key ) ) {
 			$allowed_keys[ $meta_key ] = "$wpdb->postmeta.meta_value";
 			$allowed_keys['meta_value'] = "$wpdb->postmeta.meta_value";
@@ -2893,7 +2887,7 @@ class MLAShortcodes {
 	 * @var	object
 	 */
 	public static $mla_gallery_wp_query_object = NULL;
-	
+
 	/**
 	 * Parses shortcode parameters and returns the gallery objects
 	 *
@@ -3026,7 +3020,7 @@ class MLAShortcodes {
 					$simple_tax_queries[ $key ] = implode(',', array_filter( array_map( 'trim', explode( ',', $value ) ) ) );
 				} // array_key_exists
 			} //foreach $attr
-			
+
 			/*
 			 * One of five outcomes:
 			 * 1) An explicit tax_query was found; use it and ignore all other taxonomy parameters
@@ -3050,7 +3044,7 @@ class MLAShortcodes {
 				} else {
 					$tax_query = array ();
 				}
-				
+
 				// Validate other tax_query parameters or set defaults
 				$tax_operator = 'IN';
 				if ( isset( $attr['tax_operator'] ) ) {
@@ -3059,18 +3053,18 @@ class MLAShortcodes {
 						$tax_operator = $attr_value;
 					}
 				}
-				
+
 				$tax_include_children = true;
 				if ( isset( $attr['tax_include_children'] ) ) {
 					if ( 'FALSE' == strtoupper( $attr['tax_include_children'] ) ) {
 						$tax_include_children = false;
 					}
 				}
-				
+
 				foreach( $simple_tax_queries as $key => $value ) {
 					$tax_query[] =	array( 'taxonomy' => $key, 'field' => 'slug', 'terms' => explode( ',', $value ), 'operator' => $tax_operator, 'include_children' => $tax_include_children );
 				}
-				
+
 				$query_arguments['tax_query'] = $tax_query;
 			} else {
 				// exactly one simple query is present
@@ -3212,10 +3206,10 @@ class MLAShortcodes {
 					} else {
 						$value = array_filter( array_map( 'intval', explode( ",", $value ) ) );
 					}
-				
+
 					if ( ! empty( $value ) ) {
 						$query_arguments[ $key ] = $value;
-	
+
 						if ( ! $children_ok ) {
 							$use_children = false;
 						}
@@ -3499,7 +3493,7 @@ class MLAShortcodes {
 
 			if ( ! empty( MLAData::$search_parameters['mla_terms_phrases'] ) ) {
 				MLAData::$search_parameters['mla_terms_search']['phrases'] = MLAData::$search_parameters['mla_terms_phrases'];
-				
+
 				if ( empty( MLAData::$search_parameters['mla_phrase_connector'] ) ) {
 					MLAData::$search_parameters['mla_terms_search']['radio_phrases'] = 'AND';
 				} else {
@@ -3512,12 +3506,12 @@ class MLAShortcodes {
 					MLAData::$search_parameters['mla_terms_search']['radio_terms'] = MLAData::$search_parameters['mla_phrase_connector'];
 				}
 			}
-			
+
 			unset( MLAData::$search_parameters['mla_terms_phrases'] );
 			unset( MLAData::$search_parameters['mla_terms_taxonomies'] );
 			unset( MLAData::$search_parameters['mla_phrase_connector'] );
 			unset( MLAData::$search_parameters['mla_term_connector'] );
-			
+
 			if ( empty( MLAData::$search_parameters['mla_search_fields'] ) ) {
 				MLAData::$search_parameters['mla_search_fields'] = array( 'title', 'content' );
 			} else {
@@ -3541,19 +3535,19 @@ class MLAShortcodes {
 					} // terms in search fields
 				}
 			} // mla_search_fields present
-			
+
 			if ( empty( MLAData::$search_parameters['mla_search_connector'] ) ) {
 				MLAData::$search_parameters['mla_search_connector'] = 'AND';
 			}
-			
+
 			if ( empty( MLAData::$search_parameters['sentence'] ) ) {
 				MLAData::$search_parameters['sentence'] = false;
 			}
-			
+
 			if ( empty( MLAData::$search_parameters['exact'] ) ) {
 				MLAData::$search_parameters['exact'] = false;
 			}
-			
+
 			MLAData::$search_parameters['debug'] = self::$mla_debug ? 'shortcode' : 'none';
 
 			add_filter( 'posts_search', 'MLAData::mla_query_posts_search_filter', 10, 2 );
@@ -3912,9 +3906,9 @@ class MLAShortcodes {
 				$arguments['orderby'] = 'none';
 			}
 		}
-		
+
 		$clauses['fields'] = $arguments['fields'];
-		
+
 		$clause = array ( 'INNER JOIN `' . $wpdb->term_taxonomy . '` AS tt ON t.term_id = tt.term_id' );
 		$clause_parameters = array();
 
@@ -3955,7 +3949,7 @@ class MLAShortcodes {
 
 			$clause[] = 'AND p.post_status IN (' . join( ',', $placeholders ) . ')';
 		}
-		
+
 		$clause =  join(' ', $clause);
 		$clauses['join'] = $wpdb->prepare( $clause, $clause_parameters );
 
@@ -4061,7 +4055,7 @@ class MLAShortcodes {
 		if ( 'DESC' != $order ) {
 			$order = 'ASC';
 		}
-		
+
 		$clauses['order'] = $order;
 		$clauses['orderby'] = "ORDER BY {$orderby}";
 
@@ -4075,7 +4069,7 @@ class MLAShortcodes {
 			} else {
 				$binary_keys = array();
 			}
-			
+
 			$allowed_keys = array(
 				'empty_orderby_default' => 'name',
 				'count' => 'count',
@@ -4105,7 +4099,7 @@ class MLAShortcodes {
 		}
 
 		$clauses = apply_filters( 'mla_get_terms_clauses', $clauses );
-		
+
 		/*
 		 * Build the final query
 		 */
@@ -4116,7 +4110,7 @@ class MLAShortcodes {
 		$query[] = 'WHERE (';
 		$query[] = $clauses['where'];
 		$query[] = ') GROUP BY tt.term_taxonomy_id';
-		
+
 		$clause_parameters = absint( $arguments['minimum'] );
 		if ( 0 < $clause_parameters ) {
 			$query[] = "HAVING count >= {$clause_parameters}";
@@ -4129,7 +4123,7 @@ class MLAShortcodes {
 		if ( ! ( $arguments['no_orderby'] || $no_count ) ) {
 			$query[] = 'ORDER BY count DESC, t.term_id ASC';
 		}
-		
+
 		/*
 		 * Limit the total number of terms returned
 		 */
@@ -4137,7 +4131,7 @@ class MLAShortcodes {
 		if ( 0 < $terms_limit ) {
 			$query[] = "LIMIT {$terms_limit}";
 		}
-		
+
 		/*
 		 * $final_clauses, if present, require an SQL subquery
 		 */
@@ -4146,7 +4140,7 @@ class MLAShortcodes {
 			$final_clauses[] = $clauses['orderby'];
 			$final_clauses[] = $clauses['order'];
 		}
-		
+
 		if ( '' !== $clauses['limits'] ) {
 			$final_clauses[] = $clauses['limits'];
 		}

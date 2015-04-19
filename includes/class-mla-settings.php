@@ -319,7 +319,7 @@ class MLASettings {
 	 */
 	public static function mla_admin_enqueue_scripts_action( $page_hook ) {
 		global $wpdb;
-		
+
 		/*
 		 * Without a tab value, there's nothing to do
 		 */
@@ -340,7 +340,7 @@ class MLASettings {
 			'comma' => _x( ',', 'tag_delimiter', 'media-library-assistant' ),
 			'ajax_nonce' => wp_create_nonce( MLA::MLA_ADMIN_NONCE ) 
 		);
-		
+
 		$mapping_variables = array(
 			'page' => 'mla-settings-menu-custom_field',
 			'mla_tab' => 'custom_field',
@@ -711,14 +711,14 @@ class MLASettings {
 		/*
 		 * Check for action or submit buttons.
 		 */
-		
+
 		if ( isset( $_REQUEST['custom_field_mapping'] ) && is_array( $_REQUEST['custom_field_mapping'] ) ) {
 			/*
 			 * Find the current chunk
 			 */
 			$offset = isset( $_REQUEST['offset'] ) ? $_REQUEST['offset'] : 0;
 			$length = isset( $_REQUEST['length'] ) ? $_REQUEST['length'] : 0;
-			
+
 			/*
 			 * Check for page-level submit button to map attachments.
 			 */
@@ -738,7 +738,7 @@ class MLASettings {
 				 */
 				foreach ( $_REQUEST['custom_field_mapping'] as $key => $value ) {
 					$value = stripslashes_deep( $value );
-					
+
 					if ( isset( $value['action'] ) ) {
 						$settings = array( $key => $value );
 						foreach ( $value['action'] as $action => $label ) {
@@ -757,7 +757,7 @@ class MLASettings {
 										$page_content['message'] = __( 'Custom field no mapping rule changes detected.', 'media-library-assistant' );
 										break;
 									}
-									
+
 									if ( 0 == $offset ) {
 										$page_content = self::_save_custom_field_settings( $settings );
 										if ( false !== strpos( $page_content['message'], __( 'ERROR', 'media-library-assistant' ) ) ) {
@@ -767,7 +767,7 @@ class MLASettings {
 											break;
 										}
 									}
-									
+
 									$current_values = MLAOptions::mla_get_option( 'custom_field_mapping' );
 									$settings = array( $value['name'] => $current_values[$value['name']] );
 									$map_content = self::_process_custom_field_mapping( $settings, $offset, $length );
@@ -838,7 +838,7 @@ class MLASettings {
 					}
 			}
 		}
-		
+
 		/*
 		 * Check for action or submit buttons.
 		 */
@@ -848,7 +848,7 @@ class MLASettings {
 			 */
 			$offset = isset( $_REQUEST['offset'] ) ? $_REQUEST['offset'] : 0;
 			$length = isset( $_REQUEST['length'] ) ? $_REQUEST['length'] : 0;
-			
+
 			/*
 			 * Check for page-level submit button to map attachments.
 			 */
@@ -872,7 +872,7 @@ class MLASettings {
 				 */
 				foreach ( $_REQUEST['iptc_exif_mapping']['custom'] as $key => $value ) {
 					$value = stripslashes_deep( $value );
-					
+
 					if ( isset( $value['action'] ) ) {
 						$settings = array( 'custom' => array( $key => $value ) );
 						foreach ( $value['action'] as $action => $label ) {
@@ -891,7 +891,7 @@ class MLASettings {
 										$page_content['message'] = __( 'IPTC/EXIF no mapping changes detected.', 'media-library-assistant' );
 										break;
 									}
-									
+
 									if ( 0 == $offset ) {
 										$page_content = self::_save_iptc_exif_custom_settings( $settings );
 										if ( false !== strpos( $page_content['message'], __( 'ERROR', 'media-library-assistant' ) ) ) {
@@ -1256,7 +1256,7 @@ class MLASettings {
 		if ( 0 == ( MLA_DEBUG_LEVEL & 1 ) ) {
 			unset ( $results['debug'] );
 		}
-		
+
 		return apply_filters( 'mla_get_options_tablist', $results, self::$mla_tablist, $tab );
 	}
 
@@ -2640,7 +2640,7 @@ class MLASettings {
 				 */
 				foreach ( $_REQUEST['custom_field_mapping'] as $key => $value ) {
 					$value = stripslashes_deep( $value );
-					
+
 					if ( isset( $value['action'] ) ) {
 						$settings = array( $key => $value );
 						foreach ( $value['action'] as $action => $label ) {
@@ -2782,7 +2782,7 @@ class MLASettings {
 				 */
 				foreach ( $_REQUEST['iptc_exif_mapping']['custom'] as $key => $value ) {
 					$value = stripslashes_deep( $value );
-					
+
 					if ( isset( $value['action'] ) ) {
 						$settings = array( 'custom' => array( $key => $value ) );
 						foreach ( $value['action'] as $action => $label ) {
@@ -2982,7 +2982,7 @@ class MLASettings {
 			check_admin_referer( MLA::MLA_ADMIN_NONCE, '_wpnonce' );
 			$page_content = self::_save_debug_settings();
 		}
-		
+
 		/*
 		 * Start with any page-level options
 		 */
@@ -3160,7 +3160,7 @@ class MLASettings {
 					} else {
 						$checkbox_changed = "unchecked" != $old_value;
 					}
-					
+
 					if ( $checkbox_changed ) {
 						$settings_changed = true;
 						$message_list .= self::_update_option_row( $key, $value );
@@ -3775,7 +3775,7 @@ class MLASettings {
 			$source = 'iptc_exif_custom_rule';
 			$settings = stripslashes_deep( $settings );
 		}
-		
+
 		if ( empty( $settings['custom'] ) ) {
 			return array(
 				/* translators: 1: ERROR tag 2: field type */

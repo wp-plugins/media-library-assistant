@@ -7,16 +7,16 @@
  * Adapted from /wp-admin/css/edit.css and given unique names to avoid conflicts.
  */
 
-.media-toolbar {
+.attachments-browser .media-toolbar {
 	overflow: visible;
 }
 
-.media-toolbar-secondary {
+.attachments-browser .media-toolbar .media-toolbar-secondary {
 	width: 50%;
 	max-width: 50%;
 }
 
-.media-toolbar-primary {
+.attachments-browser .media-toolbar .media-toolbar-primary {
 	width: 50%;
 	max-width: 50%;
 }

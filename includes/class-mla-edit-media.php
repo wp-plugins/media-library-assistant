@@ -88,7 +88,7 @@ class MLAEdit {
 		if ( ( 'checked' == MLAOptions::mla_get_option( 'enable_featured_image' ) ) && current_theme_supports( 'post-thumbnails', 'attachment' ) ) {
 			$edit_media_support[] = 'thumbnail';
 		}
-		
+
 		add_post_type_support( 'attachment', apply_filters( 'mla_edit_media_support', $edit_media_support ) );
 
 		/*
@@ -170,17 +170,17 @@ class MLAEdit {
 		if ( 'media-new.php' == $page_hook && ( 'checked' == MLAOptions::mla_get_option( MLAOptions::MLA_ADD_NEW_BULK_EDIT ) ) ) {
 			wp_register_style( 'mla-add-new-bulk-edit', MLA_PLUGIN_URL . 'css/mla-add-new-bulk-edit.css', false, MLA::CURRENT_MLA_VERSION );
 			wp_enqueue_style( 'mla-add-new-bulk-edit' );
-	
+
 			wp_register_style( 'mla-add-new-bulk-edit' . '-set-parent', MLA_PLUGIN_URL . 'css/mla-style-set-parent.css', false, MLA::CURRENT_MLA_VERSION );
 			wp_enqueue_style( 'mla-add-new-bulk-edit' . '-set-parent' );
-	
+
 			// 'suggest' loads the script for flat taxonomy auto-complete/suggested matches
 			wp_enqueue_script( 'mla-add-new-bulk-edit-scripts', MLA_PLUGIN_URL . "js/mla-add-new-bulk-edit-scripts{$suffix}.js", 
 				array( 'suggest', 'jquery' ), MLA::CURRENT_MLA_VERSION, false );
-	
+
 			wp_enqueue_script( 'mla-add-new-bulk-edit-scripts' . '-set-parent', MLA_PLUGIN_URL . "js/mla-set-parent-scripts{$suffix}.js", 
 				array( 'mla-add-new-bulk-edit-scripts', 'jquery' ), MLA::CURRENT_MLA_VERSION, false );
-	
+
 			$script_variables = array(
 				'uploadTitle' => __( 'Upload New Media items', 'media-library-assistant' ),
 				'comma' => _x( ',', 'tag_delimiter', 'media-library-assistant' ),
@@ -190,20 +190,20 @@ class MLAEdit {
 				'toggleOpen' => __( 'Open Bulk Edit area', 'media-library-assistant' ),
 				'toggleClose' => __( 'Close Bulk Edit area', 'media-library-assistant' ),
 			);
-	
+
 			if ( version_compare( get_bloginfo( 'version' ), '3.8', '>=' ) ) {
 				$script_variables['useDashicons'] = true;
 			}
-	
+
 			wp_localize_script( 'mla-add-new-bulk-edit-scripts', 'mla_add_new_bulk_edit_vars', $script_variables );
 
 			// Filter the media upload post parameters.
 			// @param array $post_params An array of media upload parameters used by Plupload.
 			add_filter( 'upload_post_params', 'MLAEdit::mla_upload_post_params', 10, 1 );
-			
+
 			// Fires on the post upload UI screen; legacy (pre-3.5.0) upload interface.
 			add_action( 'post-upload-ui', 'MLAEdit::mla_post_upload_ui' );
-		
+
 			return;
 		} // media-new.php
 
@@ -424,7 +424,7 @@ class MLAEdit {
 			'Select' => __( 'Select', 'media-library-assistant' ),
 			'set_parent_form' => $set_parent_form,
 		);
-		
+
 		echo MLAData::mla_parse_template( $page_template_array['page'], $page_values );
 	}
 
@@ -469,7 +469,7 @@ class MLAEdit {
 			if ( !isset( $args['tax_input'] ) ) {
 				$args['tax_input'] = array();
 			}
-	
+
 			if ( isset( $args['post_category'] ) ) {
 				$args['tax_input']['category'] = $args['post_category'];
 				unset ( $args['post_category'] );
@@ -479,13 +479,13 @@ class MLAEdit {
 			 * Pass the ID
 			 */
 			$args['cb_attachment'] = array( $post_id );
-			
+
 			$item_content = MLA::mla_process_bulk_action( 'edit', $args );
 		}
 
 		return $data;
 	} // mla_update_attachment_metadata_postfilter
-	
+
 	/**
 	 * Adds mapping update messages for display at the top of the Edit Media screen.
 	 * Declared public because it is a filter.
@@ -606,7 +606,7 @@ class MLAEdit {
 			if ( isset( $active_boxes['mla-parent-info'] ) ) {
 				add_meta_box( 'mla-parent-info', __( 'Parent Info', 'media-library-assistant' ), 'MLAEdit::mla_parent_info_handler', 'attachment', 'normal', 'core' );
 			}
-			
+
 			if ( isset( $active_boxes['mla-menu-order'] ) ) {
 				add_meta_box( 'mla-menu-order', __( 'Menu Order', 'media-library-assistant' ), 'MLAEdit::mla_menu_order_handler', 'attachment', 'normal', 'core' );
 			}

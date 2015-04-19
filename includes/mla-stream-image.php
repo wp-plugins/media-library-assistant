@@ -34,7 +34,7 @@ class MLAStreamImage {
 	 */
 	private static function _get_temp_file( $extension = '.tmp' ) {
 		static $temp = NULL;
-	
+
 		/*
 		 * Find a temp directory
 		 */
@@ -56,7 +56,7 @@ class MLAStreamImage {
 				}
 			}
 		}
-		
+
 		/*
 		 * Create a unique file
 		 */
@@ -65,11 +65,11 @@ class MLAStreamImage {
 		if ( $f === false ) {
 			return false;
 		}
-		
+
 		fclose( $f );
 		return $path;
 	}
-	
+
 	/**
 	 * @var Imagick
 	 */
@@ -89,18 +89,15 @@ class MLAStreamImage {
 	 * @return	boolean	true if conversion succeeds else false
 	 */
 	private static function _ghostscript_convert( $file, $frame, $resolution, $output_type, $explicit_path = '' ) {
-//error_log( __LINE__ . ' _ghostscript_convert entered', 0 );
 		/*
 		 * Look for exec() - from http://stackoverflow.com/a/12980534/866618
 		 */
 		if ( ini_get('safe_mode') ) {
-//error_log( __LINE__ . ' _ghostscript_convert safe_mode', 0 );
 			return false;
 		}
-		
+
 		$blacklist = preg_split( '/,\s*/', ini_get('disable_functions') . ',' . ini_get('suhosin.executor.func.blacklist') );
 		if ( in_array('exec', $blacklist) ) {
-//error_log( __LINE__ . ' _ghostscript_convert blacklist', 0 );
 			return false;
 		}
 
@@ -109,75 +106,62 @@ class MLAStreamImage {
 		 */
 		$ghostscript_path = NULL;
 		do {
-			
+
 			if ( 'WIN' === strtoupper( substr( PHP_OS, 0, 3) ) ) {
 				if ( ! empty( $explicit_path ) ) {
 					$ghostscript_path = exec( 'dir /o:n/s/b "' . $explicit_path . '"' );
-//error_log( __LINE__ . ' _ghostscript_convert explicit path = ' . var_export( $explicit_path, true ), 0 );
-//error_log( __LINE__ . ' _ghostscript_convert ghostscript path = ' . var_export( $ghostscript_path, true ), 0 );
 					if ( ! empty( $ghostscript_path ) ) {
-//error_log( __LINE__ . ' _ghostscript_convert found in explicit path', 0 );
 						break;
 					} else {
 						$ghostscript_path = NULL;
 						break;
 					}
 				}
-				
+
 				if ( $ghostscript_path = getenv('GSC') ) {
-//error_log( __LINE__ . ' _ghostscript_convert found environment variable', 0 );
 					break;
 				}
-				
+
 				$ghostscript_path = exec('where gswin*c.exe');
 				if ( ! empty( $ghostscript_path ) ) {
-//error_log( __LINE__ . ' _ghostscript_convert found in path', 0 );
 					break;
 				}
-				
+
 				$ghostscript_path = exec('dir /o:n/s/b "C:\Program Files\gs\*gswin*c.exe"');
 				if ( ! empty( $ghostscript_path ) ) {
-//error_log( __LINE__ . ' _ghostscript_convert found in Program Files', 0 );
 					break;
 				}
-				
+
 				$ghostscript_path = exec('dir /o:n/s/b "C:\Program Files (x86)\gs\*gswin32c.exe"');
 				if ( ! empty( $ghostscript_path ) ) {
-//error_log( __LINE__ . ' _ghostscript_convert found in Program Files (x86)', 0 );
 					break;
 				}
-	
-//error_log( __LINE__ . ' _ghostscript_convert not found on Windows', 0 );
+
 				$ghostscript_path = NULL;
 				break;
 			} // Windows platform
-				
+
 			if ( ! empty( $explicit_path ) ) {
 				exec( 'test -e ' . $explicit_path, $dummy, $ghostscript_path );
 				if ( $explicit_path !== $ghostscript_path ) {
 					$ghostscript_path = NULL;
 				}
 
-//error_log( __LINE__ . ' _ghostscript_convert explicit path = ' . var_export( $explicit_path, true ), 0 );
-//error_log( __LINE__ . ' _ghostscript_convert ghostscript path = ' . var_export( $ghostscript_path, true ), 0 );
 				break;
 			}
-	
+
 			$ghostscript_path = exec('which gs');
 			if ( ! empty( $ghostscript_path ) ) {
-//error_log( __LINE__ . ' _ghostscript_convert found with which gs', 0 );
 				break;
 			}
-			
+
 			$test_path = '/usr/bin/gs';
 			exec('test -e ' . $test_path, $dummy, $ghostscript_path);
-//error_log( __LINE__ . " _ghostscript_convert exec test returns '{$ghostscript_path}'", 0 );
-			
+
 			if ( $test_path !== $ghostscript_path ) {
 				$ghostscript_path = NULL;
 			}
 		} while ( false );
-//error_log( __LINE__ . " ghostscript path =  '{$ghostscript_path}'", 0 );
 
 		if ( isset( $ghostscript_path ) ) {
 			if ( 'image/jpeg' == $output_type ) {
@@ -187,32 +171,29 @@ class MLAStreamImage {
 				$device = 'png16m';
 				$extension = '.png';
 			}
-			
+
 			/*
 			 * Generate a unique temporary file name
 			 */
 			$output_file = self::_get_temp_file( $extension );
-//error_log( __LINE__ . " _ghostscript_convert exec output_file =  " . var_export( $output_file, true ), 0 );
-			
+
 			$cmd = escapeshellarg( $ghostscript_path ) . ' -sDEVICE=%1$s -r%2$dx%2$d -dFirstPage=%3$d -dLastPage=%3$d -dFitPage -o %4$s %5$s 2>&1';
 			$cmd = sprintf( $cmd, $device, $resolution, ( $frame + 1 ), escapeshellarg( $output_file ), escapeshellarg( $file ) );
-//error_log( __LINE__ . " exec input =  " . var_export( $cmd, true ), 0 );
 			exec( $cmd, $stdout, $return );
 			if ( 0 != $return ) {
-				//error_log( __LINE__ . " _ghostscript_convert exec returned '{$return}, cmd = " . var_export( $cmd, true ), 0 );
-				//error_log( __LINE__ . " _ghostscript_convert exec returned '{$return}, details = " . var_export( $stdout, true ), 0 );
+				error_log( "ERROR: _ghostscript_convert exec returned '{$return}, cmd = " . var_export( $cmd, true ), 0 );
+				error_log( "ERROR: _ghostscript_convert exec returned '{$return}, details = " . var_export( $stdout, true ), 0 );
 				return false;
 			}
-			
+
 			try {
-//error_log( __LINE__ . " readImage =  " . var_export( $output_file, true ), 0 );
 				self::$image->readImage( $output_file );
 			}
 			catch ( Exception $e ) {
-				error_log( __LINE__ . " _ghostscript_convert readImage Exception = " . var_export( $e->getMessage(), true ), 0 );
+				error_log( "ERROR: _ghostscript_convert readImage Exception = " . var_export( $e->getMessage(), true ), 0 );
 				return false;
 			}
-			
+
 			@unlink( $output_file );
 			return true;
 		} // found Ghostscript
@@ -241,7 +222,7 @@ class MLAStreamImage {
 			} elseif ( 0 < $width || 0 < $height ) {
 				// One is set; scale the other one proportionally if reducing
 				$image_size = self::$image->getImageGeometry();
-				
+
 				if ( $width && isset( $image_size['width'] ) && $width < $image_size['width'] ) {
 					self::$image->scaleImage( $width, 0 );
 				} elseif ( $height && isset( $image_size['height'] ) && $height < $image_size['height'] ) {
@@ -262,12 +243,12 @@ class MLAStreamImage {
 				self::$image->setImageCompressionQuality( $quality );
 			}
 		}
-		
+
 		if ( 'image/jpeg' == $type ) {				
 			if ( is_callable( array( self::$image, 'setImageBackgroundColor' ) ) ) {				
 				self::$image->setImageBackgroundColor('white');
 			}
-			
+
 			if ( is_callable( array( self::$image, 'mergeImageLayers' ) ) ) {
 				self::$image = self::$image->mergeImageLayers( imagick::LAYERMETHOD_FLATTEN );
 			} elseif ( is_callable( array( self::$image, 'flattenImages' ) ) ) {				
@@ -289,19 +270,19 @@ class MLAStreamImage {
 	 * @return	void	echos image content and calls exit();
 	 */
 	public static function mla_process_stream_image() {
-//error_log( __LINE__ . " mla_process_stream_image \$_REQUEST =  " . var_export( $_REQUEST, true ), 0 );
-//error_log( __LINE__ . " mla_process_stream_image memory_get_usage =  " . var_export( memory_get_usage ( true ), true ), 0 );
-//$microtime = microtime( true );
-//error_log( __LINE__ . " mla_process_stream_image {$_REQUEST['mla_stream_file']}", 0 );
+		if ( ! class_exists( 'Imagick' ) ) {
+			self::_mla_die( 'Imagick not installed', __LINE__, 500 );
+		}
+
 		if( ini_get( 'zlib.output_compression' ) ) { 
 			ini_set( 'zlib.output_compression', 'Off' );
 		}
-		
+
 		$file = $_REQUEST['mla_stream_file'];
 		if ( ! is_file( $file ) ) {
 			self::_mla_die( 'File not found', __LINE__, 404 );
 		}
-		
+
 		$use_mutex = isset( $_REQUEST['mla_single_thread'] );
 		$width = isset( $_REQUEST['mla_stream_width'] ) ? abs( intval( $_REQUEST['mla_stream_width'] ) ) : 0;
 		$height = isset( $_REQUEST['mla_stream_height'] ) ? abs( intval( $_REQUEST['mla_stream_height'] ) ) : 0;
@@ -316,21 +297,18 @@ class MLAStreamImage {
 		$ghostscript_path = isset( $_REQUEST['mla_ghostscript_path'] ) ? $_REQUEST['mla_ghostscript_path'] : '';
 		if ( ! empty( $ghostscript_path ) ) {
 			$ghostscript_path = @file_get_contents( dirname( __FILE__ ) . '/' . 'mla-ghostscript-path.txt' );
-//error_log( __LINE__ . " mla_process_stream_image explicit ghostscript_path = " . var_export( $ghostscript_path, true ), 0 );
 		}
-	
+
 		if ( $use_mutex ) {
 			$temp_file = self::_get_temp_file();
 			@unlink( $temp_file );
 			$temp_file = pathinfo( $temp_file, PATHINFO_DIRNAME ) . '/mla-mutex.txt';
-	
+
 			$mutex = new MLAMutex();
 			$mutex->init( 1, $temp_file );
 			$mutex->acquire();
-//$acquired = microtime( true ) - $microtime;
-//error_log( __LINE__ . " mla_process_stream_image {$_REQUEST['mla_stream_file']} acquired at {$acquired}", 0 );
 		}
-		
+
 		/*
 		 * Convert the file to an image format and load it
 		 */
@@ -347,8 +325,7 @@ class MLAStreamImage {
 
 			//$result = false;
 			$result = self::_ghostscript_convert( $file, $frame, $resolution, $type, $ghostscript_path );
-//error_log( __LINE__ . " mla_process_stream_image _ghostscript_convert result {$result}", 0 );
-			
+
 			if ( false === $result ) {
 				try {
 					self::$image->readImage( $file . '[' . $frame . ']' );
@@ -365,7 +342,7 @@ class MLAStreamImage {
 
 				self::$image->setImageFormat( $extension );
 			}
-		
+
 			if ( ! self::$image->valid() ) {
 				self::_mla_die( 'File not loaded', __LINE__, 404 );
 			}
@@ -383,7 +360,7 @@ class MLAStreamImage {
 			} else {
 				$best_fit = false;
 			}
-			
+
 			self::_prepare_image( $width, $height, $best_fit, $type, $quality );
 			}
 		catch ( Exception $e ) {
@@ -400,20 +377,14 @@ class MLAStreamImage {
 		catch ( Exception $e ) {
 			self::_mla_die( 'Image stream exception: ' . $e->getMessage(), __LINE__, 500 );
 		}
-			
+
 		if ( $use_mutex ) {
 			$mutex->release();
-//$elapsed = ( $released = microtime( true ) - $microtime ) - $acquired;
-//error_log( __LINE__ . " mla_process_stream_image {$_REQUEST['mla_stream_file']} released at {$released} after {$elapsed}", 0 );
 		}
-		
-//error_log( __LINE__ . " mla_process_stream_image memory_get_usage =  " . var_export( memory_get_usage ( true ), true ), 0 );
-//		unset( self::$image );
-//$elapsed = ( $unset = microtime( true ) - $microtime ) - $released;
-//error_log( __LINE__ . " mla_process_stream_image {$_REQUEST['mla_stream_file']} exit at {$unset} after {$elapsed}", 0 );
+
 		exit();
 	}
-	
+
 	/**
 	 * Abort the operation and exit
 	 *
@@ -438,7 +409,7 @@ class MLAMutex {
 	private $use_file_lock = false;
 	private $filename = '';
 	private $filepointer;
-	
+
 	function __construct( $use_lock = false ) 	{
 		/*
 		 * If sem_ functions are not available require file locking
@@ -446,81 +417,74 @@ class MLAMutex {
 		if ( ! is_callable( 'sem_get' ) ) {
 			$use_lock = true;
 		}
-		
+
 		if ( $use_lock || 'WIN' == substr( PHP_OS, 0, 3 ) ) {
 			$this->use_file_lock = true;
 		}
 	}
-	
+
 	public function init( $id, $filename = '' ) {
 		$this->id = $id;
-		
+
 		if( $this->use_file_lock ) {
 			if( empty( $filename ) ) {
-				//error_log( __LINE__ . ' MLAMutex::init no filename specified', 0 );
 				return false;
 			} else {
 				$this->filename = $filename;
 			}
 		} else {
 			if( ! ( $this->sem_id = sem_get( $this->id, 1) ) ) {
-				//error_log( __LINE__ . ' MLAMutex::init error getting semaphore', 0 );
 				return false;
 			}
 		}
-		
+
 		return true;
 	}
-	
+
 	public function acquire() {
 		if( $this->use_file_lock ) {
 			if ( empty( $this->filename ) ) {
 				return true;
 			}
-			
+
 			if( false == ( $this->filepointer = @fopen( $this->filename, "w+" ) ) ) {
-				//error_log( __LINE__ . ' MLAMutex::acquire error opening mutex file', 0 );
 				return false;
 			}
-		
+
 			if( false == flock( $this->filepointer, LOCK_EX ) ) {
-				//error_log( __LINE__ . ' MLAMutex::acquire error locking mutex file', 0 );
 				return false;
 			}
 		} else {
 			if ( ! sem_acquire( $this->sem_id ) ) {
-				//error_log( __LINE__ . ' MLAMutex::acquire error acquiring semaphore', 0 );
 				return false;
 			}
 		}
-		
+
 		$this->is_acquired = true;
 		return true;
 	}
-	
+
 	public function release() {
 		if( ! $this->is_acquired ) {
 			return true;
 		}
-		
+
 		if( $this->use_file_lock ) {
 			if( false == flock( $this->filepointer, LOCK_UN ) ) {
-				//error_log( __LINE__ . ' MLAMutex::release error unlocking mutex file', 0 );
 				return false;
 			}
-		
+
 			fclose( $this->filepointer );
 		} else {
 			if ( ! sem_release( $this->sem_id ) ) {
-				//error_log( __LINE__ . ' MLAMutex::release error releasing semaphore', 0 );
 				return false;
 			}
 		}
-		
+
 		$this->is_acquired = false;
 		return true;
 	}
-	
+
 	public function getId() {
 		return $this->sem_id;
 	}

@@ -38,7 +38,7 @@ class MLA {
 	 *
 	 * @var	string
 	 */
-	const MLA_DEVELOPMENT_VERSION = '20150417';
+	const MLA_DEVELOPMENT_VERSION = '20150418';
 
 	/**
 	 * Slug for registering and enqueueing plugin style sheet
@@ -779,9 +779,9 @@ class MLA {
 			if( ini_get( 'zlib.output_compression' ) ) { 
 				ini_set( 'zlib.output_compression', 'Off' );
 			}
-			
+
 			$file_name = stripslashes( $_REQUEST['mla_download_file'] );
-		
+
 			header('Pragma: public'); 	// required
 			header('Expires: 0');		// no cache
 			header('Cache-Control: must-revalidate, post-check=0, pre-check=0');
@@ -792,18 +792,18 @@ class MLA {
 			header('Content-Transfer-Encoding: binary');
 			header('Content-Length: '.filesize( $file_name ));	// provide file size
 			header('Connection: close');
-		
+
 			readfile( $file_name );
-		
+
 			if ( isset( $_REQUEST['mla_download_disposition'] ) && 'delete' == $_REQUEST['mla_download_disposition'] ) {
 				@unlink( $file_name );
 			}
-			
+
 			exit();
 		} else {
 			$message = __( 'ERROR', 'media-library-assistant' ) . ': ' . 'download argument(s) not set.';
 		}
-		
+
 		echo '<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">';
 		echo '<html xmlns="http://www.w3.org/1999/xhtml">';
 		echo '<head>';
@@ -866,7 +866,7 @@ class MLA {
 	public static function mla_process_bulk_action( $bulk_action, $request = NULL ) {
 		$page_content = array( 'message' => '', 'body' => '', 'unchanged' => 0, 'success' => 0, 'failure' => 0, 'item_results' => array() );
 		$custom_field_map = MLAOptions::mla_custom_field_support( 'bulk_edit' );
-		
+
 		/*
 		 * do_cleanup will remove the bulk edit elements from the $_REQUEST super array.
 		 * It is passed in the $request so it can be filtered.
@@ -877,9 +877,9 @@ class MLA {
 		} else {
 			$request['mla_bulk_action_do_cleanup'] = false;
 		}
-		
+
 		$request = apply_filters( 'mla_list_table_bulk_action_initial_request', $request, $bulk_action, $custom_field_map );
-		
+
 		if ( isset( $request['cb_attachment'] ) ) {
 			$item_content = apply_filters( 'mla_list_table_begin_bulk_action', NULL, $bulk_action );
 			if ( is_null( $item_content ) ) {
@@ -896,10 +896,10 @@ class MLA {
 				if ( isset( $item_content['body'] ) ) {
 					$page_content['body'] = $item_content['body'];
 				}
-				
+
 				return $page_content;
 			}
-			
+
 			if ( !empty( $request['bulk_custom_field_map'] ) ) {
 				do_action( 'mla_begin_mapping', 'bulk_custom', NULL );
 			} elseif ( !empty( $request['bulk_map'] ) ) {
@@ -913,7 +913,7 @@ class MLA {
 				}
 
 				$request = apply_filters( 'mla_list_table_bulk_action_item_request', $request, $bulk_action, $post_id, $custom_field_map );
-		
+
 				$item_content = apply_filters( 'mla_list_table_bulk_action', NULL, $bulk_action, $post_id );
 				if ( is_null( $item_content ) ) {
 					$prevent_default = false;
@@ -922,7 +922,7 @@ class MLA {
 					$prevent_default = isset( $item_content['prevent_default'] ) ? $item_content['prevent_default'] : false;
 					$custom_message = isset( $item_content['message'] ) ? $item_content['message'] : '';
 				}
-	
+
 				if ( ! $prevent_default ) {
 					switch ( $bulk_action ) {
 						case 'delete':
@@ -1056,7 +1056,7 @@ class MLA {
 									if ( ',' !== $comma ) {
 										$tags = str_replace( $comma, ',', $terms );
 									}
-						
+
 									$fragments = explode( ',', trim( $terms, " \n\t\r\0\x0B," ) );
 									$terms = array();
 									foreach( $fragments as $fragment ) {
@@ -1087,7 +1087,7 @@ class MLA {
 										$current_terms[ $new_term->name ] =  $new_term->name;
 									}
 								}
-								
+
 								if ( 'add' == $tax_action ) {
 									/*
 									 * Add new terms; remove existing terms
@@ -1097,7 +1097,7 @@ class MLA {
 											unset( $terms[ $index ] );
 										}
 									}
-									
+
 									$do_update = ! empty( $terms );
 								} elseif ( 'remove' == $tax_action ) {
 									/*
@@ -1108,7 +1108,7 @@ class MLA {
 											unset( $terms[ $index ] );
 										}
 									}
-									
+
 									$do_update = ! empty( $terms );
 								} else { 
 									/*
@@ -1123,7 +1123,7 @@ class MLA {
 											break; // not a match; stop checking
 										}
 									}
-									
+
 									$do_update = ! empty( $current_terms );
 								}
 
@@ -1142,7 +1142,7 @@ class MLA {
 							break;
 						default:
 							$item_content = apply_filters( 'mla_list_table_custom_bulk_action', NULL, $bulk_action, $post_id );
-	
+
 							if ( is_null( $item_content ) ) {
 								$prevent_default = false;
 								/* translators: 1: ERROR tag 2: bulk action */
@@ -1152,7 +1152,7 @@ class MLA {
 							}
 					} // switch $bulk_action
 				} // ! $prevent_default
-				
+
 				// Custom action can set $prevent_default, so test again.
 				if ( ! $prevent_default ) {
 					if ( ! empty( $custom_message ) ) {
@@ -1163,11 +1163,11 @@ class MLA {
 							$item_content['message'] = $custom_message . '<br>' . $item_content['message'];
 						}
 					}
-	
+
 					$page_content['item_results'][ $post_id ] = array( 'result' => 'unknown', 'message' => $item_content['message'] );
 					if ( ! empty( $item_content['message'] ) ) {
 						$page_content['message'] .= $item_content['message'] . '<br>';
-	
+
 						if ( false !== strpos( $item_content['message'], __( 'no changes detected', 'media-library-assistant' ) ) ) {
 							$page_content['unchanged'] += 1;
 							$page_content['item_results'][ $post_id ]['result'] = 'unchanged';
@@ -1206,10 +1206,10 @@ class MLA {
 				unset( $_REQUEST['post_author'] );
 				unset( $_REQUEST['tax_input'] );
 				unset( $_REQUEST['tax_action'] );
-	
+
 				foreach (MLAOptions::mla_custom_field_support( 'bulk_edit' ) as $slug => $label )
 					unset( $_REQUEST[ $slug ] );
-	
+
 				unset( $_REQUEST['cb_attachment'] );
 			}
 		} else { // isset cb_attachment
@@ -1224,7 +1224,7 @@ class MLA {
 			unset( $_REQUEST['bulk_edit'] );
 			unset( $_REQUEST['action2'] );
 		}
-		
+
 		return $page_content;
 	}
 
@@ -1387,12 +1387,12 @@ class MLA {
 						break;
 					case self::MLA_ADMIN_SET_PARENT:
 						$new_data = array( 'post_parent' => $_REQUEST['found_post_id'] );
-	
+
 						foreach( $_REQUEST['children'] as $child ) {
 							$item_content = MLAData::mla_update_single_item( $child, $new_data );
 							$page_content['message'] .= $item_content['message'] . '<br>';
 						}
-	
+
 						unset( $_REQUEST['parent'] );
 						unset( $_REQUEST['children'] );
 						unset( $_REQUEST['mla-set-parent-ajax-nonce'] );
@@ -1427,7 +1427,7 @@ class MLA {
 						} // Unknown mla_admin_action
 				} // switch ($_REQUEST['mla_admin_action'])
 			} // ! $prevent_default
-			
+
 			if ( ! empty( $custom_message ) ) {
 				$page_content['message'] = $custom_message . $page_content['message'];
 			}
@@ -1534,7 +1534,7 @@ class MLA {
 			//	Fetch, prepare, sort, and filter our data...
 			$MLAListTable->prepare_items();
 			$MLAListTable->views();
-			
+
 			$view_arguments = MLA_List_Table::mla_submenu_arguments();
 			if ( isset( $view_arguments['lang'] ) ) {
 				$form_url = 'upload.php?page=' . self::ADMIN_PAGE_SLUG . '&lang=' . $view_arguments['lang'];
@@ -1750,7 +1750,7 @@ class MLA {
 			case 'bulk_edit':
 				$_REQUEST['bulk_edit'] = __( 'Update', 'media-library-assistant' );
 		}
-		
+
 		$item_content = (object) self::mla_process_bulk_action( 'edit' );
 		wp_send_json_success( $item_content );
 	}
@@ -1842,7 +1842,7 @@ class MLA {
 
 				$tax_output[$tax_name] = $tax_value;
 			} // foreach tax_input
-			
+
 			$_REQUEST['tax_input'] = $tax_output;
 		} // ! empty( $_REQUEST['tax_input'] )
 
@@ -1858,7 +1858,7 @@ class MLA {
 		if ( ! $prevent_default ) {
 			$results = MLAData::mla_update_single_item( $post_id, $_REQUEST, $_REQUEST['tax_input'] );
 		}
-	
+
 		$new_item = (object) MLAData::mla_get_attachment_by_id( $post_id );
 
 		//	Create an instance of our package class and echo the new HTML
@@ -2157,7 +2157,7 @@ class MLA {
 			'Refresh' =>  __( 'Refresh', 'media-library-assistant' ),
 			'set_parent_form' => $set_parent_form,
 		);
-		
+
 		$page_values = apply_filters( 'mla_list_table_inline_values', $page_values );
 		$page_template = apply_filters( 'mla_list_table_inline_template', $page_template_array['page'] );
 		$parse_value = MLAData::mla_parse_template( $page_template, $page_values );

@@ -305,7 +305,7 @@ class MLA_List_Table extends WP_List_Table {
 
 		$submenu_arguments = array();
 		$has_filters = $include_filters;
-		
+
 		/*
 		 * WPML arguments
 		 */
@@ -611,7 +611,7 @@ class MLA_List_Table extends WP_List_Table {
 	 */
 	function column_default( $item, $column_name ) {
 		static $custom_columns = NULL;
-		
+
 		if ( 't_' == substr( $column_name, 0, 2 ) ) {
 			$taxonomy = substr( $column_name, 2 );
 			$tax_object = get_taxonomy( $taxonomy );
@@ -647,7 +647,7 @@ class MLA_List_Table extends WP_List_Table {
 			if ( NULL === $custom_columns ) {
 				$custom_columns = MLAOptions::mla_custom_field_support( 'custom_columns' );
 			}
-			
+
 			$values = get_post_meta( $item->ID, $custom_columns[ $column_name ], false );
 			if ( empty( $values ) ) {
 				return '';
@@ -677,7 +677,7 @@ class MLA_List_Table extends WP_List_Table {
 				return $list[0];
 			}
 		} else { // 'c_'
-		
+
 			$content = apply_filters( 'mla_list_table_column_default', NULL, $item, $column_name );
 			if ( is_null( $content ) ) {
 				//Show the whole array for troubleshooting purposes
@@ -747,10 +747,10 @@ class MLA_List_Table extends WP_List_Table {
 			} else {
 				$view_args = array();
 			}
-			
+
 			$edit_url = '<a href="' . add_query_arg( $view_args, wp_nonce_url( '?mla_admin_action=' . MLA::MLA_ADMIN_SINGLE_EDIT_DISPLAY, MLA::MLA_ADMIN_NONCE ) ) . '" title="' . __( 'Edit this item', 'media-library-assistant' ) . '">' . __( 'Edit', 'media-library-assistant' ) . '</a>';
 		}
-		
+
 		return sprintf( '<a href="%1$s" title="' . __( 'Edit', 'media-library-assistant' ) . ' &#8220;%2$s&#8221;">%3$s</a>', admin_url( $edit_url ), esc_attr( $item->post_title ), $thumb ); 
 	}
 
@@ -781,7 +781,7 @@ class MLA_List_Table extends WP_List_Table {
 			default:
 				$flag = '';
 		}
-		
+
 	return $flag;
 	}
 
@@ -805,7 +805,7 @@ class MLA_List_Table extends WP_List_Table {
 			 */
 			$view_args = array_merge( array( 'page' => MLA::ADMIN_PAGE_SLUG, 'mla_item_ID' => $item->ID ),
 				self::mla_submenu_arguments() );
-				
+
 			if ( isset( $_REQUEST['paged'] ) ) {
 				$view_args['paged'] = $_REQUEST['paged'];
 			}
@@ -828,7 +828,7 @@ class MLA_List_Table extends WP_List_Table {
 					} else {
 						$actions['edit'] = '<a href="' . add_query_arg( $view_args, wp_nonce_url( '?mla_admin_action=' . MLA::MLA_ADMIN_SINGLE_EDIT_DISPLAY, MLA::MLA_ADMIN_NONCE ) ) . '" title="' . __( 'Edit this item', 'media-library-assistant' ) . '">' . __( 'Edit', 'media-library-assistant' ) . '</a>';
 					}
-					
+
 					$actions['inline hide-if-no-js'] = '<a class="editinline" href="#" title="' . __( 'Edit this item inline', 'media-library-assistant' ) . '">' . __( 'Quick Edit', 'media-library-assistant' ) . '</a>';
 				}
 			} // edit_post
@@ -854,7 +854,7 @@ class MLA_List_Table extends WP_List_Table {
 			$actions['view']  = '<a href="' . site_url( ) . '?attachment_id=' . $item->ID . '" rel="permalink" title="' . __( 'View', 'media-library-assistant' ) . ' &#8220;' . esc_attr( $item->post_title ) . '&#8221;">' . __( 'View', 'media-library-assistant' ) . '</a>';
 
 			$actions = apply_filters( 'mla_list_table_build_rollover_actions', $actions, $item, $column );
-		
+
 			$this->rollover_id = $item->ID;
 		} // $this->rollover_id != $item->ID
 
@@ -879,7 +879,7 @@ class MLA_List_Table extends WP_List_Table {
 
 		if ( !empty( $item->mla_wp_attachment_metadata ) ) {
 			$inline_data .= '	<div class="image_alt">';
-			
+
 			if ( isset( $item->mla_wp_attachment_image_alt ) ) {
 				if ( is_array( $item->mla_wp_attachment_image_alt ) ) {
 					$inline_data .= esc_attr( $item->mla_wp_attachment_image_alt[0] );
@@ -887,7 +887,7 @@ class MLA_List_Table extends WP_List_Table {
 					$inline_data .= esc_attr( $item->mla_wp_attachment_image_alt );
 				}
 			}
-			
+
 			$inline_data .= "</div>\r\n";
 		}
 
@@ -949,7 +949,7 @@ class MLA_List_Table extends WP_List_Table {
 		}
 
 		$inline_data = apply_filters( 'mla_list_table_build_inline_data', $inline_data, $item );
-		
+
 		$inline_data .= "</div>\r\n";
 
 		return $inline_data;
@@ -1098,7 +1098,7 @@ class MLA_List_Table extends WP_List_Table {
 		if ( !MLAOptions::$process_featured_in ) {
 			return __( 'Disabled', 'media-library-assistant' );
 		}
-		
+
 		/*
 		 * Move parent to the top of the list
 		 */
@@ -1112,7 +1112,7 @@ class MLA_List_Table extends WP_List_Table {
 		$value = '';
 		foreach ( $features as $feature ) {
 			$status = self::_format_post_status( $feature->post_status );
-			
+
 			if ( $feature->ID == $item->post_parent ) {
 				$parent = ',<br>' . __( 'PARENT', 'media-library-assistant' );
 			} else {
@@ -1158,7 +1158,7 @@ class MLA_List_Table extends WP_List_Table {
 				unset( $inserts[ $item->post_parent ] );
 				array_unshift( $inserts, $parent );
 			}
-			
+
 			foreach ( $inserts as $insert ) {
 				$status = self::_format_post_status( $insert->post_status );
 
@@ -1203,11 +1203,11 @@ class MLA_List_Table extends WP_List_Table {
 			unset( $galleries[ $item->post_parent ] );
 			array_unshift( $galleries, $parent );
 		}
-		
+
 		$value = '';
 		foreach ( $galleries as $ID => $gallery ) {
 			$status = self::_format_post_status( $gallery['post_status'] );
-			
+
 			if ( $gallery['ID'] == $item->post_parent ) {
 				$parent = ',<br>' . __( 'PARENT', 'media-library-assistant' );
 			} else {
@@ -1248,11 +1248,11 @@ class MLA_List_Table extends WP_List_Table {
 			unset( $mla_galleries[ $item->post_parent ] );
 			array_unshift( $mla_galleries, $parent );
 		}
-		
+
 		$value = '';
 		foreach ( $mla_galleries as $gallery ) {
 			$status = self::_format_post_status( $gallery['post_status'] );
-			
+
 			if ( $gallery['ID'] == $item->post_parent ) {
 				$parent = ',<br>' . __( 'PARENT', 'media-library-assistant' );
 			} else {
@@ -1286,7 +1286,7 @@ class MLA_List_Table extends WP_List_Table {
 			} else {
 				$alt_text = $item->mla_wp_attachment_image_alt;
 			}
-			
+
 			return sprintf( '<a href="%1$s" title="' . __( 'Filter by', 'media-library-assistant' ) . ' &#8220;%2$s&#8221;">%3$s</a>', esc_url( add_query_arg( array_merge( self::mla_submenu_arguments( false ), array(
 				'page' => MLA::ADMIN_PAGE_SLUG,
 				'mla-metakey' => '_wp_attachment_image_alt',
@@ -1381,7 +1381,7 @@ class MLA_List_Table extends WP_List_Table {
 	 */
 	function column_date( $item ) {
 		global $post;
-		
+
 		if ( '0000-00-00 00:00:00' == $item->post_date ) {
 			$h_time = __( 'Unpublished', 'media-library-assistant' );
 		} else {
@@ -1540,7 +1540,7 @@ class MLA_List_Table extends WP_List_Table {
 		} else {
 			$columns = self::$default_hidden_columns;
 		}
-		
+
 		return apply_filters( 'mla_list_table_get_hidden_columns', $columns );
 	}
 
@@ -1862,7 +1862,7 @@ class MLA_List_Table extends WP_List_Table {
 		if ( is_null( $total_items ) ) {
 			$total_items = MLAData::mla_count_list_table_items( $_REQUEST, ( ( $current_page - 1 ) * $per_page ), $per_page );
 		}
-		
+
 		/*
 		 * Register the pagination options & calculations.
 		 */

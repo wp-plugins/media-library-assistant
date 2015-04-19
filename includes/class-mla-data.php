@@ -808,11 +808,11 @@ class MLAData {
 	private static function _parse_arguments( $argument_string ) {
 		$argument_string = trim( $argument_string, " \n\t\r\0\x0B," );
 		$arguments = array();
-		
+
 		while ( strlen( $argument_string ) ) {
 			$argument = '';
 			$index = 0;
-			
+
 			// Check for enclosing quotes
 			$delimiter = $argument_string[0];
 			if ( '\'' == $delimiter || '"' == $delimiter ) {
@@ -820,7 +820,7 @@ class MLAData {
 			} else {
 				$delimiter = '';
 			}
-			
+
 			while ( $index < strlen( $argument_string ) ) {
 				$byte = $argument_string[ $index++ ];
 				if ( '\\' == $byte ) {
@@ -850,7 +850,7 @@ class MLAData {
 									$digit_index++;
 								}
 							}
-	
+
 							if ( $digit_count = $digit_index - $index ) {
 								$argument .= chr( octdec( substr( $argument_string, $index, $digit_count ) ) );
 								$index += $digit_count - 1;
@@ -858,13 +858,13 @@ class MLAData {
 								$argument .= $argument_string[ $index ];
 							}
 					} // switch
-	
+
 					$index++;
 				} else { // backslash
 					if ( $delimiter == $byte || ',' == $byte ) {
 						break;
 					}
-	
+
 					$argument .= $byte;
 				} // just another 8-bit value, but check for closing delimiter
 			} // index < strlen
@@ -872,7 +872,7 @@ class MLAData {
 			$arguments[] = $argument;
 			$argument_string = trim( substr( $argument_string, $index ), " \n\t\r\0\x0B," );
 		} // strlen( $argument_string )
-		
+
 		return $arguments;
 	}
 
@@ -918,7 +918,7 @@ class MLAData {
 					} else {
 						$format = $args['args'][0];
 					}
-					
+
 					$show_fractions = ( 'false' !== strtolower( trim( $args['args'][1] ) ) );
 				} else {
 					if ( is_numeric( $args['args'] ) ) {
@@ -930,7 +930,7 @@ class MLAData {
 			} else {
 				$format = '%1$+.2f';
 			}
-			
+
 			$fragments = array_map( 'intval', explode( '/', $value ) );
 			if ( 1 == count( $fragments ) ) {
 				$value = trim( $value );
@@ -954,11 +954,11 @@ class MLAData {
 		} elseif ( 'substr' == $args['format'] ) {
 			$start = 0;
 			$length = strlen( $value );
-			
+
 			if ( ! empty( $args['args'] ) ) {
 				if ( is_array( $args['args'] ) ) {
 					$start = intval( $args['args'][0] );
-					
+
 					if ( 1 < count( $args['args'] ) ) {
 						$length = intval( $args['args'][1] );
 					}
@@ -966,7 +966,7 @@ class MLAData {
 					$start = intval( $args['args'] );
 				}
 			}
-			
+
 			if ( false === $value = substr( $value, $start, $length ) ) {
 				$value = '';
 			}
@@ -1220,12 +1220,12 @@ class MLAData {
 						 */
 						$markup_values[ $key ] = $markup_values[ $value['value'] ];
 					}
-					
+
 					break;
 				default:
 					// ignore anything else
 			} // switch
-			
+
 			if ( isset( $markup_values[ $key ] ) ) {
 				$markup_values[ $key ] = self::mla_apply_field_level_format( $markup_values[ $key ], $value );
 			} // isset( $markup_values[ $key ] )
@@ -1310,7 +1310,7 @@ class MLAData {
 				$result['value'] = $matches[1];
 				if ( ! empty( $matches[5] ) ) {
 					$args = self::_parse_arguments( $matches[5] );
-					
+
 					if ( 1 == count( $args ) ) {
 						$args = $args[0];
 					}
@@ -1595,7 +1595,7 @@ class MLAData {
 								}
 							} // foreach
 						}
-						
+
 						if ( NULL !== $orderby ) {
 							$clean_request[ $key ] = $orderby;
 						}
@@ -1722,7 +1722,7 @@ class MLAData {
 		self::$query_parameters = array( 'use_postmeta_view' => false, 'orderby' => $clean_request['orderby'], 'order' => $clean_request['order'] );
 		self::$query_parameters['detached'] = isset( $clean_request['detached'] ) ? $clean_request['detached'] : NULL;
 		self::$search_parameters = array( 'debug' => 'none' );
-		
+
 		/*
 		 * Matching a meta_value to NULL requires a LEFT JOIN to a view and a special WHERE clause
 		 * Matching a wildcard pattern requires mainpulating the WHERE clause, too
@@ -2042,7 +2042,7 @@ class MLAData {
 	private static function _match_quoted_phrase( $needle, $haystack ) {
 		$haystack = strtolower( html_entity_decode( $haystack ) );
 		$needle = strtolower( html_entity_decode( $needle ) );
-		
+
 		// Escape the PCRE meta-characters
 		$safe_needle = '';
 		for ( $index = 0; $index < strlen( $needle ); $index++ ) {
@@ -2052,7 +2052,7 @@ class MLAData {
 			}
 			$safe_needle .= $chr;
 		}
-		
+
 		$pattern = '/^' . $safe_needle . '$|^' . $safe_needle . '\s+|\s+' . $safe_needle . '\s+|\s+' . $safe_needle . '$/';
 		$match_count = preg_match_all($pattern, $haystack, $matches);
 		return 0 < $match_count;
@@ -2094,7 +2094,7 @@ class MLAData {
 			foreach ( $terms as $term ) {
 				preg_match_all('/".*?("|$)|\'.*?(\'|$)|((?<=[\t ",+])|^)[^\t ",+]+/', $term, $matches);
 				$phrases = array_map('MLAData::mla_search_terms_tidy', $matches[0]);
-				
+
 				/*
 				 * Find the quoted phrases for a word-boundary check
 				 */
@@ -2102,7 +2102,7 @@ class MLAData {
 				foreach ( $phrases as $index => $phrase ) {
 					$quoted[ $index ] = ( '"' == $matches[1][$index] ) || ( "'" == $matches[2][$index] );
 				}
-				
+
 				$tax_terms = array();
 				$tax_counts = array();
 				foreach ( $phrases as $index => $phrase ) {
@@ -2124,7 +2124,7 @@ class MLAData {
 							}
 						} // quoted phrase
 					} // not exact
-					
+
 					foreach( $the_terms as $the_term ) {
 						$tax_terms[ $the_term->taxonomy ][ $the_term->term_id ] = (integer) $the_term->term_taxonomy_id;
 
@@ -2167,7 +2167,7 @@ class MLAData {
 							$prefix = 'mlatt0';
 							$tax_index = 1; // only one JOIN needed for the "Any Term" case
 						}
-						
+
 						$tax_clause .= sprintf( '%1$s %2$s.term_taxonomy_id IN (%3$s)', $inner_connector, $prefix, implode( ',', $tax_term ) );
 						$inner_connector = ' OR';
 					} // foreach tax_term
@@ -2258,7 +2258,7 @@ class MLAData {
 					if ( in_array( 'name', $fields ) ) {
 					  $inner_clause .= "{$inner_connector}({$wpdb->posts}.post_name LIKE {$sql_term})";
 					}
-					
+
 					$inner_clause = apply_filters( 'mla_list_table_search_filter_inner_clause', $inner_clause, $inner_connector, $wpdb->posts, $sql_term );
 
 					if ( ! empty($inner_clause) ) {
@@ -2856,7 +2856,7 @@ class MLAData {
 								foreach ( $haystack as $substack ) {
 									$results[] = self::mla_find_array_element( $tail, $substack, $option, $keep_existing );
 								}
-								
+
 								if ( 1 == count( $results ) ) {
 									$haystack =  $results[0];
 								} else {
@@ -2867,7 +2867,7 @@ class MLAData {
 							}
 						} // found tail
 					} // found .*.
-					
+
 					break;
 				} else {
 					if ( is_array( $haystack ) ) {
@@ -3016,7 +3016,7 @@ class MLAData {
 			$save_id = -1;
 			return NULL;
 		}
-		
+
 		/*
 		 * inserted_option  'enabled', 'base' or 'disabled'
 		 * tested_reference	true if any of the four where-used types was processed
@@ -3066,7 +3066,7 @@ class MLAData {
 		if ( ! $add_references ) {
 			return $references;
 		}
-		
+
 		/*
 		 * Fill in Parent data
 		 */
@@ -3101,7 +3101,7 @@ class MLAData {
 				$references['files'][ $references['path'] . $size_info['file'] ] = $size_info;
 			}
 		}
-		
+
 		$base_type = wp_check_filetype( $references['file'] );
 		$base_reference = array(
 			'file' => $references['file'],
@@ -3110,7 +3110,7 @@ class MLAData {
 			'mime_type' => isset( $base_type['type'] ) ? $base_type['type'] : 'unknown',
 			'size' => 'full',
 			);
-			
+
 		$references['files'][ $references['base_file'] ] = $base_reference;
 
 		/*
@@ -3173,7 +3173,7 @@ class MLAData {
 				$inserted_in_option = MLAOptions::mla_get_option( MLAOptions::MLA_INSERTED_IN_TUNING );
 				$references['inserted_option'] = $inserted_in_option;
 			}
-			
+
 			$wp_4dot0_plus = version_compare( get_bloginfo('version'), '4.0', '>=' );
 			if ( 'base' == $inserted_in_option ) {
 				$query_parameters = array();
@@ -3186,9 +3186,9 @@ class MLAData {
 					if ( empty( $file ) ) {
 						continue;
 					}
-					
+
 					$query[] = 'OR ( POST_CONTENT LIKE %s)';
-					
+
 					if ( $wp_4dot0_plus ) {
 						$query_parameters[] = '%' . $wpdb->esc_like( $file ) . '%';
 					} else {
@@ -3219,13 +3219,13 @@ class MLAData {
 					if ( empty( $file ) ) {
 						continue;
 					}
-					
+
 					if ( $wp_4dot0_plus ) {
 						$like = $wpdb->esc_like( $file );
 					} else {
 						$like = like_escape( $file );
 					}
-		
+
 					$inserts = $wpdb->get_results(
 						$wpdb->prepare(
 							"SELECT ID, post_type, post_status, post_title FROM {$wpdb->posts}
@@ -3375,7 +3375,7 @@ class MLAData {
 
 			return;
 		}
-		
+
 		/*
 		 * Collect the raw data for where-used analysis
 		 */
@@ -3389,7 +3389,7 @@ class MLAData {
 			} else {
 				$references['base_file'] = '';
 			}
-			
+
 			$pathinfo = pathinfo($references['base_file']);
 			if ( ( ! isset( $pathinfo['dirname'] ) ) || '.' == $pathinfo['dirname'] ) {
 				$references['path'] = '/';
@@ -3398,13 +3398,13 @@ class MLAData {
 			}
 
 			$references['file'] = $pathinfo['basename'];
-	
+
 			if ( isset( $attachment->mla_wp_attachment_metadata ) )  {
 				$attachment_metadata = $attachment->mla_wp_attachment_metadata;
 			} else {
 				$attachment_metadata = '';
 			}
-			
+
 			$sizes = isset( $attachment_metadata['sizes'] ) ? $attachment_metadata['sizes'] : NULL;
 			if ( ! empty( $sizes ) && is_array( $sizes ) ) {
 				/* Using the path and name as the array key ensures each name is added only once */
@@ -3413,7 +3413,7 @@ class MLAData {
 					$references['files'][ $references['path'] . $size_info['file'] ] = $size_info;
 				}
 			}
-			
+
 			if ( ! empty( $references['base_file'] ) ) {
 				$base_type = wp_check_filetype( $references['file'] );
 				$base_reference = array(
@@ -3423,10 +3423,10 @@ class MLAData {
 					'mime_type' => ( isset( $base_type['type'] ) && false !== $base_type['type'] ) ? $base_type['type'] : 'unknown',
 					'size' => 'full',
 					);
-				
+
 				$references['files'][ $references['base_file'] ] = $base_reference;
 			}
-			
+
 			$files[ $index ] = $references;
 		}
 
@@ -3435,7 +3435,7 @@ class MLAData {
 		} else {
 			$exclude_revisions = '';
 		}
-		
+
 		$features = array();
 		if ( MLAOptions::$process_featured_in && ! empty( $attachment_ids ) ) {
 			$attachment_ids = implode( ',', $attachment_ids );
@@ -3447,7 +3447,7 @@ class MLAData {
 					AND ( m.meta_value IN ( {$attachment_ids} ) ){$exclude_revisions}
 					"
 			);
-			
+
 			foreach ( $results as $result ) {
 				$features[ $result->meta_value ][ $result->ID ] = (object) array( 'ID' => $result->ID, 'post_title' => $result->post_title, 'post_type' => $result->post_type, 'post_status' => $result->post_status );
 			}
@@ -3519,7 +3519,7 @@ class MLAData {
 
 		foreach ( $attachments as $attachment_index => $attachment ) {
 			$references = array_merge( $initial_references, $files[ $attachment_index ] );
-			
+
 			/*
 			 * Fill in Parent data
 			 */
@@ -3527,15 +3527,15 @@ class MLAData {
 				$references['is_unattached'] = true;
 			} else {
 				$references['is_unattached'] = false;
-				
+
 				if ( isset( $attachment->parent_type ) ) {
 					$references['parent_type'] =  $attachment->parent_type;
 				}
-		
+
 				if ( isset( $attachment->parent_status ) ) {
 					$references['parent_status'] =  $attachment->parent_status;
 				}
-		
+
 				if ( isset( $attachment->parent_title ) )  {
 					$references['parent_title'] =  $attachment->parent_title;
 				}
@@ -3545,7 +3545,7 @@ class MLAData {
 			 * Accumulate reference test types, e.g.,  0 = no tests, 4 = all tests
 			 */
 			$reference_tests = 0;
-	
+
 			/*
 			 * Look for the "Featured Image(s)", if enabled
 			 */
@@ -3555,14 +3555,14 @@ class MLAData {
 					foreach ( $features[ $attachment->ID ] as $id => $feature ) {
 						$references['found_reference'] = true;
 						$references['features'][ $id ] = $feature;
-	
+
 						if ( $id == $attachment->post_parent ) {
 							$references['found_parent'] = true;
 						}
 					} // foreach $feature
 				}
 			} // $process_featured_in
-	
+
 			/*
 			 * Look for item(s) inserted in post_content
 			 */
@@ -3574,13 +3574,13 @@ class MLAData {
 					foreach( $inserts[ $attachment_index ] as $insert ) {
 						$ref_insert = clone $insert;
 						unset( $ref_insert->file_name );
-						
+
 						if ( 'base' == $inserted_in_option ) {
 							$ref_key = pathinfo( $references['base_file'], PATHINFO_FILENAME );
 						} else {
 							$ref_key = $insert->file_name;
 						}
-						
+
 						$references['inserts'][ $ref_key ][ $insert->ID ] = $ref_insert;
 						if ( $insert->ID == $attachment->post_parent ) {
 							$references['found_parent'] = true;
@@ -3590,7 +3590,7 @@ class MLAData {
 					$references['inserts'] = array();
 				}
 			} // $process_inserted_in
-	
+
 			/*
 			 * Look for [mla_gallery] references
 			 */
@@ -3601,7 +3601,7 @@ class MLAData {
 					if ( ! empty( $galleries ) ) {
 						$references['found_reference'] = true;
 						$references['mla_galleries'] = $galleries;
-	
+
 						foreach ( $galleries as $post_id => $gallery ) {
 							if ( $post_id == $attachment->post_parent ) {
 								$references['found_parent'] = true;
@@ -3612,7 +3612,7 @@ class MLAData {
 					}
 				}
 			} // $process_mla_gallery_in
-	
+
 			/*
 			 * Look for [gallery] references
 			 */
@@ -3623,7 +3623,7 @@ class MLAData {
 					if ( ! empty( $galleries ) ) {
 						$references['found_reference'] = true;
 						$references['galleries'] = $galleries;
-	
+
 						foreach ( $galleries as $post_id => $gallery ) {
 							if ( $post_id == $attachment->post_parent ) {
 								$references['found_parent'] = true;
@@ -3634,7 +3634,7 @@ class MLAData {
 					}
 				}
 			} // $process_gallery_in
-	
+
 			/*
 			 * Evaluate and summarize reference tests
 			 */
@@ -3645,22 +3645,22 @@ class MLAData {
 			} else {
 				$references['tested_reference'] = true;
 				$suffix = ( 4 == $reference_tests ) ? '' : '?';
-	
+
 				if ( !$references['found_reference'] ) {
 					$errors .= '(' . sprintf( __( 'ORPHAN', 'media-library-assistant' ) . '%1$s) ', $suffix );
 				}
-	
+
 				if ( !$references['found_parent'] && ! empty( $references['parent_title'] ) ) {
 					$errors .= '(' . sprintf( __( 'UNUSED', 'media-library-assistant' ) . '%1$s) ', $suffix );
 				}
 			}
-	
+
 			if ( $references['is_unattached'] ) {
 				$errors .= '(' . __( 'UNATTACHED', 'media-library-assistant' ) . ')';
 			} elseif ( empty( $references['parent_title'] ) )  {
 				$errors .= '(' . __( 'INVALID PARENT', 'media-library-assistant' ) . ')';
 			}
-	
+
 			$references['parent_errors'] = trim( $errors );
 			$attachments[ $attachment_index ]->mla_references = apply_filters( 'mla_fetch_attachment_references', $references, $attachment->ID, (int) $attachment->post_parent );
 		} // foreach $attachment
@@ -3795,7 +3795,7 @@ class MLAData {
 		} else {
 			$like = like_escape( $shortcode );
 		}
-		
+
 		$results = $wpdb->get_results(
 			$wpdb->prepare(
 				"
@@ -3944,15 +3944,15 @@ class MLAData {
 		if ( isset( $values['rdf:Alt'] ) ) {
 			return self::_parse_xmp_array( $values['rdf:Alt'] );
 		}
-		
+
 		if ( isset( $values['rdf:Bag'] ) ) {
 			return self::_parse_xmp_array( $values['rdf:Bag'] );
 		}
-		
+
 		if ( isset( $values['rdf:Seq'] ) ) {
 			return self::_parse_xmp_array( $values['rdf:Seq'] );
 		}
-		
+
 		$results = array();
 		foreach( $values as $key => $value ) {
 			if ( false !== ($colon = strpos( $key, ':' ) ) ) {
@@ -3960,14 +3960,14 @@ class MLAData {
 			} else {
 				$new_key = $key;
 			}
-		
+
 			if ( is_array( $value ) ) {
 				$results[ $new_key ] = self::_parse_xmp_array( $value );
 			} else {
 				$results[ $new_key ] = self::_parse_iso8601_date( $value );
 			}
 		}
-		
+
 		return $results;
 	}
 
@@ -4052,7 +4052,7 @@ class MLAData {
 			if ( isset( $value['attributes'] ) ) {
 				foreach ( $value['attributes'] as $att_tag => $att_value ) {
 					$att_value = self::_bin_to_utf8( $att_value );
-					
+
 					if ( 'xmlns:' == substr( $att_tag, 0, 6 ) ) {
 						$xmlns[ substr( $att_tag, 6 ) ] = $att_value;
 					} elseif ( 'x:xmptk' == $att_tag ) {
@@ -4075,7 +4075,7 @@ class MLAData {
 								$att_name = implode( ':', $key );
 								break;
 						} // count
-						
+
 						if ( ! in_array( $att_tag, array( 'rdf:about', 'rdf:parseType' ) ) ) {
 							$node_attributes[ $att_tag ] = $att_value;
 						}
@@ -4105,7 +4105,7 @@ class MLAData {
 					$complete_value = NULL;
 					if ( isset( $value['attributes'] ) ) {
 						unset( $value['attributes']['xml:lang'] );
-						
+
 						if ( ! empty( $value['attributes'] ) ) {
 							$complete_value = array();
 							foreach ( $value['attributes'] as $attr_key => $attr_value ) {
@@ -4113,7 +4113,7 @@ class MLAData {
 							}
 						}
 					}
-					
+
 					if ( empty( $complete_value ) ) {
 						if ( isset( $value['value'] ) ) {
 							$complete_value = self::_bin_to_utf8( $value['value'] );
@@ -4121,7 +4121,7 @@ class MLAData {
 							$complete_value = '';
 						}
 					}
-					
+
 					if ( 'rdf:li' == $value['tag'] ) {
 						$levels[ $current_level ]['values'][] = $complete_value;
 					} else {
@@ -4940,7 +4940,7 @@ class MLAData {
 				} // fractional or mixed value
 			} // non-zero numerator
 		} // valid denominator
-		
+
 		return false;
 	}
 
@@ -5066,7 +5066,7 @@ class MLAData {
 					error_log( __( 'ERROR', 'media-library-assistant' ) . ': ' . '$results[mla_exif_errors] = ' . var_export( $results['mla_exif_errors'], true ), 0 );
 				}
 			} // exif_read_data
-			
+
 			$results['mla_xmp_metadata'] = self::mla_parse_xmp_metadata( $path, 0 );
 			if ( NULL == $results['mla_xmp_metadata'] ) {
 				$results['mla_xmp_metadata'] = array();
@@ -5089,19 +5089,19 @@ class MLAData {
 				$new_data['FNumber'] = $value;
 			}
 		} // FNumber
-		
+
 		if ( isset( $exif_data['ExposureBiasValue'] ) ) {
 			$fragments = array_map( 'intval', explode( '/', $exif_data['ExposureBiasValue'] ) );
 			if ( ! is_null( $fragments[1] ) ) {
 				$numerator = $fragments[0];
 				$denominator = $fragments[1];
-				
+
 				// Clean up some common format issues, e.g. 4/6, 2/4
 				while ( ( 0 == ( $numerator & 0x1 ) ) && ( 0 == ( $denominator & 0x1 ) ) ) {
 					$numerator = ( $numerator >> 1 );
 					$denominator = ( $denominator >> 1 );
 				}
-				
+
 				// Remove excess precision
 				if ( ( $denominator > $numerator) && ( 1000 < $numerator ) && ( 1000 < $denominator ) ) {
 					$exif_data['ExposureBiasValue'] = sprintf( '%1$+.3f', ( $numerator/$denominator ) );
@@ -5111,12 +5111,12 @@ class MLAData {
 					$exif_data['ExposureBiasValue'] = $numerator . '/' . $denominator;
 				}
 			}
-			
+
 			if ( false !== ( $value = self::_rational_to_string( $exif_data['ExposureBiasValue'], '%1$+d', '%1$+d/%2$d', '%1$+.2f' ) ) ) {
 				$new_data['ExposureBiasValue'] = $value;
 			}
 		} // ExposureBiasValue
-		
+
 		if ( isset( $exif_data['Flash'] ) ) {
 			$value = ( absint( $exif_data['Flash'] ) );
 			if ( $value & 0x1 ) {
@@ -5125,19 +5125,19 @@ class MLAData {
 				$new_data['Flash'] = __( 'No', 'media-library-assistant' );
 			}
 		} // Flash
-		
+
 		if ( isset( $exif_data['FocalLength'] ) ) {
 			if ( false !== ( $value = self::_rational_to_string( $exif_data['FocalLength'], '%1$d', '%1$d/%2$d', '%1$.2f' ) ) ) {
 				$new_data['FocalLength'] = $value;
 			}
 		} // FocalLength
-		
+
 		if ( isset( $exif_data['ExposureTime'] ) ) {
 			if ( false !== ( $value = self::_rational_to_string( $exif_data['ExposureTime'], '%1$d', '%1$d/%2$d', '%1$.2f' ) ) ) {
 				$new_data['ExposureTime'] = $value;
 			}
 		} // ExposureTime
-		
+
 		/*
 		 * ShutterSpeed in "1/" format, from ExposureTime
 		 * Special logic for "fractional shutter speed" values 1.3, 1.5, 1.6, 2.5
@@ -5171,15 +5171,15 @@ class MLAData {
 		if ( isset( $exif_data['UndefinedTag:0xA420'] ) ) {
 			$new_data['ImageUniqueID'] = $exif_data['UndefinedTag:0xA420'];
 		}
-		
+
 		if ( isset( $exif_data['UndefinedTag:0xA430'] ) ) {
 			$new_data['CameraOwnerName'] = $exif_data['UndefinedTag:0xA430'];
 		}
-		
+
 		if ( isset( $exif_data['UndefinedTag:0xA431'] ) ) {
 			$new_data['BodySerialNumber'] = $exif_data['UndefinedTag:0xA431'];
 		}
-		
+
 		if ( isset( $exif_data['UndefinedTag:0xA432'] ) && is_array( $exif_data['UndefinedTag:0xA432'] ) ) {
 			$array = $new_data['LensSpecification'] = $exif_data['UndefinedTag:0xA432'];
 
@@ -5188,39 +5188,39 @@ class MLAData {
 					$new_data['LensMinFocalLength'] = $value;
 				}
 			}
-			
+
 			if ( isset ( $array[1] ) ) {
 				if ( false !== ( $value = self::_rational_to_string( $array[1], '%1$d', '%1$d/%2$d', '%1$.2f' ) ) ) {
 					$new_data['LensMaxFocalLength'] = $value;
 				}
 			}
-			
+
 			if ( isset ( $array[2] ) ) {
 				if ( false !== ( $value = self::_rational_to_string( $array[2], '%1$d', '%1$d/%2$d', '%1$.1f' ) ) ) {
 					$new_data['LensMinFocalLengthFN'] = $value;
 				}
 			}
-			
+
 			if ( isset ( $array[3] ) ) {
 				if ( false !== ( $value = self::_rational_to_string( $array[3], '%1$d', '%1$d/%2$d', '%1$.1f' ) ) ) {
 					$new_data['LensMaxFocalLengthFN'] = $value;
 				}
 			}
-			
+
 		}
-		
+
 		if ( isset( $exif_data['UndefinedTag:0xA433'] ) ) {
 			$new_data['LensMake'] = $exif_data['UndefinedTag:0xA433'];
 		}
-		
+
 		if ( isset( $exif_data['UndefinedTag:0xA434'] ) ) {
 			$new_data['LensModel'] = $exif_data['UndefinedTag:0xA434'];
 		}
-		
+
 		if ( isset( $exif_data['UndefinedTag:0xA435'] ) ) {
 			$new_data['LensSerialNumber'] = $exif_data['UndefinedTag:0xA435'];
 		}
-		
+
 		if ( ! empty( $new_data ) ) {
 			$results['mla_exif_metadata']['CAMERA'] = $new_data;
 		}
@@ -5690,7 +5690,7 @@ class MLAData {
 						if ( is_array( $post_data[ $key ] ) ) {
 							delete_post_meta( $post_id, '_wp_attachment_image_alt' );
 						}
-						
+
 						if ( update_post_meta( $post_id, '_wp_attachment_image_alt', $value ) ) {
 							/* translators: 1: element name 2: old_value 3: new_value */
 							$message .= sprintf( __( 'Changing %1$s from "%2$s" to "%3$s"', 'media-library-assistant' ) . '<br>', __( 'ALT Text', 'media-library-assistant' ), esc_attr( $post_data[ $key ] ), esc_attr( $value ) );
@@ -5806,7 +5806,7 @@ class MLAData {
 							$action_name = __( 'Removing', 'media-library-assistant' );
 							$tags = self::_remove_terms( $post_id, $tags, $taxonomy_obj );
 							$result = wp_set_post_terms( $post_id, $tags, $taxonomy );
-							
+
 							if ( empty( $tags ) ) {
 								$result = true;
 							}
@@ -5814,7 +5814,7 @@ class MLAData {
 						case 'replace':
 							$action_name = __( 'Replacing', 'media-library-assistant' );
 							$result = wp_set_post_terms( $post_id, $tags, $taxonomy );
-							
+
 							if ( empty( $tags ) ) {
 								$result = true;
 							}
@@ -5824,7 +5824,7 @@ class MLAData {
 							$result = NULL;
 							// ignore anything else
 					}
-					
+
 					/*
 					 * Definitive results check would use:
 					 * do_action( 'set_object_terms', $object_id, $terms, $tt_ids, $taxonomy, $append, $old_tt_ids );
@@ -5896,7 +5896,7 @@ class MLAData {
 	private static function _remove_terms( $post_id, $terms, $taxonomy_obj ) {
 		$taxonomy = $taxonomy_obj->name;
 		$hierarchical = $taxonomy_obj->hierarchical;
-		
+
 		/*
 		 * Get the current terms for the terms_after check
 		 */
@@ -5905,17 +5905,17 @@ class MLAData {
 			$current_terms = wp_get_object_terms( $post_id, $taxonomy );
 			wp_cache_add( $post_id, $current_terms, $taxonomy . '_relationships' );
 		}
-		
+
 		$terms_before = array();
 		foreach( $current_terms as $term ) {
 			$terms_before[ $term->term_id ] = $term->name;
 		}
-		
+
 		$terms_after = array();
 		if ( $hierarchical ) {
 			$terms = array_map( 'intval', $terms );
 			$terms = array_unique( $terms );
-			
+
 			foreach( $terms_before as $index => $term ) {
 				if ( ! in_array( $index, $terms ) ) {
 					$terms_after[] = $index;
@@ -5928,7 +5928,7 @@ class MLAData {
 				}
 			}
 		}
-		
+
 		return $terms_after;
 	}
 

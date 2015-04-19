@@ -404,7 +404,7 @@ class MLAModal {
 		self::$mla_media_modal_settings['screen'] = 'modal';
 		if ( function_exists( 'get_current_screen' ) ) {
 			$screen = get_current_screen();
-			
+
 			if ( is_object( $screen) && 'upload' == $screen->base ) {
 				self::$mla_media_modal_settings['screen'] = 'grid';
 			}
@@ -418,7 +418,7 @@ class MLAModal {
 		if ( EMPTY_TRASH_DAYS && MEDIA_TRASH ) {
 			self::$mla_media_modal_settings['mimeTypes']['trash'] = MLAOptions::$mla_option_definitions[ MLAOptions::MLA_POST_MIME_TYPES ]['std']['trash']['plural'];
 		}
-		
+
 		self::$mla_media_modal_settings['months'] = self::_months_dropdown('attachment');
 
 		self::$mla_media_modal_settings['termsTaxonomy'] =  MLAOptions::mla_taxonomy_support('', 'filter');
@@ -484,7 +484,7 @@ class MLAModal {
 		);
 
 		$initial_values = apply_filters( 'mla_media_modal_initial_filters', $initial_values );
-		
+
 		/*
 		 * Except for filterMime/post_mime_type, these will be passed
 		 * back to the server in the query['s'] field.
@@ -538,7 +538,7 @@ class MLAModal {
 		 */
 		if ( function_exists( 'get_current_screen' ) ) {
 			$screen = get_current_screen();
-			
+
 			if ( is_object( $screen ) ) {
 				if ( 'upload' == $screen->base ) {
 					if ( 'checked' != MLAOptions::mla_get_option( MLAOptions::MLA_MEDIA_GRID_TOOLBAR ) ) {
@@ -576,7 +576,7 @@ class MLAModal {
 		 */
 		if ( function_exists( 'get_current_screen' ) ) {
 			$screen = get_current_screen();
-			
+
 			if ( 'upload' == $screen->base ) {
 				if ( 'checked' != MLAOptions::mla_get_option( MLAOptions::MLA_MEDIA_GRID_TOOLBAR ) ) {
 					return;
@@ -635,7 +635,7 @@ class MLAModal {
 //$cause_notice = $screen->bad_property;
 //trigger_error( 'mla_print_media_templates_action', E_USER_WARNING );
 //error_log( 'DEBUG: xdebug_get_function_stack = ' . var_export( xdebug_get_function_stack(), true), 0 );		
-	
+
 			/*
 			 * If there's no action variable, we have nothing to do
 			 */
@@ -1089,14 +1089,14 @@ class MLAModal {
 		}
 
 		$query['post_type'] = 'attachment';
-		
+
 		if ( empty( $query['status'] ) ) {
 			$query['post_status'] = 'inherit';
 			if ( current_user_can( get_post_type_object( 'attachment' )->cap->read_private_posts ) ) {
 				$query['post_status'] .= ',private';
 			}
 		}
-		
+
 		$query = MLAData::mla_query_media_modal_items( $query, $offset, $count );
 		$posts = array_map( 'wp_prepare_attachment_for_js', $query->posts );
 		$posts = array_filter( $posts );

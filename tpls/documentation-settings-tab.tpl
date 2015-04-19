@@ -137,6 +137,7 @@
 </li>
 </ul>
 <li><a href="#mla_mapping_hooks"><strong>MLA Custom Field and IPTC/EXIF Mapping Actions and Filters (Hooks)</strong></a></li>
+<li><a href="#mla_debug_tab"><strong>MLA Debug Tab</strong></a></li>
 <li><a href="#mla_list_table_hooks"><strong>Media/Assistant Submenu Actions and Filters (Hooks)</strong></a></li>
 </ul>
 <h3>Translating/Localizing the plugin</h3>
@@ -361,7 +362,7 @@ Ten <code>[mla_gallery]</code> parameters provide an easy way to simulate thumbn
 <table>
 <tr>
 <td style="padding-right: 10px; vertical-align: top; font-weight:bold">mla_viewer</td>
-<td>must be "true" or "single" to enable thumbnail substitution. Use "true" unless you experience generation failures due to memory limitations on your server. Use "single" to generate one thumbnail at a time, which may be slower but requires less mempry.</td>
+<td>must be "true" or "single" to enable thumbnail substitution. Use "true" unless you experience generation failures due to memory limitations on your server. Use "single" to generate one thumbnail at a time, which may be slower but requires less memory.</td>
 </tr>
 <tr>
 <td style="padding-right: 10px; vertical-align: top; font-weight:bold">mla_viewer_extensions</td>
@@ -4863,7 +4864,34 @@ The current Settings/Media Library Assistant tab list hook is:
 <td>gives you an opportunity to remove one or more tabs from the list that appears on the Settings/Media Library Assistant screen.</td>
 </tr>
 </table>
+<a name="mla_debug_tab"></a>&nbsp;
+<p>
+<a href="#backtotop">Go to Top</a>
+</p>
+<h3>MLA Debug Tab</h3>
+<p>
+If you are having trouble with some part of Media Library Assistant it may be helpful to look at the PHP error log. MLA writes messages to the log for a variety of reasons, and the information thay contain can be very helpful in finding the cause of a problem and resolving it.
+</p>
+<p>
+To add the Debug tab to your Settings/Media Library Assistant submenu you must add an entry to your <code>wp-config.php</code> file:
+<ul>
+<li><code>define( 'MLA_DEBUG_LEVEL', 1 );</code></li>
+</ul>
+<p>
+Once that line is added to the <code>wp-config.php</code> file the "Debug" tab will appear at the right of the tab list in the Settings/Media Library Assistant submenu. In addition, the value <code>MLA_DEBUG_LEVEL</code> will appear in the submenu title to remind you it has been set.
+</p>
+<p>
+The Debug Options screen begins with an "Error Log" title, followed by the PHP error reporting level in parentheses. Below the title is a text box with the current content of the PHP error log file. Below the text box are three action buttons:
+</p>
+<ul>
+<li><strong>Download</strong> - click this button to download a copy of the error log to your system.</li>
+<li><strong>Reset</strong> - click this button to erase the contents of the error log.</li>
+<li><strong>Save Changes</strong> - this button doesn't do anything useful in the current MLA version.</li>
+</ul>
+<p>
+If you are having an MLA problem that includes error messages in the log, copying the messages and adding them to your Support Forum topic can be most helpful; thanks!
 <a name="mla_list_table_hooks"></a>&nbsp;
+</p>
 <p>
 <a href="#backtotop">Go to Top</a>
 </p>
