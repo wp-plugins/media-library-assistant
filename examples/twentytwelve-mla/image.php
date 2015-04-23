@@ -38,10 +38,17 @@ get_header(); ?>
 							<?php edit_post_link( __( 'Edit', 'twentytwelve' ), '<span class="edit-link">', '</span>' ); ?>
 						</footer><!-- .entry-meta -->
 
+						<?php if ( isset( $_REQUEST['term_slug'] ) ): ?>
+						<nav id="image-navigation" class="navigation" role="navigation">
+							<span class="previous-image"><?php echo do_shortcode('[mla_gallery tag=' . $_REQUEST['term_slug'] . ' order=ASC mla_output="previous_link" mla_link_text="&larr; Previous" mla_link_href={+link_url+}?term_slug={+query:tag+}]')?></span>
+							<span class="next-image"><?php echo do_shortcode('[mla_gallery tag=' . $_REQUEST['term_slug'] . ' order=ASC mla_output="next_link" mla_link_text="Next &rarr;" mla_link_href={+link_url+}?term_slug={+query:tag+}]')?></span>
+						</nav><!-- #image-navigation -->
+						<?php else: ?>
 						<nav id="image-navigation" class="navigation" role="navigation">
 							<span class="previous-image"><?php previous_image_link( false, __( '&larr; Previous', 'twentytwelve' ) ); ?></span>
 							<span class="next-image"><?php next_image_link( false, __( 'Next &rarr;', 'twentytwelve' ) ); ?></span>
 						</nav><!-- #image-navigation -->
+						<?php endif; ?>
 					</header><!-- .entry-header -->
 
 					<div class="entry-content">

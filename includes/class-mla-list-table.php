@@ -48,6 +48,15 @@ class MLA_List_Table extends WP_List_Table {
 	 */
 	protected $currently_hidden = array();
 
+	/**
+	 * The WPML_List_table support object, if required
+	 *
+	 * @since 2.11
+	 *
+	 * @var	object
+	 */
+	protected $mla_wpml_table = NULL;
+
 	/*
 	 * The $default_columns, $default_hidden_columns, and $default_sortable_columns
 	 * arrays define the table columns.
@@ -465,72 +474,6 @@ class MLA_List_Table extends WP_List_Table {
 	}
 
 	/**
-	 * Handler for filter "wpml-media_view-upload-count" in /plugins/wpml-media/inc/wpml-media.class.php
-	 *
-	 * Computes the number of attachments that satisfy a meta_query specification.
-	 * The count is automatically made language-specific by WPML filters.
-	 *
-	 * @since 1.90
-	 *
-	 * @param	NULL	default return value if not replacing count
-	 * @param	string	key/slug value for the selected view
-	 * @param	string	HTML <a></a> tag for the link to the selected view
-	 * @param	string	language code, e.g., 'en', 'es'
-	 *
-	 * @return	mixed	NULL to allow SQL query or replacement count value
-	 */
-	public static function mla_wpml_media_view_upload_count_filter( $count, $key, $view, $lang ) {
-		// extract the base URL and query parameters
-		$href_count = preg_match( '/(href=["\'])([\s\S]+?)\?([\s\S]+?)(["\'])/', $view, $href_matches );	
-		if ( $href_count ) {
-			wp_parse_str( $href_matches[3], $href_args );
-
-			if ( isset( $href_args['meta_query'] ) ) {
-				$meta_view = self::_get_view( $key, '' );
-				// extract the count value
-				$href_count = preg_match( '/class="count">\(([^\)]*)\)/', $meta_view, $href_matches );	
-				if ( $href_count ) {
-					$count = array( $href_matches[1] );
-				}
-			}
-		}
-
-		return $count;
-	}
-
-	/**
-	 * Handler for filter "wpml-media_view-upload-page-count" in /plugins/wpml-media/inc/wpml-media.class.php
-	 *
-	 * Computes the number of language-specific attachments that satisfy a meta_query specification.
-	 * The count is made language-specific by WPML filters when the current_language is set.
-	 *
-	 * @since 1.90
-	 *
-	 * @param	NULL	default return value if not replacing count
-	 * @param	string	language code, e.g., 'en', 'es'
-	 *
-	 * @return	mixed	NULL to allow SQL query or replacement count value
-	 */
-	public static function mla_wpml_media_view_upload_page_count_filter( $count, $lang ) {
-		global $sitepress;
-
-		if ( isset( $_GET['meta_slug'] ) ) {
-			$save_lang = $sitepress->get_current_language();
-			$sitepress->switch_lang( $lang['code'] );
-			$meta_view = self::_get_view( $_GET['meta_slug'], '' );
-			$sitepress->switch_lang( $save_lang );
-
-			// extract the count value
-			$href_count = preg_match( '/class="count">\(([^\)]*)\)/', $meta_view, $href_matches );	
-			if ( $href_count ) {
-				$count = array( $href_matches[1] );
-			}
-		}
-
-		return $count;
-	}
-
-	/**
 	 * Adds support for taxonomy and custom field columns
 	 *
 	 * Called in the admin_init action because the list_table object isn't
@@ -591,8 +534,8 @@ class MLA_List_Table extends WP_List_Table {
 
 		if ( is_object( $sitepress ) ) {		 
 			add_filter( 'views_media_page_mla-menu', 'MLA_List_Table::mla_views_media_page_mla_menu_filter', 10, 1 );
-			add_filter( 'wpml-media_view-upload-count', 'MLA_List_Table::mla_wpml_media_view_upload_count_filter', 10, 4 );
-			add_filter( 'wpml-media_view-upload-page-count', 'MLA_List_Table::mla_wpml_media_view_upload_page_count_filter', 10, 2 );
+			
+			$this->mla_wpml_table = new MLA_WPML_Table( $this );
 		}
 	}
 
@@ -1572,6 +1515,20 @@ class MLA_List_Table extends WP_List_Table {
 	}
 
 	/**
+	 * Wrapper for _get_view; returns HTML markup for one view that can be used with this table
+	 *
+	 * @since 2.11
+	 *
+	 * @param	string	View slug, key to MLA_POST_MIME_TYPES array 
+	 * @param	string	Slug for current view 
+	 * 
+	 * @return	string | false	HTML for link to display the view, false if count = zero
+	 */
+	public function mla_get_view( $view_slug, $current_view ) {
+		return self::_get_view( $view_slug, $current_view );
+	}
+
+	/**
 	 * Returns HTML markup for one view that can be used with this table
 	 *
 	 * @since 1.40
@@ -1642,8 +1599,7 @@ class MLA_List_Table extends WP_List_Table {
 					$value = MLAOptions::$mla_option_definitions[ MLAOptions::MLA_POST_MIME_TYPES ]['std']['trash'];
 					$singular = sprintf('%s <span class="count">(%%s)</span>', $value['singular'] );
 					$plural = sprintf('%s <span class="count">(%%s)</span>', $value['plural'] );
-					return '<a href="' . add_query_arg( array(
-						 'status' => 'trash' 
+					return '<a href="' . add_query_arg( array( 'status' => 'trash'
 					), $base_url ) . '"' . $class . '>' . sprintf( _nx( $singular, $plural, $posts_per_type['trash'], 'uploaded files', 'media-library-assistant' ), number_format_i18n( $posts_per_type['trash'] ) ) . '</a>';
 				}
 
@@ -1664,8 +1620,7 @@ class MLA_List_Table extends WP_List_Table {
 		 */
 		if ( $mla_type->post_mime_type ) {
 			if ( !empty( $num_posts[ $view_slug ] ) ) {
-				return "<a href='" . add_query_arg( array(
-					 'post_mime_type' => $view_slug 
+				return "<a href='" . add_query_arg( array( 'post_mime_type' => $view_slug
 				), $base_url ) . "'$class>" . sprintf( translate_nooped_plural( $post_mime_types[ $view_slug ][ 2 ], $num_posts[ $view_slug ], 'media-library-assistant' ), number_format_i18n( $num_posts[ $view_slug ] ) ) . '</a>';
 			}
 

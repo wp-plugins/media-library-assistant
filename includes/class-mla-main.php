@@ -38,7 +38,7 @@ class MLA {
 	 *
 	 * @var	string
 	 */
-	const MLA_DEVELOPMENT_VERSION = '';
+	const MLA_DEVELOPMENT_VERSION = '20150422';
 
 	/**
 	 * Slug for registering and enqueueing plugin style sheet
@@ -205,6 +205,17 @@ class MLA {
 	 * @return	void
 	 */
 	public static function initialize( ) {
+		global $sitepress;
+		
+		/*
+		 * Check for WPML presence before loading support class,
+		 * then immediately initialize it sonce we're already in the "init" action.
+		 */
+		if ( is_object( $sitepress ) ) {
+			require_once( MLA_PLUGIN_PATH . 'includes/class-mla-wpml-support.php' );
+			MLA_WPML::initialize();
+		}
+
 		add_action( 'admin_init', 'MLA::mla_admin_init_action' );
 		add_action( 'admin_enqueue_scripts', 'MLA::mla_admin_enqueue_scripts_action' );
 		add_action( 'admin_menu', 'MLA::mla_admin_menu_action' );
