@@ -4991,12 +4991,20 @@ The following hooks are defined in <code>/media-library-assistant/includes/class
 <td>Gives you an opportunity to post-process an MLA_List_Table bulk action, standard or custom. The filter is called once after all of the items in $_REQUEST['cb_attachment'] are processed.</td>
 </tr>
 <tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">mla_list_table_admin_action</td>
+<td>Gives you an opportunity to pre-process an MLA_List_Table item-level action, standard or custom, before the MLA handler. This filter is called before anything is output for the Media/Assistant submenu, so you can redirect to another admin screen if desired.</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">mla_list_table_custom_admin_action</td>
+<td>Gives you an opportunity to process an MLA_List_Table item-level action that MLA does not recognize. This filter is called before anything is output for the Media/Assistant submenu, so you can redirect to another admin screen if desired.</td>
+</tr>
+<tr>
 <td style="padding-right: 10px; vertical-align: top; font-weight:bold">mla_list_table_single_action</td>
-<td>Gives you an opportunity to pre-process an MLA_List_Table page-level or single-item action, standard or custom, before the MLA handler.</td>
+<td>Gives you an opportunity to pre-process an MLA_List_Table item-level action, standard or custom, before the MLA handler. This filter is called after the Media/Assistant submenu screen header is output but before the messages and submenu table are displayed.</td>
 </tr>
 <tr>
 <td style="padding-right: 10px; vertical-align: top; font-weight:bold">mla_list_table_custom_single_action</td>
-<td>Gives you an opportunity to process an MLA_List_Table page-level or single-item action that MLA does not recognize.</td>
+<td>Gives you an opportunity to process an MLA_List_Table page-level or single-item action that MLA does not recognize. This filter is called after the Media/Assistant submenu screen header is output but before the messages and submenu table are displayed.</td>
 </tr>
 <tr>
 <td style="padding-right: 10px; vertical-align: top; font-weight:bold">mla_list_table_clear_filter_by</td>

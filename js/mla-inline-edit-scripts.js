@@ -281,7 +281,13 @@ var jQuery,
 			
 			// make ajax request
 			mla.bulkEdit.inProcess = true;
-			spinner.show();
+			
+			if ( mla.settings.useSpinnerClass ) {
+				spinner.addClass("is-active");
+			} else {
+				spinner.show();
+			}
+			
 			statusMessage = mla.settings.bulkWaiting + ': ' + mla.bulkEdit.waiting
 				+ ', ' + mla.settings.bulkComplete + ': ' + mla.bulkEdit.complete
 				+ ', ' + mla.settings.bulkUnchanged + ': ' + mla.bulkEdit.unchanged
@@ -294,11 +300,22 @@ var jQuery,
 				data: params,
 				dataType: 'json'
 			}).always( function() {
-				spinner.hide();
+				
+				if ( mla.settings.useSpinnerClass ) {
+					spinner.removeClass("is-active");
+				} else {
+					spinner.hide();
+				}
+				
 			}).done( function( response, status ) {
 					var responseData = 'no response.data', responseMessage, items;
 					
-					spinner.hide();
+					if ( mla.settings.useSpinnerClass ) {
+						spinner.removeClass("is-active");
+					} else {
+						spinner.hide();
+					}
+					
 					if ( response ) {
 						if ( ! response.success ) {
 							if ( response.responseData ) {
@@ -435,8 +452,12 @@ var jQuery,
 			if ( typeof(id) == 'object' )
 				id = mla.utility.getId(id);
 
-			$('table.widefat .inline-edit-save .spinner').show();
-
+			if ( mla.settings.useSpinnerClass ) {
+				$('table.widefat .inline-edit-save .spinner').addClass("is-active");
+			} else {
+				$('table.widefat .inline-edit-save .spinner').show();
+			}
+				
 			params = {
 				action: mla.settings.ajax_action,
 				nonce: mla.settings.ajax_nonce,
@@ -452,7 +473,11 @@ var jQuery,
 			// make ajax request
 			$.post( ajaxurl, params,
 				function( response ) {
-					$( 'table.widefat .inline-edit-save .spinner' ).hide();
+					if ( mla.settings.useSpinnerClass ) {
+						$('table.widefat .inline-edit-save .spinner').removeClass("is-active");
+					} else {
+						$('table.widefat .inline-edit-save .spinner').hide();
+					}
 
 					if ( response ) {
 						if ( -1 != response.indexOf( '<tr' ) ) {
@@ -558,7 +583,12 @@ var jQuery,
 				tableCell = $( '#attachment-' + postId + " td.attached_to" ).clone( true );
 				tableCell.html( '<span class="spinner"></span>' );
 				$( '#attachment-' + postId + " td.attached_to" ).replaceWith( tableCell );
-				$( '#attachment-' + postId + " td.attached_to .spinner" ).show();
+				
+				if ( mla.settings.useSpinnerClass ) {
+					$( '#attachment-' + postId + " td.attached_to .spinner" ).addClass("is-active");
+				} else {
+					$( '#attachment-' + postId + " td.attached_to .spinner" ).show();
+				}
 
 				params = $.param( {
 					action: mla.settings.ajax_action + '-set-parent',
@@ -593,7 +623,11 @@ var jQuery,
 			var id = $('table.widefat tr.inline-editor').attr('id');
 
 			if ( id ) {
-				$('table.widefat .inline-edit-save .spinner').hide();
+				if ( mla.settings.useSpinnerClass ) {
+					$('table.widefat .inline-edit-save .spinner').removeClass("is-active");
+				} else {
+					$('table.widefat .inline-edit-save .spinner').hide();
+				}
 
 				if ( 'bulk-edit' == id ) {
 					$('table.widefat #bulk-edit').removeClass('inline-editor').hide();

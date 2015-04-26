@@ -170,8 +170,12 @@ All of the MLA source code has been annotated with "DocBlocks", a special type o
 
 = 2.11 =
 * New: Term-specific pagination has been added to the `/examples/twentytwelve-mla/image.php` file.
+* New: When WPML is active, the Media/Assistant submenu table will include a "language management" column showing each item's translation status by language. You can click on an item's "pencil" or "plus" icon to edit an existing translation or duplicate the item in a new language.
 * New: When WPML is active and "All Languages" is selected, the Media/Assistant submenu table will include a "Language" column showing each item's language.
+* New: Two hooks, `mla_list_table_admin_action``mla_list_table_custom_admin_action`, have been added.
 * Fix: When WPML is active, `[mla_tag_cloud]` returns language-specific terms.
+* Fix: Media/Assistant "Unattached" and "Trash" view handling updated for WP 4.2 changes.
+* Fix: JavaScript "spinner" handling updated for WP 4.2 changes.
 
 = 2.10 =
 * New: For the `[mla_gallery]` shortcode, the **Google File Viewer (mla_viewer) has been replaced** by two new featues. First, **a "Featured Image" can be assigned to Media Library items**; it will replace the MIME type icon as the thumbnail for the item. Second, **PDF documents can generate a thumbnail image** for the item if Imagemagick, Imagick and Ghostscript are available on the server. See the [Other Notes section](http://wordpress.org/extend/plugins/media-library-assistant/other_notes/ "Click here, then scroll down") section or the Settings/Media Library Assistant Documentation tab for more information.

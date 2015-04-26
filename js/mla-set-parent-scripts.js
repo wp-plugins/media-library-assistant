@@ -152,14 +152,22 @@ var jQuery;
 				},
 				spinner = $( '#mla-set-parent-search-div .spinner' );
 
-			spinner.show();
+			if ( mla.settings.useSpinnerClass ) {
+				spinner.addClass("is-active");
+			} else {
+				spinner.show();
+			}
 
 			$.ajax( ajaxurl, {
 				type: 'POST',
 				data: post,
 				dataType: 'json'
 			}).always( function() {
-				spinner.hide();
+				if ( mla.settings.useSpinnerClass ) {
+					spinner.removeClass("is-active");
+				} else {
+					spinner.hide();
+				}
 			}).done( function( response ) {
 				var responseData = 'no response.data', id = 0;
 

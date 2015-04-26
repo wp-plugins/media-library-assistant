@@ -140,7 +140,11 @@ inlineEditUpload = {
 		if ( typeof(id) == 'object' )
 			id = this.getId(id);
 
-		$('table.widefat .spinner').show();
+		if ( mla.settings.useSpinnerClass ) {
+			$('table.widefat .spinner').addClass("is-active");
+		} else {
+			$('table.widefat .spinner').show();
+		}
 
 		params = {
 			action: mla_inline_edit_upload_vars.ajax_action,
@@ -154,7 +158,11 @@ inlineEditUpload = {
 		// make ajax request
 		$.post( ajaxurl, params,
 			function(r) {
-				$('table.widefat .spinner').hide();
+				if ( mla.settings.useSpinnerClass ) {
+					$('table.widefat .spinner').removeClass("is-active");
+				} else {
+					$('table.widefat .spinner').hide();
+				}
 
 				if (r) {
 					if ( -1 != r.indexOf('<tr') ) {
@@ -183,7 +191,12 @@ inlineEditUpload = {
 				$('#bulk-titles').html('');
 				$('#inlineedit').append( $('#bulk-edit') );
 			} else {
-				$('table.widefat .spinner').hide();
+				if ( mla.settings.useSpinnerClass ) {
+					$('table.widefat .spinner').removeClass("is-active");
+				} else {
+					$('table.widefat .spinner').hide();
+				}
+
 				$('#'+id).remove();
 				id = id.substr( id.lastIndexOf('-') + 1 );
 				$(this.what+id).show();

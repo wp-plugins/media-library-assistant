@@ -22,6 +22,29 @@ if ( !class_exists( 'WP_List_Table' ) ) {
  * @since 0.1
  */
 class MLA_List_Table extends WP_List_Table {
+
+	/**
+	 * True if the current view is "Unattached"
+	 *
+	 * Declaration added in MLA v2.11 for WP 4.2 compatibility.
+	 *
+	 * @since 0.1
+	 *
+	 * @var	int
+	 */
+	private $detached;
+
+	/**
+	 * True if the current view is "Trash"
+	 *
+	 * Declaration added in MLA v2.11 for WP 4.2 compatibility.
+	 *
+	 * @since 0.1
+	 *
+	 * @var	int
+	 */
+	private $is_trash;
+
 	/*
 	 * These variables are used to assign row_actions to exactly one visible column
 	 */

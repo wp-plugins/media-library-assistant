@@ -38,7 +38,7 @@ class MLA {
 	 *
 	 * @var	string
 	 */
-	const MLA_DEVELOPMENT_VERSION = '20150422';
+	const MLA_DEVELOPMENT_VERSION = '20150426';
 
 	/**
 	 * Slug for registering and enqueueing plugin style sheet
@@ -285,32 +285,35 @@ class MLA {
 				check_admin_referer( self::MLA_ADMIN_NONCE );
 			}
 
-			switch ( $_REQUEST['mla_admin_action'] ) {
-				case self::MLA_ADMIN_SINGLE_CUSTOM_FIELD_MAP:
-					do_action( 'mla_begin_mapping', 'single_custom', $_REQUEST['mla_item_ID'] );
-					$updates = MLAOptions::mla_evaluate_custom_field_mapping( $_REQUEST['mla_item_ID'], 'single_attachment_mapping' );
-					do_action( 'mla_end_mapping' );
-
-					if ( !empty( $updates ) ) {
-						$item_content = MLAData::mla_update_single_item( $_REQUEST['mla_item_ID'], $updates );
-					}
-
-					$view_args = isset( $_REQUEST['mla_source'] ) ? array( 'mla_source' => $_REQUEST['mla_source']) : array();
-					wp_redirect( add_query_arg( $view_args, admin_url( 'post.php' ) . '?post=' . $_REQUEST['mla_item_ID'] . '&action=edit&message=101' ), 302 );
-					exit;
-				case self::MLA_ADMIN_SINGLE_MAP:
-					$item = get_post( $_REQUEST['mla_item_ID'] );
-					do_action( 'mla_begin_mapping', 'single_iptc_exif', $_REQUEST['mla_item_ID'] );
-					$updates = MLAOptions::mla_evaluate_iptc_exif_mapping( $item, 'iptc_exif_mapping' );
-					do_action( 'mla_end_mapping' );
-					$page_content = MLAData::mla_update_single_item( $_REQUEST['mla_item_ID'], $updates );
-
-					$view_args = isset( $_REQUEST['mla_source'] ) ? array( 'mla_source' => $_REQUEST['mla_source']) : array();
-					wp_redirect( add_query_arg( $view_args, admin_url( 'post.php' ) . '?post=' . $_REQUEST['mla_item_ID'] . '&action=edit&message=102' ), 302 );
-					exit;
-				default:
-					// ignore the rest
-			} // switch ($_REQUEST['mla_admin_action'])
+			if ( apply_filters( 'mla_list_table_admin_action', true, $_REQUEST['mla_admin_action'], ( isset( $_REQUEST['mla_item_ID'] ) ? $_REQUEST['mla_item_ID'] : 0 ) ) ) {
+				switch ( $_REQUEST['mla_admin_action'] ) {
+					case self::MLA_ADMIN_SINGLE_CUSTOM_FIELD_MAP:
+						do_action( 'mla_begin_mapping', 'single_custom', $_REQUEST['mla_item_ID'] );
+						$updates = MLAOptions::mla_evaluate_custom_field_mapping( $_REQUEST['mla_item_ID'], 'single_attachment_mapping' );
+						do_action( 'mla_end_mapping' );
+	
+						if ( !empty( $updates ) ) {
+							$item_content = MLAData::mla_update_single_item( $_REQUEST['mla_item_ID'], $updates );
+						}
+	
+						$view_args = isset( $_REQUEST['mla_source'] ) ? array( 'mla_source' => $_REQUEST['mla_source']) : array();
+						wp_redirect( add_query_arg( $view_args, admin_url( 'post.php' ) . '?post=' . $_REQUEST['mla_item_ID'] . '&action=edit&message=101' ), 302 );
+						exit;
+					case self::MLA_ADMIN_SINGLE_MAP:
+						$item = get_post( $_REQUEST['mla_item_ID'] );
+						do_action( 'mla_begin_mapping', 'single_iptc_exif', $_REQUEST['mla_item_ID'] );
+						$updates = MLAOptions::mla_evaluate_iptc_exif_mapping( $item, 'iptc_exif_mapping' );
+						do_action( 'mla_end_mapping' );
+						$page_content = MLAData::mla_update_single_item( $_REQUEST['mla_item_ID'], $updates );
+	
+						$view_args = isset( $_REQUEST['mla_source'] ) ? array( 'mla_source' => $_REQUEST['mla_source']) : array();
+						wp_redirect( add_query_arg( $view_args, admin_url( 'post.php' ) . '?post=' . $_REQUEST['mla_item_ID'] . '&action=edit&message=102' ), 302 );
+						exit;
+					default:
+						do_action( 'mla_list_table_custom_admin_action', $_REQUEST['mla_admin_action'], ( isset( $_REQUEST['mla_item_ID'] ) ? $_REQUEST['mla_item_ID'] : 0 ) );
+						// ignore the rest
+				} // switch ($_REQUEST['mla_admin_action'])
+			} // apply_filters mla_list_table_admin_action
 		} // (!empty($_REQUEST['mla_admin_action'])
 
 		if ( ( defined('WP_ADMIN') && WP_ADMIN ) && ( defined('DOING_AJAX') && DOING_AJAX ) ) {
@@ -395,10 +398,15 @@ class MLA {
 				'bulkCanceled' => __( 'CANCELED', 'media-library-assistant' ),
 				'bulkChunkSize' => MLAOptions::mla_get_option( MLAOptions::MLA_BULK_CHUNK_SIZE ),
 				'comma' => _x( ',', 'tag_delimiter', 'media-library-assistant' ),
+				'useSpinnerClass' => false,
 				'ajax_action' => self::JAVASCRIPT_INLINE_EDIT_SLUG,
 				'ajax_nonce' => wp_create_nonce( self::MLA_ADMIN_NONCE ) 
 			);
 
+			if ( version_compare( get_bloginfo( 'version' ), '4.2', '>=' ) ) {
+				$script_variables['useSpinnerClass'] = true;
+			}
+	
 			wp_localize_script( self::JAVASCRIPT_INLINE_EDIT_SLUG, self::JAVASCRIPT_INLINE_EDIT_OBJECT, $script_variables );
 		}
 	}

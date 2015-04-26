@@ -1125,14 +1125,18 @@ class MLAModal {
 				array( 'jquery' ), MLA::CURRENT_MLA_VERSION, false );
 
 			$script_variables = array(
+				'useDashicons' => false,
+				'useSpinnerClass' => false,
 			);
 
 			if ( version_compare( get_bloginfo( 'version' ), '3.8', '>=' ) ) {
 				$script_variables['useDashicons'] = true;
-			} else {
-				$script_variables['useDashicons'] = false;
 			}
 
+			if ( version_compare( get_bloginfo( 'version' ), '4.2', '>=' ) ) {
+				$script_variables['useSpinnerClass'] = true;
+			}
+	
 			wp_localize_script( MLA::JAVASCRIPT_INLINE_EDIT_SLUG . '-terms-search', self::JAVASCRIPT_TERMS_SEARCH_OBJECT, $script_variables );
 
 			/*

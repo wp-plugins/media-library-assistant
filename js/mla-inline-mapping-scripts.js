@@ -188,7 +188,12 @@ var jQuery,
 				statusMessage += ', ' + mla.settings.bulkRedone + ': ' + mla.bulkMap.redone;
 			}
 			
-			spinner.show();
+			if ( mla.settings.useSpinnerClass ) {
+				spinner.addClass("is-active");
+			} else {
+				spinner.show();
+			}
+
 			statusMessage = mla.settings.bulkWaiting + ': ' + mla.bulkMap.waiting
 				+ ', ' + mla.settings.bulkRunning + ': ' + mla.bulkMap.running
 				+ ', ' + mla.settings.bulkComplete + ': ' + mla.bulkMap.complete
@@ -202,7 +207,11 @@ var jQuery,
 				data: params,
 				dataType: 'json'
 			}).always( function() {
-				spinner.hide();
+				if ( mla.settings.useSpinnerClass ) {
+					spinner.removeClass("is-active");
+				} else {
+					spinner.hide();
+				}
 			}).done( function( response, status ) {
 					var responseData = 'no response.data', responseMessage = '';
 					
@@ -288,7 +297,11 @@ var jQuery,
 			var progressDiv = $( '#mla-progress-div' );
 
 			if ( progressDiv ) {
-				$('p.inline-edit-save .spinner', progressDiv ).hide();
+				if ( mla.settings.useSpinnerClass ) {
+					$('p.inline-edit-save .spinner', progressDiv ).removeClass("is-active");
+				} else {
+					$('p.inline-edit-save .spinner', progressDiv ).hide();
+				}
 
 				// Reset Div content to initial values
 

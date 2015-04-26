@@ -9,6 +9,7 @@ var jQuery,
 		// mla.settings.ajaxFailError for setParent
 		// mla.settings.ajaxDoneError for setParent
 		// mla.settings.useDashicons for setParent
+		// mla.settings.useSpinnerClass for setParent
 		settings: {},
 	
 		// Utility functions

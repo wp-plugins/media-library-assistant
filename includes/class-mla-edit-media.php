@@ -187,12 +187,17 @@ class MLAEdit {
 				'ajaxFailError' => __( 'An ajax.fail error has occurred. Please reload the page and try again.', 'media-library-assistant' ),
 				'ajaxDoneError' => __( 'An ajax.done error has occurred. Please reload the page and try again.', 'media-library-assistant' ),
 				'useDashicons' => false,
+				'useSpinnerClass' => false,
 				'toggleOpen' => __( 'Open Bulk Edit area', 'media-library-assistant' ),
 				'toggleClose' => __( 'Close Bulk Edit area', 'media-library-assistant' ),
 			);
 
 			if ( version_compare( get_bloginfo( 'version' ), '3.8', '>=' ) ) {
 				$script_variables['useDashicons'] = true;
+			}
+
+			if ( version_compare( get_bloginfo( 'version' ), '4.2', '>=' ) ) {
+				$script_variables['useSpinnerClass'] = true;
 			}
 
 			wp_localize_script( 'mla-add-new-bulk-edit-scripts', 'mla_add_new_bulk_edit_vars', $script_variables );
@@ -236,12 +241,16 @@ class MLAEdit {
 			'Ajax_Url' => admin_url( 'admin-ajax.php' ),
 			'ajaxFailError' => __( 'An ajax.fail error has occurred. Please reload the page and try again.', 'media-library-assistant' ),
 			'ajaxDoneError' => __( 'An ajax.done error has occurred. Please reload the page and try again.', 'media-library-assistant' ),
+			'useDashicons' => false,
+			'useSpinnerClass' => false,
 		);
 
 		if ( version_compare( get_bloginfo( 'version' ), '3.8', '>=' ) ) {
 			$script_variables['useDashicons'] = true;
-		} else {
-			$script_variables['useDashicons'] = false;
+		}
+
+		if ( version_compare( get_bloginfo( 'version' ), '4.2', '>=' ) ) {
+			$script_variables['useSpinnerClass'] = true;
 		}
 
 		wp_localize_script( self::JAVASCRIPT_EDIT_MEDIA_SLUG, self::JAVASCRIPT_EDIT_MEDIA_OBJECT, $script_variables );

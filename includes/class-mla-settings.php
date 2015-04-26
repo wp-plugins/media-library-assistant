@@ -338,8 +338,13 @@ class MLASettings {
 			'ntdeltitle' => __( 'Remove From Bulk Edit', 'media-library-assistant' ),
 			'notitle' => '(' . __( 'no slug', 'media-library-assistant' ) . ')',
 			'comma' => _x( ',', 'tag_delimiter', 'media-library-assistant' ),
+			'useSpinnerClass' => false,
 			'ajax_nonce' => wp_create_nonce( MLA::MLA_ADMIN_NONCE ) 
 		);
+
+		if ( version_compare( get_bloginfo( 'version' ), '4.2', '>=' ) ) {
+			$script_variables['useSpinnerClass'] = true;
+		}
 
 		$mapping_variables = array(
 			'page' => 'mla-settings-menu-custom_field',
