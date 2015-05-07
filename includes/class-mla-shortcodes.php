@@ -457,7 +457,12 @@ class MLAShortcodes {
 			/*
 			 * Replace data-selection parameters with the "ids" list
 			 */
-			$blacklist = array_merge( $mla_arguments, self::$mla_get_shortcode_attachments_parameters );
+			if ( 'mla_tag_cloud' == $arguments['mla_alt_shortcode'] ) {
+				$blacklist = self::$mla_get_shortcode_attachments_parameters;
+			} else {
+				$blacklist = array_merge( $mla_arguments, self::$mla_get_shortcode_attachments_parameters );
+			}
+			
 			$new_args = '';
 			foreach ( $attr as $key => $value ) {
 				if ( array_key_exists( $key, $blacklist ) ) {

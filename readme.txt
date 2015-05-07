@@ -172,7 +172,9 @@ All of the MLA source code has been annotated with "DocBlocks", a special type o
 * New: Term-specific pagination has been added to the `/examples/twentytwelve-mla/image.php` file.
 * New: When WPML is active, the Media/Assistant submenu table will include a "language management" column showing each item's translation status by language. You can click on an item's "pencil" or "plus" icon to edit an existing translation or duplicate the item in a new language.
 * New: When WPML is active and "All Languages" is selected, the Media/Assistant submenu table will include a "Language" column showing each item's language.
-* New: Two hooks, `mla_list_table_admin_action``mla_list_table_custom_admin_action`, have been added.
+* New: Two hooks, `mla_list_table_admin_action` and `mla_list_table_custom_admin_action`, have been added.
+* New: For `[mla_gallery]`, when `mla_alt_shortcode=mla_tag_cloud`, parameters such as `mla_link_href` are passed through to be used by [`mla_tag_cloud]`.
+* New: Polylang support is provided by an example plugin, `/examples/mla-polylang-support.zip`.
 * Fix: When WPML is active, `[mla_tag_cloud]` returns language-specific terms.
 * Fix: Media/Assistant "Unattached" and "Trash" view handling updated for WP 4.2 changes.
 * Fix: JavaScript "spinner" handling updated for WP 4.2 changes.
