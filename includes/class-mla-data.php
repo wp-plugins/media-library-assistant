@@ -5794,7 +5794,7 @@ class MLAData {
 				$taxonomy_obj = get_taxonomy( $taxonomy );
 
 				if ( current_user_can( $taxonomy_obj->cap->assign_terms ) ) {
-					if ( is_array( $tags ) ) // array of int = hierarchical, array of string = non-hierarchical.
+					if ( is_array( $tags ) ) // array of int = hierarchical, comma-delimited string = non-hierarchical.
 						$tags = array_filter( $tags );
 
 					switch ( $tax_action ) {

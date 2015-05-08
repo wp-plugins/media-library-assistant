@@ -37,12 +37,21 @@ class MLA_WPML {
 		/*
 		 * Defined in wp-includes/post.php function wp_insert_post
 		 */
-		//add_filter( 'edit_attachment', 'MLA_WPML::edit_attachment', 10, 2 );
+		add_filter( 'wp_insert_post_empty_content', 'MLA_WPML::wp_insert_post_empty_content', 10, 2 );
+		add_action( 'add_attachment', 'MLA_WPML::add_attachment', 10, 1 );
+		add_action( 'edit_attachment', 'MLA_WPML::edit_attachment', 10, 1 );
 
 		/*
 		 * Defined in /media-library-assistant/includes/class-mla-main.php
 		 */
 		add_action( 'mla_list_table_custom_admin_action', 'MLA_WPML::mla_list_table_custom_admin_action', 10, 2 );
+		add_filter( 'mla_list_table_inline_action', 'MLA_WPML::mla_list_table_inline_action', 10, 2 );
+		add_filter( 'mla_list_table_bulk_action', 'MLA_WPML::mla_list_table_bulk_action', 10, 3 );
+		
+		/*
+		 * Defined in /wpml-media/inc/wpml-media-class.php
+		 */
+		add_action( 'wpml_media_create_duplicate_attachment', 'MLA_WPML::wpml_media_create_duplicate_attachment', 10, 2 );
 	}
 
 	/**
@@ -62,18 +71,57 @@ class MLA_WPML {
 	}
 
 	/**
-	 * Process an MLA_List_Table custom single action
+	 * Captures the Quick Edit "before update" term assignments
 	 *
-	 * Add a duplicate translation for an item, then redirect to the Media/Edit Media screen.
+	 * @since 2.11
+	 *
+	 * @param	array	$item_content	NULL, to indicate no handler.
+	 * @param	integer	$post_id		the affected attachment.
+	 *
+	 * @return	object	updated $item_content. NULL if no handler, otherwise
+	 *					( 'message' => error or status message(s), 'body' => '',
+	 *					  'prevent_default' => true to bypass the MLA handler )
+	 */
+	public static function mla_list_table_inline_action( $item_content, $post_id ) {
+//error_log( __LINE__ . " MLA_WPML::mla_list_table_inline_action post_id = " . var_export( $post_id, true ), 0 );
+		self::_build_terms_before( $post_id );
+		
+		return $item_content;
+	} // mla_list_table_inline_action
+
+	/**
+	 * Captures the Bulk Edit "before update" term assignments
+	 *
+	 * @since 2.11
+	 *
+	 * @param	array	$item_content	NULL, to indicate no handler.
+	 * @param	string	$bulk_action	the requested action.
+	 * @param	integer	$post_id		the affected attachment.
+	 *
+	 * @return	object	updated $item_content. NULL if no handler, otherwise
+	 *					( 'message' => error or status message(s), 'body' => '',
+	 *					  'prevent_default' => true to bypass the MLA handler )
+	 */
+	public static function mla_list_table_bulk_action( $item_content, $bulk_action, $post_id ) {
+//error_log( __LINE__ . " MLA_WPML::mla_list_table_bulk_action [{$post_id}] bulk_action = " . var_export( $bulk_action, true ), 0 );
+
+		if ( 'edit' == $bulk_action ) {
+			self::_build_terms_before( $post_id );
+		}
+		
+		return $item_content;
+	} // mla_list_table_bulk_action
+
+	/**
+	 * Add a duplicate translation for an item, then redirect to the Media/Edit Media screen
 	 *
 	 * @since 2.11
 	 *
 	 * @param	string	$mla_admin_action	the requested action.
 	 * @param	integer	$mla_item_ID		zero (0), or the affected attachment.
-	 *
-	 * @return	void
 	 */
 	public static function mla_list_table_custom_admin_action( $mla_admin_action, $mla_item_ID ) {
+//error_log( __LINE__ . " MLA_WPML::mla_list_table_custom_admin_action( {$mla_admin_action}, {$mla_item_ID} )", 0 );
 		if ( 'wpml_create_translation' == $mla_admin_action ) {
 			$new_item = WPML_Media::create_duplicate_attachment( $mla_item_ID, $_REQUEST['mla_parent_ID'], $_REQUEST['lang'] );
 			$view_args = isset( $_REQUEST['mla_source'] ) ? array( 'mla_source' => $_REQUEST['mla_source']) : array();
@@ -83,8 +131,7 @@ class MLA_WPML {
 	} // mla_list_table_custom_admin_action
 
 	/**
-	 * Adds mapping update messages for display at the top of the Edit Media screen.
-	 * Declared public because it is a filter.
+	 * Adds translation update message for display at the top of the Edit Media screen
 	 *
 	 * @since 2.11
 	 *
@@ -101,62 +148,345 @@ class MLA_WPML {
 	} // mla_post_updated_messages_filter
 
 	/**
-	 * Taxonmy terms in all languages
+	 * Taxonomy terms and translations
 	 *
 	 * @since 2.11
 	 *
-	 * @var	array
+	 * @var	array	[ $term_taxonomy_id ] => array( $term, $details, $translations )
 	 */
-	private static $tax_input = array();
+	private static $relevant_terms = array();
+	
+	/**
+	 * Adds a term and its translations to $relevant_terms
+	 *
+	 * @since 2.11
+	 *
+	 * @param	object	WordPress term object
+	 * @param	object	Sitepress translations object; optional
+	 */
+	private static function _add_relevant_term( $term, $translations = NULL ) {
+		global $sitepress;
+		
+		if ( ! array_key_exists( $term->term_taxonomy_id, self::$relevant_terms ) ) {
+			$taxonomy_name = 'tax_' . $term->taxonomy;
+			$details = $sitepress->get_element_language_details( $term->term_taxonomy_id, $taxonomy_name );
+			
+			if ( empty( $translations ) ) {
+				$translations = $sitepress->get_element_translations( $details->trid, $taxonomy_name );
+			}
+			
+			self::$relevant_terms[ $term->term_taxonomy_id ]['term'] = $term;
+			self::$relevant_terms[ $term->term_taxonomy_id ]['details'] = $details;
+			self::$relevant_terms[ $term->term_taxonomy_id ]['translations'] = $translations;
+		}
+		
+		return self::$relevant_terms[ $term->term_taxonomy_id ];
+	} // mla_post_updated_messages_filter
+
+	/**
+	 * Finds a $relevant_term (if defined) given a key and (optional) a language
+	 *
+	 * @since 2.11
+	 *
+	 * @param	string	$field to search in; 'id', 'name', or 'term_taxonomy_id'
+	 * @param	mixed	$value to search for; integer, string or integer
+	 * @param	string	$taxonomy to search in; slug
+	 * @param	string	$language code; string; optional
+	 */
+	private static function _get_relevant_term( $field, $value, $taxonomy, $language = NULL ) {
+		global $sitepress;
+		
+		$relevant_term = false;
+		foreach( self::$relevant_terms as $term_taxonomy_id => $candidate ) {
+			if ( $taxonomy != $candidate['term']->taxonomy ) {
+				continue;
+			}
+			
+			switch ( $field ) {
+				case 'id':
+					if ( $value == $candidate['term']->term_id ) {
+						$relevant_term = $candidate;
+					}
+					break;
+				case 'name':
+					if ( $value == $candidate['term']->name ) {
+						$relevant_term = $candidate;
+					}
+					break;
+				case 'term_taxonomy_id':
+					if ( $value == $term_taxonomy_id ) {
+						$relevant_term = $candidate;
+					}
+					break;
+			} // field
+			
+			if ( ! empty( $relevant_term ) ) {
+				break;
+			}
+		} // relevant term
+
+		/*
+		 * No match; try to add it and its translations
+		 */
+		if ( $candidate = get_term_by( $field, $value, $taxonomy ) ) {
+			$relevant_term =  self::_add_relevant_term( $candidate );
+			
+			foreach ( $relevant_term['translations'] as $translation ) {
+				if ( array_key_exists( $translation->element_id, self::$relevant_terms ) ) {
+					continue;
+				}
+				
+				$term_object = get_term_by( 'term_taxonomy_id', $translation->element_id, $taxonomy );
+				self::_add_relevant_term( $term_object, $relevant_term['translations'] );
+			} // translation
+		} // new term
+		
+		/*
+		 * Find the language-specific value, if requested
+		 */
+		if ( $relevant_term && ! empty( $language ) ) {
+			if ( $relevant_term && array_key_exists( $language, $relevant_term['translations'] ) ) {
+				$relevant_term = self::$relevant_terms[ $relevant_term['translations'][ $language ]->element_id ];
+			} else {
+				$relevant_term = false;
+			}
+		}
+		
+		return $relevant_term;
+	}
+
+	/**
+	 * Taxonomy terms for the current item translation before any changes
+	 *
+	 * @since 2.11
+	 *
+	 * @var	array	['element_id'] => $post_id;
+	 * 				[ language_details ]
+	 * 				[ $language ][ translation_details ]
+	 * 				[ $language ][ $taxonomy ][ $term_taxonomy_id ] => $term
+	 */
+	private static $terms_before = array( 'element_id' => 0 );
+	
+	/**
+	 * Build the $terms_before array
+	 *
+	 * Takes each translatable taxonomy and builds an array of
+	 * language-specific term_id to term_id/term_name mappings 
+	 * for terms already assigned to the item translation.
+	 *
+	 * @since 2.11
+	 * @uses MLA_WPML::$terms_before
+	 *
+	 * @param	integer	$post_id ID of the current post
+	 *
+	 */
+	private static function _build_terms_before( $post_id ) {
+		global $sitepress;
+//error_log( __LINE__ . " MLA_WPML::_build_terms_before( {$post_id} ) initial self::\$terms_before element_id = " . var_export( self::$terms_before['element_id'], true ), 0 );
+
+		if ( $post_id == self::$terms_before['element_id'] ) {
+			return;
+		}
+		
+		$language_details = (array) $sitepress->get_element_language_details( $post_id, 'post_attachment' );
+		$translations = array();
+		foreach ( $sitepress->get_element_translations( $language_details['trid'], 'post_attachment' ) as $language_code => $translation ) {
+			$translations[ $language_code ] = (array) $translation;
+		}
+//error_log( __LINE__ . " MLA_WPML::_build_tax_input language_details = " . var_export( $language_details, true ), 0 );
+//error_log( __LINE__ . " MLA_WPML::_build_tax_input translations = " . var_export( $translations, true ), 0 );
+		
+		self::$terms_before = array_merge( array( 'element_id' => $post_id ), $language_details, $translations );
+//error_log( __LINE__ . ' MLA_WPML::_build_terms_before new self::$terms_before = ' . var_export( self::$terms_before, true ), 0 );
+		$taxonomies = $sitepress->get_translatable_taxonomies( true, 'attachment' );
+//error_log( __LINE__ . " MLA_WPML::_build_tax_input taxonomies = " . var_export( $taxonomies, true ), 0 );
+
+		/*
+		 * Find all assigned terms and build term_master array
+		 */		
+		foreach ( $translations as $language_code => $translation ) {
+			foreach ( $taxonomies as $taxonomy_name ) {
+				if ( $terms = get_the_terms( $translation['element_id'], $taxonomy_name ) ) {
+					foreach ( $terms as $term ) {
+						self::_add_relevant_term( $term );
+						self::$terms_before[ $language_code ][ $taxonomy_name ][ $term->term_taxonomy_id ] = $term;
+					} // term
+				} else {
+					self::$terms_before[ $language_code ][ $taxonomy_name ] = array();
+				}
+			} // taxonomy
+		} // translation
+		
+		/*
+		 * Add missing translated terms to the term_master array
+		 */		
+		foreach ( self::$relevant_terms as $term ) {
+			foreach ( $term['translations'] as $translation ) {
+				if ( array_key_exists( $translation->element_id, self::$relevant_terms ) ) {
+					continue;
+				}
+				
+				$term_object = get_term_by( 'term_taxonomy_id', $translation->element_id, $term['term']->taxonomy );
+				self::_add_relevant_term( $term_object, $term['translations'] );
+			} // translation
+		} // term
+		
+//error_log( __LINE__ .  ' MLA_WPML::_build_terms_before final self::$terms_before = ' . var_export( self::$terms_before, true ), 0 );
+//error_log( __LINE__ .  ' MLA_WPML::_build_terms_before final self::$relevant_terms = ' . var_export( self::$relevant_terms, true ), 0 );
+		return;
+	}
+	
+	/**
+	 * Replacement tax_input values in all languages
+	 *
+	 * @since 2.11
+	 *
+	 * @var	array	['tax_input_post_id'] => $post_id;
+	 * 				[ $language ][ $taxonomy ] => array of integer term_ids (hierarchical)
+	 * 				[ $language ][ $taxonomy ] => comma-delimited string of term names (flat)
+	 */
+	private static $tax_input = array( 'tax_input_post_id' => 0 );
 	
 	/**
 	 * Build the $tax_input array
 	 *
-	 * Takes each term from the $taxonomies parameter and builds an array of
+	 * Takes each term from the $tax_inputs parameter and builds an array of
 	 * language-specific term_id to term_id/term_name mappings for all languages.
 	 *
 	 * @since 2.11
 	 * @uses MLA_WPML::$tax_input
 	 *
-	 * @param	array	$taxonomies	'tax_input' request parameter
-	 *
+	 * @param	integer	$post_id ID of the current post
+	 * @param	array	$tax_inputs 'tax_input' request parameter
+	 * @param	array	$tax_actions 'tax_action' request parameter
 	 */
-	private static function _build_tax_input( $taxonomies ) {
-		global $polylang;
-		
-		foreach ( $taxonomies as $taxonomy => $terms ) {
-			// hierarchical taxonomy => array of term_id values; flat => string
-			if ( is_array( $terms ) ) {
-				self::$tax_input[ $taxonomy ]['taxonomy_type'] = 'hierarchical';
+	private static function _build_tax_input( $post_id, $tax_inputs = NULL, $tax_actions = NULL ) {
+		global $sitepress;
+//error_log( __LINE__ . " MLA_WPML::_build_tax_input [{$post_id}] initial self::\$tax_input tax_input_post_id = " . var_export( self::$tax_input['tax_input_post_id'], true ), 0 );
+
+		if ( $post_id == self::$tax_input['tax_input_post_id'] ) {
+			return;
+		}
+
+		self::$tax_input = array( 'tax_input_post_id' => $post_id );
+		$active_languages = $sitepress->get_active_languages();
+//error_log( __LINE__ . " MLA_WPML::_build_tax_input active_languages = " . var_export( $active_languages, true ), 0 );
+
+		/*
+		 * See if we are cloning the existing assignments
+		 */
+		if ( ( NULL == $tax_inputs ) && ( NULL == $tax_actions ) && isset( self::$terms_before['element_id'] ) && ($post_id == self::$terms_before['element_id'] ) ) {
+			$translation = self::$terms_before[ self::$terms_before['language_code'] ];
+			$taxonomies = $sitepress->get_translatable_taxonomies( true, 'attachment' );
+			$tax_inputs = array();
+			$no_terms = true;
+			foreach ( $taxonomies as $taxonomy_name ) {
+				$terms = isset( $translation[ $taxonomy_name ] ) ? $translation[ $taxonomy_name ] : array();
+				if ( ! empty( $terms ) ) {
+					$no_terms = false;
+					$taxonomy = get_taxonomy( $taxonomy_name );
+					$input_terms = array();
+					foreach ( $terms as $term ) {
+						if ( $taxonomy->hierarchical ) {
+							$input_terms[] = $term->term_id;
+						} else {
+							$input_terms[] = $term->name;
+						}
+					} // term
+					
+					if ( $taxonomy->hierarchical ) {
+						$tax_inputs[ $taxonomy_name ] = $input_terms;
+					} else {
+						$tax_inputs[ $taxonomy_name ] = implode( ',', $input_terms );
+					}
+				} else {
+					$tax_inputs[ $taxonomy_name ] = array();
+				}
+			} // taxonomy_name
+			
+			if ( $no_terms ) {
+				foreach( $active_languages as $language => $language_details ) {
+					self::$tax_input[ $language ] = array();
+				}
+				
+				return;
+			}
+		} // cloning
+
+		foreach ( $tax_inputs as $taxonomy => $terms ) {
+			$tax_action = isset( $tax_actions[ $taxonomy ] ) ? $tax_actions[ $taxonomy ] : 'replace'; 
+			$input_terms = array();
+			// hierarchical taxonomy => array of term_id integer values; flat => comma-delimited string of names
+			if ( $hierarchical = is_array( $terms ) ) {
+				
 				foreach( $terms as $term ) {
 					if ( 0 == $term ) {
 						continue;
 					}
 					
-					$translations = $polylang->model->get_translations( 'term', $term );
-					foreach ( $translations as $language => $term_id ) {
-						self::$tax_input[ $taxonomy ][ $language ][ $term_id ] = $term_id;
+					$relevant_term = self::_get_relevant_term( 'term_id', $term, $taxonomy );
+					foreach ( $relevant_term['translations'] as $language => $translation ) {
+						$translated_term = self::_get_relevant_term( 'term_taxonomy_id', $translation->element_id, $taxonomy );
+						$input_terms[ $language ][ $translation->element_id ] = $translated_term['term'];
 					} // for each language
 				} // foreach term
 			} else {
-				self::$tax_input[ $taxonomy ]['taxonomy_type'] = 'flat';
-				/*
-				 * Convert names to IDs, get ID translations, convert back to names
-				 */
+				// Convert names to an array
 				$term_names = array_map( 'trim', explode( ',', $terms ) );
+
 				foreach ( $term_names as $term_name ) {
 					if ( ! empty( $term_name ) ) {
-						$term = get_term_by( 'name', $term_name, $taxonomy );
-						$translations = $polylang->model->get_translations( 'term', $term->term_id );
-
-						foreach ( $translations as $language => $term_id ) {
-							$term = get_term_by( 'id', $term_id, $taxonomy );
-							self::$tax_input[ $taxonomy ][ $language ][ $term_id ] = $term->name;
+						$relevant_term = self::_get_relevant_term( 'name', $term_name, $taxonomy );
+						foreach ( $relevant_term['translations'] as $language => $translation ) {
+							$translated_term = self::_get_relevant_term( 'term_taxonomy_id', $translation->element_id, $taxonomy );
+						$input_terms[ $language ][ $translation->element_id ] = $translated_term['term'];
 						} // for each language
 					} // not empty
 				} // foreach name
-			}
+			} // flat taxonomy
+//error_log( __LINE__ . " MLA_WPML::_build_tax_input [{$taxonomy}] input_terms = " . var_export( $input_terms, true ), 0 );
+
+			foreach( $active_languages as $language => $language_details ) {
+				/*
+				 * Apply the tax_action to the terms_before to find the terms_after
+				 */
+				$term_changes = isset( $input_terms[ $language ] ) ? $input_terms[ $language ] : array();
+				if ( 'replace' == $tax_action ) {
+					$terms_after = $term_changes;
+				} else {
+					$terms_after = isset( self::$terms_before[ $language ][ $taxonomy ] ) ? self::$terms_before[ $language ][ $taxonomy ] : array();
+	
+					foreach( $term_changes as $term_taxonomy_id => $input_term ) {
+						if ( 'add' == $tax_action ) {
+							$terms_after[ $term_taxonomy_id ] = $input_term;
+						} else {
+							unset( $terms_after[ $term_taxonomy_id ] );
+						}
+					} // input_term
+				}
+//error_log( __LINE__ . " MLA_WPML::_build_tax_input terms_after = " . var_export( $terms_after, true ), 0 );
+
+				/*
+				 * Convert terms_after to tax_input format
+				 */
+				$term_changes = array();
+				foreach( $terms_after as $input_term ) {
+					if ( $hierarchical ) {
+						$term_changes[] = $input_term->term_id;
+					} else {
+						$term_changes[] = $input_term->name;
+					}
+				} // input_term
+					
+				if ( $hierarchical ) {
+					self::$tax_input[ $language ][ $taxonomy ] = $term_changes;
+				} else {
+					self::$tax_input[ $language ][ $taxonomy ] = implode( ',', $term_changes );
+				}
+			} // language
+			
 		} // foreach taxonomy
+//error_log( __LINE__ . " MLA_WPML::_build_tax_input self::\$tax_input = " . var_export( self::$tax_input, true ), 0 );
 	} // _build_tax_input
 
 	/**
@@ -164,34 +494,101 @@ class MLA_WPML {
 	 *
 	 * @since 2.11
 	 *
-	 * @param	array	$taxonomies	'tax_input' request parameter
 	 * @param	integer	$post_id ID of the current post
+	 * @param	array	$tax_inputs 'tax_input' request parameter
+	 * @param	array	$tax_actions 'tax_actions' request parameter
 	 *
-	 * @return	array	updated $taxonomies
+	 * @return	array	updated $tax_inputs
 	 */
-	private static function _apply_tax_input( $taxonomies, $post_id ) {
-		global $polylang;
+	private static function _apply_tax_input( $post_id, $post_language = NULL ) {
+		global $sitepress;
 		
-		$post_language = $polylang->model->get_post_language( $post_id );
-		$post_language = $post_language->slug;
+		if ( NULL == $post_language ) {
+			$post_language = $sitepress->get_element_language_details( $post_id, 'post_attachment' );
+			$post_language = $post_language->language_code;
+		}
 		
-		$translated_taxonomies = array();
-		foreach ( $taxonomies as $taxonomy => $terms ) {
-			if ( isset( self::$tax_input[ $taxonomy ][ $post_language ] ) ) {
-				$terms = self::$tax_input[ $taxonomy ][ $post_language ];
-				if ( 'flat' == self::$tax_input[ $taxonomy ]['taxonomy_type'] ) {
-					$terms = implode( ',', $terms );
-				} else {
-					// renumber the keys
-					$terms = array_merge( $terms );
-				}
-				
-				$translated_taxonomies[ $taxonomy ] = $terms;
-			} // found language
-		} // foreach taxonomy 
-
-		return $translated_taxonomies;
+//error_log( __LINE__ . " MLA_WPML::_apply_tax_input( {$post_id}, {$post_language} ) = " . var_export( self::$tax_input[ $post_language ], true ), 0 );
+		return self::$tax_input[ $post_language ];
 	} // _apply_tax_input
+
+	/**
+	 * Captures "before update" term assignments from the Media/Edit Media screen
+	 *
+	 * @since 2.11
+	 *
+	 * @param bool  $maybe_empty Whether the post should be considered "empty".
+	 * @param array $postarr     Array of post data.
+	 */
+	public static function wp_insert_post_empty_content( $maybe_empty, $postarr ) {
+		global $sitepress;
+		
+//error_log( __LINE__ . ' MLA_WPML::wp_insert_post_empty_content $postarr = ' . var_export( $postarr, true ), 0 );
+//error_log( __LINE__ . ' MLA_WPML::wp_insert_post_empty_content $_REQUEST = ' . var_export( $_REQUEST, true ), 0 );
+		
+		if ( isset( $_REQUEST['action'] ) && 'editpost' ==  $_REQUEST['action'] && isset( $_REQUEST['post_ID'] ) ) {
+			self::_build_terms_before( $_REQUEST['post_ID'] );
+		}
+
+		return $maybe_empty;
+	} // wp_insert_post_empty_content
+
+	/**
+	 * Filters taxonomy updates by language.
+	 *
+	 * @since 2.11
+	 *
+	 * @param	integer	ID of the current post
+	 */
+	public static function add_attachment( $post_id ) {
+		static $already_adding = 0;
+		
+//error_log( __LINE__ . ' MLA_WPML::add_attachment( {$post_id} ) $already_adding = ' . var_export( $already_adding, true ), 0 );
+//error_log( __LINE__ . ' MLA_WPML::add_attachment $_REQUEST = ' . var_export( $_REQUEST, true ), 0 );
+		
+		if ( $already_adding == $post_id ) {
+			return;
+		} else {
+			$already_adding = $post_id;
+		}
+	} // add_attachment
+
+	/**
+	 * Copies taxonomy terms from the source item to the new translated item
+	 *
+	 * @since 2.11
+	 *
+	 * @param	integer	ID of the source item
+	 * @param	integer	ID of the new item
+	 */
+	public static function wpml_media_create_duplicate_attachment( $attachment_id, $duplicated_attachment_id ) {
+		global $sitepress;
+		static $already_adding = 0;
+		
+//error_log( __LINE__ . " MLA_WPML::wpml_media_create_duplicate_attachment( {$attachment_id}, {$duplicated_attachment_id} ) \$already_adding = " . var_export( $already_adding, true ), 0 );
+//error_log( __LINE__ . ' MLA_WPML::wpml_media_create_duplicate_attachment $_REQUEST = ' . var_export( $_REQUEST, true ), 0 );
+		
+		if ( $already_adding == $duplicated_attachment_id ) {
+			return;
+		} else {
+			$already_adding = $duplicated_attachment_id;
+		}
+		
+		if ( isset( $_REQUEST['mla_admin_action'] ) && 'wpml_create_translation' ==  $_REQUEST['mla_admin_action'] ) {
+			self::_build_terms_before( $attachment_id );
+			self::_build_tax_input( $attachment_id );
+			$language_details = $sitepress->get_element_language_details( $duplicated_attachment_id, 'post_attachment' );
+			$tax_inputs = self::_apply_tax_input( 0, $language_details->language_code );
+//error_log( __LINE__ . ' MLA_WPML::add_attachment tax_inputs = ' . var_export( $tax_inputs, true ), 0 );
+			
+			if ( !empty( $tax_inputs ) ) {
+				MLAData::mla_update_single_item( $duplicated_attachment_id, array(), $tax_inputs );
+			}
+
+			self::$terms_before = array( 'element_id' => 0 );
+			self::$relevant_terms = array();
+		} // wpml_create_translation
+	} // wpml_media_create_duplicate_attachment
 
 	/**
 	 * Filters taxonomy updates by language.
@@ -201,17 +598,18 @@ class MLA_WPML {
 	 * @param	integer	ID of the current post
 	 */
 	public static function edit_attachment( $post_id ) {
-		static $already_updating = false;
+		static $already_updating = 0;
 		
-		//error_log( 'MLA_WPML::edit_attachment $post_id = ' . var_export( $post_id, true ), 0 );
-		//error_log( 'MLA_WPML::edit_attachment $already_updating = ' . var_export( $already_updating, true ), 0 );
-		//error_log( 'MLA_WPML::edit_attachment $_REQUEST = ' . var_export( $_REQUEST, true ), 0 );
-
+//error_log( __LINE__ . ' MLA_WPML::edit_attachment( {$post_id} ) $already_updating = ' . var_export( $already_updating, true ), 0 );
+//error_log( __LINE__ . ' MLA_WPML::edit_attachment $_REQUEST = ' . var_export( $_REQUEST, true ), 0 );
+		
 		/*
 		 * mla_update_single_item eventually calls this action again
 		 */
-		if ( $already_updating ) {
+		if ( $already_updating == $post_id ) {
 			return;
+		} else {
+			$already_updating = $post_id;
 		}
 		
 		/*
@@ -219,28 +617,33 @@ class MLA_WPML {
 		 * post_categories_meta_box() changes the input name
 		 */
 		if ( isset( $_REQUEST['tax_input'] ) ) {
-			$taxonomies = $_REQUEST['tax_input'];
+			$tax_inputs = $_REQUEST['tax_input'];
 		} else {
-			$taxonomies = array();
+			$tax_inputs = array();
 		}
 
 		if ( isset( $_REQUEST['post_category'] ) ) {
-			$taxonomies['category'] = $_REQUEST['post_category'];
+			$tax_inputs['category'] = $_REQUEST['post_category'];
 		}
 
-		if ( ! empty( $taxonomies ) ) {
-			self::_build_tax_input( $taxonomies );
-			$taxonomies = self::_apply_tax_input( $taxonomies, $post_id );
+		if ( isset( $_REQUEST['tax_action'] ) ) {
+			$tax_actions = $_REQUEST['tax_action'];
+		} else {
+			$tax_actions = NULL;
+		}
+
+		if ( ! empty( $tax_inputs ) ) {
+			self::_build_tax_input( $post_id, $tax_inputs, $tax_actions );
+			$tax_inputs = self::_apply_tax_input( $post_id, $tax_inputs, $tax_actions );
 		}
 		
-		//error_log( 'MLA_WPML::edit_attachment $taxonomies = ' . var_export( $taxonomies, true ), 0 );
-		if ( !empty( $taxonomies ) ) {
+//error_log( 'MLA_WPML::edit_attachment $tax_inputs = ' . var_export( $tax_inputs, true ), 0 );
+		if ( !empty( $tax_inputs ) ) {
 			$already_updating = true; // prevent recursion
-			MLAData::mla_update_single_item( $post_id, array(), $taxonomies );
+			MLAData::mla_update_single_item( $post_id, array(), $tax_inputs );
 			$already_updating = false;
 		}
 	} // edit_attachment
-
 } // Class MLA_WPML
 
 /**

@@ -170,6 +170,7 @@ All of the MLA source code has been annotated with "DocBlocks", a special type o
 
 = 2.11 =
 * New: Term-specific pagination has been added to the `/examples/twentytwelve-mla/image.php` file.
+* New: When WPML is active, all taxonomy term assignments are verified/adjusted to be valid for the item's language.
 * New: When WPML is active, the Media/Assistant submenu table will include a "language management" column showing each item's translation status by language. You can click on an item's "pencil" or "plus" icon to edit an existing translation or duplicate the item in a new language.
 * New: When WPML is active and "All Languages" is selected, the Media/Assistant submenu table will include a "Language" column showing each item's language.
 * New: Two hooks, `mla_list_table_admin_action` and `mla_list_table_custom_admin_action`, have been added.
