@@ -1293,7 +1293,9 @@ class MLAShortcodes {
 									$args['mla_stream_type'] = $arguments['mla_viewer_type'];
 								}
 
-								//$icon_url = add_query_arg( $args, wp_nonce_url( admin_url(  'upload.php' ), MLA::MLA_ADMIN_NONCE ) );
+								/*
+								 * For efficiency, image streaming is done outside WordPress
+								 */
 								$icon_url = add_query_arg( $args, wp_nonce_url( MLA_PLUGIN_URL . 'includes/mla-stream-image.php', MLA::MLA_ADMIN_NONCE ) );
 							}
 						}

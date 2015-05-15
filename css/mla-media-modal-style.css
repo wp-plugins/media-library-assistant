@@ -112,7 +112,6 @@
 	max-height: 200px;
 }
 
-/* Required for WP v3.5.x */
 .media-sidebar .compat-item .mla-taxonomy-row td.field div.tabs-panel input {
 	width: 16px;
 }

@@ -556,7 +556,7 @@ You can add <code>post_parent=all</code> to include or exclude attachments regar
 The "id" parameter lets you specify a post ID for your query. The gallery will display images which are attached to that post. If the "id" parameter is not specified, the <code>[mla_gallery]</code> behavior differs from the <code>[gallery]</code> behavior. If your query uses taxonomy or custom field parameters, "author", "author_name" or "s" (search term), then the query will NOT be restricted to items attached to the current post. This lets you build a gallery with any combination of Media Library items that match the parameters.
 </p>
 <p>
-For WordPress 3.5 and later, the "ids" parameter lets you specify a list of Post IDs. The attachment(s) matching the "ids" values will be displayed in the order specified by the list.
+The "ids" parameter lets you specify a list of Post IDs. The attachment(s) matching the "ids" values will be displayed in the order specified by the list.
 </p>
 <p>
 You can use the "post_parent" to override the default behavior. If you set "post_parent" to a specific post ID, only the items attached to that post are displayed. There are four additional values available:
@@ -4398,8 +4398,8 @@ Using a template with the Option Dropdown "Text" or "Single" values will yield a
 <p>
 There are two other ways you can perform custom field mapping for one or more existing attachments:
 <dl>
-<dt>Single Item Edit/Edit Media screen</dt>
-<dd>For WordPress 3.5 and later, you can click the "Map Custom Field metadata" link in the "Image Metadata" postbox to apply the existing mapping rules to a single attachment.  For WordPress 3.4.x and earlier, you can click the "Map Custom Field metadata" button on the Single Item Edit screen to apply the existing mapping rules.
+<dt>Edit Media screen</dt>
+<dd>You can click the "Map Custom Field metadata" link in the "Image Metadata" postbox to apply the existing mapping rules to a single attachment.
 </dd>
 <dt>Bulk Action edit area</dt>
 <dd>To perform mapping for a group of attachments you can use the Bulk Action facility on the main Assistant screen. Check the attachments you want to map, select "edit" from the Bulk Actions dropdown list and click "Apply". The bulk edit area will open with a list of the checked attachments in the left-hand column. You can click the "Map Custom Field metadata" button in the lower left corner of the area to apply the existing mapping rules to the attachments in the list.
@@ -4714,8 +4714,8 @@ In fact, WordPress contains its own rules for composing a Title from IPTC/Exif m
 <p>
 There are two other ways you can perform metadata mapping to one or more existing Media Library images:
 <dl>
-<dt>Single Item Edit/Edit Media screen</dt>
-<dd>For WordPress 3.5 and later, you can click the "Map IPTC/EXIF metadata" link in the "Image Metadata" postbox to apply the standing mapping rules to a single attachment.  For WordPress 3.4.x and earlier, you can click the "Map IPTC/EXIF metadata" button on the Single Item Edit screen to apply the standing mapping rules.
+<dt>Edit Media screen</dt>
+<dd>You can click the "Map IPTC/EXIF metadata" link in the "Image Metadata" postbox to apply the standing mapping rules to a single attachment.
 </dd>
 <dt>Bulk Action edit area</dt>
 <dd>To perform mapping for a group of attachments you can use the Bulk Action facility on the main Assistant screen. Check the attachments you want to map, select "edit" from the Bulk Actions dropdown list and click "Apply". The bulk edit area will open with a list of the checked attachments in the left-hand column. You can click the "Map IPTC/EXIF metadata" button in the lower left corner of the area to apply the standing mapping rules to the attachments in the list.

@@ -110,7 +110,7 @@ class MLAModal {
 		 * documented as: "Filter the attachment fields to edit."
 		 */
 
-		if ( MLATest::$wordpress_3point5_plus && ( ( 'checked' == MLAOptions::mla_get_option( MLAOptions::MLA_MEDIA_MODAL_TOOLBAR ) ) || ( 'checked' == MLAOptions::mla_get_option( MLAOptions::MLA_MEDIA_GRID_TOOLBAR ) ) ) ) {
+		if ( ( ( 'checked' == MLAOptions::mla_get_option( MLAOptions::MLA_MEDIA_MODAL_TOOLBAR ) ) || ( 'checked' == MLAOptions::mla_get_option( MLAOptions::MLA_MEDIA_GRID_TOOLBAR ) ) ) ) {
 			add_filter( 'get_media_item_args', 'MLAModal::mla_get_media_item_args_filter', 10, 1 );
 			add_filter( 'attachment_fields_to_edit', 'MLAModal::mla_attachment_fields_to_edit_filter', 0x7FFFFFFF, 2 );
 
@@ -123,7 +123,7 @@ class MLAModal {
 			add_action( 'wp_ajax_' . self::JAVASCRIPT_QUERY_ATTACHMENTS_ACTION, 'MLAModal::mla_query_attachments_action' );
 			add_action( 'wp_ajax_' . self::JAVASCRIPT_FILL_COMPAT_ACTION, 'MLAModal::mla_fill_compat_fields_action' );
 			add_action( 'wp_ajax_' . self::JAVASCRIPT_UPDATE_COMPAT_ACTION, 'MLAModal::mla_update_compat_fields_action' );
-		} // $wordpress_3point5_plus
+		} // Media Modal support enabled
 	}
 
 	/**

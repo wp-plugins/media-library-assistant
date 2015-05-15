@@ -48,29 +48,26 @@ class MLAEdit {
 	 * @return	void
 	 */
 	public static function initialize() {
-		/*
-		 * WordPress 3.5 uses the edit-form-advanced.php file for the Edit Media
-		 * page. This supports all the standard meta-boxes for post types.
-		 */
-		if ( MLATest::$wordpress_3point5_plus ) {
-			add_action( 'admin_init', 'MLAEdit::mla_admin_init_action' );
+		// do_action( 'admin_init' ) in wp-admin/admin.php
+		add_action( 'admin_init', 'MLAEdit::mla_admin_init_action' );
 
-			add_action( 'admin_enqueue_scripts', 'MLAEdit::mla_admin_enqueue_scripts_action' );
+		// do_action( 'admin_enqueue_scripts', $hook_suffix ) in wp-admin/admin-header.php
+		add_action( 'admin_enqueue_scripts', 'MLAEdit::mla_admin_enqueue_scripts_action' );
 
-			add_action( 'add_meta_boxes', 'MLAEdit::mla_add_meta_boxes_action', 10, 2 );
+		// do_action( 'add_meta_boxes', $post_type, $post ) in wp-admin/edit-form-advanced.php
+		add_action( 'add_meta_boxes', 'MLAEdit::mla_add_meta_boxes_action', 10, 2 );
 
-			// apply_filters( 'post_updated_messages', $messages ) in wp-admin/edit-form-advanced.php
-			add_filter( 'post_updated_messages', 'MLAEdit::mla_post_updated_messages_filter', 10, 1 );
+		// apply_filters( 'post_updated_messages', $messages ) in wp-admin/edit-form-advanced.php
+		add_filter( 'post_updated_messages', 'MLAEdit::mla_post_updated_messages_filter', 10, 1 );
 
-			// do_action in wp-admin/includes/meta-boxes.php function attachment_submit_meta_box
-			add_action( 'attachment_submitbox_misc_actions', 'MLAEdit::mla_attachment_submitbox_action' );
+		// do_action in wp-admin/includes/meta-boxes.php function attachment_submit_meta_box
+		add_action( 'attachment_submitbox_misc_actions', 'MLAEdit::mla_attachment_submitbox_action' );
 
-			// do_action in wp-includes/post.php function wp_insert_post
-			add_action( 'edit_attachment', 'MLAEdit::mla_edit_attachment_action', 10, 1 );
+		// do_action in wp-includes/post.php function wp_insert_post
+		add_action( 'edit_attachment', 'MLAEdit::mla_edit_attachment_action', 10, 1 );
 
-			// apply_filters( 'admin_title', $admin_title, $title ) in /wp-admin/admin-header.php
-			add_filter( 'admin_title', 'MLAEdit::mla_edit_add_help_tab', 10, 2 );
-		} // $wordpress_3point5_plus
+		// apply_filters( 'admin_title', $admin_title, $title ) in /wp-admin/admin-header.php
+		add_filter( 'admin_title', 'MLAEdit::mla_edit_add_help_tab', 10, 2 );
 	}
 
 	/**
@@ -488,7 +485,6 @@ class MLAEdit {
 			 * Pass the ID
 			 */
 			$args['cb_attachment'] = array( $post_id );
-
 			$item_content = MLA::mla_process_bulk_action( 'edit', $args );
 		}
 

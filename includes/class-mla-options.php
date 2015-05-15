@@ -2263,6 +2263,11 @@ class MLAOptions {
 
 		$attachment_metadata = isset( $wp_attachment_metadata[ $post_id ]->meta_value ) ? unserialize( $wp_attachment_metadata[ $post_id ]->meta_value ) : array();
 		if ( !empty( $attachment_metadata ) ) {
+			if ( isset( $attachment_metadata['image_meta'] ) ) {
+				foreach ( $attachment_metadata['image_meta'] as $key => $value )
+					$results[ $key ] = $value;
+			}
+
 			$sizes = isset( $attachment_metadata['sizes'] ) ? $attachment_metadata['sizes'] : array();
 
 			if ( isset( $attachment_metadata['width'] ) ) {
@@ -2284,11 +2289,6 @@ class MLAOptions {
 			}
 
 			$results['hwstring_small'] = isset( $attachment_metadata['hwstring_small'] ) ? $attachment_metadata['hwstring_small'] : '';
-
-			if ( isset( $attachment_metadata['image_meta'] ) ) {
-				foreach ( $attachment_metadata['image_meta'] as $key => $value )
-					$results[ $key ] = $value;
-			}
 		}
 
 		if ( ! empty( $base_file ) ) {

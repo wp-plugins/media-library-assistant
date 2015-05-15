@@ -38,7 +38,7 @@ class MLA {
 	 *
 	 * @var	string
 	 */
-	const MLA_DEVELOPMENT_VERSION = '20150508';
+	const MLA_DEVELOPMENT_VERSION = '20150514';
 
 	/**
 	 * Slug for registering and enqueueing plugin style sheet
@@ -48,24 +48,6 @@ class MLA {
 	 * @var	string
 	 */
 	const STYLESHEET_SLUG = 'mla-style';
-
-	/**
-	 * Slug for localizing and enqueueing JavaScript - edit single item page
-	 *
-	 * @since 0.1
-	 *
-	 * @var	string
-	 */
-	const JAVASCRIPT_SINGLE_EDIT_SLUG = 'mla-single-edit-scripts';
-
-	/**
-	 * Object name for localizing JavaScript - edit single item page
-	 *
-	 * @since 0.1
-	 *
-	 * @var	string
-	 */
-	const JAVASCRIPT_SINGLE_EDIT_OBJECT = 'mla_single_edit_vars';
 
 	/**
 	 * Slug for localizing and enqueueing JavaScript - MLA List Table
@@ -113,7 +95,9 @@ class MLA {
 	const MLA_ADMIN_SINGLE_DELETE = 'single_item_delete';
 
 	/**
-	 * mla_admin_action value for displaying a single item
+	 * mla_admin_action value to display a single item for editing
+	 *
+	 * Used by class-mla-view-list-table.php and class-mla-upload-list-table.php
 	 *
 	 * @since 0.1
 	 *
@@ -123,6 +107,8 @@ class MLA {
 
 	/**
 	 * mla_admin_action value for updating a single item
+	 *
+	 * Used by class-mla-view-list-table.php and class-mla-upload-list-table.php
 	 *
 	 * @since 0.1
 	 *
@@ -356,59 +342,49 @@ class MLA {
 		wp_register_style( self::STYLESHEET_SLUG . '-set-parent', MLA_PLUGIN_URL . 'css/mla-style-set-parent.css', false, self::CURRENT_MLA_VERSION );
 		wp_enqueue_style( self::STYLESHEET_SLUG . '-set-parent' );
 
-		if ( isset( $_REQUEST['mla_admin_action'] ) && ( $_REQUEST['mla_admin_action'] == self::MLA_ADMIN_SINGLE_EDIT_DISPLAY ) ) {
-			wp_enqueue_script( self::JAVASCRIPT_SINGLE_EDIT_SLUG, MLA_PLUGIN_URL . "js/mla-single-edit-scripts{$suffix}.js", 
-				array( 'wp-lists', 'suggest', 'jquery' ), self::CURRENT_MLA_VERSION, false );
-			$script_variables = array(
-				'comma' => _x( ',', 'tag_delimiter', 'media-library-assistant' ),
-				'Ajax_Url' => admin_url( 'admin-ajax.php' ) 
-			);
-			wp_localize_script( self::JAVASCRIPT_SINGLE_EDIT_SLUG, self::JAVASCRIPT_SINGLE_EDIT_OBJECT, $script_variables );
-		} else {
-			wp_enqueue_script( self::JAVASCRIPT_INLINE_EDIT_SLUG, MLA_PLUGIN_URL . "js/mla-inline-edit-scripts{$suffix}.js", 
-				array( 'wp-lists', 'suggest', 'jquery' ), self::CURRENT_MLA_VERSION, false );
+		wp_enqueue_script( self::JAVASCRIPT_INLINE_EDIT_SLUG, MLA_PLUGIN_URL . "js/mla-inline-edit-scripts{$suffix}.js", 
+			array( 'wp-lists', 'suggest', 'jquery' ), self::CURRENT_MLA_VERSION, false );
 
-			wp_enqueue_script( self::JAVASCRIPT_INLINE_EDIT_SLUG . '-set-parent', MLA_PLUGIN_URL . "js/mla-set-parent-scripts{$suffix}.js", 
-				array( 'wp-lists', 'suggest', 'jquery', self::JAVASCRIPT_INLINE_EDIT_SLUG ), self::CURRENT_MLA_VERSION, false );
+		wp_enqueue_script( self::JAVASCRIPT_INLINE_EDIT_SLUG . '-set-parent', MLA_PLUGIN_URL . "js/mla-set-parent-scripts{$suffix}.js", 
+			array( 'wp-lists', 'suggest', 'jquery', self::JAVASCRIPT_INLINE_EDIT_SLUG ), self::CURRENT_MLA_VERSION, false );
 
-			MLAModal::mla_add_terms_search_scripts();
+		MLAModal::mla_add_terms_search_scripts();
 
-			$fields = array( 'post_title', 'post_name', 'post_excerpt', 'post_content', 'image_alt', 'post_parent', 'post_parent_title', 'menu_order', 'post_author' );
-			$custom_fields = MLAOptions::mla_custom_field_support( 'quick_edit' );
-			$custom_fields = array_merge( $custom_fields, MLAOptions::mla_custom_field_support( 'bulk_edit' ) );
-			foreach ($custom_fields as $slug => $label ) {
-				$fields[] = $slug;
-			}
-
-			$fields = apply_filters( 'mla_list_table_inline_fields', $fields );
-
-			$script_variables = array(
-				'fields' => $fields,
-				'ajaxFailError' => __( 'An ajax.fail error has occurred. Please reload the page and try again.', 'media-library-assistant' ),
-				'ajaxDoneError' => __( 'An ajax.done error has occurred. Please reload the page and try again.', 'media-library-assistant' ),
-				'error' => __( 'Error while saving the changes.', 'media-library-assistant' ),
-				'ntdelTitle' => __( 'Remove From Bulk Edit', 'media-library-assistant' ),
-				'noTitle' => __( '(no title)', 'media-library-assistant' ),
-				'bulkTitle' => __( 'Bulk Edit items', 'media-library-assistant' ),
-				'bulkWaiting' => __( 'Waiting', 'media-library-assistant' ),
-				'bulkComplete' => __( 'Complete', 'media-library-assistant' ),
-				'bulkUnchanged' => __( 'Unchanged', 'media-library-assistant' ),
-				'bulkSuccess' => __( 'Succeeded', 'media-library-assistant' ),
-				'bulkFailure' => __( 'Failed', 'media-library-assistant' ),
-				'bulkCanceled' => __( 'CANCELED', 'media-library-assistant' ),
-				'bulkChunkSize' => MLAOptions::mla_get_option( MLAOptions::MLA_BULK_CHUNK_SIZE ),
-				'comma' => _x( ',', 'tag_delimiter', 'media-library-assistant' ),
-				'useSpinnerClass' => false,
-				'ajax_action' => self::JAVASCRIPT_INLINE_EDIT_SLUG,
-				'ajax_nonce' => wp_create_nonce( self::MLA_ADMIN_NONCE ) 
-			);
-
-			if ( version_compare( get_bloginfo( 'version' ), '4.2', '>=' ) ) {
-				$script_variables['useSpinnerClass'] = true;
-			}
-	
-			wp_localize_script( self::JAVASCRIPT_INLINE_EDIT_SLUG, self::JAVASCRIPT_INLINE_EDIT_OBJECT, $script_variables );
+		$fields = array( 'post_title', 'post_name', 'post_excerpt', 'post_content', 'image_alt', 'post_parent', 'post_parent_title', 'menu_order', 'post_author' );
+		$custom_fields = MLAOptions::mla_custom_field_support( 'quick_edit' );
+		$custom_fields = array_merge( $custom_fields, MLAOptions::mla_custom_field_support( 'bulk_edit' ) );
+		foreach ($custom_fields as $slug => $label ) {
+			$fields[] = $slug;
 		}
+
+		$fields = apply_filters( 'mla_list_table_inline_fields', $fields );
+
+		$script_variables = array(
+			'fields' => $fields,
+			'ajaxFailError' => __( 'An ajax.fail error has occurred. Please reload the page and try again.', 'media-library-assistant' ),
+			'ajaxDoneError' => __( 'An ajax.done error has occurred. Please reload the page and try again.', 'media-library-assistant' ),
+			'error' => __( 'Error while saving the changes.', 'media-library-assistant' ),
+			'ntdelTitle' => __( 'Remove From Bulk Edit', 'media-library-assistant' ),
+			'noTitle' => __( '(no title)', 'media-library-assistant' ),
+			'bulkTitle' => __( 'Bulk Edit items', 'media-library-assistant' ),
+			'bulkWaiting' => __( 'Waiting', 'media-library-assistant' ),
+			'bulkComplete' => __( 'Complete', 'media-library-assistant' ),
+			'bulkUnchanged' => __( 'Unchanged', 'media-library-assistant' ),
+			'bulkSuccess' => __( 'Succeeded', 'media-library-assistant' ),
+			'bulkFailure' => __( 'Failed', 'media-library-assistant' ),
+			'bulkCanceled' => __( 'CANCELED', 'media-library-assistant' ),
+			'bulkChunkSize' => MLAOptions::mla_get_option( MLAOptions::MLA_BULK_CHUNK_SIZE ),
+			'comma' => _x( ',', 'tag_delimiter', 'media-library-assistant' ),
+			'useSpinnerClass' => false,
+			'ajax_action' => self::JAVASCRIPT_INLINE_EDIT_SLUG,
+			'ajax_nonce' => wp_create_nonce( self::MLA_ADMIN_NONCE ) 
+		);
+
+		if ( version_compare( get_bloginfo( 'version' ), '4.2', '>=' ) ) {
+			$script_variables['useSpinnerClass'] = true;
+		}
+
+		wp_localize_script( self::JAVASCRIPT_INLINE_EDIT_SLUG, self::JAVASCRIPT_INLINE_EDIT_OBJECT, $script_variables );
 	}
 
 	/**
@@ -417,10 +393,6 @@ class MLA {
 	 * Add a submenu page in the "Media" section,
 	 * add settings page in the "Settings" section.
 	 * add settings link in the Plugins section entry for MLA.
-	 *
-	 * For WordPress versions before 3.5, 
-	 * add submenu page(s) for attachment taxonomies,
-	 * add filter to clean up taxonomy submenu labels.
 	 *
 	 * @since 0.1
 	 *
@@ -451,14 +423,6 @@ class MLA {
 		$taxonomies = get_object_taxonomies( 'attachment', 'objects' );
 		if ( !empty( $taxonomies ) ) {
 			foreach ( $taxonomies as $tax_name => $tax_object ) {
-				/*
-				 * WordPress 3.5 adds native support for taxonomies
-				 */
-				if ( ! MLATest::$wordpress_3point5_plus ) {
-					$hook = add_submenu_page( 'upload.php', $tax_object->label, $tax_object->label, 'manage_categories', 'mla-edit-tax-' . $tax_name, 'MLA::mla_edit_tax_redirect' );
-					add_action( 'load-' . $hook, 'MLA::mla_edit_tax_redirect' );
-				} // ! MLATest::$wordpress_3point5_plus
-
 				/*
 				 * The page_hook we need for taxonomy edits is slightly different
 				 */
@@ -566,35 +530,24 @@ class MLA {
 		$file_suffix = $screen->id;
 
 		/*
-		 * Override the screen suffix if we are going to display something other than the attachment table
+		 * Use a generic page for edit taxonomy screens
 		 */
-		if ( isset( $_REQUEST['mla_admin_action'] ) ) {
-			switch ( $_REQUEST['mla_admin_action'] ) {
-				case self::MLA_ADMIN_SINGLE_EDIT_DISPLAY:
-					$file_suffix = self::MLA_ADMIN_SINGLE_EDIT_DISPLAY;
+		if ( 't_' == substr( self::$page_hooks[ $file_suffix ], 0, 2 ) ) {
+			$taxonomy = substr( self::$page_hooks[ $file_suffix ], 2 );
+			switch ( $taxonomy ) {
+				case 'attachment_category':
+				case 'attachment_tag':
 					break;
-			} // switch
-		} else { // isset( $_REQUEST['mla_admin_action'] )
-			/*
-			 * Use a generic page for edit taxonomy screens
-			 */
-			if ( 't_' == substr( self::$page_hooks[ $file_suffix ], 0, 2 ) ) {
-				$taxonomy = substr( self::$page_hooks[ $file_suffix ], 2 );
-				switch ( $taxonomy ) {
-					case 'attachment_category':
-					case 'attachment_tag':
-						break;
-					default:
-						$tax_object = get_taxonomy( $taxonomy );
+				default:
+					$tax_object = get_taxonomy( $taxonomy );
 
-						if ( $tax_object->hierarchical ) {
-							$file_suffix = 'edit-hierarchical-taxonomy';
-						} else {
-							$file_suffix = 'edit-flat-taxonomy';
-						}
-				} // $taxonomy switch
-			} // is taxonomy
-		}
+					if ( $tax_object->hierarchical ) {
+						$file_suffix = 'edit-hierarchical-taxonomy';
+					} else {
+						$file_suffix = 'edit-flat-taxonomy';
+					}
+			} // $taxonomy switch
+		} // is taxonomy
 
 		$template_array = MLAData::mla_load_template( 'help-for-' . $file_suffix . '.tpl' );
 		if ( empty( $template_array ) ) {
@@ -661,10 +614,6 @@ class MLA {
 	 * @return	boolean	True to display "Screen Options", false to suppress them
 	 */
 	public static function mla_screen_options_show_screen_filter( $show_screen, $this_screen ) {
-		if ( isset( $_REQUEST['mla_admin_action'] ) && ( $_REQUEST['mla_admin_action'] == self::MLA_ADMIN_SINGLE_EDIT_DISPLAY ) ) {
-			return false;
-		}
-
 		return $show_screen;
 	}
 
@@ -688,42 +637,9 @@ class MLA {
 	}
 
 	/**
-	 * Redirect to the Edit Tags/Categories page
-	 *
-	 * The custom taxonomy add/edit submenu entries go to "upload.php" by default.
-	 * This filter is the only way to redirect them to the correct WordPress page.
-	 * The filter is not required for WordPress 3.5 and later.
-	 *
-	 * @since 0.1
-	 *
-	 * @return	void
-	 */
-	public static function mla_edit_tax_redirect( ) {
-		/*
-		 * WordPress 3.5 adds native support for taxonomies
-		 */
-		if ( MLATest::$wordpress_3point5_plus ) {
-			return;
-		}
-
-		$screen = get_current_screen();
-
-		if ( isset( $_REQUEST['page'] ) && ( substr( $_REQUEST['page'], 0, 13 ) == 'mla-edit-tax-' ) ) {
-			$taxonomy = substr( $_REQUEST['page'], 13 );
-			wp_redirect( admin_url( 'edit-tags.php?taxonomy=' . $taxonomy . '&post_type=attachment' ), 302 );
-			exit;
-		}
-	}
-
-	/**
 	 * Cleanup menus for Edit Tags/Categories page
 	 *
-	 * For WordPress before 3.5, the submenu entries for custom taxonomies
-	 * under the "Media" menu are not set up correctly by WordPress, so this
-	 * function cleans them up, redirecting the request to the right WordPress
-	 * page for editing/adding taxonomy terms.
-	 * For WordPress 3.5 and later, the function fixes the submenu bolding when
-	 * going to the Edit Media screen.
+	 * Fixes the submenu bolding when going to the Edit Media screen.
 	 *
 	 * @since 0.1
 	 *
@@ -754,31 +670,6 @@ class MLA {
 		 */
 		if ( isset( $_REQUEST['mla_source'] ) ) {
 			$submenu_file = 'upload.php?page=' . self::ADMIN_PAGE_SLUG;
-		}
-
-		/*
-		 * WordPress 3.5 adds native support for taxonomies
-		 */
-		if ( MLATest::$wordpress_3point5_plus ) {
-			return $parent_file;
-		}
-
-		if ( isset( $_REQUEST['taxonomy'] ) ) {
-			$taxonomies = get_object_taxonomies( 'attachment', 'objects' );
-
-			foreach ( $taxonomies as $tax_name => $tax_object ) {
-				if ( $_REQUEST['taxonomy'] == $tax_name ) {
-					$mla_page = 'mla-edit-tax-' . $tax_name;
-					$real_page = 'edit-tags.php?taxonomy=' . $tax_name . '&post_type=attachment';
-
-					foreach ( $submenu['upload.php'] as $submenu_index => $submenu_entry ) {
-						if ( $submenu_entry[ 2 ] == $mla_page ) {
-							$submenu['upload.php'][ $submenu_index ][ 2 ] = $real_page;
-							return 'upload.php';
-						}
-					}
-				}
-			}
 		}
 
 		return $parent_file;
@@ -873,6 +764,214 @@ class MLA {
 	}
 
 	/**
+	 * Prepare Bulk Edit field-level updates
+	 *
+	 * @since 2.11
+	 *
+	 * @param	integer	$post_id Current post ID
+	 * @param	array	$requestForm elements, e.g., from $_REQUEST
+	 * @param	array	$custom_field_map Form id to field name mapping
+	 *
+	 * @return	array	Non-empty form elements
+	 */
+	public static function mla_prepare_bulk_edits( $post_id, $request, $custom_field_map ) {
+		/*
+		 * Copy the edit form contents to $new_data
+		 * Trim text values for testing purposes only
+		 */
+		$new_data = array() ;
+		if ( isset( $request['post_title'] ) ) {
+			$test_value = self::_process_bulk_value( $post_id, $request['post_title'] );
+			if ( ! empty( $test_value ) ) {
+				$new_data['post_title'] = $test_value;
+			} elseif ( is_null( $test_value ) ) {
+				$new_data['post_title'] = '';
+			}
+		}
+
+		if ( isset( $request['post_excerpt'] ) ) {
+			$test_value = self::_process_bulk_value( $post_id, $request['post_excerpt'] );
+			if ( ! empty( $test_value ) ) {
+				$new_data['post_excerpt'] = $test_value;
+			} elseif ( is_null( $test_value ) ) {
+				$new_data['post_excerpt'] = '';
+			}
+		}
+
+		if ( isset( $request['post_content'] ) ) {
+			$test_value = self::_process_bulk_value( $post_id, $request['post_content'] );
+			if ( ! empty( $test_value ) ) {
+				$new_data['post_content'] = $test_value;
+			} elseif ( is_null( $test_value ) ) {
+				$new_data['post_content'] = '';
+			}
+		}
+
+		/*
+		 * image_alt requires a separate key because some attachment types
+		 * should not get a value, e.g., text or PDF documents
+		 */
+		if ( isset( $request['image_alt'] ) ) {
+			$test_value = self::_process_bulk_value( $post_id, $request['image_alt'] );
+			if ( ! empty( $test_value ) ) {
+				$new_data['bulk_image_alt'] = $test_value;
+			} elseif ( is_null( $test_value ) ) {
+				$new_data['bulk_image_alt'] = '';
+			}
+		}
+
+		if ( isset( $request['post_parent'] ) ) {
+			if ( is_numeric( $request['post_parent'] ) ) {
+				$new_data['post_parent'] = $request['post_parent'];
+			}
+		}
+
+		if ( isset( $request['post_author'] ) ) {
+			if ( -1 != $request['post_author'] ) {
+					$new_data['post_author'] = $request['post_author'];
+			}
+		}
+
+		if ( isset( $request['comment_status'] ) ) {
+			if ( -1 != $request['comment_status'] ) {
+					$new_data['comment_status'] = $request['comment_status'];
+			}
+		}
+
+		if ( isset( $request['ping_status'] ) ) {
+			if ( -1 != $request['ping_status'] ) {
+					$new_data['ping_status'] = $request['ping_status'];
+			}
+		}
+
+		/*
+		 * Custom field support
+		 */
+		$custom_fields = array();
+		foreach ( $custom_field_map as $slug => $label ) {
+			if ( isset( $request[ $slug ] ) ) {
+				$test_value = self::_process_bulk_value( $post_id, $request[ $slug ] );
+				if ( ! empty( $test_value ) ) {
+					$custom_fields[ $label ] = $test_value;
+				} elseif ( is_null( $test_value ) ) {
+					$custom_fields[ $label ] = '';
+				}
+			}
+		} // foreach
+
+		if ( ! empty( $custom_fields ) ) {
+			$new_data[ 'custom_updates' ] = $custom_fields;
+		}
+
+		/*
+		 * Taxonomy Support
+		 */
+		$tax_input = array();
+		foreach ( $request['tax_input'] as $taxonomy => $terms ) {
+			if ( ! empty( $request['tax_action'] ) ) {
+				$tax_action = $request['tax_action'][ $taxonomy ];
+			} else {
+				$tax_action = 'replace';
+			}
+
+			/*
+			 * Ignore empty updates
+			 */
+			if ( $hierarchical = is_array( $terms ) ) {
+				if ( false !== ( $index = array_search( 0, $terms ) ) ) {
+					unset( $terms[ $index ] );
+				}
+			} else {
+				/*
+				 * Parse out individual terms
+				 */
+				$comma = _x( ',', 'tag_delimiter', 'media-library-assistant' );
+				if ( ',' !== $comma ) {
+					$tags = str_replace( $comma, ',', $terms );
+				}
+
+				$fragments = explode( ',', trim( $terms, " \n\t\r\0\x0B," ) );
+				$terms = array();
+				foreach( $fragments as $fragment ) {
+					$fragment = trim( wp_unslash( $fragment ) );
+					if ( ! empty( $fragment ) ) {
+						$terms[] = $fragment;
+					}
+				} // foreach fragment
+
+				$terms = array_unique( $terms );
+			}
+
+			if ( empty( $terms ) && 'replace' != $tax_action ) {
+				continue;
+			}
+
+			$post_terms = get_object_term_cache( $post_id, $taxonomy );
+			if ( false === $post_terms ) {
+				$post_terms = wp_get_object_terms( $post_id, $taxonomy );
+				wp_cache_add( $post_id, $post_terms, $taxonomy . '_relationships' );
+			}
+
+			$current_terms = array();
+			foreach( $post_terms as $new_term ) {
+				if ( $hierarchical ) {
+					$current_terms[ $new_term->term_id ] =  $new_term->term_id;
+				} else {
+					$current_terms[ $new_term->name ] =  $new_term->name;
+				}
+			}
+
+			if ( 'add' == $tax_action ) {
+				/*
+				 * Add new terms; remove existing terms
+				 */
+				foreach ( $terms as $index => $new_term ) {
+					if ( isset( $current_terms[ $new_term ] ) ) {
+						unset( $terms[ $index ] );
+					}
+				}
+
+				$do_update = ! empty( $terms );
+			} elseif ( 'remove' == $tax_action ) {
+				/*
+				 * Remove only the existing terms
+				 */
+				foreach ( $terms as $index => $new_term ) {
+					if ( ! isset( $current_terms[ $new_term ] ) ) {
+						unset( $terms[ $index ] );
+					}
+				}
+
+				$do_update = ! empty( $terms );
+			} else { 
+				/*
+				 * Replace all terms; if the new terms match the term
+				 * cache, we can skip the update
+				 */
+				foreach ( $terms as $new_term ) {
+					if ( isset( $current_terms[ $new_term ] ) ) {
+						unset( $current_terms[ $new_term ] );
+					} else {
+						$current_terms[ $new_term ] = $new_term;
+						break; // not a match; stop checking
+					}
+				}
+
+				$do_update = ! empty( $current_terms );
+			}
+
+			if ( $do_update ) {
+				$tax_input[ $taxonomy ] = $terms;
+			}
+		} // foreach taxonomy
+
+		$new_data[ 'tax_input' ] = $tax_input;
+		$new_data[ 'tax_action' ] = $tax_action;
+		
+		return $new_data;
+	}
+
+	/**
 	 * Process bulk action for one or more attachments
 	 *
 	 * @since 2.00
@@ -961,195 +1060,10 @@ class MLA {
 								break;
 							}
 
-							/*
-							 * Copy the edit form contents to $new_data
-							 * Trim text values for testing purposes only
-							 */
-							$new_data = array() ;
-							if ( isset( $request['post_title'] ) ) {
-								$test_value = self::_process_bulk_value( $post_id, $request['post_title'] );
-								if ( ! empty( $test_value ) ) {
-									$new_data['post_title'] = $test_value;
-								} elseif ( is_null( $test_value ) ) {
-									$new_data['post_title'] = '';
-								}
-							}
-
-							if ( isset( $request['post_excerpt'] ) ) {
-								$test_value = self::_process_bulk_value( $post_id, $request['post_excerpt'] );
-								if ( ! empty( $test_value ) ) {
-									$new_data['post_excerpt'] = $test_value;
-								} elseif ( is_null( $test_value ) ) {
-									$new_data['post_excerpt'] = '';
-								}
-							}
-
-							if ( isset( $request['post_content'] ) ) {
-								$test_value = self::_process_bulk_value( $post_id, $request['post_content'] );
-								if ( ! empty( $test_value ) ) {
-									$new_data['post_content'] = $test_value;
-								} elseif ( is_null( $test_value ) ) {
-									$new_data['post_content'] = '';
-								}
-							}
-
-							/*
-							 * image_alt requires a separate key because some attachment types
-							 * should not get a value, e.g., text or PDF documents
-							 */
-							if ( isset( $request['image_alt'] ) ) {
-								$test_value = self::_process_bulk_value( $post_id, $request['image_alt'] );
-								if ( ! empty( $test_value ) ) {
-									$new_data['bulk_image_alt'] = $test_value;
-								} elseif ( is_null( $test_value ) ) {
-									$new_data['bulk_image_alt'] = '';
-								}
-							}
-
-							if ( isset( $request['post_parent'] ) ) {
-								if ( is_numeric( $request['post_parent'] ) ) {
-									$new_data['post_parent'] = $request['post_parent'];
-								}
-							}
-
-							if ( isset( $request['post_author'] ) ) {
-								if ( -1 != $request['post_author'] ) {
-										$new_data['post_author'] = $request['post_author'];
-								}
-							}
-
-							if ( isset( $request['comment_status'] ) ) {
-								if ( -1 != $request['comment_status'] ) {
-										$new_data['comment_status'] = $request['comment_status'];
-								}
-							}
-
-							if ( isset( $request['ping_status'] ) ) {
-								if ( -1 != $request['ping_status'] ) {
-										$new_data['ping_status'] = $request['ping_status'];
-								}
-							}
-
-							/*
-							 * Custom field support
-							 */
-							$custom_fields = array();
-							foreach ( $custom_field_map as $slug => $label ) {
-								if ( isset( $request[ $slug ] ) ) {
-									$test_value = self::_process_bulk_value( $post_id, $request[ $slug ] );
-									if ( ! empty( $test_value ) ) {
-										$custom_fields[ $label ] = $test_value;
-									} elseif ( is_null( $test_value ) ) {
-										$custom_fields[ $label ] = '';
-									}
-								}
-							} // foreach
-
-							if ( ! empty( $custom_fields ) ) {
-								$new_data[ 'custom_updates' ] = $custom_fields;
-							}
-
-							/*
-							 * Taxonomy Support
-							 */
-							$tax_input = array();
-							foreach ( $request['tax_input'] as $taxonomy => $terms ) {
-								if ( ! empty( $request['tax_action'] ) ) {
-									$tax_action = $request['tax_action'][ $taxonomy ];
-								} else {
-									$tax_action = 'replace';
-								}
-
-								/*
-								 * Ignore empty updates
-								 */
-								if ( $hierarchical = is_array( $terms ) ) {
-									if ( false !== ( $index = array_search( 0, $terms ) ) ) {
-										unset( $terms[ $index ] );
-									}
-								} else {
-									/*
-									 * Parse out individual terms
-									 */
-									$comma = _x( ',', 'tag_delimiter', 'media-library-assistant' );
-									if ( ',' !== $comma ) {
-										$tags = str_replace( $comma, ',', $terms );
-									}
-
-									$fragments = explode( ',', trim( $terms, " \n\t\r\0\x0B," ) );
-									$terms = array();
-									foreach( $fragments as $fragment ) {
-										$fragment = trim( wp_unslash( $fragment ) );
-										if ( ! empty( $fragment ) ) {
-											$terms[] = $fragment;
-										}
-									} // foreach fragment
-
-									$terms = array_unique( $terms );
-								}
-
-								if ( empty( $terms ) && 'replace' != $tax_action ) {
-									continue;
-								}
-
-								$post_terms = get_object_term_cache( $post_id, $taxonomy );
-								if ( false === $post_terms ) {
-									$post_terms = wp_get_object_terms( $post_id, $taxonomy );
-									wp_cache_add( $post_id, $post_terms, $taxonomy . '_relationships' );
-								}
-
-								$current_terms = array();
-								foreach( $post_terms as $new_term ) {
-									if ( $hierarchical ) {
-										$current_terms[ $new_term->term_id ] =  $new_term->term_id;
-									} else {
-										$current_terms[ $new_term->name ] =  $new_term->name;
-									}
-								}
-
-								if ( 'add' == $tax_action ) {
-									/*
-									 * Add new terms; remove existing terms
-									 */
-									foreach ( $terms as $index => $new_term ) {
-										if ( isset( $current_terms[ $new_term ] ) ) {
-											unset( $terms[ $index ] );
-										}
-									}
-
-									$do_update = ! empty( $terms );
-								} elseif ( 'remove' == $tax_action ) {
-									/*
-									 * Remove only the existing terms
-									 */
-									foreach ( $terms as $index => $new_term ) {
-										if ( ! isset( $current_terms[ $new_term ] ) ) {
-											unset( $terms[ $index ] );
-										}
-									}
-
-									$do_update = ! empty( $terms );
-								} else { 
-									/*
-									 * Replace all terms; if the new terms match the term
-									 * cache, we can skip the update
-									 */
-									foreach ( $terms as $new_term ) {
-										if ( isset( $current_terms[ $new_term ] ) ) {
-											unset( $current_terms[ $new_term ] );
-										} else {
-											$current_terms[ $new_term ] = $new_term;
-											break; // not a match; stop checking
-										}
-									}
-
-									$do_update = ! empty( $current_terms );
-								}
-
-								if ( $do_update ) {
-									$tax_input[ $taxonomy ] = $terms;
-								}
-							} // foreach taxonomy
+							$new_data = self::mla_prepare_bulk_edits( $post_id, $request, $custom_field_map );
+							$tax_input = $new_data['tax_input'];
+							unset( $new_data['tax_input'] );
+							unset( $new_data['tax_action'] );
 
 							$item_content = MLAData::mla_update_single_item( $post_id, $new_data, $tax_input, $request['tax_action'] );
 							break;
@@ -1376,27 +1290,6 @@ class MLA {
 				switch ( $_REQUEST['mla_admin_action'] ) {
 					case self::MLA_ADMIN_SINGLE_DELETE:
 						$page_content = self::_delete_single_item( $_REQUEST['mla_item_ID'] );
-						break;
-					case self::MLA_ADMIN_SINGLE_EDIT_DISPLAY:
-						echo ' - ' . __( 'Edit single item', 'media-library-assistant' ) . '</h2>';
-						$page_content = self::_display_single_item( $_REQUEST['mla_item_ID'] );
-						break;
-					case self::MLA_ADMIN_SINGLE_EDIT_UPDATE:
-						if ( !empty( $_REQUEST['update'] ) ) {
-							$page_content = MLAData::mla_update_single_item( $_REQUEST['mla_item_ID'], $_REQUEST['attachments'][ $_REQUEST['mla_item_ID'] ], $_REQUEST['tax_input'] );
-						} elseif ( !empty( $_REQUEST['map-iptc-exif'] ) ) {
-							$item = get_post( $_REQUEST['mla_item_ID'] );
-							do_action( 'mla_begin_mapping', 'single_iptc_exif', $_REQUEST['mla_item_ID'] );
-							$updates = MLAOptions::mla_evaluate_iptc_exif_mapping( $item, 'iptc_exif_mapping' );
-							do_action( 'mla_end_mapping' );
-							$page_content = MLAData::mla_update_single_item( $_REQUEST['mla_item_ID'], $updates );
-						} else {
-							$page_content = array(
-								/* translators: 1: post ID */
-								'message' => sprintf( __( 'Item %1$d cancelled.', 'media-library-assistant' ), $_REQUEST['mla_item_ID'] ),
-								'body' => '' 
-							);
-						}
 						break;
 					case self::MLA_ADMIN_SINGLE_RESTORE:
 						$page_content = self::_restore_single_item( $_REQUEST['mla_item_ID'] );
@@ -2279,290 +2172,6 @@ class MLA {
 			/* translators: 1: post ID */
 			'message' => sprintf( __( 'Item %1$d permanently deleted.', 'media-library-assistant' ), $post_id ),
 			'body' => '' 
-		);
-	}
-
-	/**
-	 * Display a single item sub page; prepare the form to 
-	 * change the meta data for a single attachment.
-	 * 
-	 * This function is not used in WordPress 3.5 and later.
-	 *
-	 * @since 0.1
-	 * 
-	 * @param	integer	The WordPress Post ID of the attachment item
-	 *
-	 * @return	array	message and/or HTML content
-	 */
-	private static function _display_single_item( $post_id ) {
-		global $post;
-
-		/*
-		 * This function sets the global $post
-		 */
-		$post_data = MLAData::mla_get_attachment_by_id( $post_id );
-		if ( !isset( $post_data ) ) {
-			return array(
-				'message' => __( 'ERROR', 'media-library-assistant' ) . ': ' . __( 'Could not retrieve Attachment.', 'media-library-assistant' ),
-				'body' => '' 
-			);
-		}
-
-		if ( ! current_user_can( 'edit_post', $post_id ) ) {
-			return array(
-				'message' => __( 'You are not allowed to edit this Attachment.', 'media-library-assistant' ),
-				'body' => '' 
-			);
-		}
-
-		if ( 0 === strpos( strtolower( $post_data['post_mime_type'] ), 'image' )  ) {
-			$page_template_array = MLAData::mla_load_template( 'admin-display-single-image.tpl' );
-			$width = isset( $post_data['mla_wp_attachment_metadata']['width'] ) ? $post_data['mla_wp_attachment_metadata']['width'] : '';
-			$height = isset( $post_data['mla_wp_attachment_metadata']['height'] ) ? $post_data['mla_wp_attachment_metadata']['height'] : '';
-			$image_meta = var_export( $post_data['mla_wp_attachment_metadata'], true );
-
-			if ( !isset( $post_data['mla_wp_attachment_image_alt'] ) ) {
-				$post_data['mla_wp_attachment_image_alt'] = '';
-			}
-		} else {
-			$page_template_array = MLAData::mla_load_template( 'admin-display-single-document.tpl' );
-			$width = '';
-			$height = '';
-			$image_meta = '';
-		}
-
-		if ( array( $page_template_array ) ) {
-			$page_template = $page_template_array['page'];
-			$authors_template = $page_template_array['authors'];
-			$postbox_template = $page_template_array['postbox'];
-		} else {
-			/* translators: 1: ERROR tag 2: page_template_array */
-			error_log( sprintf( _x( '%1$s: MLA::_display_single_item \$page_template_array = "%2$s"', 'error_log', 'media-library-assistant' ), __( 'ERROR', 'media-library-assistant' ), var_export( $page_template_array, true ) ), 0 );
-			$page_template = $page_template_array;
-			$authors_template = '';
-			$postbox_template = '';
-		}
-
-		if ( empty($post_data['mla_references']['parent_title'] ) ) {
-			$parent_info = $post_data['mla_references']['parent_errors'];
-		} else {
-			$parent_info = sprintf( '(%1$s) %2$s %3$s', $post_data['mla_references']['parent_type'], $post_data['mla_references']['parent_title'], $post_data['mla_references']['parent_errors'] );
-		}
-
-		if ( $authors = self::mla_authors_dropdown( $post_data['post_author'], 'attachments[' . $post_data['ID'] . '][post_author]' ) ) {
-			$args = array (
-				'ID' => $post_data['ID'],
-				'Author' => __( 'Author', 'media-library-assistant' ),
-				'authors' => $authors
-				);
-			$authors = MLAData::mla_parse_template( $authors_template, $args );
-		} else {
-			$authors = '';
-		}
-
-		if ( MLAOptions::$process_featured_in ) {
-			$features = '';
-
-			foreach ( $post_data['mla_references']['features'] as $feature_id => $feature ) {
-				if ( $feature_id == $post_data['post_parent'] ) {
-					$parent = __( 'PARENT', 'media-library-assistant' ) . ' ';
-				} else {
-					$parent = '';
-				}
-
-				$features .= sprintf( '%1$s (%2$s %3$s), %4$s', /*$1%s*/ $parent, /*$2%s*/ $feature->post_type, /*$3%s*/ $feature_id, /*$4%s*/ $feature->post_title ) . "\n";
-			} // foreach $feature
-		} else {
-			$features = __( 'Disabled', 'media-library-assistant' );
-		}
-
-		if ( MLAOptions::$process_inserted_in ) {
-			$inserts = '';
-
-			foreach ( $post_data['mla_references']['inserts'] as $file => $insert_array ) {
-				$inserts .= $file . "\n";
-
-				foreach ( $insert_array as $insert ) {
-					if ( $insert->ID == $post_data['post_parent'] ) {
-						$parent = '  ' . __( 'PARENT', 'media-library-assistant' ) . ' ';
-					} else {
-						$parent = '  ';
-					}
-
-					$inserts .= sprintf( '%1$s (%2$s %3$s), %4$s', /*$1%s*/ $parent, /*$2%s*/ $insert->post_type, /*$3%s*/ $insert->ID, /*$4%s*/ $insert->post_title ) . "\n";
-				} // foreach $insert
-			} // foreach $file
-		} else {
-			$inserts = __( 'Disabled', 'media-library-assistant' );
-		}
-
-		if ( MLAOptions::$process_gallery_in ) {
-			$galleries = '';
-
-			foreach ( $post_data['mla_references']['galleries'] as $gallery_id => $gallery ) {
-				if ( $gallery_id == $post_data['post_parent'] ) {
-					$parent = __( 'PARENT', 'media-library-assistant' ) . ' ';
-				} else {
-					$parent = '';
-				}
-
-				$galleries .= sprintf( '%1$s (%2$s %3$s), %4$s', /*$1%s*/ $parent, /*$2%s*/ $gallery['post_type'], /*$3%s*/ $gallery_id, /*$4%s*/ $gallery['post_title'] ) . "\n";
-			} // foreach $gallery
-		} else {
-			$galleries = __( 'Disabled', 'media-library-assistant' );
-		}
-
-		if ( MLAOptions::$process_mla_gallery_in ) {
-			$mla_galleries = '';
-
-			foreach ( $post_data['mla_references']['mla_galleries'] as $gallery_id => $gallery ) {
-				if ( $gallery_id == $post_data['post_parent'] ) {
-					$parent = __( 'PARENT', 'media-library-assistant' ) . ' ';
-				} else {
-					$parent = '';
-				}
-
-				$mla_galleries .= sprintf( '%1$s (%2$s %3$s), %4$s', /*$1%s*/ $parent, /*$2%s*/ $gallery['post_type'], /*$3%s*/ $gallery_id, /*$4%s*/ $gallery['post_title'] ) . "\n";
-			} // foreach $gallery
-		} else {
-			$mla_galleries = __( 'Disabled', 'media-library-assistant' );
-		}
-
-		/*
-		 * WordPress doesn't look in hidden fields to set the month filter dropdown or sorting parameters
-		 */
-		if ( isset( $_REQUEST['m'] ) ) {
-			$url_args = '&m=' . $_REQUEST['m'];
-		} else {
-			$url_args = '';
-		}
-
-		if ( isset( $_REQUEST['post_mime_type'] ) ) {
-			$url_args .= '&post_mime_type=' . $_REQUEST['post_mime_type'];
-		}
-
-		if ( isset( $_REQUEST['order'] ) ) {
-			$url_args .= '&order=' . $_REQUEST['order'];
-		}
-
-		if ( isset( $_REQUEST['orderby'] ) ) {
-			$url_args .= '&orderby=' . $_REQUEST['orderby'];
-		}
-
-		/*
-		 * Add the current view arguments
-		 */
-		if ( isset( $_REQUEST['detached'] ) ) {
-			$view_args = '<input type="hidden" name="detached" value="' . $_REQUEST['detached'] . "\" />\n";
-		} elseif ( isset( $_REQUEST['status'] ) ) {
-			$view_args = '<input type="hidden" name="status" value="' . $_REQUEST['status'] . "\" />\n";
-		} else {
-			$view_args = '';
-		}
-
-		if ( isset( $_REQUEST['paged'] ) ) {
-			$view_args .= sprintf( '<input type="hidden" name="paged" value="%1$s" />', $_REQUEST['paged'] ) . "\n";
-		}
-
-		$side_info_column = '';
-		$taxonomies = get_object_taxonomies( 'attachment', 'objects' );
-
-		foreach ( $taxonomies as $tax_name => $tax_object ) {
-			ob_start();
-
-			if ( $tax_object->hierarchical && $tax_object->show_ui ) {
-				$box = array(
-					 'id' => $tax_name . 'div',
-					'title' => esc_html( $tax_object->labels->name ),
-					'callback' => 'categories_meta_box',
-					'args' => array(
-						 'taxonomy' => $tax_name 
-					),
-					'inside_html' => '' 
-				);
-				post_categories_meta_box( $post, $box );
-			} elseif ( $tax_object->show_ui ) {
-				$box = array(
-					 'id' => 'tagsdiv-' . $tax_name,
-					'title' => esc_html( $tax_object->labels->name ),
-					'callback' => 'post_tags_meta_box',
-					'args' => array(
-						 'taxonomy' => $tax_name 
-					),
-					'inside_html' => '' 
-				);
-				post_tags_meta_box( $post, $box );
-			}
-
-			$box['inside_html'] = ob_get_contents();
-			ob_end_clean();
-			$side_info_column .= MLAData::mla_parse_template( $postbox_template, $box );
-		}
-
-		$page_values = array(
-			'form_url' => admin_url( 'upload.php' ) . '?page=' . self::ADMIN_PAGE_SLUG . $url_args,
-			'ID' => $post_data['ID'],
-			'post_mime_type' => $post_data['post_mime_type'],
-			'menu_order' => $post_data['menu_order'],
-			'mla_admin_action' => self::MLA_ADMIN_SINGLE_EDIT_UPDATE,
-			'view_args' => $view_args,
-			'wpnonce' => wp_nonce_field( self::MLA_ADMIN_NONCE, '_wpnonce', true, false ),
-			'Cancel' => __( 'Cancel', 'media-library-assistant' ),
-			'Update' => __( 'Update', 'media-library-assistant' ),
-			'Map IPTC/EXIF metadata' =>  __( 'Map IPTC/EXIF metadata', 'media-library-assistant' ),
-			'attachment_icon' => wp_get_attachment_image( $post_id, array( 160, 120 ), true ),
-			'File name' => __( 'File name', 'media-library-assistant' ),
-			'file_name' => esc_html( $post_data['mla_references']['file'] ),
-			'File type' => __( 'File type', 'media-library-assistant' ),
-			'Upload date' => __( 'Upload date', 'media-library-assistant' ),
-			'post_date' => $post_data['post_date'],
-			'Last modified' => __( 'Last modified', 'media-library-assistant' ),
-			'post_modified' => $post_data['post_modified'],
-			'Dimensions' => __( 'Dimensions', 'media-library-assistant' ),
-			'width' => $width,
-			'height' => $height,
-			'Title' => __( 'Title', 'media-library-assistant' ),
-			'required' => __( 'required', 'media-library-assistant' ),
-			'post_title_attr' => esc_attr( $post_data['post_title'] ),
-			'Name/Slug' => __( 'Name/Slug', 'media-library-assistant' ),
-			'post_name_attr' => esc_attr( $post_data['post_name'] ),
-			'Must be unique' => __( 'Must be unique; will be validated.', 'media-library-assistant' ),
-			'ALT Text' => __( 'ALT Text', 'media-library-assistant' ),
-			'image_alt_attr' => '',
-			'ALT Text Help' => __( 'Alternate text for the image, e.g. &#8220;The Mona Lisa&#8221;', 'media-library-assistant' ),
-			'Caption' => __( 'Caption', 'media-library-assistant' ),
-			'post_excerpt_attr' => esc_attr( $post_data['post_excerpt'] ),
-			'Description' => __( 'Description', 'media-library-assistant' ),
-			'post_content' => esc_textarea( $post_data['post_content'] ),
-			'Parent Info' => __( 'Parent Info', 'media-library-assistant' ),
-			'post_parent' => $post_data['post_parent'],
-			'parent_info' => esc_attr( $parent_info ),
-			'Parent Info Help' => __( 'ID, type and title of parent, if any.', 'media-library-assistant' ),
-			'Menu Order' => __( 'Menu Order', 'media-library-assistant' ),
-			'authors' => $authors,
-			'File URL' => __( 'File URL', 'media-library-assistant' ),
-			'guid_attr' => esc_attr( $post_data['guid'] ),
-			'File URL Help' => __( 'Location of the uploaded file.', 'media-library-assistant' ),
-			'Image Metadata' => __( 'Image Metadata', 'media-library-assistant' ),
-			'image_meta' => esc_textarea( $image_meta ),
-			'Featured in' => __( 'Featured in', 'media-library-assistant' ),
-			'features' => esc_textarea( $features ),
-			'Inserted in' => __( 'Inserted in', 'media-library-assistant' ),
-			'inserts' => esc_textarea( $inserts ),
-			'Gallery in' => __( 'Gallery in', 'media-library-assistant' ),
-			'galleries' => esc_textarea( $galleries ),
-			'MLA Gallery in' => __( 'MLA Gallery in', 'media-library-assistant' ),
-			'mla_galleries' => esc_textarea( $mla_galleries ),
-			'side_info_column' => $side_info_column 
-		);
-
-		if ( !empty( $post_data['mla_wp_attachment_image_alt'] ) ) {
-			$page_values['image_alt_attr'] = esc_attr( $post_data['mla_wp_attachment_image_alt'] );
-		}
-
-		return array(
-			'message' => '',
-			'body' => MLAData::mla_parse_template( $page_template, $page_values ) 
 		);
 	}
 

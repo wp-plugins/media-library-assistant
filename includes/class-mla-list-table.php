@@ -698,23 +698,13 @@ class MLA_List_Table extends WP_List_Table {
 		}
 
 		/*
-		 * Use the WordPress Edit Media screen for 3.5 and later
+		 * Use the WordPress Edit Media screen
 		 */
 		$view_args = self::mla_submenu_arguments();
-		if ( MLATest::$wordpress_3point5_plus ) {
-			if ( isset( $view_args['lang'] ) ) {
-				$edit_url = 'post.php?post=' . $item->ID . '&action=edit&mla_source=edit&lang=' . $view_args['lang'];
-			} else {
-				$edit_url = 'post.php?post=' . $item->ID . '&action=edit&mla_source=edit';
-			}
+		if ( isset( $view_args['lang'] ) ) {
+			$edit_url = 'post.php?post=' . $item->ID . '&action=edit&mla_source=edit&lang=' . $view_args['lang'];
 		} else {
-			if ( isset( $view_args['lang'] ) ) {
-				$view_args = array( 'lang' => $view_args['lang'] );
-			} else {
-				$view_args = array();
-			}
-
-			$edit_url = '<a href="' . add_query_arg( $view_args, wp_nonce_url( '?mla_admin_action=' . MLA::MLA_ADMIN_SINGLE_EDIT_DISPLAY, MLA::MLA_ADMIN_NONCE ) ) . '" title="' . __( 'Edit this item', 'media-library-assistant' ) . '">' . __( 'Edit', 'media-library-assistant' ) . '</a>';
+			$edit_url = 'post.php?post=' . $item->ID . '&action=edit&mla_source=edit';
 		}
 
 		return sprintf( '<a href="%1$s" title="' . __( 'Edit', 'media-library-assistant' ) . ' &#8220;%2$s&#8221;">%3$s</a>', admin_url( $edit_url ), esc_attr( $item->post_title ), $thumb ); 
@@ -781,20 +771,15 @@ class MLA_List_Table extends WP_List_Table {
 					$actions['restore'] = '<a class="submitdelete" href="' . add_query_arg( $view_args, wp_nonce_url( '?mla_admin_action=' . MLA::MLA_ADMIN_SINGLE_RESTORE, MLA::MLA_ADMIN_NONCE ) ) . '" title="' . __( 'Restore this item from the Trash', 'media-library-assistant' ) . '">' . __( 'Restore', 'media-library-assistant' ) . '</a>';
 				} else {
 					/*
-					 * Use the WordPress Edit Media screen for 3.5 and later
+					 * Use the WordPress Edit Media screen
 					 */
-					if ( MLATest::$wordpress_3point5_plus ) {
-						if ( isset( $view_args['lang'] ) ) {
-							$edit_url = 'post.php?post=' . $item->ID . '&action=edit&mla_source=edit&lang=' . $view_args['lang'];
-						} else {
-							$edit_url = 'post.php?post=' . $item->ID . '&action=edit&mla_source=edit';
-						}
-
-						$actions['edit'] = '<a href="' . admin_url( $edit_url ) . '" title="' . __( 'Edit this item', 'media-library-assistant' ) . '">' . __( 'Edit', 'media-library-assistant' ) . '</a>';
+					if ( isset( $view_args['lang'] ) ) {
+						$edit_url = 'post.php?post=' . $item->ID . '&action=edit&mla_source=edit&lang=' . $view_args['lang'];
 					} else {
-						$actions['edit'] = '<a href="' . add_query_arg( $view_args, wp_nonce_url( '?mla_admin_action=' . MLA::MLA_ADMIN_SINGLE_EDIT_DISPLAY, MLA::MLA_ADMIN_NONCE ) ) . '" title="' . __( 'Edit this item', 'media-library-assistant' ) . '">' . __( 'Edit', 'media-library-assistant' ) . '</a>';
+						$edit_url = 'post.php?post=' . $item->ID . '&action=edit&mla_source=edit';
 					}
 
+					$actions['edit'] = '<a href="' . admin_url( $edit_url ) . '" title="' . __( 'Edit this item', 'media-library-assistant' ) . '">' . __( 'Edit', 'media-library-assistant' ) . '</a>';
 					$actions['inline hide-if-no-js'] = '<a class="editinline" href="#" title="' . __( 'Edit this item inline', 'media-library-assistant' ) . '">' . __( 'Quick Edit', 'media-library-assistant' ) . '</a>';
 				}
 			} // edit_post

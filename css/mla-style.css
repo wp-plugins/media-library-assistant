@@ -60,54 +60,6 @@ img.mla_media_thumbnail_80_60 {
 }
 
 /*
- * MLA Edit single item field labels column
- */
-.mla-media-item .describe th {
-	width: 150px
-}
-
-/*
- * MLA Display Single Item Image Metadata, Featured in, Inserted in
- */
-textarea[readonly] {
-	background-color: rgb(238, 238, 238)
-}
-
-/*
- * MLA Display Single Item
- */
-.has-right-sidebar .mla-inner-sidebar {
-	clear: right;
-	float: right;
-	position: relative;
-	width: 286px;
-	margin-top: 10px;
-	margin-left: 10px;
-	margin-right: auto;
-	display:block
-}
-
-.has-right-sidebar .mla-media-single {
-	width: 100%;
-	clear: left;
-	margin-right: -2000px;
-	float: left
-}
-
-.has-right-sidebar .mla-media-item {
-	margin-right: 300px;
-}
-
-.has-right-sidebar .mla-media-item table {
-	width: 100%
-}
-
-.mla-media-item .describe input[type='text'],
-.mla-media-item .describe textarea {
-	width: 100%
-}
-
-/*
  * MLA Inline editing - adapted from load-styles.php
  */
 .mla_bulk_taxonomy_options {
