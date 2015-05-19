@@ -1418,24 +1418,30 @@ class MLAOptions {
 	 * @param	string 	Name of the desired option
 	 * @param	boolean	True to ignore current setting and return default values
 	 * @param	boolean	True to ignore default values and return only stored values
+	 * @param	array	Custom option definitions
+	 * 
 	 *
 	 * @return	mixed	Value(s) for the option or false if the option is not a defined MLA option
 	 */
-	public static function mla_get_option( $option, $get_default = false, $get_stored = false ) {
-		if ( ! array_key_exists( $option, self::$mla_option_definitions ) ) {
+	public static function mla_get_option( $option, $get_default = false, $get_stored = false, $option_table = NULL ) {
+		if ( NULL == $option_table ) {
+			$option_table = self::$mla_option_definitions;
+		}
+		
+		if ( ! array_key_exists( $option, $option_table ) ) {
 			return false;
 		}
 
 		if ( $get_default ) {
-			if ( array_key_exists( 'std', self::$mla_option_definitions[ $option ] ) ) {
-				return self::$mla_option_definitions[ $option ]['std'];
+			if ( array_key_exists( 'std', $option_table[ $option ] ) ) {
+				return $option_table[ $option ]['std'];
 			}
 
 			return false;
 		} // $get_default
 
-		if ( ! $get_stored && array_key_exists( 'std', self::$mla_option_definitions[ $option ] ) ) {
-			return get_option( MLA_OPTION_PREFIX . $option, self::$mla_option_definitions[ $option ]['std'] );
+		if ( ! $get_stored && array_key_exists( 'std', $option_table[ $option ] ) ) {
+			return get_option( MLA_OPTION_PREFIX . $option, $option_table[ $option ]['std'] );
 		}
 
 		return get_option( MLA_OPTION_PREFIX . $option, false );
@@ -1448,11 +1454,16 @@ class MLAOptions {
 	 *
 	 * @param	string 	Name of the desired option
 	 * @param	mixed 	New value for the desired option
+	 * @param	array	Custom option definitions
 	 *
 	 * @return	boolean	True if the value was changed or false if the update failed
 	 */
-	public static function mla_update_option( $option, $newvalue ) {
-		if ( array_key_exists( $option, self::$mla_option_definitions ) ) {
+	public static function mla_update_option( $option, $newvalue, $option_table = NULL ) {
+		if ( NULL == $option_table ) {
+			$option_table = self::$mla_option_definitions;
+		}
+		
+		if ( array_key_exists( $option, $option_table ) ) {
 			return update_option( MLA_OPTION_PREFIX . $option, $newvalue );
 		}
 
@@ -1465,11 +1476,16 @@ class MLAOptions {
 	 * @since 0.1
 	 *
 	 * @param	string 	Name of the desired option
+	 * @param	array	Custom option definitions
 	 *
 	 * @return	boolean	True if the option was deleted, otherwise false
 	 */
-	public static function mla_delete_option( $option ) {
-		if ( array_key_exists( $option, self::$mla_option_definitions ) ) {
+	public static function mla_delete_option( $option, $option_table = NULL ) {
+		if ( NULL == $option_table ) {
+			$option_table = self::$mla_option_definitions;
+		}
+		
+		if ( array_key_exists( $option, $option_table ) ) {
 			return delete_option( MLA_OPTION_PREFIX . $option );
 		}
 
@@ -3820,6 +3836,9 @@ class MLAOptions {
 						'option' => 'text' );
 
 					$exif_value =  self::_evaluate_data_source( $post->ID, 'single_attachment_mapping', $data_value, $attachment_metadata );
+					if ( ' ' == $exif_value ) {
+						$exif_value = '';
+					}
 				} else {
 					$exif_value = MLAData::mla_exif_metadata_value( $setting_value['exif_value'], $image_metadata );
 				}
@@ -3925,6 +3944,9 @@ class MLAOptions {
 						'option' => 'array' );
 
 					$exif_value =  self::_evaluate_data_source( $post->ID, 'single_attachment_mapping', $data_value, $attachment_metadata );
+					if ( ' ' == $exif_value ) {
+						$exif_value = '';
+					}
 				} else {
 					$exif_value = MLAData::mla_exif_metadata_value( $setting_value['exif_value'], $image_metadata );
 				}
@@ -4083,6 +4105,9 @@ class MLAOptions {
 						'option' => 'text' );
 
 					$exif_value =  self::_evaluate_data_source( $post->ID, 'single_attachment_mapping', $data_value, $attachment_metadata );
+					if ( ' ' == $exif_value ) {
+						$exif_value = '';
+					}
 				} else {
 					$exif_value = MLAData::mla_exif_metadata_value( $setting_value['exif_value'], $image_metadata );
 				}

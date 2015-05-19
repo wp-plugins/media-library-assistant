@@ -50,6 +50,11 @@ class MLA_WPML {
 		add_filter( 'mla_list_table_bulk_action', 'MLA_WPML::mla_list_table_bulk_action', 10, 3 );
 		
 		/*
+		 * Defined in /media-library-assistant/includes/class-mla-settings.php
+		 */
+		add_filter( 'mla_get_options_tablist', 'MLA_WPML::mla_get_options_tablist', 10, 3 );
+		
+		/*
 		 * Defined in /wpml-media/inc/wpml-media-class.php
 		 */
 		add_action( 'wpml_media_create_duplicate_attachment', 'MLA_WPML::wpml_media_create_duplicate_attachment', 10, 2 );
@@ -69,6 +74,11 @@ class MLA_WPML {
 		if ( isset( $_REQUEST['page'] ) && ( MLA::ADMIN_PAGE_SLUG == $_REQUEST['page'] ) ) {
 			add_action( 'admin_print_styles', 'MLA_WPML_Table::mla_list_table_add_icl_styles' );
 		}
+		
+		/*
+		 * Localize $mla_language_option_definitions array
+		 */
+		self::mla_localize_language_option_definitions();
 	}
 
 	/**
@@ -627,9 +637,13 @@ class MLA_WPML {
 		self::$duplicate_attachments [ $duplicated_attachment_id ] = $language_details->language_code;
 		
 		if ( isset( $_REQUEST['mla_admin_action'] ) && 'wpml_create_translation' ==  $_REQUEST['mla_admin_action'] ) {
-			self::_build_terms_before( $attachment_id );
-			self::_build_tax_input( $attachment_id );
-			$tax_inputs = self::_apply_tax_input( 0, $language_details->language_code );
+			if ( 'checked' == MLAOptions::mla_get_option( 'term_synchronization', false, false, MLA_WPML::$mla_language_option_definitions ) ) {
+				self::_build_terms_before( $attachment_id );
+				self::_build_tax_input( $attachment_id );
+				$tax_inputs = self::_apply_tax_input( 0, $language_details->language_code );
+			} else {
+				$tax_inputs = NULL;
+			}
 			
 			if ( !empty( $tax_inputs ) ) {
 				MLAData::mla_update_single_item( $duplicated_attachment_id, array(), $tax_inputs );
@@ -665,9 +679,15 @@ class MLA_WPML {
 		 * Check for Bulk Edit during Add New Media
 		 */
 		if ( is_array( self::$upload_bulk_edit_args ) ) {
-			$tax_inputs = self::$upload_bulk_edit_args['tax_input'];
-			self::_build_tax_input( $post_id, $tax_inputs, self::$upload_bulk_edit_args['tax_action'] );
-			$tax_inputs = self::_apply_tax_input( $post_id );
+			if ( ! empty( self::$upload_bulk_edit_args['tax_input'] ) ) {
+				$tax_inputs = self::$upload_bulk_edit_args['tax_input'];
+				if ( 'checked' == MLAOptions::mla_get_option( 'term_assignment', false, false, MLA_WPML::$mla_language_option_definitions ) ) {
+					self::_build_tax_input( $post_id, $tax_inputs, self::$upload_bulk_edit_args['tax_action'] );
+					$tax_inputs = self::_apply_tax_input( $post_id );
+				}
+			} else {
+				$tax_inputs = NULL;
+			}
 			
 			$updates = 	MLA::mla_prepare_bulk_edits( $post_id, self::$upload_bulk_edit_args, self::$upload_bulk_edit_map );
 			unset( $updates['tax_input'] );
@@ -676,22 +696,24 @@ class MLA_WPML {
 			MLAData::mla_update_single_item( $post_id, $updates, $tax_inputs );
 
 			/*
-			 * Sychronize the changes to all other translations
+			 * Synchronize the changes to all other translations
 			 */
-			foreach( self::$tax_input as $language => $tax_inputs ) {
-				/*
-				 * Skip 'tax_input_post_id' and the language we've already updated
-				 */
-				if ( ( ! isset( self::$terms_before[ $language ] ) ) || ( self::$terms_before[ 'language_code' ] == $language ) ) {
-					continue;
-				}
-				
-				$translation = self::$terms_before[ $language ];
-				$tax_inputs = self::_apply_tax_input( $translation['element_id'], $language );
-				$already_updating = $translation['element_id']; // prevent recursion
-				MLAData::mla_update_single_item( $translation['element_id'], $updates, $tax_inputs );
-				$already_updating = $post_id;
-			}
+			if ( 'checked' == MLAOptions::mla_get_option( 'term_synchronization', false, false, MLA_WPML::$mla_language_option_definitions ) ) {
+				foreach( self::$tax_input as $language => $tax_inputs ) {
+					/*
+					 * Skip 'tax_input_post_id' and the language we've already updated
+					 */
+					if ( ( ! isset( self::$terms_before[ $language ] ) ) || ( self::$terms_before[ 'language_code' ] == $language ) ) {
+						continue;
+					}
+					
+					$translation = self::$terms_before[ $language ];
+					$tax_inputs = self::_apply_tax_input( $translation['element_id'], $language );
+					$already_updating = $translation['element_id']; // prevent recursion
+					MLAData::mla_update_single_item( $translation['element_id'], $updates, $tax_inputs );
+					$already_updating = $post_id;
+				} // translation
+			} // do synchronization
 			
 			return;
 		} // Upload New Media Bulk Edit
@@ -716,7 +738,7 @@ class MLA_WPML {
 			$tax_actions = NULL;
 		}
 
-		if ( ! empty( $tax_inputs ) ) {
+		if ( ( ! empty( $tax_inputs ) ) && ( 'checked' == MLAOptions::mla_get_option( 'term_assignment', false, false, MLA_WPML::$mla_language_option_definitions ) ) ) {
 			self::_build_tax_input( $post_id, $tax_inputs, $tax_actions );
 			$tax_inputs = self::_apply_tax_input( $post_id );
 		}
@@ -725,24 +747,242 @@ class MLA_WPML {
 			MLAData::mla_update_single_item( $post_id, array(), $tax_inputs );
 			
 			/*
-			 * Sychronize the changes to all other translations
+			 * Synchronize the changes to all other translations
 			 */
-			foreach( self::$tax_input as $language => $tax_inputs ) {
-				/*
-				 * Skip 'tax_input_post_id' and the language we've already updated
-				 */
-				if ( ( ! isset( self::$terms_before[ $language ] ) ) || ( self::$terms_before[ 'language_code' ] == $language ) ) {
-					continue;
-				}
-				
-				$translation = self::$terms_before[ $language ];
-				$tax_inputs = self::_apply_tax_input( $translation['element_id'], $language );
-				$already_updating = $translation['element_id']; // prevent recursion
-				MLAData::mla_update_single_item( $translation['element_id'], array(), $tax_inputs );
-				$already_updating = $post_id;
-			} // translation
+			if ( 'checked' == MLAOptions::mla_get_option( 'term_synchronization', false, false, MLA_WPML::$mla_language_option_definitions ) ) {
+				foreach( self::$tax_input as $language => $tax_inputs ) {
+					/*
+					 * Skip 'tax_input_post_id' and the language we've already updated
+					 */
+					if ( ( ! isset( self::$terms_before[ $language ] ) ) || ( self::$terms_before[ 'language_code' ] == $language ) ) {
+						continue;
+					}
+					
+					$translation = self::$terms_before[ $language ];
+					$tax_inputs = self::_apply_tax_input( $translation['element_id'], $language );
+					$already_updating = $translation['element_id']; // prevent recursion
+					MLAData::mla_update_single_item( $translation['element_id'], array(), $tax_inputs );
+					$already_updating = $post_id;
+				} // translation
+			} // do synchronization
 		}
 	} // edit_attachment
+
+	/**
+	 * Adds the "Language" tab to the Settings/Media Library Assistant list
+	 *
+	 * @since 2.11
+	 *
+	 * @param	array|false	The entire tablist ( $tab = NULL ), a single tab entry or false if not found/not allowed.
+	 * @param	array		The entire default tablist
+	 * @param	string|NULL	tab slug for single-element return or NULL to return entire tablist
+	 *
+	 * @return	array	updated tablist or single tab element
+	 */
+	public static function mla_get_options_tablist( $results, $mla_tablist, $tab ) {
+		$language_key = 'language';
+		$language_value = array( 'title' => __( 'Language', 'media-library-assistant' ), 'render' => array( 'MLA_WPML', 'mla_render_language_tab' ) );
+
+		if ( $language_key == $tab ) {
+			return $language_value;
+		}
+		
+		return array_merge( $results, array( $language_key => $language_value ) );
+	}
+	
+	/**
+	 * $mla_language_option_definitions defines the language-specific database options and
+	 * admin page areas for setting/updating them
+	 *
+	 * The array must be populated at runtime in MLA_WPML::mla_localize_language_option_definitions(),
+	 * because localization calls cannot be placed in the "public static" array definition itself.
+	 *
+	 * Each option is defined by an array with the elements documented in class-mla-options.php
+	 */
+	 
+	public static $mla_language_option_definitions = array ();
+	
+	/**
+	 * Localize $mla_language_option_definitions array
+	 *
+	 * Localization must be done at runtime, and these calls cannot be placed
+	 * in the "public static" array definition itself.
+	 *
+	 * @since 2.11
+	 *
+	 * @return	void
+	 */
+	public static function mla_localize_language_option_definitions() {
+		MLA_WPML::$mla_language_option_definitions = array (
+			'media_assistant_table_header' =>
+				array('tab' => 'language',
+					'name' => __( 'Media/Assistant submenu table', 'media-library-assistant' ),
+					'type' => 'header'),
+
+			'language_column' =>
+				array('tab' => 'language',
+					'name' => __( 'Language Column', 'media-library-assistant' ),
+					'type' => 'checkbox',
+					'std' => 'checked',
+					'help' => __( 'Check this option to add a Language column to the Media/Assistant submenu table.', 'media-library-assistant' )),
+
+			'translations_column' =>
+				array('tab' => 'language',
+					'name' => __( 'Translations Column', 'media-library-assistant' ),
+					'type' => 'checkbox',
+					'std' => 'checked',
+					'help' => __( 'Check this option to add a Translation Status column to the Media/Assistant submenu table.', 'media-library-assistant' )),
+
+			'term_translation_header' =>
+				array('tab' => 'language',
+					'name' => __( 'Term Management', 'media-library-assistant' ),
+					'type' => 'header'),
+
+			'term_assignment' =>
+				array('tab' => 'language',
+					'name' => __( 'Term Assignment', 'media-library-assistant' ),
+					'type' => 'checkbox',
+					'std' => 'checked',
+					'help' => __( 'Check this option to assign language-specific terms when items are updated.'), 'media-library-assistant' ),
+
+			'term_synchronization' =>
+				array('tab' => 'language',
+					'name' => __( 'Term Synchronization', 'media-library-assistant' ),
+					'type' => 'checkbox',
+					'std' => 'checked',
+					'help' => __( 'Check this option to synchronize common terms among all item translations.'), 'media-library-assistant' ),
+		);
+	}
+
+	/**
+	 * Renders the Settings/Media Library Assistant "Language" tab
+	 *
+	 * @since 2.11
+	 *
+	 * @return	array	( 'message' => '', 'body' => '' )
+	 */
+	public static function mla_render_language_tab() {
+		$page_content = array(
+			'message' => '',
+			'body' => '<h3>Language</h3>' 
+		);
+		
+		/*
+		 * Check for submit buttons to change or reset settings.
+		 * Initialize page messages and content.
+		 */
+		if ( !empty( $_REQUEST['mla-language-options-save'] ) ) {
+			check_admin_referer( MLA::MLA_ADMIN_NONCE, '_wpnonce' );
+			$page_content = self::_save_language_settings( );
+		} elseif ( !empty( $_REQUEST['mla-language-options-reset'] ) ) {
+			check_admin_referer( MLA::MLA_ADMIN_NONCE, '_wpnonce' );
+			$page_content = self::_reset_language_settings( );
+		} else {
+			$page_content = array(
+				'message' => '',
+				'body' => '' 
+			);
+		}
+
+		if ( !empty( $page_content['body'] ) ) {
+			return $page_content;
+		}
+
+		$page_values = array(
+			'Language Options' => __( 'Language Options', 'media-library-assistant' ),
+			/* translators: 1: - 4: page subheader values */
+			'In this tab' => sprintf( __( 'In this tab you can find a number of options for controlling WPML-specific operations. Scroll down to find options for %1$s and %2$s. Be sure to click "Save Changes" at the bottom of the tab to save any changes you make.', 'media-library-assistant' ), '<strong>' . __( 'Media/Assistant submenu table', 'media-library-assistant' ) . '</strong>', '<strong>' . __( 'Term Management', 'media-library-assistant' ) . '</strong>' ),
+			'Save Changes' => __( 'Save Changes', 'media-library-assistant' ),
+			'Delete Language options' => __( 'Delete Language options and restore default settings', 'media-library-assistant' ),
+			'_wpnonce' => wp_nonce_field( MLA::MLA_ADMIN_NONCE, '_wpnonce', true, false ),
+			'_wp_http_referer' => wp_referer_field( false ),
+			'Go to Top' => __( 'Go to Top', 'media-library-assistant' ),
+			'form_url' => admin_url( 'options-general.php' ) . '?page=mla-settings-menu-language&mla_tab=language',
+			'options_list' => '',
+		);
+
+		$options_list = '';
+		foreach ( MLA_WPML::$mla_language_option_definitions as $key => $value ) {
+			if ( 'language' == $value['tab'] ) {
+				$options_list .= MLASettings::mla_compose_option_row( $key, $value, MLA_WPML::$mla_language_option_definitions );
+			}
+		}
+
+		$page_values['options_list'] = $options_list;
+		$page_template = MLAData::mla_load_template( 'admin-display-language-tab.tpl' );
+		$page_content['body'] = MLAData::mla_parse_template( $page_template, $page_values );
+		return $page_content;
+	}
+
+	/**
+	 * Save Language settings to the options table
+ 	 *
+	 * @since 2.11
+	 *
+	 * @uses $_REQUEST
+	 *
+	 * @return	array	Message(s) reflecting the results of the operation
+	 */
+	private static function _save_language_settings( ) {
+		$message_list = '';
+
+		foreach ( MLA_WPML::$mla_language_option_definitions as $key => $value ) {
+			if ( 'language' == $value['tab'] ) {
+				$message_list .= MLASettings::mla_update_option_row( $key, $value, MLA_WPML::$mla_language_option_definitions );
+			} // language option
+		} // foreach mla_options
+
+		$page_content = array(
+			'message' => __( 'Language settings saved.', 'media-library-assistant' ) . "\n",
+			'body' => '' 
+		);
+
+		/*
+		 * Uncomment this for debugging.
+		 */
+		//$page_content['message'] .= $message_list;
+
+		return $page_content;
+	} // _save_language_settings
+
+	/**
+	 * Delete saved settings, restoring default values
+ 	 *
+	 * @since 2.11
+	 *
+	 * @return	array	Message(s) reflecting the results of the operation
+	 */
+	private static function _reset_language_settings( ) {
+		$message_list = '';
+
+		foreach ( MLA_WPML::$mla_language_option_definitions as $key => $value ) {
+			if ( 'language' == $value['tab'] ) {
+				if ( 'custom' == $value['type'] && isset( $value['reset'] ) ) {
+					$message = self::$value['reset']( 'reset', $key, $value, $_REQUEST );
+				} elseif ( ('header' == $value['type']) || ('hidden' == $value['type']) ) {
+					$message = '';
+				} else {
+					MLAOptions::mla_delete_option( $key, MLA_WPML::$mla_language_option_definitions );
+					/* translators: 1: option name */
+					$message = '<br>' . sprintf( _x( 'delete_option "%1$s"', 'message_list', 'media-library-assistant'), $key );
+				}
+
+				$message_list .= $message;
+			}
+		}
+
+		$page_content = array(
+			'message' => __( 'Language settings reset to default values.', 'media-library-assistant' ) . "\n",
+			'body' => '' 
+		);
+
+		/*
+		 * Uncomment this for debugging.
+		 */
+		//$page_content['message'] .= $message_list;
+
+		return $page_content;
+	} // _reset_language_settings
 } // Class MLA_WPML
 
 /**
@@ -893,12 +1133,14 @@ class MLA_WPML_Table {
 			$current_language = $sitepress->get_current_language();
 			$languages = $sitepress->get_active_languages();
 			$view_status = isset( $_REQUEST['status'] ) ? $_REQUEST['status'] : '';
+			$show_language = 'checked' == MLAOptions::mla_get_option( 'language_column', false, false, MLA_WPML::$mla_language_option_definitions );
+			$show_translations = 'checked' == MLAOptions::mla_get_option( 'translations_column', false, false, MLA_WPML::$mla_language_option_definitions );
 
-			if ( 'all' == $current_language ) {
+			if ( $show_language && 'all' == $current_language ) {
 				self::$language_columns[ 'language' ] = __( 'Language', 'wpml-media' );	
 			}
 			
-			if ( 1 < count( $languages ) && $view_status != 'trash' ) {
+			if ( $show_translations && 1 < count( $languages ) && $view_status != 'trash' ) {
 				$language_codes = array();
 				foreach ( $languages as $language ) {
 					if ( $current_language != $language['code'] ) {
@@ -990,7 +1232,7 @@ class MLA_WPML_Table {
 			}
 
 			$trid = $sitepress->get_element_trid( $item->ID, 'post_attachment' );
-			$translations = $sitepress->get_element_translations( $trid, 'post_attachment' ); // 
+			$translations = $sitepress->get_element_translations( $trid, 'post_attachment' );
 
 			$content = '';
 			foreach( $languages as $language ) {
@@ -998,13 +1240,18 @@ class MLA_WPML_Table {
 					continue;
 				}
 				
-				if ( isset( $translations[ $language[ 'code' ] ] ) && $translations[ $language[ 'code' ] ]->element_id ) {
+				if ( isset( $translations[ $language[ 'code' ] ] ) && $translations[ $language[ 'code' ] ]->element_id == $item->ID ) {
+					// The item's own language
+					$img = 'yes.png';
+					$alt = sprintf( __( 'Edit the %s translation', 'sitepress' ), $language[ 'display_name' ] );
+					
+					$link = 'post.php?action=edit&amp;mla_source=edit&amp;post=' . $translations[ $language[ 'code' ] ]->element_id . '&amp;lang=' . $language[ 'code' ];
+				} elseif ( isset( $translations[ $language[ 'code' ] ] ) && $translations[ $language[ 'code' ] ]->element_id ) {
 					// Translation exists
 					$img = 'edit_translation.png';
 					$alt = sprintf( __( 'Edit the %s translation', 'sitepress' ), $language[ 'display_name' ] );
 					
 					$link = 'post.php?action=edit&amp;mla_source=edit&amp;post=' . $translations[ $language[ 'code' ] ]->element_id . '&amp;lang=' . $language[ 'code' ];
-
 				} else {
 					// Translation does not exist
 					$img = 'add_translation.png';

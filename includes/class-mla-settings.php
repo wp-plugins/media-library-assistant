@@ -972,31 +972,32 @@ class MLASettings {
  	 *
 	 * @param	string	HTML id/name attribute and option database key (OMIT MLA_OPTION_PREFIX)
 	 * @param	array	Option parameters, e.g., 'type', 'std'
+	 * @param	array	Custom option definitions
 	 *
 	 * @return	string	HTML markup for the option's table row
 	 */
-	private static function _update_option_row( $key, $value ) {
+	public static function mla_update_option_row( $key, $value, $option_table = NULL ) {
 		if ( isset( $_REQUEST[ MLA_OPTION_PREFIX . $key ] ) ) {
 			$message = '<br>update_option(' . $key . ")\r\n";
 			switch ( $value['type'] ) {
 				case 'checkbox':
-					MLAOptions::mla_update_option( $key, 'checked' );
+					MLAOptions::mla_update_option( $key, 'checked', $option_table );
 					break;
 				case 'header':
 				case 'subheader':
 					$message = '';
 					break;
 				case 'radio':
-					MLAOptions::mla_update_option( $key, $_REQUEST[ MLA_OPTION_PREFIX . $key ] );
+					MLAOptions::mla_update_option( $key, $_REQUEST[ MLA_OPTION_PREFIX . $key ], $option_table );
 					break;
 				case 'select':
-					MLAOptions::mla_update_option( $key, $_REQUEST[ MLA_OPTION_PREFIX . $key ] );
+					MLAOptions::mla_update_option( $key, $_REQUEST[ MLA_OPTION_PREFIX . $key ], $option_table );
 					break;
 				case 'text':
-					MLAOptions::mla_update_option( $key, stripslashes( trim( $_REQUEST[ MLA_OPTION_PREFIX . $key ] ) ) );
+					MLAOptions::mla_update_option( $key, stripslashes( trim( $_REQUEST[ MLA_OPTION_PREFIX . $key ], $option_table ) ) );
 					break;
 				case 'textarea':
-					MLAOptions::mla_update_option( $key, stripslashes( trim( $_REQUEST[ MLA_OPTION_PREFIX . $key ] ) ) );
+					MLAOptions::mla_update_option( $key, stripslashes( trim( $_REQUEST[ MLA_OPTION_PREFIX . $key ], $option_table ) ) );
 					break;
 				case 'custom':
 					$message = MLAOptions::$value['update']( 'update', $key, $value, $_REQUEST );
@@ -1012,23 +1013,24 @@ class MLASettings {
 			$message = '<br>delete_option(' . $key . ')';
 			switch ( $value['type'] ) {
 				case 'checkbox':
-					MLAOptions::mla_update_option( $key, 'unchecked' );
+					$message = '<br>uncheck_option(' . $key . ')';
+					MLAOptions::mla_update_option( $key, 'unchecked', $option_table );
 					break;
 				case 'header':
 				case 'subheader':
 					$message = '';
 					break;
 				case 'radio':
-					MLAOptions::mla_delete_option( $key );
+					MLAOptions::mla_delete_option( $key, $option_table );
 					break;
 				case 'select':
-					MLAOptions::mla_delete_option( $key );
+					MLAOptions::mla_delete_option( $key, $option_table );
 					break;
 				case 'text':
-					MLAOptions::mla_delete_option( $key );
+					MLAOptions::mla_delete_option( $key, $option_table );
 					break;
 				case 'textarea':
-					MLAOptions::mla_delete_option( $key );
+					MLAOptions::mla_delete_option( $key, $option_table );
 					break;
 				case 'custom':
 					$message = MLAOptions::$value['delete']( 'delete', $key, $value, $_REQUEST );
@@ -1052,10 +1054,11 @@ class MLASettings {
  	 *
 	 * @param	string	HTML id/name attribute and option database key (OMIT MLA_OPTION_PREFIX)
 	 * @param	array	Option parameters, e.g., 'type', 'std'
+	 * @param	array	Custom option definitions
 	 *
 	 * @return	string	HTML markup for the option's table row
 	 */
-	private static function _compose_option_row( $key, $value ) {
+	public static function mla_compose_option_row( $key, $value, $option_table = NULL ) {
 		switch ( $value['type'] ) {
 			case 'checkbox':
 				$option_values = array(
@@ -1065,7 +1068,7 @@ class MLASettings {
 					'help' => $value['help'] 
 				);
 
-				if ( 'checked' == MLAOptions::mla_get_option( $key ) ) {
+				if ( 'checked' == MLAOptions::mla_get_option( $key, false, false, $option_table ) ) {
 					$option_values['checked'] = 'checked="checked"';
 				}
 
@@ -1089,7 +1092,7 @@ class MLASettings {
 						'value' => $value['texts'][$optid] 
 					);
 
-					if ( $option == MLAOptions::mla_get_option( $key ) ) {
+					if ( $option == MLAOptions::mla_get_option( $key, false, false, $option_table ) ) {
 						$option_values['checked'] = 'checked="checked"';
 					}
 
@@ -1112,7 +1115,7 @@ class MLASettings {
 						'text' => $value['texts'][$optid]
 					);
 
-					if ( $option == MLAOptions::mla_get_option( $key ) ) {
+					if ( $option == MLAOptions::mla_get_option( $key, false, false, $option_table ) ) {
 						$option_values['selected'] = 'selected="selected"';
 					}
 
@@ -1140,7 +1143,7 @@ class MLASettings {
 					$option_values['size'] = $value['size'];
 				}
 
-				$option_values['text'] = MLAOptions::mla_get_option( $key );
+				$option_values['text'] = MLAOptions::mla_get_option( $key, false, false, $option_table );
 
 				return MLAData::mla_parse_template( self::$page_template_array['text'], $option_values );
 			case 'textarea':
@@ -1162,7 +1165,7 @@ class MLASettings {
 					$option_values['rows'] = $value['rows'];
 				}
 
-				$option_values['text'] = stripslashes( MLAOptions::mla_get_option( $key ) );
+				$option_values['text'] = stripslashes( MLAOptions::mla_get_option( $key, false, false, $option_table ) );
 
 				return MLAData::mla_parse_template( self::$page_template_array['textarea'], $option_values );
 			case 'custom':
@@ -1213,7 +1216,7 @@ class MLASettings {
 	private static $mla_tablist = array();
 
 	/**
-	 * Localize $mla_option_definitions array
+	 * Localize $mla_tablist array
 	 *
 	 * Localization must be done at runtime, and these calls cannot be placed
 	 * in the "public static" array definition itself.
@@ -1224,22 +1227,19 @@ class MLASettings {
 	 */
 	public static function mla_localize_tablist() {
 		self::$mla_tablist = array(
-			'general' => array( 'title' => __ ( 'General', 'media-library-assistant' ), 'render' => '_compose_general_tab' ),
-			'view' => array( 'title' => __ ( 'Views', 'media-library-assistant' ), 'render' => '_compose_view_tab' ),
-			'upload' => array( 'title' => __ ( 'Uploads', 'media-library-assistant' ), 'render' => '_compose_upload_tab' ),
-			'mla_gallery' => array( 'title' => __ ( 'MLA Gallery', 'media-library-assistant' ), 'render' => '_compose_mla_gallery_tab' ),
-			'custom_field' => array( 'title' => __ ( 'Custom Fields', 'media-library-assistant' ), 'render' => '_compose_custom_field_tab' ),
-			'iptc_exif' => array( 'title' => 'IPTC/EXIF', 'render' => '_compose_iptc_exif_tab' ),
-			'documentation' => array( 'title' => __ ( 'Documentation', 'media-library-assistant' ), 'render' => '_compose_documentation_tab' ),
-			'debug' => array( 'title' => __ ( 'Debug', 'media-library-assistant' ), 'render' => '_compose_debug_tab' ),
+			'general' => array( 'title' => __ ( 'General', 'media-library-assistant' ), 'render' => array( 'MLASettings', '_compose_general_tab' ) ),
+			'view' => array( 'title' => __ ( 'Views', 'media-library-assistant' ), 'render' => array( 'MLASettings', '_compose_view_tab' ) ),
+			'upload' => array( 'title' => __ ( 'Uploads', 'media-library-assistant' ), 'render' => array( 'MLASettings', '_compose_upload_tab' ) ),
+			'mla_gallery' => array( 'title' => __ ( 'MLA Gallery', 'media-library-assistant' ), 'render' => array( 'MLASettings', '_compose_mla_gallery_tab' ) ),
+			'custom_field' => array( 'title' => __ ( 'Custom Fields', 'media-library-assistant' ), 'render' => array( 'MLASettings', '_compose_custom_field_tab' ) ),
+			'iptc_exif' => array( 'title' => 'IPTC/EXIF', 'render' => array( 'MLASettings', '_compose_iptc_exif_tab' ) ),
+			'documentation' => array( 'title' => __ ( 'Documentation', 'media-library-assistant' ), 'render' => array( 'MLASettings', '_compose_documentation_tab' ) ),
+			'debug' => array( 'title' => __ ( 'Debug', 'media-library-assistant' ), 'render' => array( 'MLASettings', '_compose_debug_tab' ) ),
 		);
 	}
 
 	/**
-	 * Localize $mla_option_definitions array
-	 *
-	 * Localization must be done at runtime, and these calls cannot be placed
-	 * in the "public static" array definition itself.
+	 * Retrieve the list of options tabs or a specific tab value
 	 *
 	 * @since 1.82
 	 *
@@ -1251,15 +1251,19 @@ class MLASettings {
 		if ( is_string( $tab ) ) {
 			if ( isset( self::$mla_tablist[ $tab ] ) ) {
 				$results = self::$mla_tablist[ $tab ];
+
+				if ( ( 'debug' == $tab ) && ( 0 == ( MLA_DEBUG_LEVEL & 1 ) ) ) {
+					$results = false;
+				}
 			} else {
-				return false;
+				$results = false;
 			}
 		} else {
 			$results = self::$mla_tablist;
-		}
 
-		if ( 0 == ( MLA_DEBUG_LEVEL & 1 ) ) {
-			unset ( $results['debug'] );
+			if ( 0 == ( MLA_DEBUG_LEVEL & 1 ) ) {
+				unset ( $results['debug'] );
+			}
 		}
 
 		return apply_filters( 'mla_get_options_tablist', $results, self::$mla_tablist, $tab );
@@ -1434,7 +1438,7 @@ class MLASettings {
 		$options_list = '';
 		foreach ( MLAOptions::$mla_option_definitions as $key => $value ) {
 			if ( 'general' == $value['tab'] ) {
-				$options_list .= self::_compose_option_row( $key, $value );
+				$options_list .= self::mla_compose_option_row( $key, $value );
 			}
 		}
 
@@ -1683,7 +1687,7 @@ class MLASettings {
 			$options_list = '';
 			foreach ( MLAOptions::$mla_option_definitions as $key => $value ) {
 				if ( 'view' == $value['tab'] ) {
-					$options_list .= self::_compose_option_row( $key, $value );
+					$options_list .= self::mla_compose_option_row( $key, $value );
 				}
 			}
 
@@ -1728,7 +1732,7 @@ class MLASettings {
 		$options_list = '';
 		foreach ( MLAOptions::$mla_option_definitions as $key => $value ) {
 			if ( 'view' == $value['tab'] ) {
-				$options_list .= self::_compose_option_row( $key, $value );
+				$options_list .= self::mla_compose_option_row( $key, $value );
 			}
 		}
 
@@ -2152,7 +2156,7 @@ class MLASettings {
 			$options_list = '';
 			foreach ( MLAOptions::$mla_option_definitions as $key => $value ) {
 				if ( 'upload' == $value['tab'] ) {
-					$options_list .= self::_compose_option_row( $key, $value );
+					$options_list .= self::mla_compose_option_row( $key, $value );
 				}
 			}
 
@@ -2195,7 +2199,7 @@ class MLASettings {
 		$options_list = '';
 		foreach ( MLAOptions::$mla_option_definitions as $key => $value ) {
 			if ( 'upload' == $value['tab'] ) {
-				$options_list .= self::_compose_option_row( $key, $value );
+				$options_list .= self::mla_compose_option_row( $key, $value );
 			}
 		}
 
@@ -2339,7 +2343,7 @@ class MLASettings {
 		$options_list = '';
 		foreach ( MLAOptions::$mla_option_definitions as $key => $value ) {
 			if ( 'mla_gallery' == $value['tab'] ) {
-				$options_list .= self::_compose_option_row( $key, $value );
+				$options_list .= self::mla_compose_option_row( $key, $value );
 			}
 		}
 
@@ -2737,7 +2741,7 @@ class MLASettings {
 		$options_list = '';
 		foreach ( MLAOptions::$mla_option_definitions as $key => $value ) {
 			if ( 'custom_field' == $value['tab'] ) {
-				$options_list .= self::_compose_option_row( $key, $value );
+				$options_list .= self::mla_compose_option_row( $key, $value );
 			}
 		}
 
@@ -2876,7 +2880,7 @@ class MLASettings {
 		$options_list = '';
 		foreach ( MLAOptions::$mla_option_definitions as $key => $value ) {
 			if ( 'iptc_exif' == $value['tab'] ) {
-				$options_list .= self::_compose_option_row( $key, $value );
+				$options_list .= self::mla_compose_option_row( $key, $value );
 			}
 		}
 
@@ -2931,7 +2935,7 @@ class MLASettings {
 
 		foreach ( MLAOptions::$mla_option_definitions as $key => $value ) {
 			if ( 'debug' == $value['tab'] ) {
-				$message_list .= self::_update_option_row( $key, $value );
+				$message_list .= self::mla_update_option_row( $key, $value );
 			} // view option
 		} // foreach mla_options
 
@@ -2994,7 +2998,7 @@ class MLASettings {
 		$options_list = '';
 		foreach ( MLAOptions::$mla_option_definitions as $key => $value ) {
 			if ( 'debug' == $value['tab'] ) {
-				$options_list .= self::_compose_option_row( $key, $value );
+				$options_list .= self::mla_compose_option_row( $key, $value );
 			}
 		}
 
@@ -3098,7 +3102,8 @@ class MLASettings {
 		if ( $current_tab ) {
 			if ( isset( $current_tab['render'] ) ) {
 				$handler = $current_tab['render'];
-				$page_content = self::$handler(  );
+//				$page_content = self::$handler(  );
+				$page_content = call_user_func( $handler );
 			} else {
 				$page_content = array( 'message' => __( 'ERROR', 'media-library-assistant' ) . ': ' . __( 'Cannot render content tab', 'media-library-assistant' ), 'body' => '' );
 			}
@@ -3146,7 +3151,7 @@ class MLASettings {
 					$old_value = MLAOptions::mla_get_option( $key );
 					if ( $old_value != $_REQUEST[ MLA_OPTION_PREFIX . $key ] ) {
 						$settings_changed = true;
-						$message_list .= self::_update_option_row( $key, $value );
+						$message_list .= self::mla_update_option_row( $key, $value );
 					}
 				} elseif ( 'text' == $value['type'] ) {
 					if ( '' == $_REQUEST[ MLA_OPTION_PREFIX . $key ] ) {
@@ -3156,7 +3161,7 @@ class MLASettings {
 					$old_value = MLAOptions::mla_get_option( $key );
 					if ( $old_value != $_REQUEST[ MLA_OPTION_PREFIX . $key ] ) {
 						$settings_changed = true;
-						$message_list .= self::_update_option_row( $key, $value );
+						$message_list .= self::mla_update_option_row( $key, $value );
 					}
 				} elseif ( 'checkbox' == $value['type'] ) {
 					$old_value = MLAOptions::mla_get_option( $key );
@@ -3168,7 +3173,7 @@ class MLASettings {
 
 					if ( $checkbox_changed ) {
 						$settings_changed = true;
-						$message_list .= self::_update_option_row( $key, $value );
+						$message_list .= self::mla_update_option_row( $key, $value );
 					}
 				}
 			} // mla_gallery option
@@ -3415,7 +3420,7 @@ class MLASettings {
 
 		foreach ( MLAOptions::$mla_option_definitions as $key => $value ) {
 			if ( 'view' == $value['tab'] ) {
-				$message_list .= self::_update_option_row( $key, $value );
+				$message_list .= self::mla_update_option_row( $key, $value );
 			} // view option
 		} // foreach mla_options
 
@@ -3449,7 +3454,7 @@ class MLASettings {
 
 		foreach ( MLAOptions::$mla_option_definitions as $key => $value ) {
 			if ( 'upload' == $value['tab'] ) {
-				$message_list .= self::_update_option_row( $key, $value );
+				$message_list .= self::mla_update_option_row( $key, $value );
 			} // upload option
 		} // foreach mla_options
 
@@ -3589,7 +3594,7 @@ class MLASettings {
 			 */
 			foreach ( MLAOptions::$mla_option_definitions as $key => $value ) {
 				if ( 'custom_field' == $value['tab'] ) {
-					$option_messages .= self::_update_option_row( $key, $value );
+					$option_messages .= self::mla_update_option_row( $key, $value );
 				}
 			}
 
@@ -3872,7 +3877,7 @@ class MLASettings {
 		 */
 		foreach ( MLAOptions::$mla_option_definitions as $key => $value ) {
 			if ( 'iptc_exif' == $value['tab'] ) {
-				$option_messages .= self::_update_option_row( $key, $value );
+				$option_messages .= self::mla_update_option_row( $key, $value );
 			}
 		}
 
@@ -3967,7 +3972,7 @@ class MLASettings {
 						//	ignore everything else
 				} // switch
 
-				$message_list .= self::_update_option_row( $key, $value );
+				$message_list .= self::mla_update_option_row( $key, $value );
 			} // general option
 		} // foreach mla_options
 

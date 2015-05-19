@@ -174,9 +174,11 @@ All of the MLA source code has been annotated with "DocBlocks", a special type o
 * New: When WPML is active, taxonomy term assignments are synchronized across all the item's translations.
 * New: When WPML is active, the Media/Assistant submenu table will include a "language management" column showing each item's translation status by language. You can click on an item's "pencil" or "plus" icon to edit an existing translation or duplicate the item in a new language.
 * New: When WPML is active and "All Languages" is selected, the Media/Assistant submenu table will include a "Language" column showing each item's language.
+* New: When WPML is active, the Settings/Media Library Assistant "Language" tab lets you select the enhancements you want.
 * New: Two hooks, `mla_list_table_admin_action` and `mla_list_table_custom_admin_action`, have been added.
 * New: For `[mla_gallery]`, when `mla_alt_shortcode=mla_tag_cloud`, parameters such as `mla_link_href` are passed through to be used by [`mla_tag_cloud]`.
 * New: Polylang support is provided by an example plugin, `/examples/mla-polylang-support.zip`.
+* Fix: For IPTC/EXIF mapping, empty values returned from an "EXIF/Template" template no longer suppress IPTC values that are present.
 * Fix: For the Media/Library grid view, JavaScript errors initializing the Enhanced Media Search toolbar control have been eliminated.
 * Fix: When WPML is active, `[mla_tag_cloud]` returns language-specific terms.
 * Fix: The MLA `orientation` data source reliably returns "portrait" or "landscape". The WordPress `orientaton` value, when present, is available as `meta:image_meta.orientation`.
