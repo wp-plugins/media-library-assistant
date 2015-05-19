@@ -177,8 +177,10 @@ All of the MLA source code has been annotated with "DocBlocks", a special type o
 * New: Two hooks, `mla_list_table_admin_action` and `mla_list_table_custom_admin_action`, have been added.
 * New: For `[mla_gallery]`, when `mla_alt_shortcode=mla_tag_cloud`, parameters such as `mla_link_href` are passed through to be used by [`mla_tag_cloud]`.
 * New: Polylang support is provided by an example plugin, `/examples/mla-polylang-support.zip`.
+* Fix: For the Media/Library grid view, JavaScript errors initializing the Enhanced Media Search toolbar control have been eliminated.
 * Fix: When WPML is active, `[mla_tag_cloud]` returns language-specific terms.
 * Fix: The MLA `orientation` data source reliably returns "portrait" or "landscape". The WordPress `orientaton` value, when present, is available as `meta:image_meta.orientation`.
+* Fix: Media/Assistant filtering by numeric custom field values with leading spaces (such as `file_size`) has been restored.
 * Fix: Media/Assistant "Unattached" and "Trash" view handling updated for WP 4.2 changes.
 * Fix: JavaScript "spinner" handling updated for WP 4.2 changes.
 * Fix: Code and files for WordPress before version 3.5 has been removed.

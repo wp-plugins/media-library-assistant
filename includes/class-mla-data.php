@@ -1746,7 +1746,7 @@ class MLAData {
 		/*
 		 * We must patch the WHERE clause if there are leading spaces in the meta_value
 		 */
-		if ( isset( $clean_request['mla-metavalue'] ) && (' ' == $clean_request['mla-metavalue'][0] ) ) {
+		if ( isset( $clean_request['mla-metavalue'] ) && ( 0 < strlen( $clean_request['mla-metavalue']  ) ) && ( ' ' == $clean_request['mla-metavalue'][0] ) ) {
 			self::$query_parameters['mla-metavalue'] = $clean_request['mla-metavalue'];
 		}
 
@@ -2384,7 +2384,7 @@ class MLAData {
 		 * WordPress filters meta_value thru trim() - which we must reverse
 		 */
 		if ( isset( self::$query_parameters['mla-metavalue'] ) ) {
-			$where_clause = preg_replace( '/(^.*meta_value AS CHAR\) = \')([^\']*)/', '${1}' . self::$query_parameters['mla-metavalue'], $where_clause );
+			$where_clause = preg_replace( '/(^.*meta_value AS CHAR\) = \')([^\']*)/m', '${1}' . self::$query_parameters['mla-metavalue'], $where_clause );
 		}
 
 		/*

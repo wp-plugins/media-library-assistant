@@ -52,7 +52,7 @@
 	vertical-align:middle;
 }
 
-.mode-grid.media-frame .media-toolbar input#media-search-input,
+.mode-grid.media-frame .media-toolbar input#mla-media-search-input,
 .mode-grid.media-frame .media-toolbar input#mla-search-submit {
 	/* margin-top: 11px; */
 	position: static;

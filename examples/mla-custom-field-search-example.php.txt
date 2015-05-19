@@ -1,0 +1,108 @@
+<?php
+/**
+ * Extends the Media/Assistant "Search Media" box to custom field values
+ *
+ * @package MLA Custom Field Search Example
+ * @version 1.00
+ */
+
+/*
+Plugin Name: MLA Custom Field Search Example
+Plugin URI: http://fairtradejudaica.org/media-library-assistant-a-wordpress-plugin/
+Description: Extends the Media/Assistant "Search Media" box to custom field values
+Author: David Lingren
+Version: 1.00
+Author URI: http://fairtradejudaica.org/our-story/staff/
+
+Copyright 2014 - 2015 David Lingren
+
+	This program is free software; you can redistribute it and/or modify
+	it under the terms of the GNU General Public License as published by
+	the Free Software Foundation; either version 2 of the License, or
+	(at your option) any later version.
+
+	This program is distributed in the hope that it will be useful,
+	but WITHOUT ANY WARRANTY; without even the implied warranty of
+	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+	GNU General Public License for more details.
+
+	You can get a copy of the GNU General Public License by writing to the
+	Free Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110, USA
+*/
+
+/**
+ * Class MLA Custom Field Search Example hooks one of the filters provided by the MLA_List_Table class
+ *
+ * Call it anything you want, but give it an unlikely and hopefully unique name. Hiding everything
+ * else inside a class means this is the only name you have to worry about.
+ *
+ * @package MLA Custom Field Search Example
+ * @since 1.00
+ */
+class MLACustomFieldSearchExample {
+	/**
+	 * Initialization function, similar to __construct()
+	 *
+	 * @since 1.00
+	 *
+	 * @return	void
+	 */
+	public static function initialize() {
+		// The filters are only useful for the admin section; exit in the front-end posts/pages
+		if ( ! is_admin() )
+			return;
+
+		// Defined in /media-library-assistant/includes/class-mla-main.php
+		add_filter( 'mla_list_table_new_instance', 'MLACustomFieldSearchExample::mla_list_table_new_instance', 10, 1 );
+	}
+
+	/**
+	 * Extend the MLA_List_Table class
+	 *
+	 * This filter gives you an opportunity to extend the MLA_List_Table class.
+	 * You can also use this filter to inspect or modify any of the $_REQUEST arguments.
+	 *
+	 * @since 1.00
+	 *
+	 * @param	object	$mla_list_table NULL, to indicate no extension/use the base class.
+	 *
+	 * @return	object	updated mla_list_table object.
+	 */
+	public static function mla_list_table_new_instance( $mla_list_table ) {
+		
+		// Look for the special "custom:" prefix in the Search Media text box
+		if ( isset( $_REQUEST['s'] ) && ( 'custom:' == substr( $_REQUEST['s'], 0, 7 ) ) ) {
+			$tokens = explode( '=', substr( $_REQUEST['s'], 7 ) ) ;
+
+			// See if the custom field name is present, followed by "=" and a value
+			if ( 1 < count( $tokens ) ) {
+				$field = array_shift( $tokens );
+				$value = implode( '=', $tokens );
+			} else {
+				// Supply a default custom field name
+				$field = 'File Size';
+				$value = $tokens[0];
+			}
+
+			// Numeric and "commas" format fields are often padded to sort reasonably
+			if ( in_array( $field, array( 'File Size', 'pixels', 'width', 'height' ) ) ) {
+				$value = str_pad( $value, 15, ' ', STR_PAD_LEFT );
+			}
+			
+			$_REQUEST['mla-metakey'] = $field;
+			$_REQUEST['mla-metavalue'] = $value;
+		
+			unset( $_REQUEST['s'] );
+			unset( $_REQUEST['mla_search_connector'] );
+			unset( $_REQUEST['mla_search_fields'] );
+		} // isset s=custom:
+		
+		return $mla_list_table;
+	} // mla_list_table_new_instance
+} // Class MLACustomFieldSearchExample
+
+/*
+ * Install the filters at an early opportunity
+ */
+add_action('init', 'MLACustomFieldSearchExample::initialize');
+?>

@@ -486,6 +486,11 @@ var wp, wpAjax, ajaxurl, jQuery, _,
 		}); // wp.media.view.MlaTermsSearch
 	} // mlaModal.settings.enableTermsSearch
 
+/*	for debug : trace every event triggered in the wp.media.view.MlaSearch * /
+function MlaSearchOn( eventName ) {
+	console.log('wp.media.view.MlaSearch Event: ', eventName);
+} // */
+
 	/**
 	 * Extended wp.media.view.Search
 	 */
@@ -509,6 +514,10 @@ var wp, wpAjax, ajaxurl, jQuery, _,
 
 			initialize: function() {
 				var state = this.controller._state;
+/*	for debug : trace every event triggered in the wp.media.view.MlaSearch * /
+wp.media.view.MlaSearch.off( 'all', MlaSearchOn );
+wp.media.view.MlaSearch.on( 'all', MlaSearchOn );
+// */
 
 				if ( 'undefined' === typeof mlaModal.settings.query[ state ] ) {
 					mlaModal.settings.query[ state ] = _.clone( mlaModal.settings.query.initial );
@@ -634,21 +643,16 @@ var wp, wpAjax, ajaxurl, jQuery, _,
 		}); // Simulated search
 	} // mlaModal.settings.enableSearchBox
 
-/*	for debug : trace every event triggered in the wp.media.frame * /
-function mediaFrameOn( eventName ) {
-	//console.log('wp.media.frame Event: ', eventName);
-} // */
-	
 	/**
 	 * Add/replace media-toolbar controls with our own
 	 */
 	if ( mlaModal.settings.enableMimeTypes || mlaModal.settings.enableMonthsDropdown || mlaModal.settings.enableTermsDropdown || mlaModal.settings.enableTermsSearch || mlaModal.settings.enableSearchBox ) {
 		wp.media.view.AttachmentsBrowser = wp.media.view.AttachmentsBrowser.extend({
-/*	for debug : trace every event triggered in the wp.media.frame * /
-			toolbarEvent: function(eventName ) {
+/*	for debug : trace every event triggered in this.controller * /
+			toolbarEvent: function( eventName ) {
 				var id = this.model.attributes.id;
-				//console.log('toolbarEvent this.model.attributes: ', JSON.stringify( this.model.attributes ));
-				//console.log('toolbarEvent( ', id, ' ) Event: ', eventName);
+				console.log('toolbarEvent this.model.attributes: ', JSON.stringify( this.model.attributes ));
+				console.log('toolbarEvent( ', id, ' ) Event: ', eventName);
 			}, // */
 
 			createToolbar: function() {
@@ -661,14 +665,9 @@ function mediaFrameOn( eventName ) {
 					mlaModal.settings.query[ state ].searchFields = _.clone( mlaModal.settings.query.initial.searchFields );
 				}
 
-/*	for debug : trace every event triggered in the wp.media.frame * /
-wp.media.frame.off( 'all', mediaFrameOn );
-wp.media.frame.on( 'all', mediaFrameOn );
-// */
-
-/*	for debug : trace every event triggered in the wp.media.frame */
-//this.stopListening( wp.media.frame );
-//this.listenTo( wp.media.frame, 'all', this.toolbarEvent );
+/*	for debug : trace every event triggered in the this.controller * /
+this.stopListening( this.controller );
+this.listenTo( this.controller, 'all', this.toolbarEvent );
 // */
 
 				// Apply the original method to create the toolbar
@@ -712,7 +711,8 @@ wp.media.frame.on( 'all', mediaFrameOn );
 
 				if ( this.options.search ) {
 					if ( mlaModal.settings.enableSearchBox ) {
-						this.toolbar.unset( 'search', { silent: true } );
+						this.listenTo( this.controller, 'uploader:ready', this.hideDefaultSearch );
+						//this.toolbar.unset( 'search', { silent: true } );
 						this.toolbar.set( 'MlaSearch', new wp.media.view.MlaSearch({
 							controller: this.controller,
 							model:      this.collection.props,
@@ -726,6 +726,10 @@ wp.media.frame.on( 'all', mediaFrameOn );
 						}).render() );
 					}
 				}
+			},
+
+			hideDefaultSearch: function() {
+				$( '#media-search-input' ).hide();
 			},
 
 			updateFilters: function( taxonomy, selectMarkup ) {
