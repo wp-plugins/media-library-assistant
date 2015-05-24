@@ -38,7 +38,7 @@ class MLA {
 	 *
 	 * @var	string
 	 */
-	const MLA_DEVELOPMENT_VERSION = '20150519';
+	const MLA_DEVELOPMENT_VERSION = '20150522';
 
 	/**
 	 * Slug for registering and enqueueing plugin style sheet
@@ -180,6 +180,26 @@ class MLA {
 	private static $page_hooks = array();
 
 	/**
+	 * Accumulates error messages from name conflict tests
+	 *
+	 * @since 1.14
+	 */
+	private static $mla_language_support_error_messages = '';
+	 
+	/**
+	 * Displays name conflict error messages at the top of the Dashboard
+	 *
+	 * @since 2.11
+	 */
+	public static function mla_name_conflict_reporting_action () {
+		$messages = self::$mla_language_support_error_messages;
+		
+		echo '<div class="error"><p><strong>The Media Library Assistant cannot activate multi-language support.</strong> Another plugin or theme has declared conflicting class, function or constant names:</p>'."\r\n";
+		echo "<ul>{$messages}</ul>\r\n";
+		echo '<p>You must resolve these conflicts before multi-language support can be activated.</p></div>'."\r\n";
+	}
+	
+	/**
 	 * Initialization function, similar to __construct()
 	 *
 	 * This function contains add_action and add_filter calls
@@ -191,15 +211,47 @@ class MLA {
 	 * @return	void
 	 */
 	public static function initialize( ) {
-		global $sitepress;
+//		global $sitepress, $polylang;
+		global $sitepress; $polylang = NULL;
 		
 		/*
-		 * Check for WPML presence before loading support class,
-		 * then immediately initialize it sonce we're already in the "init" action.
+		 * Check for WPML/Polylang presence before loading language support class,
+		 * then immediately initialize it since we're already in the "init" action.
 		 */
 		if ( is_object( $sitepress ) ) {
-			require_once( MLA_PLUGIN_PATH . 'includes/class-mla-wpml-support.php' );
-			MLA_WPML::initialize();
+			if ( class_exists( 'MLA_WPML' ) ) {
+				self::$mla_language_support_error_messages .= "<li>class MLA_WPML</li>";
+			}
+
+			if ( class_exists( 'MLA_WPML_List_Table' ) ) {
+				self::$mla_language_support_error_messages .= "<li>class MLA_WPML_List_Table</li>";
+			}
+
+			if ( class_exists( 'MLA_WPML_Table' ) ) {
+				self::$mla_language_support_error_messages .= "<li>class MLA_WPML_Table</li>";
+			}
+
+			if ( empty( self::$mla_language_support_error_messages ) ) {
+				require_once( MLA_PLUGIN_PATH . 'includes/class-mla-wpml-support.php' );
+				MLA_WPML::initialize();
+			}
+		} elseif ( is_object( $polylang ) ) {
+			if ( class_exists( 'MLAPolylangSupport' ) ) {
+				self::$mla_language_support_error_messages .= '<li>class MLAPolylangSupport in plugin "MLA Polylang Support"</li>';
+			}
+
+			if ( class_exists( 'MLA_Polylang' ) ) {
+				self::$mla_language_support_error_messages .= "<li>class MLA_Polylang</li>";
+			}
+
+			if ( empty( self::$mla_language_support_error_messages ) ) {
+				require_once( MLA_PLUGIN_PATH . 'includes/class-mla-polylang-support.php' );
+				MLA_Polylang::initialize();
+			}
+		}
+
+		if ( ! empty( self::$mla_language_support_error_messages ) ) {
+			add_action( 'admin_notices', 'MLA::mla_name_conflict_reporting_action' );
 		}
 
 		add_action( 'admin_init', 'MLA::mla_admin_init_action' );
@@ -893,7 +945,8 @@ class MLA {
 				$fragments = explode( ',', trim( $terms, " \n\t\r\0\x0B," ) );
 				$terms = array();
 				foreach( $fragments as $fragment ) {
-					$fragment = trim( wp_unslash( $fragment ) );
+					// WordPress encodes special characters, e.g., "&" as HTML entities in term names
+					$fragment = _wp_specialchars( trim( wp_unslash( $fragment ) ) );
 					if ( ! empty( $fragment ) ) {
 						$terms[] = $fragment;
 					}
@@ -1623,7 +1676,11 @@ class MLA {
 		$new_item = (object) MLAData::mla_get_attachment_by_id( $post_id );
 
 		//	Create an instance of our package class and echo the new HTML
-		$MLAListTable = new MLA_List_Table();
+		$MLAListTable = apply_filters( 'mla_list_table_new_instance', NULL );
+		if ( is_null( $MLAListTable ) ) {
+			$MLAListTable = new MLA_List_Table();
+		}
+
 		$MLAListTable->single_row( $new_item );
 		die(); // this is required to return a proper result
 	}
@@ -1774,7 +1831,11 @@ class MLA {
 		$new_item = (object) MLAData::mla_get_attachment_by_id( $post_id );
 
 		//	Create an instance of our package class and echo the new HTML
-		$MLAListTable = new MLA_List_Table();
+		$MLAListTable = apply_filters( 'mla_list_table_new_instance', NULL );
+		if ( is_null( $MLAListTable ) ) {
+			$MLAListTable = new MLA_List_Table();
+		}
+
 		$MLAListTable->single_row( $new_item );
 		die(); // this is required to return a proper result
 	}

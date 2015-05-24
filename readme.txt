@@ -178,8 +178,11 @@ All of the MLA source code has been annotated with "DocBlocks", a special type o
 * New: Two hooks, `mla_list_table_admin_action` and `mla_list_table_custom_admin_action`, have been added.
 * New: For `[mla_gallery]`, when `mla_alt_shortcode=mla_tag_cloud`, parameters such as `mla_link_href` are passed through to be used by [`mla_tag_cloud]`.
 * New: Polylang support is provided by an example plugin, `/examples/mla-polylang-support.zip`.
+* Fix: Taxonomy terms containing "HTML special characters", e.g., ampersands, are now handled correctly for searching and editing.
+* Fix: The `mla_list_table_new_instance` filter is now called for Media/Assistant Set Parent and Quick Edit (Ajax) actions.
 * Fix: For IPTC/EXIF mapping, empty values returned from an "EXIF/Template" template no longer suppress IPTC values that are present.
 * Fix: For the Media/Library grid view, JavaScript errors initializing the Enhanced Media Search toolbar control have been eliminated.
+* Fix: For IPTC/EXIF and custom field mapping, handling of items with corrupted `attachment_matadata` has been improved to avoid PHP Notice and Warning messages.
 * Fix: When WPML is active, `[mla_tag_cloud]` returns language-specific terms.
 * Fix: The MLA `orientation` data source reliably returns "portrait" or "landscape". The WordPress `orientaton` value, when present, is available as `meta:image_meta.orientation`.
 * Fix: Media/Assistant filtering by numeric custom field values with leading spaces (such as `file_size`) has been restored.

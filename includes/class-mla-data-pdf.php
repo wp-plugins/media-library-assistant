@@ -792,5 +792,5 @@ class MLAPDF {
 
 		return array( 'xmp' => $xmp, 'pdf' => $metadata );
 	}
-} // class MLAData
+} // class MLAPDF
 ?>

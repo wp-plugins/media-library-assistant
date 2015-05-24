@@ -328,7 +328,6 @@ class MLA_List_Table extends WP_List_Table {
 	 * @return	array	non-empty view, search, filter and sort arguments
 	 */
 	public static function mla_submenu_arguments( $include_filters = true ) {
-		global $sitepress;
 		static $submenu_arguments = NULL, $has_filters = NULL;
 
 		if ( is_array( $submenu_arguments ) && ( $has_filters == $include_filters ) ) {
@@ -337,15 +336,6 @@ class MLA_List_Table extends WP_List_Table {
 
 		$submenu_arguments = array();
 		$has_filters = $include_filters;
-
-		/*
-		 * WPML arguments
-		 */
-		if ( isset( $_REQUEST['lang'] ) ) {
-			$submenu_arguments['lang'] = $_REQUEST['lang'];
-		} elseif ( is_object( $sitepress ) ) {		 
-			$submenu_arguments['lang'] = $sitepress->get_current_language();
-		}
 
 		/*
 		 * View arguments
@@ -478,25 +468,6 @@ class MLA_List_Table extends WP_List_Table {
 	}
 
 	/**
-	 * Handler for filter "views_{$this->screen->id}" in /admin/includes/class-wp-list-table.php
-	 *
-	 * Filter the list of available list table views. Set when the
-	 * file is loaded because the list_table object isn't created in time
-	 * to affect the "screen options" setup.
-	 *
-	 * @since 1.82
-	 *
-	 * @param	array	A list of available list table views
-	 *
-	 * @return	array	Updated list of available list table views
-	 */
-	public static function mla_views_media_page_mla_menu_filter( $views ) {
-		// hooked by WPML Media in wpml-media.class.php
-		$views = apply_filters( 'views_upload', $views );
-		return $views;
-	}
-
-	/**
 	 * Adds support for taxonomy and custom field columns
 	 *
 	 * Called in the admin_init action because the list_table object isn't
@@ -532,8 +503,6 @@ class MLA_List_Table extends WP_List_Table {
 	 * @return	void
 	 */
 	function __construct( ) {
-		global $sitepress;
-
 		$this->detached = isset( $_REQUEST['detached'] );
 		$this->is_trash = isset( $_REQUEST['status'] ) && $_REQUEST['status'] == 'trash';
 
@@ -554,12 +523,6 @@ class MLA_List_Table extends WP_List_Table {
 		 * They are added when the source file is loaded because the MLA_List_Table
 		 * object is created too late to be useful.
 		 */
-
-		if ( is_object( $sitepress ) ) {		 
-			add_filter( 'views_media_page_mla-menu', 'MLA_List_Table::mla_views_media_page_mla_menu_filter', 10, 1 );
-			
-			$this->mla_wpml_table = new MLA_WPML_Table( $this );
-		}
 	}
 
 	/**

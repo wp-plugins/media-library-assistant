@@ -3871,18 +3871,7 @@ class MLAShortcodes {
 	 * @return	array	array of term objects, empty if none found
 	 */
 	public static function mla_get_terms( $attr ) {
-		global $wpdb, $sitepress;
-
-		/*
-		 * Check for WPML language-specific query
-		 */
-		if ( is_object( $sitepress ) ) {		 
-			if ( 'all' == ( $current_language = $sitepress->get_current_language() ) ) {
-				$current_language = NULL;
-			}
-		} else {
-			$current_language = NULL;
-		}
+		global $wpdb;
 
 		/*
 		 * Make sure $attr is an array, even if it's empty
@@ -3930,13 +3919,6 @@ class MLAShortcodes {
 		$clause = array ( 'INNER JOIN `' . $wpdb->term_taxonomy . '` AS tt ON t.term_id = tt.term_id' );
 		$clause_parameters = array();
 		
-		/*
-		 * Check for WPML language-specific query
-		 */
-		if ( isset( $current_language ) ) {
-			$clause[] = 'JOIN `' . $wpdb->prefix . 'icl_translations` AS icl_t ON icl_t.element_id = tt.term_taxonomy_id';
-		}
-
 		if ( ! $no_count ) {
 			$clause[] = 'LEFT JOIN `' . $wpdb->term_relationships . '` AS tr ON tt.term_taxonomy_id = tr.term_taxonomy_id';
 			$clause[] = 'LEFT JOIN `' . $wpdb->posts . '` AS p ON tr.object_id = p.ID';
@@ -4002,19 +3984,6 @@ class MLAShortcodes {
 		}
 
 		$clause = array( 'tt.taxonomy IN (' . join( ',', $placeholders ) . ')' );
-
-		/*
-		 * Check for WPML language-specific query
-		 */
-		if ( isset( $current_language ) ) {
-			$clause[] = "AND icl_t.language_code = '" . $current_language . "'";
-
-			foreach ($taxonomies as $taxonomy) {
-				$clause_parameters[] = 'tax_' . $taxonomy;
-			}
-	
-			$clause[] = 'AND icl_t.element_type IN (' . join( ',', $placeholders ) . ')';
-		}
 
 		/*
 		 * The "ids" parameter can build an item-specific cloud.

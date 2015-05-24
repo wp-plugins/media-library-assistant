@@ -26,13 +26,25 @@ class MLA_WPML {
 	 * @return	void
 	 */
 	public static function initialize() {
+		/*
+		 * The remaining filters are only useful for the admin section; exit in the front-end posts/pages
+		 */
+		if ( ! is_admin() ) {
+			 /*
+			  * Defined in /media-library-assistant/includes/class-mla-shortcodes.php
+			  */
+			add_filter( 'mla_get_terms_query_arguments', 'MLA_WPML::mla_get_terms_query_arguments', 10, 1 );
+			add_filter( 'mla_get_terms_clauses', 'MLA_WPML::mla_get_terms_clauses', 10, 1 );
+	
+			return;
+		}
 
-		add_action( 'admin_init', 'MLA_WPML::mla_wpml_admin_init_action' );
+		add_action( 'admin_init', 'MLA_WPML::admin_init' );
 
 		/*
 		 * Defined in wp-admin/edit-form-advanced.php
 		 */
-		add_filter( 'post_updated_messages', 'MLA_WPML::mla_wpml_post_updated_messages', 10, 1 );
+		add_filter( 'post_updated_messages', 'MLA_WPML::post_updated_messages', 10, 1 );
 
 		/*
 		 * Defined in wp-includes/post.php function wp_insert_post
@@ -44,10 +56,12 @@ class MLA_WPML {
 		/*
 		 * Defined in /media-library-assistant/includes/class-mla-main.php
 		 */
+		add_filter( 'mla_list_table_new_instance', 'MLA_WPML_Table::mla_list_table_new_instance', 10, 1 );
 		add_action( 'mla_list_table_custom_admin_action', 'MLA_WPML::mla_list_table_custom_admin_action', 10, 2 );
 		add_filter( 'mla_list_table_inline_action', 'MLA_WPML::mla_list_table_inline_action', 10, 2 );
 		add_filter( 'mla_list_table_bulk_action_initial_request', 'MLA_WPML::mla_list_table_bulk_action_initial_request', 10, 3 );
-		add_filter( 'mla_list_table_bulk_action', 'MLA_WPML::mla_list_table_bulk_action', 10, 3 );
+		add_filter( 'mla_list_table_bulk_action_item_request', 'MLA_WPML::mla_list_table_bulk_action_item_request', 10, 4 );
+		//add_filter( 'mla_list_table_bulk_action', 'MLA_WPML::mla_list_table_bulk_action', 10, 3 );
 		
 		/*
 		 * Defined in /media-library-assistant/includes/class-mla-settings.php
@@ -61,13 +75,72 @@ class MLA_WPML {
 	}
 
 	/**
-	 * Add the plugin's filter/action handlers
+	 * MLA Tag Cloud Query Arguments
+	 *
+	 * Saves [mla_tag_cloud] query parameters for use in MLA_WPML::mla_get_terms_clauses.
+	 *
+	 * @since 2.11
+	 * @uses MLA_WPML::$all_query_parameters
+	 *
+	 * @param	array	shortcode arguments merged with attachment selection defaults, so every possible parameter is present
+	 *
+	 * @return	array	updated attachment query arguments
+	 */
+	public static function mla_get_terms_query_arguments( $all_query_parameters ) {
+		//error_log( 'MLA_WPML::mla_get_terms_query_arguments_filter $all_query_parameters = ' . var_export( $all_query_parameters, true ), 0 );
+
+		self::$all_query_parameters = $all_query_parameters;
+		return $all_query_parameters;
+	} // mla_get_terms_query_arguments
+
+	/**
+	 * Save the query arguments
+	 *
+	 * @since 2.11
+	 *
+	 * @var	array
+	 */
+	private static $all_query_parameters = array();
+
+	/**
+	 * MLA Tag Cloud Query Clauses
+	 *
+	 * Adds language-specific clauses to filter the cloud terms.
+	 *
+	 * @since 2.11
+	 *
+	 * @param	array	SQL clauses ( 'fields', 'join', 'where', 'order', 'orderby', 'limits' )
+	 *
+	 * @return	array	updated SQL clauses
+	 */
+	public static function mla_get_terms_clauses( $clauses ) {
+		global $sitepress;
+		//error_log( 'MLA_WPML::mla_get_terms_clauses $clauses = ' . var_export( $clauses, true ), 0 );
+
+		if ( 'all' != ( $current_language = $sitepress->get_current_language() ) ) {
+			$clauses['join'] = preg_replace( '/(^.* AS tt ON t.term_id = tt.term_id)/m', '${1}' . ' JOIN `jholland_icl_translations` AS icl_t ON icl_t.element_id = tt.term_taxonomy_id', $clauses['join'] );
+			
+			$clauses['where'] .= " AND icl_t.language_code = '" . $current_language . "'";
+
+			$taxonomies = array();
+			foreach ( self::$all_query_parameters['taxonomy'] as $taxonomy) {
+				$taxonomies[] = 'tax_' . $taxonomy;
+			}
+	
+			$clauses['where'] .= "AND icl_t.element_type IN ( '" . join( "','", $taxonomies ) . "' )";
+		}
+
+		return $clauses;
+	} // mla_get_terms_clauses
+
+	/**
+	 * Add the plugin's admin-mode filter/action handlers
 	 *
 	 * @since 2.11
 	 *
 	 * @return	void
 	 */
-	public static function mla_wpml_admin_init_action() {
+	public static function admin_init() {
 		/*
 		 * Add styles for the language management column
 		 */
@@ -105,17 +178,14 @@ class MLA_WPML {
 	 *
 	 * @since 2.11
 	 *
-	 * @param	array	$request	NULL, to indicate no handler.
+	 * @param	array	$request		bulk action request parameters, including ['mla_bulk_action_do_cleanup'].
 	 * @param	string	$bulk_action	the requested action.
-	 * @param	integer	$custom_field_map		the affected attachment.
+	 * @param	array	$custom_field_map	[ slug => field_name ]
 	 *
-	 * @return	object	updated $item_content. NULL if no handler, otherwise
-	 *					( 'message' => error or status message(s), 'body' => '',
-	 *					  'prevent_default' => true to bypass the MLA handler )
+	 * @return	array	updated bulk action request parameters
 	 */
 	public static function mla_list_table_bulk_action_initial_request( $request, $bulk_action, $custom_field_map ) {
-//error_log( __LINE__ . " MLA_WPML::mla_list_table_bulk_action_initial_request [{$bulk_action}] request = " . var_export( $request, true ), 0 );
-
+//error_log( __LINE__ . " MLA_WPML::mla_list_table_bulk_action_initial_request request = " . var_export( $request, true ), 0 );
 		/*
 		 * Check for Bulk Edit processing during Upload New Media
 		 */
@@ -153,6 +223,30 @@ class MLA_WPML {
 	private static $upload_bulk_edit_args = NULL;
 	
 	/**
+	 * Converts Bulk Edit taxonomy inputs to language-specific values
+	 *
+	 * @since 2.11
+	 *
+	 * @param	array	$request		bulk action request parameters, including ['mla_bulk_action_do_cleanup'].
+	 * @param	string	$bulk_action	the requested action.
+	 * @param	integer	$post_id		the affected attachment.
+	 * @param	array	$custom_field_map	[ slug => field_name ]
+	 *
+	 * @return	array	updated bulk action request parameters
+	 */
+	public static function mla_list_table_bulk_action_item_request( $request, $bulk_action, $post_id, $custom_field_map ) {
+//error_log( __LINE__ . " MLA_WPML::mla_list_table_bulk_action_item_request( {$bulk_action}, {$post_id} ) request = " . var_export( $request, true ), 0 );
+
+		if ( 'edit' == $bulk_action && ( ! empty( $request['tax_input'] ) ) ) {
+			self::_build_terms_before( $post_id );
+			self::_build_tax_input( $post_id, $request['tax_input'], $request['tax_action'] );
+			$request['tax_input'] = self::_apply_tax_input( $post_id );
+		}
+		
+		return $request;
+	} // mla_list_table_bulk_action_item_request
+
+	/**
 	 * Captures the Bulk Edit "before update" term assignments
 	 *
 	 * @since 2.11
@@ -169,7 +263,7 @@ class MLA_WPML {
 //error_log( __LINE__ . " MLA_WPML::mla_list_table_bulk_action [{$post_id}] bulk_action = " . var_export( $bulk_action, true ), 0 );
 
 		if ( 'edit' == $bulk_action ) {
-			self::_build_terms_before( $post_id );
+			//self::_build_terms_before( $post_id );
 		}
 		
 		return $item_content;
@@ -202,7 +296,7 @@ class MLA_WPML {
 	 *
 	 * @return	array	updated messages
 	 */
-	public static function mla_wpml_post_updated_messages( $messages ) {
+	public static function post_updated_messages( $messages ) {
 	if ( isset( $messages['attachment'] ) ) {
 		$messages['attachment'][201] = __( 'Duplicate translation created; update as desired.', 'media-library-assistant' );
 	}
@@ -259,6 +353,13 @@ class MLA_WPML {
 	private static function _get_relevant_term( $field, $value, $taxonomy, $language = NULL ) {
 		global $sitepress;
 		
+		/*
+		 * WordPress encodes special characters, e.g., "&" as HTML entities in term names
+		 */
+		if ( 'name' == $field ) {
+			$value = _wp_specialchars( $value );
+		}
+
 		$relevant_term = false;
 		foreach( self::$relevant_terms as $term_taxonomy_id => $candidate ) {
 			if ( $taxonomy != $candidate['term']->taxonomy ) {
@@ -289,9 +390,9 @@ class MLA_WPML {
 		} // relevant term
 
 		/*
-		 * No match; try to add it and its translations
+		 * If no match; try to add it and its translations
 		 */
-		if ( $candidate = get_term_by( $field, $value, $taxonomy ) ) {
+ 		if ( ( false === $relevant_term ) && $candidate = get_term_by( $field, $value, $taxonomy ) ) {
 			$relevant_term =  self::_add_relevant_term( $candidate );
 			
 			foreach ( $relevant_term['translations'] as $translation ) {
@@ -479,10 +580,13 @@ class MLA_WPML {
 					}
 					
 					$relevant_term = self::_get_relevant_term( 'term_id', $term, $taxonomy );
-					foreach ( $relevant_term['translations'] as $language => $translation ) {
-						$translated_term = self::_get_relevant_term( 'term_taxonomy_id', $translation->element_id, $taxonomy );
-						$input_terms[ $language ][ $translation->element_id ] = $translated_term['term'];
-					} // for each language
+					if ( isset( $relevant_term['translations'] ) ) {
+						foreach ( $relevant_term['translations'] as $language => $translation ) {
+							if ($translated_term = self::_get_relevant_term( 'term_taxonomy_id', $translation->element_id, $taxonomy ) ) {
+								$input_terms[ $language ][ $translation->element_id ] = $translated_term['term'];
+							}
+						} // for each language
+					} // translations exist
 				} // foreach term
 			} else {
 				// Convert names to an array
@@ -491,10 +595,13 @@ class MLA_WPML {
 				foreach ( $term_names as $term_name ) {
 					if ( ! empty( $term_name ) ) {
 						$relevant_term = self::_get_relevant_term( 'name', $term_name, $taxonomy );
-						foreach ( $relevant_term['translations'] as $language => $translation ) {
-							$translated_term = self::_get_relevant_term( 'term_taxonomy_id', $translation->element_id, $taxonomy );
-						$input_terms[ $language ][ $translation->element_id ] = $translated_term['term'];
-						} // for each language
+						if ( isset( $relevant_term['translations'] ) ) {
+							foreach ( $relevant_term['translations'] as $language => $translation ) {
+								if ( $translated_term = self::_get_relevant_term( 'term_taxonomy_id', $translation->element_id, $taxonomy ) ) {
+									$input_terms[ $language ][ $translation->element_id ] = $translated_term['term'];
+								}
+							} // for each language
+						} // translations exist
 					} // not empty
 				} // foreach name
 			} // flat taxonomy
@@ -986,8 +1093,29 @@ class MLA_WPML {
 } // Class MLA_WPML
 
 /**
+ * Class MLA (Media Library Assistant) WPML List Table adds a reference to an MLA_WPML object
+ *
+ * Extends the MLA_List_Table class.
+ *
+ * @package Media Library Assistant
+ * @since 2.11
+ */
+class MLA_WPML_List_Table extends MLA_List_Table {
+	/**
+	 * The MLA_WPML_Table support object
+	 *
+	 * @since 2.11
+	 *
+	 * @var	object
+	 */
+	protected $mla_wpml_table = NULL;
+}
+
+/**
  * Class MLA (Media Library Assistant) WPML Table provides support for the WPML Multilingual CMS
  * family of plugins, including WPML Media, for an MLA_List_Table object.
+ *
+ * An instance of this class is created in the class MLA_List_Table constructor (class-mla-list-table.php).
  *
  * @package Media Library Assistant
  * @since 2.11
@@ -1018,16 +1146,59 @@ class MLA_WPML_Table {
 		$this->mla_list_table = $table;
 		
 		/*
+		 * Defined in /wp-admin/includes/class-wp-list-table.php
+		 */
+		// filter "views_{$this->screen->id}"
+		add_filter( 'views_media_page_mla-menu', 'MLA_WPML_Table::mla_views_media_page_mla_menu_filter', 10, 1 );
+
+		 /*
+		  * Defined in /media-library-assistant/includes/class-mla-list-table.php
+		  */
+		add_filter( 'mla_list_table_submenu_arguments', array( $this, 'mla_list_table_submenu_arguments' ), 10, 2 );
+		add_filter( 'mla_list_table_get_columns', array( $this, 'mla_list_table_get_columns' ), 10, 1 );
+		add_filter( 'mla_list_table_column_default', array( $this, 'mla_list_table_column_default' ), 10, 3 );
+
+		/*
 		 * Defined in /plugins/wpml-media/inc/wpml-media.class.php
 		 */
 		add_filter( 'wpml-media_view-upload-count', array( $this, 'mla_wpml_media_view_upload_count_filter' ), 10, 4 );
 		add_filter( 'wpml-media_view-upload-page-count', array( $this, 'mla_wpml_media_view_upload_page_count_filter' ), 10, 2 );
-		
-		 /*
-		  * Defined in /media-library-assistant/includes/class-mla-list-table.php
-		  */
-		add_filter( 'mla_list_table_get_columns', array( $this, 'mla_list_table_get_columns' ), 10, 1 );
-		add_filter( 'mla_list_table_column_default', array( $this, 'mla_list_table_column_default' ), 10, 3 );
+	}
+
+	/**
+	 * Handler for filter "views_{$this->screen->id}" in /wp-admin/includes/class-wp-list-table.php
+	 *
+	 * Filter the list of available list table views, calling the WPML filter that adds language-specific views.
+	 *
+	 * @since 2.11
+	 *
+	 * @param	array	A list of available list table views
+	 *
+	 * @return	array	Updated list of available list table views
+	 */
+	public static function mla_views_media_page_mla_menu_filter( $views ) {
+		// hooked by WPML Media in wpml-media.class.php
+		$views = apply_filters( 'views_upload', $views );
+		return $views;
+	}
+
+	/**
+	 * Extend the MLA_List_Table class
+	 *
+	 * Adds a protected variable holding a reference to the WPML_List_Table object,
+	 * then creates the WPML_List_Table passing it a reference to the new "parent" object.
+	 *
+	 * @since 2.11
+	 *
+	 * @param	object	$mla_list_table NULL, to indicate no extension/use the base class.
+	 *
+	 * @return	object	updated mla_list_table object.
+	 */
+	public static function mla_list_table_new_instance( $mla_list_table ) {
+		$mla_list_table = new MLA_WPML_List_Table;
+		$mla_list_table->mla_wpml_table = new MLA_WPML_Table( $mla_list_table );
+
+		return $mla_list_table;
 	}
 
 	/**
@@ -1118,6 +1289,33 @@ class MLA_WPML_Table {
 	 *
 	 * @since 2.11
 	 *
+	 * @param	array	$submenu_arguments An array of query arguments.
+	 *					format: attribute => value
+	 * @param	boolean	Include the "click filter" values in the results
+	 *
+	 * @return	array	updated array of query arguments.
+	 */
+	public static function mla_list_table_submenu_arguments( $submenu_arguments, $include_filters ) {
+		global $sitepress;
+		
+		if ( isset( $_REQUEST['lang'] ) ) {
+			$submenu_arguments['lang'] = $_REQUEST['lang'];
+		} elseif ( is_object( $sitepress ) ) {		 
+			$submenu_arguments['lang'] = $sitepress->get_current_language();
+		}
+
+		return $submenu_arguments;
+	}
+	
+	/**
+	 * Filter the MLA_List_Table columns
+	 *
+	 * Inserts the language columns just after the item thumbnail column.
+	 * Defined as static because it is called before the List_Table object is created.
+	 * Added as a filter when the file is loaded.
+	 *
+	 * @since 2.11
+	 *
 	 * @param	array	$columns An array of columns.
 	 *					format: column_slug => Column Label
 	 *
@@ -1167,8 +1365,9 @@ class MLA_WPML_Table {
 
 				$flags_column = '';
 				foreach ( $languages as $language ) {
-					if ( isset( $flags[ $language[ 'code' ] ] ) )
+					if ( isset( $flags[ $language[ 'code' ] ] ) ) {
 						$flags_column .= $flags[ $language[ 'code' ] ];
+					}
 				}
 
 				self::$language_columns[ 'icl_translations' ] = $flags_column;

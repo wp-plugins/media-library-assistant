@@ -2109,13 +2109,15 @@ class MLAData {
 					if ( isset( $terms_search_parameters['exact'] ) ) {
 						$the_terms = array();
 						foreach( $terms_search_parameters['taxonomies'] as $taxonomy ) {
-							$the_term = get_term_by( 'name', $phrase, $taxonomy );
+							// WordPress encodes special characters, e.g., "&" as HTML entities in term names
+							$the_term = get_term_by( 'name', _wp_specialchars( $phrase ), $taxonomy );
 							if ( false !== $the_term ) {
 								$the_terms[] = $the_term;
 							}
 						}
 					} else {
-						$the_terms = get_terms( $terms_search_parameters['taxonomies'], array( 'name__like' => $phrase, 'fields' => 'all', 'hide_empty' => false ) );
+						// WordPress encodes special characters, e.g., "&" as HTML entities in term names
+						$the_terms = get_terms( $terms_search_parameters['taxonomies'], array( 'name__like' => _wp_specialchars( $phrase ), 'fields' => 'all', 'hide_empty' => false ) );
 						if ( $quoted[ $index ] ) {
 							foreach ( $the_terms as $term_index => $the_term ) {
 								if ( ! self::_match_quoted_phrase( $phrase, $the_term->name ) ) {
@@ -2271,7 +2273,8 @@ class MLAData {
 					 * separated by taxonomy.
 					 */
 					if ( in_array( 'terms', $fields ) ) {
-						$the_terms = get_terms( self::$search_parameters['mla_search_taxonomies'], array( 'name__like' => $term, 'fields' => 'all', 'hide_empty' => false ) );
+						// WordPress encodes special characters, e.g., "&" as HTML entities in term names
+						$the_terms = get_terms( self::$search_parameters['mla_search_taxonomies'], array( 'name__like' => _wp_specialchars( $term ), 'fields' => 'all', 'hide_empty' => false ) );
 						foreach( $the_terms as $the_term ) {
 							$tax_terms[ $the_term->taxonomy ][ $the_term->term_id ] = (integer) $the_term->term_taxonomy_id;
 
@@ -3094,7 +3097,7 @@ class MLAData {
 
 		$attachment_metadata = get_post_meta( $ID, '_wp_attachment_metadata', true );
 		$sizes = isset( $attachment_metadata['sizes'] ) ? $attachment_metadata['sizes'] : NULL;
-		if ( ! empty( $sizes ) ) {
+		if ( is_array( $sizes ) ) {
 			// Using the name as the array key ensures each name is added only once
 			foreach ( $sizes as $size => $size_info ) {
 				$size_info['size'] = $size;
@@ -5922,6 +5925,8 @@ class MLAData {
 				}
 			}
 		} else {
+			// WordPress encodes special characters, e.g., "&" as HTML entities in term names
+			array_map( '_wp_specialchars', $terms );
 			foreach( $terms_before as $index => $term ) {
 				if ( ! in_array( $term, $terms ) ) {
 					$terms_after[] = $term;

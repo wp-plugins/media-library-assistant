@@ -2277,7 +2277,15 @@ class MLAOptions {
 		$base_file = isset( $wp_attached_files[ $post_id ]->meta_value ) ? $wp_attached_files[ $post_id ]->meta_value : '';
 		$sizes = array();
 
-		$attachment_metadata = isset( $wp_attachment_metadata[ $post_id ]->meta_value ) ? unserialize( $wp_attachment_metadata[ $post_id ]->meta_value ) : array();
+		if ( isset( $wp_attachment_metadata[ $post_id ]->meta_value ) ) {
+			$attachment_metadata =  @unserialize( $wp_attachment_metadata[ $post_id ]->meta_value );
+			if ( ! is_array( $attachment_metadata ) ) {
+				$attachment_metadata = array();
+			}
+		} else {
+			$attachment_metadata = array();
+		}
+		
 		if ( !empty( $attachment_metadata ) ) {
 			if ( isset( $attachment_metadata['image_meta'] ) ) {
 				foreach ( $attachment_metadata['image_meta'] as $key => $value )
