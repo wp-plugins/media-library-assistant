@@ -114,11 +114,11 @@ class MLA_WPML {
 	 * @return	array	updated SQL clauses
 	 */
 	public static function mla_get_terms_clauses( $clauses ) {
-		global $sitepress;
+		global $wpdb, $sitepress;
 		//error_log( 'MLA_WPML::mla_get_terms_clauses $clauses = ' . var_export( $clauses, true ), 0 );
 
 		if ( 'all' != ( $current_language = $sitepress->get_current_language() ) ) {
-			$clauses['join'] = preg_replace( '/(^.* AS tt ON t.term_id = tt.term_id)/m', '${1}' . ' JOIN `jholland_icl_translations` AS icl_t ON icl_t.element_id = tt.term_taxonomy_id', $clauses['join'] );
+			$clauses['join'] = preg_replace( '/(^.* AS tt ON t.term_id = tt.term_id)/m', '${1}' . ' JOIN `' . $wpdb->prefix . 'icl_translations` AS icl_t ON icl_t.element_id = tt.term_taxonomy_id', $clauses['join'] );
 			
 			$clauses['where'] .= " AND icl_t.language_code = '" . $current_language . "'";
 
