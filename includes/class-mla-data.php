@@ -2118,6 +2118,11 @@ class MLAData {
 					} else {
 						// WordPress encodes special characters, e.g., "&" as HTML entities in term names
 						$the_terms = get_terms( $terms_search_parameters['taxonomies'], array( 'name__like' => _wp_specialchars( $phrase ), 'fields' => 'all', 'hide_empty' => false ) );
+						// Invalid taxonomy will return WP_Error object
+						if ( ! is_array( $the_terms ) ) {
+							$the_terms = array();
+						}
+						
 						if ( $quoted[ $index ] ) {
 							foreach ( $the_terms as $term_index => $the_term ) {
 								if ( ! self::_match_quoted_phrase( $phrase, $the_term->name ) ) {
@@ -2275,6 +2280,11 @@ class MLAData {
 					if ( in_array( 'terms', $fields ) ) {
 						// WordPress encodes special characters, e.g., "&" as HTML entities in term names
 						$the_terms = get_terms( self::$search_parameters['mla_search_taxonomies'], array( 'name__like' => _wp_specialchars( $term ), 'fields' => 'all', 'hide_empty' => false ) );
+						// Invalid taxonomy will return WP_Error object
+						if ( ! is_array( $the_terms ) ) {
+							$the_terms = array();
+						}
+						
 						foreach( $the_terms as $the_term ) {
 							$tax_terms[ $the_term->taxonomy ][ $the_term->term_id ] = (integer) $the_term->term_taxonomy_id;
 
