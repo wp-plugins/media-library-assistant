@@ -122,8 +122,12 @@ class MLA_WPML {
 			
 			$clauses['where'] .= " AND icl_t.language_code = '" . $current_language . "'";
 
+			if ( is_string( $query_taxonomies = self::$all_query_parameters['taxonomy'] ) ) {
+				$query_taxonomies = array ( $query_taxonomies );
+			}
+			
 			$taxonomies = array();
-			foreach ( self::$all_query_parameters['taxonomy'] as $taxonomy) {
+			foreach ( $query_taxonomies as $taxonomy) {
 				$taxonomies[] = 'tax_' . $taxonomy;
 			}
 	
