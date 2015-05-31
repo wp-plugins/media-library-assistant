@@ -12,7 +12,7 @@
 /*
 Plugin Name: Media Library Assistant
 Plugin URI: http://fairtradejudaica.org/media-library-assistant-a-wordpress-plugin/
-Description: 20150522 Enhances the Media Library; powerful [mla_gallery], taxonomy support, IPTC/EXIF processing, bulk & quick edit actions and where-used reporting.
+Description: 20150531 Enhances the Media Library; powerful [mla_gallery], taxonomy support, IPTC/EXIF processing, bulk & quick edit actions and where-used reporting.
 Author: David Lingren, Fair Trade Judaica
 Text Domain: media-library-assistant
 Domain Path: /languages
@@ -112,6 +112,7 @@ $mla_name_conflict_candidates =
 		'MLA_View_List_Table' => 'class',
 		'MLA_Optional_Upload_List_Table' => 'class',
 		'MLA_Upload_List_Table' => 'class',
+		//'MLA_BACKUP_DIR' => 'constant'
 	);
 
 /*

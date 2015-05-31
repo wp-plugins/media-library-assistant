@@ -35,6 +35,15 @@ class MLA_List_Table extends WP_List_Table {
 	private $detached;
 
 	/**
+	 * True if the current view is "Attached"
+	 *
+	 * @since 2.11
+	 *
+	 * @var	int
+	 */
+	private $attached;
+
+	/**
 	 * True if the current view is "Trash"
 	 *
 	 * Declaration added in MLA v2.11 for WP 4.2 compatibility.
@@ -503,7 +512,8 @@ class MLA_List_Table extends WP_List_Table {
 	 * @return	void
 	 */
 	function __construct( ) {
-		$this->detached = isset( $_REQUEST['detached'] );
+		$this->detached = isset( $_REQUEST['detached'] ) && ( '1' == $_REQUEST['detached'] );
+		$this->attached = isset( $_REQUEST['detached'] ) && ( '0' == $_REQUEST['detached'] );
 		$this->is_trash = isset( $_REQUEST['status'] ) && $_REQUEST['status'] == 'trash';
 
 		//Set parent defaults
@@ -1511,7 +1521,7 @@ class MLA_List_Table extends WP_List_Table {
 	 */
 	private static function _get_view( $view_slug, $current_view ) {
 		global $wpdb;
-		static $mla_types = NULL, $posts_per_type, $post_mime_types, $avail_post_mime_types, $matches, $num_posts;
+		static $mla_types = NULL, $posts_per_type, $post_mime_types, $avail_post_mime_types, $matches, $num_posts, $detached_items;
 
 		/*
 		 * Calculate the common values once per page load
@@ -1537,6 +1547,8 @@ class MLA_List_Table extends WP_List_Table {
 					$num_posts[ $type ] = ( isset( $num_posts[ $type ] ) ) ? $num_posts[ $type ] + $posts_per_type[ $real ] : $posts_per_type[ $real ];
 				}
 			}
+
+			$detached_items = $wpdb->get_var( "SELECT COUNT(*) FROM {$wpdb->posts} WHERE post_type = 'attachment' AND post_status != 'trash' AND post_parent < 1" );
 		}
 
 		$class = ( $view_slug == $current_view ) ? ' class="current"' : '';
@@ -1549,19 +1561,21 @@ class MLA_List_Table extends WP_List_Table {
 			case 'all':
 				$total_items = array_sum( $posts_per_type ) - $posts_per_type['trash'];
 				return "<a href='{$base_url}'$class>" . sprintf( _nx( 'All', 'All', $total_items, 'uploaded files', 'media-library-assistant' ) . ' <span class="count">(%1$s)</span></a>', number_format_i18n( $total_items ) );
-			case 'unattached':
-				$total_items = $wpdb->get_var(
-						"
-						SELECT COUNT( * ) FROM {$wpdb->posts}
-						WHERE post_type = 'attachment' AND post_status != 'trash' AND post_parent < 1
-						"
-				);
-
-				if ( $total_items ) {
-					$value = MLAOptions::$mla_option_definitions[ MLAOptions::MLA_POST_MIME_TYPES ]['std']['unattached'];
+			case 'detached':
+				if ( $detached_items ) {
+					$value = MLAOptions::$mla_option_definitions[ MLAOptions::MLA_POST_MIME_TYPES ]['std']['detached'];
 					$singular = sprintf('%s <span class="count">(%%s)</span>', $value['singular'] );
 					$plural = sprintf('%s <span class="count">(%%s)</span>', $value['plural'] );
-					return '<a href="' . add_query_arg( array( 'detached' => '1' ), $base_url ) . '"' . $class . '>' . sprintf( _nx( $singular, $plural, $total_items, 'detached files', 'media-library-assistant' ), number_format_i18n( $total_items ) ) . '</a>';
+					return '<a href="' . add_query_arg( array( 'detached' => '1' ), $base_url ) . '"' . $class . '>' . sprintf( _nx( $singular, $plural, $detached_items, 'detached files', 'media-library-assistant' ), number_format_i18n( $detached_items ) ) . '</a>';
+				}
+
+				return false;
+			case 'attached':
+				if ( $attached_items = ( array_sum( $posts_per_type ) - $posts_per_type['trash'] ) - $detached_items ) {
+					$value = MLAOptions::$mla_option_definitions[ MLAOptions::MLA_POST_MIME_TYPES ]['std']['attached'];
+					$singular = sprintf('%s <span class="count">(%%s)</span>', $value['singular'] );
+					$plural = sprintf('%s <span class="count">(%%s)</span>', $value['plural'] );
+					return '<a href="' . add_query_arg( array( 'detached' => '0' ), $base_url ) . '"' . $class . '>' . sprintf( _nx( $singular, $plural, $attached_items, 'attached files', 'media-library-assistant' ), number_format_i18n( $attached_items ) ) . '</a>';
 				}
 
 				return false;
@@ -1639,7 +1653,9 @@ class MLA_List_Table extends WP_List_Table {
 		 * Find current view
 		 */
 		if ( $this->detached  ) {
-			$current_view = 'unattached';
+			$current_view = 'detached';
+		} elseif ( $this->attached ) {
+			$current_view = 'attached';
 		} elseif ( $this->is_trash ) {
 			$current_view = 'trash';
 		} elseif ( empty( $_REQUEST['post_mime_type'] ) ) {
@@ -1669,12 +1685,7 @@ class MLA_List_Table extends WP_List_Table {
 				}
 
 				if ( $link = self::_get_view( $value->slug, $current_view ) ) {
-					// WPML Media looks for "detached", not "unattached"
-					if ( 'unattached' == $value->slug ) {
-						$view_links[ 'detached' ] = $link;
-					} else {
-						$view_links[ $value->slug ] = $link;
-					}
+					$view_links[ $value->slug ] = $link;
 				}
 			}
 		}

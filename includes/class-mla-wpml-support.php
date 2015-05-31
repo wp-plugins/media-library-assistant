@@ -39,6 +39,9 @@ class MLA_WPML {
 			return;
 		}
 
+		/*
+		 * Defined in /wp-admin/admin.php
+		 */
 		add_action( 'admin_init', 'MLA_WPML::admin_init' );
 
 		/*
@@ -50,7 +53,7 @@ class MLA_WPML {
 		 * Defined in wp-includes/post.php function wp_insert_post
 		 */
 		add_filter( 'wp_insert_post_empty_content', 'MLA_WPML::wp_insert_post_empty_content', 10, 2 );
-		add_action( 'add_attachment', 'MLA_WPML::add_attachment', 10, 1 );
+		//add_action( 'add_attachment', 'MLA_WPML::add_attachment', 10, 1 );
 		add_action( 'edit_attachment', 'MLA_WPML::edit_attachment', 10, 1 );
 
 		/*
@@ -61,7 +64,6 @@ class MLA_WPML {
 		add_filter( 'mla_list_table_inline_action', 'MLA_WPML::mla_list_table_inline_action', 10, 2 );
 		add_filter( 'mla_list_table_bulk_action_initial_request', 'MLA_WPML::mla_list_table_bulk_action_initial_request', 10, 3 );
 		add_filter( 'mla_list_table_bulk_action_item_request', 'MLA_WPML::mla_list_table_bulk_action_item_request', 10, 4 );
-		//add_filter( 'mla_list_table_bulk_action', 'MLA_WPML::mla_list_table_bulk_action', 10, 3 );
 		
 		/*
 		 * Defined in /media-library-assistant/includes/class-mla-settings.php
@@ -189,7 +191,7 @@ class MLA_WPML {
 	 * @return	array	updated bulk action request parameters
 	 */
 	public static function mla_list_table_bulk_action_initial_request( $request, $bulk_action, $custom_field_map ) {
-//error_log( __LINE__ . " MLA_WPML::mla_list_table_bulk_action_initial_request request = " . var_export( $request, true ), 0 );
+//error_log( __LINE__ . " MLA_WPML::mla_list_table_bulk_action_initial_request [{$bulk_action}] request = " . var_export( $request, true ), 0 );
 		/*
 		 * Check for Bulk Edit processing during Upload New Media
 		 */
@@ -249,29 +251,6 @@ class MLA_WPML {
 		
 		return $request;
 	} // mla_list_table_bulk_action_item_request
-
-	/**
-	 * Captures the Bulk Edit "before update" term assignments
-	 *
-	 * @since 2.11
-	 *
-	 * @param	array	$item_content	NULL, to indicate no handler.
-	 * @param	string	$bulk_action	the requested action.
-	 * @param	integer	$post_id		the affected attachment.
-	 *
-	 * @return	object	updated $item_content. NULL if no handler, otherwise
-	 *					( 'message' => error or status message(s), 'body' => '',
-	 *					  'prevent_default' => true to bypass the MLA handler )
-	 */
-	public static function mla_list_table_bulk_action( $item_content, $bulk_action, $post_id ) {
-//error_log( __LINE__ . " MLA_WPML::mla_list_table_bulk_action [{$post_id}] bulk_action = " . var_export( $bulk_action, true ), 0 );
-
-		if ( 'edit' == $bulk_action ) {
-			//self::_build_terms_before( $post_id );
-		}
-		
-		return $item_content;
-	} // mla_list_table_bulk_action
 
 	/**
 	 * Add a duplicate translation for an item, then redirect to the Media/Edit Media screen
@@ -1165,7 +1144,9 @@ class MLA_WPML_Table {
 		/*
 		 * Defined in /plugins/wpml-media/inc/wpml-media.class.php
 		 */
+		add_filter( 'wpml-media_view-upload-sql', array( $this, 'mla_wpml_media_view_upload_sql_filter' ), 10, 2 );
 		add_filter( 'wpml-media_view-upload-count', array( $this, 'mla_wpml_media_view_upload_count_filter' ), 10, 4 );
+		add_filter( 'wpml-media_view-upload-page-sql', array( $this, 'mla_wpml_media_view_upload_page_sql_filter' ), 10, 2 );
 		add_filter( 'wpml-media_view-upload-page-count', array( $this, 'mla_wpml_media_view_upload_page_count_filter' ), 10, 2 );
 	}
 
@@ -1206,6 +1187,27 @@ class MLA_WPML_Table {
 	}
 
 	/**
+	 * Handler for filter "wpml-media_view-upload-sql" in /plugins/wpml-media/inc/wpml-media.class.php
+	 *
+	 * Computes the number of language-specific attachments that satisfy a meta_query specification.
+	 * The count is made language-specific by WPML filters when the current_language is set.
+	 *
+	 * @since 2.11
+	 *
+	 * @param	string	SQL query string
+	 * @param	string	language code, e.g., 'en', 'es'
+	 *
+	 * @return	mixed	updated SQL query string
+	 */
+	public function mla_wpml_media_view_upload_sql_filter( $sql, $lang ) {
+		if ( isset( $_GET['detached'] ) && ( '0' == $_GET['detached'] ) ) {
+			$sql = str_replace( "post_mime_type LIKE 'attached%'", 'post_parent > 0', $sql );
+		}
+
+		return $sql;
+	}
+
+	/**
 	 * Handler for filter "wpml-media_view-upload-count" in 
 	 * /plugins/wpml-media/inc/wpml-media.class.php
 	 *
@@ -1242,6 +1244,27 @@ class MLA_WPML_Table {
 	}
 
 	/**
+	 * Handler for filter "wpml-media_view-upload-page-sql" in /plugins/wpml-media/inc/wpml-media.class.php
+	 *
+	 * Computes the number of language-specific attachments that satisfy a meta_query specification.
+	 * The count is made language-specific by WPML filters when the current_language is set.
+	 *
+	 * @since 2.11
+	 *
+	 * @param	string	SQL query string
+	 * @param	string	language code, e.g., 'en', 'es'
+	 *
+	 * @return	mixed	updated SQL query string
+	 */
+	public function mla_wpml_media_view_upload_page_sql_filter( $sql, $lang ) {
+		if ( isset( $_GET['detached'] ) && ( '0' == $_GET['detached'] ) ) {
+			$sql = str_replace( 'post_parent = 0', 'post_parent > 0', $sql );
+		}
+
+		return $sql;
+	}
+
+	/**
 	 * Handler for filter "wpml-media_view-upload-page-count" in /plugins/wpml-media/inc/wpml-media.class.php
 	 *
 	 * Computes the number of language-specific attachments that satisfy a meta_query specification.
@@ -1263,10 +1286,14 @@ class MLA_WPML_Table {
 			$meta_view = $this->mla_list_table->mla_get_view( $_GET['meta_slug'], '' );
 			$sitepress->switch_lang( $save_lang );
 
-			// extract the count value
-			$href_count = preg_match( '/class="count">\(([^\)]*)\)/', $meta_view, $href_matches );	
-			if ( $href_count ) {
-				$count = array( $href_matches[1] );
+			if ( false !== $meta_view ) {
+				// extract the count value
+				$href_count = preg_match( '/class="count">\(([^\)]*)\)/', $meta_view, $href_matches );	
+				if ( $href_count ) {
+					$count = array( $href_matches[1] );
+				}
+			} else {
+				$count = '0';
 			}
 		}
 

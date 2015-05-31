@@ -413,7 +413,8 @@ class MLAModal {
 		self::$mla_media_modal_settings['comma'] = _x( ',', 'tag_delimiter', 'media-library-assistant' );
 		self::$mla_media_modal_settings['ajaxNonce'] = wp_create_nonce( MLA::MLA_ADMIN_NONCE );
 		self::$mla_media_modal_settings['mimeTypes'] = MLAMime::mla_pluck_table_views();
-		self::$mla_media_modal_settings['mimeTypes']['detached'] = MLAOptions::$mla_option_definitions[ MLAOptions::MLA_POST_MIME_TYPES ]['std']['unattached']['plural'];
+		self::$mla_media_modal_settings['mimeTypes']['detached'] = MLAOptions::$mla_option_definitions[ MLAOptions::MLA_POST_MIME_TYPES ]['std']['detached']['plural'];
+		self::$mla_media_modal_settings['mimeTypes']['attached'] = MLAOptions::$mla_option_definitions[ MLAOptions::MLA_POST_MIME_TYPES ]['std']['attached']['plural'];
 
 		if ( EMPTY_TRASH_DAYS && MEDIA_TRASH ) {
 			self::$mla_media_modal_settings['mimeTypes']['trash'] = MLAOptions::$mla_option_definitions[ MLAOptions::MLA_POST_MIME_TYPES ]['std']['trash']['plural'];
@@ -1017,6 +1018,9 @@ class MLAModal {
 		if ( isset( $query['post_mime_type'] ) ) {
 			if ( 'detached' == $query['post_mime_type'] ) {
 				$query['detached'] = '1';
+				unset( $query['post_mime_type'] );
+			} elseif ( 'attached' == $query['post_mime_type'] ) {
+				$query['detached'] = '0';
 				unset( $query['post_mime_type'] );
 			} elseif ( 'trash' == $query['post_mime_type'] ) {
 				$query['status'] = 'trash';

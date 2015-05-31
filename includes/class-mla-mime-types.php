@@ -41,7 +41,7 @@ class MLAMime {
 		add_filter( 'icon_dir', 'MLAMime::mla_icon_dir_filter', 0x7FFFFFFF, 1 );
 		add_filter( 'icon_dir_uri', 'MLAMime::mla_icon_dir_uri_filter', 0x7FFFFFFF, 1 );
 		add_filter( 'icon_dirs', 'MLAMime::mla_icon_dirs_filter', 0x7FFFFFFF, 1 );
-//		add_filter( 'wp_mime_type_icon', 'MLAMime::mla_wp_mime_type_icon_filter', 0x7FFFFFFF, 3 );
+		//add_filter( 'wp_mime_type_icon', 'MLAMime::mla_wp_mime_type_icon_filter', 0x7FFFFFFF, 3 );
 	}
 
 	/**
@@ -456,7 +456,7 @@ class MLAMime {
 	 * @param	string	MIME type represented by the icon
 	 * @param	integer	Attachment ID or zero (0) if MIME type passed in
 	 *
-	 * @return	array	Updated (path => URI) array
+	 * @return	array	Updated URI to the MIME type icon
 	 */
 	public static function mla_wp_mime_type_icon_filter( $icon, $mime, $post_id ) {
 		return $icon;
@@ -679,7 +679,7 @@ class MLAMime {
 		 */
 		$results = array();
 		foreach ( $mla_types as $value ) {
-			if ( in_array( $value->slug, array( 'all', 'trash', 'unattached' ) ) ) {
+			if ( in_array( $value->slug, array( 'all', 'trash', 'detached' ) ) ) {
 				continue;
 			}
 
@@ -1709,27 +1709,15 @@ class MLAMime {
 
 		/*
 		 * Find the WordPress-standard (unfiltered) extensions
-		 * WordPress 3.4.x and earlier do not implement wp_get_mime_types
 		 */
 		global $wp_filter;
-		if ( function_exists('wp_get_mime_types') ) {
-			if ( isset( $wp_filter['mime_types'] ) ) {
-				$save_filters = $wp_filter['mime_types'];
-				unset( $wp_filter['mime_types'] );
-				$core_types = wp_get_mime_types();
-				$wp_filter['mime_types'] = $save_filters;
-			} else {
-				$core_types = wp_get_mime_types();
-			}
+		if ( isset( $wp_filter['mime_types'] ) ) {
+			$save_filters = $wp_filter['mime_types'];
+			unset( $wp_filter['mime_types'] );
+			$core_types = wp_get_mime_types();
+			$wp_filter['mime_types'] = $save_filters;
 		} else {
-			if ( isset( $wp_filter['upload_mimes'] ) ) {
-				$save_filters = $wp_filter['upload_mimes'];
-				unset( $wp_filter['upload_mimes'] );
-				$core_types = get_allowed_mime_types();
-				$wp_filter['upload_mimes'] = $save_filters;
-			} else {
-				$core_types = get_allowed_mime_types();
-			}
+			$core_types = wp_get_mime_types();
 		}
 
 		/*
@@ -1810,7 +1798,7 @@ class MLAMime {
 				);
 
 				if ( 'checked' == MLAOptions::mla_get_option( MLAOptions::MLA_ENABLE_MLA_ICONS ) ) {
-					self::$mla_upload_mime_templates[ $key ]['icon_type'] = self::$mla_upload_mime_templates[ $array[0] ]['mla_icon_type'];
+					self::$mla_upload_mime_templates[ $key ]['icon_type'] = self::$mla_upload_mime_templates[ $key ]['mla_icon_type'];
 				}
 			}
 		}
@@ -1833,15 +1821,15 @@ class MLAMime {
 				$mla_type = '';
 				$description = '';
 
-				if ( NULL == $icon_type = wp_ext2type( $key ) ) {
-					$icon_type = 'default';
-				}
+//				if ( NULL == $icon_type = wp_ext2type( $key ) ) {
+//					$icon_type = 'default';
+//				}
+				$icon_type = self::mla_get_core_icon_type( $key );
 
 				$wp_icon_type = $icon_type;
 				$mla_icon_type = $icon_type;
-				$core_icon_type = self::mla_get_core_icon_type( $key );
+				$core_icon_type = $icon_type; //self::mla_get_core_icon_type( $key );
 			}
-
 
 			self::$mla_upload_mime_templates[ $key ] = array(
 				'post_ID' => $post_ID,
@@ -1859,7 +1847,7 @@ class MLAMime {
 			);
 
 			if ( 'checked' == MLAOptions::mla_get_option( MLAOptions::MLA_ENABLE_MLA_ICONS ) ) {
-				self::$mla_upload_mime_templates[ $array[0] ]['icon_type'] = self::$mla_upload_mime_templates[ $array[0] ]['mla_icon_type'];
+				self::$mla_upload_mime_templates[ $key ]['icon_type'] = self::$mla_upload_mime_templates[ $key ]['mla_icon_type'];
 			}
 		}
 

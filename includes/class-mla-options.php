@@ -1190,9 +1190,18 @@ class MLAOptions {
 							'menu_order' => 0,
 							'description' => _x( 'All application subtypes', 'post_mime_types_description', 'media-library-assistant' )
 						),
-						'unattached' => array(
+						'detached' => array(
 							'singular' => _x( 'Unattached', 'table_view_singular', 'media-library-assistant' ),
 							'plural' => _x( 'Unattached', 'table_view_plural', 'media-library-assistant' ),
+							'specification' => '',
+							'post_mime_type' => false,
+							'table_view' => true,
+							'menu_order' => 0,
+							'description' => _x( 'Built-in view', 'post_mime_types_description', 'media-library-assistant' )
+						),
+						'attached' => array(
+							'singular' => _x( 'Attached', 'table_view_singular', 'media-library-assistant' ),
+							'plural' => _x( 'Attached', 'table_view_plural', 'media-library-assistant' ),
 							'specification' => '',
 							'post_mime_type' => false,
 							'table_view' => true,

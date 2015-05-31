@@ -38,7 +38,7 @@ class MLA {
 	 *
 	 * @var	string
 	 */
-	const MLA_DEVELOPMENT_VERSION = '20150522';
+	const MLA_DEVELOPMENT_VERSION = '20150531';
 
 	/**
 	 * Slug for registering and enqueueing plugin style sheet
@@ -211,8 +211,7 @@ class MLA {
 	 * @return	void
 	 */
 	public static function initialize( ) {
-//		global $sitepress, $polylang;
-		global $sitepress; $polylang = NULL;
+		global $sitepress, $polylang;
 		
 		/*
 		 * Check for WPML/Polylang presence before loading language support class,
