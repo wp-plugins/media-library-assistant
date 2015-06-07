@@ -462,7 +462,7 @@ class MLAShortcodes {
 			} else {
 				$blacklist = array_merge( $mla_arguments, self::$mla_get_shortcode_attachments_parameters );
 			}
-			
+
 			$new_args = '';
 			foreach ( $attr as $key => $value ) {
 				if ( array_key_exists( $key, $blacklist ) ) {
@@ -3918,7 +3918,7 @@ class MLAShortcodes {
 
 		$clause = array ( 'INNER JOIN `' . $wpdb->term_taxonomy . '` AS tt ON t.term_id = tt.term_id' );
 		$clause_parameters = array();
-		
+
 		if ( ! $no_count ) {
 			$clause[] = 'LEFT JOIN `' . $wpdb->term_relationships . '` AS tr ON tt.term_taxonomy_id = tr.term_taxonomy_id';
 			$clause[] = 'LEFT JOIN `' . $wpdb->posts . '` AS p ON tr.object_id = p.ID';

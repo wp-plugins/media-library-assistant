@@ -344,7 +344,7 @@ and provides functions to get and put them from/to WordPress option variables</p
 </div>
 <a name="mla_delete_option" id="mla_delete_option"></a><div class="element clickable method public mla_delete_option" data-toggle="collapse" data-target=".mla_delete_option .collapse">
 <h2>Delete the stored value of a defined MLA option</h2>
-<pre>mla_delete_option(string $option) : boolean</pre>
+<pre>mla_delete_option(string $option, array $option_table) : boolean</pre>
 <div class="labels"></div>
 <div class="row collapse"><div class="detail-description">
 <p class="long_description"></p>
@@ -356,6 +356,9 @@ and provides functions to get and put them from/to WordPress option variables</p
 <div class="subelement argument">
 <h4>$option</h4>
 <code>string</code><p>Name of the desired option</p></div>
+<div class="subelement argument">
+<h4>$option_table</h4>
+<code>array</code><p>Custom option definitions</p></div>
 <h3>Returns</h3>
 <div class="subelement response">
 <code>boolean</code>True if the option was deleted, otherwise false</div>
@@ -499,7 +502,7 @@ Isolates clients from changes to _evaluate_data_source().</p></p>
 </div>
 <a name="mla_get_option" id="mla_get_option"></a><div class="element clickable method public mla_get_option" data-toggle="collapse" data-target=".mla_get_option .collapse">
 <h2>Return the stored value or default value of a defined MLA option</h2>
-<pre>mla_get_option(string $option, boolean $get_default, boolean $get_stored) : mixed</pre>
+<pre>mla_get_option(string $option, boolean $get_default, boolean $get_stored, array $option_table) : mixed</pre>
 <div class="labels"></div>
 <div class="row collapse"><div class="detail-description">
 <p class="long_description"></p>
@@ -517,6 +520,9 @@ Isolates clients from changes to _evaluate_data_source().</p></p>
 <div class="subelement argument">
 <h4>$get_stored</h4>
 <code>boolean</code><p>True to ignore default values and return only stored values</p></div>
+<div class="subelement argument">
+<h4>$option_table</h4>
+<code>array</code><p>Custom option definitions</p></div>
 <h3>Returns</h3>
 <div class="subelement response">
 <code>mixed</code>Value(s) for the option or false if the option is not a defined MLA option</div>
@@ -804,7 +810,7 @@ to ensure that mapping is only performed for new additions, not metadata updates
 </div>
 <a name="mla_update_option" id="mla_update_option"></a><div class="element clickable method public mla_update_option" data-toggle="collapse" data-target=".mla_update_option .collapse">
 <h2>Add or update the stored value of a defined MLA option</h2>
-<pre>mla_update_option(string $option, mixed $newvalue) : boolean</pre>
+<pre>mla_update_option(string $option, mixed $newvalue, array $option_table) : boolean</pre>
 <div class="labels"></div>
 <div class="row collapse"><div class="detail-description">
 <p class="long_description"></p>
@@ -819,6 +825,9 @@ to ensure that mapping is only performed for new additions, not metadata updates
 <div class="subelement argument">
 <h4>$newvalue</h4>
 <code>mixed</code><p>New value for the desired option</p></div>
+<div class="subelement argument">
+<h4>$option_table</h4>
+<code>array</code><p>Custom option definitions</p></div>
 <h3>Returns</h3>
 <div class="subelement response">
 <code>boolean</code>True if the value was changed or false if the update failed</div>
@@ -1658,7 +1667,7 @@ also controls the ATTACHMENT DETAILS enhancements</h2>
 <div class="row"><footer class="span12">
             Template is built using <a href="http://twitter.github.com/bootstrap/">Twitter Bootstrap 2</a> and icons provided by <a href="http://glyphicons.com/">Glyphicons</a>.<br>
             Documentation is powered by <a href="http://www.phpdoc.org/">phpDocumentor 2.0.0a8</a> and<br>
-            generated on 2015-04-19T11:52:22-07:00.<br></footer></div>
+            generated on 2015-06-06T19:41:36-07:00.<br></footer></div>
 </div>
 </body>
 </html>

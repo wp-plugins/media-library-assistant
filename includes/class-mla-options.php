@@ -1436,7 +1436,7 @@ class MLAOptions {
 		if ( NULL == $option_table ) {
 			$option_table = self::$mla_option_definitions;
 		}
-		
+
 		if ( ! array_key_exists( $option, $option_table ) ) {
 			return false;
 		}
@@ -1471,7 +1471,7 @@ class MLAOptions {
 		if ( NULL == $option_table ) {
 			$option_table = self::$mla_option_definitions;
 		}
-		
+
 		if ( array_key_exists( $option, $option_table ) ) {
 			return update_option( MLA_OPTION_PREFIX . $option, $newvalue );
 		}
@@ -1493,7 +1493,7 @@ class MLAOptions {
 		if ( NULL == $option_table ) {
 			$option_table = self::$mla_option_definitions;
 		}
-		
+
 		if ( array_key_exists( $option, $option_table ) ) {
 			return delete_option( MLA_OPTION_PREFIX . $option );
 		}
@@ -2294,7 +2294,7 @@ class MLAOptions {
 		} else {
 			$attachment_metadata = array();
 		}
-		
+
 		if ( !empty( $attachment_metadata ) ) {
 			if ( isset( $attachment_metadata['image_meta'] ) ) {
 				foreach ( $attachment_metadata['image_meta'] as $key => $value )

@@ -38,7 +38,7 @@ class MLA {
 	 *
 	 * @var	string
 	 */
-	const MLA_DEVELOPMENT_VERSION = '20150531';
+	const MLA_DEVELOPMENT_VERSION = '20150606';
 
 	/**
 	 * Slug for registering and enqueueing plugin style sheet
@@ -193,12 +193,12 @@ class MLA {
 	 */
 	public static function mla_name_conflict_reporting_action () {
 		$messages = self::$mla_language_support_error_messages;
-		
+
 		echo '<div class="error"><p><strong>The Media Library Assistant cannot activate multi-language support.</strong> Another plugin or theme has declared conflicting class, function or constant names:</p>'."\r\n";
 		echo "<ul>{$messages}</ul>\r\n";
 		echo '<p>You must resolve these conflicts before multi-language support can be activated.</p></div>'."\r\n";
 	}
-	
+
 	/**
 	 * Initialization function, similar to __construct()
 	 *
@@ -212,7 +212,7 @@ class MLA {
 	 */
 	public static function initialize( ) {
 		global $sitepress, $polylang;
-		
+
 		/*
 		 * Check for WPML/Polylang presence before loading language support class,
 		 * then immediately initialize it since we're already in the "init" action.
@@ -328,11 +328,11 @@ class MLA {
 						do_action( 'mla_begin_mapping', 'single_custom', $_REQUEST['mla_item_ID'] );
 						$updates = MLAOptions::mla_evaluate_custom_field_mapping( $_REQUEST['mla_item_ID'], 'single_attachment_mapping' );
 						do_action( 'mla_end_mapping' );
-	
+
 						if ( !empty( $updates ) ) {
 							$item_content = MLAData::mla_update_single_item( $_REQUEST['mla_item_ID'], $updates );
 						}
-	
+
 						$view_args = isset( $_REQUEST['mla_source'] ) ? array( 'mla_source' => $_REQUEST['mla_source']) : array();
 						wp_redirect( add_query_arg( $view_args, admin_url( 'post.php' ) . '?post=' . $_REQUEST['mla_item_ID'] . '&action=edit&message=101' ), 302 );
 						exit;
@@ -342,7 +342,7 @@ class MLA {
 						$updates = MLAOptions::mla_evaluate_iptc_exif_mapping( $item, 'iptc_exif_mapping' );
 						do_action( 'mla_end_mapping' );
 						$page_content = MLAData::mla_update_single_item( $_REQUEST['mla_item_ID'], $updates );
-	
+
 						$view_args = isset( $_REQUEST['mla_source'] ) ? array( 'mla_source' => $_REQUEST['mla_source']) : array();
 						wp_redirect( add_query_arg( $view_args, admin_url( 'post.php' ) . '?post=' . $_REQUEST['mla_item_ID'] . '&action=edit&message=102' ), 302 );
 						exit;
@@ -820,7 +820,7 @@ class MLA {
 	 * @since 2.11
 	 *
 	 * @param	integer	$post_id Current post ID
-	 * @param	array	$requestForm elements, e.g., from $_REQUEST
+	 * @param	array	$request Form elements, e.g., from $_REQUEST
 	 * @param	array	$custom_field_map Form id to field name mapping
 	 *
 	 * @return	array	Non-empty form elements
@@ -1019,7 +1019,7 @@ class MLA {
 
 		$new_data[ 'tax_input' ] = $tax_input;
 		$new_data[ 'tax_action' ] = $tax_action;
-		
+
 		return $new_data;
 	}
 

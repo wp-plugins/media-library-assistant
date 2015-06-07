@@ -426,7 +426,7 @@ class MLAMutex {
 	 * @var resource
 	 */
 	private $sem_id;
-	
+
 	/**
 	 * True if the semaphore has been acquired
 	 *
@@ -435,7 +435,7 @@ class MLAMutex {
 	 * @var boolean
 	 */
 	private $is_acquired = false;
-	
+
 	/**
 	 * True if using a file lock instead of a semaphore
 	 *
@@ -444,7 +444,7 @@ class MLAMutex {
 	 * @var boolean
 	 */
 	private $use_file_lock = false;
-	
+
 	/**
 	 * Name of the (locked) file used as a semaphore 
 	 *
@@ -453,7 +453,7 @@ class MLAMutex {
 	 * @var string
 	 */
 	private $filename = '';
-	
+
 	/**
 	 * File system pointer resource of the (locked) file used as a semaphore 
 	 *

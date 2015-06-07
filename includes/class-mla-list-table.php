@@ -597,9 +597,10 @@ class MLA_List_Table extends WP_List_Table {
 				/*
 				 * For display purposes, convert array values.
 				 * They are not links because no search will match them.
+				 * Use "@" because embedded arrays throw PHP Warnings from implode.
 				 */
 				if ( is_array( $value ) ) {
-					$list[] = 'array( ' . implode( ', ', $value ) . ' )';
+					$list[] = 'array( ' . @implode( ', ', $value ) . ' )';
 				} else {
 					$list[] = sprintf( '<a href="%1$s" title="' . __( 'Filter by', 'media-library-assistant' ) . ' &#8220;%2$s&#8221;">%3$s</a>', esc_url( add_query_arg( array_merge( self::mla_submenu_arguments( false ), array(
 						'page' => MLA::ADMIN_PAGE_SLUG,

@@ -127,16 +127,6 @@ var jQuery,
 			});
 		},
 
-/*		toggle : function(el){
-			var t = this;
-
-			if ( 'none' == $( t.what + mla.utility.getId( el ) ).css('display') ) {
-				t.revert();
-			} else {
-				t.edit( el );
-			}
-		}, // */
-
 		bulkEdit : function(){
 			var te = '', c = true;
 			this.revert();
@@ -440,8 +430,9 @@ var jQuery,
 				textarea.suggest( ajaxurl + '?action=ajax-tag-search&tax=' + taxname, { delay: 500, minchars: 2, multiple: true, multipleSep: mla.settings.comma + ' ' } );
 			});
 
-			$(editRow).attr('id', 'edit-'+id).addClass('inline-editor').show();
+			rowData = $(editRow).attr('id', 'edit-'+id).addClass('inline-editor').show().position().top;
 			$('.ptitle', editRow).focus();
+			$( 'html, body' ).animate( { scrollTop: rowData }, 'fast' );
 
 			return false;
 		},

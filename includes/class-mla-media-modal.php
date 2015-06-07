@@ -257,6 +257,8 @@ class MLAModal {
 					$form_fields[ 'mla-' . $key ] = array( 'tr' => $row );
 				} // is supported
 			} // foreach
+
+			$form_fields = apply_filters( 'mla_media_modal_form_fields', $form_fields, $post );
 		} // in_modal
 
 		self::$media_item_args = array( 'errors' => null, 'in_modal' => false );
@@ -303,7 +305,7 @@ class MLAModal {
 				sprintf( __( '%1$s %2$d', 'media-library-assistant' ), $wp_locale->get_month( $month ), $year );
 		}
 
-		return $month_array;
+		return apply_filters( 'mla_media_modal_months_dropdown', $month_array, $post_type );
 	}
 
 	/**
@@ -338,7 +340,7 @@ class MLAModal {
 
 		} // foreach
 
-		return array( 'class' => $class_array, 'value' => $value_array, 'text' => $text_array );
+		return apply_filters( 'mla_media_modal_terms_options', array( 'class' => $class_array, 'value' => $value_array, 'text' => $text_array ) );
 	}
 
 	/**
@@ -484,7 +486,7 @@ class MLAModal {
 			//'termsSearch' => ''
 		);
 
-		$initial_values = apply_filters( 'mla_media_modal_initial_filters', $initial_values );
+		$initial_values = apply_filters( 'mla_media_modal_initial_filters', $initial_values, $post );
 
 		/*
 		 * Except for filterMime/post_mime_type, these will be passed
@@ -500,11 +502,11 @@ class MLAModal {
 		self::$mla_media_modal_settings['query']['initial']['searchClicks'] = 0; // mla_search_clicks, to force transmission
 
 		$settings = array_merge( $settings, array( 'mla_settings' => self::$mla_media_modal_settings ) );
-		return $settings;
+		return apply_filters( 'mla_media_modal_settings', $settings, $post );
 	} // mla_mla_media_view_settings_filter
 
 	/**
-	 * Adds strings values to be passed to the Media Manager in /wp-includes/js/media-views.js.
+	 * Adds string values to be passed to the Media Manager in /wp-includes/js/media-views.js.
 	 * Declared public because it is a filter.
 	 *
 	 * @since 1.20
@@ -522,7 +524,7 @@ class MLAModal {
 			);
 
 		$strings = array_merge( $strings, array( 'mla_strings' => $mla_strings ) );
-		return $strings;
+		return apply_filters( 'mla_media_modal_strings', $strings, $post );
 	} // mla_mla_media_view_strings_filter
 
 	/**
@@ -585,10 +587,16 @@ class MLAModal {
 			} elseif ( 'checked' != MLAOptions::mla_get_option( MLAOptions::MLA_MEDIA_MODAL_TOOLBAR ) ) {
 				return;
 			}
+		} else {
+			$screen = NULL;
 		}
 
 		// Include mla javascript templates
-		require_once MLA_PLUGIN_PATH . 'includes/mla-media-modal-js-template.php';
+		$template_path = apply_filters( 'mla_media_modal_template_path', MLA_PLUGIN_PATH . 'includes/mla-media-modal-js-template.php', $screen);
+		
+		if ( ! empty( $template_path ) ) {
+			require_once $template_path;
+		}
 	} // mla_print_media_templates_action
 
 	/**
@@ -753,7 +761,10 @@ class MLAModal {
 			wp_send_json_error();
 		}
 
-		$results = array();
+		$results = apply_filters( 'mla_media_modal_begin_fill_compat_fields', array(), $requested, $post );
+		if ( ! empty( $results ) ) {
+			wp_send_json_success( $results );
+		}
 
 		/*
 		 * Match all supported taxonomies against the requested list
@@ -904,7 +915,7 @@ class MLAModal {
 			$results[ $key ] = $row;
 		}
 
-		wp_send_json_success( $results );
+		wp_send_json_success( apply_filters( 'mla_media_modal_end_fill_compat_fields', $results, $_REQUEST['query'], $requested, $post ) );
 	} // mla_fill_compat_fields_action
 
 	/**
@@ -918,14 +929,24 @@ class MLAModal {
 	 */
 	public static function mla_update_compat_fields_action() {
 		global $post;
-		if ( empty( $_REQUEST['id'] ) || ! $id = absint( $_REQUEST['id'] ) ) {
+		
+		if ( empty( $_REQUEST['id'] ) || ! $post_id = absint( $_REQUEST['id'] ) ) {
 			wp_send_json_error();
 		}
+		
+		if ( empty( $post ) ) {
+			$post = get_post( $post_id ); // for filters and wp_popular_terms_checklist
+		}
 
+		do_action( 'mla_media_modal_begin_update_compat_fields', $post );
+		
+		$taxonomies = array();
 		$results = array();
 
 		foreach ( get_taxonomies( array ( 'show_ui' => true ), 'objects' ) as $key => $value ) {
 			if ( isset( $_REQUEST[ $key ] ) && MLAOptions::mla_taxonomy_support( $key ) ) {
+				$taxonomies[ $key ] = $value;
+				
 				if ( ! $use_checklist = $value->hierarchical ) {
 					$use_checklist =  MLAOptions::mla_taxonomy_support( $key, 'flat-checklist' );
 				}
@@ -936,14 +957,14 @@ class MLAModal {
 					$terms = array_map( 'trim', preg_split( '/,+/', $_REQUEST[ $key ] ) );
 				}
 
-				wp_set_object_terms( $id, $terms, $key, false );
-				delete_transient( MLA_OPTION_PREFIX . 't_term_counts_' . $key );
-
+				$terms = apply_filters( 'mla_media_modal_update_compat_fields_terms', $terms, $key, $value, $post_id );
+				
+				if ( is_array( $terms ) ) { 
+					wp_set_object_terms( $post_id, $terms, $key, false );
+					delete_transient( MLA_OPTION_PREFIX . 't_term_counts_' . $key );
+				}
+				
 				if ( $use_checklist ) {
-					if ( empty( $post ) ) {
-						$post = get_post( $id ); // for wp_popular_terms_checklist
-					}
-
 					ob_start();
 					$popular_ids = wp_popular_terms_checklist( $key );
 					$results[$key]["mla-{$key}-checklist-pop"] = ob_get_clean();
@@ -951,19 +972,19 @@ class MLAModal {
 					ob_start();
 
 					if ( $value->hierarchical ) {
-						wp_terms_checklist( $id, array( 'taxonomy' => $key, 'popular_cats' => $popular_ids ) );
+						wp_terms_checklist( $post_id, array( 'taxonomy' => $key, 'popular_cats' => $popular_ids ) );
 					} else {
 						$checklist_walker = new MLA_Checklist_Walker;
-						wp_terms_checklist( $id, array( 'taxonomy' => $key, 'popular_cats' => $popular_ids, 'walker' => $checklist_walker ) );
+						wp_terms_checklist( $post_id, array( 'taxonomy' => $key, 'popular_cats' => $popular_ids, 'walker' => $checklist_walker ) );
 					}
 
 					$results[$key]["mla-{$key}-checklist"] = ob_get_clean();
 				} else {
-					$terms = get_object_term_cache( $id, $key );
+					$terms = get_object_term_cache( $post_id, $key );
 
 					if ( false === $terms ) {
-						$terms = wp_get_object_terms( $id, $key );
-						wp_cache_add( $id, $terms, $key . '_relationships' );
+						$terms = wp_get_object_terms( $post_id, $key );
+						wp_cache_add( $post_id, $terms, $key . '_relationships' );
 					}
 
 					if ( is_wp_error( $terms ) || empty( $terms ) ) {
@@ -979,15 +1000,15 @@ class MLAModal {
 
 					sort( $list );
 					$hidden_list = join( ',', $list );
-
+					
 					$results[$key]["object-terms"] = $object_terms;
-					$results[$key]["mla-attachments-{$id}-{$key}"] = "\t\t<input name='attachments[{$id}][{$key}]' class='the-tags' id='mla-attachments-{$id}-{$key}' type='hidden' value='{$hidden_list}'>\n";
-					$results[$key]["mla-tags-{$id}-{$key}"] = "\t\t<input name='mla_tags[{$id}][{$key}]' class='server-tags' id='mla-tags-{$id}-{$key}' type='hidden' value='{$hidden_list}'>\n";
+					$results[$key]["mla-attachments-{$post_id}-{$key}"] = "\t\t<input name='attachments[{$post_id}][{$key}]' class='the-tags' id='mla-attachments-{$post_id}-{$key}' type='hidden' value='{$hidden_list}'>\n";
+					$results[$key]["mla-tags-{$post_id}-{$key}"] = "\t\t<input name='mla_tags[{$post_id}][{$key}]' class='server-tags' id='mla-tags-{$post_id}-{$key}' type='hidden' value='{$hidden_list}'>\n";
 				}
 			} // set and supported
 		} // foreach taxonomy
 
-		wp_send_json_success( $results );
+		wp_send_json_success( apply_filters( 'mla_media_modal_end_update_compat_fields', $results, $taxonomies, $post ) );
 	} // mla_update_compat_fields_action
 
 	/**
@@ -1007,13 +1028,15 @@ class MLAModal {
 		/*
 		 * Pick out and clean up the query terms we can process
 		 */
-		$query = isset( $_REQUEST['query'] ) ? (array) $_REQUEST['query'] : array();
-		$query = array_intersect_key( $query, array_flip( array(
+		$raw_query = isset( $_REQUEST['query'] ) ? (array) $_REQUEST['query'] : array();
+		$query = array_intersect_key( $raw_query, array_flip( array(
 			'order', 'orderby', 'posts_per_page', 'paged', 'post_mime_type',
 			'post_parent', 'post__in', 'post__not_in',
 			'mla_filter_month', 'mla_filter_term', 'mla_terms_search',
 			'mla_search_value', 's', 'mla_search_fields', 'mla_search_connector'
 		) ) );
+
+		$query = apply_filters( 'mla_media_modal_query_initial_terms', $query, $raw_query );
 
 		if ( isset( $query['post_mime_type'] ) ) {
 			if ( 'detached' == $query['post_mime_type'] ) {
@@ -1101,6 +1124,8 @@ class MLAModal {
 			}
 		}
 
+		$query = apply_filters( 'mla_media_modal_query_final_terms', $query, $raw_query );
+
 		$query = MLAData::mla_query_media_modal_items( $query, $offset, $count );
 		$posts = array_map( 'wp_prepare_attachment_for_js', $query->posts );
 		$posts = array_filter( $posts );
@@ -1140,7 +1165,7 @@ class MLAModal {
 			if ( version_compare( get_bloginfo( 'version' ), '4.2', '>=' ) ) {
 				$script_variables['useSpinnerClass'] = true;
 			}
-	
+
 			wp_localize_script( MLA::JAVASCRIPT_INLINE_EDIT_SLUG . '-terms-search', self::JAVASCRIPT_TERMS_SEARCH_OBJECT, $script_variables );
 
 			/*

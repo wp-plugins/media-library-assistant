@@ -71,8 +71,6 @@ var jQuery,
 			 * everything is ready.
 			 */
 			$( '#the-list' ).on( 'click', 'a.editinline', function(){
-				var selector = '#edit-' + mlaPolylang.utility.getId( this );
-				
 				$( '.quick-edit-row' ).one( 'focusin', function() {
 					mlaPolylang.inlineTranslate.openQuickEdit( this );
 					return false;
@@ -169,7 +167,7 @@ var jQuery,
 		},
 
 		openQuickEdit : function( id ) {
-			var t = this, translateRow, translations, currentLanguage;
+			var translateRow, translations, currentLanguage;
 
 			if ( typeof( id ) == 'object' )
 				id = mlaPolylang.utility.getId( id );
@@ -274,9 +272,9 @@ var jQuery,
 				});
 			});
 			
-			$( translateRow ).attr( 'id', 'edit-'+id ).addClass( 'inline-translator' ).show();
-			//$( '.ptitle', translateRow ).focus();
-
+			rowData = $( translateRow ).attr( 'id', 'edit-'+id ).addClass( 'inline-translator' ).show().position().top;
+			$( 'html, body' ).animate( { scrollTop: rowData }, 'fast' );
+			
 			return false;
 		},
 
@@ -286,7 +284,11 @@ var jQuery,
 			if ( typeof( id ) == 'object' )
 				id = mlaPolylang.utility.getId( id );
 
-			$( 'table.widefat .pll-quick-translate-save .spinner' ).show();
+			if ( mla.settings.useSpinnerClass ) {
+				$( 'table.widefat .pll-quick-translate-save .spinner' ).addClass("is-active");
+			} else {
+				$( 'table.widefat .pll-quick-translate-save .spinner' ).show();
+			}
 
 			params = {
 				action: mlaPolylang.settings.ajax_action,
@@ -303,26 +305,47 @@ var jQuery,
 			// make ajax request
 			$.post( ajaxurl, params,
 				function( response ) {
-					var newId;
+					var newId, oldRow, rowId, rows, rIndex;
 					
-					$( 'table.widefat .pll-quick-translate-save .spinner' ).hide();
+					if ( mla.settings.useSpinnerClass ) {
+						$( 'table.widefat .pll-quick-translate-save .spinner' ).removeClass("is-active");
+					} else {
+						$( 'table.widefat .pll-quick-translate-save .spinner' ).hide();
+					}
 
 					if ( response ) {
-						if ( -1 != response.indexOf( '<tr' ) ) {
-							// Replace the Quick Translate row with the new or revised item
-							newId = mlaPolylang.utility.getId( $( response ) );
+						if ( -1 != response.indexOf( '<tr id="attachment' ) ) {
+							// Find all the rows in the response
+							rows = $( response ).closest( 'tr' );
+									
+							// Remove the selected item
+							newId = mlaPolylang.utility.getId( rows[ 0 ] );
+							oldRow = $( mlaPolylang.inlineTranslate.what + newId )
+							if ( 'undefined' != typeof oldRow ) {
+								oldRow.remove();
+							}
+	
+							// Replace the Quick Translate area with the selected item
+							$( '#edit-' + id ).before( rows[ 0 ] ).remove();
+							$( mlaPolylang.inlineTranslate.what + newId ).hide().fadeIn();
+							
+							// Update any other translations in the table
+							if ( 1 < rows.length ) { 
+								for ( rIndex = 1; rIndex < rows.length; rIndex++ ) {
+									rowId = mlaPolylang.utility.getId( rows[ rIndex ] );
+									oldRow = $( mlaPolylang.inlineTranslate.what + rowId )
+									
+									if ( 'undefined' != typeof oldRow ) {
+										oldRow.before( rows[ rIndex ] ).remove();
+										oldRow = $( mlaPolylang.inlineTranslate.what + rowId )
+										oldRow.hide().fadeIn();
+									}
+								}
+							} // other translations
+							
+							// Quick Edit a new selected item
 							if ( newId != id ) {
-								$( mlaPolylang.inlineTranslate.what + newId ).remove();
-								$( mlaPolylang.inlineTranslate.what + id ).remove();
-								$( '#edit-' + id ).before( response ).remove();
-								$( mlaPolylang.inlineTranslate.what + id ).hide().fadeIn();
-								$( mlaPolylang.inlineTranslate.what + newId ).hide().fadeIn();
-								// Quick Edit the new item
 								$( 'a.editinline', mlaPolylang.inlineTranslate.what + newId ).click();
-							} else {
-								$( mlaPolylang.inlineTranslate.what + id ).remove();
-								$( '#edit-' + id ).before( response ).remove();
-								$( mlaPolylang.inlineTranslate.what + id ).hide().fadeIn();
 							}
 						} else {
 							response = response.replace( /<.[^<>]*?>/g, '' );
@@ -340,7 +363,11 @@ var jQuery,
 			var id = $( 'table.widefat tr.inline-translator ').attr( 'id' );
 
 			if ( id ) {
-				$( 'table.widefat .pll-quick-translate-save .spinner' ).hide();
+				if ( mla.settings.useSpinnerClass ) {
+					$( 'table.widefat .pll-quick-translate-save .spinner' ).removeClass("is-active");
+				} else {
+					$( 'table.widefat .pll-quick-translate-save .spinner' ).hide();
+				}
 
 				if ( 'pll-bulk-translate' == id ) {
 					$( 'table.widefat #pll-bulk-translate ').removeClass( 'inline-translator' ).hide();

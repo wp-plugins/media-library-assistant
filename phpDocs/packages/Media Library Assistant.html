@@ -77,7 +77,6 @@
 <li><a href="#MLAData" title="Class MLA (Media Library Assistant) Data provides database and template file access for MLA needs">MLAData</a></li>
 <li><a href="#MLAEdit" title="Class MLA (Media Library Assistant) Edit contains meta boxes for the Edit Media (advanced-form-edit.php) screen">MLAEdit</a></li>
 <li><a href="#MLA_Checklist_Walker" title="Class MLA (Media Library Assistant) Checklist Walker replaces term_id with slug in checklist output">MLA_Checklist_Walker</a></li>
-<li><a href="#MLA_Image_Editor" title="MLA Image Editor Class for Image Manipulation through Imagick PHP Module">MLA_Image_Editor</a></li>
 <li><a href="#MLA_List_Table" title='Class MLA (Media Library Assistant) List Table implements the "Assistant" admin submenu'>MLA_List_Table</a></li>
 <li><a href="#MLA" title="Class MLA (Media Library Assistant) provides several enhancements to the handling
 of images and files held in the WordPress Media Library.">MLA</a></li>
@@ -88,15 +87,19 @@ the Views and Uploads Settings tabs">MLAMime</a></li>
 <li><a href="#MLATextWidget" title="Class MLA (Media Library Assistant) Text Widget defines a shortcode-enabled version of the WordPress Text widget">MLATextWidget</a></li>
 <li><a href="#MLAOptions" title="Class MLA (Media Library Assistant) Options manages the plugin option settings
 and provides functions to get and put them from/to WordPress option variables">MLAOptions</a></li>
+<li><a href="#MLA_Polylang" title="Class MLA (Media Library Assistant) Polylang provides support for the
+Polylang Multilingual plugin">MLA_Polylang</a></li>
 <li><a href="#MLASettings" title="Class MLA (Media Library Assistant) Settings provides the settings page to edit the plugin option settings">MLASettings</a></li>
 <li><a href="#MLAShortcodes" title="Class MLA (Media Library Assistant) Shortcodes defines the shortcodes available to MLA users">MLAShortcodes</a></li>
-<li><a href="#MLAStreamImage" title="Class MLA (Media Library Assistant) Stream Image provides PDF thumbnails.">MLAStreamImage</a></li>
-<li><a href="#MLAMutex" title='Class MLA (Media Library Assistant) Mutex provides a simple "mutual exclusion" semaphore
-for the [mla_gallery] mla_viewer=single option'>MLAMutex</a></li>
 <li><a href="#MLA_Upload_List_Table" title='Class MLA (Media Library Assistant) Upload List Table implements the "Upload" admin settings tab'>MLA_Upload_List_Table</a></li>
 <li><a href="#MLA_Upload_Optional_List_Table" title='Class MLA (Media Library Assistant) Upload Optional List Table implements the
 searchable database of exension/type associations for the "Uploads" admin settings tab'>MLA_Upload_Optional_List_Table</a></li>
 <li><a href="#MLA_View_List_Table" title='Class MLA (Media Library Assistant) View List Table implements the "Views" admin settings tab'>MLA_View_List_Table</a></li>
+<li><a href="#MLA_WPML" title="Class MLA (Media Library Assistant) WPML provides support for the WPML Multilingual CMS
+family of plugins, including WPML Media">MLA_WPML</a></li>
+<li><a href="#MLA_WPML_List_Table" title="Class MLA (Media Library Assistant) WPML List Table adds a reference to an MLA_WPML object">MLA_WPML_List_Table</a></li>
+<li><a href="#MLA_WPML_Table" title="Class MLA (Media Library Assistant) WPML Table provides support for the WPML Multilingual CMS
+family of plugins, including WPML Media, for an MLA_List_Table object.">MLA_WPML_Table</a></li>
 <li><a href="#MLAStreamImage" title="Class MLA (Media Library Assistant) Stream Image provides PDF thumbnails
 for the [mla_gallery] mla_viewer.">MLAStreamImage</a></li>
 <li><a href="#MLAMutex" title='Class MLA (Media Library Assistant) Mutex provides a simple "mutual exclusion" semaphore
@@ -194,14 +197,6 @@ for the [mla_gallery] mla_viewer=single option</p>
 <div class="details collapse"></div>
 <a href="../classes/MLAMutex.html" class="more">« More »</a>
 </div>
-<a name="MLAMutex" id="MLAMutex"></a><div class="element ajax clickable class" href="../classes/MLAMutex.html">
-<h1>MLAMutex<a href="../classes/MLAMutex.html">¶</a>
-</h1>
-<p class="short_description">Class MLA (Media Library Assistant) Mutex provides a simple "mutual exclusion" semaphore
-for the [mla_gallery] mla_viewer=single option</p>
-<div class="details collapse"></div>
-<a href="../classes/MLAMutex.html" class="more">« More »</a>
-</div>
 <a name="MLAObjects" id="MLAObjects"></a><div class="element ajax clickable class" href="../classes/MLAObjects.html">
 <h1>MLAObjects<a href="../classes/MLAObjects.html">¶</a>
 </h1>
@@ -241,13 +236,6 @@ and provides functions to get and put them from/to WordPress option variables</p
 <a name="MLAStreamImage" id="MLAStreamImage"></a><div class="element ajax clickable class" href="../classes/MLAStreamImage.html">
 <h1>MLAStreamImage<a href="../classes/MLAStreamImage.html">¶</a>
 </h1>
-<p class="short_description">Class MLA (Media Library Assistant) Stream Image provides PDF thumbnails.</p>
-<div class="details collapse"></div>
-<a href="../classes/MLAStreamImage.html" class="more">« More »</a>
-</div>
-<a name="MLAStreamImage" id="MLAStreamImage"></a><div class="element ajax clickable class" href="../classes/MLAStreamImage.html">
-<h1>MLAStreamImage<a href="../classes/MLAStreamImage.html">¶</a>
-</h1>
 <p class="short_description">Class MLA (Media Library Assistant) Stream Image provides PDF thumbnails
 for the [mla_gallery] mla_viewer.</p>
 <div class="details collapse"></div>
@@ -275,19 +263,20 @@ to ensure the plugin can run in the current WordPress envrionment.</p>
 <div class="details collapse"></div>
 <a href="../classes/MLA_Checklist_Walker.html" class="more">« More »</a>
 </div>
-<a name="MLA_Image_Editor" id="MLA_Image_Editor"></a><div class="element ajax clickable class" href="../classes/MLA_Image_Editor.html">
-<h1>MLA_Image_Editor<a href="../classes/MLA_Image_Editor.html">¶</a>
-</h1>
-<p class="short_description">MLA Image Editor Class for Image Manipulation through Imagick PHP Module</p>
-<div class="details collapse"></div>
-<a href="../classes/MLA_Image_Editor.html" class="more">« More »</a>
-</div>
 <a name="MLA_List_Table" id="MLA_List_Table"></a><div class="element ajax clickable class" href="../classes/MLA_List_Table.html">
 <h1>MLA_List_Table<a href="../classes/MLA_List_Table.html">¶</a>
 </h1>
 <p class="short_description">Class MLA (Media Library Assistant) List Table implements the "Assistant" admin submenu</p>
 <div class="details collapse"></div>
 <a href="../classes/MLA_List_Table.html" class="more">« More »</a>
+</div>
+<a name="MLA_Polylang" id="MLA_Polylang"></a><div class="element ajax clickable class" href="../classes/MLA_Polylang.html">
+<h1>MLA_Polylang<a href="../classes/MLA_Polylang.html">¶</a>
+</h1>
+<p class="short_description">Class MLA (Media Library Assistant) Polylang provides support for the
+Polylang Multilingual plugin</p>
+<div class="details collapse"></div>
+<a href="../classes/MLA_Polylang.html" class="more">« More »</a>
 </div>
 <a name="MLA_Upload_List_Table" id="MLA_Upload_List_Table"></a><div class="element ajax clickable class" href="../classes/MLA_Upload_List_Table.html">
 <h1>MLA_Upload_List_Table<a href="../classes/MLA_Upload_List_Table.html">¶</a>
@@ -310,6 +299,29 @@ searchable database of exension/type associations for the "Uploads" admin settin
 <p class="short_description">Class MLA (Media Library Assistant) View List Table implements the "Views" admin settings tab</p>
 <div class="details collapse"></div>
 <a href="../classes/MLA_View_List_Table.html" class="more">« More »</a>
+</div>
+<a name="MLA_WPML" id="MLA_WPML"></a><div class="element ajax clickable class" href="../classes/MLA_WPML.html">
+<h1>MLA_WPML<a href="../classes/MLA_WPML.html">¶</a>
+</h1>
+<p class="short_description">Class MLA (Media Library Assistant) WPML provides support for the WPML Multilingual CMS
+family of plugins, including WPML Media</p>
+<div class="details collapse"></div>
+<a href="../classes/MLA_WPML.html" class="more">« More »</a>
+</div>
+<a name="MLA_WPML_List_Table" id="MLA_WPML_List_Table"></a><div class="element ajax clickable class" href="../classes/MLA_WPML_List_Table.html">
+<h1>MLA_WPML_List_Table<a href="../classes/MLA_WPML_List_Table.html">¶</a>
+</h1>
+<p class="short_description">Class MLA (Media Library Assistant) WPML List Table adds a reference to an MLA_WPML object</p>
+<div class="details collapse"></div>
+<a href="../classes/MLA_WPML_List_Table.html" class="more">« More »</a>
+</div>
+<a name="MLA_WPML_Table" id="MLA_WPML_Table"></a><div class="element ajax clickable class" href="../classes/MLA_WPML_Table.html">
+<h1>MLA_WPML_Table<a href="../classes/MLA_WPML_Table.html">¶</a>
+</h1>
+<p class="short_description">Class MLA (Media Library Assistant) WPML Table provides support for the WPML Multilingual CMS
+family of plugins, including WPML Media, for an MLA_List_Table object.</p>
+<div class="details collapse"></div>
+<a href="../classes/MLA_WPML_Table.html" class="more">« More »</a>
 </div>
 <a name="MNA_Pad_Counts_Walker" id="MNA_Pad_Counts_Walker"></a><div class="element ajax clickable class" href="../classes/MNA_Pad_Counts_Walker.html">
 <h1>MNA_Pad_Counts_Walker<a href="../classes/MNA_Pad_Counts_Walker.html">¶</a>
@@ -566,7 +578,7 @@ display an "accordian-style" list.</p></p>
 <div class="row"><footer class="span12">
             Template is built using <a href="http://twitter.github.com/bootstrap/">Twitter Bootstrap 2</a> and icons provided by <a href="http://glyphicons.com/">Glyphicons</a>.<br>
             Documentation is powered by <a href="http://www.phpdoc.org/">phpDocumentor 2.0.0a8</a> and<br>
-            generated on 2015-04-19T11:52:22-07:00.<br></footer></div>
+            generated on 2015-06-06T19:41:35-07:00.<br></footer></div>
 </div>
 </body>
 </html>

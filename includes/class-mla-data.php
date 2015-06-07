@@ -2122,7 +2122,7 @@ class MLAData {
 						if ( ! is_array( $the_terms ) ) {
 							$the_terms = array();
 						}
-						
+
 						if ( $quoted[ $index ] ) {
 							foreach ( $the_terms as $term_index => $the_term ) {
 								if ( ! self::_match_quoted_phrase( $phrase, $the_term->name ) ) {
@@ -2284,7 +2284,7 @@ class MLAData {
 						if ( ! is_array( $the_terms ) ) {
 							$the_terms = array();
 						}
-						
+
 						foreach( $the_terms as $the_term ) {
 							$tax_terms[ $the_term->taxonomy ][ $the_term->term_id ] = (integer) $the_term->term_taxonomy_id;
 
@@ -3957,7 +3957,7 @@ class MLAData {
 		if ( is_scalar( $values ) ) {
 			return $values;
 		}
-		
+
 		if ( isset( $values['rdf:Alt'] ) ) {
 			return self::_parse_xmp_array( $values['rdf:Alt'] );
 		}

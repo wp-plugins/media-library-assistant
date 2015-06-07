@@ -69,16 +69,18 @@ add screen options and help tabs,
 add settings link in the Plugins section entry for MLA.'><span class="description">Add settings page in the "Settings" section,
 add screen options and help tabs,
 add settings link in the Plugins section entry for MLA.</span><pre>mla_admin_menu_action()</pre></a></li>
+<li class="method public "><a href="#mla_compose_option_row" title="mla_compose_option_row :: Compose the table row for a single MLA option"><span class="description">Compose the table row for a single MLA option</span><pre>mla_compose_option_row()</pre></a></li>
 <li class="method public "><a href="#mla_deactivation_hook" title="mla_deactivation_hook :: Perform one-time actions on plugin deactivation"><span class="description">Perform one-time actions on plugin deactivation</span><pre>mla_deactivation_hook()</pre></a></li>
 <li class="method public "><a href="#mla_get_icon_type_dropdown" title="mla_get_icon_type_dropdown :: Get an HTML select element representing a list of icon types"><span class="description">Get an HTML select element representing a list of icon types</span><pre>mla_get_icon_type_dropdown()</pre></a></li>
 <li class="method public "><a href="#mla_inline_edit_upload_action" title="mla_inline_edit_upload_action :: Ajax handler for Upload MIME Types inline editing (quick and bulk edit)"><span class="description">Ajax handler for Upload MIME Types inline editing (quick and bulk edit)</span><pre>mla_inline_edit_upload_action()</pre></a></li>
 <li class="method public "><a href="#mla_inline_edit_view_action" title="mla_inline_edit_view_action :: Ajax handler for Post MIME Types inline editing (quick and bulk edit)"><span class="description">Ajax handler for Post MIME Types inline editing (quick and bulk edit)</span><pre>mla_inline_edit_view_action()</pre></a></li>
 <li class="method public "><a href="#mla_inline_mapping_custom_action" title="mla_inline_mapping_custom_action :: Ajax handler for Custom Fields tab inline mapping"><span class="description">Ajax handler for Custom Fields tab inline mapping</span><pre>mla_inline_mapping_custom_action()</pre></a></li>
 <li class="method public "><a href="#mla_inline_mapping_iptc_exif_action" title="mla_inline_mapping_iptc_exif_action :: Ajax handler for IPTC/EXIF tab inline mapping"><span class="description">Ajax handler for IPTC/EXIF tab inline mapping</span><pre>mla_inline_mapping_iptc_exif_action()</pre></a></li>
-<li class="method public "><a href="#mla_localize_tablist" title="mla_localize_tablist :: Localize $mla_option_definitions array"><span class="description">Localize $mla_option_definitions array</span><pre>mla_localize_tablist()</pre></a></li>
+<li class="method public "><a href="#mla_localize_tablist" title="mla_localize_tablist :: Localize $mla_tablist array"><span class="description">Localize $mla_tablist array</span><pre>mla_localize_tablist()</pre></a></li>
 <li class="method public "><a href="#mla_render_settings_page" title='mla_render_settings_page :: Render (echo) the "Media Library Assistant" subpage in the Settings section'><span class="description">Render (echo) the "Media Library Assistant" subpage in the Settings section</span><pre>mla_render_settings_page()</pre></a></li>
 <li class="method public "><a href="#mla_screen_options_show_screen_filter" title="mla_screen_options_show_screen_filter :: Only show screen options on the View and Upload tabs"><span class="description">Only show screen options on the View and Upload tabs</span><pre>mla_screen_options_show_screen_filter()</pre></a></li>
 <li class="method public "><a href="#mla_set_screen_option_filter" title='mla_set_screen_option_filter :: Save the "Views/Uploads per page" option set by this user'><span class="description">Save the "Views/Uploads per page" option set by this user</span><pre>mla_set_screen_option_filter()</pre></a></li>
+<li class="method public "><a href="#mla_update_option_row" title="mla_update_option_row :: Update or delete a single MLA option value"><span class="description">Update or delete a single MLA option value</span><pre>mla_update_option_row()</pre></a></li>
 <li class="nav-header private">» Private</li>
 <li class="method private "><a href="#_compose_custom_field_tab" title="_compose_custom_field_tab :: Compose the Custom Field tab content for the Settings subpage"><span class="description">Compose the Custom Field tab content for the Settings subpage</span><pre>_compose_custom_field_tab()</pre></a></li>
 <li class="method private "><a href="#_compose_debug_tab" title="_compose_debug_tab :: Compose the Debug tab content for the Settings subpage"><span class="description">Compose the Debug tab content for the Settings subpage</span><pre>_compose_debug_tab()</pre></a></li>
@@ -89,7 +91,6 @@ add settings link in the Plugins section entry for MLA.</span><pre>mla_admin_men
 <li class="method private "><a href="#_compose_import_settings" title="_compose_import_settings :: Compose HTML markup for the import settings if any settings files exist"><span class="description">Compose HTML markup for the import settings if any settings files exist</span><pre>_compose_import_settings()</pre></a></li>
 <li class="method private "><a href="#_compose_iptc_exif_tab" title="_compose_iptc_exif_tab :: Compose the IPTC/EXIF tab content for the Settings subpage"><span class="description">Compose the IPTC/EXIF tab content for the Settings subpage</span><pre>_compose_iptc_exif_tab()</pre></a></li>
 <li class="method private "><a href="#_compose_mla_gallery_tab" title="_compose_mla_gallery_tab :: Compose the MLA Gallery tab content for the Settings subpage"><span class="description">Compose the MLA Gallery tab content for the Settings subpage</span><pre>_compose_mla_gallery_tab()</pre></a></li>
-<li class="method private "><a href="#_compose_option_row" title="_compose_option_row :: Compose the table row for a single MLA option"><span class="description">Compose the table row for a single MLA option</span><pre>_compose_option_row()</pre></a></li>
 <li class="method private "><a href="#_compose_optional_upload_tab" title="_compose_optional_upload_tab :: Compose the Optional File Upload MIME Types tab content for the Settings subpage"><span class="description">Compose the Optional File Upload MIME Types tab content for the Settings subpage</span><pre>_compose_optional_upload_tab()</pre></a></li>
 <li class="method private "><a href="#_compose_settings_tabs" title="_compose_settings_tabs :: Compose the navigation tabs for the Settings subpage"><span class="description">Compose the navigation tabs for the Settings subpage</span><pre>_compose_settings_tabs()</pre></a></li>
 <li class="method private "><a href="#_compose_upload_tab" title="_compose_upload_tab :: Compose the File Upload MIME Types tab content for the Settings subpage"><span class="description">Compose the File Upload MIME Types tab content for the Settings subpage</span><pre>_compose_upload_tab()</pre></a></li>
@@ -120,9 +121,8 @@ without saving the settings to the mla_option</span><pre>_process_iptc_exif_taxo
 <li class="method private "><a href="#_save_iptc_exif_settings" title="_save_iptc_exif_settings :: Save IPTC/EXIF settings to the options table"><span class="description">Save IPTC/EXIF settings to the options table</span><pre>_save_iptc_exif_settings()</pre></a></li>
 <li class="method private "><a href="#_save_upload_settings" title="_save_upload_settings :: Save Upload settings to the options table"><span class="description">Save Upload settings to the options table</span><pre>_save_upload_settings()</pre></a></li>
 <li class="method private "><a href="#_save_view_settings" title="_save_view_settings :: Save View settings to the options table"><span class="description">Save View settings to the options table</span><pre>_save_view_settings()</pre></a></li>
-<li class="method private "><a href="#_update_option_row" title="_update_option_row :: Update or delete a single MLA option value"><span class="description">Update or delete a single MLA option value</span><pre>_update_option_row()</pre></a></li>
 <li class="method private "><a href="#_version_upgrade" title="_version_upgrade :: Database and option update check, for installing new versions"><span class="description">Database and option update check, for installing new versions</span><pre>_version_upgrade()</pre></a></li>
-<li class="method private "><a href="#mla_get_options_tablist" title="mla_get_options_tablist :: Localize $mla_option_definitions array"><span class="description">Localize $mla_option_definitions array</span><pre>mla_get_options_tablist()</pre></a></li>
+<li class="method private "><a href="#mla_get_options_tablist" title="mla_get_options_tablist :: Retrieve the list of options tabs or a specific tab value"><span class="description">Retrieve the list of options tabs or a specific tab value</span><pre>mla_get_options_tablist()</pre></a></li>
 <li class="nav-header">
 <i class="icon-custom icon-property"></i> Properties</li>
 <li class="property public "><a href="#%24page_template_array" title="$page_template_array :: Template file for the Settings page(s) and parts"><span class="description">Template file for the Settings page(s) and parts</span><pre>$page_template_array</pre></a></li>
@@ -282,6 +282,39 @@ add settings link in the Plugins section entry for MLA.</h2>
 </tr></table>
 </div></div>
 </div>
+<a name="mla_compose_option_row" id="mla_compose_option_row"></a><div class="element clickable method public mla_compose_option_row" data-toggle="collapse" data-target=".mla_compose_option_row .collapse">
+<h2>Compose the table row for a single MLA option</h2>
+<pre>mla_compose_option_row(string $key, array $value, array $option_table) : string</pre>
+<div class="labels"></div>
+<div class="row collapse"><div class="detail-description">
+<p class="long_description"></p>
+<table class="table table-bordered">
+<tr>
+<th>since</th>
+<td>0.80</td>
+</tr>
+<tr>
+<th>uses</th>
+<td>\global\$page_template_array</td>
+</tr>
+</table>
+<h3>Parameters</h3>
+<div class="subelement argument">
+<h4>$key</h4>
+<code>string</code><p>HTML id/name attribute and option database key (OMIT MLA_OPTION_PREFIX)</p>
+</div>
+<div class="subelement argument">
+<h4>$value</h4>
+<code>array</code><p>Option parameters, e.g., 'type', 'std'</p>
+</div>
+<div class="subelement argument">
+<h4>$option_table</h4>
+<code>array</code><p>Custom option definitions</p></div>
+<h3>Returns</h3>
+<div class="subelement response">
+<code>string</code>HTML markup for the option's table row</div>
+</div></div>
+</div>
 <a name="mla_deactivation_hook" id="mla_deactivation_hook"></a><div class="element clickable method public mla_deactivation_hook" data-toggle="collapse" data-target=".mla_deactivation_hook .collapse">
 <h2>Perform one-time actions on plugin deactivation</h2>
 <pre>mla_deactivation_hook() : void</pre>
@@ -368,7 +401,7 @@ add settings link in the Plugins section entry for MLA.</h2>
 </div></div>
 </div>
 <a name="mla_localize_tablist" id="mla_localize_tablist"></a><div class="element clickable method public mla_localize_tablist" data-toggle="collapse" data-target=".mla_localize_tablist .collapse">
-<h2>Localize $mla_option_definitions array</h2>
+<h2>Localize $mla_tablist array</h2>
 <pre>mla_localize_tablist() : void</pre>
 <div class="labels"></div>
 <div class="row collapse"><div class="detail-description">
@@ -438,6 +471,39 @@ in the "public static" array definition itself.</p></p>
 <h3>Returns</h3>
 <div class="subelement response">
 <code>string</code><code>void</code>New value if this is our option, otherwise nothing</div>
+</div></div>
+</div>
+<a name="mla_update_option_row" id="mla_update_option_row"></a><div class="element clickable method public mla_update_option_row" data-toggle="collapse" data-target=".mla_update_option_row .collapse">
+<h2>Update or delete a single MLA option value</h2>
+<pre>mla_update_option_row(string $key, array $value, array $option_table) : string</pre>
+<div class="labels"></div>
+<div class="row collapse"><div class="detail-description">
+<p class="long_description"></p>
+<table class="table table-bordered">
+<tr>
+<th>since</th>
+<td>0.80</td>
+</tr>
+<tr>
+<th>uses</th>
+<td>\global\$_REQUEST</td>
+</tr>
+</table>
+<h3>Parameters</h3>
+<div class="subelement argument">
+<h4>$key</h4>
+<code>string</code><p>HTML id/name attribute and option database key (OMIT MLA_OPTION_PREFIX)</p>
+</div>
+<div class="subelement argument">
+<h4>$value</h4>
+<code>array</code><p>Option parameters, e.g., 'type', 'std'</p>
+</div>
+<div class="subelement argument">
+<h4>$option_table</h4>
+<code>array</code><p>Custom option definitions</p></div>
+<h3>Returns</h3>
+<div class="subelement response">
+<code>string</code>HTML markup for the option's table row</div>
 </div></div>
 </div>
 <a name="_compose_custom_field_tab" id="_compose_custom_field_tab"></a><div class="element clickable method private _compose_custom_field_tab" data-toggle="collapse" data-target="._compose_custom_field_tab .collapse">
@@ -623,36 +689,6 @@ in the "public static" array definition itself.</p></p>
 <h3>Returns</h3>
 <div class="subelement response">
 <code>array</code>'message' => status/error messages, 'body' => tab content</div>
-</div></div>
-</div>
-<a name="_compose_option_row" id="_compose_option_row"></a><div class="element clickable method private _compose_option_row" data-toggle="collapse" data-target="._compose_option_row .collapse">
-<h2>Compose the table row for a single MLA option</h2>
-<pre>_compose_option_row(string $key, array $value) : string</pre>
-<div class="labels"></div>
-<div class="row collapse"><div class="detail-description">
-<p class="long_description"></p>
-<table class="table table-bordered">
-<tr>
-<th>since</th>
-<td>0.80</td>
-</tr>
-<tr>
-<th>uses</th>
-<td>\global\$page_template_array</td>
-</tr>
-</table>
-<h3>Parameters</h3>
-<div class="subelement argument">
-<h4>$key</h4>
-<code>string</code><p>HTML id/name attribute and option database key (OMIT MLA_OPTION_PREFIX)</p>
-</div>
-<div class="subelement argument">
-<h4>$value</h4>
-<code>array</code><p>Option parameters, e.g., 'type', 'std'</p>
-</div>
-<h3>Returns</h3>
-<div class="subelement response">
-<code>string</code>HTML markup for the option's table row</div>
 </div></div>
 </div>
 <a name="_compose_optional_upload_tab" id="_compose_optional_upload_tab"></a><div class="element clickable method private _compose_optional_upload_tab" data-toggle="collapse" data-target="._compose_optional_upload_tab .collapse">
@@ -1120,36 +1156,6 @@ without saving the settings to the mla_option</h2>
 <code>array</code>Message(s) reflecting the results of the operation</div>
 </div></div>
 </div>
-<a name="_update_option_row" id="_update_option_row"></a><div class="element clickable method private _update_option_row" data-toggle="collapse" data-target="._update_option_row .collapse">
-<h2>Update or delete a single MLA option value</h2>
-<pre>_update_option_row(string $key, array $value) : string</pre>
-<div class="labels"></div>
-<div class="row collapse"><div class="detail-description">
-<p class="long_description"></p>
-<table class="table table-bordered">
-<tr>
-<th>since</th>
-<td>0.80</td>
-</tr>
-<tr>
-<th>uses</th>
-<td>\global\$_REQUEST</td>
-</tr>
-</table>
-<h3>Parameters</h3>
-<div class="subelement argument">
-<h4>$key</h4>
-<code>string</code><p>HTML id/name attribute and option database key (OMIT MLA_OPTION_PREFIX)</p>
-</div>
-<div class="subelement argument">
-<h4>$value</h4>
-<code>array</code><p>Option parameters, e.g., 'type', 'std'</p>
-</div>
-<h3>Returns</h3>
-<div class="subelement response">
-<code>string</code>HTML markup for the option's table row</div>
-</div></div>
-</div>
 <a name="_version_upgrade" id="_version_upgrade"></a><div class="element clickable method private _version_upgrade" data-toggle="collapse" data-target="._version_upgrade .collapse">
 <h2>Database and option update check, for installing new versions</h2>
 <pre>_version_upgrade() : void</pre>
@@ -1163,12 +1169,11 @@ without saving the settings to the mla_option</h2>
 </div></div>
 </div>
 <a name="mla_get_options_tablist" id="mla_get_options_tablist"></a><div class="element clickable method private mla_get_options_tablist" data-toggle="collapse" data-target=".mla_get_options_tablist .collapse">
-<h2>Localize $mla_option_definitions array</h2>
+<h2>Retrieve the list of options tabs or a specific tab value</h2>
 <pre>mla_get_options_tablist(string $tab) : array | false</pre>
 <div class="labels"></div>
 <div class="row collapse"><div class="detail-description">
-<p class="long_description"><p>Localization must be done at runtime, and these calls cannot be placed
-in the "public static" array definition itself.</p></p>
+<p class="long_description"></p>
 <table class="table table-bordered"><tr>
 <th>since</th>
 <td>1.82</td>
@@ -1334,7 +1339,7 @@ because Localization calls cannot be placed in the "public static" array definit
 <div class="row"><footer class="span12">
             Template is built using <a href="http://twitter.github.com/bootstrap/">Twitter Bootstrap 2</a> and icons provided by <a href="http://glyphicons.com/">Glyphicons</a>.<br>
             Documentation is powered by <a href="http://www.phpdoc.org/">phpDocumentor 2.0.0a8</a> and<br>
-            generated on 2015-04-19T11:52:22-07:00.<br></footer></div>
+            generated on 2015-06-06T19:41:36-07:00.<br></footer></div>
 </div>
 </body>
 </html>

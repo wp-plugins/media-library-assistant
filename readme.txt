@@ -174,9 +174,12 @@ All of the MLA source code has been annotated with "DocBlocks", a special type o
 * New: **Polylang support has been added.** See the [Other Notes section](http://wordpress.org/extend/plugins/media-library-assistant/other_notes/ "Click here, then scroll down") section or the Settings/Media Library Assistant Documentation tab for more information.
 * New: **WPML support has been enhanced.** In particular, 1) all taxonomy term assignments are verified/adjusted to be valid for the item's language, 2) taxonomy term assignments are synchronized across all the item's translations, 3) the Media/Assistant submenu table will include a "language management" column showing each item's translation status by language; you can click on an item's "pencil" or "plus" icon to edit an existing translation or duplicate the item in a new language, 4) when "All Languages" is selected, the Media/Assistant submenu table will include a "Language" column showing each item's language, and 5) the Settings/Media Library Assistant "Language" tab lets you select the enhancements you want. See the [Other Notes section](http://wordpress.org/extend/plugins/media-library-assistant/other_notes/ "Click here, then scroll down") section or the Settings/Media Library Assistant Documentation tab for more information.
 * New: **An "Attached" view has been added**, filtering the Media/Assistant submenu table to show only those items having a parent post/page. You can disable the new view, if desired, on the Settings/Media Library Assistant Views tab.
+* New: The Media/Assistant submenu table Quick Edit area now scrolls to the top of the viewport when it is opened.
+* New: Thirteen additional hooks have been added to the "Media Manager Enhancement filters (Hooks)". The `/examples/mla-media-modal-hooks-example.php.txt` file documents all the new additions.
 * New: Two hooks, `mla_list_table_admin_action` and `mla_list_table_custom_admin_action`, have been added.
 * New: For `[mla_gallery]`, when `mla_alt_shortcode=mla_tag_cloud`, parameters such as `mla_link_href` are passed through to be used by [`mla_tag_cloud]`.
 * New: Term-specific pagination has been added to the `/examples/twentytwelve-mla/image.php` file.
+* Fix: The obsolete "Attached" view has been removed from the `/examples/mla-custom-view-example.php.txt` file.
 * Fix: MLA enhanced icons for non-iage items are now properly displayed on the Media/Assistant submenu table.
 * Fix: Taxonomy terms containing "HTML special characters", e.g., ampersands, are now handled correctly for searching and editing.
 * Fix: The `mla_list_table_new_instance` filter is now called for Media/Assistant Set Parent and Quick Edit (Ajax) actions.
@@ -281,7 +284,7 @@ All of the MLA source code has been annotated with "DocBlocks", a special type o
 == Upgrade Notice ==
 
 = 2.10 =
-Enhanced WPML and new Polylang support. "Attached" Media/Assistant table view. Three other enhancements, twelve fixes.
+Enhanced WPML and new Polylang support. "Attached" Media/Assistant table view. Five other enhancements, thirteen fixes.
 
 == Other Notes ==
 
@@ -292,6 +295,113 @@ In this section, scroll down to see highlights from the documentation, including
 == Acknowledgements ==
 
 Media Library Assistant includes many images drawn (with permission) from the [Crystal Project Icons](http://www.softicons.com/free-icons/system-icons/crystal-project-icons-by-everaldo-coelho), created by [Everaldo Coelho](http://www.everaldo.com), founder of [Yellowicon](http://www.yellowicon.com).
+
+<h4>WPML &amp; Polylang Multilingual Support; the MLA Language Tab</h4>
+
+Media Library Assistant provides integrates support for two popular "Multilanguage/ Multilingual/ Internationalization" plugins; [WPML](https://wpml.org/ "WPML - The WordPress Multilingual Plugin") and [Polylang](https://wordpress.org/plugins/polylang/ "Polylang - Making WordPress multilingual"). These plugins let you write posts and pages in multiple languages and make it easy for a visitor to select the language in which to view your site. MLA works with the plugins to make language-specific Media library items easy to create and manage.
+
+MLA detects the presence of either plugin and automatically adds several features that work with them:
+
+* <strong>Language-specific filtering</strong> of the <code>[mla_gallery]</code> and <code>[mla_tag_cloud]</code> shortcodes.
+* <strong>Media/Assistant submenu table enhancements</strong> for displaying and managing item translations.
+* <strong>Term Assignment and Term Synchronization</strong>, to match terms to language-specific items and automatically keep all translations for an item in synch.
+
+<strong>Items, Translations and Terms</strong>
+
+Each Media Library item can have one or more "translations". The item translations are linked and they use the same file in the Media Library. The linkage lets us know that "&iexcl;Hola Mundo!" (Spanish), "Bonjour Monde" (French) and "Hello world!" (English) are all translations of the same post/page. Post/page translation is optional; some posts/pages may not be defined for all languages. The language of the first translation entered for a post/page is noted as the "source language".
+
+Taxonomy terms can also have one or more translations, which are also linked. The linkage lets us know that "Accesorio Categor&iacute;a" (Spanish), "Cat&eacute;gorie Attachement" (French) and "Attachment Category" (English) are all translations of the same term. Term translation is optional; some terms may not be defined for all languages. The language of the first translation entered for a term is noted as the "source language".
+
+When an item is uploaded to the Media Library it is assigned to the current language (note: <strong>avoid uploading items when you are in "All Languages"/"Show all languages" mode</strong>; bad things happen). WPML provides an option to duplicate the new item in all active languages; Polylang does not. MLA makes it easy to add translations to additional languages with the Translations column on the Media/Assistant submenu table. For Polylang, MLA provides Quick Translate and Bulk Translate actions as well.
+
+Assigning language-specific terms to items with multiple translations can be complex. MLA's <strong>Term Assignment</strong> logic assures that every term you assign on any of the editing screens (Media/Add New Bulk Edit, Media/Edit, Media/Assistant Quick Edit and Bulk Edit, Media Manager ATTACHMENT DETAILS pane) will be matched to the language of each item and translation. MLA's <strong>Term Synchronization</strong> logic ensures that changes made in one translation are replicated to all other translations that have an equivalent language-specific term.
+
+<strong>Shortcode Support</strong>
+
+The <code>[mla_gallery]</code> shortcode selects items using the WordPress <code>WP_Query</code> class. Both WPML and Polylang use the hooks provided by <code>WP_Query</code> to return items in the current language. If you use taxonomy parameters in your shortcode you must make sure that the term name, slug or other value is in the same language as the post/page in which it is embedded. This is easily done when the post/page content is translated from one language to another.
+
+The <code>[mla_tag_cloud]</code> shortcode selects terms using the WordPress <code>wpdb</code> class. MLA adds language qualifiers to the database queries that compose the cloud so all terms displated are appropriate for the current language. No special coding or shortcode modification is required.
+
+<strong>Media/Assistant submenu table</strong>
+
+Two columns are added to the table when WPML or Polylang is active:
+
+* <strong>Language</strong> - displays the language of the item. This column is only present when "All languages/Show all languages" is selected in the admin toolbar at the top of the screen.
+* <strong>"Translations"</strong> - displays the translation status of the item in all active languages. The column header displays the flag icon for the language. The column content will have a checkmark icon for the item's language, a pencil icon for an existing translation or a plus icon for a translation that does not exist. You can click any icon to go directly to the Media/Edit Media screen for that translation. If you click a plus icon, a new translation will be created and initialized with content and terms from the current item and you will go to the Media/Edit Media screen for the new translation.
+
+When Polylang is active, several additional features are available:
+
+* <strong>A Language dropdown control</strong> is added to the Quick Edit and Bulk Edit areas. You can change the language of one or more items by selecting a new value in the dropdown and clicking Update. The new language must not have an exising translation; if a translation already exists the change will be ignored.
+* <strong>Translation status links</strong> are added to the Quick Edit area, just below the Language dropdown control. If you click one of the pencil/plus translation status links, a new Quick Edit area will open for the translation you selected. A new translation is created if you click a plus status icon.
+* <strong>A Quick Translate rollover action</strong> can be added to each item (the default option setting is "unchecked"). If you activate this option, when you click the "Quick Translate" rollover action for an item the Quick Translate area opens, showing the Language dropdown control and the translation status links. From there, click "Set Language" to change the language assigned to the item or click one of the pencil/plus translation status links. A new Quick Edit area will open for the translation you selected. A new translation is created if you click a plus status icon.
+* <strong>A Translate action</strong> is added to the Bulk Actions dropdown control. If you click the box next to one or more items, select Translate in the Bulk Actions dropdown and click Apply, the Bulk Translate area will open. The center column contains a checkbox for each active language and an "All Languages" checkbox. Check the box(es) for the languages you want and then click "Bulk Translate". The Media/Assistant submenu table will be refreshed to display only the items you selected in the language(s) you selected. Existing translations will be displayed, and <strong>new translations will be created</strong> as needed so every item has a translation in every language selected.
+
+<strong>Term Management</strong>
+
+Taxonomy terms are language-specific, and making sure the right terms are assigned to all items and translations can be a challenge. Terms can change when an item is updated in any of four ways:
+
+1. <strong>Individual edit</strong> - this is the full-screen Media/Edit Media submenu provided by WordPress. Taxonomies are displayed and updated in meta boxes along the right side of the screen. When "Update" is clicked whatever terms have been selected/entered are assigned to the item; they replace any old assignments.
+1. <strong>Media Manager Modal Window</strong> – this is the popup window provided by WordPress' "Add Media" and "Select Featured Image" features. Taxonomies are displayed and updated in the ATTACHMENT DETAILS meta boxes along the right side of the window. Whatever terms are selected/entered here are assigned to the item; they replace any old assignments.
+1. <strong>Quick Edit</strong> - this is a row-level action on the Media/Assistant screen. When "Update" is clicked whatever terms have been selected/entered are assigned to the item; they replace any old assignments.
+1. <strong>Bulk edit</strong> - this is a bulk action on the Media/Assistant screen, and is also available on the Media/Upload New Media screen. In the Bulk Edit area, terms can be added or removed or all terms can be replaced. The bulk edit can be applied to multiple item translations in one or more languages.
+
+When terms change in any of the above ways there are two tasks that require rules:
+
+1. How should language-specific terms be assigned to items selected? This is "Term Assignment".1. How should terms assigned to one translation of an item be used to update other translations of the same item? This is "Term Synchronization".
+
+<strong>Term Assignment</strong>
+
+When a specific language is selected only the item translations for that language are shown, and only the terms for that language are displayed (except for a Polylang bug that shows all languages in the "auto-complete" list for flat taxonomies). When "All Languages"/"Show all languages" is selected the terms for all languages are displayed even if they cannot be assigned to an item. For example, a Spanish term may appear in the list be cannot be assigned to an English item translations.
+
+For individual edit and quick edit updates the rule is simple:
+
+1. For all terms selected/entered, find the equivalent term in the language of the item translation. Assign the equivalent (language-specific) term if one exists. If no equivalent term exists, ignore the selected/entered term. Assign all equivalent terms to the item translation, replacing any previous terms.
+
+For bulk edit updates the rule depends on which action (add, remove, replace) has been selected. Each of the item translations in the bulk edit list is updated by these rules:
+
+1. <strong>Add</strong>: For all terms selected/entered, find the equivalent term in the language of the item translation. Assign the equivalent (language-specific) term if one exists. If the equivalent term exists, add it to the item translation.
+1. <strong>Remove</strong>: For all terms selected/entered, find the equivalent term in the language of the item translation. Assign the equivalent (language-specific) term if one exists. If the equivalent term exists, remove it from the item translation.
+1. <strong>Replace</strong>: This is the tricky case. What should happen to terms already assigned to an item translation that have not been selected/entered for the update? In particular, what about terms that do not have translations to all languages? Should a "French-only" term be preserved?
+
+The "<strong>Replace</strong>" answer is the same as the individual/quick edit answer. If the term is not selected/entered for the update it is discarded along with the other old assignments. After all, in "All Languages"/"Show all languages" mode the "French-only" term would have been in the list and could be selected if desired.
+
+<strong>Term Synchronization</strong>
+
+If you edit an item translation, for example to add or remove a term assignment, what should happen to the other translations of the same item? Term synchroniztion will add or remove the equivalent term in the other item translations if the equivalent term exists.
+
+What about "untranslated" terms that do not have translations to all languages? Should an existing "French-only" (untranslated) term be preserved? It is, since there is no way to indicate that it should be removed.
+
+Individual and quick edits are "replace" updates, and "replace" is an option for bulk edits as well. For term synchronization to preserve untranslated terms "replace" updates must be converted to separate "add" and "remove" updates that include only the changes made to the original item translation. For example, if these terms are defined:
+
+English
+
+- Common-term-1-eng
+- Common-term-2-eng
+- English-only-term
+
+Spanish
+
+- Common-term-1-esp
+- Common-term-2-esp
+- Spanish-only-term
+
+And these term assignments exist:
+
+English Translation
+
+- Common-term-1-eng
+- English-only-term
+
+Spanish Translation
+
+- Common-term-1-esp
+- Spanish-only-term
+
+Then synchronization handles common editing actions as follows:
+
+1. If you edit the English Translation and add "Common-term-2-eng", synchronization will add "Common-term-2-esp" to the Spanish Translation.
+1. If you edit the English Translation and remove "Common-term-1-eng", synchronization will remove "Common-term-1-esp" from the Spanish Translation.
+1. If you edit the English Translation and remove "English-only-term", nothing will happen to the Spanish Translation.
 
 <h4>Thumbnail Substitution Support, mla_viewer</h4>
 
@@ -361,4 +471,4 @@ Seven "format" values help you reformat fields or encode them for use in HTML at
 * <strong>,url</strong> - If you use a substitution parameter in an HTML <code>href</code> attribute such as a hyperlink (<code>a</code>) or <code>img</code> tag you can add the ",url" option to convert special characters such as quotes, spaces and ampersands to their URL-encoded equivalents.
 * <strong>,fraction(f,s)</strong> - Many of the EXIF metadata fields are expressed as "rational" quantities, i.e., separate numerator and denominator values separated by a slash. The "fraction" format converts these to a more useful format.
 * <strong>,timestamp(f)</strong> - Many date and time values are stored as a UNIX timestamp. The ",timestamp" format converts a timestamp into a variety of date and/or time string formats, using the PHP date() function.
-* <strong>,date(f)</strong> - Many EXIF date and time values such as DateTimeOriginal and DateTimeDigitized are stored as strings with a format of "YYYY:MM:DD HH:MM:SS". You can format these valkues by using the ",date" format.
+* <strong>,date(f)</strong> - Many EXIF date and time values such as DateTimeOriginal and DateTimeDigitized are stored as strings with a format of "YYYY:MM:DD HH:MM:SS". You can format these values by using the ",date" format.

@@ -1072,7 +1072,7 @@ this.listenTo( this.controller, 'all', this.toolbarEvent );
 				query[ taxonomy ] = termList;
 
 				wp.media.post( mlaModal.settings.ajaxUpdateCompatAction, query ).done( function( results ) {
-						var taxonomy, list;
+					var tagsDiv, taxonomy, list;
 
 					for ( taxonomy in results ) {
 						if ( 'object' === typeof( results[ taxonomy][ 'object-terms' ] ) ) {
@@ -1086,6 +1086,9 @@ this.listenTo( this.controller, 'all', this.toolbarEvent );
 						for ( list in results[ taxonomy ] ) {
 							$( "#" + list, tableData ).replaceWith( results[ taxonomy ][ list ] );
 						}
+
+						tagsDiv = $( '#mla-taxonomy-' + taxonomy, tableData );
+						mlaModal.tagBox.quickClicks( tagsDiv );
 					}
 
 					$( tableData ).css( 'opacity', '1.0' );

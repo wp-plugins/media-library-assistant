@@ -309,7 +309,7 @@ class MLATaxQueryExample {
 
 				if ( $include_children ) {
 					$args = array( 'child_of' => $term->term_id, 'hide_empty' => false );
-					$children = get_terms( 'attachment_category', $args );
+					$children = get_terms( $taxonomy, $args );
 					foreach( $children as $child ) {
 						$ttids[] = $child->term_taxonomy_id;
 					}

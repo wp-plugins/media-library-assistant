@@ -64,12 +64,13 @@
 <li class="method public "><a href="#mla_admin_init_action" title="mla_admin_init_action :: Load the plugin's Ajax handler or process Edit Media update actions"><span class="description">Load the plugin's Ajax handler or process Edit Media update actions</span><pre>mla_admin_init_action()</pre></a></li>
 <li class="method public "><a href="#mla_admin_menu_action" title="mla_admin_menu_action :: Add the submenu pages"><span class="description">Add the submenu pages</span><pre>mla_admin_menu_action()</pre></a></li>
 <li class="method public "><a href="#mla_authors_dropdown" title="mla_authors_dropdown :: Get the edit Authors dropdown box, if user has suitable permissions"><span class="description">Get the edit Authors dropdown box, if user has suitable permissions</span><pre>mla_authors_dropdown()</pre></a></li>
-<li class="method public "><a href="#mla_edit_tax_redirect" title="mla_edit_tax_redirect :: Redirect to the Edit Tags/Categories page"><span class="description">Redirect to the Edit Tags/Categories page</span><pre>mla_edit_tax_redirect()</pre></a></li>
 <li class="method public "><a href="#mla_find_posts_ajax_action" title='mla_find_posts_ajax_action :: Ajax handler to fetch candidates for the "Set Parent" popup window'><span class="description">Ajax handler to fetch candidates for the "Set Parent" popup window</span><pre>mla_find_posts_ajax_action()</pre></a></li>
 <li class="method public "><a href="#mla_inline_edit_ajax_action" title="mla_inline_edit_ajax_action :: Ajax handler for inline editing"><span class="description">Ajax handler for inline editing</span><pre>mla_inline_edit_ajax_action()</pre></a></li>
 <li class="method public "><a href="#mla_load_media_action" title="mla_load_media_action :: Redirect to Media/Assistant if Media/Library is hidden"><span class="description">Redirect to Media/Assistant if Media/Library is hidden</span><pre>mla_load_media_action()</pre></a></li>
+<li class="method public "><a href="#mla_name_conflict_reporting_action" title="mla_name_conflict_reporting_action :: Displays name conflict error messages at the top of the Dashboard"><span class="description">Displays name conflict error messages at the top of the Dashboard</span><pre>mla_name_conflict_reporting_action()</pre></a></li>
 <li class="method public "><a href="#mla_parent_file_filter" title="mla_parent_file_filter :: Cleanup menus for Edit Tags/Categories page"><span class="description">Cleanup menus for Edit Tags/Categories page</span><pre>mla_parent_file_filter()</pre></a></li>
 <li class="method public "><a href="#mla_plugins_loaded_action" title="mla_plugins_loaded_action :: Load a plugin text domain"><span class="description">Load a plugin text domain</span><pre>mla_plugins_loaded_action()</pre></a></li>
+<li class="method public "><a href="#mla_prepare_bulk_edits" title="mla_prepare_bulk_edits :: Prepare Bulk Edit field-level updates"><span class="description">Prepare Bulk Edit field-level updates</span><pre>mla_prepare_bulk_edits()</pre></a></li>
 <li class="method public "><a href="#mla_process_bulk_action" title="mla_process_bulk_action :: Process bulk action for one or more attachments"><span class="description">Process bulk action for one or more attachments</span><pre>mla_process_bulk_action()</pre></a></li>
 <li class="method public "><a href="#mla_render_admin_page" title='mla_render_admin_page :: Render the "Assistant" subpage in the Media section, using the list_table package'><span class="description">Render the "Assistant" subpage in the Media section, using the list_table package</span><pre>mla_render_admin_page()</pre></a></li>
 <li class="method public "><a href="#mla_screen_options_show_screen_filter" title="mla_screen_options_show_screen_filter :: Only show screen options on the table-list screen"><span class="description">Only show screen options on the table-list screen</span><pre>mla_screen_options_show_screen_filter()</pre></a></li>
@@ -82,9 +83,6 @@
 <li class="method private "><a href="#_compose_post_type_select" title="_compose_post_type_select :: Compose a Post Type Options list with current selection"><span class="description">Compose a Post Type Options list with current selection</span><pre>_compose_post_type_select()</pre></a></li>
 <li class="method private "><a href="#_current_bulk_action" title="_current_bulk_action :: Get the current action selected from the bulk actions dropdown"><span class="description">Get the current action selected from the bulk actions dropdown</span><pre>_current_bulk_action()</pre></a></li>
 <li class="method private "><a href="#_delete_single_item" title="_delete_single_item :: Delete a single item permanently"><span class="description">Delete a single item permanently</span><pre>_delete_single_item()</pre></a></li>
-<li class="method private "><a href="#_display_single_item" title="_display_single_item :: Display a single item sub page; prepare the form to
-change the meta data for a single attachment."><span class="description">Display a single item sub page; prepare the form to
-change the meta data for a single attachment.</span><pre>_display_single_item()</pre></a></li>
 <li class="method private "><a href="#_process_bulk_value" title="_process_bulk_value :: Process bulk edit area fields, which may contain a Content Template"><span class="description">Process bulk edit area fields, which may contain a Content Template</span><pre>_process_bulk_value()</pre></a></li>
 <li class="method private "><a href="#_process_mla_download_file" title="_process_mla_download_file :: Process secure file download"><span class="description">Process secure file download</span><pre>_process_mla_download_file()</pre></a></li>
 <li class="method private "><a href="#_restore_single_item" title="_restore_single_item :: Restore a single item from the Trash"><span class="description">Restore a single item from the Trash</span><pre>_restore_single_item()</pre></a></li>
@@ -92,6 +90,7 @@ change the meta data for a single attachment.</span><pre>_display_single_item()<
 <li class="nav-header">
 <i class="icon-custom icon-property"></i> Properties</li>
 <li class="nav-header private">» Private</li>
+<li class="property private "><a href="#%24mla_language_support_error_messages" title="$mla_language_support_error_messages :: Accumulates error messages from name conflict tests"><span class="description">Accumulates error messages from name conflict tests</span><pre>$mla_language_support_error_messages</pre></a></li>
 <li class="property private "><a href="#%24page_hooks" title="$page_hooks :: Holds screen ids to match help text to corresponding screen"><span class="description">Holds screen ids to match help text to corresponding screen</span><pre>$page_hooks</pre></a></li>
 <li class="nav-header">
 <i class="icon-custom icon-constant"></i> Constants</li>
@@ -99,13 +98,11 @@ change the meta data for a single attachment.</span><pre>_display_single_item()<
 <li class="constant  "><a href="#CURRENT_MLA_VERSION" title="CURRENT_MLA_VERSION :: Current version number"><span class="description">Current version number</span><pre>CURRENT_MLA_VERSION</pre></a></li>
 <li class="constant  "><a href="#JAVASCRIPT_INLINE_EDIT_OBJECT" title="JAVASCRIPT_INLINE_EDIT_OBJECT :: Object name for localizing JavaScript - MLA List Table"><span class="description">Object name for localizing JavaScript - MLA List Table</span><pre>JAVASCRIPT_INLINE_EDIT_OBJECT</pre></a></li>
 <li class="constant  "><a href="#JAVASCRIPT_INLINE_EDIT_SLUG" title="JAVASCRIPT_INLINE_EDIT_SLUG :: Slug for localizing and enqueueing JavaScript - MLA List Table"><span class="description">Slug for localizing and enqueueing JavaScript - MLA List Table</span><pre>JAVASCRIPT_INLINE_EDIT_SLUG</pre></a></li>
-<li class="constant  "><a href="#JAVASCRIPT_SINGLE_EDIT_OBJECT" title="JAVASCRIPT_SINGLE_EDIT_OBJECT :: Object name for localizing JavaScript - edit single item page"><span class="description">Object name for localizing JavaScript - edit single item page</span><pre>JAVASCRIPT_SINGLE_EDIT_OBJECT</pre></a></li>
-<li class="constant  "><a href="#JAVASCRIPT_SINGLE_EDIT_SLUG" title="JAVASCRIPT_SINGLE_EDIT_SLUG :: Slug for localizing and enqueueing JavaScript - edit single item page"><span class="description">Slug for localizing and enqueueing JavaScript - edit single item page</span><pre>JAVASCRIPT_SINGLE_EDIT_SLUG</pre></a></li>
 <li class="constant  "><a href="#MLA_ADMIN_NONCE" title="MLA_ADMIN_NONCE :: Action name; uniquely identifies the nonce"><span class="description">Action name; uniquely identifies the nonce</span><pre>MLA_ADMIN_NONCE</pre></a></li>
 <li class="constant  "><a href="#MLA_ADMIN_SET_PARENT" title="MLA_ADMIN_SET_PARENT :: mla_admin_action value for setting an item's parent object"><span class="description">mla_admin_action value for setting an item's parent object</span><pre>MLA_ADMIN_SET_PARENT</pre></a></li>
 <li class="constant  "><a href="#MLA_ADMIN_SINGLE_CUSTOM_FIELD_MAP" title="MLA_ADMIN_SINGLE_CUSTOM_FIELD_MAP :: mla_admin_action value for mapping Custom Field metadata"><span class="description">mla_admin_action value for mapping Custom Field metadata</span><pre>MLA_ADMIN_SINGLE_CUSTOM_FIELD_MAP</pre></a></li>
 <li class="constant  "><a href="#MLA_ADMIN_SINGLE_DELETE" title="MLA_ADMIN_SINGLE_DELETE :: mla_admin_action value for permanently deleting a single item"><span class="description">mla_admin_action value for permanently deleting a single item</span><pre>MLA_ADMIN_SINGLE_DELETE</pre></a></li>
-<li class="constant  "><a href="#MLA_ADMIN_SINGLE_EDIT_DISPLAY" title="MLA_ADMIN_SINGLE_EDIT_DISPLAY :: mla_admin_action value for displaying a single item"><span class="description">mla_admin_action value for displaying a single item</span><pre>MLA_ADMIN_SINGLE_EDIT_DISPLAY</pre></a></li>
+<li class="constant  "><a href="#MLA_ADMIN_SINGLE_EDIT_DISPLAY" title="MLA_ADMIN_SINGLE_EDIT_DISPLAY :: mla_admin_action value to display a single item for editing"><span class="description">mla_admin_action value to display a single item for editing</span><pre>MLA_ADMIN_SINGLE_EDIT_DISPLAY</pre></a></li>
 <li class="constant  "><a href="#MLA_ADMIN_SINGLE_EDIT_UPDATE" title="MLA_ADMIN_SINGLE_EDIT_UPDATE :: mla_admin_action value for updating a single item"><span class="description">mla_admin_action value for updating a single item</span><pre>MLA_ADMIN_SINGLE_EDIT_UPDATE</pre></a></li>
 <li class="constant  "><a href="#MLA_ADMIN_SINGLE_MAP" title="MLA_ADMIN_SINGLE_MAP :: mla_admin_action value for mapping IPTC/EXIF metadata"><span class="description">mla_admin_action value for mapping IPTC/EXIF metadata</span><pre>MLA_ADMIN_SINGLE_MAP</pre></a></li>
 <li class="constant  "><a href="#MLA_ADMIN_SINGLE_RESTORE" title="MLA_ADMIN_SINGLE_RESTORE :: mla_admin_action value for restoring a single item from the trash"><span class="description">mla_admin_action value for restoring a single item from the trash</span><pre>MLA_ADMIN_SINGLE_RESTORE</pre></a></li>
@@ -215,11 +212,7 @@ set up the Assistant submenu.</p></p>
 <div class="row collapse"><div class="detail-description">
 <p class="long_description"><p>Add a submenu page in the "Media" section,
 add settings page in the "Settings" section.
-add settings link in the Plugins section entry for MLA.</p>
-
-<p>For WordPress versions before 3.5,
-add submenu page(s) for attachment taxonomies,
-add filter to clean up taxonomy submenu labels.</p></p>
+add settings link in the Plugins section entry for MLA.</p></p>
 <table class="table table-bordered"><tr>
 <th>since</th>
 <td>0.1</td>
@@ -251,20 +244,6 @@ add filter to clean up taxonomy submenu labels.</p></p>
 <h3>Returns</h3>
 <div class="subelement response">
 <code>string</code><code>false</code>HTML markup for the dropdown field or False</div>
-</div></div>
-</div>
-<a name="mla_edit_tax_redirect" id="mla_edit_tax_redirect"></a><div class="element clickable method public mla_edit_tax_redirect" data-toggle="collapse" data-target=".mla_edit_tax_redirect .collapse">
-<h2>Redirect to the Edit Tags/Categories page</h2>
-<pre>mla_edit_tax_redirect() : void</pre>
-<div class="labels"></div>
-<div class="row collapse"><div class="detail-description">
-<p class="long_description"><p>The custom taxonomy add/edit submenu entries go to "upload.php" by default.
-This filter is the only way to redirect them to the correct WordPress page.
-The filter is not required for WordPress 3.5 and later.</p></p>
-<table class="table table-bordered"><tr>
-<th>since</th>
-<td>0.1</td>
-</tr></table>
 </div></div>
 </div>
 <a name="mla_find_posts_ajax_action" id="mla_find_posts_ajax_action"></a><div class="element clickable method public mla_find_posts_ajax_action" data-toggle="collapse" data-target=".mla_find_posts_ajax_action .collapse">
@@ -304,17 +283,24 @@ Adds filters for post type and pagination.</p></p>
 </tr></table>
 </div></div>
 </div>
+<a name="mla_name_conflict_reporting_action" id="mla_name_conflict_reporting_action"></a><div class="element clickable method public mla_name_conflict_reporting_action" data-toggle="collapse" data-target=".mla_name_conflict_reporting_action .collapse">
+<h2>Displays name conflict error messages at the top of the Dashboard</h2>
+<pre>mla_name_conflict_reporting_action() </pre>
+<div class="labels"></div>
+<div class="row collapse"><div class="detail-description">
+<p class="long_description"></p>
+<table class="table table-bordered"><tr>
+<th>since</th>
+<td>2.11</td>
+</tr></table>
+</div></div>
+</div>
 <a name="mla_parent_file_filter" id="mla_parent_file_filter"></a><div class="element clickable method public mla_parent_file_filter" data-toggle="collapse" data-target=".mla_parent_file_filter .collapse">
 <h2>Cleanup menus for Edit Tags/Categories page</h2>
 <pre>mla_parent_file_filter(array $parent_file) : string</pre>
 <div class="labels"></div>
 <div class="row collapse"><div class="detail-description">
-<p class="long_description"><p>For WordPress before 3.5, the submenu entries for custom taxonomies
-under the "Media" menu are not set up correctly by WordPress, so this
-function cleans them up, redirecting the request to the right WordPress
-page for editing/adding taxonomy terms.
-For WordPress 3.5 and later, the function fixes the submenu bolding when
-going to the Edit Media screen.</p></p>
+<p class="long_description"><p>Fixes the submenu bolding when going to the Edit Media screen.</p></p>
 <table class="table table-bordered"><tr>
 <th>since</th>
 <td>0.1</td>
@@ -341,6 +327,32 @@ Defined as public because it's an action.</p></p>
 <th>since</th>
 <td>1.60</td>
 </tr></table>
+</div></div>
+</div>
+<a name="mla_prepare_bulk_edits" id="mla_prepare_bulk_edits"></a><div class="element clickable method public mla_prepare_bulk_edits" data-toggle="collapse" data-target=".mla_prepare_bulk_edits .collapse">
+<h2>Prepare Bulk Edit field-level updates</h2>
+<pre>mla_prepare_bulk_edits(integer $post_id, array $request, array $custom_field_map) : array</pre>
+<div class="labels"></div>
+<div class="row collapse"><div class="detail-description">
+<p class="long_description"></p>
+<table class="table table-bordered"><tr>
+<th>since</th>
+<td>2.11</td>
+</tr></table>
+<h3>Parameters</h3>
+<div class="subelement argument">
+<h4>$post_id</h4>
+<code>integer</code><p>Current post ID</p></div>
+<div class="subelement argument">
+<h4>$request</h4>
+<code>array</code><p>Form elements, e.g., from $_REQUEST</p>
+</div>
+<div class="subelement argument">
+<h4>$custom_field_map</h4>
+<code>array</code><p>Form id to field name mapping</p></div>
+<h3>Returns</h3>
+<div class="subelement response">
+<code>array</code>Non-empty form elements</div>
 </div></div>
 </div>
 <a name="mla_process_bulk_action" id="mla_process_bulk_action"></a><div class="element clickable method public mla_process_bulk_action" data-toggle="collapse" data-target=".mla_process_bulk_action .collapse">
@@ -552,26 +564,6 @@ Defined as public because it's an action.</p></p>
 <code>array</code>success/failure message and NULL content</div>
 </div></div>
 </div>
-<a name="_display_single_item" id="_display_single_item"></a><div class="element clickable method private _display_single_item" data-toggle="collapse" data-target="._display_single_item .collapse">
-<h2>Display a single item sub page; prepare the form to
-change the meta data for a single attachment.</h2>
-<pre>_display_single_item(integer $post_id) : array</pre>
-<div class="labels"></div>
-<div class="row collapse"><div class="detail-description">
-<p class="long_description"><p>This function is not used in WordPress 3.5 and later.</p></p>
-<table class="table table-bordered"><tr>
-<th>since</th>
-<td>0.1</td>
-</tr></table>
-<h3>Parameters</h3>
-<div class="subelement argument">
-<h4>$post_id</h4>
-<code>integer</code><p>The WordPress Post ID of the attachment item</p></div>
-<h3>Returns</h3>
-<div class="subelement response">
-<code>array</code>message and/or HTML content</div>
-</div></div>
-</div>
 <a name="_process_bulk_value" id="_process_bulk_value"></a><div class="element clickable method private _process_bulk_value" data-toggle="collapse" data-target="._process_bulk_value .collapse">
 <h2>Process bulk edit area fields, which may contain a Content Template</h2>
 <pre>_process_bulk_value(integer $post_id, string $bulk_value) : string</pre>
@@ -646,6 +638,18 @@ change the meta data for a single attachment.</h2>
 </div>
 <h3>
 <i class="icon-custom icon-property"></i> Properties</h3>
+<a name="%24mla_language_support_error_messages" id="$mla_language_support_error_messages"> </a><div class="element clickable property private $mla_language_support_error_messages" data-toggle="collapse" data-target=".$mla_language_support_error_messages .collapse">
+<h2>Accumulates error messages from name conflict tests</h2>
+<pre>$mla_language_support_error_messages </pre>
+<div class="labels"></div>
+<div class="row collapse"><div class="detail-description">
+<p class="long_description"></p>
+<table class="table table-bordered"><tr>
+<th>since</th>
+<td>1.14</td>
+</tr></table>
+</div></div>
+</div>
 <a name="%24page_hooks" id="$page_hooks"> </a><div class="element clickable property private $page_hooks" data-toggle="collapse" data-target=".$page_hooks .collapse">
 <h2>Holds screen ids to match help text to corresponding screen</h2>
 <pre>$page_hooks : array</pre>
@@ -708,30 +712,6 @@ change the meta data for a single attachment.</h2>
 </tr></table>
 </div></div>
 </div>
-<a name="JAVASCRIPT_SINGLE_EDIT_OBJECT" id="JAVASCRIPT_SINGLE_EDIT_OBJECT"> </a><div class="element clickable constant  JAVASCRIPT_SINGLE_EDIT_OBJECT" data-toggle="collapse" data-target=".JAVASCRIPT_SINGLE_EDIT_OBJECT .collapse">
-<h2>Object name for localizing JavaScript - edit single item page</h2>
-<pre>JAVASCRIPT_SINGLE_EDIT_OBJECT : string</pre>
-<div class="labels"></div>
-<div class="row collapse"><div class="detail-description">
-<p class="long_description"></p>
-<table class="table table-bordered"><tr>
-<th>since</th>
-<td>0.1</td>
-</tr></table>
-</div></div>
-</div>
-<a name="JAVASCRIPT_SINGLE_EDIT_SLUG" id="JAVASCRIPT_SINGLE_EDIT_SLUG"> </a><div class="element clickable constant  JAVASCRIPT_SINGLE_EDIT_SLUG" data-toggle="collapse" data-target=".JAVASCRIPT_SINGLE_EDIT_SLUG .collapse">
-<h2>Slug for localizing and enqueueing JavaScript - edit single item page</h2>
-<pre>JAVASCRIPT_SINGLE_EDIT_SLUG : string</pre>
-<div class="labels"></div>
-<div class="row collapse"><div class="detail-description">
-<p class="long_description"></p>
-<table class="table table-bordered"><tr>
-<th>since</th>
-<td>0.1</td>
-</tr></table>
-</div></div>
-</div>
 <a name="MLA_ADMIN_NONCE" id="MLA_ADMIN_NONCE"> </a><div class="element clickable constant  MLA_ADMIN_NONCE" data-toggle="collapse" data-target=".MLA_ADMIN_NONCE .collapse">
 <h2>Action name; uniquely identifies the nonce</h2>
 <pre>MLA_ADMIN_NONCE : string</pre>
@@ -781,11 +761,11 @@ change the meta data for a single attachment.</h2>
 </div></div>
 </div>
 <a name="MLA_ADMIN_SINGLE_EDIT_DISPLAY" id="MLA_ADMIN_SINGLE_EDIT_DISPLAY"> </a><div class="element clickable constant  MLA_ADMIN_SINGLE_EDIT_DISPLAY" data-toggle="collapse" data-target=".MLA_ADMIN_SINGLE_EDIT_DISPLAY .collapse">
-<h2>mla_admin_action value for displaying a single item</h2>
+<h2>mla_admin_action value to display a single item for editing</h2>
 <pre>MLA_ADMIN_SINGLE_EDIT_DISPLAY : string</pre>
 <div class="labels"></div>
 <div class="row collapse"><div class="detail-description">
-<p class="long_description"></p>
+<p class="long_description"><p>Used by class-mla-view-list-table.php and class-mla-upload-list-table.php</p></p>
 <table class="table table-bordered"><tr>
 <th>since</th>
 <td>0.1</td>
@@ -797,7 +777,7 @@ change the meta data for a single attachment.</h2>
 <pre>MLA_ADMIN_SINGLE_EDIT_UPDATE : string</pre>
 <div class="labels"></div>
 <div class="row collapse"><div class="detail-description">
-<p class="long_description"></p>
+<p class="long_description"><p>Used by class-mla-view-list-table.php and class-mla-upload-list-table.php</p></p>
 <table class="table table-bordered"><tr>
 <th>since</th>
 <td>0.1</td>
@@ -883,7 +863,7 @@ change the meta data for a single attachment.</h2>
 <div class="row"><footer class="span12">
             Template is built using <a href="http://twitter.github.com/bootstrap/">Twitter Bootstrap 2</a> and icons provided by <a href="http://glyphicons.com/">Glyphicons</a>.<br>
             Documentation is powered by <a href="http://www.phpdoc.org/">phpDocumentor 2.0.0a8</a> and<br>
-            generated on 2015-04-19T11:52:22-07:00.<br></footer></div>
+            generated on 2015-06-06T19:41:35-07:00.<br></footer></div>
 </div>
 </body>
 </html>

@@ -138,6 +138,7 @@
 </ul>
 <li><a href="#mla_mapping_hooks"><strong>MLA Custom Field and IPTC/EXIF Mapping Actions and Filters (Hooks)</strong></a></li>
 <li><a href="#mla_debug_tab"><strong>MLA Debug Tab</strong></a></li>
+<li><a href="#mla_language_tab"><strong>WPML &amp; Polylang Multilingual Support; the MLA Language Tab</strong></a></li>
 <li><a href="#mla_list_table_hooks"><strong>Media/Assistant Submenu Actions and Filters (Hooks)</strong></a></li>
 </ul>
 <h3>Translating/Localizing the plugin</h3>
@@ -2005,33 +2006,33 @@ WordPress provides functions that generate links to the "<em>next/previous image
 The next or previous link returned is drawn from the attachment-specific "link" substitution parameter for the next or previous gallery item. This means you can use all of the <a href="#gallery_display_content">Gallery Display Content</a> parameters to control each element of the link. For example, you can code <code>mla_rollover_text='&amp;larr; Previous'</code> to replace the thumbnail image with a generic text link to the "previous_link" item. You can also add HTML arguments to the link to pass values along from one page to the next.
 </p>
 <p>
-Expanding the example, you can select images using the MLA Att. Tag taxonomy and have each gallery item link to a page (<em><strong>page_id=893</strong></em> in this case) that displays a larger version of the single image:
+Here is a more complete example of two standard WordPress pages, "Sample Gallery" and "Single Sample", that work together. The "Sample Gallery" page displays a gallery of all items assigned to the Att.Tags "sample" term. The "Single Sample" page displays the full-size image for a "sample" item and has links to move back and forth through all the items assigned to the term. The Sample Gallery page contains:
 </p>
 <code>
-[mla_gallery attachment_tag="sample" mla_caption="{+title+}" mla_link_href="{+site_url+}?page_id=893&amp;current_id={+attachment_ID+}&amp;attachment_tag={+query:attachment_tag+}"]
+[mla_gallery attachment_tag="sample" mla_caption="{+title+}" mla_link_href="/single-sample/?current_id={+attachment_ID+}&amp;attachment_tag={+query:attachment_tag+}"]
 </code>
 <p>
-Note the use of <code>attachment_tag={+query:attachment_tag+}</code> in the href to pass the tag value from the gallery page to the single-image page. The single-image page would have three <code>[mla+gallery]</code> shortcodes; one to display the image and two for the "Previous Sample" and "Next Sample" links:
+In this example <code>/single-sample/</code>, the URL portion of the link, is the "Permalink" WordPress generates from the page title. If your Permalink structure is different you will have to adjust this element. Note the use of <code>attachment_tag={+query:attachment_tag+}</code> in the href to pass the tag value from the gallery page to the Single Sample page. The Single Sample page has three <code>[mla_gallery]</code> shortcodes; one to display the image and two for the "Previous Sample" and "Next Sample" links:
 </p>
 <code>
 [mla_gallery columns=1 ids="{+request:current_id+}" size=medium]
 <br />&nbsp;<br>
 &lt;div style="clear: both; float: left"&gt;<br />
-[mla_gallery mla_output="previous_link,wrap" mla_link_text='&amp;larr; Previous Sample' attachment_tag="{+request:attachment_tag+}" id="{+request:current_id+}" mla_caption="{+title+}" mla_link_href="{+site_url+}?page_id=893&amp;current_id={+attachment_ID+}&amp;attachment_tag={+query:attachment_tag+}"]<br>
+[mla_gallery mla_output="previous_link,wrap" mla_link_text='&amp;larr; Previous Sample' attachment_tag="{+request:attachment_tag+}" id="{+request:current_id+}" mla_rollover_text="{+title+}" mla_link_href="{+page_url+}?current_id={+attachment_ID+}&amp;attachment_tag={+query:attachment_tag+}"]<br>
 &lt;/div&gt;<br>
 &lt;div style="float: right"&gt;<br>
-[mla_gallery mla_output="next_link,wrap" mla_link_text='Next Sample &amp;rarr;' attachment_tag="{+request:attachment_tag+}" id="{+request:current_id+}" mla_caption="{+title+}" mla_link_href="{+site_url+}?page_id=893&amp;current_id={+attachment_ID+}&amp;attachment_tag={+query:attachment_tag+}"]<br>
+[mla_gallery mla_output="next_link,wrap" mla_link_text='Next Sample &amp;rarr;' attachment_tag="{+request:attachment_tag+}" id="{+request:current_id+}" mla_rollover_text="{+title+}" mla_link_href="{+page_url+}?current_id={+attachment_ID+}&amp;attachment_tag={+query:attachment_tag+}"]<br>
 &lt;/div&gt;
 </code>
 <p>
 Consider the following points:
 </p>
 <ol>
-<li>The "ids" parameter in the first <code>[mla_gallery]</code> takes the "current_id" value (for the single image to be displayed) from the HTML $_REQUEST array. 
+<li>The "ids" parameter in the first <code>[mla_gallery]</code> takes the "current_id" value (for the single image to be displayed) from the link's query arguments (in the PHP $_REQUEST array). This is passed from the Sample Gallery page and updated in the previous/next link.
 </li>
-<li>The "id" parameters in the second and third <code>[mla_gallery]</code> take the "current_id" value from the HTML $_REQUEST array. In these "galleries" the "current_id" is the item from which "previous" and "next" are calculated.
+<li>The "id" parameters in the second and third <code>[mla_gallery]</code> take the "current_id" value from the $_REQUEST array. In these "galleries" the "current_id" is the item from which "previous" and "next" are calculated.
 </li>
-<li>The "attachment_tag" parameters in the second and third <code>[mla_gallery]</code> take the their value from the HTML $_REQUEST array as well. The Att. Tag value is used to reconstruct the original gallery for the previous/next calculation.
+<li>The "attachment_tag" parameters in the second and third <code>[mla_gallery]</code> take the their value from the $_REQUEST array as well. The Att. Tag value is used to reconstruct the original gallery for the previous/next calculation, keeping the navigation within the bounds of the selected term.
 </li>
 </ol>
 <p>
@@ -4874,7 +4875,7 @@ If you are having trouble with some part of Media Library Assistant it may be he
 </p>
 <p>
 To add the Debug tab to your Settings/Media Library Assistant submenu you must add an entry to your <code>wp-config.php</code> file:
-<ul>
+<ul style="margin-left: 20px">
 <li><code>define( 'MLA_DEBUG_LEVEL', 1 );</code></li>
 </ul>
 <p>
@@ -4883,13 +4884,151 @@ Once that line is added to the <code>wp-config.php</code> file the "Debug" tab w
 <p>
 The Debug Options screen begins with an "Error Log" title, followed by the PHP error reporting level in parentheses. Below the title is a text box with the current content of the PHP error log file. Below the text box are three action buttons:
 </p>
-<ul>
+<ul style="margin-left: 20px">
 <li><strong>Download</strong> - click this button to download a copy of the error log to your system.</li>
 <li><strong>Reset</strong> - click this button to erase the contents of the error log.</li>
 <li><strong>Save Changes</strong> - this button doesn't do anything useful in the current MLA version.</li>
 </ul>
 <p>
 If you are having an MLA problem that includes error messages in the log, copying the messages and adding them to your Support Forum topic can be most helpful; thanks!
+<a name="mla_language_tab"></a>&nbsp;
+<p>
+<a href="#backtotop">Go to Top</a>
+</p>
+<h3>WPML &amp; Polylang Multilingual Support; the MLA Language Tab</h3>
+<p>
+Media Library Assistant provides integrates support for two popular "Multilanguage/ Multilingual/ Internationalization" plugins; <a href="https://wpml.org/" title="WPML - The WordPress Multilingual Plugin" target="_blank">WPML</a> and <a href="https://wordpress.org/plugins/polylang/" title="Polylang - Making WordPress multilingual" target="_blank">Polylang</a>. These plugins let you write posts and pages in multiple languages and make it easy for a visitor to select the language in which to view your site. MLA works with the plugins to make language-specific Media library items easy to create and manage.
+</p>
+<p>
+MLA detects the presence of either plugin and automatically adds several features that work with them:
+</p>
+<ul style="margin-left: 20px">
+<li><strong>Language-specific filtering</strong> of the <code>[mla_gallery]</code> and <code>[mla_tag_cloud]</code> shortcodes.</li>
+<li><strong>Media/Assistant submenu table enhancements</strong> for displaying and managing item translations.</li>
+<li><strong>Term Assignment and Term Synchronization</strong>, to match terms to language-specific items and automatically keep all translations for an item in synch.</li>
+</ul>
+<h4>Items, Translations and Terms</h4>
+<p>
+Each Media Library item can have one or more "translations". The item translations are linked and they use the same file in the Media Library. The linkage lets us know that "&iexcl;Hola Mundo!" (Spanish), "Bonjour Monde" (French) and "Hello world!" (English) are all translations of the same post/page. Post/page translation is optional; some posts/pages may not be defined for all languages. The language of the first translation entered for a post/page is noted as the "source language".
+</p>
+<p>
+Taxonomy terms can also have one or more translations, which are also linked. The linkage lets us know that "Accesorio Categor&iacute;a" (Spanish), "Cat&eacute;gorie Attachement" (French) and "Attachment Category" (English) are all translations of the same term. Term translation is optional; some terms may not be defined for all languages. The language of the first translation entered for a term is noted as the "source language".
+</p>
+<p>
+When an item is uploaded to the Media Library it is assigned to the current language (note: <strong>avoid uploading items when you are in "All Languages"/"Show all languages" mode</strong>; bad things happen). WPML provides an option to duplicate the new item in all active languages; Polylang does not. MLA makes it easy to add translations to additional languages with the Translations column on the Media/Assistant submenu table. For Polylang, MLA provides Quick Translate and Bulk Translate actions as well.
+</p>
+<p>
+Assigning language-specific terms to items with multiple translations can be complex. MLA's <strong>Term Assignment</strong> logic assures that every term you assign on any of the editing screens (Media/Add New Bulk Edit, Media/Edit, Media/Assistant Quick Edit and Bulk Edit, Media Manager ATTACHMENT DETAILS pane) will be matched to the language of each item and translation. MLA's <strong>Term Synchronization</strong> logic ensures that changes made in one translation are replicated to all other translations that have an equivalent language-specific term.
+</p>
+<h4>Shortcode Support</h4>
+<p>
+The <code>[mla_gallery]</code> shortcode selects items using the WordPress <code>WP_Query</code> class. Both WPML and Polylang use the hooks provided by <code>WP_Query</code> to return items in the current language. If you use taxonomy parameters in your shortcode you must make sure that the term name, slug or other value is in the same language as the post/page in which it is embedded. This is easily done when the post/page content is translated from one language to another.
+</p>
+<p>
+The <code>[mla_tag_cloud]</code> shortcode selects terms using the WordPress <code>wpdb</code> class. MLA adds language qualifiers to the database queries that compose the cloud so all terms displated are appropriate for the current language. No special coding or shortcode modification is required.
+</p>
+<h4>Media/Assistant submenu table</h4>
+<p>
+Two columns are added to the table when WPML or Polylang is active:
+</p>
+<ul style="margin-left: 20px">
+<li><strong>Language</strong> - displays the language of the item. This column is only present when "All languages/Show all languages" is selected in the admin toolbar at the top of the screen.</li>
+<li><strong>"Translations"</strong> - displays the translation status of the item in all active languages. The column header displays the flag icon for the language. The column content will have a checkmark icon for the item's language, a pencil icon for an existing translation or a plus icon for a translation that does not exist. You can click any icon to go directly to the Media/Edit Media screen for that translation. If you click a plus icon, a new translation will be created and initialized with content and terms from the current item and you will go to the Media/Edit Media screen for the new translation.</li>
+</ul>
+<p>
+When Polylang is active, several additional features are available:
+</p>
+<ul style="margin-left: 20px">
+<li><strong>A Language dropdown control</strong> is added to the Quick Edit and Bulk Edit areas. You can change the language of one or more items by selecting a new value in the dropdown and clicking Update. The new language must not have an exising translation; if a translation already exists the change will be ignored.</li>
+<li><strong>Translation status links</strong> are added to the Quick Edit area, just below the Language dropdown control. If you click one of the pencil/plus translation status links, a new Quick Edit area will open for the translation you selected. A new translation is created if you click a plus status icon.</li>
+<li><strong>A Quick Translate rollover action</strong> can be added to each item (the default option setting is "unchecked"). If you activate this option, when you click the "Quick Translate" rollover action for an item the Quick Translate area opens, showing the Language dropdown control and the translation status links. From there, click "Set Language" to change the language assigned to the item or click one of the pencil/plus translation status links. A new Quick Edit area will open for the translation you selected. A new translation is created if you click a plus status icon.</li>
+<li><strong>A Translate action</strong> is added to the Bulk Actions dropdown control. If you click the box next to one or more items, select Translate in the Bulk Actions dropdown and click Apply, the Bulk Translate area will open. The center column contains a checkbox for each active language and an "All Languages" checkbox. Check the box(es) for the languages you want and then click "Bulk Translate". The Media/Assistant submenu table will be refreshed to display only the items you selected in the language(s) you selected. Existing translations will be displayed, and <strong>new translations will be created</strong> as needed so every item has a translation in every language selected.</li>
+</ul>
+<h4>Term Management</h4>
+<p>
+Taxonomy terms are language-specific, and making sure the right terms are assigned to all items and translations can be a challenge. Terms can change when an item is updated in any of four ways:
+</p>
+<ol>
+<li><strong>Individual edit</strong> - this is the full-screen Media/Edit Media submenu provided by WordPress. Taxonomies are displayed and updated in meta boxes along the right side of the screen. When "Update" is clicked whatever terms have been selected/entered are assigned to the item; they replace any old assignments.</li>
+<li><strong>Media Manager Modal Window</strong> - this is the popup window provided by WordPress' "Add Media" and "Select Featured Image" features. Taxonomies are displayed and updated in the ATTACHMENT DETAILS meta boxes along the right side of the window. Whatever terms are selected/entered here are assigned to the item; they replace any old assignments.</li>
+<li><strong>Quick Edit</strong> - this is a row-level action on the Media/Assistant screen. When "Update" is clicked whatever terms have been selected/entered are assigned to the item; they replace any old assignments.</li>
+<li><strong>Bulk edit</strong> - this is a bulk action on the Media/Assistant screen, and is also available on the Media/Upload New Media screen. In the Bulk Edit area, terms can be added or removed or all terms can be replaced. The bulk edit can be applied to multiple item translations in one or more languages.</li>
+</ol>
+<p>
+When terms change in any of the above ways there are two tasks that require rules:
+</p>
+<ol>
+<li>How should language-specific terms be assigned to items selected? This is "Term Assignment".</li>
+<li>How should terms assigned to one translation of an item be used to update other translations of the same item? This is "Term Synchronization".</li>
+</ol>
+<strong>Term Assignment</strong>
+<p>
+When a specific language is selected only the item translations for that language are shown, and only the terms for that language are displayed (except for a Polylang bug that shows all languages in the "auto-complete" list for flat taxonomies). When "All Languages"/"Show all languages" is selected the terms for all languages are displayed even if they cannot be assigned to an item. For example, a Spanish term may appear in the list be cannot be assigned to an English item translations.
+</p>
+For individual edit and quick edit updates the rule is simple:
+<ol>
+<li>For all terms selected/entered, find the equivalent term in the language of the item translation. Assign the equivalent (language-specific) term if one exists. If no equivalent term exists, ignore the selected/entered term. Assign all equivalent terms to the item translation, replacing any previous terms.</li>
+</ol>
+For bulk edit updates the rule depends on which action (add, remove, replace) has been selected. Each of the item translations in the bulk edit list is updated by these rules:
+<ol>
+<li><strong>Add</strong>: For all terms selected/entered, find the equivalent term in the language of the item translation. Assign the equivalent (language-specific) term if one exists. If the equivalent term exists, add it to the item translation.</li>
+<li><strong>Remove</strong>: For all terms selected/entered, find the equivalent term in the language of the item translation. Assign the equivalent (language-specific) term if one exists. If the equivalent term exists, remove it from the item translation.</li>
+<li><strong>Replace</strong>: This is the tricky case. What should happen to terms already assigned to an item translation that have not been selected/entered for the update? In particular, what about terms that do not have translations to all languages? Should a "French-only" term be preserved?</li>
+</ol>
+The "<strong>Replace</strong>" answer is the same as the individual/quick edit answer. If the term is not selected/entered for the update it is discarded along with the other old assignments. After all, in "All Languages"/"Show all languages" mode the "French-only" term would have been in the list and could be selected if desired.
+</p>
+<strong>Term Synchronization</strong>
+<p>
+If you edit an item translation, for example to add or remove a term assignment, what should happen to the other translations of the same item? Term synchroniztion will add or remove the equivalent term in the other item translations if the equivalent term exists.
+</p>
+<p>
+What about "untranslated" terms that do not have translations to all languages? Should an existing "French-only" (untranslated) term be preserved? It is, since there is no way to indicate that it should be removed.
+</p>
+<p>
+Individual and quick edits are "replace" updates, and "replace" is an option for bulk edits as well. For term synchronization to preserve untranslated terms "replace" updates must be converted to separate "add" and "remove" updates that include only the changes made to the original item translation. For example, if these terms are defined:
+</p>
+<table border="1" cellspacing="0"><tr>
+<td style="font-weight:bold; text-align:center">English</td>
+<td style="font-weight:bold; text-align:center">Spanish</td>
+</tr><tr>
+<td style="padding: 0px 10px">Common-term-1-eng</td>
+<td style="padding: 0px 10px">Common-term-1-esp</td>
+</tr><tr>
+<td style="padding: 0px 10px">Common-term-2-eng</td>
+<td style="padding: 0px 10px">Common-term-2-esp</td>
+</tr><tr>
+<td style="padding: 0px 10px">English-only-term</td>
+<td style="padding: 0px 10px">&nbsp;</td>
+</tr><tr>
+<td style="padding: 0px 10px">&nbsp;</td>
+<td style="padding: 0px 10px">Spanish-only-term</td>
+</tr></table>
+<p>
+And these term assignments exist:
+</p>
+<table border="1" cellpadding="5" cellspacing="0"><tr>
+<td style="font-weight:bold; text-align:center">English Translation</td>
+<td style="font-weight:bold; text-align:center">Spanish Translation</td>
+</tr><tr>
+<td style="padding: 0px 10px">Common-term-1-eng</td>
+<td style="padding: 0px 10px">Common-term-1-esp</td>
+</tr><tr>
+<td style="padding: 0px 10px">English-only-term</td>
+<td style="padding: 0px 10px">&nbsp;</td>
+</tr><tr>
+<td style="padding: 0px 10px">&nbsp;</td>
+<td style="padding: 0px 10px">Spanish-only-term</td>
+</tr></table>
+<p>
+Then synchronization handles common editing actions as follows:
+</p>
+<ol>
+<li>If you edit the English Translation and add "Common-term-2-eng", synchronization will add "Common-term-2-esp" to the Spanish Translation.</li>
+<li>If you edit the English Translation and remove "Common-term-1-eng", synchronization will remove "Common-term-1-esp" from the Spanish Translation.</li>
+<li>If you edit the English Translation and remove "English-only-term", nothing will happen to the Spanish Translation.</li>
+</ol>
+<p>
+&nbsp;
 <a name="mla_list_table_hooks"></a>&nbsp;
 </p>
 <p>
