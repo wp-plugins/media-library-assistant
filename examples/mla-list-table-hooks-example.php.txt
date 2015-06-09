@@ -3,7 +3,7 @@
  * Provides an example of hooking the filters provided by the MLA_List_Table class
  *
  * @package MLA List Table Hooks Example
- * @version 1.02
+ * @version 1.03
  */
 
 /*
@@ -11,7 +11,7 @@ Plugin Name: MLA List Table Hooks Example
 Plugin URI: http://fairtradejudaica.org/media-library-assistant-a-wordpress-plugin/
 Description: Provides an example of hooking the filters provided by the MLA_List_Table class
 Author: David Lingren
-Version: 1.02
+Version: 1.03
 Author URI: http://fairtradejudaica.org/our-story/staff/
 
 Copyright 2014 - 2015 David Lingren
@@ -74,6 +74,8 @@ class MLAListTableHooksExample {
 		 /*
 		  * Defined in /media-library-assistant/includes/class-mla-data.php
 		  */
+		add_filter( 'mla_list_table_query_final_terms', 'MLAListTableHooksExample::mla_list_table_query_final_terms', 10, 1 );
+		add_filter( 'mla_list_table_query_custom_items', 'MLAListTableHooksExample::mla_list_table_query_custom_items', 10, 2 );
 		add_filter( 'mla_list_table_search_filter_fields', 'MLAListTableHooksExample::mla_list_table_search_filter_fields', 10, 2 );
 		add_filter( 'mla_list_table_search_filter_inner_clause', 'MLAListTableHooksExample::mla_list_table_search_filter_inner_clause', 10, 4 );
 		add_filter( 'mla_fetch_attachment_references', 'MLAListTableHooksExample::mla_fetch_attachment_references', 10, 3 );
@@ -81,6 +83,8 @@ class MLAListTableHooksExample {
 		 /*
 		  * Defined in /media-library-assistant/includes/class-mla-main.php
 		  */
+		add_filter( 'mla_list_table_admin_action', 'MLAListTableHooksExample::mla_list_table_admin_action', 10, 3 );
+		add_action( 'mla_list_table_custom_admin_action', 'MLAListTableHooksExample::mla_list_table_custom_admin_action', 10, 2 );
 		add_filter( 'mla_list_table_inline_fields', 'MLAListTableHooksExample::mla_list_table_inline_fields', 10, 1 );
 		add_filter( 'mla_list_table_inline_action', 'MLAListTableHooksExample::mla_list_table_inline_action', 10, 2 );
 
@@ -323,6 +327,42 @@ class MLAListTableHooksExample {
 		 */
 		return $references;
 	} // mla_fetch_attachment_references
+
+	/**
+	 * Pre-process an MLA_List_Table admin action
+	 *
+	 * This filter gives you an opportunity to pre-process an MLA_List_Table item-level action,
+	 * standard or custom, before the MLA handler. This filter is called before anything is output
+	 * for the Media/Assistant submenu, so you can redirect to another admin screen if desired.
+	 *
+	 * @since 1.03
+	 *
+	 * @param	boolean	$process_action	true, to let MLA process the requested action.
+	 * @param	string	$mla_admin_action	the requested action.
+	 * @param	integer	$mla_item_ID		zero (0), or the affected attachment.
+	 */
+	public static function mla_list_table_admin_action( $process_action, $mla_admin_action, $mla_item_ID ) {
+		//error_log( 'MLAListTableHooksExample::mla_list_table_admin_action $mla_admin_action = ' . var_export( $mla_admin_action, true ), 0 );
+		//error_log( 'MLAListTableHooksExample::mla_list_table_admin_action $mla_item_ID = ' . var_export( $mla_item_ID, true ), 0 );
+		return $process_action;
+	} // mla_list_table_admin_action
+
+	/**
+	 * Process an MLA_List_Table custom admin action
+	 *
+	 * This filter gives you an opportunity to process an MLA_List_Table item-level action
+	 * that MLA does not recognize. This filter is called before anything is output for the
+	 * Media/Assistant submenu, so you can redirect to another admin screen if desired.
+	 *
+	 * @since 1.03
+	 *
+	 * @param	string	$mla_admin_action	the requested action.
+	 * @param	integer	$mla_item_ID		zero (0), or the affected attachment.
+	 */
+	public static function mla_list_table_custom_admin_action( $mla_admin_action, $mla_item_ID ) {
+		//error_log( 'MLAListTableHooksExample::mla_list_table_custom_admin_action $mla_admin_action = ' . var_export( $mla_admin_action, true ), 0 );
+		//error_log( 'MLAListTableHooksExample::mla_list_table_custom_admin_action $mla_item_ID = ' . var_export( $mla_item_ID, true ), 0 );
+	} // mla_list_table_custom_admin_action
 
 	/**
 	 * Process an MLA_List_Table inline action, i.e., Quick Edit 
@@ -776,7 +816,7 @@ class MLAListTableHooksExample {
 	 * @param	array	$items			NULL, indicating no substitution.
 	 * @param	object	$mla_list_table	The MLA_List_Table object, passed by reference.
 	 *
-	 * @return	array	updated $items array.
+	 * @return	object	NULL or replacement $items array
 	 */
 	public static function mla_list_table_prepare_items_the_items( $items, $mla_list_table ) {
 		//error_log( 'MLAListTableHooksExample::mla_list_table_prepare_items_the_items $items = ' . var_export( $items, true ), 0 );
@@ -784,6 +824,45 @@ class MLAListTableHooksExample {
 		return $items;
 	} // mla_list_table_prepare_items_the_items
 	
+	/**
+	 * Filter the WP_Query request parameters for the prepare_items query
+	 *
+	 * Gives you an opportunity to change the terms of the prepare_items query
+	 * after they are processed by the "Prepare List Table Query" handler.
+	 *
+	 * @since 1.03
+	 *
+	 * @param	array	WP_Query request prepared by "Prepare List Table Query"
+	 *
+	 * @return	array	updated WP_Query request
+	 */
+	public static function mla_list_table_query_final_terms( $request ) {
+		//error_log( 'MLAListTableHooksExample::mla_list_table_query_final_terms $request = ' . var_export( $request, true ), 0 );
+
+		return $request;
+	} // mla_list_table_query_final_terms
+
+	/**
+	 * Replace the prepare_items WP_Query object with your own results
+	 *
+	 * Gives you an opportunity to substitute the results of the prepare_items query
+	 * with alternative results of your own.
+	 *
+	 * @since 1.03
+	 *
+	 * @param	object	NULL, indicating no results substitution
+	 * @param	array	WP_Query request prepared by "Prepare List Table Query"
+	 */
+	public static function mla_list_table_query_custom_items( $wp_query_object, $request ) {
+		//error_log( 'MLAListTableHooksExample::mla_media_modal_query_custom_items $request = ' . var_export( $request, true ), 0 );
+
+		/*
+		 * You can replace the NULL $wp_query_object with a new WP_Query( $request )
+		 * object using your own $request parameters
+		 */
+		return $wp_query_object;
+	} // mla_media_modal_query_custom_items
+
 	/**
 	 * Inspect or modify the results of prepare_items()
 	 *
@@ -798,7 +877,10 @@ class MLAListTableHooksExample {
 	 */
 	public static function mla_list_table_prepare_items( $mla_list_table ) {
 		//error_log( 'MLAListTableHooksExample::mla_list_table_prepare_items $mla_list_table->get_pagenum() = ' . var_export( $mla_list_table->get_pagenum(), true ), 0 );
-		return $mla_list_table;
+
+		/*
+		 * $mla_list_table->items contains the requested items from the database
+		 */
 	} // mla_list_table_prepare_items
 	
 	/**

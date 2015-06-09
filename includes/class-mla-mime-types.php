@@ -874,15 +874,21 @@ class MLAMime {
 				$result['prefix'] = trim( strtolower( $matches[1] ) );
 				$tail = $matches[2];
 
-				$match_count = preg_match( '/([^,=]+)((,|=)(.+))$/', $tail, $matches );
+				$match_count = preg_match( '/([^,=]+)((,|=)(.*))$/', $tail, $matches );
 				if ( 1 == $match_count ) {
 					$result['name'] = $matches[1];
 
 					if ( ',' == $matches[3] ) {
 						$result['option'] = trim( strtolower( $matches[4] ));
 					} else {
-						$result['option'] = 'match';
-						$result['value'] = $matches[4];
+						if ( empty( $matches[4] ) ) {
+							$result['option'] = 'null';
+						} elseif ( '*' == $matches[4] ) {
+							$result['option'] = 'any';
+						} else {
+							$result['option'] = 'match';
+							$result['value'] = $matches[4];
+						}
 					}
 				} else {
 					$result['option'] = 'any';

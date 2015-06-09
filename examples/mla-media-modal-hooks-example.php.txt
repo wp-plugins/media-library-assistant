@@ -1,8 +1,10 @@
 <?php
 /**
- * Provides an example of the filters provided by the "Media Manager Enhancements" feature
+ * Provides examples of the filters provided by the "Media Manager Enhancements" feature
  *
- * In this example the initial value for the MIME Type dropdown control is changed.
+ * In this example:
+ *     - the initial value for the MIME Type dropdown control can be changed.
+ *     - items assigned to a taxonomy term can be excluded from the "Query Attachments" results
  *
  * @package MLA Media Modal Hooks Example
  * @version 1.01
@@ -11,7 +13,7 @@
 /*
 Plugin Name: MLA Media Modal Hooks Example
 Plugin URI: http://fairtradejudaica.org/media-library-assistant-a-wordpress-plugin/
-Description: Provides an example of the filters provided by the "Media Manager Enhancements" feature
+Description: Provides examples of the filters provided by the "Media Manager Enhancements" feature
 Author: David Lingren
 Version: 1.01
 Author URI: http://fairtradejudaica.org/our-story/staff/
@@ -67,6 +69,10 @@ class MLAMediaModalExample {
 		 *
 		 * Comment out the filters you don't need; save them for future use
 		 */
+		 
+		/*
+		 * Defined in /media-library-assistant/includes/class-mla-data.php
+		 */
 		add_filter( 'mla_media_modal_form_fields', 'MLAMediaModalExample::mla_media_modal_form_fields', 10, 2 );
 		add_filter( 'mla_media_modal_months_dropdown', 'MLAMediaModalExample::mla_media_modal_months_dropdown', 10, 2 );
 		add_filter( 'mla_media_modal_terms_options', 'MLAMediaModalExample::mla_media_modal_terms_options', 10, 1 );
@@ -74,20 +80,26 @@ class MLAMediaModalExample {
 		add_filter( 'mla_media_modal_settings', 'MLAMediaModalExample::mla_media_modal_settings', 10, 2 );
 		add_filter( 'mla_media_modal_strings', 'MLAMediaModalExample::mla_media_modal_strings', 10, 2 );
 		add_filter( 'mla_media_modal_template_path', 'MLAMediaModalExample::mla_media_modal_template_path', 10, 2 );
-		add_filter( 'mla_media_modal_begin_fill_compat_fields', 'MLAMediaModalExample::mla_media_modal_fill_compat_fields', 10, 3 );
-		add_filter( 'mla_media_modal_end_fill_compat_fields', 'MLAMediaModalExample::mla_media_modal_fill_compat_fields', 10, 4 );
+		add_filter( 'mla_media_modal_begin_fill_compat_fields', 'MLAMediaModalExample::mla_media_modal_begin_fill_compat_fields', 10, 3 );
+		add_filter( 'mla_media_modal_end_fill_compat_fields', 'MLAMediaModalExample::mla_media_modal_end_fill_compat_fields', 10, 4 );
 		add_action( 'mla_media_modal_begin_update_compat_fields', 'MLAMediaModalExample::mla_media_modal_begin_update_compat_fields', 10, 1 );
 		add_filter( 'mla_media_modal_update_compat_fields_terms', 'MLAMediaModalExample::mla_media_modal_update_compat_fields_terms', 10, 4 );
 		add_filter( 'mla_media_modal_end_update_compat_fields', 'MLAMediaModalExample::mla_media_modal_end_update_compat_fields', 10, 3 );
 		add_filter( 'mla_media_modal_query_initial_terms', 'MLAMediaModalExample::mla_media_modal_query_initial_terms', 10, 2 );
-		add_filter( 'mla_media_modal_query_final_terms', 'MLAMediaModalExample::mla_media_modal_query_final_terms', 10, 2 );
+		add_filter( 'mla_media_modal_query_filtered_terms', 'MLAMediaModalExample::mla_media_modal_query_filtered_terms', 10, 2 );
+
+		/*
+		 * Defined in /media-library-assistant/includes/class-mla-data.php
+		 */
+		add_filter( 'mla_media_modal_query_final_terms', 'MLAMediaModalExample::mla_media_modal_query_final_terms', 10, 1 );
+		add_filter( 'mla_media_modal_query_custom_items', 'MLAMediaModalExample::mla_media_modal_query_custom_items', 10, 2 );
 	} // initialize
 
 	/**
 	 * MLA Edit Media Form Fields Filter
 	 *
 	 * Gives you an opportunity to change the content of the
-	 * Media Manager Modal Window toolbar controls.
+	 * Media Manager Modal Window ATTACHMENT DETAILS fields.
 	 *
 	 * @since 1.01
 	 *
@@ -226,8 +238,8 @@ class MLAMediaModalExample {
 	/**
 	 * MLA Edit Media JavaScript Template(s) Filter
 	 *
-	 * Gives you an opportunity to change the content of the
-	 * Media Manager Modal Window toolbar control template(s).
+	 * Gives you an opportunity to change the path to the JavaScript template file
+	 * or substitute your own template(s).
 	 *
 	 * @since 1.01
 	 *
@@ -301,7 +313,7 @@ class MLAMediaModalExample {
 	 * @param	object	the current post
 	 */
 	public static function mla_media_modal_begin_update_compat_fields( $post ) {
-		error_log( "MLAMediaModalExample::mla_media_modal_begin_update_compat_fields( {$post->ID} )", 0 );
+		//error_log( "MLAMediaModalExample::mla_media_modal_begin_update_compat_fields( {$post->ID} )", 0 );
 
 	} // mla_media_modal_begin_update_compat_fields
 
@@ -319,8 +331,8 @@ class MLAMediaModalExample {
 	 * @param	integer	current post ID
 	 */
 	public static function mla_media_modal_update_compat_fields_terms( $terms, $key, $value, $post_id ) {
-		error_log( "MLAMediaModalExample::mla_media_modal_update_compat_fields_terms( {$key}, {$post_id} ) \$terms = " . var_export( $terms, true ), 0 );
-		error_log( "MLAMediaModalExample::mla_media_modal_update_compat_fields_terms( {$key}, {$post_id} ) \$value = " . var_export( $value, true ), 0 );
+		//error_log( "MLAMediaModalExample::mla_media_modal_update_compat_fields_terms( {$key}, {$post_id} ) \$terms = " . var_export( $terms, true ), 0 );
+		//error_log( "MLAMediaModalExample::mla_media_modal_update_compat_fields_terms( {$key}, {$post_id} ) \$value = " . var_export( $value, true ), 0 );
 
 		/*
 		 * To suppress term assignment, set $terms = NULL;
@@ -342,9 +354,9 @@ class MLAMediaModalExample {
 	 * @param	object	current post object
 	 */
 	public static function mla_media_modal_end_update_compat_fields( $results, $taxonomies, $post ) {
-		error_log( 'MLAMediaModalExample::mla_media_modal_end_update_compat_fields $results = ' . var_export( $results, true ), 0 );
-		error_log( 'MLAMediaModalExample::mla_media_modal_end_update_compat_fields $taxonomies = ' . var_export( $taxonomies, true ), 0 );
-		error_log( 'MLAMediaModalExample::mla_media_modal_end_update_compat_fields $post = ' . var_export( $post, true ), 0 );
+		//error_log( 'MLAMediaModalExample::mla_media_modal_end_update_compat_fields $results = ' . var_export( $results, true ), 0 );
+		//error_log( 'MLAMediaModalExample::mla_media_modal_end_update_compat_fields $taxonomies = ' . var_export( $taxonomies, true ), 0 );
+		//error_log( 'MLAMediaModalExample::mla_media_modal_end_update_compat_fields $post = ' . var_export( $post, true ), 0 );
 
 		return $results;
 	} // mla_media_modal_end_update_compat_fields
@@ -369,23 +381,79 @@ class MLAMediaModalExample {
 	} // mla_media_modal_query_initial_terms
 
 	/**
-	 * MLA Edit Media "Query Attachments" initial terms Filter
+	 * MLA Edit Media "Query Attachments" filtered terms Filter
 	 *
 	 * Gives you an opportunity to change the terms of the 
 	 * Media Manager Modal Window "Query Attachments" query
-	 * after they are pre-processed by the MLA handler.
+	 * after they are pre-processed by the Ajax handler.
 	 *
 	 * @since 1.01
 	 *
 	 * @param	array	WP_Query terms supported for "Query Attachments"
 	 * @param	array	All terms passed in the request
 	 */
-	public static function mla_media_modal_query_final_terms( $query, $raw_query ) {
-		error_log( 'MLAMediaModalExample::mla_media_modal_query_final_terms $query = ' . var_export( $query, true ), 0 );
-		error_log( 'MLAMediaModalExample::mla_media_modal_query_final_terms $raw_query = ' . var_export( $raw_query, true ), 0 );
+	public static function mla_media_modal_query_filtered_terms( $query, $raw_query ) {
+		//error_log( 'MLAMediaModalExample::mla_media_modal_query_filtered_terms $query = ' . var_export( $query, true ), 0 );
+		//error_log( 'MLAMediaModalExample::mla_media_modal_query_filtered_terms $raw_query = ' . var_export( $raw_query, true ), 0 );
 
 		return $query;
+	} // mla_media_modal_query_filtered_terms
+
+	/**
+	 * MLA Edit Media "Query Attachments" final terms Filter
+	 *
+	 * Gives you an opportunity to change the terms of the 
+	 * Media Manager Modal Window "Query Attachments" query
+	 * after they are processed by the "Prepare List Table Query" handler.
+	 *
+	 * @since 1.01
+	 *
+	 * @param	array	WP_Query request prepared by "Prepare List Table Query"
+	 */
+	public static function mla_media_modal_query_final_terms( $request ) {
+		//error_log( 'MLAMediaModalExample::mla_media_modal_query_final_terms $request = ' . var_export( $request, true ), 0 );
+
+		/*
+		 * Comment the next line out to remove items assigned to the
+		 *  Att. Categories "Admin" term from the query results.
+		 */
+		return $request;
+
+		if ( isset( $request['tax_query'] ) ) {
+			$tax_query = $request['tax_query'];
+			$tax_query['relation'] = 'AND';
+		} else {
+			$tax_query = array();
+		}
+		
+		$tax_query[] = array( 'taxonomy' => 'attachment_category', 'operator' => 'NOT IN', 'field' => 'slug', 'terms' => 'admin' );
+		$request['tax_query'] = $tax_query;
+		
+		//error_log( 'MLAMediaModalExample::mla_media_modal_query_final_terms altered $request = ' . var_export( $request, true ), 0 );
+		return $request;
 	} // mla_media_modal_query_final_terms
+
+	/**
+	 * MLA Edit Media "Query Attachments" custom results filter
+	 *
+	 * Gives you an opportunity to substitute the results of the 
+	 * Media Manager Modal Window "Query Attachments" query
+	 * with alternative results of your own.
+	 *
+	 * @since 1.01
+	 *
+	 * @param	object	NULL, indicating no results substitution
+	 * @param	array	WP_Query request prepared by "Prepare List Table Query"
+	 */
+	public static function mla_media_modal_query_custom_items( $wp_query_object, $request ) {
+		//error_log( 'MLAMediaModalExample::mla_media_modal_query_custom_items $request = ' . var_export( $request, true ), 0 );
+
+		/*
+		 * You can replace the NULL $wp_query_object with a new WP_Query( $request )
+		 * object using your own $request parameters
+		 */
+		return $wp_query_object;
+	} // mla_media_modal_query_custom_items
 } //MLAMediaModalExample
 
 /*

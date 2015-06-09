@@ -175,8 +175,10 @@ All of the MLA source code has been annotated with "DocBlocks", a special type o
 * New: **WPML support has been enhanced.** In particular, 1) all taxonomy term assignments are verified/adjusted to be valid for the item's language, 2) taxonomy term assignments are synchronized across all the item's translations, 3) the Media/Assistant submenu table will include a "language management" column showing each item's translation status by language; you can click on an item's "pencil" or "plus" icon to edit an existing translation or duplicate the item in a new language, 4) when "All Languages" is selected, the Media/Assistant submenu table will include a "Language" column showing each item's language, and 5) the Settings/Media Library Assistant "Language" tab lets you select the enhancements you want. See the [Other Notes section](http://wordpress.org/extend/plugins/media-library-assistant/other_notes/ "Click here, then scroll down") section or the Settings/Media Library Assistant Documentation tab for more information.
 * New: **An "Attached" view has been added**, filtering the Media/Assistant submenu table to show only those items having a parent post/page. You can disable the new view, if desired, on the Settings/Media Library Assistant Views tab.
 * New: The Media/Assistant submenu table Quick Edit area now scrolls to the top of the viewport when it is opened.
-* New: Thirteen additional hooks have been added to the "Media Manager Enhancement filters (Hooks)". The `/examples/mla-media-modal-hooks-example.php.txt` file documents all the new additions.
-* New: Two hooks, `mla_list_table_admin_action` and `mla_list_table_custom_admin_action`, have been added.
+* New: Fifteen additional hooks have been added to the "Media Manager Enhancement filters (Hooks)". The `/examples/mla-media-modal-hooks-example.php.txt` file documents all the new additions. The example plugin includes code to add a "term elimination" taxonomy query to the standard "Query Attachments" terms.
+* New: Four new filters for the "Media/Assistant Submenu Hooks" allow you to 1) process row-level actions from the Edit Media screen and 2) modify the "prepare_items" query terms or substitute your own query results. The `/media-library-assistant/examples/mla-list-table-hooks-example.php.txt` example plugin has been updated with the new filters.
+* New: A new `/media-library-assistant/examples/mla-custom-field-search-example.php.txt` example plugin has been added to demonstrate the new "prepare_items" query terms filter, adding a custom field search to the Media/Assistant Search Media text box.
+* New: A new `/media-library-assistant/examples/mla-a-z-cloud-example.php.txt` example plugin has been added that combines MLA with the Collapse-o-matic plugin and custom database queries to produce an "alphabetic cloud" and custom `[mla_gallery]`.
 * New: For `[mla_gallery]`, when `mla_alt_shortcode=mla_tag_cloud`, parameters such as `mla_link_href` are passed through to be used by [`mla_tag_cloud]`.
 * New: Term-specific pagination has been added to the `/examples/twentytwelve-mla/image.php` file.
 * Fix: The obsolete "Attached" view has been removed from the `/examples/mla-custom-view-example.php.txt` file.
@@ -283,8 +285,8 @@ All of the MLA source code has been annotated with "DocBlocks", a special type o
 
 == Upgrade Notice ==
 
-= 2.10 =
-Enhanced WPML and new Polylang support. "Attached" Media/Assistant table view. Five other enhancements, thirteen fixes.
+= 2.11 =
+Enhanced WPML and new Polylang support. "Attached" Media/Assistant table view. Seven other enhancements, thirteen fixes.
 
 == Other Notes ==
 

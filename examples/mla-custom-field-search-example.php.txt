@@ -3,7 +3,7 @@
  * Extends the Media/Assistant "Search Media" box to custom field values
  *
  * @package MLA Custom Field Search Example
- * @version 1.00
+ * @version 1.01
  */
 
 /*
@@ -11,7 +11,7 @@ Plugin Name: MLA Custom Field Search Example
 Plugin URI: http://fairtradejudaica.org/media-library-assistant-a-wordpress-plugin/
 Description: Extends the Media/Assistant "Search Media" box to custom field values
 Author: David Lingren
-Version: 1.00
+Version: 1.01
 Author URI: http://fairtradejudaica.org/our-story/staff/
 
 Copyright 2014 - 2015 David Lingren
@@ -54,6 +54,9 @@ class MLACustomFieldSearchExample {
 
 		// Defined in /media-library-assistant/includes/class-mla-main.php
 		add_filter( 'mla_list_table_new_instance', 'MLACustomFieldSearchExample::mla_list_table_new_instance', 10, 1 );
+
+		// Defined in /media-library-assistant/includes/class-mla-data.php
+		add_filter( 'mla_list_table_query_final_terms', 'MLACustomFieldSearchExample::mla_list_table_query_final_terms', 10, 1 );
 	}
 
 	/**
@@ -72,33 +75,116 @@ class MLACustomFieldSearchExample {
 		
 		// Look for the special "custom:" prefix in the Search Media text box
 		if ( isset( $_REQUEST['s'] ) && ( 'custom:' == substr( $_REQUEST['s'], 0, 7 ) ) ) {
-			$tokens = explode( '=', substr( $_REQUEST['s'], 7 ) ) ;
-
-			// See if the custom field name is present, followed by "=" and a value
-			if ( 1 < count( $tokens ) ) {
-				$field = array_shift( $tokens );
-				$value = implode( '=', $tokens );
-			} else {
-				// Supply a default custom field name
-				$field = 'File Size';
-				$value = $tokens[0];
-			}
-
-			// Numeric and "commas" format fields are often padded to sort reasonably
-			if ( in_array( $field, array( 'File Size', 'pixels', 'width', 'height' ) ) ) {
-				$value = str_pad( $value, 15, ' ', STR_PAD_LEFT );
-			}
-			
-			$_REQUEST['mla-metakey'] = $field;
-			$_REQUEST['mla-metavalue'] = $value;
-		
+			self::$custom_field_parameters['s'] = $_REQUEST['s'];
 			unset( $_REQUEST['s'] );
+			self::$custom_field_parameters['mla_search_connector'] = $_REQUEST['mla_search_connector'];
 			unset( $_REQUEST['mla_search_connector'] );
+			self::$custom_field_parameters['mla_search_fields'] = $_REQUEST['mla_search_fields'];
 			unset( $_REQUEST['mla_search_fields'] );
 		} // isset s=custom:
 		
 		return $mla_list_table;
 	} // mla_list_table_new_instance
+	
+	/**
+	 * Custom Field Search "parameters"
+	 *
+	 * @since 1.01
+	 *
+	 * @var	array
+	 */
+	public static $custom_field_parameters = array();
+
+	/**
+	 * Filter the WP_Query request parameters for the prepare_items query
+	 *
+	 * Gives you an opportunity to change the terms of the prepare_items query
+	 * after they are processed by the "Prepare List Table Query" handler.
+	 *
+	 * @since 1.01
+	 *
+	 * @param	array	WP_Query request prepared by "Prepare List Table Query"
+	 *
+	 * @return	array	updated WP_Query request
+	 */
+	public static function mla_list_table_query_final_terms( $request ) {
+		/*
+		 * If $request['offset'] and $request['posts_per_page'] are set, this is the "prepare_items" request.
+		 * If they are NOT set, this is a "view count" request, i.e., to get the count for a custom view.
+		 *
+		 * MLAData::$query_parameters and MLAData::$search_parameters contain
+		 * additional parameters used in some List Table queries.
+		 */
+		if ( ! ( isset( $request['offset'] ) && isset( $request['posts_per_page'] ) ) ) {
+			return $request;
+		}
+		
+		if ( empty( self::$custom_field_parameters ) ) {
+			return $request;
+		}
+		
+		// Apply default field name?
+		if ( '=' == substr( self::$custom_field_parameters['s'], 7, 1 ) ) {
+			$tokens = array( 'File Size', substr( self::$custom_field_parameters['s'], 8 ) );
+		} else {
+			$tokens = explode( '=', substr( self::$custom_field_parameters['s'], 7 ) ) ;
+		}
+
+		// See if the custom field name is present, followed by "=" and a value
+		if ( 1 < count( $tokens ) ) {
+			$field = array_shift( $tokens );
+			$value = implode( '=', $tokens );
+		} else {
+			// Supply a default custom field name
+			$field = 'File Size';
+			$value = $tokens[0];
+		}
+
+		/*
+		 * Parse the query, remove MLA-specific elements, fix numeric and "commas" format fields
+		 */
+		$tokens = MLAMime::mla_prepare_view_query( 'custom_field_search', 'custom:' . $field . '=' . $value );
+		$tokens = $tokens['meta_query'];
+		$query = array( 'relation' => $tokens['relation'] );
+		
+		$padded_values = array();
+		$patterns = array();
+		foreach ( $tokens as $key => $value ) {
+			if ( ! is_numeric( $key ) ) {
+				continue;
+			}
+			
+			if ( in_array( $value['key'], array( 'File Size', 'pixels', 'width', 'height' ) ) ) {
+				if ( '=' == $value['compare'] ) {
+					$value['value'] = str_pad( $value['value'], 15, ' ', STR_PAD_LEFT );
+					$padded_values[ trim( $value['value'] ) ] = $value['value'];
+				} else {
+					$patterns[] = $value['value'] = '%' . $value['value'];
+				}
+			}
+			
+			$query[] = $value;
+		}
+
+		if ( ! empty( $padded_values ) ) {
+			MLAData::$query_parameters['mla-metavalue'] = $padded_values;
+		}
+		
+		if ( ! empty( $patterns ) ) {
+			MLAData::$query_parameters['patterns'] = $patterns;
+		}
+		
+		/*
+		 * Combine with an existing "custom view" meta_query, if present
+		 */
+		if ( isset( $request['meta_query'] ) ) {
+			$request['meta_query'] = array( 'relation' => 'AND', $request['meta_query'], $query );
+		} else {
+			$request['meta_query'] = $query;
+		}
+
+		return $request;
+	} // mla_list_table_query_final_terms
 } // Class MLACustomFieldSearchExample
 
 /*

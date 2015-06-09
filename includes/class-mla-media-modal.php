@@ -1124,7 +1124,7 @@ class MLAModal {
 			}
 		}
 
-		$query = apply_filters( 'mla_media_modal_query_final_terms', $query, $raw_query );
+		$query = apply_filters( 'mla_media_modal_query_filtered_terms', $query, $raw_query );
 
 		$query = MLAData::mla_query_media_modal_items( $query, $offset, $count );
 		$posts = array_map( 'wp_prepare_attachment_for_js', $query->posts );

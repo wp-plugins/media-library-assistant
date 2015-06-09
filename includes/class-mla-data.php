@@ -1383,12 +1383,24 @@ class MLAData {
 	public static function mla_count_list_table_items( $request, $offset = NULL, $count = NULL ) {
 		if ( NULL !== $offset && NULL !== $count ) {
 			$request = self::_prepare_list_table_query( $request, $offset, $count );
-			self::$mla_list_table_items = self::_execute_list_table_query( $request );
+			$request = apply_filters( 'mla_list_table_query_final_terms', $request );
+	
+			self::$mla_list_table_items = apply_filters( 'mla_list_table_query_custom_items', NULL, $request );
+			if ( is_null( self::$mla_list_table_items ) ) {
+				self::$mla_list_table_items = self::_execute_list_table_query( $request );
+			}
+			
 			return self::$mla_list_table_items->found_posts;
 		}
 
 		$request = self::_prepare_list_table_query( $request );
-		$results = self::_execute_list_table_query( $request );
+		$request = apply_filters( 'mla_list_table_query_final_terms', $request );
+	
+		$results = apply_filters( 'mla_list_table_query_custom_items', NULL, $request );
+		if ( is_null( $results ) ) {
+			$results = self::_execute_list_table_query( $request );
+		}
+		
 		self::$mla_list_table_items = NULL;
 
 		return $results->found_posts;
@@ -1411,7 +1423,12 @@ class MLAData {
 	public static function mla_query_list_table_items( $request, $offset, $count ) {
 		if ( NULL == self::$mla_list_table_items ) {
 			$request = self::_prepare_list_table_query( $request, $offset, $count );
-			self::$mla_list_table_items = self::_execute_list_table_query( $request );
+			$request = apply_filters( 'mla_list_table_query_final_terms', $request );
+	
+			self::$mla_list_table_items = apply_filters( 'mla_list_table_query_custom_items', NULL, $request );
+			if ( is_null( self::$mla_list_table_items ) ) {
+				self::$mla_list_table_items = self::_execute_list_table_query( $request );
+			}
 		}
 
 		$attachments = self::$mla_list_table_items->posts;
@@ -1452,11 +1469,14 @@ class MLAData {
 	 * @param	int		number of rows to skip over to reach desired page
 	 * @param	int		number of rows on each page
 	 *
-	 * @return	array	attachment objects (posts)
+	 * @return	object	WP_Query object with query results
 	 */
 	public static function mla_query_media_modal_items( $request, $offset, $count ) {
 		$request = self::_prepare_list_table_query( $request, $offset, $count );
-		return self::_execute_list_table_query( $request );
+		$request = apply_filters( 'mla_media_modal_query_final_terms', $request );
+
+		$results = apply_filters( 'mla_media_modal_query_custom_items', NULL, $request );
+		return is_null( $results ) ? self::_execute_list_table_query( $request ) : $results;
 	}
 
 	/**
@@ -1473,7 +1493,7 @@ class MLAData {
 	 *
 	 * @var	array
 	 */
-	private static $query_parameters = array();
+	public static $query_parameters = array();
 
 	/**
 	 * WP_Query 'posts_search' filter "parameters"
@@ -2397,7 +2417,13 @@ class MLAData {
 		 * WordPress filters meta_value thru trim() - which we must reverse
 		 */
 		if ( isset( self::$query_parameters['mla-metavalue'] ) ) {
-			$where_clause = preg_replace( '/(^.*meta_value AS CHAR\) = \')([^\']*)/m', '${1}' . self::$query_parameters['mla-metavalue'], $where_clause );
+			if ( is_array( self::$query_parameters['mla-metavalue'] ) ) {
+				foreach ( self::$query_parameters['mla-metavalue'] as $pattern => $replacement ) {
+					$where_clause = preg_replace( '/(^.*meta_value AS CHAR\) = \')(' . $pattern . '[^\']*)/m', '${1}' . $replacement, $where_clause );
+				}
+			} else {
+				$where_clause = preg_replace( '/(^.*meta_value AS CHAR\) = \')([^\']*)/m', '${1}' . self::$query_parameters['mla-metavalue'], $where_clause );
+			}
 		}
 
 		/*

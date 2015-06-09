@@ -98,10 +98,10 @@
 <a href="#select_parent"><strong>Select Parent Popup Window</strong></a>
 </li>
 <li>
-<a href="#mla_edit_meta_boxes"><strong>Edit Media additional meta boxes (and Hooks)</strong></a>
+<a href="#mla_media_modal_filters"><strong>Media Manager Enhancement filters (Hooks)</strong></a>
 </li>
 <li>
-<a href="#mla_media_modal_filters"><strong>Media Manager Enhancement filters (Hooks)</strong></a>
+<a href="#mla_edit_meta_boxes"><strong>Edit Media additional meta boxes (and Hooks)</strong></a>
 </li>
 <li>
 <a href="#mla_views"><strong>Library Views/Post MIME Type Processing</strong></a>
@@ -3861,14 +3861,94 @@ If you change your mind you can close the window without making a change by clic
 </p>
 <h3>Media Manager Enhancement filters (Hooks)</h3>
 <p>
-Media Library Assistant adds several controls to the toolbar in the Media Manager Modal Window; more MIME type filters, year/month filter, taxonomy term filter and an enhanced Search media box. You can change the initial values set for these controls when the Modal Window opens using a filter that MLA provides.An example of using the hooks from a simple, stand-alone plugin can be found here: <a title="View the Meta Box Hooks Example source code" href="[+examples_url+]mla-media-modal-hooks-example.php.txt" target="_blank" style="font-size:14px; font-weight:bold">mla-media-modal-hooks-example.php.txt</a>. To run the example:
+Media Library Assistant adds several controls to the toolbar in the Media Manager Modal Window; more MIME type filters, year/month filter, taxonomy term filter and an enhanced Search media box. These features are supported by a comprehensive set of filters and actions that give you control over MMMW content from PHP code in your theme or in another plugin.
+</p>
+<p>
+An example of using the hooks from a simple, stand-alone plugin can be found here: <a title="View the Meta Box Hooks Example source code" href="[+examples_url+]mla-media-modal-hooks-example.php.txt" target="_blank" style="font-size:14px; font-weight:bold">mla-media-modal-hooks-example.php.txt</a>. To run the example:
+</p>
 <ol>
 <li>Remove the ".txt" extension and save the "mla-media-modal-hooks-example.php" file in your plugins directory. You can give the plugin and its file any (unique) name you like.</li>
 <li>Go to the Plugins/Installed Plugins screen and activate the "MLA Media Modal Hooks Example" plugin.</li>
 <li>Make any changes or additions you want to in the example plugin source code. For example, you can uncomment the <code>$initial_values</code> assignments and setting a new initial value for one or more controls.</li>
 <li>Click the "Add Media" button for a post or page to see the effect of your changes.</li>
 </ol>
+<p>
+The following hooks are defined in <code>/wp-admin/includes/class-mla-media-modal.php</code>:
+</p>
+<table>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">mla_media_modal_form_fields</td>
+<td>Change the content of the Media Manager Modal Window ATTACHMENT DETAILS fields</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">mla_media_modal_months_dropdown</td>
+<td>Change the content of the Media Manager Modal Window Month & Year Dropdown control</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">mla_media_modal_terms_options</td>
+<td>Change the content of the Media Manager Modal Window Terms Dropdown control</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">mla_media_modal_initial_filters</td>
+<td>Change  the initial values of the Media Manager Modal Window toolbar controls</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">mla_media_modal_settings</td>
+<td>Change the content of the Media Manager Modal Window toolbar controls</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">mla_media_modal_strings</td>
+<td>Change the content of the string values passed Media Manager Modal Window toolbar controls</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">mla_media_modal_template_path</td>
+<td>Change the path to the JavaScript template file or substitute your own template(s)</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">mla_media_modal_begin_fill_compat_fields</td>
+<td>Replace the content of the Media Manager Modal Window ATTACHMENT DETAILS taxonomy meta boxes before the MLA results have been added</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">mla_media_modal_end_fill_compat_fields</td>
+<td>Change the content of the Media Manager Modal Window ATTACHMENT DETAILS taxonomy meta boxes after MLA results have been added.</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">mla_media_modal_begin_update_compat_fields</td>
+<td>Pre-process the $_REQUEST elements for the Media Manager Modal Window ATTACHMENT DETAILS taxonomy meta boxes updates</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">mla_media_modal_update_compat_fields_terms</td>
+<td>Change the terms assigned to one Media Manager Modal Window ATTACHMENT DETAILS taxonomy</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">mla_media_modal_end_update_compat_fields</td>
+<td>Change the content of one (or more) Media Manager Modal Window ATTACHMENT DETAILS taxonomy meta boxes with updated checkbox or tag/term lists</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">mla_media_modal_query_initial_terms</td>
+<td>Change the terms of the Media Manager Modal Window "Query Attachments" query before they are pre-processed by the MLA handler</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">mla_media_modal_query_filtered_terms</td>
+<td>Change the terms of the Media Manager Modal Window "Query Attachments" query after they are pre-processed by the Ajax handler</td>
+</tr>
+</table>
+<p>
+The following hooks are defined in <code>/wp-admin/includes/class-mla_data.php</code>:
+</p>
+<table>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">mla_media_modal_query_final_terms</td>
+<td>Change the terms of the Media Manager Modal Window "Query Attachments" query after they are processed by the "Prepare List Table Query" handler</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">mla_media_modal_query_custom_items</td>
+<td>Substitute the results of the Media Manager Modal Window "Query Attachments" query with alternative results of your own</td>
+</tr>
+</table>
+<p>
 <a name="mla_edit_meta_boxes"></a>
+&nbsp;
 </p>
 <p>
 <a href="#backtotop">Go to Top</a>
@@ -3963,8 +4043,8 @@ The Table View list adds several enhancements to the Post MIME Type list. In the
 The Table View list also supports custom field queries. You can choose from three forms of the custom field specification:
 </p>
 <ul class="mla_settings">
-<li>To return all items that have a non-NULL value in the field, simply enter the prefix "custom:" followed by the custom field name. For example, <code>custom:My Featured Items</code></li>
-<li>To return all items that have a NULL value in the field, enter the prefix "custom:" followed by the custom field name and then ",null". For example, <code>custom:My Featured Items,null</code></li>
+<li>To return all items that have a non-NULL value in the field, simply enter the prefix "custom:" followed by the custom field name. For example, <code>custom:My Featured Items</code>. You can also enter the custom field name and then "=*", e.g., <code>custom:My Featured Items=*</code>.</li>
+<li>To return all items that have a NULL value in the field, enter the prefix "custom:" followed by the custom field name and then ",null". For example, <code>custom:My Featured Items,null</code>. You can also enter the custom field name and then "=", e.g., <code>custom:My Featured Items=</code>.</li>
 <li>To return all items that match one or more values, enter the prefix "custom:" followed by the custom field name and then "=" followed by a list of values. For example, <code>custom:Color=red</code> or <code>custom:Color=red,green,blue</code>. Wildcard specifications are also supported; for example, "*post" to match anything ending in "post" or "th*da*" to match values like "the date" and "this day".</li>
 </ul>
 <p>
@@ -5080,6 +5160,14 @@ The following hooks are defined in <code>/wp-admin/includes/class-wp-list-table.
 The following hooks are defined in <code>/wp-admin/includes/class-mla-data.php</code>:
 </p>
 <table>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">mla_list_table_query_final_terms</td>
+<td>Gives you an opportunity to change the terms of the prepare_items query after they are processed by the "Prepare List Table Query" handler.</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">mla_list_table_query_custom_items</td>
+<td>Gives you an opportunity to substitute the results of the prepare_items query with alternative results of your own.</td>
+</tr>
 <tr>
 <td style="padding-right: 10px; vertical-align: top; font-weight:bold">mla_list_table_search_filter_fields</td>
 <td>Gives you an opportunity to add or remove any of the MLA standard fields for Search Media.</td>
