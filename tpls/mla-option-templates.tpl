@@ -650,9 +650,7 @@
 	<[+icontag+] class='gallery-icon [+orientation+]'>
 		[+link+]
 	</[+icontag+]>
-	<[+captiontag+] class='wp-caption-text gallery-caption'>
-		[+caption+]
-	</[+captiontag+]>
+	[+captiontag_content+]
 </[+itemtag+]>
 
 <!-- template="default-row-close-markup" -->

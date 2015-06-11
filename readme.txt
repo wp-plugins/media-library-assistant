@@ -181,6 +181,9 @@ All of the MLA source code has been annotated with "DocBlocks", a special type o
 * New: A new `/media-library-assistant/examples/mla-a-z-cloud-example.php.txt` example plugin has been added that combines MLA with the Collapse-o-matic plugin and custom database queries to produce an "alphabetic cloud" and custom `[mla_gallery]`.
 * New: For `[mla_gallery]`, when `mla_alt_shortcode=mla_tag_cloud`, parameters such as `mla_link_href` are passed through to be used by [`mla_tag_cloud]`.
 * New: Term-specific pagination has been added to the `/examples/twentytwelve-mla/image.php` file.
+* New: For `[mla_gallery]`, the **new "captiontag_content"** attachment-specific substitution parameter contains the complete HTML markup for the caption if both captiontag and caption are not empty. This can be used to omit empty caption tags (as it is in the default template).
+* Fix: For `[mla_gallery]`, the "captiontag" (&lt;dd&gt; or &lt;figcaption&gt;) now contains an **item-specific `id` attribute**, supporting the `aria-describedby` attribute in the thumbnail's &lt;img&gt; tag.
+* Fix: For `[mla_gallery]`, the **default HTML5 Row Open and Row Close template sections are now empty** for themes that register support for HTML5. This removes the `<!-- row-open -->` comment in the Row Open section and the `<br style="clear: both" />` tag in the Row Close section.
 * Fix: The obsolete "Attached" view has been removed from the `/examples/mla-custom-view-example.php.txt` file.
 * Fix: MLA enhanced icons for non-iage items are now properly displayed on the Media/Assistant submenu table.
 * Fix: Taxonomy terms containing "HTML special characters", e.g., ampersands, are now handled correctly for searching and editing.
@@ -286,7 +289,7 @@ All of the MLA source code has been annotated with "DocBlocks", a special type o
 == Upgrade Notice ==
 
 = 2.11 =
-Enhanced WPML and new Polylang support. "Attached" Media/Assistant table view. Seven other enhancements, thirteen fixes.
+Enhanced WPML and new Polylang support. "Attached" Media/Assistant table view. Eight other enhancements, fifteen fixes.
 
 == Other Notes ==
 

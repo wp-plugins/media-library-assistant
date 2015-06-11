@@ -2506,6 +2506,10 @@ The item-level substitution parameter names are:
 <td style="padding-right: 10px; vertical-align: top; font-weight:bold">caption</td>
 <td>if captiontag is not empty, contains caption/post_excerpt</td>
 </tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">captiontag_content</td>
+<td>if both captiontag and caption are not empty, contains the complete HTML markup for the caption. This can be used to omit empty tags (as it is in the default template).</td>
+</tr>
 <td style="padding-right: 10px; vertical-align: top; font-weight:bold">excerpt</td>
 <td>always contains post_excerpt</td>
 </tr>

@@ -699,9 +699,17 @@ class MLAShortcodes {
 			$open_template = '';
 		}
 
-		$row_open_template = MLAOptions::mla_fetch_gallery_template( $markup_values['mla_markup'] . '-row-open', 'markup' );
-		if ( empty( $row_open_template ) ) {
+		/*
+		 * Emulate [gallery] handling of row open markup for the default template only
+		 */
+		if ( $html5 && ( 'default' == $markup_values['mla_markup'] ) ) {
 			$row_open_template = '';
+		} else{
+			$row_open_template = MLAOptions::mla_fetch_gallery_template( $markup_values['mla_markup'] . '-row-open', 'markup' );
+		
+			if ( empty( $row_open_template ) ) {
+				$row_open_template = '';
+			}
 		}
 
 		$item_template = MLAOptions::mla_fetch_gallery_template( $markup_values['mla_markup'] . '-item', 'markup' );
@@ -709,9 +717,17 @@ class MLAShortcodes {
 			$item_template = '';
 		}
 
-		$row_close_template = MLAOptions::mla_fetch_gallery_template( $markup_values['mla_markup'] . '-row-close', 'markup' );
-		if ( empty( $row_close_template ) ) {
+		/*
+		 * Emulate [gallery] handling of row close markup for the default template only
+		 */
+		if ( $html5 && ( 'default' == $markup_values['mla_markup'] ) ) {
 			$row_close_template = '';
+		} else{
+			$row_close_template = MLAOptions::mla_fetch_gallery_template( $markup_values['mla_markup'] . '-row-close', 'markup' );
+		
+			if ( empty( $row_close_template ) ) {
+				$row_close_template = '';
+			}
 		}
 
 		$close_template = MLAOptions::mla_fetch_gallery_template( $markup_values['mla_markup'] . '-close', 'markup' );
@@ -725,7 +741,6 @@ class MLAShortcodes {
 		$new_text = $open_template . $row_open_template . $row_close_template . $close_template;
 
 		$markup_values = MLAData::mla_expand_field_level_parameters( $new_text, $attr, $markup_values );
-
 		if ( self::$mla_debug ) {
 			$output = self::$mla_debug_messages;
 			self::$mla_debug_messages = '';
@@ -958,13 +973,14 @@ class MLAShortcodes {
 			}
 
 			/*
-			 * As of WP 3.7, this function returns "<a href='$url'>$link_text</a>", where $link_text
-			 * can be an image thumbnail or a text link. The "title=" attribute was dropped.
-			 * The function is defined in /wp-includes/post-template.php.
+			 * As of WP 3.7, this function returns "<a href='$url'>$link_text</a>", where
+			 * $link_text can be an image thumbnail or a text link. The "title=" attribute
+			 * was dropped. The function is defined in /wp-includes/post-template.php.
 			 *
-			 * As of WP 4.1, this function has an additional optional parameter, an "Array or string of attributes",
-			 * used in the [gallery] shortcode to tie the link to a caption with 'aria-describedby'. The caption
-			 * has a matching 'id' attribute "$selector-#id".
+			 * As of WP 4.1, this function has an additional optional parameter, an "Array or
+			 * string of attributes", used in the [gallery] shortcode to tie the link to a
+			 * caption with 'aria-describedby'. The caption has a matching 'id' attribute
+			 * "$selector-#id". See below for the MLA equivalent processing.
 			 */
 			$item_values['pagelink'] = wp_get_attachment_link($attachment->ID, $size, true, $show_icon, $link_text);
 			$item_values['filelink'] = wp_get_attachment_link($attachment->ID, $size, false, $show_icon, $link_text);
@@ -1037,6 +1053,14 @@ class MLAShortcodes {
 				$image_attributes = self::_process_shortcode_parameter( $arguments['mla_image_attributes'], $item_values ) . ' ';
 			} else {
 				$image_attributes = '';
+			}
+
+			/*
+			 * WordPress 4.1 ties the <img> tag to the caption with 'aria-describedby'
+			 * has a matching 'id' attribute "$selector-#id".
+			 */
+			if ( trim( $item_values['caption'] ) && ( false === strpos( $image_attributes, 'aria-describedby=' ) ) && ( 'default' == $item_values['mla_markup'] ) ) {
+				$image_attributes .= 'aria-describedby="' . $item_values['selector'] . '-' . $item_values['attachment_ID'] . '" ';
 			}
 
 			if ( ! empty( $arguments['mla_image_class'] ) ) {
@@ -1341,7 +1365,7 @@ class MLAShortcodes {
 				} // has extension
 			} // mla_viewer
 
-			if ($is_gallery ) {
+			if ( $is_gallery ) {
 				/*
 				 * Start of row markup
 				 */
@@ -1361,7 +1385,17 @@ class MLAShortcodes {
 				} else {
 					$item_values['last_in_row'] = '';
 				}
-
+				
+				/*
+				 * Conditional caption tag to replicate WP 4.1+,
+				 * now used in the default markup template.
+				 */
+				if ( $item_values['captiontag'] && trim( $item_values['caption'] ) ) {
+					$item_values['captiontag_content'] = '<' . $item_values['captiontag'] . " class='wp-caption-text gallery-caption' id='" . $item_values['selector'] . '-' . $item_values['attachment_ID'] . "'>\n\t\t" . $item_values['caption'] . "\n\t</" . $item_values['captiontag'] . ">\n";
+				} else {
+					$item_values['captiontag_content'] = '';
+				}
+	
 				$item_values = apply_filters( 'mla_gallery_item_values', $item_values );
 				$item_template = apply_filters( 'mla_gallery_item_template', $item_template );
 				$parse_value = MLAData::mla_parse_template( $item_template, $item_values );

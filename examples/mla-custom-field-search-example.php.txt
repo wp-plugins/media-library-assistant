@@ -3,7 +3,7 @@
  * Extends the Media/Assistant "Search Media" box to custom field values
  *
  * @package MLA Custom Field Search Example
- * @version 1.01
+ * @version 1.02
  */
 
 /*
@@ -11,7 +11,7 @@ Plugin Name: MLA Custom Field Search Example
 Plugin URI: http://fairtradejudaica.org/media-library-assistant-a-wordpress-plugin/
 Description: Extends the Media/Assistant "Search Media" box to custom field values
 Author: David Lingren
-Version: 1.01
+Version: 1.02
 Author URI: http://fairtradejudaica.org/our-story/staff/
 
 Copyright 2014 - 2015 David Lingren
@@ -72,15 +72,32 @@ class MLACustomFieldSearchExample {
 	 * @return	object	updated mla_list_table object.
 	 */
 	public static function mla_list_table_new_instance( $mla_list_table ) {
-		
-		// Look for the special "custom:" prefix in the Search Media text box
-		if ( isset( $_REQUEST['s'] ) && ( 'custom:' == substr( $_REQUEST['s'], 0, 7 ) ) ) {
-			self::$custom_field_parameters['s'] = $_REQUEST['s'];
-			unset( $_REQUEST['s'] );
-			self::$custom_field_parameters['mla_search_connector'] = $_REQUEST['mla_search_connector'];
-			unset( $_REQUEST['mla_search_connector'] );
-			self::$custom_field_parameters['mla_search_fields'] = $_REQUEST['mla_search_fields'];
-			unset( $_REQUEST['mla_search_fields'] );
+		/*
+		 * Look for the special "custom:" prefix in the Search Media text box,
+		 * after checking for the "debug" prefixes.
+		 */
+		if ( isset( $_REQUEST['s'] ) ) {
+			switch ( substr( $_REQUEST['s'], 0, 3 ) ) {
+				case '>|<':
+					self::$custom_field_parameters['debug'] = 'console';
+					$start = 3;
+					break;
+				case '<|>':
+					self::$custom_field_parameters['debug'] = 'log';
+					$start = 3;
+					break;
+				default:
+					$start = 0;
+			}
+
+			if ( 'custom:' == substr( $_REQUEST['s'], $start, 7 ) ) {
+				self::$custom_field_parameters['s'] = substr( $_REQUEST['s'], $start + 7 );
+				unset( $_REQUEST['s'] );
+				self::$custom_field_parameters['mla_search_connector'] = $_REQUEST['mla_search_connector'];
+				unset( $_REQUEST['mla_search_connector'] );
+				self::$custom_field_parameters['mla_search_fields'] = $_REQUEST['mla_search_fields'];
+				unset( $_REQUEST['mla_search_fields'] );
+			} // custom: prefix
 		} // isset s=custom:
 		
 		return $mla_list_table;
@@ -123,11 +140,15 @@ class MLACustomFieldSearchExample {
 			return $request;
 		}
 		
+		if ( isset( self::$custom_field_parameters['debug'] ) ) {
+			MLAData::$query_parameters['debug'] = self::$custom_field_parameters['debug'];
+		}
+		
 		// Apply default field name?
-		if ( '=' == substr( self::$custom_field_parameters['s'], 7, 1 ) ) {
-			$tokens = array( 'File Size', substr( self::$custom_field_parameters['s'], 8 ) );
+		if ( '=' == substr( self::$custom_field_parameters['s'], 0, 1 ) ) {
+			$tokens = array( 'File Size', substr( self::$custom_field_parameters['s'], 1 ) );
 		} else {
-			$tokens = explode( '=', substr( self::$custom_field_parameters['s'], 7 ) ) ;
+			$tokens = explode( '=', self::$custom_field_parameters['s'] ) ;
 		}
 
 		// See if the custom field name is present, followed by "=" and a value
@@ -145,8 +166,22 @@ class MLACustomFieldSearchExample {
 		 */
 		$tokens = MLAMime::mla_prepare_view_query( 'custom_field_search', 'custom:' . $field . '=' . $value );
 		$tokens = $tokens['meta_query'];
+
+		/*
+		 * Matching a meta_value to NULL requires a LEFT JOIN to a view and a special WHERE clause;
+		 * MLA filters will handle this case.
+		 */
+		if ( isset( $tokens['key'] ) ) {
+			MLAData::$query_parameters['use_postmeta_view'] = true;
+			MLAData::$query_parameters['postmeta_key'] = $tokens['key'];
+			MLAData::$query_parameters['postmeta_value'] = NULL;
+			return $request;
+		}
+
+		/*
+		 * Process "normal" meta_query
+		 */
 		$query = array( 'relation' => $tokens['relation'] );
-		
 		$padded_values = array();
 		$patterns = array();
 		foreach ( $tokens as $key => $value ) {
@@ -159,10 +194,14 @@ class MLACustomFieldSearchExample {
 					$value['value'] = str_pad( $value['value'], 15, ' ', STR_PAD_LEFT );
 					$padded_values[ trim( $value['value'] ) ] = $value['value'];
 				} else {
-					$patterns[] = $value['value'] = '%' . $value['value'];
+					$value['value'] = '%' . $value['value'];
 				}
 			}
 			
+			if ( 'LIKE' == $value['compare'] ) {
+				$patterns[] = $value['value'];
+			}
+
 			$query[] = $value;
 		}
 

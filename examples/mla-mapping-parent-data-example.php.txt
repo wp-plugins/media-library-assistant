@@ -5,7 +5,7 @@
  * Provides an example of the filters provided by the IPTC/EXIF and Custom Field mapping features
  *
  * @package MLA Mapping Parent Data Example
- * @version 1.00
+ * @version 1.01
  */
 
 /*
@@ -13,7 +13,7 @@ Plugin Name: MLA Mapping Parent Data Example
 Plugin URI: http://fairtradejudaica.org/media-library-assistant-a-wordpress-plugin/
 Description: Copies a custom field value from the parent post/page to all attached Media Library items.
 Author: David Lingren
-Version: 1.00
+Version: 1.01
 Author URI: http://fairtradejudaica.org/our-story/staff/
 
 Copyright 2015 David Lingren
@@ -60,6 +60,11 @@ class MLAMappingParentDataExample {
 			return;
 
 		add_filter( 'mla_mapping_updates', 'MLAMappingParentDataExample::mla_mapping_updates', 10, 5 );
+		
+		/*
+		 * Triggered by wp_insert_post and wp_publish_post in wp-includes/post.php 
+		 */
+		add_filter( 'save_post', 'MLAMappingParentDataExample::save_post', 10, 3 );
 	}
 
 	/**
@@ -80,8 +85,10 @@ class MLAMappingParentDataExample {
 	 * @return	array	updated attachment's updates
 	 */
 	public static function mla_mapping_updates( $updates, $post_id, $category, $settings, $attachment_metadata ) {
-
-		// Make sure our rule is defined
+		/*
+		 * For this example we have created a custom field named "ref_offer", which can be
+		 * changed for your application. Make sure our rule is defined.
+		 */
 		if ( 'single_attachment_mapping' == $category ) {
 			if ( ! isset( $settings['ref_offer'] ) ) {
 				return $updates;
@@ -116,6 +123,34 @@ class MLAMappingParentDataExample {
 		
 		return $updates;
 	} // mla_mapping_updates
+
+	/**
+	 * WordPress save post action
+	 *
+	 * This action is called AFTER the post has been added or updated in the posts database table.
+	 * It is used to map or re-map the IPTC/EXIF and custom field rules.
+	 *
+	 * @since 1.01
+	 *
+	 * @param	integer post ID to be evaluated
+	 * @param	object 	post content
+	 * @param	boolean true if update, false if insert
+	 */
+	public static function save_post( $post_id, $post, $update ) {
+		// If this is just a revision, exit.
+		if ( wp_is_post_revision( $post_id ) ) {
+			return;
+		}
+
+		// You may need to add MIME types other than 'image' for your application	
+		foreach ( get_attached_media( 'image' , $post_id ) as $attachment_id => $value) {
+			$updates = MLAOptions::mla_evaluate_custom_field_mapping( $attachment_id, 'single_attachment_mapping' );
+
+			if ( !empty( $updates ) ) {
+				$item_content = MLAData::mla_update_single_item( $attachment_id, $updates );
+			}
+		}
+	} // save_post
 } //MLAMappingParentDataExample
 
 /*
