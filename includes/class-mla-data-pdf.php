@@ -693,12 +693,13 @@ class MLAPDF {
 	 * @return	array	( 'xmp' => array( key => value ), 'pdf' => array( key => value ) ) for each metadata field, in string format
 	 */
 	public static function mla_extract_pdf_metadata( $file_name ) {
+		$xmp = array();
 		$metadata = array();
 		self::$pdf_indirect_objects = NULL;
 		$chunksize = 16384;
 
 		if ( ! file_exists( $file_name ) ) {
-			return $metadata;
+			return array( 'xmp' => $xmp, 'pdf' => $metadata );
 		}
 
 		$filesize = filesize( $file_name );
@@ -723,7 +724,7 @@ class MLAPDF {
 		if ( 0 == $match_count ) {
 			/* translators: 1: ERROR tag 2: path and file */
 			error_log( sprintf( _x( '%1$s: File "%2$s", startxref not found.', 'error_log', 'media-library-assistant' ), __( 'ERROR', 'media-library-assistant' ), $path ), 0 );
-			return $metadata;
+			return array( 'xmp' => $xmp, 'pdf' => $metadata );
 		}
 
 		$startxref = (integer) $matches[1][ $match_count - 1 ][0];
@@ -762,7 +763,6 @@ class MLAPDF {
 			/*
 			 * Look for XMP Metadata
 			 */
-			$xmp = array();
 			$root_reference = NULL;
 			foreach ( $trailer_dictionaries as $trailer_dictionary ) 
 			if ( isset( $trailer_dictionary['Root'] ) ) {
