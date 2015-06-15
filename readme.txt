@@ -4,7 +4,7 @@ Donate link: http://fairtradejudaica.org/make-a-difference/donate/
 Tags: attachment, attachments, documents, gallery, image, images, media, library, media library, tag cloud, media-tags, media tags, tags, media categories, categories, IPTC, EXIF, XMP, GPS, PDF, meta, metadata, photo, photos, photograph, photographs, photoblog, photo albums, lightroom, photoshop, MIME, mime-type, icon, upload, file extensions, WPML, Polylang, multilanguage, multilingual, localization
 Requires at least: 3.5.0
 Tested up to: 4.2.2
-Stable tag: 2.10
+Stable tag: 2.11
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -300,6 +300,8 @@ In this section, scroll down to see highlights from the documentation, including
 == Acknowledgements ==
 
 Media Library Assistant includes many images drawn (with permission) from the [Crystal Project Icons](http://www.softicons.com/free-icons/system-icons/crystal-project-icons-by-everaldo-coelho), created by [Everaldo Coelho](http://www.everaldo.com), founder of [Yellowicon](http://www.yellowicon.com).
+
+<strong>Many thanks</strong> to Aurovrata Venet and Il'ya Karastel for testing and advising on the new multilingual support features!
 
 <h4>WPML &amp; Polylang Multilingual Support; the MLA Language Tab</h4>
 
