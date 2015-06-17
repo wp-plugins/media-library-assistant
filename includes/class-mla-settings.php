@@ -3018,7 +3018,10 @@ class MLASettings {
 			$page_content['message'] = sprintf( __( '%1$s: Reading the %2$s file ( %3$s ) "%4$s".', 'media-library-assistant' ), __( 'ERROR', 'media-library-assistant' ), __( 'Error Log', 'media-library-assistant' ), $error_log_name, $php_errormsg );
 			$error_log_contents = '';
 		} else {
-			//$error_log_contents = esc_html( $error_log_contents );
+			$display_limit = absint( MLAOptions::mla_get_option( MLAOptions::MLA_DEBUG_DISPLAY_LIMIT ) );
+			if ( 0 < $display_limit ) {
+				$error_log_contents = substr( $error_log_contents, 0 - $display_limit );
+			}
 		}
 
 		if ( current_user_can( 'upload_files' ) ) {

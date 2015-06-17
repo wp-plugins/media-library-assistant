@@ -3,7 +3,7 @@
  * Extends the Media/Assistant "Search Media" box to custom field values
  *
  * @package MLA Custom Field Search Example
- * @version 1.02
+ * @version 1.03
  */
 
 /*
@@ -11,7 +11,7 @@ Plugin Name: MLA Custom Field Search Example
 Plugin URI: http://fairtradejudaica.org/media-library-assistant-a-wordpress-plugin/
 Description: Extends the Media/Assistant "Search Media" box to custom field values
 Author: David Lingren
-Version: 1.02
+Version: 1.03
 Author URI: http://fairtradejudaica.org/our-story/staff/
 
 Copyright 2014 - 2015 David Lingren
@@ -97,12 +97,14 @@ class MLACustomFieldSearchExample {
 				unset( $_REQUEST['mla_search_connector'] );
 				self::$custom_field_parameters['mla_search_fields'] = $_REQUEST['mla_search_fields'];
 				unset( $_REQUEST['mla_search_fields'] );
-			} // custom: prefix
+			} else {
+				self::$custom_field_parameters = array();
+			}
 		} // isset s=custom:
 		
 		return $mla_list_table;
 	} // mla_list_table_new_instance
-	
+
 	/**
 	 * Custom Field Search "parameters"
 	 *
@@ -146,7 +148,7 @@ class MLACustomFieldSearchExample {
 		
 		// Apply default field name?
 		if ( '=' == substr( self::$custom_field_parameters['s'], 0, 1 ) ) {
-			$tokens = array( 'File Size', substr( self::$custom_field_parameters['s'], 1 ) );
+			$tokens = array( 'Orientation', substr( self::$custom_field_parameters['s'], 1 ) );
 		} else {
 			$tokens = explode( '=', self::$custom_field_parameters['s'] ) ;
 		}
@@ -157,7 +159,7 @@ class MLACustomFieldSearchExample {
 			$value = implode( '=', $tokens );
 		} else {
 			// Supply a default custom field name
-			$field = 'File Size';
+			$field = 'Orientation';
 			$value = $tokens[0];
 		}
 

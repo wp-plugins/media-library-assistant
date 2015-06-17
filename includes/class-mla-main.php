@@ -29,7 +29,7 @@ class MLA {
 	 *
 	 * @var	string
 	 */
-	const CURRENT_MLA_VERSION = '2.11';
+	const CURRENT_MLA_VERSION = '2.12';
 
 	/**
 	 * Current date for Development Version, empty for production versions
@@ -2305,6 +2305,120 @@ class MLA {
 			'message' => sprintf( __( 'Item %1$d moved to Trash.', 'media-library-assistant' ), $post_id ),
 			'body' => '' 
 		);
+	}
+
+	/**
+	 * Accumulates debug messages
+	 *
+	 * @since 2.12
+	 *
+	 * @var	string
+	 */
+	private static $mla_debug_messages = array();
+
+	/**
+	 * Debug information collection mode
+	 *
+	 * @since 2.12
+	 *
+	 * @var	string
+	 */
+	private static $mla_debug_mode = 'none';
+
+	/**
+	 * Set debug information collection mode
+	 * 
+	 * @since 2.12
+	 * 
+	 * @param	string	$mode Collection mode: 'buffer' (default), 'console', 'log' or 'none'
+	 *
+	 * @return	boolean	true if success else false
+	 */
+	public static function mla_debug_mode( $mode = 'buffer' ) {
+		self::$mla_debug_mode = $mode;
+		return true;
+	}
+
+	/**
+	 * Get debug information without clearing the buffer
+	 * 
+	 * @since 2.12
+	 * 
+	 * @param	string	$format Return data type: 'string' (default) or 'array'
+	 * @param	string	$glue Join array elements with '\n' or '<p>' (default)
+	 *
+	 * @return	boolean	true if success else false
+	 */
+	public static function mla_debug_content( $format = 'string', $glue = '<p>' ) {
+		if ( 'array' == $format ) {
+			return self::$mla_debug_messages;
+		}
+		
+		// format == 'string'
+		if ( '<p>' == $glue ) {
+			return '<p>' . implode( '</p><p>', self::$mla_debug_messages ) . '</p>';
+		}
+
+		return implode( "\n", self::$mla_debug_messages ) . "\n";
+	}
+
+	/**
+	 * Flush debug information and clear buffer
+	 * 
+	 * @since 2.12
+	 * 
+	 * @param	string	$destination Destination: 'buffer' (default), 'console', 'log' or 'none'
+	 * @param	boolean	$stop_collecting true (default) to stop, false to continue collection
+	 *
+	 * @return	string	debug content if $destination == 'buffer' else empty string
+	 */
+	public static function mla_debug_flush( $destination = 'buffer', $stop_collecting = true ) {
+		$results = '';
+		
+		switch ( $destination ) {
+			case 'buffer':
+				$results = self::mla_debug_content();
+				break;
+			case 'console':
+				foreach( self::$mla_debug_messages as $message ) {
+					trigger_error( $message, E_USER_WARNING );
+				}
+				break;
+			case 'log':
+				foreach( self::$mla_debug_messages as $message ) {
+					error_log( $message, 0 );
+				}
+				break;
+		}
+		
+		self::$mla_debug_messages = array();
+		
+		if ( $stop_collecting ) {
+			self::$mla_debug_mode = 'none';
+		}
+
+		return $results;
+	}
+
+	/**
+	 * Add a debug message to the collection
+	 * 
+	 * @since 2.12
+	 * 
+	 * @param	string	$message Message text
+	 */
+	public static function mla_debug_add( $message ) {
+		switch ( self::$mla_debug_mode ) {
+			case 'buffer':
+				self::$mla_debug_messages[] = $message;
+				break;
+			case 'console':
+				trigger_error( $message, E_USER_WARNING );
+				break;
+			case 'log':
+				error_log( $message, 0 );
+				break;
+		}
 	}
 } // class MLA
 ?>

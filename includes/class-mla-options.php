@@ -246,6 +246,11 @@ class MLAOptions {
 	const MLA_ENABLE_MLA_ICONS = 'enable_mla_icons';
 
 	/**
+	 * Provides a unique name for the Debug display limit option
+	 */
+	const MLA_DEBUG_DISPLAY_LIMIT = 'debug_display_limit';
+
+	/**
 	 * Option setting for "Featured in" reporting
 	 *
 	 * This setting is false if the "Featured in" database access setting is "disabled", else true.
@@ -382,10 +387,10 @@ class MLAOptions {
 		 * Load the default templates
 		 */
 		if ( is_null( self::$mla_option_templates ) ) {
-			MLAShortcodes::$mla_debug_messages .= '<p><strong>mla_debug _load_option_templates()</strong> ' . __( 'error loading tpls/mla-option-templates.tpl', 'media-library-assistant' );
+			MLA::mla_debug_add( '<strong>mla_debug _load_option_templates()</strong> ' . __( 'error loading tpls/mla-option-templates.tpl', 'media-library-assistant' ) );
 			return;
 		} elseif ( !self::$mla_option_templates ) {
-			MLAShortcodes::$mla_debug_messages .= '<p><strong>mla_debug _load_option_templates()</strong> ' . __( 'tpls/mla-option-templates.tpl not found', 'media-library-assistant' );
+			MLA::mla_debug_add( '<strong>mla_debug _load_option_templates()</strong> ' . __( 'tpls/mla-option-templates.tpl not found', 'media-library-assistant' ) );
 			$mla_option_templates = null;
 			return;
 		}
@@ -1243,6 +1248,14 @@ class MLAOptions {
 					'std' => 'checked',
 					'help' => __( 'Check/uncheck this option to enable/disable MLA File Type Icons Support, then click <strong>Save Changes</strong> to record the new setting.', 'media-library-assistant' )),
 
+			self::MLA_DEBUG_DISPLAY_LIMIT =>
+				array('tab' => 'debug',
+					'name' => __( 'Display Limit', 'media-library-assistant' ),
+					'type' => 'text',
+					'std' => '',
+					'size' => 5,
+					'help' => __( 'Enter the maximum number of debug log characters to display; enter zero for no limit.', 'media-library-assistant' )),
+
 			/* Here are examples of the other option types
 			'textarea' =>
 				array('tab' => '',
@@ -1293,7 +1306,7 @@ class MLAOptions {
 	 */
 	public static function mla_fetch_gallery_template( $key, $type = 'style' ) {
 		if ( ! is_array( self::$mla_option_templates ) ) {
-			MLAShortcodes::$mla_debug_messages .= '<p><strong>mla_debug mla_fetch_gallery_template()</strong> ' . __( 'no templates exist', 'media-library-assistant' );
+			MLA::mla_debug_add( '<strong>mla_debug mla_fetch_gallery_template()</strong> ' . __( 'no templates exist', 'media-library-assistant' ) );
 			return null;
 		}
 
@@ -1301,7 +1314,7 @@ class MLAOptions {
 		if ( array_key_exists( $array_key, self::$mla_option_templates ) ) {
 			return self::$mla_option_templates[ $array_key ];
 		} else {
-			MLAShortcodes::$mla_debug_messages .= "<p><strong>mla_fetch_gallery_template( {$key}, {$type} )</strong> " . __( 'not found', 'media-library-assistant' );
+			MLA::mla_debug_add( "<strong>mla_fetch_gallery_template( {$key}, {$type} )</strong> " . __( 'not found', 'media-library-assistant' ) );
 			return false;
 		}
 	}
@@ -1315,7 +1328,7 @@ class MLAOptions {
 	 */
 	public static function mla_get_style_templates() {
 		if ( ! is_array( self::$mla_option_templates ) ) {
-			MLAShortcodes::$mla_debug_messages .= '<p><strong>mla_debug mla_get_style_templates()</strong> ' . __( 'no templates exist', 'media-library-assistant' );
+			MLA::mla_debug_add( '<strong>mla_debug mla_get_style_templates()</strong> ' . __( 'no templates exist', 'media-library-assistant' ) );
 			return null;
 		}
 
@@ -1357,7 +1370,7 @@ class MLAOptions {
 	 */
 	public static function mla_get_markup_templates() {
 		if ( ! is_array( self::$mla_option_templates ) ) {
-			MLAShortcodes::$mla_debug_messages .= '<p><strong>mla_debug mla_get_markup_templates()</strong> ' . __( 'no templates exist', 'media-library-assistant' );
+			MLA::mla_debug_add( '<strong>mla_debug mla_get_markup_templates()</strong> ' . __( 'no templates exist', 'media-library-assistant' ) );
 			return null;
 		}
 

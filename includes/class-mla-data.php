@@ -1515,7 +1515,6 @@ class MLAData {
 	 * ['sentence'] => entire string must match as one "keyword"
 	 * ['exact'] => entire string must match entire field value
 	 * ['debug'] => internal element, console/log/shortcode/none
-	 * ['mla_debug_messages'] => internal element, added when debug = 'shortcode'
 	 * ['tax_terms_count'] => internal element, shared with JOIN and GROUP BY filters
 	 *
 	 * @since 2.00
@@ -1760,6 +1759,7 @@ class MLAData {
 		if ( isset( $clean_request['debug'] ) ) {
 			self::$query_parameters['debug'] = $clean_request['debug'];
 			self::$search_parameters['debug'] = $clean_request['debug'];
+			MLA::mla_debug_mode( $clean_request['debug'] );
 			unset( $clean_request['debug'] );
 		}
 
@@ -1982,13 +1982,8 @@ class MLAData {
 			global $wp_filter;
 			$debug_array = array( 'posts_search' => $wp_filter['posts_search'], 'posts_join' => $wp_filter['posts_join'], 'posts_where' => $wp_filter['posts_where'], 'posts_orderby' => $wp_filter['posts_orderby'] );
 
-			if ( 'console' == self::$query_parameters['debug'] ) {
-				/* translators: 1: DEBUG tag 2: query filter details */
-				trigger_error( sprintf( __( '%1$s: _execute_list_table_query $wp_filter = "%2$s".', 'media-library-assistant' ), __( 'DEBUG', 'media-library-assistant' ), var_export( $debug_array, true ) ), E_USER_WARNING );
-			} else {
-				/* translators: 1: DEBUG tag 2: query filter details */
-				error_log( sprintf( _x( '%1$s: _execute_list_table_query $wp_filter = "%2$s".', 'error_log', 'media-library-assistant' ), __( 'DEBUG', 'media-library-assistant' ), var_export( $debug_array, true ) ), 0 );
-			}
+			/* translators: 1: DEBUG tag 2: query filter details */
+			MLA::mla_debug_add( sprintf( _x( '%1$s: _execute_list_table_query $wp_filter = "%2$s".', 'error_log', 'media-library-assistant' ), __( 'DEBUG', 'media-library-assistant' ), var_export( $debug_array, true ) ) );
 
 			add_filter( 'posts_clauses', 'MLAData::mla_query_posts_clauses_filter', 0x7FFFFFFF, 1 );
 			add_filter( 'posts_clauses_request', 'MLAData::mla_query_posts_clauses_request_filter', 0x7FFFFFFF, 1 );
@@ -2002,17 +1997,10 @@ class MLAData {
 
 			$debug_array = array( 'request' => $request, 'query_parameters' => self::$query_parameters, 'post_count' => $results->post_count, 'found_posts' => $results->found_posts );
 
-			if ( 'console' == self::$query_parameters['debug'] ) {
-				/* translators: 1: DEBUG tag 2: query details */
-				trigger_error( sprintf( __( '%1$s: _execute_list_table_query WP_Query = "%2$s".', 'media-library-assistant' ), __( 'DEBUG', 'media-library-assistant' ), var_export( $debug_array, true ) ), E_USER_WARNING );
-				/* translators: 1: DEBUG tag 2: SQL statement */
-				trigger_error( sprintf( __( '%1$s: _execute_list_table_query SQL_request = "%2$s".', 'media-library-assistant' ), __( 'DEBUG', 'media-library-assistant' ), var_export( $results->request, true ) ), E_USER_WARNING );
-			} else {
-				/* translators: 1: DEBUG tag 2: query details */
-				error_log( sprintf( _x( '%1$s: _execute_list_table_query WP_Query = "%2$s".', 'error_log', 'media-library-assistant' ), __( 'DEBUG', 'media-library-assistant' ), var_export( $debug_array, true ) ), 0 );
-				/* translators: 1: DEBUG tag 2: SQL statement */
-				error_log( sprintf( _x( '%1$s: _execute_list_table_query SQL_request = "%2$s".', 'error_log', 'media-library-assistant' ), __( 'DEBUG', 'media-library-assistant' ), var_export( $results->request, true ) ), 0 );
-			}
+			/* translators: 1: DEBUG tag 2: query details */
+			MLA::mla_debug_add( sprintf( _x( '%1$s: _execute_list_table_query WP_Query = "%2$s".', 'error_log', 'media-library-assistant' ), __( 'DEBUG', 'media-library-assistant' ), var_export( $debug_array, true ) ) );
+			/* translators: 1: DEBUG tag 2: SQL statement */
+			MLA::mla_debug_add( sprintf( _x( '%1$s: _execute_list_table_query SQL_request = "%2$s".', 'error_log', 'media-library-assistant' ), __( 'DEBUG', 'media-library-assistant' ), var_export( $results->request, true ) ) );
 		} // debug
 
 		if ( function_exists( 'relevanssi_prevent_default_request' ) ) {
@@ -2381,13 +2369,10 @@ class MLAData {
 			$debug_array['search_clause'] = $search_clause;
 
 			if ( 'shortcode' == self::$search_parameters['debug'] ) {
-				self::$search_parameters['mla_debug_messages'] = '<p><strong>mla_debug posts_search filter</strong> = ' . var_export( $debug_array, true ) . '</p>';
-			} elseif ( 'console' == self::$search_parameters['debug'] ) {
-				/* translators: 1: DEBUG tag 2: search filter details */
-				trigger_error( sprintf( __( '%1$s: mla_query_posts_search_filter = "%2$s".', 'media-library-assistant' ), __( 'DEBUG', 'media-library-assistant' ), var_export( $debug_array, true ) ), E_USER_WARNING );
+				MLA::mla_debug_add( '<strong>mla_debug posts_search filter</strong> = ' . var_export( $debug_array, true ) );
 			} else {
 				/* translators: 1: DEBUG tag 2: search filter details */
-				error_log( sprintf( _x( '%1$s: mla_query_posts_search_filter = "%2$s".', 'error_log', 'media-library-assistant' ), __( 'DEBUG', 'media-library-assistant' ), var_export( $debug_array, true ) ), 0 );
+				MLA::mla_debug_add( sprintf( _x( '%1$s: mla_query_posts_search_filter = "%2$s".', 'error_log', 'media-library-assistant' ), __( 'DEBUG', 'media-library-assistant' ), var_export( $debug_array, true ) ) );
 			}
 		} // debug
 
@@ -2457,13 +2442,8 @@ class MLAData {
 		if ( isset( self::$query_parameters['debug'] ) ) {
 			$debug_array['where_clause'] = $where_clause;
 
-			if ( 'console' == self::$query_parameters['debug'] ) {
-				/* translators: 1: DEBUG tag 2: where filter details */
-				trigger_error( sprintf( __( '%1$s: mla_query_posts_where_filter = "%2$s".', 'media-library-assistant' ), __( 'DEBUG', 'media-library-assistant' ), var_export( $debug_array, true ) ), E_USER_WARNING );
-			} else {
-				/* translators: 1: DEBUG tag 2: where filter details */
-				error_log( sprintf( _x( '%1$s: mla_query_posts_where_filter = "%2$s".', 'error_log', 'media-library-assistant' ), __( 'DEBUG', 'media-library-assistant' ), var_export( $debug_array, true ) ), 0 );
-			}
+			/* translators: 1: DEBUG tag 2: where filter details */
+			MLA::mla_debug_add( sprintf( _x( '%1$s: mla_query_posts_where_filter = "%2$s".', 'error_log', 'media-library-assistant' ), __( 'DEBUG', 'media-library-assistant' ), var_export( $debug_array, true ) ) );
 		} // debug
 
 		return $where_clause;
@@ -2511,13 +2491,8 @@ class MLAData {
 		if ( isset( self::$query_parameters['debug'] ) ) {
 			$debug_array['join_clause'] = $join_clause;
 
-			if ( 'console' == self::$query_parameters['debug'] ) {
-				/* translators: 1: DEBUG tag 2: join filter details */
-				trigger_error( sprintf( __( '%1$s: mla_query_posts_join_filter = "%2$s".', 'media-library-assistant' ), __( 'DEBUG', 'media-library-assistant' ), var_export( $debug_array, true ) ), E_USER_WARNING );
-			} else {
-				/* translators: 1: DEBUG tag 2: join filter details */
-				error_log( sprintf( _x( '%1$s: mla_query_posts_join_filter = "%2$s".', 'error_log', 'media-library-assistant' ), __( 'DEBUG', 'media-library-assistant' ), var_export( $debug_array, true ) ), 0 );
-			}
+			/* translators: 1: DEBUG tag 2: join filter details */
+			MLA::mla_debug_add( sprintf( _x( '%1$s: mla_query_posts_join_filter = "%2$s".', 'error_log', 'media-library-assistant' ), __( 'DEBUG', 'media-library-assistant' ), var_export( $debug_array, true ) ) );
 		} // debug
 
 		return $join_clause;
@@ -2613,13 +2588,8 @@ class MLAData {
 		if ( isset( self::$query_parameters['debug'] ) ) {
 			$debug_array['orderby_clause'] = $orderby_clause;
 
-			if ( 'console' == self::$query_parameters['debug'] ) {
-				/* translators: 1: DEBUG tag 2: orderby details details */
-				trigger_error( sprintf( __( '%1$s: mla_query_posts_orderby_filter = "%2$s".', 'media-library-assistant' ), __( 'DEBUG', 'media-library-assistant' ), var_export( $debug_array, true ) ), E_USER_WARNING );
-			} else {
-				/* translators: 1: DEBUG tag 2: orderby details details */
-				error_log( sprintf( _x( '%1$s: mla_query_posts_orderby_filter = "%2$s".', 'error_log', 'media-library-assistant' ), __( 'DEBUG', 'media-library-assistant' ), var_export( $debug_array, true ) ), 0 );
-			}
+			/* translators: 1: DEBUG tag 2: orderby details details */
+			MLA::mla_debug_add( sprintf( _x( '%1$s: mla_query_posts_orderby_filter = "%2$s".', 'error_log', 'media-library-assistant' ), __( 'DEBUG', 'media-library-assistant' ), var_export( $debug_array, true ) ) );
 		} // debug
 
 		return $orderby_clause;
@@ -2652,13 +2622,8 @@ class MLAData {
 	 * @return	array	query clauses after modification (none)
 	 */
 	public static function mla_query_posts_clauses_filter( $pieces ) {
-		if ( 'console' == self::$query_parameters['debug'] ) {
-			/* translators: 1: DEBUG tag 2: SQL clauses */
-			trigger_error( sprintf( __( '%1$s: mla_query_posts_clauses_filter = "%2$s".', 'media-library-assistant' ), __( 'DEBUG', 'media-library-assistant' ), var_export( $pieces, true ) ), E_USER_WARNING );
-		} else {
-			/* translators: 1: DEBUG tag 2: SQL clauses */
-			error_log( sprintf( _x( '%1$s: mla_query_posts_clauses_filter = "%2$s".', 'error_log', 'media-library-assistant' ), __( 'DEBUG', 'media-library-assistant' ), var_export( $pieces, true ) ), 0 );
-		}
+		/* translators: 1: DEBUG tag 2: SQL clauses */
+		MLA::mla_debug_add( sprintf( _x( '%1$s: mla_query_posts_clauses_filter = "%2$s".', 'error_log', 'media-library-assistant' ), __( 'DEBUG', 'media-library-assistant' ), var_export( $pieces, true ) ) );
 
 		return $pieces;
 	}
@@ -2676,13 +2641,8 @@ class MLAData {
 	 * @return	array	query clauses after modification (none)
 	 */
 	public static function mla_query_posts_clauses_request_filter( $pieces ) {
-		if ( 'console' == self::$query_parameters['debug'] ) {
-			/* translators: 1: DEBUG tag 2: SQL clauses */
-			trigger_error( sprintf( __( '%1$s: mla_query_posts_clauses_request_filter = "%2$s".', 'media-library-assistant' ), __( 'DEBUG', 'media-library-assistant' ), var_export( $pieces, true ) ), E_USER_WARNING );
-		} else {
-			/* translators: 1: DEBUG tag 2: SQL clauses */
-			error_log( sprintf( _x( '%1$s: mla_query_posts_clauses_request_filter = "%2$s".', 'error_log', 'media-library-assistant' ), __( 'DEBUG', 'media-library-assistant' ), var_export( $pieces, true ) ), 0 );
-		}
+		/* translators: 1: DEBUG tag 2: SQL clauses */
+		MLA::mla_debug_add( sprintf( _x( '%1$s: mla_query_posts_clauses_request_filter = "%2$s".', 'error_log', 'media-library-assistant' ), __( 'DEBUG', 'media-library-assistant' ), var_export( $pieces, true ) ) );
 
 		return $pieces;
 	}

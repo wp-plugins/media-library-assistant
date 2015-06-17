@@ -4,7 +4,7 @@ Donate link: http://fairtradejudaica.org/make-a-difference/donate/
 Tags: attachment, attachments, documents, gallery, image, images, media, library, media library, tag cloud, media-tags, media tags, tags, media categories, categories, IPTC, EXIF, XMP, GPS, PDF, meta, metadata, photo, photos, photograph, photographs, photoblog, photo albums, lightroom, photoshop, MIME, mime-type, icon, upload, file extensions, WPML, Polylang, multilanguage, multilingual, localization
 Requires at least: 3.5.0
 Tested up to: 4.2.2
-Stable tag: 2.11
+Stable tag: 2.12
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -170,6 +170,11 @@ All of the MLA source code has been annotated with "DocBlocks", a special type o
 
 == Changelog ==
 
+= 2.12 =
+* New: For `[mla_gallery]` and `[mla_tag_cloud]`, the `mla_debug=log` parameter writes debug information to the error log instead of the page or post containing the shortcode.
+* New: On the Settings/Media Library Assistant Debug tab, a new option lets you limit the amount of error log content displayed in the text area.
+* Fix: For `[mla_gallery]`, **a defect in the default template's caption processing** (using the "captiontag_content"  attachment-specific substitution parameter) has been corrected. The defect caused improper handling of the `mla_caption` parameter in some cases.
+
 = 2.11 =
 * New: **Polylang support has been added.** See the [Other Notes section](http://wordpress.org/extend/plugins/media-library-assistant/other_notes/ "Click here, then scroll down") section or the Settings/Media Library Assistant Documentation tab for more information.
 * New: **WPML support has been enhanced.** In particular, 1) all taxonomy term assignments are verified/adjusted to be valid for the item's language, 2) taxonomy term assignments are synchronized across all the item's translations, 3) the Media/Assistant submenu table will include a "language management" column showing each item's translation status by language; you can click on an item's "pencil" or "plus" icon to edit an existing translation or duplicate the item in a new language, 4) when "All Languages" is selected, the Media/Assistant submenu table will include a "Language" column showing each item's language, and 5) the Settings/Media Library Assistant "Language" tab lets you select the enhancements you want. See the [Other Notes section](http://wordpress.org/extend/plugins/media-library-assistant/other_notes/ "Click here, then scroll down") section or the Settings/Media Library Assistant Documentation tab for more information.
@@ -288,8 +293,8 @@ All of the MLA source code has been annotated with "DocBlocks", a special type o
 
 == Upgrade Notice ==
 
-= 2.11 =
-Enhanced WPML and new Polylang support. "Attached" Media/Assistant table view. Eight other enhancements, fifteen fixes.
+= 2.12 =
+Fixes a defect in [mla_gallery] handling of the mla_caption parameter. Adds mla_debug=log option.
 
 == Other Notes ==
 

@@ -901,6 +901,9 @@ In general you won't need these, since adding to the cache is the right thing to
 <h4>Debugging Output</h4>
 <p>
 The "mla_debug" parameter controls the display of information about the query parameters and SQL statements used to retrieve gallery items. If you code <code>mla_debug=true</code> you will see a lot of information added to the post or page containing the gallery. Of course, this parameter should <strong><em>ONLY</em></strong> be used in a development/debugging environment; it's quite ugly.
+</p>
+<p>
+If you code <code>mla_debug=log</code> all of the information will be written to the error log. You can use the <a href="#mla_debug_tab">MLA Debug Tab</a> to view and download the information in the error log.
 <a name="mla_gallery_hooks"></a>
 </p>
 <h4>MLA Gallery Filters and Actions (Hooks)</h4>
@@ -1283,6 +1286,9 @@ The order parameter (default ASC) can give an ASC/DESC default for any value tha
 <h4>Debugging Output</h4>
 <p>
 The "mla_debug" parameter controls the display of information about the query parameters and SQL statements used to retrieve tag cloud items. If you code <code>mla_debug=true</code> you will see a lot of information added to the post or page containing the cloud. Of course, this parameter should <strong><em>ONLY</em></strong> be used in a development/debugging environment; it's quite ugly.
+</p>
+<p>
+If you code <code>mla_debug=log</code> all of the information will be written to the error log. You can use the <a href="#mla_debug_tab">MLA Debug Tab</a> to view and download the information in the error log.
 <a name="tag_cloud_substitution"></a>
 </p>
 <h4>Tag Cloud Substitution Parameters</h4>

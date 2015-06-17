@@ -1,6 +1,6 @@
 <?php
 /**
- * Stream image handler for the mla_viewer
+ * Stand-alone stream image handler for the mla_viewer
  *
  * @package Media Library Assistant
  * @since 2.10
@@ -9,9 +9,10 @@
 /*
  * Process mla_viewer image stream requests
  */
-@ini_set('error_log','C:\Program Files (x86)\Apache Software Foundation\Apache2.2\logs\php-errors.log');
+//@ini_set('error_log','C:\Program Files (x86)\Apache Software Foundation\Apache2.2\logs\php-errors.log');
 
 if ( isset( $_REQUEST['mla_stream_file'] ) ) {
+	MLAStreamImage::$mla_debug = isset( $_REQUEST['mla_debug'] ) && 'log' == $_REQUEST['mla_debug'];
 	MLAStreamImage::mla_process_stream_image();
 }
 
@@ -25,6 +26,15 @@ MLAStreamImage::_mla_die( 'mla_stream_file not set', __LINE__, 500 );
  * @since 2.10
  */
 class MLAStreamImage {
+	/**
+	 * Log debug information if true
+	 *
+	 * @since 2.12
+	 *
+	 * @var boolean
+	 */
+	public static $mla_debug = false;
+
 	/**
 	 * Generate a unique, writable file in the temporary directory
 	 *
@@ -53,6 +63,7 @@ class MLAStreamImage {
 				} else {
 					$temp = '/tmp/';
 					if ( false == @is_dir( $temp ) ) {
+						self::_mla_debug_add( 'Temp directory failure' );
 						return false;
 					}
 				}
@@ -65,6 +76,7 @@ class MLAStreamImage {
 		$path = $temp . uniqid( mt_rand() ) . $extension;
 		$f = @fopen( $path, 'a' );
 		if ( $f === false ) {
+			self::_mla_debug_add( 'Temp file failure' );
 			return false;
 		}
 
@@ -99,11 +111,13 @@ class MLAStreamImage {
 		 * Look for exec() - from http://stackoverflow.com/a/12980534/866618
 		 */
 		if ( ini_get('safe_mode') ) {
+			self::_mla_debug_add( 'safe_mode failure' );
 			return false;
 		}
 
 		$blacklist = preg_split( '/,\s*/', ini_get('disable_functions') . ',' . ini_get('suhosin.executor.func.blacklist') );
 		if ( in_array('exec', $blacklist) ) {
+			self::_mla_debug_add( 'blacklist failure' );
 			return false;
 		}
 
@@ -187,8 +201,8 @@ class MLAStreamImage {
 			$cmd = sprintf( $cmd, $device, $resolution, ( $frame + 1 ), escapeshellarg( $output_file ), escapeshellarg( $file ) );
 			exec( $cmd, $stdout, $return );
 			if ( 0 != $return ) {
-				error_log( "ERROR: _ghostscript_convert exec returned '{$return}, cmd = " . var_export( $cmd, true ), 0 );
-				error_log( "ERROR: _ghostscript_convert exec returned '{$return}, details = " . var_export( $stdout, true ), 0 );
+				self::_mla_debug_add( "ERROR: _ghostscript_convert exec returned '{$return}, cmd = " . var_export( $cmd, true ) );
+				self::_mla_debug_add( "ERROR: _ghostscript_convert exec returned '{$return}, details = " . var_export( $stdout, true ) );
 				return false;
 			}
 
@@ -196,7 +210,7 @@ class MLAStreamImage {
 				self::$image->readImage( $output_file );
 			}
 			catch ( Exception $e ) {
-				error_log( "ERROR: _ghostscript_convert readImage Exception = " . var_export( $e->getMessage(), true ), 0 );
+				self::_mla_debug_add( "ERROR: _ghostscript_convert readImage Exception = " . var_export( $e->getMessage(), true ) );
 				return false;
 			}
 
@@ -204,6 +218,7 @@ class MLAStreamImage {
 			return true;
 		} // found Ghostscript
 
+		self::_mla_debug_add( 'Ghostscript detection failure' );
 		return false;
 	}
 
@@ -392,6 +407,19 @@ class MLAStreamImage {
 	}
 
 	/**
+	 * Log debug information
+	 *
+	 * @since 2.12
+	 *
+	 * @param	string	$message Error message.
+	 */
+	private static function _mla_debug_add( $message ) {
+		if ( self::$mla_debug ) {
+			error_log( $message, 0);
+		}
+	}
+
+	/**
 	 * Abort the operation and exit
 	 *
 	 * @since 2.10
@@ -403,7 +431,7 @@ class MLAStreamImage {
 	 * @return	void	echos page content and calls exit();
 	 */
 	private static function _mla_die( $message, $title = '', $response = 500 ) {
-error_log( __LINE__ . " _mla_die( '{$message}', '{$title}', '{$response}' )", 0 );
+		self::_mla_debug_add( __LINE__ . " _mla_die( '{$message}', '{$title}', '{$response}' )" );
 		exit();
 	}
 } // Class MLAStreamImage
