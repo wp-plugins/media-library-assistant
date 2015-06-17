@@ -57,6 +57,12 @@ class MLACustomFieldSearchExample {
 
 		// Defined in /media-library-assistant/includes/class-mla-data.php
 		add_filter( 'mla_list_table_query_final_terms', 'MLACustomFieldSearchExample::mla_list_table_query_final_terms', 10, 1 );
+
+		// Defined in /media-library-assistant/includes/class-mla-media-modal.php
+		add_filter( 'mla_media_modal_query_initial_terms', 'MLACustomFieldSearchExample::mla_media_modal_query_initial_terms', 10, 2 );
+
+		// Defined in /media-library-assistant/includes/class-mla-data.php
+		add_filter( 'mla_media_modal_query_final_terms', 'MLACustomFieldSearchExample::mla_media_modal_query_final_terms', 10, 1 );
 	}
 
 	/**
@@ -226,6 +232,70 @@ class MLACustomFieldSearchExample {
 
 		return $request;
 	} // mla_list_table_query_final_terms
+
+	/**
+	 * MLA Edit Media "Query Attachments" initial terms Filter
+	 *
+	 * Gives you an opportunity to change the terms of the 
+	 * Media Manager Modal Window "Query Attachments" query
+	 * before they are pre-processed by the MLA handler.
+	 *
+	 * @since 1.03
+	 *
+	 * @param	array	WP_Query terms supported for "Query Attachments"
+	 * @param	array	All terms passed in the request
+	 */
+	public static function mla_media_modal_query_initial_terms( $query, $raw_query ) {
+		/*
+		 * Look for the special "custom:" prefix in the Search Media text box,
+		 * after checking for the "debug" prefixes.
+		 */
+		if ( isset( $query['mla_search_value'] ) ) {
+			switch ( substr( $query['mla_search_value'], 0, 3 ) ) {
+				case '>|<':
+					self::$custom_field_parameters['debug'] = 'console';
+					$start = 3;
+					break;
+				case '<|>':
+					self::$custom_field_parameters['debug'] = 'log';
+					$start = 3;
+					break;
+				default:
+					$start = 0;
+			}
+
+			if ( 'custom:' == substr( $query['mla_search_value'], $start, 7 ) ) {
+				self::$custom_field_parameters['s'] = substr( $query['mla_search_value'], $start + 7 );
+				unset( $query['mla_search_value'] );
+				self::$custom_field_parameters['mla_search_connector'] = $query['mla_search_connector'];
+				unset( $query['mla_search_connector'] );
+				self::$custom_field_parameters['mla_search_fields'] = $query['mla_search_fields'];
+				unset( $query['mla_search_fields'] );
+			} else {
+				self::$custom_field_parameters = array();
+			}
+		} // isset mla_search_value=custom:
+
+		return $query;
+	}
+
+	/**
+	 * MLA Edit Media "Query Attachments" final terms Filter
+	 *
+	 * Gives you an opportunity to change the terms of the 
+	 * Media Manager Modal Window "Query Attachments" query
+	 * after they are processed by the "Prepare List Table Query" handler.
+	 *
+	 * @since 1.03
+	 *
+	 * @param	array	WP_Query request prepared by "Prepare List Table Query"
+	 */
+	public static function mla_media_modal_query_final_terms( $request ) {
+		/*
+		 * The logic used in the Media/Assistant Search Media box will work here as well
+		 */
+		return MLACustomFieldSearchExample::mla_list_table_query_final_terms( $request );
+	}
 } // Class MLACustomFieldSearchExample
 
 /*

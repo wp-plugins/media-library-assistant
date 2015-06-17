@@ -170,6 +170,10 @@ All of the MLA source code has been annotated with "DocBlocks", a special type o
 
 == Changelog ==
 
+= 2.13 =
+* New: The `/media-library-assistant/examples/mla-custom-field-search-example.php.txt` example plugin has been extended to handle queries made in the Media Manager Modal (popup) Window "Search" box.
+* Fix: PHP Warning messages are no longer produced when the Bulk Edit area is used with no taxonomies selected for MLA support.
+
 = 2.12 =
 * New: For `[mla_gallery]` and `[mla_tag_cloud]`, the `mla_debug=log` parameter writes debug information to the error log instead of the page or post containing the shortcode.
 * New: On the Settings/Media Library Assistant Debug tab, a new option lets you limit the amount of error log content displayed in the text area.

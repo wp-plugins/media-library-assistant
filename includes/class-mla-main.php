@@ -38,7 +38,7 @@ class MLA {
 	 *
 	 * @var	string
 	 */
-	const MLA_DEVELOPMENT_VERSION = '';
+	const MLA_DEVELOPMENT_VERSION = '20150617';
 
 	/**
 	 * Slug for registering and enqueueing plugin style sheet
@@ -899,17 +899,20 @@ class MLA {
 		 * Custom field support
 		 */
 		$custom_fields = array();
-		foreach ( $custom_field_map as $slug => $label ) {
-			if ( isset( $request[ $slug ] ) ) {
-				$test_value = self::_process_bulk_value( $post_id, $request[ $slug ] );
-				if ( ! empty( $test_value ) ) {
-					$custom_fields[ $label ] = $test_value;
-				} elseif ( is_null( $test_value ) ) {
-					$custom_fields[ $label ] = '';
-				}
-			}
-		} // foreach
 
+		if ( is_array( $custom_field_map ) ) {
+			foreach ( $custom_field_map as $slug => $label ) {
+				if ( isset( $request[ $slug ] ) ) {
+					$test_value = self::_process_bulk_value( $post_id, $request[ $slug ] );
+					if ( ! empty( $test_value ) ) {
+						$custom_fields[ $label ] = $test_value;
+					} elseif ( is_null( $test_value ) ) {
+						$custom_fields[ $label ] = '';
+					}
+				}
+			} // foreach
+		}
+		
 		if ( ! empty( $custom_fields ) ) {
 			$new_data[ 'custom_updates' ] = $custom_fields;
 		}
@@ -917,109 +920,114 @@ class MLA {
 		/*
 		 * Taxonomy Support
 		 */
-		$tax_input = array();
-		foreach ( $request['tax_input'] as $taxonomy => $terms ) {
-			if ( ! empty( $request['tax_action'] ) ) {
-				$tax_action = $request['tax_action'][ $taxonomy ];
-			} else {
-				$tax_action = 'replace';
-			}
-
-			/*
-			 * Ignore empty updates
-			 */
-			if ( $hierarchical = is_array( $terms ) ) {
-				if ( false !== ( $index = array_search( 0, $terms ) ) ) {
-					unset( $terms[ $index ] );
-				}
-			} else {
-				/*
-				 * Parse out individual terms
-				 */
-				$comma = _x( ',', 'tag_delimiter', 'media-library-assistant' );
-				if ( ',' !== $comma ) {
-					$tags = str_replace( $comma, ',', $terms );
-				}
-
-				$fragments = explode( ',', trim( $terms, " \n\t\r\0\x0B," ) );
-				$terms = array();
-				foreach( $fragments as $fragment ) {
-					// WordPress encodes special characters, e.g., "&" as HTML entities in term names
-					$fragment = _wp_specialchars( trim( wp_unslash( $fragment ) ) );
-					if ( ! empty( $fragment ) ) {
-						$terms[] = $fragment;
-					}
-				} // foreach fragment
-
-				$terms = array_unique( $terms );
-			}
-
-			if ( empty( $terms ) && 'replace' != $tax_action ) {
-				continue;
-			}
-
-			$post_terms = get_object_term_cache( $post_id, $taxonomy );
-			if ( false === $post_terms ) {
-				$post_terms = wp_get_object_terms( $post_id, $taxonomy );
-				wp_cache_add( $post_id, $post_terms, $taxonomy . '_relationships' );
-			}
-
-			$current_terms = array();
-			foreach( $post_terms as $new_term ) {
-				if ( $hierarchical ) {
-					$current_terms[ $new_term->term_id ] =  $new_term->term_id;
+		$tax_inputs = array();
+		$tax_actions = array();
+		
+		if ( isset( $undefined ) && is_array( $undefined ) ) {
+			foreach ( $request['tax_input'] as $taxonomy => $terms ) {
+				if ( ! empty( $request['tax_action'] ) ) {
+					$tax_action = $request['tax_action'][ $taxonomy ];
 				} else {
-					$current_terms[ $new_term->name ] =  $new_term->name;
+					$tax_action = 'replace';
 				}
-			}
-
-			if ( 'add' == $tax_action ) {
+	
 				/*
-				 * Add new terms; remove existing terms
+				 * Ignore empty updates
 				 */
-				foreach ( $terms as $index => $new_term ) {
-					if ( isset( $current_terms[ $new_term ] ) ) {
+				if ( $hierarchical = is_array( $terms ) ) {
+					if ( false !== ( $index = array_search( 0, $terms ) ) ) {
 						unset( $terms[ $index ] );
 					}
-				}
-
-				$do_update = ! empty( $terms );
-			} elseif ( 'remove' == $tax_action ) {
-				/*
-				 * Remove only the existing terms
-				 */
-				foreach ( $terms as $index => $new_term ) {
-					if ( ! isset( $current_terms[ $new_term ] ) ) {
-						unset( $terms[ $index ] );
+				} else {
+					/*
+					 * Parse out individual terms
+					 */
+					$comma = _x( ',', 'tag_delimiter', 'media-library-assistant' );
+					if ( ',' !== $comma ) {
+						$tags = str_replace( $comma, ',', $terms );
 					}
+	
+					$fragments = explode( ',', trim( $terms, " \n\t\r\0\x0B," ) );
+					$terms = array();
+					foreach( $fragments as $fragment ) {
+						// WordPress encodes special characters, e.g., "&" as HTML entities in term names
+						$fragment = _wp_specialchars( trim( wp_unslash( $fragment ) ) );
+						if ( ! empty( $fragment ) ) {
+							$terms[] = $fragment;
+						}
+					} // foreach fragment
+	
+					$terms = array_unique( $terms );
 				}
-
-				$do_update = ! empty( $terms );
-			} else { 
-				/*
-				 * Replace all terms; if the new terms match the term
-				 * cache, we can skip the update
-				 */
-				foreach ( $terms as $new_term ) {
-					if ( isset( $current_terms[ $new_term ] ) ) {
-						unset( $current_terms[ $new_term ] );
+	
+				if ( empty( $terms ) && 'replace' != $tax_action ) {
+					continue;
+				}
+	
+				$post_terms = get_object_term_cache( $post_id, $taxonomy );
+				if ( false === $post_terms ) {
+					$post_terms = wp_get_object_terms( $post_id, $taxonomy );
+					wp_cache_add( $post_id, $post_terms, $taxonomy . '_relationships' );
+				}
+	
+				$current_terms = array();
+				foreach( $post_terms as $new_term ) {
+					if ( $hierarchical ) {
+						$current_terms[ $new_term->term_id ] =  $new_term->term_id;
 					} else {
-						$current_terms[ $new_term ] = $new_term;
-						break; // not a match; stop checking
+						$current_terms[ $new_term->name ] =  $new_term->name;
 					}
 				}
+	
+				if ( 'add' == $tax_action ) {
+					/*
+					 * Add new terms; remove existing terms
+					 */
+					foreach ( $terms as $index => $new_term ) {
+						if ( isset( $current_terms[ $new_term ] ) ) {
+							unset( $terms[ $index ] );
+						}
+					}
+	
+					$do_update = ! empty( $terms );
+				} elseif ( 'remove' == $tax_action ) {
+					/*
+					 * Remove only the existing terms
+					 */
+					foreach ( $terms as $index => $new_term ) {
+						if ( ! isset( $current_terms[ $new_term ] ) ) {
+							unset( $terms[ $index ] );
+						}
+					}
+	
+					$do_update = ! empty( $terms );
+				} else { 
+					/*
+					 * Replace all terms; if the new terms match the term
+					 * cache, we can skip the update
+					 */
+					foreach ( $terms as $new_term ) {
+						if ( isset( $current_terms[ $new_term ] ) ) {
+							unset( $current_terms[ $new_term ] );
+						} else {
+							$current_terms[ $new_term ] = $new_term;
+							break; // not a match; stop checking
+						}
+					}
+	
+					$do_update = ! empty( $current_terms );
+				}
+	
+				if ( $do_update ) {
+					$tax_inputs[ $taxonomy ] = $terms;
+					$tax_actions[ $taxonomy ] = $tax_action;
+				}
+			} // foreach taxonomy
+		}
 
-				$do_update = ! empty( $current_terms );
-			}
-
-			if ( $do_update ) {
-				$tax_input[ $taxonomy ] = $terms;
-			}
-		} // foreach taxonomy
-
-		$new_data[ 'tax_input' ] = $tax_input;
-		$new_data[ 'tax_action' ] = $tax_action;
-
+		$new_data[ 'tax_input' ] = $tax_inputs;
+		$new_data[ 'tax_action' ] = $tax_actions;
+		
 		return $new_data;
 	}
 
@@ -1114,10 +1122,11 @@ class MLA {
 
 							$new_data = self::mla_prepare_bulk_edits( $post_id, $request, $custom_field_map );
 							$tax_input = $new_data['tax_input'];
+							$tax_action = $new_data['tax_action'];
 							unset( $new_data['tax_input'] );
 							unset( $new_data['tax_action'] );
 
-							$item_content = MLAData::mla_update_single_item( $post_id, $new_data, $tax_input, $request['tax_action'] );
+							$item_content = MLAData::mla_update_single_item( $post_id, $new_data, $tax_input, $tax_action );
 							break;
 						case 'restore':
 							$item_content = self::_restore_single_item( $post_id );

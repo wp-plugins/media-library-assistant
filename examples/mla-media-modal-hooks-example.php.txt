@@ -414,6 +414,11 @@ class MLAMediaModalExample {
 		//error_log( 'MLAMediaModalExample::mla_media_modal_query_final_terms $request = ' . var_export( $request, true ), 0 );
 
 		/*
+		 * MLAData::$query_parameters and MLAData::$search_parameters contain
+		 * additional parameters used in some List Table queries.
+		 */
+		 
+		/*
 		 * Comment the next line out to remove items assigned to the
 		 *  Att. Categories "Admin" term from the query results.
 		 */
