@@ -171,7 +171,12 @@ All of the MLA source code has been annotated with "DocBlocks", a special type o
 == Changelog ==
 
 = 2.13 =
+* New: For the Media/Assistant submenu table, **wildcard searches are now allowed in the Search Media box** using an asterisk ("*") as the wildcard placeholder. Pull down the Help menu on the screen and select the Search Media section for more information.
+* New: For IPTC/EXIF custom field mapping rules, **Format, Option and Delete Null Values** options can be specified and are handled like their equivalents in Custom Field mapping rules.
 * New: The `/media-library-assistant/examples/mla-custom-field-search-example.php.txt` example plugin has been extended to handle queries made in the Media Manager Modal (popup) Window "Search" box.
+* Fix: For the Media/Assistant submenu table and the Media Manager Modal (popup) Window, default table sorting on a custom field no longer causes WordPress Database Errors.
+* Fix: For the Media/Assistant Quick Edit and Bulk Edit actions, the Custom Field mapping rule "Delete Null Values" option is now handled correctly. When this option is specified, empty values will not be stored in the database.
+* Fix: The "single" option now returns just the first value of a custom field if it has multiple values.
 * Fix: PHP Warning messages are no longer produced when the Bulk Edit area is used with no taxonomies selected for MLA support.
 
 = 2.12 =

@@ -229,6 +229,24 @@ class MLASettings {
 			MLAMime::mla_update_upload_mime();
 		} // version is less than 1.72
 
+		if ( version_compare( '2.13', $current_version, '>' ) ) {
+			/*
+			 * Add format, option and no_null to IPTC/EXIF custom mapping rules
+			 */
+			$option_value = MLAOptions::mla_get_option( 'iptc_exif_mapping' );
+			$new_values = array();
+
+			foreach ( $option_value['custom'] as $key => $value ) {
+				$value['format'] = isset( $value['format'] ) ? $value['format'] : 'native';
+				$value['option'] = isset( $value['option'] ) ? $value['option'] : 'text';
+				$value['no_null'] = isset( $value['no_null'] ) ? $value['no_null'] : false;
+				$new_values[ $key ] = $value;
+			}
+
+			$option_value['custom'] = $new_values;
+			MLAOptions::mla_update_option( 'iptc_exif_mapping', $option_value );
+		} // version is less than 2.13
+
 		MLAOptions::mla_update_option( MLAOptions::MLA_VERSION_OPTION, MLA::CURRENT_MLA_VERSION );
 	}
 

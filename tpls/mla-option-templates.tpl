@@ -169,9 +169,7 @@
         </td>
 		</tr>
         <tr valign="top">
-		<td>&nbsp;
-			
-        </td>
+		<td>&nbsp;</td>
 		<td style="text-align:left;">
             <input name="custom_field_mapping[[+index+]][meta_name]" id="custom_field_meta_name_[+index+]" type="text" size="[+meta_name_size+]" value="[+meta_name+]" />
         </td>
@@ -238,9 +236,7 @@
         </td>
 		</tr>
         <tr valign="top">
-		<td>&nbsp;
-			
-        </td>
+		<td>&nbsp;</td>
 		<td style="text-align:left;">
             <input name="custom_field_mapping[[+index+]][meta_name]" id="custom_field_meta_name_[+index+]" type="text" size="[+meta_name_size+]" value="[+meta_name+]" />
         </td>
@@ -303,9 +299,7 @@
         </td>
 		</tr>
         <tr valign="top">
-		<td>&nbsp;
-			
-        </td>
+		<td>&nbsp;</td>
 		<td style="text-align:left;">
             <input name="custom_field_mapping[[+index+]][meta_name]" id="custom_field_meta_name_[+index+]" type="text" size="[+meta_name_size+]" value="[+meta_name+]" />
         </td>
@@ -530,7 +524,30 @@
             </select>
         </td>
 		</tr>
-        <tr valign="top">
+		<tr valign="top">
+		<td>&nbsp;</td>
+		<td style="text-align:right;">
+			<strong>[+Format+]:</strong>&nbsp;
+            <select name="iptc_exif_mapping[custom][[+index+]][format]" id="iptc_exif_custom_format_[+index+]">
+                <option [+native_format+] value="native">[+Native+]</option>
+                <option [+commas_format+] value="commas">[+Commas+]</option>
+                <option [+raw_format+] value="raw">[+Raw+]</option>
+            </select>
+        </td>
+		<td colspan="[+column_count_meta+]" style="text-align:left; vertical-align:middle;">
+			<strong>[+Option+]:</strong>&nbsp;
+            <select name="iptc_exif_mapping[custom][[+index+]][option]" id="iptc_exif_custom_option_[+index+]">
+                <option [+text_option+] value="text">[+Text+]</option>
+                <option [+single_option+] value="single">[+Single+]</option>
+                <option [+export_option+] value="export">[+Export+]</option>
+                <option [+array_option+] value="array">[+Array+]</option>
+                <option [+multi_option+] value="multi">[+Multi+]</option>
+            </select>
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            <input type="checkbox" name="iptc_exif_mapping[custom][[+index+]][no_null]" id="iptc_exif_custom_no_null_[+index+]" [+no_null_checked+] value="1" /> <strong>[+Delete NULL values+]</strong>
+        </td>
+		</tr>
+		<tr valign="top">
 		<td colspan="[+column_count+]" style="padding-bottom: 10px">
 	        <input name="iptc_exif_mapping[custom][[+index+]][action][delete_rule]" class="button-primary" id="iptc-exif-mapping-delete-rule-[+index+]" style="height: 18px; line-height: 16px" type="submit" value="[+Delete Rule+]" />
 	        <input name="iptc_exif_mapping[custom][[+index+]][action][delete_field]" class="button-primary" id="iptc-exif-mapping-delete-field-[+index+]" style="height: 18px; line-height: 16px" type="submit" value="[+Delete Field+]" />
@@ -572,6 +589,29 @@
             </select>
         </td>
 		</tr>
+		<tr valign="top">
+		<td>&nbsp;</td>
+		<td style="text-align:right;">
+			<strong>[+Format+]:</strong>&nbsp;
+            <select name="iptc_exif_mapping[custom][[+index+]][format]" id="iptc_exif_custom_format_[+index+]">
+                <option [+native_format+] value="native">[+Native+]</option>
+                <option [+commas_format+] value="commas">[+Commas+]</option>
+                <option [+raw_format+] value="raw">[+Raw+]</option>
+            </select>
+        </td>
+		<td colspan="[+column_count_meta+]" style="text-align:left; vertical-align:middle;">
+			<strong>[+Option+]:</strong>&nbsp;
+            <select name="iptc_exif_mapping[custom][[+index+]][option]" id="iptc_exif_custom_option_[+index+]">
+                <option [+text_option+] value="text">[+Text+]</option>
+                <option [+single_option+] value="single">[+Single+]</option>
+                <option [+export_option+] value="export">[+Export+]</option>
+                <option [+array_option+] value="array">[+Array+]</option>
+                <option [+multi_option+] value="multi">[+Multi+]</option>
+            </select>
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            <input type="checkbox" name="iptc_exif_mapping[custom][[+index+]][no_null]" id="iptc_exif_custom_no_null_[+index+]" [+no_null_checked+] value="1" /> <strong>[+Delete NULL values+]</strong>
+        </td>
+		</tr>
         <tr valign="top">
 		<td colspan="[+column_count+]">
 	        <input name="iptc_exif_mapping[custom][[+index+]][action][add_rule]" class="button-primary" id="iptc-exif-mapping-add-rule-[+index+]" type="submit" value="[+Add Rule+]" />
@@ -608,6 +648,29 @@
                 <option [+keep_selected+] value="1">[+Keep+]</option>
                 <option [+replace_selected+] value="">[+Replace+]</option>
             </select>
+        </td>
+		</tr>
+		<tr valign="top">
+		<td>&nbsp;</td>
+		<td style="text-align:right;">
+			<strong>[+Format+]:</strong>&nbsp;
+            <select name="iptc_exif_mapping[custom][[+index+]][format]" id="iptc_exif_custom_format_[+index+]">
+                <option [+native_format+] value="native">[+Native+]</option>
+                <option [+commas_format+] value="commas">[+Commas+]</option>
+                <option [+raw_format+] value="raw">[+Raw+]</option>
+            </select>
+        </td>
+		<td colspan="[+column_count_meta+]" style="text-align:left; vertical-align:middle;">
+			<strong>[+Option+]:</strong>&nbsp;
+            <select name="iptc_exif_mapping[custom][[+index+]][option]" id="iptc_exif_custom_option_[+index+]">
+                <option [+text_option+] value="text">[+Text+]</option>
+                <option [+single_option+] value="single">[+Single+]</option>
+                <option [+export_option+] value="export">[+Export+]</option>
+                <option [+array_option+] value="array">[+Array+]</option>
+                <option [+multi_option+] value="multi">[+Multi+]</option>
+            </select>
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            <input type="checkbox" name="iptc_exif_mapping[custom][[+index+]][no_null]" id="iptc_exif_custom_no_null_[+index+]" [+no_null_checked+] value="1" /> <strong>[+Delete NULL values+]</strong>
         </td>
 		</tr>
         <tr valign="top">

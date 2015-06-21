@@ -36,6 +36,15 @@ class MLAData {
 	private static $mla_alt_text_view = NULL;
 
 	/**
+	 * WordPress version test for $wpdb->esc_like() Vs esc_sql()
+	 *
+	 * @since 2.1x
+	 *
+	 * @var	boolean
+	 */
+	private static $wp_4dot0_plus = true;
+
+	/**
 	 * Initialization function, similar to __construct()
 	 *
 	 * @since 0.1
@@ -43,6 +52,7 @@ class MLAData {
 	public static function initialize() {
 		global $table_prefix;
 		self::$mla_alt_text_view = $table_prefix . MLA_OPTION_PREFIX . self::MLA_ALT_TEXT_VIEW_SUFFIX;
+		self::$wp_4dot0_plus = version_compare( get_bloginfo('version'), '4.0', '>=' );
 
 		add_action( 'save_post', 'MLAData::mla_save_post_action', 10, 1);
 		add_action( 'edit_attachment', 'MLAData::mla_save_post_action', 10, 1);
@@ -62,8 +72,8 @@ class MLAData {
 	 * @param	string 	Optional type of template source; 'path', 'file' (default), 'option', 'string'
 	 *
 	 * @return	string|array|false|NULL
-	 *  		string for files that do not contain template divider comments,
-	 * 			array for files containing template divider comments,
+	 *			string for files that do not contain template divider comments,
+	 *			array for files containing template divider comments,
 	 *			false if file or option does not exist,
 	 *			NULL if file could not be loaded.
 	 */
@@ -72,7 +82,7 @@ class MLAData {
 			case 'file':
 				/*
 				 * Look in three places, in this order:
-				 * 1) Custom templates  
+				 * 1) Custom templates
 				 * 2) Language-specific templates
 				 * 3) Standard templates
 				 */
@@ -103,7 +113,7 @@ class MLAData {
 				}
 				break;
 			case 'option':
-				$template =  MLAOptions::mla_get_option( $source );
+				$template = MLAOptions::mla_get_option( $source );
 				if ( $template == false ) {
 					return false;
 				}
@@ -594,7 +604,7 @@ class MLAData {
 		} else { // array of sub-nodes
 			switch ( $node['type'] ) {
 				case 'string':
-					$result[] =  self::mla_parse_array_template( $node['value'], $markup_values );
+					$result[] = self::mla_parse_array_template( $node['value'], $markup_values );
 					break;
 				case 'test':
 					$node_value = $node['value'];
@@ -765,7 +775,7 @@ class MLAData {
 	 * @since 1.50
 	 *
 	 * @param	array	an array of scalar values
-	 * @param	string	data option  'text'|'single'|'export'|'array'|'multi'
+	 * @param	string	data option; 'text'|'single'|'export'|'array'|'multi'
 	 * @param	boolean	Optional: for option 'multi', retain existing values
 	 *
 	 * @return	array	( parameter => value ) for all field-level parameters and anything in $markup_values
@@ -1213,7 +1223,7 @@ class MLAData {
 							'format' => 'raw',
 							'option' => $value['option'] ); // single, export, text for array values, e.g., alt_text
 
-						$markup_values[ $key ] =  MLAOptions::mla_get_data_source( $post_id, 'single_attachment_mapping', $data_value );
+						$markup_values[ $key ] = MLAOptions::mla_get_data_source( $post_id, 'single_attachment_mapping', $data_value );
 					} elseif ( isset( $markup_values[ $value['value'] ] ) ) {
 						/*
 						 * A standard element can have a format modifier, e.g., commas, attr
@@ -1554,14 +1564,26 @@ class MLAData {
 		$default_orderby = array_merge( array( 'none' => array('none',false) ), MLA_List_Table::mla_get_sortable_columns( ) );
 		$current_orderby = MLAOptions::mla_get_option( MLAOptions::MLA_DEFAULT_ORDERBY );
 		$found_current = false;
-		foreach ($default_orderby as $key => $value ) {
+		foreach ( $default_orderby as $key => $value ) {
 			if ( $current_orderby == $value[0] ) {
 				$found_current = true;
 				break;
 			}
 		}
 
-		if ( ! $found_current ) {
+		if ( $found_current ) {
+			/*
+			 * Custom fields can have HTML reserved characters, which are encoded by
+			 * mla_get_sortable_columns, so a separate, unencoded list is required.
+			 */
+			$default_orderby = MLAOptions::mla_custom_field_support( 'custom_sortable_columns' );
+			foreach ( $default_orderby as $sort_key => $sort_value ) {
+				if ( $current_orderby == $sort_key ) {
+					$current_orderby = 'c_' . $sort_value[0];
+					break;
+				}
+			} // foreach
+		} else {
 			MLAOptions::mla_delete_option( MLAOptions::MLA_DEFAULT_ORDERBY );
 			$current_orderby = MLAOptions::mla_get_option( MLAOptions::MLA_DEFAULT_ORDERBY );
 		}
@@ -1766,7 +1788,7 @@ class MLAData {
 		/*
 		 * We must patch the WHERE clause if there are leading spaces in the meta_value
 		 */
-		if ( isset( $clean_request['mla-metavalue'] ) && ( 0 < strlen( $clean_request['mla-metavalue']  ) ) && ( ' ' == $clean_request['mla-metavalue'][0] ) ) {
+		if ( isset( $clean_request['mla-metavalue'] ) && ( 0 < strlen( $clean_request['mla-metavalue'] ) ) && ( ' ' == $clean_request['mla-metavalue'][0] ) ) {
 			self::$query_parameters['mla-metavalue'] = $clean_request['mla-metavalue'];
 		}
 
@@ -1799,8 +1821,8 @@ class MLAData {
 			self::$search_parameters['exact'] = isset( $clean_request['exact'] );
 
 			if ( in_array( 'alt-text', self::$search_parameters['mla_search_fields'] ) ) {
-			  self::$query_parameters['use_postmeta_view'] = true;
-			  self::$query_parameters['postmeta_key'] = '_wp_attachment_image_alt';
+				self::$query_parameters['use_postmeta_view'] = true;
+				self::$query_parameters['postmeta_key'] = '_wp_attachment_image_alt';
 			}
 
 			if ( in_array( 'terms', self::$search_parameters['mla_search_fields'] ) ) {
@@ -1875,7 +1897,7 @@ class MLAData {
 		 */
 		if ( isset( $clean_request['mla_filter_term'] ) ) {
 			if ( $clean_request['mla_filter_term'] != 0 ) {
-				$tax_filter =  MLAOptions::mla_taxonomy_support('', 'filter');
+				$tax_filter = MLAOptions::mla_taxonomy_support('', 'filter');
 				if ( $clean_request['mla_filter_term'] == -1 ) {
 					$term_list = get_terms( $tax_filter, array(
 						'fields' => 'ids',
@@ -1906,7 +1928,7 @@ class MLAData {
 			unset( $clean_request['mla_filter_term'] );
 		} // isset mla_filter_term
 
-		if ( isset( $clean_request['mla-tax'] )  && isset( $clean_request['mla-term'] )) {
+		if ( isset( $clean_request['mla-tax'] ) && isset( $clean_request['mla-term'] )) {
 			$clean_request['tax_query'] = array(
 				array(
 					'taxonomy' => $clean_request['mla-tax'],
@@ -2018,6 +2040,35 @@ class MLAData {
 		}
 
 		return $results;
+	}
+
+	/**
+	 * Detects wildcard searches, i.e., containing an asterisk outside quotes
+	 * 
+	 * Defined as public because it's a callback from array_map().
+	 *
+	 * @since 2.1x
+	 *
+	 * @param	string	search string
+	 *
+	 * @return	boolean	true if wildcard
+	 */
+	private static function _wildcard_search_string( $search_string ) {
+		preg_match_all('/".*?("|$)|((?<=[\t ",+])|^)[^\t ",+]+/', $search_string, $matches);
+		
+		if ( is_array( $matches ) ) {
+			foreach ( $matches[0] as $term ) {
+				if ( '"' == substr( $term, 0, 1) ) {
+					continue;
+				}
+				
+				if ( false !== strpos( $term, '*' ) ) {
+					return true;
+				}
+			}
+		}
+		
+		return false;
 	}
 
 	/**
@@ -2206,29 +2257,30 @@ class MLAData {
 		 * Process the keyword search argument, if present.
 		 */
 		if ( isset( self::$search_parameters['s'] ) ) {
+
+			// WordPress v3.7 says: there are no line breaks in <input /> fields
+			$keyword_string = str_replace( array( "\r", "\n" ), '', self::$search_parameters['s'] );
+			$is_wildcard_search = self::_wildcard_search_string( $keyword_string );
+
 			/*
 			 * Interpret a numeric value as the ID of a specific attachment or the ID of
 			 * a parent post/page; add it to the regular text-based search.
 			 */
-			if ( is_numeric( self::$search_parameters['s'] ) ) {
-				$id = absint( self::$search_parameters['s'] );
+			if ( is_numeric( $keyword_string ) ) {
+				$id = absint( $keyword_string );
 				$numeric_clause = '( ( ' . $wpdb->posts . '.ID = ' . $id . ' ) OR ( ' . $wpdb->posts . '.post_parent = ' . $id . ' ) ) OR ';
-			} else {
-				$numeric_clause = '';
 			}
 
-			// WordPress v3.7 says: there are no line breaks in <input /> fields
-			self::$search_parameters['s'] = str_replace( array( "\r", "\n" ), '', self::$search_parameters['s'] );
-
-			if (  self::$search_parameters['sentence'] || self::$search_parameters['exact'] ) {
-				$terms_search = array( self::$search_parameters['s'] );
+			if ( $is_wildcard_search || self::$search_parameters['sentence'] || self::$search_parameters['exact'] ) {
+				$keyword_array = array( $keyword_string );
 			} else {
 				// v3.6.1 was '/".*?("|$)|((?<=[\r\n\t ",+])|^)[^\r\n\t ",+]+/'
-				preg_match_all('/".*?("|$)|((?<=[\t ",+])|^)[^\t ",+]+/', self::$search_parameters['s'], $matches);
-				$terms_search = array_map('MLAData::mla_search_terms_tidy', $matches[0]);
+				preg_match_all('/".*?("|$)|((?<=[\t ",+])|^)[^\t ",+]+/', $keyword_string, $matches);
+				$keyword_array = array_map( 'MLAData::mla_search_terms_tidy', $matches[0]);
 			}
 
 			$fields = self::$search_parameters['mla_search_fields'];
+			$allow_terms_search = in_array( 'terms', $fields ) && ( ! $is_wildcard_search );
 			$percent = self::$search_parameters['exact'] ? '' : '%';
 			$connector = '';
 
@@ -2237,41 +2289,57 @@ class MLAData {
 			} else {
 				$tax_terms = array();
 				$tax_counts = array();
-				$wp_4dot0_plus = version_compare( get_bloginfo('version'), '4.0', '>=' );
-				foreach ( $terms_search as $term ) {
-					if ( $wp_4dot0_plus ) {
-						$sql_term = $percent . $wpdb->esc_like( $term ) . $percent;
-						$sql_term = $wpdb->prepare( '%s', $sql_term );
+				foreach ( $keyword_array as $term ) {
+					if ( $is_wildcard_search ) {
+						/*
+						 * Escape any % in the source string
+						 */
+						if ( self::$wp_4dot0_plus ) {
+							$sql_term = $wpdb->esc_like( $term );
+							$sql_term = $wpdb->prepare( '%s', $sql_term );
+						} else {
+							$sql_term = "'" . esc_sql( like_escape( $term ) ) . "'";
+						}
+						
+						/*
+						 * Convert wildcard * to SQL %
+						 */
+						$sql_term = str_replace( '*', '%', $sql_term );
 					} else {
-						$sql_term = "'" . $percent . esc_sql( like_escape( $term ) ) . $percent . "'";
+						if ( self::$wp_4dot0_plus ) {
+							$sql_term = $percent . $wpdb->esc_like( $term ) . $percent;
+							$sql_term = $wpdb->prepare( '%s', $sql_term );
+						} else {
+							$sql_term = "'" . $percent . esc_sql( like_escape( $term ) ) . $percent . "'";
+						}
 					}
 
 					$inner_connector = '';
 					$inner_clause = '';
 
 					if ( in_array( 'content', $fields ) ) {
-					  $inner_clause .= "{$inner_connector}({$wpdb->posts}.post_content LIKE {$sql_term})";
-					  $inner_connector = ' OR ';
+						$inner_clause .= "{$inner_connector}({$wpdb->posts}.post_content LIKE {$sql_term})";
+						$inner_connector = ' OR ';
 					}
 
 					if ( in_array( 'title', $fields ) ) {
-					  $inner_clause .= "{$inner_connector}({$wpdb->posts}.post_title LIKE {$sql_term})";
-					  $inner_connector = ' OR ';
+						$inner_clause .= "{$inner_connector}({$wpdb->posts}.post_title LIKE {$sql_term})";
+						$inner_connector = ' OR ';
 					}
 
 					if ( in_array( 'excerpt', $fields ) ) {
-					  $inner_clause .= "{$inner_connector}({$wpdb->posts}.post_excerpt LIKE {$sql_term})";
-					  $inner_connector = ' OR ';
+						$inner_clause .= "{$inner_connector}({$wpdb->posts}.post_excerpt LIKE {$sql_term})";
+						$inner_connector = ' OR ';
 					}
 
 					if ( in_array( 'alt-text', $fields ) ) {
-					  $view_name = self::$mla_alt_text_view;
-					  $inner_clause .= "{$inner_connector}({$view_name}.meta_value LIKE {$sql_term})";
-					  $inner_connector = ' OR ';
+						$view_name = self::$mla_alt_text_view;
+						$inner_clause .= "{$inner_connector}({$view_name}.meta_value LIKE {$sql_term})";
+						$inner_connector = ' OR ';
 					}
 
 					if ( in_array( 'name', $fields ) ) {
-					  $inner_clause .= "{$inner_connector}({$wpdb->posts}.post_name LIKE {$sql_term})";
+						$inner_clause .= "{$inner_connector}({$wpdb->posts}.post_name LIKE {$sql_term})";
 					}
 
 					$inner_clause = apply_filters( 'mla_list_table_search_filter_inner_clause', $inner_clause, $inner_connector, $wpdb->posts, $sql_term );
@@ -2285,7 +2353,7 @@ class MLAData {
 					 * Convert search term text to term_taxonomy_id value(s),
 					 * separated by taxonomy.
 					 */
-					if ( in_array( 'terms', $fields ) ) {
+					if ( $allow_terms_search ) {
 						// WordPress encodes special characters, e.g., "&" as HTML entities in term names
 						$the_terms = get_terms( self::$search_parameters['mla_search_taxonomies'], array( 'name__like' => _wp_specialchars( $term ), 'fields' => 'all', 'hide_empty' => false ) );
 						// Invalid taxonomy will return WP_Error object
@@ -2304,13 +2372,13 @@ class MLAData {
 						}
 					} // in_array terms
 				} // foreach term
-			  
-				if ( in_array( 'terms', $fields ) ) {
+
+				if ( $allow_terms_search ) {
 					/*
 					 * For the AND connector, a taxonomy term must have all of the search terms within it
 					 */
 					if ( 'AND' == self::$search_parameters['mla_search_connector'] ) {
-						$search_term_count = count( $terms_search );
+						$search_term_count = count( $keyword_array );
 						foreach ($tax_terms as $taxonomy => $term_ids ) {
 							foreach ( $term_ids as $term_id => $term_taxonomy_id ) {
 								if ( $search_term_count != $tax_counts[ $taxonomy ][ $term_id ] ) {
@@ -2482,7 +2550,7 @@ class MLAData {
 
 			while ( $tax_index < self::$search_parameters['tax_terms_count'] ) {
 				$prefix = 'mlatt' . $tax_index++;
-				$tax_clause .= sprintf( ' INNER JOIN %1$s AS %2$s ON (%3$s.ID = %2$s.object_id)', $wpdb->term_relationships, $prefix, $wpdb->posts );
+				$tax_clause .= sprintf( ' LEFT JOIN %1$s AS %2$s ON (%3$s.ID = %2$s.object_id)', $wpdb->term_relationships, $prefix, $wpdb->posts );
 			}
 
 			$join_clause .= $tax_clause;
@@ -2831,7 +2899,7 @@ class MLAData {
 	 *
 	 * @param string key value, e.g. array1.array2.element
 	 * @param array PHP nested arrays
-	 * @param string data option  'text'|'single'|'export'|'array'|'multi'
+	 * @param string data option; 'text'|'single'|'export'|'array'|'multi'
 	 * @param boolean keep existing values - for 'multi' option
 	 *
 	 * @return mixed string or array value matching key(.key ...) or ''
@@ -2857,7 +2925,7 @@ class MLAData {
 								}
 
 								if ( 1 == count( $results ) ) {
-									$haystack =  $results[0];
+									$haystack = $results[0];
 								} else {
 									$haystack = $results;
 								}
@@ -2870,13 +2938,13 @@ class MLAData {
 					break;
 				} else {
 					if ( is_array( $haystack ) ) {
-					  if ( isset( $haystack[ $key ] ) ) {
-						  $haystack = $haystack[ $key ];
-					  } else {
-						  $haystack = '';
-					  }
+						if ( isset( $haystack[ $key ] ) ) {
+							$haystack = $haystack[ $key ];
+						} else {
+							$haystack = '';
+						}
 					} else {
-					  $haystack = '';
+						$haystack = '';
 					}
 				} // * != key
 			} // foreach $key
@@ -3017,7 +3085,7 @@ class MLAData {
 		}
 
 		/*
-		 * inserted_option  'enabled', 'base' or 'disabled'
+		 * inserted_option	'enabled', 'base' or 'disabled'
 		 * tested_reference	true if any of the four where-used types was processed
 		 * found_reference	true if any where-used array is not empty()
 		 * found_parent		true if $parent matches a where-used post ID
@@ -3071,15 +3139,15 @@ class MLAData {
 		 */
 		$parent_data = self::mla_fetch_attachment_parent_data( $parent );
 		if ( isset( $parent_data['parent_type'] ) ) {
-			$references['parent_type'] =  $parent_data['parent_type'];
+			$references['parent_type'] = $parent_data['parent_type'];
 		}
 
 		if ( isset( $parent_data['parent_status'] ) ) {
-			$references['parent_status'] =  $parent_data['parent_status'];
+			$references['parent_status'] = $parent_data['parent_status'];
 		}
 
-		if ( isset( $parent_data['parent_title'] ) )  {
-			$references['parent_title'] =  $parent_data['parent_title'];
+		if ( isset( $parent_data['parent_title'] ) ) {
+			$references['parent_title'] = $parent_data['parent_title'];
 		}
 
 		$references['base_file'] = get_post_meta( $ID, '_wp_attached_file', true );
@@ -3122,7 +3190,7 @@ class MLAData {
 		}
 
 		/*
-		 * Accumulate reference test types, e.g.,  0 = no tests, 4 = all tests
+		 * Accumulate reference test types, e.g., 0 = no tests, 4 = all tests
 		 */
 		$reference_tests = 0;
 
@@ -3173,7 +3241,6 @@ class MLAData {
 				$references['inserted_option'] = $inserted_in_option;
 			}
 
-			$wp_4dot0_plus = version_compare( get_bloginfo('version'), '4.0', '>=' );
 			if ( 'base' == $inserted_in_option ) {
 				$query_parameters = array();
 				$query = array();
@@ -3188,7 +3255,7 @@ class MLAData {
 
 					$query[] = 'OR ( POST_CONTENT LIKE %s)';
 
-					if ( $wp_4dot0_plus ) {
+					if ( self::$wp_4dot0_plus ) {
 						$query_parameters[] = '%' . $wpdb->esc_like( $file ) . '%';
 					} else {
 						$query_parameters[] = '%' . like_escape( $file ) . '%';
@@ -3196,7 +3263,7 @@ class MLAData {
 				}
 
 				$query[] = ')';
-				$query =  join(' ', $query);
+				$query = join(' ', $query);
 
 				$inserts = $wpdb->get_results(
 					$wpdb->prepare( $query, $query_parameters )
@@ -3219,7 +3286,7 @@ class MLAData {
 						continue;
 					}
 
-					if ( $wp_4dot0_plus ) {
+					if ( self::$wp_4dot0_plus ) {
 						$like = $wpdb->esc_like( $file );
 					} else {
 						$like = like_escape( $file );
@@ -3312,7 +3379,7 @@ class MLAData {
 
 		if ( $references['is_unattached'] ) {
 			$errors .= '(' . __( 'UNATTACHED', 'media-library-assistant' ) . ')';
-		} elseif ( empty( $references['parent_title'] ) )  {
+		} elseif ( empty( $references['parent_title'] ) ) {
 			$errors .= '(' . __( 'INVALID PARENT', 'media-library-assistant' ) . ')';
 		}
 
@@ -3383,7 +3450,7 @@ class MLAData {
 		foreach ( $attachments as $index => $attachment ) {
 			$attachment_ids[ $index ] = $attachment->ID;
 			$references = array( 'files' => array() );
-			if ( isset( $attachment->mla_wp_attached_file ) )  {
+			if ( isset( $attachment->mla_wp_attached_file ) ) {
 				$references['base_file'] = $attachment->mla_wp_attached_file;
 			} else {
 				$references['base_file'] = '';
@@ -3398,7 +3465,7 @@ class MLAData {
 
 			$references['file'] = $pathinfo['basename'];
 
-			if ( isset( $attachment->mla_wp_attachment_metadata ) )  {
+			if ( isset( $attachment->mla_wp_attachment_metadata ) ) {
 				$attachment_metadata = $attachment->mla_wp_attachment_metadata;
 			} else {
 				$attachment_metadata = '';
@@ -3457,7 +3524,6 @@ class MLAData {
 		}
 
 		if ( MLAOptions::$process_inserted_in ) {
-			$wp_4dot0_plus = version_compare( get_bloginfo('version'), '4.0', '>=' );
 			$query_parameters = array();
 			$query = array();
 			$query[] = "SELECT ID, post_type, post_status, post_title, CONVERT(`post_content` USING utf8 ) AS POST_CONTENT FROM {$wpdb->posts} WHERE ( %s=%s";
@@ -3469,7 +3535,7 @@ class MLAData {
 				foreach ( $file['files'] as $base_name => $file_data ) {
 					$query[] = 'OR ( POST_CONTENT LIKE %s)';
 
-					if ( $wp_4dot0_plus ) {
+					if ( self::$wp_4dot0_plus ) {
 						$query_parameters[] = '%' . $wpdb->esc_like( $base_name ) . '%';
 					} else {
 						$query_parameters[] = '%' . like_escape( $base_name ) . '%';
@@ -3478,7 +3544,7 @@ class MLAData {
 			}
 
 			$query[] = "){$exclude_revisions}";
-			$query =  join(' ', $query);
+			$query = join(' ', $query);
 
 			$results = $wpdb->get_results(
 				$wpdb->prepare( $query, $query_parameters )
@@ -3528,20 +3594,20 @@ class MLAData {
 				$references['is_unattached'] = false;
 
 				if ( isset( $attachment->parent_type ) ) {
-					$references['parent_type'] =  $attachment->parent_type;
+					$references['parent_type'] = $attachment->parent_type;
 				}
 
 				if ( isset( $attachment->parent_status ) ) {
-					$references['parent_status'] =  $attachment->parent_status;
+					$references['parent_status'] = $attachment->parent_status;
 				}
 
-				if ( isset( $attachment->parent_title ) )  {
-					$references['parent_title'] =  $attachment->parent_title;
+				if ( isset( $attachment->parent_title ) ) {
+					$references['parent_title'] = $attachment->parent_title;
 				}
 			}
 
 			/*
-			 * Accumulate reference test types, e.g.,  0 = no tests, 4 = all tests
+			 * Accumulate reference test types, e.g., 0 = no tests, 4 = all tests
 			 */
 			$reference_tests = 0;
 
@@ -3656,7 +3722,7 @@ class MLAData {
 
 			if ( $references['is_unattached'] ) {
 				$errors .= '(' . __( 'UNATTACHED', 'media-library-assistant' ) . ')';
-			} elseif ( empty( $references['parent_title'] ) )  {
+			} elseif ( empty( $references['parent_title'] ) ) {
 				$errors .= '(' . __( 'INVALID PARENT', 'media-library-assistant' ) . ')';
 			}
 
@@ -3788,8 +3854,7 @@ class MLAData {
 			$exclude_revisions = '';
 		}
 
-		$wp_4dot0_plus = version_compare( get_bloginfo('version'), '4.0', '>=' );
-		if ( $wp_4dot0_plus ) {
+		if ( self::$wp_4dot0_plus ) {
 			$like = $wpdb->esc_like( $shortcode );
 		} else {
 			$like = like_escape( $shortcode );
@@ -4422,16 +4487,16 @@ class MLAData {
 		"2#202" => "ObjectData Preview Data",
 
 		// Pre ObjectData Descriptor Record
-		"7#010"  => "Size Mode",
-		"7#020"  => "Max Subfile Size",
-		"7#090"  => "ObjectData Size Announced",
-		"7#095"  => "Maximum ObjectData Size",
+		"7#010" => "Size Mode",
+		"7#020" => "Max Subfile Size",
+		"7#090" => "ObjectData Size Announced",
+		"7#095" => "Maximum ObjectData Size",
 
 		// ObjectData Record
-		"8#010"  => "Subfile",
+		"8#010" => "Subfile",
 
 		// Post ObjectData Descriptor Record
-		"9#010"  => "Confirmed ObjectData Size"
+		"9#010" => "Confirmed ObjectData Size"
 	);
 
 	/**
@@ -4577,7 +4642,7 @@ class MLAData {
 		"2#027" => "Max 64 characters of publishable country/geographical location name; repeatable",
 		"2#030" => "8 numeric characters of Release Date - CCYYMMDD",
 		"2#035" => "11 characters of Release Time (earliest use) - HHMMSS±HHMM",
-		"2#037" => "8 numeric characters of Expiration Date (latest use) -  CCYYMDD",
+		"2#037" => "8 numeric characters of Expiration Date (latest use) - CCYYMDD",
 		"2#038" => "11 characters of Expiration Time (latest use) - HHMMSS±HHMM",
 		"2#040" => "Max 256 Characters of editorial instructions, e.g., embargoes and warnings",
 		"2#042" => "2 numeric characters of type of action this object provides to a previous object",
@@ -4620,16 +4685,16 @@ class MLAData {
 		"2#202" => "Max 256000 binary octets containing the ObjectData Preview data",
 
 		// Pre ObjectData Descriptor Record
-		"7#010"  => "1 numeric character - 0=objectdata size not known, 1=objectdata size known at beginning of transfer",
-		"7#020"  => "4 octet binary maximum subfile dataset(s) size",
-		"7#090"  => "4 octet binary objectdata size if known at beginning of transfer",
-		"7#095"  => "4 octet binary largest possible objectdata size",
+		"7#010" => "1 numeric character - 0=objectdata size not known, 1=objectdata size known at beginning of transfer",
+		"7#020" => "4 octet binary maximum subfile dataset(s) size",
+		"7#090" => "4 octet binary objectdata size if known at beginning of transfer",
+		"7#095" => "4 octet binary largest possible objectdata size",
 
 		// ObjectData Record
-		"8#010"  => "Subfile DataSet containing the objectdata itself; repeatable",
+		"8#010" => "Subfile DataSet containing the objectdata itself; repeatable",
 
 		// Post ObjectData Descriptor Record
-		"9#010"  => "4 octet binary total objectdata size"
+		"9#010" => "4 octet binary total objectdata size"
 	);
 
 	/**
@@ -4816,7 +4881,7 @@ class MLAData {
 	 * @since 2.10
 	 *
 	 * @param	string	field name
-	 * @param	string	data option  'text'|'single'|'export'|'array'|'multi'
+	 * @param	string	data option; 'text'|'single'|'export'|'array'|'multi'
 	 * @param	boolean	Optional: for option 'multi', retain existing values
 	 * @param	string	XMP metadata array
 	 *
@@ -4989,8 +5054,8 @@ class MLAData {
 		$file_name = $path_info['basename'];
 		MLAData::$mla_IPTC_EXIF_errors[] = "{$level} ({$type}) - {$string} [{$file_name} : {$line}]";
 
-	    /* Don't execute PHP internal error handler */
-    	return true;
+		/* Don't execute PHP internal error handler */
+		return true;
 	}
 
 	/**
@@ -5043,7 +5108,7 @@ class MLAData {
 					}
 
 					foreach ( $iptc_values as $key => $value ) {
-						if ( in_array( $key, array( '1#000', '1#020', '1#022', '1#120', '1#122', '2#000',  '2#200', '2#201' ) ) ) {
+						if ( in_array( $key, array( '1#000', '1#020', '1#022', '1#120', '1#122', '2#000', '2#200', '2#201' ) ) ) {
 							$value = unpack( 'nbinary', $value[0] );
 							$results['mla_iptc_metadata'][ $key ] = (string) $value['binary'];
 						} elseif ( 1 == count( $value ) ) {
@@ -5157,7 +5222,7 @@ class MLAData {
 							if ( in_array( $test, array( 1.3, 1.5, 1.6, 2.5 ) ) ) {
 								$new_data['ShutterSpeed'] = '1/' . number_format( 1.0 / $value, 1, '.', '' );
 							} else {
-								$new_data['ShutterSpeed'] = '1/' .  number_format( 1.0 / $value, 0, '.', '' );
+								$new_data['ShutterSpeed'] = '1/' . number_format( 1.0 / $value, 0, '.', '' );
 							}
 						}
 					} else {
@@ -5470,7 +5535,7 @@ class MLAData {
 					}
 
 					$delete = empty( $old_meta_value );
-				} else  {
+				} else {
 					$delete = NULL === $meta_value;
 				}
 
@@ -5606,7 +5671,7 @@ class MLAData {
 		$post_data = self::mla_get_attachment_by_id( $post_id, false );
 		if ( !isset( $post_data ) ) {
 			return array(
-				'message' =>  __( 'ERROR', 'media-library-assistant' ) . ': ' . __( 'Could not retrieve Attachment.', 'media-library-assistant' ),
+				'message' => __( 'ERROR', 'media-library-assistant' ) . ': ' . __( 'Could not retrieve Attachment.', 'media-library-assistant' ),
 				'body' => '' 
 			);
 		}

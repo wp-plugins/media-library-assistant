@@ -400,10 +400,10 @@ class MLAEdit {
 		}
 
 		$custom_fields = '';
-		foreach (MLAOptions::mla_custom_field_support( 'bulk_edit' ) as $slug => $label ) {
+		foreach (MLAOptions::mla_custom_field_support( 'bulk_edit' ) as $slug => $details ) {
 			  $page_values = array(
 				  'slug' => $slug,
-				  'label' => esc_attr( $label ),
+				  'label' => esc_attr( $details['name'] ),
 			  );
 			  $custom_fields .= MLAData::mla_parse_template( $page_template_array['custom_field'], $page_values );
 		}

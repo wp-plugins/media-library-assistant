@@ -834,8 +834,8 @@ class MLA_List_Table extends WP_List_Table {
 
 		$custom_fields = MLAOptions::mla_custom_field_support( 'quick_edit' );
 		$custom_fields = array_merge( $custom_fields, MLAOptions::mla_custom_field_support( 'bulk_edit' ) );
-		foreach ($custom_fields as $slug => $label ) {
-			$value = get_metadata( 'post', $item->ID, $label, true );
+		foreach ( $custom_fields as $slug => $details ) {
+			$value = get_metadata( 'post', $item->ID, $details['name'], true );
 			$inline_data .= '	<div class="' . $slug . '">' . esc_html( $value ) . "</div>\r\n";
 		}
 

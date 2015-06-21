@@ -38,7 +38,7 @@ class MLA {
 	 *
 	 * @var	string
 	 */
-	const MLA_DEVELOPMENT_VERSION = '20150617';
+	const MLA_DEVELOPMENT_VERSION = '20150621';
 
 	/**
 	 * Slug for registering and enqueueing plugin style sheet
@@ -302,7 +302,7 @@ class MLA {
 	 * @return	void
 	 */
 	public static function mla_admin_init_action() {
-//error_log( 'DEBUG: MLA::mla_admin_init_action $_REQUEST = ' . var_export( $_REQUEST, true ), 0 );
+//error_log( __LINE__ . ' DEBUG: MLA::mla_admin_init_action $_REQUEST = ' . var_export( $_REQUEST, true ), 0 );
 		/*
 		 * Process secure file download requests
 		 */
@@ -404,7 +404,7 @@ class MLA {
 		$fields = array( 'post_title', 'post_name', 'post_excerpt', 'post_content', 'image_alt', 'post_parent', 'post_parent_title', 'menu_order', 'post_author' );
 		$custom_fields = MLAOptions::mla_custom_field_support( 'quick_edit' );
 		$custom_fields = array_merge( $custom_fields, MLAOptions::mla_custom_field_support( 'bulk_edit' ) );
-		foreach ($custom_fields as $slug => $label ) {
+		foreach ( $custom_fields as $slug => $details ) {
 			$fields[] = $slug;
 		}
 
@@ -901,13 +901,17 @@ class MLA {
 		$custom_fields = array();
 
 		if ( is_array( $custom_field_map ) ) {
-			foreach ( $custom_field_map as $slug => $label ) {
+			foreach ( $custom_field_map as $slug => $details ) {
 				if ( isset( $request[ $slug ] ) ) {
 					$test_value = self::_process_bulk_value( $post_id, $request[ $slug ] );
 					if ( ! empty( $test_value ) ) {
-						$custom_fields[ $label ] = $test_value;
+						$custom_fields[ $details['name'] ] = $test_value;
 					} elseif ( is_null( $test_value ) ) {
-						$custom_fields[ $label ] = '';
+						if ( $details['no_null'] ) {
+							$custom_fields[ $details['name'] ] = NULL;
+						} else {
+							$custom_fields[ $details['name'] ] = '';
+						}
 					}
 				}
 			} // foreach
@@ -1201,8 +1205,9 @@ class MLA {
 				unset( $_REQUEST['tax_input'] );
 				unset( $_REQUEST['tax_action'] );
 
-				foreach (MLAOptions::mla_custom_field_support( 'bulk_edit' ) as $slug => $label )
+				foreach ( MLAOptions::mla_custom_field_support( 'bulk_edit' ) as $slug => $details ) {
 					unset( $_REQUEST[ $slug ] );
+				}
 
 				unset( $_REQUEST['cb_attachment'] );
 			}
@@ -1765,11 +1770,17 @@ class MLA {
 		 * Custom field support
 		 */
 		$custom_fields = array();
-		foreach (MLAOptions::mla_custom_field_support( 'quick_edit' ) as $slug => $label ) {
+		foreach ( MLAOptions::mla_custom_field_support( 'quick_edit' ) as $slug => $details ) {
 			if ( isset( $_REQUEST[ $slug ] ) ) {
-				$custom_fields[ $label ] = $_REQUEST[ $slug ];
+				$value = trim( $_REQUEST[ $slug ] );
 				unset ( $_REQUEST[ $slug ] );
-			  }
+
+				if ( $details['no_null'] && empty( $value ) ) {
+					$custom_fields[ $details['name'] ] = NULL;
+				} else {
+					$custom_fields[ $details['name'] ] = $value;
+				}
+			}
 		}
 
 		if ( ! empty( $custom_fields ) ) {
@@ -1991,10 +2002,10 @@ class MLA {
 		}
 
 		$custom_fields = '';
-		foreach (MLAOptions::mla_custom_field_support( 'quick_edit' ) as $slug => $label ) {
+		foreach ( MLAOptions::mla_custom_field_support( 'quick_edit' ) as $slug => $details ) {
 			  $page_values = array(
 				  'slug' => $slug,
-				  'label' => esc_attr( $label ),
+				  'label' => esc_attr( $details['name'] ),
 			  );
 			  $custom_fields .= MLAData::mla_parse_template( $page_template_array['custom_field'], $page_values );
 		}
@@ -2093,10 +2104,10 @@ class MLA {
 		}
 
 		$bulk_custom_fields = '';
-		foreach (MLAOptions::mla_custom_field_support( 'bulk_edit' ) as $slug => $label ) {
+		foreach ( MLAOptions::mla_custom_field_support( 'bulk_edit' ) as $slug => $details ) {
 			  $page_values = array(
 				  'slug' => $slug,
-				  'label' => esc_attr( $label ),
+				  'label' => esc_attr( $details['name'] ),
 			  );
 			  $bulk_custom_fields .= MLAData::mla_parse_template( $page_template_array['custom_field'], $page_values );
 		}

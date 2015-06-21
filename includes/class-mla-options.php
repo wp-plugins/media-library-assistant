@@ -2252,12 +2252,12 @@ class MLAOptions {
 					break;
 				case 'quick_edit':
 					if ( $value['quick_edit'] ) {
-						$results[ $slug ] = $value['name'];
+						$results[ $slug ] = $value;
 					}
 					break;
 				case 'bulk_edit':
 					if ( $value['bulk_edit'] ) {
-						$results[ $slug ] = $value['name'];
+						$results[ $slug ] = $value;
 					}
 					break;
 			} // switch support_type
@@ -2613,7 +2613,7 @@ class MLAOptions {
 				$result = MLAData::mla_find_array_element( $data_value['meta_name'], $attachment_metadata, $data_value['option'], $data_value['keep_existing'] );
 				break;
 			case 'template':
-				if ( in_array( $data_value['option'], array ( 'export', 'array', 'multi' ) ) ) {
+				if ( in_array( $data_value['option'], array ( 'single', 'export', 'array', 'multi' ) ) ) {
 					$default_option = 'array';
 				} else {
 					$default_option = 'text';
@@ -3049,7 +3049,7 @@ class MLAOptions {
 						} else {
 							$old_text = '';
 						}
-					} else {
+					} else { // } meta:
 						if ( is_string( $old_text = get_metadata( 'post', $post_id, $setting_value['name'], true ) ) ) {
 							$old_text = trim( $old_text );
 						}
@@ -3058,7 +3058,7 @@ class MLAOptions {
 					if ( ( ' ' != $new_text ) && empty( $old_text ) ) {
 						$custom_updates[ $setting_value['name'] ] = $new_text;
 					}
-				} else {
+				} else { // } keep_existing
 					if ( ' ' == $new_text && $setting_value['no_null'] ) {
 						$new_text = NULL;
 					}
@@ -3533,6 +3533,8 @@ class MLAOptions {
 					foreach ( $sorted_keys as $row_name ) {
 						$current_value = $current_values[ $row_name ];
 						$row_values = array (
+							'column_count' => 7,
+							'column_count_meta' => (7 - 2),
 							'index' => $index++,
 							'key' => esc_attr( $row_name ),
 							'name_attr' => esc_attr( $row_name ),
@@ -3551,10 +3553,8 @@ class MLAOptions {
 							'mla_column_checked' => '',
 							'quick_edit_checked' => '',
 							'bulk_edit_checked' => '',
-							'column_count' => 7,
 							'meta_name_size' => 30,
 							'meta_name' => esc_attr( $current_value['meta_name'] ),
-							'column_count_meta' => (7 - 2),
 							'Option' => __( 'Option', 'media-library-assistant' ),
 							'text_option' => '',
 							'Text' => __( 'Text', 'media-library-assistant' ),
@@ -3581,9 +3581,6 @@ class MLAOptions {
 						}
 
 						switch( $current_value['format'] ) {
-							case 'native':
-								$row_values['native_format'] = 'selected="selected"';
-								break;
 							case 'commas':
 								$row_values['commas_format'] = 'selected="selected"';
 								break;
@@ -3637,6 +3634,7 @@ class MLAOptions {
 				$row_template = self::$mla_option_templates['custom-field-new-rule-row'];
 				$row_values = array (
 					'column_count' => 7,
+					'column_count_meta' => (7 - 2),
 					'Add new Rule' => __( 'Add a new Mapping Rule', 'media-library-assistant' ),
 					'index' => self::MLA_NEW_CUSTOM_RULE,
 					'field_name_options' => self::_compose_custom_field_option_list( 'none', $current_values ),
@@ -3656,7 +3654,6 @@ class MLAOptions {
 					'bulk_edit_checked' => '',
 					'meta_name_size' => 30,
 					'meta_name' => '',
-					'column_count_meta' => (7 - 2),
 					'Option' => __( 'Option', 'media-library-assistant' ),
 					'text_option' => '',
 					'Text' => __( 'Text', 'media-library-assistant' ),
@@ -3681,6 +3678,7 @@ class MLAOptions {
 				$row_template = self::$mla_option_templates['custom-field-new-field-row'];
 				$row_values = array (
 					'column_count' => 7,
+					'column_count_meta' => (7 - 2),
 					'Add new Field' => __( 'Add a new Field and Mapping Rule', 'media-library-assistant' ),
 					'index' => self::MLA_NEW_CUSTOM_FIELD,
 					'field_name_size' => '24',
@@ -3700,7 +3698,6 @@ class MLAOptions {
 					'bulk_edit_checked' => '',
 					'meta_name_size' => 30,
 					'meta_name' => '',
-					'column_count_meta' => (7 - 2),
 					'Option' => __( 'Option', 'media-library-assistant' ),
 					'text_option' => '',
 					'Text' => __( 'Text', 'media-library-assistant' ),
@@ -3833,6 +3830,8 @@ class MLAOptions {
 		$image_metadata = MLAData::mla_fetch_attachment_image_metadata( $post->ID );
 		$updates = array();
 		$update_all = ( 'iptc_exif_mapping' == $category );
+		$data_source_category = $update_all ? 'single_attachment_mapping' : 'custom_field_mapping';
+		
 		if ( NULL == $settings ) {
 			$settings = self::mla_get_option( 'iptc_exif_mapping' );
 		}
@@ -3865,7 +3864,7 @@ class MLAOptions {
 						'format' => 'native',
 						'option' => 'text' );
 
-					$exif_value =  self::_evaluate_data_source( $post->ID, 'single_attachment_mapping', $data_value, $attachment_metadata );
+					$exif_value =  self::_evaluate_data_source( $post->ID, $data_source_category, $data_value, $attachment_metadata );
 					if ( ' ' == $exif_value ) {
 						$exif_value = '';
 					}
@@ -3973,7 +3972,7 @@ class MLAOptions {
 						'format' => 'native',
 						'option' => 'array' );
 
-					$exif_value =  self::_evaluate_data_source( $post->ID, 'single_attachment_mapping', $data_value, $attachment_metadata );
+					$exif_value =  self::_evaluate_data_source( $post->ID, $data_source_category, $data_value, $attachment_metadata );
 					if ( ' ' == $exif_value ) {
 						$exif_value = '';
 					}
@@ -4103,14 +4102,19 @@ class MLAOptions {
 				}
 			} // foreach new setting
 
-		if ( ! empty( $tax_inputs ) ) {
-			$updates['taxonomy_updates'] = array ( 'inputs' => $tax_inputs, 'actions' => $tax_actions );
-		}
+			if ( ! empty( $tax_inputs ) ) {
+				$updates['taxonomy_updates'] = array ( 'inputs' => $tax_inputs, 'actions' => $tax_actions );
+			}
 		} // update taxonomy term mappings
 
 		if ( $update_all || ( 'iptc_exif_custom_mapping' == $category ) ) {
 			$custom_updates = array();
 			foreach ( $settings['custom'] as $setting_key => $setting_value ) {
+				/*
+				 * Convert checkbox value(s)
+				 */
+				$setting_value['no_null'] = isset( $setting_value['no_null'] );
+
 				$setting_name = $setting_value['name'];
 				$setting_value = apply_filters( 'mla_mapping_rule', $setting_value, $post->ID, 'iptc_exif_custom_mapping', $attachment_metadata );
 				if ( NULL === $setting_value ) {
@@ -4120,26 +4124,41 @@ class MLAOptions {
 				if ( 'none' == $setting_value['iptc_value'] ) {
 					$iptc_value = '';
 				} else {
-					$iptc_value = MLAData::mla_iptc_metadata_value( $setting_value['iptc_value'], $image_metadata );
-				}
-
-				$iptc_value = apply_filters( 'mla_mapping_iptc_value', $iptc_value, $setting_key, $post->ID, 'iptc_exif_custom_mapping', $attachment_metadata );
-
-				if ( 'template:' == substr( $setting_value['exif_value'], 0, 9 ) ) {
 					$data_value = array(
 						'name' => $setting_key,
 						'data_source' => 'template',
-						'meta_name' => substr( $setting_value['exif_value'], 9 ),
+						'meta_name' => '([+iptc:' . $setting_value['iptc_value'] . '+])',
 						'keep_existing' => $setting_value['keep_existing'],
-						'format' => 'native',
-						'option' => 'text' );
+						'format' => $setting_value['format'],
+						'option' => $setting_value['option'] );
+						
+					$iptc_value = self::_evaluate_data_source( $post->ID, $data_source_category, $data_value, $attachment_metadata );
+					if ( ' ' == $iptc_value ) {
+						$iptc_value = '';
+					}
+				}
+				
+				$iptc_value = apply_filters( 'mla_mapping_iptc_value', $iptc_value, $setting_key, $post->ID, 'iptc_exif_custom_mapping', $attachment_metadata );
 
-					$exif_value =  self::_evaluate_data_source( $post->ID, 'single_attachment_mapping', $data_value, $attachment_metadata );
+				$exif_value = trim( $setting_value['exif_value'] );
+				if ( ! empty( $exif_value ) ) {
+					$data_value = array(
+						'name' => $setting_key,
+						'data_source' => 'template',
+						'keep_existing' => $setting_value['keep_existing'],
+						'format' => $setting_value['format'],
+						'option' => $setting_value['option'] );
+
+					if ( 'template:' == substr( $exif_value, 0, 9 ) ) {
+						$data_value['meta_name'] = substr( $exif_value, 9 );
+					} else {
+						$data_value['meta_name'] = '([+exif:' . $exif_value . '+])';
+					}
+
+					$exif_value =  self::_evaluate_data_source( $post->ID, $data_source_category, $data_value, $attachment_metadata );
 					if ( ' ' == $exif_value ) {
 						$exif_value = '';
 					}
-				} else {
-					$exif_value = MLAData::mla_exif_metadata_value( $setting_value['exif_value'], $image_metadata );
 				}
 
 				$exif_value = apply_filters( 'mla_mapping_exif_value', $exif_value, $setting_key, $post->ID, 'iptc_exif_custom_mapping', $attachment_metadata );
@@ -4156,10 +4175,6 @@ class MLAOptions {
 					} else {
 						$new_text = $iptc_value;
 					}
-				}
-
-				if ( is_array( $new_text ) ) {
-				$new_text = implode( ',', $new_text );
 				}
 
 				if ( $setting_value['keep_existing'] ) {
@@ -4184,8 +4199,11 @@ class MLAOptions {
 					if ( ( ! empty( $new_text ) ) && empty( $old_value ) ) {
 						$custom_updates[ $setting_name ] = $new_text;
 					}
-				} // keep_existing
-				else {
+				} else { // } keep_existing
+					if ( empty( $new_text ) && $setting_value['no_null'] ) {
+						$new_text = NULL;
+					}
+
 					$custom_updates[ $setting_name ] = $new_text;
 				}
 			} // foreach new setting
@@ -4550,7 +4568,10 @@ class MLAOptions {
 					'iptc_value' => 'none',
 					'exif_value' => '',
 					'iptc_first' => true,
-					'keep_existing' => true
+					'keep_existing' => true,
+					'format' => 'native',
+					'option' => 'text',
+					'no_null' => false
 				);
 			}
 
@@ -4605,6 +4626,34 @@ class MLAOptions {
 				/* translators: 1: custom field name 2: attribute 3: old value 'to' new value */
 				$message_list .= '<br>' . sprintf( __( '%1$s changing %2$s value from %3$s.', 'media-library-assistant' ), esc_html( $old_values['name'] ), __( 'Existing Text', 'media-library-assistant' ), $boolean_text ) . "\r\n";
 				$old_values['keep_existing'] = $boolean_value;
+			}
+
+			if ( $old_values['format'] != $new_value['format'] ) {
+				$any_setting_changed = true;
+				/* translators: 1: custom field name 2: attribute 3: old value 4: new value */
+				$message_list .= '<br>' . sprintf( __( '%1$s changing %2$s from %3$s to %4$s.', 'media-library-assistant' ), esc_html( $old_values['name'] ), __( 'Format', 'media-library-assistant' ), $old_values['format'], $new_value['format'] ) . "\r\n";
+				$old_values['format'] = $new_value['format'];
+			}
+
+			if ( $old_values['option'] != $new_value['option'] ) {
+				$any_setting_changed = true;
+				/* translators: 1: custom field name 2: attribute 3: old value 4: new value */
+				$message_list .= '<br>' . sprintf( __( '%1$s changing %2$s from %3$s to %4$s.', 'media-library-assistant' ), esc_html( $old_values['name'] ), __( 'Option', 'media-library-assistant' ), $old_values['option'], $new_value['option'] ) . "\r\n";
+				$old_values['option'] = $new_value['option'];
+			}
+
+			if ( isset( $new_value['no_null'] ) ) {
+				$boolean_value = true;
+				$boolean_text = __( 'unchecked to checked', 'media-library-assistant' );
+			} else {
+				$boolean_value = false;
+				$boolean_text = __( 'checked to unchecked', 'media-library-assistant' );
+			}
+			if ( $old_values['no_null'] != $boolean_value ) {
+				$any_setting_changed = true;
+				/* translators: 1: custom field name 2: attribute 3: old value 'to' new value */
+				$message_list .= '<br>' . sprintf( __( '%1$s changing %2$s value from %3$s.', 'media-library-assistant' ), esc_html( $old_values['name'] ), __( 'Delete NULL values', 'media-library-assistant' ), $boolean_text ) . "\r\n";
+				$old_values['no_null'] = $boolean_value;
 			}
 
 			if ( $any_setting_changed ) {
@@ -4861,6 +4910,7 @@ class MLAOptions {
 								$current_value = $current_values['custom'][ $row_name ];
 								$row_values = array (
 									'column_count' => 5,
+							'column_count_meta' => (5 - 2),
 									'index' => $index++,
 									'key' => esc_attr( $row_name ),
 									'name_attr' => esc_attr( $current_value['name'] ),
@@ -4876,6 +4926,26 @@ class MLAOptions {
 									'Keep' => __( 'Keep', 'media-library-assistant' ),
 									'replace_selected' => '',
 									'Replace' => __( 'Replace', 'media-library-assistant' ),
+							'Format' => __( 'Format', 'media-library-assistant' ),
+							'native_format' => '',
+							'Native' => __( 'Native', 'media-library-assistant' ),
+							'commas_format' => '',
+							'Commas' => __( 'Commas', 'media-library-assistant' ),
+							'raw_format' => '',
+							'Raw' => __( 'Raw', 'media-library-assistant' ),
+							'Option' => __( 'Option', 'media-library-assistant' ),
+							'text_option' => '',
+							'Text' => __( 'Text', 'media-library-assistant' ),
+							'single_option' => '',
+							'Single' => __( 'Single', 'media-library-assistant' ),
+							'export_option' => '',
+							'Export' => __( 'Export', 'media-library-assistant' ),
+							'array_option' => '',
+							'Array' => __( 'Array', 'media-library-assistant' ),
+							'multi_option' => '',
+							'Multi' => __( 'Multi', 'media-library-assistant' ),
+							'no_null_checked' => '',
+							'Delete NULL values' => __( 'Delete NULL values', 'media-library-assistant' ),
 									'Delete Rule' => __( 'Delete Rule', 'media-library-assistant' ),
 									'Delete Field' => __( 'Delete Rule AND Field', 'media-library-assistant' ),
 									'Update Rule' => __( 'Update Rule', 'media-library-assistant' ),
@@ -4894,6 +4964,38 @@ class MLAOptions {
 									$row_values['replace_selected'] = 'selected="selected"';
 								}
 
+						switch( $current_value['format'] ) {
+							case 'commas':
+								$row_values['commas_format'] = 'selected="selected"';
+								break;
+							case 'raw':
+								$row_values['raw_format'] = 'selected="selected"';
+								break;
+							default:
+								$row_values['native_format'] = 'selected="selected"';
+						} // format
+
+						switch( $current_value['option'] ) {
+							case 'single':
+								$row_values['single_option'] = 'selected="selected"';
+								break;
+							case 'export':
+								$row_values['export_option'] = 'selected="selected"';
+								break;
+							case 'array':
+								$row_values['array_option'] = 'selected="selected"';
+								break;
+							case 'multi':
+								$row_values['multi_option'] = 'selected="selected"';
+								break;
+							default:
+								$row_values['text_option'] = 'selected="selected"';
+						} // option
+
+						if ( $current_value['no_null'] ) {
+							$row_values['no_null_checked'] = 'checked="checked"';
+						}
+
 								$table_rows .= MLAData::mla_parse_template( $row_template, $row_values );
 							} // foreach current_values key
 						} // foreach sorted_name
@@ -4904,6 +5006,7 @@ class MLAOptions {
 						$row_template = self::$mla_option_templates['iptc-exif-custom-new-rule-row'];
 						$row_values = array (
 							'column_count' => 5 ,
+					'column_count_meta' => (5 - 2),
 							'Add new Rule' => __( 'Add a new Mapping Rule', 'media-library-assistant' ),
 							'index' => self::MLA_NEW_CUSTOM_RULE,
 							'field_name_options' => self::_compose_custom_field_option_list( 'none', $current_values['custom'] ),
@@ -4918,6 +5021,26 @@ class MLAOptions {
 							'Keep' => __( 'Keep', 'media-library-assistant' ),
 							'replace_selected' => '',
 							'Replace' => __( 'Replace', 'media-library-assistant' ),
+					'Format' => __( 'Format', 'media-library-assistant' ),
+					'native_format' => 'selected="selected"',
+					'Native' => __( 'Native', 'media-library-assistant' ),
+					'commas_format' => '',
+					'Commas' => __( 'Commas', 'media-library-assistant' ),
+					'raw_format' => '',
+					'Raw' => __( 'Raw', 'media-library-assistant' ),
+					'Option' => __( 'Option', 'media-library-assistant' ),
+					'text_option' => '',
+					'Text' => __( 'Text', 'media-library-assistant' ),
+					'single_option' => '',
+					'Single' => __( 'Single', 'media-library-assistant' ),
+					'export_option' => '',
+					'Export' => __( 'Export', 'media-library-assistant' ),
+					'array_option' => '',
+					'Array' => __( 'Array', 'media-library-assistant' ),
+					'multi_option' => '',
+					'Multi' => __( 'Multi', 'media-library-assistant' ),
+					'no_null_checked' => '',
+					'Delete NULL values' => __( 'Delete NULL values', 'media-library-assistant' ),
 							'Add Rule' => __( 'Add Rule', 'media-library-assistant' ),
 							'Map All Attachments' => __( 'Add Rule and Map All Attachments', 'media-library-assistant' ),
 						);
@@ -4929,6 +5052,7 @@ class MLAOptions {
 						$row_template = self::$mla_option_templates['iptc-exif-custom-new-field-row'];
 						$row_values = array (
 							'column_count' => 5 ,
+					'column_count_meta' => (5 - 2),
 							'Add new Field' => __( 'Add a new Field and Mapping Rule', 'media-library-assistant' ),
 							'index' => self::MLA_NEW_CUSTOM_FIELD,
 							'field_name_size' => '24',
@@ -4943,6 +5067,26 @@ class MLAOptions {
 							'Keep' => __( 'Keep', 'media-library-assistant' ),
 							'replace_selected' => '',
 							'Replace' => __( 'Replace', 'media-library-assistant' ),
+					'Format' => __( 'Format', 'media-library-assistant' ),
+					'native_format' => 'selected="selected"',
+					'Native' => __( 'Native', 'media-library-assistant' ),
+					'commas_format' => '',
+					'Commas' => __( 'Commas', 'media-library-assistant' ),
+					'raw_format' => '',
+					'Raw' => __( 'Raw', 'media-library-assistant' ),
+					'Option' => __( 'Option', 'media-library-assistant' ),
+					'text_option' => '',
+					'Text' => __( 'Text', 'media-library-assistant' ),
+					'single_option' => '',
+					'Single' => __( 'Single', 'media-library-assistant' ),
+					'export_option' => '',
+					'Export' => __( 'Export', 'media-library-assistant' ),
+					'array_option' => '',
+					'Array' => __( 'Array', 'media-library-assistant' ),
+					'multi_option' => '',
+					'Multi' => __( 'Multi', 'media-library-assistant' ),
+					'no_null_checked' => '',
+					'Delete NULL values' => __( 'Delete NULL values', 'media-library-assistant' ),
 							'Add Field' => __( 'Add Field', 'media-library-assistant' ),
 							'Map All Attachments' => __( 'Add Field and Map All Attachments', 'media-library-assistant' ),
 						);
