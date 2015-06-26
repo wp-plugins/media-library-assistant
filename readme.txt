@@ -179,6 +179,7 @@ All of the MLA source code has been annotated with "DocBlocks", a special type o
 * New: If Imagick and/or Ghostcript support is not present, an explicit warning message is displayed in the "Enable thumbnail substitution" portion of the Settings/Media Library Assistant MLA Gallery tab.
 * New: A new filter for the "Media/Assistant Submenu Hooks" allows you to modify the content of the dropdown Help menu. The `/media-library-assistant/examples/mla-list-table-hooks-example.php.txt` example plugin has been updated with the new filter.
 * New: A new `/media-library-assistant/examples/mla-custom-file-size-example.php.txt` example plugin has been added to demonstrate a simple example of changing the content of the "Item:" template part.
+* Fix: For **Bulk Edit actions, taxonomy term updates** have been fixed.
 * Fix: The `/media-library-assistant/examples/mla-hooks-example.php.txt` example plugin has been updated to handle the new `captiontag_content` template substitution parameter.
 * Fix: The default `_wpnonce` query argument is no longer used, eliminating a conflict between MLA and the "A5 Custom Login Page" plugin. 
 * Fix: For the Settings/Media Library Assistant Views and Uploads, the Quick Edit action has been fixed.

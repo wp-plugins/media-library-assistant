@@ -38,7 +38,7 @@ class MLA {
 	 *
 	 * @var	string
 	 */
-	const MLA_DEVELOPMENT_VERSION = '20150625';
+	const MLA_DEVELOPMENT_VERSION = '20150626';
 
 	/**
 	 * Slug for registering and enqueueing plugin style sheet
@@ -949,7 +949,7 @@ class MLA {
 		$tax_inputs = array();
 		$tax_actions = array();
 		
-		if ( isset( $undefined ) && is_array( $undefined ) ) {
+		if ( isset( $request['tax_input'] ) && is_array( $request['tax_input'] ) ) {
 			foreach ( $request['tax_input'] as $taxonomy => $terms ) {
 				if ( ! empty( $request['tax_action'] ) ) {
 					$tax_action = $request['tax_action'][ $taxonomy ];
