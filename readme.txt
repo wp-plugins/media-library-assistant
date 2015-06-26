@@ -171,9 +171,17 @@ All of the MLA source code has been annotated with "DocBlocks", a special type o
 == Changelog ==
 
 = 2.13 =
+* New: For the Media/Assistant submenu table, the **"Thumbnail" bulk action** lets you easily **generate thumbnail images** for non-image items. These can be used as the Featured Image for `mla_viewer` processing. A settings option lets you disable this feature if desired.
 * New: For the Media/Assistant submenu table, **wildcard searches are now allowed in the Search Media box** using an asterisk ("*") as the wildcard placeholder. Pull down the Help menu on the screen and select the Search Media section for more information.
+* New: For the **Terms Search** popup window and `mla_terms_search` shortcode parameter, **wildcard searches are now allowed** using an asterisk ("*") as the wildcard placeholder.
 * New: For IPTC/EXIF custom field mapping rules, **Format, Option and Delete Null Values** options can be specified and are handled like their equivalents in Custom Field mapping rules.
 * New: The `/media-library-assistant/examples/mla-custom-field-search-example.php.txt` example plugin has been extended to handle queries made in the Media Manager Modal (popup) Window "Search" box.
+* New: If Imagick and/or Ghostcript support is not present, an explicit warning message is displayed in the "Enable thumbnail substitution" portion of the Settings/Media Library Assistant MLA Gallery tab.
+* New: A new filter for the "Media/Assistant Submenu Hooks" allows you to modify the content of the dropdown Help menu. The `/media-library-assistant/examples/mla-list-table-hooks-example.php.txt` example plugin has been updated with the new filter.
+* New: A new `/media-library-assistant/examples/mla-custom-file-size-example.php.txt` example plugin has been added to demonstrate a simple example of changing the content of the "Item:" template part.
+* Fix: The `/media-library-assistant/examples/mla-hooks-example.php.txt` example plugin has been updated to handle the new `captiontag_content` template substitution parameter.
+* Fix: The default `_wpnonce` query argument is no longer used, eliminating a conflict between MLA and the "A5 Custom Login Page" plugin. 
+* Fix: For the Settings/Media Library Assistant Views and Uploads, the Quick Edit action has been fixed.
 * Fix: For the Media/Assistant submenu table and the Media Manager Modal (popup) Window, default table sorting on a custom field no longer causes WordPress Database Errors.
 * Fix: For the Media/Assistant Quick Edit and Bulk Edit actions, the Custom Field mapping rule "Delete Null Values" option is now handled correctly. When this option is specified, empty values will not be stored in the database.
 * Fix: The "single" option now returns just the first value of a custom field if it has multiple values.
@@ -213,7 +221,7 @@ All of the MLA source code has been annotated with "DocBlocks", a special type o
 * Fix: Code and files for WordPress before version 3.5 has been removed.
 
 = 2.10 =
-* New: For the `[mla_gallery]` shortcode, the **Google File Viewer (mla_viewer) has been replaced** by two new featues. First, **a "Featured Image" can be assigned to Media Library items**; it will replace the MIME type icon as the thumbnail for the item. Second, **PDF documents can generate a thumbnail image** for the item if Imagemagick, Imagick and Ghostscript are available on the server. See the [Other Notes section](http://wordpress.org/extend/plugins/media-library-assistant/other_notes/ "Click here, then scroll down") section or the Settings/Media Library Assistant Documentation tab for more information.
+* New: For the `[mla_gallery]` shortcode, the **Google File Viewer (mla_viewer) has been replaced** by two new featues. First, **a "Featured Image" can be assigned to Media Library items**; it will replace the MIME type icon as the thumbnail for the item. Second, **PDF documents can generate a thumbnail image** for the item if ImageMagick, Imagick and Ghostscript are available on the server. See the [Other Notes section](http://wordpress.org/extend/plugins/media-library-assistant/other_notes/ "Click here, then scroll down") section or the Settings/Media Library Assistant Documentation tab for more information.
 * New: **XMP metadata can be extracted from JPEG and TIFF images** and used in `[mla_gallery]` shortcodes and IPTC/EXIF or Custom Field mapping rules.
 * New: Several **simple MLA Gallery examples** have been added to the Documentation tab.
 * New: A Media/Assistant submenu table **custom view example plugin**, `mla-custom-view-example.php.txt` has been added to the `/media-library-assistant/examples/` directory. The example adds two custom views for "Attached" items and "Unpublished" items that are attached to a parent whose `post_status` is 'draft', 'future', 'pending' or 'trash' .
@@ -428,7 +436,7 @@ Then synchronization handles common editing actions as follows:
 
 <strong>NOTE: Google has discontinued the File Viewer support for thumbnail images.</strong> This solution supports dynamic thumbnail image generation for PDF and Postscript documents on your site's server. You can also assign a "Featured Image" to any Media Library item. For non-image items such as Microsoft Office documents the featured image will replace the MIME-type icon or document title in an <code>[mla_gallery]</code> display. Simply go to the Media/Edit Media screen, scroll down to the "Featured Image" meta box and select an image as you would for a post or page. 
 
-The dynamic thumbnail image generation for PDF and Postscript documents uses the PHP <code>Imagick</code> class, which <strong>requires Imagemagick and Ghostscript</strong> to be installed on your server. If you need help installing them, look at this <a href="https://wordpress.org/support/topic/nothing-but-error-messages" title="Help with installation" target="_blank">PDF Thumbnails support topic</a>. If you don't have them on your server you can still use the Featured Image support to supply thumbnails for your non-image items. 
+The dynamic thumbnail image generation for PDF and Postscript documents uses the PHP <code>Imagick</code> class, which <strong>requires ImageMagick and Ghostscript</strong> to be installed on your server. If you need help installing them, look at this <a href="https://wordpress.org/support/topic/nothing-but-error-messages" title="Help with installation" target="_blank">PDF Thumbnails support topic</a>. If you don't have them on your server you can still use the Featured Image support to supply thumbnails for your non-image items. 
 
 Ten <code>[mla_gallery]</code> parameters provide an easy way to simulate thumbnail images for the non-image file types.
 
@@ -452,7 +460,7 @@ Check this option to allow the "mla_viewer" to generate thumbnail images for PDF
 * <strong>Enable Featured Images</strong><br />
 Check this option to extend Featured Image support to all Media Library items. The Featured Image can be used as a thumbnail image for the item in an <code>[mla_gallery]</code> display.
 * <strong>Enable explicit Ghostscript check</strong><br />
-Check this option to enable the explicit check for Ghostscript support required for thumbnail generation. If your Ghostscript software is in a non-standard location, unchecking this option bypasses the check. Bad things can happen if Ghostscript is missing but Imagemagick is present, so leave this option checked unless you know it is safe to turn it off.
+Check this option to enable the explicit check for Ghostscript support required for thumbnail generation. If your Ghostscript software is in a non-standard location, unchecking this option bypasses the check. Bad things can happen if Ghostscript is missing but ImageMagick is present, so leave this option checked unless you know it is safe to turn it off.
 * <strong>Ghostscript path</strong><br />
 If your Ghostscript software is in a non-standard location, enter the full path and name of the executable here. The value you enter will be used as-is and the search for Ghostscript in the usual locations will be bypassed.
 

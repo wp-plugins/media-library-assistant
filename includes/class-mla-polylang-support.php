@@ -258,7 +258,7 @@ class MLA_Polylang {
 	public static function quick_translate() {
 		global $polylang;
 
-		check_ajax_referer( MLA::MLA_ADMIN_NONCE, 'nonce' );
+		check_ajax_referer( MLA::MLA_ADMIN_NONCE_ACTION, MLA::MLA_ADMIN_NONCE_NAME );
 
 		if ( empty( $_REQUEST['post_ID'] ) ) {
 			echo __( 'ERROR: No post ID found', 'media-library-assistant' );
@@ -371,7 +371,7 @@ class MLA_Polylang {
 			'comma' => _x( ',', 'tag_delimiter', 'media-library-assistant' ),
 			'useSpinnerClass' => false,
 			'ajax_action' => MLA_Polylang::MLA_PLL_QUICK_TRANSLATE,
-			'ajax_nonce' => wp_create_nonce( MLA::MLA_ADMIN_NONCE ) 
+			'ajax_nonce' => wp_create_nonce( MLA::MLA_ADMIN_NONCE_ACTION, MLA::MLA_ADMIN_NONCE_NAME ) 
 		);
 
 		if ( version_compare( get_bloginfo( 'version' ), '4.2', '>=' ) ) {
@@ -2061,10 +2061,10 @@ class MLA_Polylang {
 		 * Initialize page messages and content.
 		 */
 		if ( !empty( $_REQUEST['mla-language-options-save'] ) ) {
-			check_admin_referer( MLA::MLA_ADMIN_NONCE, '_wpnonce' );
+			check_admin_referer( MLA::MLA_ADMIN_NONCE_ACTION, MLA::MLA_ADMIN_NONCE_NAME );
 			$page_content = MLA_Polylang::_save_language_settings( );
 		} elseif ( !empty( $_REQUEST['mla-language-options-reset'] ) ) {
-			check_admin_referer( MLA::MLA_ADMIN_NONCE, '_wpnonce' );
+			check_admin_referer( MLA::MLA_ADMIN_NONCE_ACTION, MLA::MLA_ADMIN_NONCE_NAME );
 			$page_content = MLA_Polylang::_reset_language_settings( );
 		} else {
 			$page_content = array(
@@ -2086,7 +2086,7 @@ class MLA_Polylang {
 			'settingsURL' => admin_url('options-general.php'),
 			'Save Changes' => __( 'Save Changes', 'media-library-assistant' ),
 			'Delete Language options' => __( 'Delete Language options and restore default settings', 'media-library-assistant' ),
-			'_wpnonce' => wp_nonce_field( MLA::MLA_ADMIN_NONCE, '_wpnonce', true, false ),
+			'_wpnonce' => wp_nonce_field( MLA::MLA_ADMIN_NONCE_ACTION, MLA::MLA_ADMIN_NONCE_NAME, true, false ),
 			'_wp_http_referer' => wp_referer_field( false ),
 			'Go to Top' => __( 'Go to Top', 'media-library-assistant' ),
 			'form_url' => admin_url( 'options-general.php' ) . '?page=mla-settings-menu-language&mla_tab=language',

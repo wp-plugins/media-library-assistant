@@ -64,6 +64,10 @@
 <li class="method public "><a href="#mla_admin_init_action" title="mla_admin_init_action :: Load the plugin's Ajax handler or process Edit Media update actions"><span class="description">Load the plugin's Ajax handler or process Edit Media update actions</span><pre>mla_admin_init_action()</pre></a></li>
 <li class="method public "><a href="#mla_admin_menu_action" title="mla_admin_menu_action :: Add the submenu pages"><span class="description">Add the submenu pages</span><pre>mla_admin_menu_action()</pre></a></li>
 <li class="method public "><a href="#mla_authors_dropdown" title="mla_authors_dropdown :: Get the edit Authors dropdown box, if user has suitable permissions"><span class="description">Get the edit Authors dropdown box, if user has suitable permissions</span><pre>mla_authors_dropdown()</pre></a></li>
+<li class="method public "><a href="#mla_debug_add" title="mla_debug_add :: Add a debug message to the collection"><span class="description">Add a debug message to the collection</span><pre>mla_debug_add()</pre></a></li>
+<li class="method public "><a href="#mla_debug_content" title="mla_debug_content :: Get debug information without clearing the buffer"><span class="description">Get debug information without clearing the buffer</span><pre>mla_debug_content()</pre></a></li>
+<li class="method public "><a href="#mla_debug_flush" title="mla_debug_flush :: Flush debug information and clear buffer"><span class="description">Flush debug information and clear buffer</span><pre>mla_debug_flush()</pre></a></li>
+<li class="method public "><a href="#mla_debug_mode" title="mla_debug_mode :: Set debug information collection mode"><span class="description">Set debug information collection mode</span><pre>mla_debug_mode()</pre></a></li>
 <li class="method public "><a href="#mla_find_posts_ajax_action" title='mla_find_posts_ajax_action :: Ajax handler to fetch candidates for the "Set Parent" popup window'><span class="description">Ajax handler to fetch candidates for the "Set Parent" popup window</span><pre>mla_find_posts_ajax_action()</pre></a></li>
 <li class="method public "><a href="#mla_inline_edit_ajax_action" title="mla_inline_edit_ajax_action :: Ajax handler for inline editing"><span class="description">Ajax handler for inline editing</span><pre>mla_inline_edit_ajax_action()</pre></a></li>
 <li class="method public "><a href="#mla_load_media_action" title="mla_load_media_action :: Redirect to Media/Assistant if Media/Library is hidden"><span class="description">Redirect to Media/Assistant if Media/Library is hidden</span><pre>mla_load_media_action()</pre></a></li>
@@ -90,6 +94,8 @@
 <li class="nav-header">
 <i class="icon-custom icon-property"></i> Properties</li>
 <li class="nav-header private">» Private</li>
+<li class="property private "><a href="#%24mla_debug_messages" title="$mla_debug_messages :: Accumulates debug messages"><span class="description">Accumulates debug messages</span><pre>$mla_debug_messages</pre></a></li>
+<li class="property private "><a href="#%24mla_debug_mode" title="$mla_debug_mode :: Debug information collection mode"><span class="description">Debug information collection mode</span><pre>$mla_debug_mode</pre></a></li>
 <li class="property private "><a href="#%24mla_language_support_error_messages" title="$mla_language_support_error_messages :: Accumulates error messages from name conflict tests"><span class="description">Accumulates error messages from name conflict tests</span><pre>$mla_language_support_error_messages</pre></a></li>
 <li class="property private "><a href="#%24page_hooks" title="$page_hooks :: Holds screen ids to match help text to corresponding screen"><span class="description">Holds screen ids to match help text to corresponding screen</span><pre>$page_hooks</pre></a></li>
 <li class="nav-header">
@@ -98,7 +104,8 @@
 <li class="constant  "><a href="#CURRENT_MLA_VERSION" title="CURRENT_MLA_VERSION :: Current version number"><span class="description">Current version number</span><pre>CURRENT_MLA_VERSION</pre></a></li>
 <li class="constant  "><a href="#JAVASCRIPT_INLINE_EDIT_OBJECT" title="JAVASCRIPT_INLINE_EDIT_OBJECT :: Object name for localizing JavaScript - MLA List Table"><span class="description">Object name for localizing JavaScript - MLA List Table</span><pre>JAVASCRIPT_INLINE_EDIT_OBJECT</pre></a></li>
 <li class="constant  "><a href="#JAVASCRIPT_INLINE_EDIT_SLUG" title="JAVASCRIPT_INLINE_EDIT_SLUG :: Slug for localizing and enqueueing JavaScript - MLA List Table"><span class="description">Slug for localizing and enqueueing JavaScript - MLA List Table</span><pre>JAVASCRIPT_INLINE_EDIT_SLUG</pre></a></li>
-<li class="constant  "><a href="#MLA_ADMIN_NONCE" title="MLA_ADMIN_NONCE :: Action name; uniquely identifies the nonce"><span class="description">Action name; uniquely identifies the nonce</span><pre>MLA_ADMIN_NONCE</pre></a></li>
+<li class="constant  "><a href="#MLA_ADMIN_NONCE_ACTION" title="MLA_ADMIN_NONCE_ACTION :: Action name; gives a context for the nonce"><span class="description">Action name; gives a context for the nonce</span><pre>MLA_ADMIN_NONCE_ACTION</pre></a></li>
+<li class="constant  "><a href="#MLA_ADMIN_NONCE_NAME" title="MLA_ADMIN_NONCE_NAME :: Nonce name; uniquely identifies the nonce"><span class="description">Nonce name; uniquely identifies the nonce</span><pre>MLA_ADMIN_NONCE_NAME</pre></a></li>
 <li class="constant  "><a href="#MLA_ADMIN_SET_PARENT" title="MLA_ADMIN_SET_PARENT :: mla_admin_action value for setting an item's parent object"><span class="description">mla_admin_action value for setting an item's parent object</span><pre>MLA_ADMIN_SET_PARENT</pre></a></li>
 <li class="constant  "><a href="#MLA_ADMIN_SINGLE_CUSTOM_FIELD_MAP" title="MLA_ADMIN_SINGLE_CUSTOM_FIELD_MAP :: mla_admin_action value for mapping Custom Field metadata"><span class="description">mla_admin_action value for mapping Custom Field metadata</span><pre>MLA_ADMIN_SINGLE_CUSTOM_FIELD_MAP</pre></a></li>
 <li class="constant  "><a href="#MLA_ADMIN_SINGLE_DELETE" title="MLA_ADMIN_SINGLE_DELETE :: mla_admin_action value for permanently deleting a single item"><span class="description">mla_admin_action value for permanently deleting a single item</span><pre>MLA_ADMIN_SINGLE_DELETE</pre></a></li>
@@ -244,6 +251,94 @@ add settings link in the Plugins section entry for MLA.</p></p>
 <h3>Returns</h3>
 <div class="subelement response">
 <code>string</code><code>false</code>HTML markup for the dropdown field or False</div>
+</div></div>
+</div>
+<a name="mla_debug_add" id="mla_debug_add"></a><div class="element clickable method public mla_debug_add" data-toggle="collapse" data-target=".mla_debug_add .collapse">
+<h2>Add a debug message to the collection</h2>
+<pre>mla_debug_add(string $message) </pre>
+<div class="labels"></div>
+<div class="row collapse"><div class="detail-description">
+<p class="long_description"></p>
+<table class="table table-bordered"><tr>
+<th>since</th>
+<td>2.12</td>
+</tr></table>
+<h3>Parameters</h3>
+<div class="subelement argument">
+<h4>$message</h4>
+<code>string</code><p>Message text</p></div>
+</div></div>
+</div>
+<a name="mla_debug_content" id="mla_debug_content"></a><div class="element clickable method public mla_debug_content" data-toggle="collapse" data-target=".mla_debug_content .collapse">
+<h2>Get debug information without clearing the buffer</h2>
+<pre>mla_debug_content(string $format, string $glue) : boolean</pre>
+<div class="labels"></div>
+<div class="row collapse"><div class="detail-description">
+<p class="long_description"></p>
+<table class="table table-bordered"><tr>
+<th>since</th>
+<td>2.12</td>
+</tr></table>
+<h3>Parameters</h3>
+<div class="subelement argument">
+<h4>$format</h4>
+<code>string</code><p>Return data type: 'string' (default) or 'array'</p>
+</div>
+<div class="subelement argument">
+<h4>$glue</h4>
+<code>string</code><p>Join array elements with '\n' or '</p>
+
+<p><</p>
+
+<p>p>' (default)</p>
+</div>
+<h3>Returns</h3>
+<div class="subelement response">
+<code>boolean</code>true if success else false</div>
+</div></div>
+</div>
+<a name="mla_debug_flush" id="mla_debug_flush"></a><div class="element clickable method public mla_debug_flush" data-toggle="collapse" data-target=".mla_debug_flush .collapse">
+<h2>Flush debug information and clear buffer</h2>
+<pre>mla_debug_flush(string $destination, boolean $stop_collecting) : string</pre>
+<div class="labels"></div>
+<div class="row collapse"><div class="detail-description">
+<p class="long_description"></p>
+<table class="table table-bordered"><tr>
+<th>since</th>
+<td>2.12</td>
+</tr></table>
+<h3>Parameters</h3>
+<div class="subelement argument">
+<h4>$destination</h4>
+<code>string</code><p>Destination: 'buffer' (default), 'console', 'log' or 'none'</p>
+</div>
+<div class="subelement argument">
+<h4>$stop_collecting</h4>
+<code>boolean</code><p>true (default) to stop, false to continue collection</p>
+</div>
+<h3>Returns</h3>
+<div class="subelement response">
+<code>string</code>debug content if $destination == 'buffer' else empty string</div>
+</div></div>
+</div>
+<a name="mla_debug_mode" id="mla_debug_mode"></a><div class="element clickable method public mla_debug_mode" data-toggle="collapse" data-target=".mla_debug_mode .collapse">
+<h2>Set debug information collection mode</h2>
+<pre>mla_debug_mode(string $mode) : boolean</pre>
+<div class="labels"></div>
+<div class="row collapse"><div class="detail-description">
+<p class="long_description"></p>
+<table class="table table-bordered"><tr>
+<th>since</th>
+<td>2.12</td>
+</tr></table>
+<h3>Parameters</h3>
+<div class="subelement argument">
+<h4>$mode</h4>
+<code>string</code><p>Collection mode: 'buffer' (default), 'console', 'log' or 'none'</p>
+</div>
+<h3>Returns</h3>
+<div class="subelement response">
+<code>boolean</code>true if success else false</div>
 </div></div>
 </div>
 <a name="mla_find_posts_ajax_action" id="mla_find_posts_ajax_action"></a><div class="element clickable method public mla_find_posts_ajax_action" data-toggle="collapse" data-target=".mla_find_posts_ajax_action .collapse">
@@ -638,6 +733,30 @@ Defined as public because it's an action.</p></p>
 </div>
 <h3>
 <i class="icon-custom icon-property"></i> Properties</h3>
+<a name="%24mla_debug_messages" id="$mla_debug_messages"> </a><div class="element clickable property private $mla_debug_messages" data-toggle="collapse" data-target=".$mla_debug_messages .collapse">
+<h2>Accumulates debug messages</h2>
+<pre>$mla_debug_messages : string</pre>
+<div class="labels"></div>
+<div class="row collapse"><div class="detail-description">
+<p class="long_description"></p>
+<table class="table table-bordered"><tr>
+<th>since</th>
+<td>2.12</td>
+</tr></table>
+</div></div>
+</div>
+<a name="%24mla_debug_mode" id="$mla_debug_mode"> </a><div class="element clickable property private $mla_debug_mode" data-toggle="collapse" data-target=".$mla_debug_mode .collapse">
+<h2>Debug information collection mode</h2>
+<pre>$mla_debug_mode : string</pre>
+<div class="labels"></div>
+<div class="row collapse"><div class="detail-description">
+<p class="long_description"></p>
+<table class="table table-bordered"><tr>
+<th>since</th>
+<td>2.12</td>
+</tr></table>
+</div></div>
+</div>
 <a name="%24mla_language_support_error_messages" id="$mla_language_support_error_messages"> </a><div class="element clickable property private $mla_language_support_error_messages" data-toggle="collapse" data-target=".$mla_language_support_error_messages .collapse">
 <h2>Accumulates error messages from name conflict tests</h2>
 <pre>$mla_language_support_error_messages </pre>
@@ -712,15 +831,27 @@ Defined as public because it's an action.</p></p>
 </tr></table>
 </div></div>
 </div>
-<a name="MLA_ADMIN_NONCE" id="MLA_ADMIN_NONCE"> </a><div class="element clickable constant  MLA_ADMIN_NONCE" data-toggle="collapse" data-target=".MLA_ADMIN_NONCE .collapse">
-<h2>Action name; uniquely identifies the nonce</h2>
-<pre>MLA_ADMIN_NONCE : string</pre>
+<a name="MLA_ADMIN_NONCE_ACTION" id="MLA_ADMIN_NONCE_ACTION"> </a><div class="element clickable constant  MLA_ADMIN_NONCE_ACTION" data-toggle="collapse" data-target=".MLA_ADMIN_NONCE_ACTION .collapse">
+<h2>Action name; gives a context for the nonce</h2>
+<pre>MLA_ADMIN_NONCE_ACTION : string</pre>
 <div class="labels"></div>
 <div class="row collapse"><div class="detail-description">
 <p class="long_description"></p>
 <table class="table table-bordered"><tr>
 <th>since</th>
 <td>0.1</td>
+</tr></table>
+</div></div>
+</div>
+<a name="MLA_ADMIN_NONCE_NAME" id="MLA_ADMIN_NONCE_NAME"> </a><div class="element clickable constant  MLA_ADMIN_NONCE_NAME" data-toggle="collapse" data-target=".MLA_ADMIN_NONCE_NAME .collapse">
+<h2>Nonce name; uniquely identifies the nonce</h2>
+<pre>MLA_ADMIN_NONCE_NAME : string</pre>
+<div class="labels"></div>
+<div class="row collapse"><div class="detail-description">
+<p class="long_description"></p>
+<table class="table table-bordered"><tr>
+<th>since</th>
+<td>2.13</td>
 </tr></table>
 </div></div>
 </div>
@@ -863,7 +994,7 @@ Defined as public because it's an action.</p></p>
 <div class="row"><footer class="span12">
             Template is built using <a href="http://twitter.github.com/bootstrap/">Twitter Bootstrap 2</a> and icons provided by <a href="http://glyphicons.com/">Glyphicons</a>.<br>
             Documentation is powered by <a href="http://www.phpdoc.org/">phpDocumentor 2.0.0a8</a> and<br>
-            generated on 2015-06-06T19:41:35-07:00.<br></footer></div>
+            generated on 2015-06-25T20:07:04-07:00.<br></footer></div>
 </div>
 </body>
 </html>

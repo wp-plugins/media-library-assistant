@@ -1067,7 +1067,6 @@ this.listenTo( this.controller, 'all', this.toolbarEvent );
 				 */
 				query = {
 					id: attachmentId,
-					//_wpnonce:     settings.post.nonce
 				};
 				query[ taxonomy ] = termList;
 
@@ -1335,7 +1334,6 @@ this.listenTo( this, 'all', this.selectionEvent );
 				// json: true,
 				id: data.id,
 				query: query,
-				//_wpnonce:     settings.post.nonce
 			}).done( function( results ) {
 				var taxonomy, fieldClass;
 
@@ -1405,7 +1403,6 @@ this.listenTo( this, 'all', this.selectionEvent );
 					 */
 					query = {
 						id: attachmentId,
-						//_wpnonce:     settings.post.nonce
 					};
 					query[ taxonomy ] = termList;
 

@@ -38,7 +38,7 @@ class MLA {
 	 *
 	 * @var	string
 	 */
-	const MLA_DEVELOPMENT_VERSION = '20150621';
+	const MLA_DEVELOPMENT_VERSION = '20150625';
 
 	/**
 	 * Slug for registering and enqueueing plugin style sheet
@@ -77,13 +77,22 @@ class MLA {
 	const ADMIN_PAGE_SLUG = 'mla-menu';
 
 	/**
-	 * Action name; uniquely identifies the nonce
+	 * Action name; gives a context for the nonce
 	 *
 	 * @since 0.1
 	 *
 	 * @var	string
 	 */
-	const MLA_ADMIN_NONCE = 'mla_admin';
+	const MLA_ADMIN_NONCE_ACTION = 'mla_admin_nonce_action';
+
+	/**
+	 * Nonce name; uniquely identifies the nonce
+	 *
+	 * @since 2.13
+	 *
+	 * @var	string
+	 */
+	const MLA_ADMIN_NONCE_NAME = 'mla_admin_nonce';
 
 	/**
 	 * mla_admin_action value for permanently deleting a single item
@@ -213,6 +222,15 @@ class MLA {
 	public static function initialize( ) {
 		global $sitepress, $polylang;
 
+		if ( 'checked' == MLAOptions::mla_get_option( 'enable_featured_image_generation' ) ) {
+			if ( class_exists( 'MLA_Thumbnail' ) ) {
+				self::$mla_language_support_error_messages .= "<li>class MLA_Thumbnail</li>";
+			} else {
+				require_once( MLA_PLUGIN_PATH . 'includes/class-mla-thumbnail-generation.php' );
+				MLA_Thumbnail::initialize();
+			}
+		}
+
 		/*
 		 * Check for WPML/Polylang presence before loading language support class,
 		 * then immediately initialize it since we're already in the "init" action.
@@ -302,12 +320,12 @@ class MLA {
 	 * @return	void
 	 */
 	public static function mla_admin_init_action() {
-//error_log( __LINE__ . ' DEBUG: MLA::mla_admin_init_action $_REQUEST = ' . var_export( $_REQUEST, true ), 0 );
+		//error_log( __LINE__ . ' DEBUG: MLA::mla_admin_init_action $_REQUEST = ' . var_export( $_REQUEST, true ), 0 );
 		/*
 		 * Process secure file download requests
 		 */
 		if ( isset( $_REQUEST['mla_download_file'] ) && isset( $_REQUEST['mla_download_type'] ) ) {
-			check_admin_referer( self::MLA_ADMIN_NONCE );
+			check_admin_referer( self::MLA_ADMIN_NONCE_ACTION, MLA::MLA_ADMIN_NONCE_NAME );
 			self::_process_mla_download_file();
 			exit();
 		}
@@ -319,7 +337,7 @@ class MLA {
 			if ( isset( $_REQUEST['mla-set-parent-ajax-nonce'] ) ) {
 				check_admin_referer( 'mla_find_posts', 'mla-set-parent-ajax-nonce' );
 			} else {
-				check_admin_referer( self::MLA_ADMIN_NONCE );
+				check_admin_referer( self::MLA_ADMIN_NONCE_ACTION, MLA::MLA_ADMIN_NONCE_NAME );
 			}
 
 			if ( apply_filters( 'mla_list_table_admin_action', true, $_REQUEST['mla_admin_action'], ( isset( $_REQUEST['mla_item_ID'] ) ? $_REQUEST['mla_item_ID'] : 0 ) ) ) {
@@ -428,7 +446,7 @@ class MLA {
 			'comma' => _x( ',', 'tag_delimiter', 'media-library-assistant' ),
 			'useSpinnerClass' => false,
 			'ajax_action' => self::JAVASCRIPT_INLINE_EDIT_SLUG,
-			'ajax_nonce' => wp_create_nonce( self::MLA_ADMIN_NONCE ) 
+			'ajax_nonce' => wp_create_nonce( self::MLA_ADMIN_NONCE_ACTION, MLA::MLA_ADMIN_NONCE_NAME ) 
 		);
 
 		if ( version_compare( get_bloginfo( 'version' ), '4.2', '>=' ) ) {
@@ -600,7 +618,11 @@ class MLA {
 			} // $taxonomy switch
 		} // is taxonomy
 
-		$template_array = MLAData::mla_load_template( 'help-for-' . $file_suffix . '.tpl' );
+		$template_array = apply_filters( 'mla_list_table_help_template', NULL, 'help-for-' . $file_suffix . '.tpl', $file_suffix );
+		if ( is_null( $template_array ) ) {
+			$template_array = MLAData::mla_load_template( 'help-for-' . $file_suffix . '.tpl' );
+		}
+		
 		if ( empty( $template_array ) ) {
 			return;
 		}
@@ -1341,7 +1363,7 @@ class MLA {
 		 * Process row-level actions that affect a single item
 		 */
 		if ( !empty( $_REQUEST['mla_admin_action'] ) ) {
-			check_admin_referer( self::MLA_ADMIN_NONCE );
+			check_admin_referer( self::MLA_ADMIN_NONCE_ACTION, MLA::MLA_ADMIN_NONCE_NAME );
 
 			$page_content = apply_filters( 'mla_list_table_single_action', NULL, $_REQUEST['mla_admin_action'], ( isset( $_REQUEST['mla_item_ID'] ) ? $_REQUEST['mla_item_ID'] : 0 ) );
 			if ( is_null( $page_content ) ) {
@@ -1581,7 +1603,7 @@ class MLA {
 	public static function mla_find_posts_ajax_action() {
 		global $wpdb;
 
-		check_ajax_referer( 'mla_find_posts' );
+		check_ajax_referer( 'mla_find_posts', MLA::MLA_ADMIN_NONCE_NAME );
 
 		$post_types = get_post_types( array( 'public' => true ), 'objects' );
 		unset( $post_types['attachment'] );
@@ -1668,7 +1690,7 @@ class MLA {
 	 * @return	void	echo HTML <td> innerHTML for updated call or error message, then die()
 	 */
 	public static function mla_set_parent_ajax_action() {
-		check_ajax_referer( self::MLA_ADMIN_NONCE, 'nonce' );
+		check_ajax_referer( self::MLA_ADMIN_NONCE_ACTION, MLA::MLA_ADMIN_NONCE_NAME );
 
 		if ( empty( $_REQUEST['post_ID'] ) ) {
 			echo __( 'ERROR', 'media-library-assistant' ) . ': ' . __( 'No post ID found', 'media-library-assistant' );
@@ -1749,7 +1771,7 @@ class MLA {
 	public static function mla_inline_edit_ajax_action() {
 		set_current_screen( $_REQUEST['screen'] );
 
-		check_ajax_referer( self::MLA_ADMIN_NONCE, 'nonce' );
+		check_ajax_referer( self::MLA_ADMIN_NONCE_ACTION, MLA::MLA_ADMIN_NONCE_NAME );
 
 		if ( ! empty( $_REQUEST['bulk_action'] ) ) {
 			self::_bulk_edit_ajax_handler();
@@ -1952,7 +1974,7 @@ class MLA {
 		$page_values = array(
 			'mla_set_parent_url' => esc_url( add_query_arg( array_merge( MLA_List_Table::mla_submenu_arguments( false ), array( 'page' => MLA::ADMIN_PAGE_SLUG ) ), admin_url( 'upload.php' ) ) ),
 			'mla_set_parent_action' => self::MLA_ADMIN_SET_PARENT,
-			'wpnonce' => wp_nonce_field( self::MLA_ADMIN_NONCE, '_wpnonce', true, false ),
+			'wpnonce' => wp_nonce_field( self::MLA_ADMIN_NONCE_ACTION, MLA::MLA_ADMIN_NONCE_NAME, true, false ),
 			'mla_set_parent_div' => $set_parent_div,
 		);
 

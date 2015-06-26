@@ -355,7 +355,7 @@ The "mla_target" parameter accepts any value and adds an HTML "target" attribute
 This solution supports dynamic thumbnail image generation for PDF and Postscript documents on your site's server. You can also assign a "Featured Image" to any Media Library item. For non-image items such as Microsoft Office documents the featured image will replace the MIME-type icon or document title in an <code>[mla_gallery]</code> display. Simply go to the Media/Edit Media screen, scroll down to the "Featured Image" meta box and select an image as you would for a post or page.
 </p>
 <p>
-The dynamic thumbnail image generation for PDF and Postscript documents uses the PHP <code>Imagick</code> class, which <strong>requires Imagemagick and Ghostscript</strong> to be installed on your server.  If you need help installing them, look at this <a href="https://wordpress.org/support/topic/nothing-but-error-messages" title="Help with installation" target="_blank">PDF Thumbnails support topic</a>. If you don't have them on your server you can still use the Featured Image support to supply thumbnails for  your non-image items.
+The dynamic thumbnail image generation for PDF and Postscript documents uses the PHP <code>Imagick</code> class, which <strong>requires ImageMagick and Ghostscript</strong> to be installed on your server.  If you need help installing them, look at this <a href="https://wordpress.org/support/topic/nothing-but-error-messages" title="Help with installation" target="_blank">PDF Thumbnails support topic</a>. If you don't have them on your server you can still use the Featured Image support to supply thumbnails for  your non-image items.
 </p>
 <p>
 Ten <code>[mla_gallery]</code> parameters provide an easy way to simulate thumbnail images for the non-image file types.
@@ -406,14 +406,18 @@ Ten <code>[mla_gallery]</code> parameters provide an easy way to simulate thumbn
 When this feature is active, gallery items for which WordPress can generate a thumbnail image are not altered. If WordPress generation fails, the "Featured Image" will be used, if one is specified for the item. If the item does not have a Featured Image, supported file/MIME types (see <code>mla_viewer_extensions</code>) will have a gallery thumbnail generated dynamically. If all else fails, the thumbnail is replaced by an "img" html tag whose "src" attribute contains a url reference to the appropriate icon for the file/MIME type.
 </p>
 <p>
-Four options in the Settings/Media Library Assistant MLA Gallery tab allow control over mla_viewer operation:
+Five options in the Settings/Media Library Assistant MLA Gallery tab allow control over mla_viewer operation:
 <ul class="mla_settings">
 <li><strong>Enable thumbnail substitution</strong><br />
-Check this option to allow the "mla_viewer" to generate thumbnail images for PDF documents. Thumbnails are generated dynamically, each time the item appears in an <code>[mla_gallery]</code> display.</li>
+Check this option to allow the "mla_viewer" to generate thumbnail images for PDF documents. Thumbnails are generated dynamically, each time the item appears in an <code>[mla_gallery]</code> display.<br />
+<strong>NOTE</strong>: If Imagick and/or Ghostscript support is not present a warning message will be displayed below the option checkbox.</li>
 <li><strong>Enable Featured Images</strong><br />
 Check this option to extend Featured Image support to all Media Library items. The Featured Image can be used as a thumbnail image for the item in an <code>[mla_gallery]</code> display.</li>
+<li><strong>Enable Featured Image Generation</strong><br />
+Check this option to enable the "Thumbnail" generation action in the Media/Assistant submenu Bulk Actions dropdown.
+The Thumbnail generation action lets you add Featured Image items by generating an image for non-image files such as PDF documents.</li>
 <li><strong>Enable explicit Ghostscript check</strong><br />
-Check this option to enable the explicit check for Ghostscript support required for thumbnail generation. If your Ghostscript software is in a non-standard location, unchecking this option bypasses the check. Bad things can happen if Ghostscript is missing but Imagemagick is present, so leave this option checked unless you know it is safe to turn it off.</li>
+Check this option to enable the explicit check for Ghostscript support required for thumbnail generation. If your Ghostscript software is in a non-standard location, unchecking this option bypasses the check. Bad things can happen if Ghostscript is missing but ImageMagick is present, so leave this option checked unless you know it is safe to turn it off.</li>
 <li><strong>Ghostscript path</strong><br />
 If your Ghostscript software is in a non-standard location, enter the full path and name of the executable here. The value you enter will be used as-is and the search for Ghostscript in the usual locations will be bypassed.</li>
 </ul>

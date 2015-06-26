@@ -12,7 +12,7 @@
 /*
 Plugin Name: Media Library Assistant
 Plugin URI: http://fairtradejudaica.org/media-library-assistant-a-wordpress-plugin/
-Description: 20150621 Enhances the Media Library; powerful [mla_gallery], taxonomy support, IPTC/EXIF processing, bulk & quick edit actions and where-used reporting.
+Description: 20150625 Enhances the Media Library; powerful [mla_gallery], taxonomy support, IPTC/EXIF processing, bulk & quick edit actions and where-used reporting.
 Author: David Lingren, Fair Trade Judaica
 Text Domain: media-library-assistant
 Domain Path: /languages
@@ -92,26 +92,30 @@ if ( ! defined( 'MLA_BACKUP_DIR' ) ) {
  */
 $mla_name_conflict_candidates =
 	array (
-		'MLA' => 'class',
-		'MLAData' => 'class',
 		'MLAPDF' => 'class',
+		'MLAData' => 'class',
 		'MLAEdit' => 'class',
 		'MLA_Checklist_Walker' => 'class',
-		'MLAMime' => 'class',
+		'MLAImageProcessor' => 'class',
+		'MLAMutex' => 'class',
+		'MLA_List_Table' => 'class',
+		'MLA' => 'class',
 		'MLAModal' => 'class',
+		'MLAMime' => 'class',
 		'MLAObjects' => 'class',
 		'MLATextWidget' => 'class',
-		'MLASettings' => 'class',
 		'MLAOptions' => 'class',
+		'MLA_Polylang' => 'class',
+		'MLASettings' => 'class',
 		'MLAShortcodes' => 'class',
-		'MLATest' => 'class',
+		'MLA_Thumbnail' => 'class',
+		'MLA_Upload_List_Table' => 'class',
+		'MLA_Upload_Optional_List_Table' => 'class',
+		'MLA_View_List_Table' => 'class',
 		'MLA_WPML' => 'class',
 		'MLA_WPML_List_Table' => 'class',
 		'MLA_WPML_Table' => 'class',
-		'MLA_List_Table' => 'class',
-		'MLA_View_List_Table' => 'class',
-		'MLA_Optional_Upload_List_Table' => 'class',
-		'MLA_Upload_List_Table' => 'class',
+		'MLATest' => 'class',
 		//'MLA_BACKUP_DIR' => 'constant'
 	);
 

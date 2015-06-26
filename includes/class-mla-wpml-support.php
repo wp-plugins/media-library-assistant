@@ -1193,10 +1193,10 @@ class MLA_WPML {
 		 * Initialize page messages and content.
 		 */
 		if ( !empty( $_REQUEST['mla-language-options-save'] ) ) {
-			check_admin_referer( MLA::MLA_ADMIN_NONCE, '_wpnonce' );
+			check_admin_referer( MLA::MLA_ADMIN_NONCE_ACTION, MLA::MLA_ADMIN_NONCE_NAME );
 			$page_content = self::_save_language_settings( );
 		} elseif ( !empty( $_REQUEST['mla-language-options-reset'] ) ) {
-			check_admin_referer( MLA::MLA_ADMIN_NONCE, '_wpnonce' );
+			check_admin_referer( MLA::MLA_ADMIN_NONCE_ACTION, MLA::MLA_ADMIN_NONCE_NAME );
 			$page_content = self::_reset_language_settings( );
 		} else {
 			$page_content = array(
@@ -1218,7 +1218,7 @@ class MLA_WPML {
 			'settingsURL' => admin_url('options-general.php'),
 			'Save Changes' => __( 'Save Changes', 'media-library-assistant' ),
 			'Delete Language options' => __( 'Delete Language options and restore default settings', 'media-library-assistant' ),
-			'_wpnonce' => wp_nonce_field( MLA::MLA_ADMIN_NONCE, '_wpnonce', true, false ),
+			'_wpnonce' => wp_nonce_field( MLA::MLA_ADMIN_NONCE_ACTION, MLA::MLA_ADMIN_NONCE_NAME, true, false ),
 			'_wp_http_referer' => wp_referer_field( false ),
 			'Go to Top' => __( 'Go to Top', 'media-library-assistant' ),
 			'form_url' => admin_url( 'options-general.php' ) . '?page=mla-settings-menu-language&mla_tab=language',
@@ -1732,7 +1732,7 @@ class MLA_WPML_Table {
 					}
 
 					$args = array ( 'page' => MLA::ADMIN_PAGE_SLUG, 'mla_admin_action' => 'wpml_create_translation', 'mla_item_ID' => $item->ID, 'mla_parent_ID' => $item->post_parent, 'lang' => $language['code'] );
-					$link = add_query_arg( $args, wp_nonce_url( 'upload.php', MLA::MLA_ADMIN_NONCE ) );
+					$link = add_query_arg( $args, wp_nonce_url( 'upload.php', MLA::MLA_ADMIN_NONCE_ACTION, MLA::MLA_ADMIN_NONCE_NAME ) );
 				}
 
 				$link = apply_filters( 'wpml_link_to_translation', $link, false, $language['code'] );

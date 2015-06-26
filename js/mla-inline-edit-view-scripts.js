@@ -140,7 +140,7 @@ inlineEditView = {
 		if ( typeof(id) == 'object' )
 			id = this.getId(id);
 
-		if ( mla.settings.useSpinnerClass ) {
+		if ( mla_inline_edit_view_vars.useSpinnerClass ) {
 			$('table.widefat .spinner').addClass("is-active");
 		} else {
 			$('table.widefat .spinner').show();
@@ -148,7 +148,7 @@ inlineEditView = {
 
 		params = {
 			action: mla_inline_edit_view_vars.ajax_action,
-			nonce: mla_inline_edit_view_vars.ajax_nonce,
+			mla_admin_nonce: mla_inline_edit_view_vars.ajax_nonce,
 			post_ID: id
 		};
 
@@ -158,7 +158,7 @@ inlineEditView = {
 		// make ajax request
 		$.post( ajaxurl, params,
 			function(r) {
-				if ( mla.settings.useSpinnerClass ) {
+				if ( mla_inline_edit_view_vars.useSpinnerClass ) {
 					$('table.widefat .spinner').removeClass("is-active");
 				} else {
 					$('table.widefat .spinner').hide();
@@ -191,7 +191,7 @@ inlineEditView = {
 				$('#bulk-titles').html('');
 				$('#inlineedit').append( $('#bulk-edit') );
 			} else {
-				if ( mla.settings.useSpinnerClass ) {
+				if ( mla_inline_edit_view_vars.useSpinnerClass ) {
 					$('table.widefat .spinner').removeClass("is-active");
 				} else {
 					$('table.widefat .spinner').hide();

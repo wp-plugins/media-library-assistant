@@ -59,30 +59,33 @@ class MLAShortcodes {
 	 *
 	 * @param	string	Non-standard location to override default search, e.g.,
 	 *					'C:\Program Files (x86)\gs\gs9.15\bin\gswin32c.exe'
+	 * @param	boolean	Force ghostscript-only tests, used by MLASettings::_compose_mla_gallery_tab()
 	 *
 	 * @return	boolean	true if Ghostscript available else false
 	 */
-	private static function _ghostscript_present( $explicit_path = '' ) {
+	public static function mla_ghostscript_present( $explicit_path = '', $ghostscript_only = false ) {
 		static $ghostscript_present = NULL;
 
-		if ( isset( $ghostscript_present ) ) {
-			MLA::mla_debug_add( '<strong>_ghostscript_present</strong>, ghostscript_present = ' . var_export( $ghostscript_present, true ) );
-			return $ghostscript_present;
-		}
-
-		if ( 'checked' != MLAOptions::mla_get_option( 'enable_ghostscript_check' ) ) {
-			MLA::mla_debug_add( '<strong>_ghostscript_present</strong>, disabled' );
-			return $ghostscript_present = true;
-		}
-
-		/*
-		 * Imagick must be installed as well
-		 */
-		if ( ! class_exists( 'Imagick' ) ) {
-			MLA::mla_debug_add( '<strong>_ghostscript_present</strong>, Imagick missing' );
-			return $ghostscript_present = false;
-		}
-
+		if ( ! $ghostscript_only ) {
+			if ( isset( $ghostscript_present ) ) {
+				MLA::mla_debug_add( '<strong>_ghostscript_present</strong>, ghostscript_present = ' . var_export( $ghostscript_present, true ) );
+				return $ghostscript_present;
+			}
+	
+			if ( 'checked' != MLAOptions::mla_get_option( 'enable_ghostscript_check' ) ) {
+				MLA::mla_debug_add( '<strong>_ghostscript_present</strong>, disabled' );
+				return $ghostscript_present = true;
+			}
+	
+			/*
+			 * Imagick must be installed as well
+			 */
+			if ( ! class_exists( 'Imagick' ) ) {
+				MLA::mla_debug_add( '<strong>_ghostscript_present</strong>, Imagick missing' );
+				return $ghostscript_present = false;
+			}
+		} // not ghostscript_only
+		
 		/*
 		 * Look for exec() - from http://stackoverflow.com/a/12980534/866618
 		 */
@@ -557,7 +560,7 @@ class MLAShortcodes {
 			 * Test for Ghostscript here so debug messages can be recorded
 			 */
 			$ghostscript_path = MLAOptions::mla_get_option( 'ghostscript_path' );
-			if ( self::_ghostscript_present( $ghostscript_path ) ) {
+			if ( self::mla_ghostscript_present( $ghostscript_path ) ) {
 				$arguments['mla_viewer_extensions'] = array_filter( array_map( 'trim', explode( ',', $arguments['mla_viewer_extensions'] ) ) );
 			} else {
 				$arguments['mla_viewer_extensions'] = array();
@@ -1287,7 +1290,7 @@ class MLAShortcodes {
 							}
 						}
 
-						if ( self::_ghostscript_present( $ghostscript_path ) ) {
+						if ( self::mla_ghostscript_present( $ghostscript_path ) ) {
 							/*
 							 * Optional upper limit (in MB) on file size
 							 */
@@ -1324,7 +1327,7 @@ class MLAShortcodes {
 								/*
 								 * For efficiency, image streaming is done outside WordPress
 								 */
-								$icon_url = add_query_arg( $args, wp_nonce_url( MLA_PLUGIN_URL . 'includes/mla-stream-image.php', MLA::MLA_ADMIN_NONCE ) );
+								$icon_url = add_query_arg( $args, wp_nonce_url( MLA_PLUGIN_URL . 'includes/mla-stream-image.php', MLA::MLA_ADMIN_NONCE_ACTION, MLA::MLA_ADMIN_NONCE_NAME ) );
 							}
 						}
 

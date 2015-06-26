@@ -742,7 +742,7 @@ class MLA_List_Table extends WP_List_Table {
 
 			if ( current_user_can( 'edit_post', $item->ID ) ) {
 				if ( $this->is_trash ) {
-					$actions['restore'] = '<a class="submitdelete" href="' . add_query_arg( $view_args, wp_nonce_url( '?mla_admin_action=' . MLA::MLA_ADMIN_SINGLE_RESTORE, MLA::MLA_ADMIN_NONCE ) ) . '" title="' . __( 'Restore this item from the Trash', 'media-library-assistant' ) . '">' . __( 'Restore', 'media-library-assistant' ) . '</a>';
+					$actions['restore'] = '<a class="submitdelete" href="' . add_query_arg( $view_args, wp_nonce_url( '?mla_admin_action=' . MLA::MLA_ADMIN_SINGLE_RESTORE, MLA::MLA_ADMIN_NONCE_ACTION, MLA::MLA_ADMIN_NONCE_NAME ) ) . '" title="' . __( 'Restore this item from the Trash', 'media-library-assistant' ) . '">' . __( 'Restore', 'media-library-assistant' ) . '</a>';
 				} else {
 					/*
 					 * Use the WordPress Edit Media screen
@@ -760,12 +760,12 @@ class MLA_List_Table extends WP_List_Table {
 
 			if ( current_user_can( 'delete_post', $item->ID ) ) {
 				if ( !$this->is_trash && EMPTY_TRASH_DAYS && MEDIA_TRASH ) {
-					$actions['trash'] = '<a class="submitdelete" href="' . add_query_arg( $view_args, wp_nonce_url( '?mla_admin_action=' . MLA::MLA_ADMIN_SINGLE_TRASH, MLA::MLA_ADMIN_NONCE ) ) . '" title="' . __( 'Move this item to the Trash', 'media-library-assistant' ) . '">' . __( 'Move to Trash', 'media-library-assistant' ) . '</a>';
+					$actions['trash'] = '<a class="submitdelete" href="' . add_query_arg( $view_args, wp_nonce_url( '?mla_admin_action=' . MLA::MLA_ADMIN_SINGLE_TRASH, MLA::MLA_ADMIN_NONCE_ACTION, MLA::MLA_ADMIN_NONCE_NAME ) ) . '" title="' . __( 'Move this item to the Trash', 'media-library-assistant' ) . '">' . __( 'Move to Trash', 'media-library-assistant' ) . '</a>';
 				} else {
 					// If using trash for posts and pages but not for attachments, warn before permanently deleting 
 					$delete_ays = EMPTY_TRASH_DAYS && !MEDIA_TRASH ? ' onclick="return showNotice.warn();"' : '';
 
-					$actions['delete'] = '<a class="submitdelete"' . $delete_ays . ' href="' . add_query_arg( $view_args, wp_nonce_url( '?mla_admin_action=' . MLA::MLA_ADMIN_SINGLE_DELETE, MLA::MLA_ADMIN_NONCE ) ) . '" title="' . __( 'Delete this item Permanently', 'media-library-assistant' ) . '">' . __( 'Delete Permanently', 'media-library-assistant' ) . '</a>';
+					$actions['delete'] = '<a class="submitdelete"' . $delete_ays . ' href="' . add_query_arg( $view_args, wp_nonce_url( '?mla_admin_action=' . MLA::MLA_ADMIN_SINGLE_DELETE, MLA::MLA_ADMIN_NONCE_ACTION, MLA::MLA_ADMIN_NONCE_NAME ) ) . '" title="' . __( 'Delete this item Permanently', 'media-library-assistant' ) . '">' . __( 'Delete Permanently', 'media-library-assistant' ) . '</a>';
 				}
 			} // delete_post
 
@@ -773,7 +773,7 @@ class MLA_List_Table extends WP_List_Table {
 				$file = get_attached_file( $item->ID );
 				$download_args = array( 'page' => MLA::ADMIN_PAGE_SLUG, 'mla_download_file' => urlencode( $file ), 'mla_download_type' => $item->post_mime_type );
 
-				$actions['download'] = '<a href="' . add_query_arg( $download_args, wp_nonce_url( 'upload.php', MLA::MLA_ADMIN_NONCE ) ) . '" title="' . __( 'Download', 'media-library-assistant' ) . ' &#8220;' . esc_attr( $item->post_title ) . '&#8221;">' . __( 'Download', 'media-library-assistant' ) . '</a>';
+				$actions['download'] = '<a href="' . add_query_arg( $download_args, wp_nonce_url( 'upload.php', MLA::MLA_ADMIN_NONCE_ACTION, MLA::MLA_ADMIN_NONCE_NAME ) ) . '" title="' . __( 'Download', 'media-library-assistant' ) . ' &#8220;' . esc_attr( $item->post_title ) . '&#8221;">' . __( 'Download', 'media-library-assistant' ) . '</a>';
 			}
 
 			$actions['view']  = '<a href="' . site_url( ) . '?attachment_id=' . $item->ID . '" rel="permalink" title="' . __( 'View', 'media-library-assistant' ) . ' &#8220;' . esc_attr( $item->post_title ) . '&#8221;">' . __( 'View', 'media-library-assistant' ) . '</a>';

@@ -165,7 +165,7 @@ var jQuery,
 				mla_tab: mla.settings.mla_tab,
 				screen: mla.settings.screen,
 				action: mla.settings.ajax_action,
-				nonce: mla.settings.ajax_nonce,
+				mla_admin_nonce: mla.settings.ajax_nonce,
 				bulk_action: mla.bulkMap.targetName,
 				offset: mla.bulkMap.complete,
 				length: chunk

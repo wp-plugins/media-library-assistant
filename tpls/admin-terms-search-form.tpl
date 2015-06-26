@@ -14,11 +14,6 @@
 	<!-- mla-terms-search-div -->
 <!-- template="mla-terms-search-div" -->
 	<div id="mla-terms-search-div" style="display: none;">
-		<!-- 
-		<input name="parent" id="mla-terms-search-parent" type="hidden" value="">
-		<input name="children[]" id="mla-terms-search-children" type="hidden" value="">
-		[+mla_find_posts_nonce+]
-		 -->
 		<div id="mla-terms-search-head-div"> [+Search Terms+]
 			<div id="mla-terms-search-close-div"></div>
 		</div>

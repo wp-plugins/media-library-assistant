@@ -960,12 +960,17 @@ class MLAOptions {
 					'size' => 10,
 					'help' => __( 'Enter the CSS "width" property value, in length (px, em, pt, etc.), percent (%), "auto" or "inherit".<br>&nbsp;&nbsp;Enter "calculate" (the default) to calculate the value taking the "margin" value into account.<br>&nbsp;&nbsp;Enter "exact" to calculate the value without considering the "margin" value.<br>&nbsp;&nbsp;Enter "none" to remove the property entirely.', 'media-library-assistant' )),
 
+			'mal_viewer_header' =>
+				array('tab' => 'mla_gallery',
+					'name' => __( 'Thumbnail Substitution Support, mla_viewer', 'media-library-assistant' ),
+					'type' => 'subheader'),
+
 			'enable_mla_viewer' =>
 				array('tab' => 'mla_gallery',
 					'name' => __( 'Enable thumbnail substitution', 'media-library-assistant' ),
 					'type' => 'checkbox',
 					'std' => 'checked',
-					'help' => __( 'Check this option to allow the "mla_viewer" to generate thumbnail images for PDF  documents. Thumbnails are generated dynamically, each time the item appears in an [mla_gallery] display.<br>&nbsp;&nbsp;<strong>IMPORTANT: both Ghostscript and Imagick/Imagemagick must be installed for this feature.</strong>', 'media-library-assistant' )),
+					'help' => __( 'Check this option to allow the "mla_viewer" to generate thumbnail images for PDF  documents. Thumbnails are generated dynamically, each time the item appears in an [mla_gallery] display.<br>&nbsp;&nbsp;<strong>IMPORTANT: both Ghostscript and Imagick/ImageMagick must be installed for this feature.</strong>', 'media-library-assistant' )),
 
 			'enable_featured_image' =>
 				array('tab' => 'mla_gallery',
@@ -974,12 +979,19 @@ class MLAOptions {
 					'std' => 'checked',
 					'help' => __( 'Check this option to extend Featured Image support to all Media Library items. The Featured Image can be used as a thumbnail image for the item in an [mla_gallery] display.', 'media-library-assistant' )),
 
+			'enable_featured_image_generation' =>
+				array('tab' => 'mla_gallery',
+					'name' => __( 'Enable Featured Image Generation', 'media-library-assistant' ),
+					'type' => 'checkbox',
+					'std' => 'checked',
+					'help' => __( 'Check this option to enable the "Thumbnail" generation action in the Media/Assistant submenu Bulk Actions dropdown.', 'media-library-assistant' )),
+
 			'enable_ghostscript_check' =>
 				array('tab' => 'mla_gallery',
 					'name' => __( 'Enable explicit Ghostscript check', 'media-library-assistant' ),
 					'type' => 'checkbox',
 					'std' => 'checked',
-					'help' => __( 'Check this option to enable the explicit check for Ghostscript support required for thumbnail generation. If your Ghostscript software is in a non-standard location, unchecking this option bypasses the check. Bad things can happen if Ghostscript is missing but Imagick/Imagemagick is present, so leave this option checked unless you know it is safe to turn it off.', 'media-library-assistant' )),
+					'help' => __( 'Check this option to enable the explicit check for Ghostscript support required for thumbnail generation. If your Ghostscript software is in a non-standard location, unchecking this option bypasses the check. Bad things can happen if Ghostscript is missing but Imagick/ImageMagick is present, so leave this option checked unless you know it is safe to turn it off.', 'media-library-assistant' )),
 
 			'ghostscript_path' =>
 				array('tab' => 'mla_gallery',

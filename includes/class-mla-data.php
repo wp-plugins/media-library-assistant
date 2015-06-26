@@ -38,7 +38,7 @@ class MLAData {
 	/**
 	 * WordPress version test for $wpdb->esc_like() Vs esc_sql()
 	 *
-	 * @since 2.1x
+	 * @since 2.13
 	 *
 	 * @var	boolean
 	 */
@@ -2047,7 +2047,7 @@ class MLAData {
 	 * 
 	 * Defined as public because it's a callback from array_map().
 	 *
-	 * @since 2.1x
+	 * @since 2.13
 	 *
 	 * @param	string	search string
 	 *
@@ -2175,8 +2175,19 @@ class MLAData {
 							}
 						}
 					} else {
+						$is_wildcard_search = ( ! $quoted[ $index ] ) && self::_wildcard_search_string( $phrase );
+						
+						if ( $is_wildcard_search ) {
+							add_filter( 'terms_clauses', 'MLAData::mla_query_terms_clauses_filter', 0x7FFFFFFF, 3 );
+						}
+						
 						// WordPress encodes special characters, e.g., "&" as HTML entities in term names
 						$the_terms = get_terms( $terms_search_parameters['taxonomies'], array( 'name__like' => _wp_specialchars( $phrase ), 'fields' => 'all', 'hide_empty' => false ) );
+						
+						if ( $is_wildcard_search ) {
+							remove_filter( 'terms_clauses', 'MLAData::mla_query_terms_clauses_filter', 0x7FFFFFFF );
+						}
+						
 						// Invalid taxonomy will return WP_Error object
 						if ( ! is_array( $the_terms ) ) {
 							$the_terms = array();
@@ -2675,6 +2686,50 @@ class MLAData {
 	 */
 	public static function mla_query_relevanssi_admin_search_ok_filter( $admin_search_ok ) {
 		return false;
+	}
+
+	/**
+	 * Filters all clauses for get_terms queries
+	 * 
+	 * Defined as public because it's a filter.
+	 *
+	 * @since 2.13
+	 *
+	 * @param array $pieces     Terms query SQL clauses.
+	 * @param array $taxonomies An array of taxonomies.
+	 * @param array $args       An array of terms query arguments.
+	 */
+	public static function mla_query_terms_clauses_filter( $pieces, $taxonomies, $args ) {
+		global $wpdb;
+
+		if ( empty( $args['name__like'] ) ) {
+			return $pieces;
+		}
+		
+		$term = $args['name__like'];
+		
+		/*
+		 * Escape any % in the source string
+		 */
+		if ( self::$wp_4dot0_plus ) {
+			$sql_term = $wpdb->esc_like( $term );
+			$sql_term = $wpdb->prepare( '%s', $sql_term );
+		} else {
+			$sql_term = "'" . esc_sql( like_escape( $term ) ) . "'";
+		}
+		
+		/*
+		 * Convert wildcard * to SQL %
+		 */
+		$sql_term = str_replace( '*', '%', $sql_term );
+		
+		/*
+		 * Replace the LIKE pattern in the WHERE clause
+		 */
+		$match_clause = '%' . str_replace( '%', '\\\\%', $term ) . '%';
+		$pieces['where'] = str_replace( "LIKE '{$match_clause}'", "LIKE {$sql_term}", $pieces['where'] );
+
+		return $pieces;
 	}
 
 	/**

@@ -92,6 +92,7 @@
 <li class="method public "><a href="#mla_query_relevanssi_admin_search_ok_filter" title="mla_query_relevanssi_admin_search_ok_filter :: Disable Relevanssi - A Better Search, v3.2 by Mikko Saari
 Defined as public because it's a filter."><span class="description">Disable Relevanssi - A Better Search, v3.2 by Mikko Saari
 Defined as public because it's a filter.</span><pre>mla_query_relevanssi_admin_search_ok_filter()</pre></a></li>
+<li class="method public "><a href="#mla_query_terms_clauses_filter" title="mla_query_terms_clauses_filter :: Filters all clauses for get_terms queries"><span class="description">Filters all clauses for get_terms queries</span><pre>mla_query_terms_clauses_filter()</pre></a></li>
 <li class="method public "><a href="#mla_save_post_action" title="mla_save_post_action :: Invalidates $mla_galleries and $galleries arrays and cached values after post, page or attachment updates"><span class="description">Invalidates $mla_galleries and $galleries arrays and cached values after post, page or attachment updates</span><pre>mla_save_post_action()</pre></a></li>
 <li class="method public "><a href="#mla_search_terms_tidy" title="mla_search_terms_tidy :: Replaces a WordPress function deprecated in v3.7"><span class="description">Replaces a WordPress function deprecated in v3.7</span><pre>mla_search_terms_tidy()</pre></a></li>
 <li class="method public "><a href="#mla_update_item_postmeta" title='mla_update_item_postmeta :: Update custom field and "meta:" data for a single attachment'><span class="description">Update custom field and "meta:" data for a single attachment</span><pre>mla_update_item_postmeta()</pre></a></li>
@@ -122,9 +123,11 @@ and meta data for a single attachment</span><pre>mla_update_single_item()</pre><
 <li class="method private "><a href="#_search_mla_galleries" title="_search_mla_galleries :: Search the $mla_galleries or $galleries array"><span class="description">Search the $mla_galleries or $galleries array</span><pre>_search_mla_galleries()</pre></a></li>
 <li class="method private "><a href="#_set_array_element" title="_set_array_element :: Adds or replaces the value of a key in a possibly nested array structure"><span class="description">Adds or replaces the value of a key in a possibly nested array structure</span><pre>_set_array_element()</pre></a></li>
 <li class="method private "><a href="#_unset_array_element" title="_unset_array_element :: Deletes the value of a key in a possibly nested array structure"><span class="description">Deletes the value of a key in a possibly nested array structure</span><pre>_unset_array_element()</pre></a></li>
+<li class="method private "><a href="#_wildcard_search_string" title="_wildcard_search_string :: Detects wildcard searches, i.e., containing an asterisk outside quotes"><span class="description">Detects wildcard searches, i.e., containing an asterisk outside quotes</span><pre>_wildcard_search_string()</pre></a></li>
 <li class="nav-header">
 <i class="icon-custom icon-property"></i> Properties</li>
 <li class="property public "><a href="#%24mla_iptc_keys" title="$mla_iptc_keys :: IPTC Dataset friendly name/slug and identifiers"><span class="description">IPTC Dataset friendly name/slug and identifiers</span><pre>$mla_iptc_keys</pre></a></li>
+<li class="property public "><a href="#%24query_parameters" title='$query_parameters :: WP_Query filter "parameters"'><span class="description">WP_Query filter "parameters"</span><pre>$query_parameters</pre></a></li>
 <li class="property public "><a href="#%24search_parameters" title="$search_parameters :: WP_Query 'posts_search' filter &quot;parameters&quot;"><span class="description">WP_Query 'posts_search' filter "parameters"</span><pre>$search_parameters</pre></a></li>
 <li class="property public "><a href="#%24utf8_chars" title="$utf8_chars :: UTF-8 replacements for invalid SQL characters"><span class="description">UTF-8 replacements for invalid SQL characters</span><pre>$utf8_chars</pre></a></li>
 <li class="nav-header private">» Private</li>
@@ -139,7 +142,7 @@ and mla_fetch_attachment_image_metadata</span><pre>$mla_IPTC_EXIF_errors</pre></
 <li class="property private "><a href="#%24mla_iptc_image_types" title="$mla_iptc_image_types :: IPTC image type identifiers and descriptions"><span class="description">IPTC image type identifiers and descriptions</span><pre>$mla_iptc_image_types</pre></a></li>
 <li class="property private "><a href="#%24mla_iptc_records" title="$mla_iptc_records :: IPTC Dataset identifiers and names"><span class="description">IPTC Dataset identifiers and names</span><pre>$mla_iptc_records</pre></a></li>
 <li class="property private "><a href="#%24mla_list_table_items" title="$mla_list_table_items :: Cache the results of mla_count_list_table_items for reuse in mla_query_list_table_items"><span class="description">Cache the results of mla_count_list_table_items for reuse in mla_query_list_table_items</span><pre>$mla_list_table_items</pre></a></li>
-<li class="property private "><a href="#%24query_parameters" title='$query_parameters :: WP_Query filter "parameters"'><span class="description">WP_Query filter "parameters"</span><pre>$query_parameters</pre></a></li>
+<li class="property private "><a href="#%24wp_4dot0_plus" title="$wp_4dot0_plus :: WordPress version test for $wpdb-&gt;esc_like() Vs esc_sql()"><span class="description">WordPress version test for $wpdb-&gt;esc_like() Vs esc_sql()</span><pre>$wp_4dot0_plus</pre></a></li>
 <li class="nav-header">
 <i class="icon-custom icon-constant"></i> Constants</li>
 <li class="constant  "><a href="#MLA_ALT_TEXT_VIEW_SUFFIX" title="MLA_ALT_TEXT_VIEW_SUFFIX :: Provides a unique suffix for the ALT Text/custom field SQL View"><span class="description">Provides a unique suffix for the ALT Text/custom field SQL View</span><pre>MLA_ALT_TEXT_VIEW_SUFFIX</pre></a></li>
@@ -451,7 +454,7 @@ Could also be used with the ID3 metadata exposed in WordPress 3.6 and later.</p>
 <code>array</code><p>PHP nested arrays</p></div>
 <div class="subelement argument">
 <h4>$option</h4>
-<code>string</code><p>data option 'text'|'single'|'export'|'array'|'multi'</p>
+<code>string</code><p>data option; 'text'|'single'|'export'|'array'|'multi'</p>
 </div>
 <div class="subelement argument">
 <h4>$keep_existing</h4>
@@ -751,7 +754,7 @@ Modeled after wp_edit_attachments_query in wp-admin/post.php</p></p>
 </div>
 <a name="mla_query_media_modal_items" id="mla_query_media_modal_items"></a><div class="element clickable method public mla_query_media_modal_items" data-toggle="collapse" data-target=".mla_query_media_modal_items .collapse">
 <h2>Retrieve attachment objects for the WordPress Media Manager</h2>
-<pre>mla_query_media_modal_items(array $request, int $offset, int $count) : array</pre>
+<pre>mla_query_media_modal_items(array $request, int $offset, int $count) : object</pre>
 <div class="labels"></div>
 <div class="row collapse"><div class="detail-description">
 <p class="long_description"><p>Supports month-year and taxonomy-term filters as well as the enhanced search box</p></p>
@@ -771,7 +774,7 @@ Modeled after wp_edit_attachments_query in wp-admin/post.php</p></p>
 <code>int</code><p>number of rows on each page</p></div>
 <h3>Returns</h3>
 <div class="subelement response">
-<code>array</code>attachment objects (posts)</div>
+<code>object</code>WP_Query object with query results</div>
 </div></div>
 </div>
 <a name="mla_query_posts_clauses_filter" id="mla_query_posts_clauses_filter"></a><div class="element clickable method public mla_query_posts_clauses_filter" data-toggle="collapse" data-target=".mla_query_posts_clauses_filter .collapse">
@@ -935,6 +938,28 @@ Defined as public because it's a filter.</h2>
 <code>boolean</code>Updated setting</div>
 </div></div>
 </div>
+<a name="mla_query_terms_clauses_filter" id="mla_query_terms_clauses_filter"></a><div class="element clickable method public mla_query_terms_clauses_filter" data-toggle="collapse" data-target=".mla_query_terms_clauses_filter .collapse">
+<h2>Filters all clauses for get_terms queries</h2>
+<pre>mla_query_terms_clauses_filter(array $pieces, array $taxonomies, array $args) </pre>
+<div class="labels"></div>
+<div class="row collapse"><div class="detail-description">
+<p class="long_description"><p>Defined as public because it's a filter.</p></p>
+<table class="table table-bordered"><tr>
+<th>since</th>
+<td>2.13</td>
+</tr></table>
+<h3>Parameters</h3>
+<div class="subelement argument">
+<h4>$pieces</h4>
+<code>array</code><p>Terms query SQL clauses.</p></div>
+<div class="subelement argument">
+<h4>$taxonomies</h4>
+<code>array</code><p>An array of taxonomies.</p></div>
+<div class="subelement argument">
+<h4>$args</h4>
+<code>array</code><p>An array of terms query arguments.</p></div>
+</div></div>
+</div>
 <a name="mla_save_post_action" id="mla_save_post_action"></a><div class="element clickable method public mla_save_post_action" data-toggle="collapse" data-target=".mla_save_post_action .collapse">
 <h2>Invalidates $mla_galleries and $galleries arrays and cached values after post, page or attachment updates</h2>
 <pre>mla_save_post_action(integer $post_id) : void</pre>
@@ -1064,7 +1089,7 @@ and meta data for a single attachment</h2>
 <code>string</code><p>field name</p></div>
 <div class="subelement argument">
 <h4>$option</h4>
-<code>string</code><p>data option 'text'|'single'|'export'|'array'|'multi'</p>
+<code>string</code><p>data option; 'text'|'single'|'export'|'array'|'multi'</p>
 </div>
 <div class="subelement argument">
 <h4>$keep_existing</h4>
@@ -1406,7 +1431,7 @@ Modeled after wp_edit_attachments_query in wp-admin/post.php</p></p>
 <code>array</code><p>an array of scalar values</p></div>
 <div class="subelement argument">
 <h4>$option</h4>
-<code>string</code><p>data option 'text'|'single'|'export'|'array'|'multi'</p>
+<code>string</code><p>data option; 'text'|'single'|'export'|'array'|'multi'</p>
 </div>
 <div class="subelement argument">
 <h4>$keep_existing</h4>
@@ -1562,6 +1587,25 @@ Modeled after wp_edit_attachments_query in wp-admin/post.php</p></p>
 <code>boolean</code>true if $needle element found, false if not</div>
 </div></div>
 </div>
+<a name="_wildcard_search_string" id="_wildcard_search_string"></a><div class="element clickable method private _wildcard_search_string" data-toggle="collapse" data-target="._wildcard_search_string .collapse">
+<h2>Detects wildcard searches, i.e., containing an asterisk outside quotes</h2>
+<pre>_wildcard_search_string(string $search_string) : boolean</pre>
+<div class="labels"></div>
+<div class="row collapse"><div class="detail-description">
+<p class="long_description"><p>Defined as public because it's a callback from array_map().</p></p>
+<table class="table table-bordered"><tr>
+<th>since</th>
+<td>2.13</td>
+</tr></table>
+<h3>Parameters</h3>
+<div class="subelement argument">
+<h4>$search_string</h4>
+<code>string</code><p>search string</p></div>
+<h3>Returns</h3>
+<div class="subelement response">
+<code>boolean</code>true if wildcard</div>
+</div></div>
+</div>
 <h3>
 <i class="icon-custom icon-property"></i> Properties</h3>
 <a name="%24mla_iptc_keys" id="$mla_iptc_keys"> </a><div class="element clickable property public $mla_iptc_keys" data-toggle="collapse" data-target=".$mla_iptc_keys .collapse">
@@ -1574,6 +1618,23 @@ the "IPTC-NAA Information Interchange Model Version No. 4.1".</p></p>
 <table class="table table-bordered"><tr>
 <th>since</th>
 <td>0.90</td>
+</tr></table>
+</div></div>
+</div>
+<a name="%24query_parameters" id="$query_parameters"> </a><div class="element clickable property public $query_parameters" data-toggle="collapse" data-target=".$query_parameters .collapse">
+<h2>WP_Query filter "parameters"</h2>
+<pre>$query_parameters : array</pre>
+<div class="labels"></div>
+<div class="row collapse"><div class="detail-description">
+<p class="long_description"><p>This array defines parameters for the query's join, where and orderby filters.
+The parameters are set up in the _prepare_list_table_query function, and
+any further logic required to translate those values is contained in the filters.</p>
+
+<p>Array index values are: use_postmeta_view, postmeta_key, postmeta_value, patterns,
+detached, orderby, order, mla-metavalue, debug (also in search_parameters)</p></p>
+<table class="table table-bordered"><tr>
+<th>since</th>
+<td>0.30</td>
 </tr></table>
 </div></div>
 </div>
@@ -1599,7 +1660,6 @@ Note: 'alt-text' is not supported in [mla_gallery]
 ['sentence'] => entire string must match as one "keyword"
 ['exact'] => entire string must match entire field value
 ['debug'] => internal element, console/log/shortcode/none
-['mla_debug_messages'] => internal element, added when debug = 'shortcode'
 ['tax_terms_count'] => internal element, shared with JOIN and GROUP BY filters</p></p>
 <table class="table table-bordered"><tr>
 <th>since</th>
@@ -1745,20 +1805,15 @@ the "IPTC-NAA Information Interchange Model Version No. 4.1".</p></p>
 </tr></table>
 </div></div>
 </div>
-<a name="%24query_parameters" id="$query_parameters"> </a><div class="element clickable property private $query_parameters" data-toggle="collapse" data-target=".$query_parameters .collapse">
-<h2>WP_Query filter "parameters"</h2>
-<pre>$query_parameters : array</pre>
+<a name="%24wp_4dot0_plus" id="$wp_4dot0_plus"> </a><div class="element clickable property private $wp_4dot0_plus" data-toggle="collapse" data-target=".$wp_4dot0_plus .collapse">
+<h2>WordPress version test for $wpdb-&gt;esc_like() Vs esc_sql()</h2>
+<pre>$wp_4dot0_plus : boolean</pre>
 <div class="labels"></div>
 <div class="row collapse"><div class="detail-description">
-<p class="long_description"><p>This array defines parameters for the query's join, where and orderby filters.
-The parameters are set up in the _prepare_list_table_query function, and
-any further logic required to translate those values is contained in the filters.</p>
-
-<p>Array index values are: use_postmeta_view, postmeta_key, postmeta_value, patterns,
-detached, orderby, order, mla-metavalue, debug (also in search_parameters)</p></p>
+<p class="long_description"></p>
 <table class="table table-bordered"><tr>
 <th>since</th>
-<td>0.30</td>
+<td>2.13</td>
 </tr></table>
 </div></div>
 </div>
@@ -1784,7 +1839,7 @@ ALT Text and custom field columns.</p></p>
 <div class="row"><footer class="span12">
             Template is built using <a href="http://twitter.github.com/bootstrap/">Twitter Bootstrap 2</a> and icons provided by <a href="http://glyphicons.com/">Glyphicons</a>.<br>
             Documentation is powered by <a href="http://www.phpdoc.org/">phpDocumentor 2.0.0a8</a> and<br>
-            generated on 2015-06-06T19:41:35-07:00.<br></footer></div>
+            generated on 2015-06-25T20:07:04-07:00.<br></footer></div>
 </div>
 </body>
 </html>

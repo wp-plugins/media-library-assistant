@@ -261,7 +261,7 @@ var jQuery,
 
 			params = {
 				action: mla.settings.ajax_action,
-				nonce: mla.settings.ajax_nonce,
+				mla_admin_nonce: mla.settings.ajax_nonce,
 				bulk_action: mla.bulkEdit.targetName,
 				cb_attachment: chunk
 			};
@@ -451,7 +451,7 @@ var jQuery,
 				
 			params = {
 				action: mla.settings.ajax_action,
-				nonce: mla.settings.ajax_nonce,
+				mla_admin_nonce: mla.settings.ajax_nonce,
 				post_type: 'attachment',
 				post_ID: id,
 				edit_date: 'true',
@@ -583,7 +583,7 @@ var jQuery,
 
 				params = $.param( {
 					action: mla.settings.ajax_action + '-set-parent',
-					nonce: mla.settings.ajax_nonce,
+					mla_admin_nonce: mla.settings.ajax_nonce,
 					post_ID: postId,
 					post_parent: parentId,
 				} );

@@ -3,7 +3,7 @@
  * Provides an example of hooking the filters provided by the MLA_List_Table class
  *
  * @package MLA List Table Hooks Example
- * @version 1.03
+ * @version 1.04
  */
 
 /*
@@ -11,7 +11,7 @@ Plugin Name: MLA List Table Hooks Example
 Plugin URI: http://fairtradejudaica.org/media-library-assistant-a-wordpress-plugin/
 Description: Provides an example of hooking the filters provided by the MLA_List_Table class
 Author: David Lingren
-Version: 1.03
+Version: 1.04
 Author URI: http://fairtradejudaica.org/our-story/staff/
 
 Copyright 2014 - 2015 David Lingren
@@ -83,6 +83,7 @@ class MLAListTableHooksExample {
 		 /*
 		  * Defined in /media-library-assistant/includes/class-mla-main.php
 		  */
+		add_filter( 'mla_list_table_help_template', 'MLAListTableHooksExample::mla_list_table_help_template', 10, 3 );
 		add_filter( 'mla_list_table_admin_action', 'MLAListTableHooksExample::mla_list_table_admin_action', 10, 3 );
 		add_action( 'mla_list_table_custom_admin_action', 'MLAListTableHooksExample::mla_list_table_custom_admin_action', 10, 2 );
 		add_filter( 'mla_list_table_inline_fields', 'MLAListTableHooksExample::mla_list_table_inline_fields', 10, 1 );
@@ -195,7 +196,7 @@ class MLAListTableHooksExample {
 		//error_log( 'MLAListTableHooksExample::mla_entries_per_page $per_page = ' . var_export( $per_page, true ), 0 );
 		return $per_page;
 	} // mla_entries_per_page
-	
+
 	/**
 	 * Filter the list table sortable columns for a specific screen
 	 *
@@ -346,6 +347,27 @@ class MLAListTableHooksExample {
 		//error_log( 'MLAListTableHooksExample::mla_list_table_admin_action $mla_item_ID = ' . var_export( $mla_item_ID, true ), 0 );
 		return $process_action;
 	} // mla_list_table_admin_action
+
+	/**
+	 * Load the MLA_List_Table dropdown help menu template
+	 *
+	 * This filter gives you the opportunity to add material to the "Help" dropdown menu
+	 * on the Media/Assistant submenu screen.
+	 *
+	 * @since 1.04
+	 *
+	 * @param	array	$template_array NULL, to indicate no replacement template.
+	 * @param	string	$file_name the complete name of the default template file.
+	 * @param	string	$file_suffix the $screen->id or hook suffix part of the  template file name.
+	 */
+	public static function mla_list_table_help_template( $template_array, $file_name, $file_suffix ) {
+		//error_log( "MLAListTableHooksExample::mla_list_table_custom_admin_action( {$file_name}, {$file_suffix} )", 0 );
+		
+		// To augment the default template, first load the MLA standard value
+		// $template_array = MLAData::mla_load_template( $file_name );
+
+		return $template_array;
+	} // mla_list_table_help_template
 
 	/**
 	 * Process an MLA_List_Table custom admin action
@@ -586,7 +608,7 @@ class MLAListTableHooksExample {
 	public static function mla_list_table_clear_filter_by() {
 		//error_log( 'MLAListTableHooksExample::mla_list_table_clear_filter_by $_REQUEST = ' . var_export( $_REQUEST, true ), 0 );
 	} // mla_list_table_clear_filter_by
-	
+
 	/**
 	 * Extend the MLA_List_Table class
 	 *
@@ -602,7 +624,7 @@ class MLAListTableHooksExample {
 		//error_log( 'MLAListTableHooksExample::mla_list_table_new_instance $mla_list_table = ' . var_export( $mla_list_table, true ), 0 );
 		return $mla_list_table;
 	} // mla_list_table_new_instance
-	
+
 	/**
 	 * MLA_List_Table inline edit item values
 	 *
@@ -657,7 +679,7 @@ class MLAListTableHooksExample {
 		//error_log( 'MLAListTableHooksExample::mla_list_table_inline_parse $item_values = ' . var_export( $item_values, true ), 0 );
 		return $html_markup;
 	} // mla_list_table_inline_parse
-	
+
 	/**
 	 * Filter the MLA_List_Table columns
 	 *
@@ -804,7 +826,7 @@ class MLAListTableHooksExample {
 		//error_log( 'MLAListTableHooksExample::mla_list_table_prepare_items_total_items $mla_list_table->get_pagenum() = ' . var_export( $mla_list_table->get_pagenum(), true ), 0 );
 		return $total_items;
 	} // mla_list_table_prepare_items_total_items
-	
+
 	/**
 	 * Filter the items returned by prepare_items()
 	 *
@@ -823,7 +845,7 @@ class MLAListTableHooksExample {
 		//error_log( 'MLAListTableHooksExample::mla_list_table_prepare_items_the_items $mla_list_table->get_pagenum() = ' . var_export( $mla_list_table->get_pagenum(), true ), 0 );
 		return $items;
 	} // mla_list_table_prepare_items_the_items
-	
+
 	/**
 	 * Filter the WP_Query request parameters for the prepare_items query
 	 *
@@ -882,7 +904,7 @@ class MLAListTableHooksExample {
 		 * $mla_list_table->items contains the requested items from the database
 		 */
 	} // mla_list_table_prepare_items
-	
+
 	/**
 	 * Filter the list of item "Rollover" actions
 	 *

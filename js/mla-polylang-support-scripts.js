@@ -292,7 +292,7 @@ var jQuery,
 
 			params = {
 				action: mlaPolylang.settings.ajax_action,
-				nonce: mlaPolylang.settings.ajax_nonce,
+				mla_admin_nonce: mlaPolylang.settings.ajax_nonce,
 				post_type: 'attachment',
 				post_ID: id,
 				edit_date: 'true',

@@ -16,7 +16,7 @@
  * and illustrates some of the techniques you can use to customize the gallery display.
  *
  * @package MLA Gallery Hooks Example
- * @version 1.06
+ * @version 1.07
  */
 
 /*
@@ -24,7 +24,7 @@ Plugin Name: MLA Gallery Hooks Example
 Plugin URI: http://fairtradejudaica.org/media-library-assistant-a-wordpress-plugin/
 Description: Provides examples of hooking the filters provided by the [mla_gallery] shortcode
 Author: David Lingren
-Version: 1.06
+Version: 1.07
 Author URI: http://fairtradejudaica.org/our-story/staff/
 
 Copyright 2013, 2014 David Lingren
@@ -122,7 +122,7 @@ class MLAGalleryHooksExample {
 	 * @var	array
 	 */
 	private static $shortcode_attributes = array();
-	
+
 	/**
 	 * MLA Gallery Raw (Display) Attributes
 	 *
@@ -216,7 +216,7 @@ class MLAGalleryHooksExample {
 	 * @var	NULL|string
 	 */
 	private static $shortcode_content = NULL;
-	
+
 	/**
 	 * MLA Gallery Enclosed Content, initial filter
 	 *
@@ -251,7 +251,7 @@ class MLAGalleryHooksExample {
 	 * @var	array
 	 */
 	private static $all_display_parameters = array();
-	
+
 	/**
 	 * MLA Gallery (Display) Arguments
 	 *
@@ -283,7 +283,7 @@ class MLAGalleryHooksExample {
 	 * @var	array
 	 */
 	private static $query_attributes = array();
-	
+
 	/**
 	 * MLA Gallery Query Attributes
 	 *
@@ -315,7 +315,7 @@ class MLAGalleryHooksExample {
 	 * @var	array
 	 */
 	private static $all_query_parameters = array();
-	
+
 	/**
 	 * MLA Gallery Query Arguments
 	 *
@@ -537,7 +537,7 @@ class MLAGalleryHooksExample {
 	 * @var	array
 	 */
 	private static $wp_query_properties = array();
-	
+
 	/**
 	 * MLA Gallery WP Query Object
 	 *
@@ -688,7 +688,7 @@ class MLAGalleryHooksExample {
 		
 		return $html_markup;
 	} // mla_gallery_style_parse_filter
-	
+
 	/**
 	 * MLA Gallery Open Values
 	 *
@@ -747,7 +747,7 @@ class MLAGalleryHooksExample {
 		
 		return $html_markup;
 	} // mla_gallery_open_parse_filter
-	
+
 	/**
 	 * MLA Gallery Style
 	 *
@@ -773,7 +773,7 @@ class MLAGalleryHooksExample {
 		
 		return $html_markup;
 	} // mla_gallery_style_filter
-	
+
 	/**
 	 * MLA Gallery Row Open Values
 	 *
@@ -822,7 +822,25 @@ class MLAGalleryHooksExample {
 		
 		return $html_markup;
 	} // mla_gallery_row_open_parse_filter
-	
+
+	/**
+	 * Replace the caption value and update captiontag_content as well
+	 *
+	 * @since 1.07
+	 *
+	 * @param	array	parameter_name => parameter_value pairs
+	 * @param	string	New value for Caption
+	 *
+	 * @return	array	item_values with updated 'caption' and 'captiontag_content'
+	 */
+	private static function _update_caption( $item_values, $new_caption ) {
+		$old_caption = $item_values['caption'];
+		$item_values['caption'] = $new_caption;
+		$item_values['captiontag_content'] = str_replace( $old_caption, $new_caption, $item_values['captiontag_content'] );
+
+		return $item_values;
+	} // _update_caption
+
 	/**
 	 * MLA Gallery Item Values
 	 *
@@ -847,7 +865,7 @@ class MLAGalleryHooksExample {
 		if ( 'format terms' == self::$shortcode_attributes['my_filter'] ) {
 			$object_terms = wp_get_object_terms ( absint( $item_values['attachment_ID'] ), 'attachment_category', array( 'fields' => 'slugs' ) );
 			$item_values['terms:attachment_category'] = implode( ' ', $object_terms );
-			$item_values['caption'] = implode( ' ', $object_terms );
+			$item_values = self::_update_caption( $item_values, implode( ' ', $object_terms ) );
 			
 		//error_log( 'MLAGalleryHooksExample::mla_gallery_item_values_filter terms = ' . var_export( $item_values['terms:attachment_category'], true ), 0 );
 		}
@@ -863,19 +881,19 @@ class MLAGalleryHooksExample {
 			 */
 			$old_date = $item_values['date'];
 			$timestamp = mktime( substr( $old_date, 11, 2 ), substr( $old_date, 14, 2 ), substr( $old_date, 17, 2 ), substr( $old_date, 5, 2 ), substr( $old_date, 8, 2 ), substr( $old_date, 0, 4 ) );
-	
+
 			/*
 			 * Update the $item_values and pass them back from the filter.
 			 * We must also update the caption because it was composed before this filter is called.
 			 */
 			$item_values['date'] = date( 'd/m/Y', $timestamp );
-			$item_values['caption'] = $item_values['description'] . ', ' . $item_values['date'];
+			$item_values = self::_update_caption( $item_values,$item_values['description'] . ', ' . $item_values['date'] );
 
 			/*
 			 * This alternative generates a "clickable" caption value
 			 * linked directly to the item's attached file.
 			 */
-			//$item_values['caption'] = sprintf( '<a href="%1$s">%2$s<br>%3$s</a>', $item_values['file_url'], $item_values['title'], $item_values['date'] );
+			//$item_values = self::_update_caption( $item_values, sprintf( '<a href="%1$s">%2$s<br>%3$s</a>', $item_values['file_url'], $item_values['title'], $item_values['date'] ) );
 
 			return $item_values;
 		}
@@ -903,13 +921,11 @@ class MLAGalleryHooksExample {
 			} else {
 				$file_size = number_format( $file_size );
 			}
-	
+
 			/*
 			 * Compose a new caption, adding the file size.
 			 */
-			$item_values['caption'] = sprintf( '%1$s<br>Size: %2$s', $item_values['caption'], $file_size );
-	
-			return $item_values;
+			return self::_update_caption( $item_values, sprintf( '%1$s<br>Size: %2$s', $item_values['caption'], $file_size ) );
 		}
 		
 		/*
@@ -963,9 +979,9 @@ class MLAGalleryHooksExample {
 			if ( current_user_can( 'delete_post', $id ) ) { 
 				// Compose a new caption, adding the deletion link.
 				$mla_link_href = "{$item_values['page_url']}?attachment_ID={$id}";
-				$item_values['caption'] = sprintf( '%1$s<br><a href="%2$s" title="Click to delete">Delete this file</a>', $item_values['base_file'], $mla_link_href );
+				$item_values = self::_update_caption( $item_values, sprintf( '%1$s<br><a href="%2$s" title="Click to delete">Delete this file</a>', $item_values['base_file'], $mla_link_href ) );
 			} else {
-				$item_values['caption'] = sprintf( '%1$s', $item_values['base_file'] );
+				$item_values = self::_update_caption( $item_values, sprintf( '%1$s', $item_values['base_file'] ) );
 			}
 		}
 
@@ -1006,7 +1022,7 @@ class MLAGalleryHooksExample {
 				} // each post
 				
 				if ( ! empty( $my_caption ) ) {
-					$item_values['caption'] = $my_caption;
+					$item_values = self::_update_caption( $item_values, $my_caption );
 				}
 			} // has inserts
 		}
@@ -1085,7 +1101,7 @@ class MLAGalleryHooksExample {
 		/*
 		 * Update the $item_values and pass them back from the filter.
 		 */
-		$item_values['caption'] = $my_caption;
+		$item_values = self::_update_caption( $item_values, $my_caption );
 		return $item_values;
 	} // mla_gallery_item_values_filter
 
@@ -1122,7 +1138,7 @@ class MLAGalleryHooksExample {
 		
 		return $html_markup;
 	} // mla_gallery_item_parse_filter
-	
+
 	/**
 	 * MLA Gallery Row Close Values
 	 *
@@ -1171,7 +1187,7 @@ class MLAGalleryHooksExample {
 		
 		return $html_markup;
 	} // mla_gallery_row_close_parse_filter
-	
+
 	/**
 	 * MLA Gallery Close Values
 	 *
@@ -1220,7 +1236,7 @@ class MLAGalleryHooksExample {
 		
 		return $html_markup;
 	} // mla_gallery_close_parse_filter
-	
+
 } // Class MLAGalleryHooksExample
 
 /*

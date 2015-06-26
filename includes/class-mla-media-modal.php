@@ -413,7 +413,7 @@ class MLAModal {
 		}
 
 		self::$mla_media_modal_settings['comma'] = _x( ',', 'tag_delimiter', 'media-library-assistant' );
-		self::$mla_media_modal_settings['ajaxNonce'] = wp_create_nonce( MLA::MLA_ADMIN_NONCE );
+		self::$mla_media_modal_settings['ajaxNonce'] = wp_create_nonce( MLA::MLA_ADMIN_NONCE_ACTION, MLA::MLA_ADMIN_NONCE_NAME );
 		self::$mla_media_modal_settings['mimeTypes'] = MLAMime::mla_pluck_table_views();
 		self::$mla_media_modal_settings['mimeTypes']['detached'] = MLAOptions::$mla_option_definitions[ MLAOptions::MLA_POST_MIME_TYPES ]['std']['detached']['plural'];
 		self::$mla_media_modal_settings['mimeTypes']['attached'] = MLAOptions::$mla_option_definitions[ MLAOptions::MLA_POST_MIME_TYPES ]['std']['attached']['plural'];
@@ -1265,7 +1265,7 @@ class MLAModal {
 		$page_values = array(
 			'mla_terms_search_url' =>  esc_url( add_query_arg( array_merge( MLA_List_Table::mla_submenu_arguments( false ), array( 'page' => MLA::ADMIN_PAGE_SLUG ) ), admin_url( 'upload.php' ) ) ),
 			'mla_terms_search_action' => MLA::MLA_ADMIN_TERMS_SEARCH,
-			'wpnonce' => wp_nonce_field( MLA::MLA_ADMIN_NONCE, '_wpnonce', true, false ),
+			'wpnonce' => wp_nonce_field( MLA::MLA_ADMIN_NONCE_ACTION, MLA::MLA_ADMIN_NONCE_NAME, true, false ),
 			'mla_terms_search_div' => $terms_search_tpl,
 		);
 		$terms_search_tpl = MLAData::mla_parse_template( $page_template_array['mla-terms-search-form'], $page_values );

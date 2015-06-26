@@ -58,10 +58,10 @@
 <li class="nav-header">
 <i class="icon-custom icon-method"></i> Methods</li>
 <li class="method public "><a href="#initialize" title="initialize :: Initialization function, similar to __construct()"><span class="description">Initialization function, similar to __construct()</span><pre>initialize()</pre></a></li>
-<li class="method public "><a href="#mla_attachment_list_shortcode" title="mla_attachment_list_shortcode :: Obsolete; no longer supported"><span class="description">Obsolete; no longer supported</span><pre>mla_attachment_list_shortcode()</pre></a></li>
 <li class="method public "><a href="#mla_gallery_shortcode" title="mla_gallery_shortcode :: The MLA Gallery shortcode."><span class="description">The MLA Gallery shortcode.</span><pre>mla_gallery_shortcode()</pre></a></li>
 <li class="method public "><a href="#mla_get_shortcode_attachments" title="mla_get_shortcode_attachments :: Parses shortcode parameters and returns the gallery objects"><span class="description">Parses shortcode parameters and returns the gallery objects</span><pre>mla_get_shortcode_attachments()</pre></a></li>
 <li class="method public "><a href="#mla_get_terms" title="mla_get_terms :: Retrieve the terms in one or more taxonomies."><span class="description">Retrieve the terms in one or more taxonomies.</span><pre>mla_get_terms()</pre></a></li>
+<li class="method public "><a href="#mla_ghostscript_present" title="mla_ghostscript_present :: Verify the presence of Ghostscript for mla_viewer"><span class="description">Verify the presence of Ghostscript for mla_viewer</span><pre>mla_ghostscript_present()</pre></a></li>
 <li class="method public "><a href="#mla_no_texturize_shortcodes_filter" title="mla_no_texturize_shortcodes_filter :: Prevents wptexturizing of the [mla_gallery] shortcode, avoiding a bug in WP 4.0."><span class="description">Prevents wptexturizing of the [mla_gallery] shortcode, avoiding a bug in WP 4.0.</span><pre>mla_no_texturize_shortcodes_filter()</pre></a></li>
 <li class="method public "><a href="#mla_shortcode_query_posts_clauses_filter" title="mla_shortcode_query_posts_clauses_filter :: Filters all clauses for shortcode queries, pre caching plugins"><span class="description">Filters all clauses for shortcode queries, pre caching plugins</span><pre>mla_shortcode_query_posts_clauses_filter()</pre></a></li>
 <li class="method public "><a href="#mla_shortcode_query_posts_clauses_request_filter" title="mla_shortcode_query_posts_clauses_request_filter :: Filters all clauses for shortcode queries, post caching plugins"><span class="description">Filters all clauses for shortcode queries, post caching plugins</span><pre>mla_shortcode_query_posts_clauses_request_filter()</pre></a></li>
@@ -71,7 +71,6 @@
 <li class="method public "><a href="#mla_tag_cloud" title="mla_tag_cloud :: The MLA Tag Cloud support function."><span class="description">The MLA Tag Cloud support function.</span><pre>mla_tag_cloud()</pre></a></li>
 <li class="method public "><a href="#mla_tag_cloud_shortcode" title="mla_tag_cloud_shortcode :: The MLA Tag Cloud shortcode."><span class="description">The MLA Tag Cloud shortcode.</span><pre>mla_tag_cloud_shortcode()</pre></a></li>
 <li class="nav-header private">» Private</li>
-<li class="method private "><a href="#_ghostscript_present" title="_ghostscript_present :: Verify the presence of Ghostscript for mla_viewer"><span class="description">Verify the presence of Ghostscript for mla_viewer</span><pre>_ghostscript_present()</pre></a></li>
 <li class="method private "><a href="#_pad_term_counts" title="_pad_term_counts :: Add count of children to parent count."><span class="description">Add count of children to parent count.</span><pre>_pad_term_counts()</pre></a></li>
 <li class="method private "><a href="#_paginate_links" title="_paginate_links :: Handles pagnation output types 'previous_page', 'next_page', and 'paginate_links'"><span class="description">Handles pagnation output types 'previous_page', 'next_page', and 'paginate_links'</span><pre>_paginate_links()</pre></a></li>
 <li class="method private "><a href="#_process_pagination_output_types" title="_process_pagination_output_types :: Handles pagnation output types 'previous_page', 'next_page', and 'paginate_links'"><span class="description">Handles pagnation output types 'previous_page', 'next_page', and 'paginate_links'</span><pre>_process_pagination_output_types()</pre></a></li>
@@ -82,7 +81,6 @@
 <li class="method private "><a href="#_validate_sql_orderby" title="_validate_sql_orderby :: Translates query parameters to a valid SQL order by clause."><span class="description">Translates query parameters to a valid SQL order by clause.</span><pre>_validate_sql_orderby()</pre></a></li>
 <li class="nav-header">
 <i class="icon-custom icon-property"></i> Properties</li>
-<li class="property public "><a href="#%24mla_debug_messages" title="$mla_debug_messages :: Accumulates debug messages"><span class="description">Accumulates debug messages</span><pre>$mla_debug_messages</pre></a></li>
 <li class="property public "><a href="#%24mla_gallery_wp_query_object" title="$mla_gallery_wp_query_object :: The WP_Query object used to select items for the gallery."><span class="description">The WP_Query object used to select items for the gallery.</span><pre>$mla_gallery_wp_query_object</pre></a></li>
 <li class="nav-header private">» Private</li>
 <li class="property private "><a href="#%24mla_debug" title="$mla_debug :: Turn debug collection and display on or off"><span class="description">Turn debug collection and display on or off</span><pre>$mla_debug</pre></a></li>
@@ -126,18 +124,6 @@
 <table class="table table-bordered"><tr>
 <th>since</th>
 <td>0.20</td>
-</tr></table>
-</div></div>
-</div>
-<a name="mla_attachment_list_shortcode" id="mla_attachment_list_shortcode"></a><div class="element clickable method public mla_attachment_list_shortcode" data-toggle="collapse" data-target=".mla_attachment_list_shortcode .collapse">
-<h2>Obsolete; no longer supported</h2>
-<pre>mla_attachment_list_shortcode() : void</pre>
-<div class="labels"></div>
-<div class="row collapse"><div class="detail-description">
-<p class="long_description"></p>
-<table class="table table-bordered"><tr>
-<th>since</th>
-<td>0.1</td>
 </tr></table>
 </div></div>
 </div>
@@ -251,6 +237,30 @@ descending and then by term_id before this value is applied. Default 0.</p>
 <h3>Returns</h3>
 <div class="subelement response">
 <code>array</code>array of term objects, empty if none found</div>
+</div></div>
+</div>
+<a name="mla_ghostscript_present" id="mla_ghostscript_present"></a><div class="element clickable method public mla_ghostscript_present" data-toggle="collapse" data-target=".mla_ghostscript_present .collapse">
+<h2>Verify the presence of Ghostscript for mla_viewer</h2>
+<pre>mla_ghostscript_present(string $explicit_path, boolean $ghostscript_only) : boolean</pre>
+<div class="labels"></div>
+<div class="row collapse"><div class="detail-description">
+<p class="long_description"></p>
+<table class="table table-bordered"><tr>
+<th>since</th>
+<td>2.10</td>
+</tr></table>
+<h3>Parameters</h3>
+<div class="subelement argument">
+<h4>$explicit_path</h4>
+<code>string</code><p>Non-standard location to override default search, e.g., 'C:\Program Files (x86)\gs\gs9.15\bin\gswin32c.exe'</p>
+</div>
+<div class="subelement argument">
+<h4>$ghostscript_only</h4>
+<code>boolean</code><p>Force ghostscript-only tests, used by MLASettings::_compose_mla_gallery_tab()</p>
+</div>
+<h3>Returns</h3>
+<div class="subelement response">
+<code>boolean</code>true if Ghostscript available else false</div>
 </div></div>
 </div>
 <a name="mla_no_texturize_shortcodes_filter" id="mla_no_texturize_shortcodes_filter"></a><div class="element clickable method public mla_no_texturize_shortcodes_filter" data-toggle="collapse" data-target=".mla_no_texturize_shortcodes_filter .collapse">
@@ -411,26 +421,6 @@ options to customize the hyperlink behind each term.</p></p>
 <h3>Returns</h3>
 <div class="subelement response">
 <code>string</code>HTML content to display the tag cloud.</div>
-</div></div>
-</div>
-<a name="_ghostscript_present" id="_ghostscript_present"></a><div class="element clickable method private _ghostscript_present" data-toggle="collapse" data-target="._ghostscript_present .collapse">
-<h2>Verify the presence of Ghostscript for mla_viewer</h2>
-<pre>_ghostscript_present(string $explicit_path) : boolean</pre>
-<div class="labels"></div>
-<div class="row collapse"><div class="detail-description">
-<p class="long_description"></p>
-<table class="table table-bordered"><tr>
-<th>since</th>
-<td>2.10</td>
-</tr></table>
-<h3>Parameters</h3>
-<div class="subelement argument">
-<h4>$explicit_path</h4>
-<code>string</code><p>Non-standard location to override default search, e.g., 'C:\Program Files (x86)\gs\gs9.15\bin\gswin32c.exe'</p>
-</div>
-<h3>Returns</h3>
-<div class="subelement response">
-<code>boolean</code>true if Ghostscript available else false</div>
 </div></div>
 </div>
 <a name="_pad_term_counts" id="_pad_term_counts"></a><div class="element clickable method private _pad_term_counts" data-toggle="collapse" data-target="._pad_term_counts .collapse">
@@ -644,18 +634,6 @@ Enhanced version of /wp-includes/formatting.php function sanitize_sql_orderby().
 </div>
 <h3>
 <i class="icon-custom icon-property"></i> Properties</h3>
-<a name="%24mla_debug_messages" id="$mla_debug_messages"> </a><div class="element clickable property public $mla_debug_messages" data-toggle="collapse" data-target=".$mla_debug_messages .collapse">
-<h2>Accumulates debug messages</h2>
-<pre>$mla_debug_messages : string</pre>
-<div class="labels"></div>
-<div class="row collapse"><div class="detail-description">
-<p class="long_description"></p>
-<table class="table table-bordered"><tr>
-<th>since</th>
-<td>0.60</td>
-</tr></table>
-</div></div>
-</div>
 <a name="%24mla_gallery_wp_query_object" id="$mla_gallery_wp_query_object"> </a><div class="element clickable property public $mla_gallery_wp_query_object" data-toggle="collapse" data-target=".$mla_gallery_wp_query_object .collapse">
 <h2>The WP_Query object used to select items for the gallery.</h2>
 <pre>$mla_gallery_wp_query_object : object</pre>
@@ -728,7 +706,7 @@ any further logic required to translate those values is contained in the filter.
 <div class="row"><footer class="span12">
             Template is built using <a href="http://twitter.github.com/bootstrap/">Twitter Bootstrap 2</a> and icons provided by <a href="http://glyphicons.com/">Glyphicons</a>.<br>
             Documentation is powered by <a href="http://www.phpdoc.org/">phpDocumentor 2.0.0a8</a> and<br>
-            generated on 2015-06-06T19:41:36-07:00.<br></footer></div>
+            generated on 2015-06-25T20:07:04-07:00.<br></footer></div>
 </div>
 </body>
 </html>

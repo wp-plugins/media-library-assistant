@@ -148,7 +148,7 @@ var jQuery;
 					mla_set_parent_count: $( '#mla-set-parent-count' ).val(),
 					mla_set_parent_paged: $( '#mla-set-parent-paged' ).val(),
 					action: 'mla_find_posts',
-					_ajax_nonce: $('#mla-set-parent-ajax-nonce').val()
+					mla_admin_nonce: $('#mla-set-parent-ajax-nonce').val()
 				},
 				spinner = $( '#mla-set-parent-search-div .spinner' );
 
