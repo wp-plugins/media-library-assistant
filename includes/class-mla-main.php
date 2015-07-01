@@ -38,7 +38,7 @@ class MLA {
 	 *
 	 * @var	string
 	 */
-	const MLA_DEVELOPMENT_VERSION = '20150626';
+	const MLA_DEVELOPMENT_VERSION = '20150701';
 
 	/**
 	 * Slug for registering and enqueueing plugin style sheet
@@ -948,7 +948,8 @@ class MLA {
 		 */
 		$tax_inputs = array();
 		$tax_actions = array();
-		
+		self::mla_debug_add( "mla_prepare_bulk_edits( {$post_id} ) tax_input = " . var_export( $request['tax_input'], true ), MLA::MLA_DEBUG_CATEGORY_AJAX );
+
 		if ( isset( $request['tax_input'] ) && is_array( $request['tax_input'] ) ) {
 			foreach ( $request['tax_input'] as $taxonomy => $terms ) {
 				if ( ! empty( $request['tax_action'] ) ) {
@@ -957,6 +958,8 @@ class MLA {
 					$tax_action = 'replace';
 				}
 	
+				self::mla_debug_add( "mla_prepare_bulk_edits( {$post_id}, {$taxonomy}, {$tax_action} ) terms = " . var_export( $terms, true ), MLA::MLA_DEBUG_CATEGORY_AJAX );
+
 				/*
 				 * Ignore empty updates
 				 */
@@ -1004,6 +1007,7 @@ class MLA {
 						$current_terms[ $new_term->name ] =  $new_term->name;
 					}
 				}
+				self::mla_debug_add( "mla_prepare_bulk_edits( {$post_id}, {$taxonomy}, {$tax_action} ) current_terms = " . var_export( $current_terms, true ), MLA::MLA_DEBUG_CATEGORY_AJAX );
 	
 				if ( 'add' == $tax_action ) {
 					/*
@@ -1043,6 +1047,9 @@ class MLA {
 	
 					$do_update = ! empty( $current_terms );
 				}
+
+				self::mla_debug_add( "mla_prepare_bulk_edits( {$post_id}, {$taxonomy}, {$tax_action} ) do_update = " . var_export( $do_update, true ), MLA::MLA_DEBUG_CATEGORY_AJAX );
+				self::mla_debug_add( "mla_prepare_bulk_edits( {$post_id}, {$taxonomy}, {$tax_action} ) new terms = " . var_export( $terms, true ), MLA::MLA_DEBUG_CATEGORY_AJAX );
 	
 				if ( $do_update ) {
 					$tax_inputs[ $taxonomy ] = $terms;
@@ -1083,6 +1090,7 @@ class MLA {
 		}
 
 		$request = apply_filters( 'mla_list_table_bulk_action_initial_request', $request, $bulk_action, $custom_field_map );
+		self::mla_debug_add( 'mla_process_bulk_action $request = ' . var_export( $request, true ), MLA::MLA_DEBUG_CATEGORY_AJAX );
 
 		if ( isset( $request['cb_attachment'] ) ) {
 			$item_content = apply_filters( 'mla_list_table_begin_bulk_action', NULL, $bulk_action );
@@ -1147,12 +1155,14 @@ class MLA {
 							}
 
 							$new_data = self::mla_prepare_bulk_edits( $post_id, $request, $custom_field_map );
+							self::mla_debug_add( "mla_process_bulk_action( {$post_id} ) new_data = " . var_export( $new_data, true ), MLA::MLA_DEBUG_CATEGORY_AJAX );
 							$tax_input = $new_data['tax_input'];
 							$tax_action = $new_data['tax_action'];
 							unset( $new_data['tax_input'] );
 							unset( $new_data['tax_action'] );
 
 							$item_content = MLAData::mla_update_single_item( $post_id, $new_data, $tax_input, $tax_action );
+							self::mla_debug_add( "mla_process_bulk_action( {$post_id} ) item_content = " . var_export( $item_content, true ), MLA::MLA_DEBUG_CATEGORY_AJAX );
 							break;
 						case 'restore':
 							$item_content = self::_restore_single_item( $post_id );
@@ -1728,6 +1738,8 @@ class MLA {
 	 * @return	void	echo json results or error message, then die()
 	 */
 	private static function _bulk_edit_ajax_handler() {
+		self::mla_debug_add( '_bulk_edit_ajax_handler $_REQUEST = ' . var_export( $_REQUEST, true ), MLA::MLA_DEBUG_CATEGORY_AJAX );
+		
 		/*
 		 * The category taxonomy (edit screens) is a special case because 
 		 * post_categories_meta_box() changes the input name
@@ -2443,14 +2455,36 @@ class MLA {
 	}
 
 	/**
+	 * Constant to log Ajax debug activity
+	 *
+	 * @since 2.13
+	 *
+	 * @var	integer
+	 */
+	CONST MLA_DEBUG_CATEGORY_AJAX = 0x00000002;
+
+	/**
 	 * Add a debug message to the collection
 	 * 
 	 * @since 2.12
 	 * 
 	 * @param	string	$message Message text
+	 * @param	integer	$debug_level Optional. Debug category.
 	 */
-	public static function mla_debug_add( $message ) {
-		switch ( self::$mla_debug_mode ) {
+	public static function mla_debug_add( $message, $debug_level = NULL ) {
+		$mode = self::$mla_debug_mode;
+		
+		if ( NULL != $debug_level ) {
+			if ( ( 0 == ( MLA_DEBUG_LEVEL & 1 ) ) || ( 0 == ( MLA_DEBUG_LEVEL & $debug_level ) ) ) {
+				return;
+			}
+			
+			if ( 'none' == self::$mla_debug_mode ) {
+				$mode = 'log';
+			}
+		}
+
+		switch ( $mode ) {
 			case 'buffer':
 				self::$mla_debug_messages[] = $message;
 				break;

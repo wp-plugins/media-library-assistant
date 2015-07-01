@@ -3043,7 +3043,13 @@ class MLASettings {
 		/*
 		 * Add debug content
 		 */
-		$error_log_contents = @file_get_contents( $error_log_name, false );
+		$display_limit = absint( MLAOptions::mla_get_option( MLAOptions::MLA_DEBUG_DISPLAY_LIMIT ) );
+		if ( 0 < $display_limit ) {
+			$error_log_contents = @file_get_contents( $error_log_name, false, NULL, 0, $display_limit );
+		} else {
+			$error_log_contents = @file_get_contents( $error_log_name, false );
+		}
+		
 		if ( false === $error_log_contents ) {
 			$error_info = error_get_last();
 			if ( false !== ( $tail = strpos( $error_info['message'], '</a>]: ' ) ) ) {

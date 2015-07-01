@@ -2742,19 +2742,32 @@ The Item markup section shows how to use the "terms", "custom", "iptc" and "exif
 <p>
 Field-level substitution parameters let you access query arguments, custom fields, taxonomy terms and attachment metadata for display in an MLA gallery or in an MLA tag cloud. You can also use them in IPTC/EXIF or Custom Field mapping rules. For field-level parameters, the value you code within the surrounding the ('[+' and '+]' or '{+' and '+}') delimiters has three parts; the prefix, the field name (or template content) and, if desired, an option/format value.
 </p>
+<table>
+	<tr>
+		<td style="padding-right: 10px; vertical-align: top; font-weight:bold">prefix</td>
+		<td>defines which type of field-level data you are accessing. It must immediately follow the opening ('[+' or '{+') delimiter and end with a colon (':'). There can be no spaces in this part of the parameter.</td>
+	</tr>
+	<tr>
+		<td style="padding-right: 10px; vertical-align: top; font-weight:bold">field name</td>
+		<td>defines which field-level data element you are accessing. It must immediately follow the colon (':'). There can be no spaces between the colon and the field name. Spaces are allowed within the field name to accommodate custom field names that contain them.<br />
+		&nbsp;<br />
+		 <strong>Compound names</strong> are used to access elements within arrays, e.g., <code>sizes.thumbnail.file</code> is used to specify the file name for the thumbnail version of an image. You can also use a "*" placeholder to denote "all elements at this level" and return an array of lower-level elements. For example, you can code <code>sizes.*.file</code> to return an array of file names for all of the image's intermediate sizes.<br />
+		&nbsp;<br />
+		 For the "<strong>template</strong>" prefix, the field name is replaced by the template content; see the <a href="#mla_template_parameters">Content Templates</a> section for details.<br />
+		&nbsp;</td>
+	</tr>
+	<tr>
+		<td style="padding-right: 10px; vertical-align: top; font-weight:bold">option/format value</td>
+		<td>if present, immediately follows the field name using a comma (,) separator and ends with the closing delimiter ('+]' or '+}'). There can be no spaces in this part of the parameter.</td>
+	</tr>
+</table>
 <p>
-The <strong>prefix</strong> defines which type of field-level data you are accessing. It must immediately follow the opening ('[+' or '{+') delimiter and end with a colon (':'). There can be no spaces in this part of the parameter.
-</p>
-<p>
-The <strong>field name</strong> defines which field-level data element you are accessing. It must immediately follow the colon (':'). There can be no spaces between the colon and the field name. Spaces are allowed within the field name to accommodate custom field names that contain them. <strong>Compound names</strong> are used to access elements within arrays, e.g., &quot;<strong>sizes.thumbnail.file</strong>&quot; is used to specify the file name for the thumbnail version of an image. For the "template" prefix, the field name is replaced by the template content; see the <a href="#mla_template_parameters">Content Templates</a> section for details.
-</p>
-<p>
-The <strong>option/format value</strong>, if present, immediately follows the field name using a comma (,) separator and ends with the closing delimiter ('+]' or '+}'). There can be no spaces in this part of the parameter.
+The next sections define each of the prefixs and option/format values. 
 <a name="field_level_prefixes"></a>
 </p>
 <h4>Prefix values</h4>
 <p>
-There are ten prefix values for field-level parameters. Prefix values must be coded as shown; all lowercase letters.
+There are eleven prefix values for field-level parameters. Prefix values must be coded as shown; all lowercase letters.
 </p>
 <table>
 	<tr>
@@ -2854,6 +2867,15 @@ MLA adds three fields of its own to the XMP metadata information:
 		<br />&nbsp;</td>
 	</tr>
 	<tr>
+		<td style="padding-right: 10px; vertical-align: top; font-weight:bold">id3</td>
+		<td>
+		<a href="https://en.wikipedia.org/wiki/ID3" title="Wikipedia page for ID3" target="_blank">Wikipedia</a> says "ID3 is a metadata container most often used in conjunction with the MP3 audio file format. It allows information such as the title, artist, album, track number, and other information about the file to be stored in the file itself."
+		WordPress includes a subset of the <a href="http://www.getid3.org/" title="Official getID3() site" target="_blank">getID3() PHP Media File Parser</a> with support for audio and video file formats. A few values are available for other file types but they are not very useful.<br />
+		&nbsp;<br />
+		You can also use [+id3:ALL_ID3+], a special "pseudo value" that returns a string representation of all the metadata. You can use this pseudo-value to examine the metadata in a file, find field names and see what values are present. The ALL_ID3 value is altered to limit the amount of information displayed. Values of more than 256 characters are truncated to 256 characters. This prevents large fields such as image thumbnails from dominating the display. Array values are replaced by an "(ARRAY)" placeholder, e.g., <code>'audio' => '(ARRAY)'</code>. You can explore array values individually by coding something like <code>[+id3:audio,export+]</code> to expand all levels within the array or <code>[+id3:audio,unpack+]</code> to expand one level within the array. You can go deeper in the array hierarchy with compound names, e.g., <code>[+id3:quicktime.moov.subatoms,unpack+]</code> or <code>[+id3:quicktime.moov.subatoms.*.name+]</code>.
+		<br />&nbsp;</td>
+	</tr>
+	<tr>
 		<td style="padding-right: 10px; vertical-align: top; font-weight:bold">template</td>
 		<td>A Content Template, which lets you compose a value from multiple substitution parameters and test for empty values, choosing among two or more alternatives or suppressing output entirely. See the <a href="#mla_template_parameters">Content Templates</a> section for details. Note that the formatting option is not supported for templates.</td>
 	</tr>
@@ -2865,7 +2887,7 @@ MLA adds three fields of its own to the XMP metadata information:
 You can use a field-level option or format value to specify the treatment of fields with multiple values or to change the format of a field for display/mapping purposes. If no option/format value is present, fields with multiple values are formatted as a comma-delimited text list. The option/format value, if present, immediately follows the field name using a comma (,) separator and ends with the closing delimiter ('+]' or '+}'). There can be no spaces in this part of the parameter.
 </p>
 <p>
-Two "option" values change the treatment of fields with multiple values:
+Three "option" values change the treatment of fields with multiple values:
 </p>
 <table>
 	<tr>
@@ -2875,7 +2897,12 @@ Two "option" values change the treatment of fields with multiple values:
 	</tr>
 	<tr>
 		<td style="padding-right: 10px; vertical-align: top; font-weight:bold">,export</td>
-		<td>If this option is present, the PHP <code>var_export</code> function is used to return a string representation of all the elements in an array field. For example, if you code <code>[+meta:sizes.thumbnail,export+]</code> the result will be "array ('file' => '20120313-ASK_5605-150x150.jpg', 'width' => 150, 'height' => 150, 'mime-type' => 'image/jpeg'".
+		<td>If this option is present, the PHP <code>var_export</code> function is used to return a string representation of all the elements in an array field. For example, if you code <code>[+meta:sizes.thumbnail,export+]</code> the result will be "array ('file' => '20120313-ASK_5605-150x150.jpg', 'width' => 150, 'height' => 150, 'mime-type' => 'image/jpeg', )".
+		</td>
+	</tr>
+	<tr>
+		<td style="padding-right: 10px; vertical-align: top; font-weight:bold">,unpack</td>
+		<td>If this option is present, the top-level elements in an array field will be expanded; lower-level arrays will be denoted by a placeholder. For example, if you code <code>[+meta:sizes,unpack+]</code> the result will be "array ( 'thumbnail' => '(ARRAY)', 'medium' => '(ARRAY)', 'large' => '(ARRAY)', 'post-thumbnail' => '(ARRAY)', )".
 		</td>
 	</tr>
 </table>

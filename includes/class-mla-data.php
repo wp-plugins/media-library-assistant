@@ -788,6 +788,24 @@ class MLAData {
 			case 'export':
 				$text = sanitize_text_field( var_export( $record, true ) );
 				break;
+			case 'unpack':
+				if ( is_array( $record ) ) {
+					$clean_data = array();
+					foreach ( $record as $key => $value ) {
+						if ( is_array( $value ) ) {
+							$clean_data[ $key ] = '(ARRAY)';
+						} elseif ( is_string( $value ) ) {
+							$clean_data[ $key ] = self::_bin_to_utf8( substr( $value, 0, 256 ) );
+						} else {
+							$clean_data[ $key ] = $value;
+						}
+					}
+		
+					$text = sanitize_text_field( var_export( $clean_data, true) );
+				} else {
+					$text = sanitize_text_field( var_export( $record, true ) );
+				}
+				break;
 			case 'multi':
 				$record[0x80000000] = 'multi';
 				$record[0x80000001] = $keep_existing;
@@ -795,7 +813,7 @@ class MLAData {
 			case 'array':
 				$text = $record;
 				break;
-			default:
+			default: // or 'text'
 				$text = '';
 				foreach ( $record as $term ) {
 					$term_name = sanitize_text_field( $term );
@@ -1004,10 +1022,11 @@ class MLAData {
 	 * @return	array	( parameter => value ) for all field-level parameters and anything in $markup_values
 	 */
 	public static function mla_expand_field_level_parameters( $tpl, $query = NULL, $markup_values = array(), $post_id = 0, $keep_existing = false, $default_option = 'text' ) {
-		static $cached_post_id = 0, $item_metadata = NULL, $attachment_metadata = NULL;
+		static $cached_post_id = 0, $item_metadata = NULL, $attachment_metadata = NULL, $id3_metadata = NULL;
 		if ( $cached_post_id != $post_id ) {
 			$item_metadata = NULL;
 			$attachment_metadata = NULL;
+			$id3_metadata = NULL;
 			$cached_post_id = $post_id;
 		}
 
@@ -1196,6 +1215,17 @@ class MLAData {
 
 					$markup_values[ $key ] = self::mla_xmp_metadata_value( $value['value'], $value['option'], $keep_existing, $attachment_metadata['mla_xmp_metadata'] );
 					break;
+				case 'id3':
+					if ( is_null( $id3_metadata ) ) {
+						if ( 0 < $post_id ) {
+							$id3_metadata = self::mla_fetch_attachment_id3_metadata( $post_id );
+						} else {
+							break;
+						}
+					}
+
+					$markup_values[ $key ] = self::mla_id3_metadata_value( $value['value'], $value['option'], $keep_existing, $id3_metadata );
+					break;
 				case 'pdf':
 					if ( is_null( $attachment_metadata ) ) {
 						if ( 0 < $post_id ) {
@@ -1212,6 +1242,7 @@ class MLAData {
 						$markup_values[ $key ] = $record;
 					}
 
+					break;
 				case '':
 					$candidate = str_replace( '{', '[', str_replace( '}', ']', $value['value'] ) );
 					$key = str_replace( '{', '[', str_replace( '}', ']', $key ) );
@@ -1315,7 +1346,7 @@ class MLAData {
 				$tail = substr( $match, 2);
 			}
 
-			$match_count = preg_match( '/([^,]+)(,(text|single|export|array|multi|commas|raw|attr|url|timestamp|date|fraction|substr))(\(([^)]+)\))*\+\]/', $tail, $matches );
+			$match_count = preg_match( '/([^,]+)(,(text|single|export|unpack|array|multi|commas|raw|attr|url|timestamp|date|fraction|substr))(\(([^)]+)\))*\+\]/', $tail, $matches );
 			if ( 1 == $match_count ) {
 				$result['value'] = $matches[1];
 				if ( ! empty( $matches[5] ) ) {
@@ -2948,7 +2979,7 @@ class MLAData {
 	 * Finds the value of a key in a possibly nested array structure
 	 *
 	 * Used primarily to extract fields from the _wp_attachment_metadata custom field.
-	 * Could also be used with the ID3 metadata exposed in WordPress 3.6 and later.
+	 * Also used with the audio/video ID3 metadata exposed in WordPress 3.6 and later.
 	 *
 	 * @since 1.30
 	 *
@@ -3014,6 +3045,24 @@ class MLAData {
 					break;
 				case 'export':
 					$haystack = var_export( $haystack, true );
+					break;
+				case 'unpack':
+					if ( is_array( $haystack ) ) {
+						$clean_data = array();
+						foreach ( $haystack as $key => $value ) {
+							if ( is_array( $value ) ) {
+								$clean_data[ $key ] = '(ARRAY)';
+							} elseif ( is_string( $value ) ) {
+								$clean_data[ $key ] = self::_bin_to_utf8( substr( $value, 0, 256 ) );
+							} else {
+								$clean_data[ $key ] = $value;
+							}
+						}
+			
+						$haystack = var_export( $clean_data, true);
+					} else {
+						$haystack = var_export( $record, true );
+					}
 					break;
 				case 'multi':
 					$haystack[0x80000000] = $option;
@@ -4964,6 +5013,41 @@ class MLAData {
 	}
 
 	/**
+	 * Parse one ID3 (audio/visual) metadata field
+	 * 
+	 * Also handles the special pseudo-value 'ALL_ID3'.
+	 *
+	 * @since 2.13
+	 *
+	 * @param	string	field name
+	 * @param	string	data option; 'text'|'single'|'export'|'array'|'multi'
+	 * @param	boolean	Optional: for option 'multi', retain existing values
+	 * @param	string	ID3 metadata array
+	 *
+	 * @return	mixed	string/array representation of metadata value or an empty string
+	 */
+	public static function mla_id3_metadata_value( $id3_key, $option, $keep_existing, $id3_metadata ) {
+		if ( 'ALL_ID3' == $id3_key ) {
+			$clean_data = array();
+			foreach ( $id3_metadata as $key => $value ) {
+				if ( is_array( $value ) ) {
+					$clean_data[ $key ] = '(ARRAY)';
+				} elseif ( is_string( $value ) ) {
+					$clean_data[ $key ] = self::_bin_to_utf8( substr( $value, 0, 256 ) );
+				} else {
+					$clean_data[ $key ] = $value;
+				}
+			}
+
+			$text = var_export( $clean_data, true);
+		} else {
+			$text = self::mla_find_array_element($id3_key, $id3_metadata, $option, $keep_existing );
+		}
+
+		return $text;
+	}
+
+	/**
 	 * Parse one PDF metadata field
 	 * 
 	 * Also handles the special pseudo-value 'ALL_PDF'.
@@ -5111,6 +5195,103 @@ class MLAData {
 
 		/* Don't execute PHP internal error handler */
 		return true;
+	}
+	
+	/**
+	 * Fetch and filter ID3 metadata for an audio or video attachment
+	 * 
+	 * Adapted from /wp-admin/includes/media.php functions wp_add_id3_tag_data,
+	 * wp_read_video_metadata and wp_read_audio_metadata
+	 *
+	 * @since 2.13
+	 *
+	 * @param	int		post ID of attachment
+	 * @param	string	optional; if $post_id is zero, path to the image file.
+	 *
+	 * @return	array	Meta data variables, including 'audio' and 'video'
+	 */
+	public static function mla_fetch_attachment_id3_metadata( $post_id, $path = '' ) {
+		static $id3 = NULL;
+		
+		if ( 0 != $post_id ) {
+			$path = get_attached_file($post_id);
+		}
+
+		if ( ! empty( $path ) ) {
+			if ( ! class_exists( 'getID3' ) ) {
+				require( ABSPATH . WPINC . '/ID3/getid3.php' );
+			}
+			
+			if ( NULL == $id3 ) {
+				$id3 = new getID3();
+			}
+			
+			$data = $id3->analyze( $path );
+		}
+
+		if ( ! empty( $data['filesize'] ) )
+			$data['filesize'] = (int) $data['filesize'];
+		if ( ! empty( $data['playtime_seconds'] ) )
+			$data['length'] = (int) round( $data['playtime_seconds'] );
+		
+		// from wp_read_video_metadata
+		if ( ! empty( $data['video'] ) ) {
+			if ( ! empty( $data['video']['bitrate'] ) )
+				$data['bitrate'] = (int) $data['video']['bitrate'];
+			if ( ! empty( $data['video']['resolution_x'] ) )
+				$data['width'] = (int) $data['video']['resolution_x'];
+			if ( ! empty( $data['video']['resolution_y'] ) )
+				$data['height'] = (int) $data['video']['resolution_y'];
+		}
+		
+		// from wp_read_audio_metadata
+		if ( ! empty( $data['audio'] ) ) {
+			unset( $data['audio']['streams'] );
+		}
+	
+		// from wp_add_id3_tag_data
+		foreach ( array( 'id3v2', 'id3v1' ) as $version ) {
+			if ( ! empty( $data[ $version ]['comments'] ) ) {
+				foreach ( $data[ $version ]['comments'] as $key => $list ) {
+					if ( 'length' !== $key && ! empty( $list ) ) {
+						$data[ $key ] = reset( $list );
+						// Fix bug in byte stream analysis.
+						if ( 'terms_of_use' === $key && 0 === strpos( $metadata[ $key ], 'yright notice.' ) )
+							$metadata[ $key ] = 'Cop' . $metadata[$key];
+					}
+				}
+				break;
+			}
+		}
+		unset( $data['id3v2']['comments'] );
+		unset( $data['id3v1']['comments'] );
+
+		if ( ! empty( $data['id3v2']['APIC'] ) ) {
+			$image = reset( $data['id3v2']['APIC']);
+			if ( ! empty( $image['data'] ) ) {
+				$data['image'] = array(
+					'data' => $image['data'],
+					'mime' => $image['image_mime'],
+					'width' => $image['image_width'],
+					'height' => $image['image_height']
+				);
+			}
+
+			unset( $data['id3v2']['APIC'] );
+		} elseif ( ! empty( $data['comments']['picture'] ) ) {
+			$image = reset( $data['comments']['picture'] );
+			if ( ! empty( $image['data'] ) ) {
+				$data['image'] = array(
+					'data' => $image['data'],
+					'mime' => $image['image_mime']
+				);
+			}
+
+			unset( $data['comments']['picture'] );
+		}
+
+		$data['post_id'] = $post_id;
+		return $data;
 	}
 
 	/**

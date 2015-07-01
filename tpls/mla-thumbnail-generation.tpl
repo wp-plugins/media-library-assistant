@@ -2,7 +2,7 @@
 <form>
   <table width="99%" style="display: none">
     <tbody id="mla-thumbnail-generation">
-      <tr id="mla-bulk-thumbnail" class="inline-edit-row inline-edit-row-attachment inline-edit-attachment bulk-edit-row bulk-edit-row-attachment bulk-edit-attachment" style="display: none">
+      <tr id="mla-bulk-thumbnail" class="inline-edit-row inline-edit-row-attachment inline-edit-attachment bulk-thumbnail-row bulk-thumbnail-row-attachment bulk-thumbnail-attachment" style="display: none">
         <td colspan="[+colspan+]" class="colspanchange">
           <fieldset class="inline-edit-col-left">
             <div class="inline-edit-col">

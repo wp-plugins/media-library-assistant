@@ -73,7 +73,11 @@
  * Generate Thumbnails settings
  */
  
-#wpbody-content .bulk-edit-row-attachment fieldset.inline-edit-col-right {
+#wpbody-content .bulk-thumbnail-row-attachment fieldset.inline-edit-col-left {
+	width: 30%
+ }
+ 
+#wpbody-content .bulk-thumbnail-row-attachment fieldset.inline-edit-col-right {
 	width: 69%
  }
  

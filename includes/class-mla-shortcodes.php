@@ -868,6 +868,7 @@ class MLAShortcodes {
 			$item_values['description'] = wptexturize( $attachment->post_content );
 			$item_values['file_url'] = wptexturize( $attachment->guid );
 			$item_values['author_id'] = $attachment->post_author;
+			$item_values['caption'] = '';
 			$item_values['captiontag_content'] = '';
 
 			$user = get_user_by( 'id', $attachment->post_author );
