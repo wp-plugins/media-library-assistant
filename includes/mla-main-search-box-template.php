@@ -29,6 +29,14 @@ if ( 'checked' == MLAOptions::mla_get_option( MLAOptions::MLA_SEARCH_MEDIA_FILTE
 } else {
 	$controls_style = 'style="display: none;"';
 }
+
+$supported_taxonomies = MLAOptions::mla_supported_taxonomies('support');
+if ( empty( $supported_taxonomies ) ) {
+	$terms_style = 'style="display: none;"';
+	unset( $search_fields['terms'] );
+} else {
+	$terms_style = 'style="display: inline;"';
+}
 ?>
 <p class="search-box">
 <label class="screen-reader-text" for="mla-media-search-input"><?php _e( 'Search Media', 'media-library-assistant' ); ?></label>
@@ -44,6 +52,6 @@ if ( 'checked' == MLAOptions::mla_get_option( MLAOptions::MLA_SEARCH_MEDIA_FILTE
 <input name="mla_search_fields[]" id="search-alt-text" type="checkbox" <?php echo ( in_array( 'alt-text', $search_fields ) ) ? 'checked="checked"' : ''; ?> value="alt-text" /><?php _e( 'ALT Text', 'media-library-assistant' )?>&nbsp;
 <input name="mla_search_fields[]" id="search-excerpt" type="checkbox" <?php echo ( in_array( 'excerpt', $search_fields ) ) ? 'checked="checked"' : ''; ?> value="excerpt" /><?php _e( 'Caption', 'media-library-assistant' )?>&nbsp;
 <input name="mla_search_fields[]" id="search-content" type="checkbox" <?php echo ( in_array( 'content', $search_fields ) ) ? 'checked="checked"' : ''; ?> value="content" /><?php _e( 'Description', 'media-library-assistant' )?>&nbsp;
-<input name="mla_search_fields[]" id="terms-search" type="checkbox" <?php echo ( in_array( 'terms', $search_fields ) ) ? 'checked="checked"' : ''; ?> value="terms" /><?php _e( 'Terms', 'media-library-assistant' )?>
+<span <?php echo $terms_style ?>><input name="mla_search_fields[]" id="terms-search" type="checkbox" <?php echo ( in_array( 'terms', $search_fields ) ) ? 'checked="checked"' : ''; ?> value="terms" /><?php _e( 'Terms', 'media-library-assistant' )?></span>
 </span>
 </p>

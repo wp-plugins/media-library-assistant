@@ -33,6 +33,7 @@
 <!-- template="page" -->
 <div id="mla-add-new-bulk-edit-div" style="display: none;">
 <input id="bulk-edit-toggle" title="[+Toggle+]" class="button-primary" type="button" name="bulk_edit_toggle" value="[+Toggle+]" style="float:right" />
+<strong>[+NOTE+]</strong><br />
 [+category_fieldset+]
 [+tag_fieldset+]
   <fieldset class="inline-edit-col-right">

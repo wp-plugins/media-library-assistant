@@ -58,10 +58,10 @@
               </label></td>
 			  </tr></table>
             </div> <!-- inline-edit-group -->
-			<label class="alignleft" style="clear: both;">
+<!--		<label class="alignleft" style="clear: both;">
 			<span class="title" style="display: inline-block">[+Options+]</span>
             <input name="mla_thumbnail_options[clear_filters]" id="mla-thumbnail-options-clear-filters" type="checkbox" value="checked" checked="checked" />[+Clear Filter-by+]
-			</label>
+			</label> -->
             </div> <!-- inline-edit-col -->
           </fieldset>
           <p class="submit inline-edit-save"> <a accesskey="c" href="#mla-generate-thumbnail" title="[+Cancel+]" class="button-secondary cancel alignleft">[+Cancel+]</a>

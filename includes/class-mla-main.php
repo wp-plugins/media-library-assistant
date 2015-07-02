@@ -38,7 +38,7 @@ class MLA {
 	 *
 	 * @var	string
 	 */
-	const MLA_DEVELOPMENT_VERSION = '20150701';
+	const MLA_DEVELOPMENT_VERSION = '20150702';
 
 	/**
 	 * Slug for registering and enqueueing plugin style sheet
@@ -1281,6 +1281,14 @@ class MLA {
 
 		if ( isset( $_REQUEST['orderby'] ) ) {
 			$_GET['orderby'] = $_REQUEST['orderby'];
+		}
+
+		// bulk_refresh simply refreshes the page, ignoring other bulk actions
+		if ( ! empty( $_REQUEST['bulk_refresh'] ) ) {
+			unset( $_REQUEST['action'] );
+			unset( $_POST['action'] );
+			unset( $_REQUEST['action2'] );
+			unset( $_POST['action2'] );
 		}
 
 		$bulk_action = self::_current_bulk_action();

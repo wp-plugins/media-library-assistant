@@ -411,6 +411,7 @@ class MLAEdit {
 		$set_parent_form = MLA::mla_set_parent_form( false );
 
 		$page_values = array(
+			'NOTE' => __( 'IMPORTANT: Make your entries BEFORE uploading new items.', 'media-library-assistant' ),
 			'Toggle' => __( 'Open Bulk Edit area', 'media-library-assistant' ),
 			'category_fieldset' => $category_fieldset,
 			'tag_fieldset' => $tag_fieldset,

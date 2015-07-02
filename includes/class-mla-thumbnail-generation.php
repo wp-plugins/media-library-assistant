@@ -206,13 +206,16 @@ class MLA_Thumbnail {
 		if ( self::MLA_GFI_ACTION != $bulk_action ) {
 			return $item_content;
 		}
+
+		/* translators: 1: post ID */
+		$item_prefix = sprintf( __( 'Item %1$d', 'media-library-assistant' ), $post_id ) . ', ';
 		
 		/*
 		 * If there is a real thumbnail image, no generation is required or allowed
 		 */
 		$thumbnail = wp_get_attachment_image( $post_id );
 		if ( ! empty( $thumbnail ) ) {
-			return array( 'message' => "Item {$post_id}, has native thumbnail." );
+			return array( 'message' => $item_prefix . __( 'has native thumbnail.', 'media-library-assistant' ) );
 		}
 
 		/*
@@ -233,7 +236,7 @@ class MLA_Thumbnail {
 					break;
 				case 'keep':
 				default:
-					return array( 'message' => "Item {$post_id}, Featured Image retained." );
+					return array( 'message' => $item_prefix . __( 'Featured Image retained.', 'media-library-assistant' ) );
 			}
 		}
 
@@ -242,11 +245,12 @@ class MLA_Thumbnail {
 		 */
 		$file = get_attached_file( $post_id );
 		if ( empty( $file ) ) {
-			return array( 'message' => "ERROR: Item {$post_id}, no attached file." );
+			/* translators: 1: ERROR tag 2: Item post ID */
+			return array( 'message' => sprintf( __( '%1$s: %2$sno attached file.', 'media-library-assistant' ), __( 'ERROR', 'media-library-assistant' ), $item_prefix ) );
 		}
 
 		if ( ! in_array( strtolower( pathinfo( $file, PATHINFO_EXTENSION ) ), array( 'ai', 'eps', 'pdf', 'ps' ) ) ) {
-			return array( 'message' => "Item {$post_id}, unsupported file type." );
+			return array( 'message' => $item_prefix . __( 'unsupported file type.', 'media-library-assistant' ) );
 		}
 		
 		/*
@@ -255,7 +259,8 @@ class MLA_Thumbnail {
 		require_once( MLA_PLUGIN_PATH . 'includes/class-mla-image-processor.php' );
 		$results = MLAImageProcessor::mla_handle_thumbnail_sideload( $file, self::$bulk_action_options );
 		if ( ! empty( $results['error'] ) ) {
-			return array( 'message' => "ERROR: Item {$post_id}, thumbnail generation failed - " . $results['error'] );
+			/* translators: 1: ERROR tag 2: Item post ID */
+			return array( 'message' => sprintf( __( '%1$s: %2$sthumbnail generation failed', 'media-library-assistant' ), __( 'ERROR', 'media-library-assistant' ), $item_prefix ) . ' - ' . $results['error'] );
 		}
 		
 		/*
@@ -300,7 +305,8 @@ class MLA_Thumbnail {
 		// Insert the attachment.
 		$item_id = wp_insert_attachment( $item_data, $results['file'], $item_parent );
 		if ( empty( $item_id ) ) {
-			return array( 'message' => "ERROR: Item {$post_id}, wp_insert_attachment failed" );
+			/* translators: 1: ERROR tag 2: Item post ID */
+			return array( 'message' => sprintf( __( '%1$s: %2$swp_insert_attachment failed.', 'media-library-assistant' ), __( 'ERROR', 'media-library-assistant' ), $item_prefix ) );
 		}
 
 		// Make sure that this file is included, as wp_generate_attachment_metadata() depends on it.
@@ -315,7 +321,9 @@ class MLA_Thumbnail {
 		set_post_thumbnail( $post_id, $item_id );
 		
 		MLA_Thumbnail::$bulk_action_includes[] = $item_id;
-		$item_content = array( 'message' => "Item {$post_id}, thumbnail generated as new item {$item_id}." );
+		
+		/* translators: 1: Item post ID, 2: new thumbnail item ID */
+		$item_content = array( 'message' => sprintf( __( '%1$sthumbnail generated as new item %2$s.', 'media-library-assistant' ), $item_prefix, $item_id ) );
 
 		return $item_content;
 	} // mla_list_table_custom_bulk_action
@@ -335,24 +343,29 @@ class MLA_Thumbnail {
 			return $item_content;
 		}
 
-		// Clear all the "Filter-by" parameters
-		if ( isset( self::$bulk_action_options['clear_filters'] ) ) {
-			unset( $_REQUEST['heading_suffix'] );
-			unset( $_REQUEST['parent'] );
-			unset( $_REQUEST['author'] );
-			unset( $_REQUEST['mla-tax'] );
-			unset( $_REQUEST['mla-term'] );
-			unset( $_REQUEST['mla-metakey'] );
-			unset( $_REQUEST['mla-metavalue'] );
-		}
-
 		if ( ! empty( MLA_Thumbnail::$bulk_action_includes ) ) {
+			// Clear all the "Filter-by" parameters 
+			$_REQUEST['clear_filter_by'] = 'Clear Filter-by';
+
 			// Reset the current view to "All" to ensure that thumbnails are displayed
 			unset( $_REQUEST['post_mime_type'] );
 			unset( $_POST['post_mime_type'] );
 			unset( $_GET['post_mime_type'] );
 			unset( $_REQUEST['meta_query'] );
+			unset( $_GET['meta_query'] );
 			unset( $_REQUEST['meta_slug'] );
+			unset( $_GET['meta_slug'] );
+			
+			// Clear the "extra_nav" controls and the Search Media box, too
+			unset( $_REQUEST['m'] );
+			unset( $_POST['m'] );
+			unset( $_GET['m'] );
+			unset( $_REQUEST['mla_filter_term'] );
+			unset( $_POST['mla_filter_term'] );
+			unset( $_GET['mla_filter_term'] );
+			unset( $_REQUEST['s'] );
+			unset( $_POST['s'] );
+			unset( $_GET['s'] );
 			
 			$_REQUEST['ids'] = MLA_Thumbnail::$bulk_action_includes;
 			$_REQUEST['heading_suffix'] = __( 'Generated Thumbnails', 'media-library-assistant' );

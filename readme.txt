@@ -181,12 +181,15 @@ All of the MLA source code has been annotated with "DocBlocks", a special type o
 * New: If Imagick and/or Ghostcript support is not present, an explicit warning message is displayed in the "Enable thumbnail substitution" portion of the Settings/Media Library Assistant MLA Gallery tab.
 * New: A new filter for the "Media/Assistant Submenu Hooks" allows you to modify the content of the dropdown Help menu. The `/media-library-assistant/examples/mla-list-table-hooks-example.php.txt` example plugin has been updated with the new filter.
 * New: A new `/media-library-assistant/examples/mla-custom-file-size-example.php.txt` example plugin has been added to demonstrate a simple example of changing the content of the "Item:" template part.
+* Fix: When Polylang is active, "Show all languages" is selected after a Bulk Translate action so results from multiple languages can be displayed.
+* Fix: When Polylang is active, Quick and Bulk Edit taxonomy checklists are language-specific when "Refresh" is clicked after a Bulk Edit action.
 * Fix: The `/media-library-assistant/examples/mla-hooks-example.php.txt` example plugin has been updated to handle the new `captiontag_content` template substitution parameter.
 * Fix: The default `_wpnonce` query argument is no longer used, eliminating a conflict between MLA and the "A5 Custom Login Page" plugin. 
 * Fix: For the Settings/Media Library Assistant Views and Uploads, the Quick Edit action has been fixed.
 * Fix: For the Media/Assistant submenu table and the Media Manager Modal (popup) Window, default table sorting on a custom field no longer causes WordPress Database Errors.
 * Fix: For the Media/Assistant Quick Edit and Bulk Edit actions, the Custom Field mapping rule "Delete Null Values" option is now handled correctly. When this option is specified, empty values will not be stored in the database.
 * Fix: The "single" option now returns just the first value of a custom field if it has multiple values.
+* Fix: The Terms Search button, terms dropdown filter and "terms" search checkbox are no longer displayed when no taxonomies selected for MLA support.
 * Fix: PHP Warning messages are no longer produced when the Bulk Edit area is used with no taxonomies selected for MLA support.
 
 = 2.12 =

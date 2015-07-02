@@ -1743,10 +1743,13 @@ class MLA_List_Table extends WP_List_Table {
 			submit_button( __( 'Filter', 'media-library-assistant' ), 'secondary', 'mla_filter', false, array(
 				 'id' => 'post-query-submit' 
 			) );
-
-			submit_button( __( 'Terms Search', 'media-library-assistant' ), 'secondary', 'mla_filter', false, array(
-				 'id' => 'mla-terms-search-open', 'onclick' => 'mlaTaxonomy.termsSearch.open()' 
-			) );
+			
+			$term_search_taxonomies = MLAOptions::mla_supported_taxonomies('term-search');
+			if ( ! empty( $term_search_taxonomies ) ) {
+				submit_button( __( 'Terms Search', 'media-library-assistant' ), 'secondary', 'mla_filter', false, array(
+					 'id' => 'mla-terms-search-open', 'onclick' => 'mlaTaxonomy.termsSearch.open()' 
+				) );
+			}
 		}
 
 		if ( self::mla_submenu_arguments( true ) != self::mla_submenu_arguments( false ) ) {

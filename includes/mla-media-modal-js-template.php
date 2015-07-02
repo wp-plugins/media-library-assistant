@@ -12,6 +12,13 @@
  * @global $post
  */
 global $post;
+
+$supported_taxonomies = MLAOptions::mla_supported_taxonomies('support');
+if ( empty( $supported_taxonomies ) ) {
+	$terms_style = 'style="display: none;"';
+} else {
+	$terms_style = 'style="display: inline;"';
+}
 ?>
 <script type="text/html" id="tmpl-mla-search-box">
     <label class="screen-reader-text" for="mla-media-search-input"><?php _e( 'Search Media', 'media-library-assistant' ); ?>:</label>
@@ -48,10 +55,12 @@ global $post;
             <input type="checkbox" name="s[mla_search_content]" id="search-content" value="content" <# if ( -1 != data.searchFields.indexOf( 'content' ) ) { #>checked<# } #> />
             <?php _e( 'Description', 'media-library-assistant' ); ?>
         </li>
+		<span <?php echo $terms_style ?>>
         <li>
             <input type="checkbox" name="s[mla_search_terms]" id="search-terms" value="terms" <# if ( -1 != data.searchFields.indexOf( 'terms' ) ) { #>checked<# } #> />
             <?php _e( 'Terms', 'media-library-assistant' ); ?>
         </li>
+		</span>
     </ul>
 </script>
 <script type="text/html" id="tmpl-mla-terms-search-button">

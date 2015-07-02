@@ -443,9 +443,13 @@ class MLAModal {
 		self::$mla_media_modal_settings['enableMonthsDropdown'] = ( 'checked' == MLAOptions::mla_get_option( MLAOptions::MLA_MEDIA_MODAL_MONTHS ) );
 		self::$mla_media_modal_settings['enableSearchBox'] = ( 'checked' == MLAOptions::mla_get_option( MLAOptions::MLA_MEDIA_MODAL_SEARCHBOX ) );
 		self::$mla_media_modal_settings['enableSearchBoxControls'] = ( 'checked' == MLAOptions::mla_get_option( MLAOptions::MLA_MEDIA_MODAL_SEARCHBOX_CONTROLS ) );
-		self::$mla_media_modal_settings['enableTermsDropdown'] = ( 'checked' == MLAOptions::mla_get_option( MLAOptions::MLA_MEDIA_MODAL_TERMS ) );
-		self::$mla_media_modal_settings['enableTermsSearch'] = ( 'checked' == MLAOptions::mla_get_option( MLAOptions::MLA_MEDIA_MODAL_TERMS_SEARCH ) );
-		self::$mla_media_modal_settings['enableTermsAutofill'] = ( 'checked' == MLAOptions::mla_get_option( MLAOptions::MLA_MEDIA_MODAL_DETAILS_AUTOFILL ) );
+
+		$supported_taxonomies = MLAOptions::mla_supported_taxonomies('support');
+		self::$mla_media_modal_settings['enableTermsDropdown'] = ( 'checked' == MLAOptions::mla_get_option( MLAOptions::MLA_MEDIA_MODAL_TERMS ) ) && ( ! empty( $supported_taxonomies ) );
+		self::$mla_media_modal_settings['enableTermsAutofill'] = ( 'checked' == MLAOptions::mla_get_option( MLAOptions::MLA_MEDIA_MODAL_DETAILS_AUTOFILL ) ) && ( ! empty( $supported_taxonomies ) );
+
+		$supported_taxonomies = MLAOptions::mla_supported_taxonomies('term-search');
+		self::$mla_media_modal_settings['enableTermsSearch'] = ( 'checked' == MLAOptions::mla_get_option( MLAOptions::MLA_MEDIA_MODAL_TERMS_SEARCH ) ) && ( ! empty( $supported_taxonomies ) );
 
 		/*
 		 * Compile a list of the enhanced taxonomies
@@ -487,6 +491,15 @@ class MLAModal {
 		);
 
 		$initial_values = apply_filters( 'mla_media_modal_initial_filters', $initial_values, $post );
+
+		// No supported taxonomies implies no "terms" search
+		$supported_taxonomies = MLAOptions::mla_supported_taxonomies('support');
+		if ( empty( $supported_taxonomies ) ) {
+			$index = array_search( 'terms', $initial_values['searchFields'] );
+			if ( false !== $index ) {
+				unset( $initial_values['searchFields'][ $index ] );
+			}
+		}
 
 		/*
 		 * Except for filterMime/post_mime_type, these will be passed

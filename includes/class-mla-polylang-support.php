@@ -66,6 +66,7 @@ class MLA_Polylang {
 		 /*
 		  * Defined in /wp-admin/includes/class-wp-list-table.php
 		  */
+		// filter "views_{$this->screen->id}"
 		add_filter( 'views_media_page_mla-menu', 'MLA_Polylang::views_media_page_mla_menu', 10, 1 );
 
 		 /*
@@ -182,6 +183,13 @@ class MLA_Polylang {
 		 * Localize $mla_language_option_definitions array
 		 */
 		MLA_Polylang::mla_localize_language_option_definitions();
+
+		if ( isset( $_REQUEST['pll-bulk-translate'] ) ) {		
+			// Set "Show all languages" to display mixed-language results
+			$request['lang'] = 'all';
+			$_REQUEST['lang'] = 'all';
+			$_GET['lang'] = 'all';
+		}
 	}
 
 	/**
@@ -1338,19 +1346,12 @@ class MLA_Polylang {
 	 * @return	array	updated bulk action request parameters
 	 */
 	public static function mla_list_table_bulk_action_initial_request( $request, $bulk_action, $custom_field_map ) {
-		/*
-		 * Check for Bulk Edit processing during Upload New Media
-		 */
-		if ( ( NULL == self::$upload_bulk_edit_args ) && ( 'edit' == $bulk_action ) && ! empty( $_REQUEST['mlaAddNewBulkEdit']['formString'] ) ) {
-			/*
-			 * Suppress WPML processing in wpml-media.class.php function save_attachment_actions,
-			 * which wipes out attachment meta data.
-			 */
-			//global $action;
-			//$action = 'upload-plugin';
-
-			self::$upload_bulk_edit_args = $request;
-			self::$upload_bulk_edit_map = $custom_field_map;
+		if ( 'edit' == $bulk_action ) {
+			// Check for Bulk Edit processing during Upload New Media
+			if ( ( NULL == self::$upload_bulk_edit_args ) && ! empty( $_REQUEST['mlaAddNewBulkEdit']['formString'] ) ) {
+				self::$upload_bulk_edit_args = $request;
+				self::$upload_bulk_edit_map = $custom_field_map;
+			}
 		}
 
 		return $request;
@@ -1523,7 +1524,7 @@ class MLA_Polylang {
 	/**
 	 * MLA_List_Table inline edit item values
 	 *
-	 * Builds the Language dropdown and edit ttranslation links
+	 * Builds the Language dropdown and edit translation links
 	 * for the Quick and Bulk Edit forms.
 	 *
 	 * @since 2.11
@@ -1795,7 +1796,10 @@ class MLA_Polylang {
 	/**
 	 * Filter the "sticky" submenu URL parameters
 	 *
-	 * Maintains the pll_view and list of Bulk Translate items in the URLs for paging through the results.
+	 * Adds a language ('lang') parameter to the URL parameters that will be
+	 * retained when the submenu page refreshes.
+	 * Maintains the pll_view and list of Bulk Translate items in the URLs for
+	 * paging through the results.
 	 *
 	 * @since 2.11
 	 *
@@ -1805,6 +1809,16 @@ class MLA_Polylang {
 	 * @return	array	updated submenu_arguments.
 	 */
 	public static function mla_list_table_submenu_arguments( $submenu_arguments, $include_filters ) {
+		global $polylang;
+
+		if ( isset( $_REQUEST['lang'] ) ) {
+			$submenu_arguments['lang'] = $_REQUEST['lang'];
+		} elseif ( $polylang->curlang ) {		 
+			$submenu_arguments['lang'] = $polylang->curlang->slug;
+		} else {		 
+			$submenu_arguments['lang'] = 'all';
+		}
+
 		if ( isset( $_REQUEST['pll_view'] ) ) {
 			$submenu_arguments['pll_view'] = $_REQUEST['pll_view'];
 		}

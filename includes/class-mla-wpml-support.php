@@ -1546,11 +1546,10 @@ class MLA_WPML_Table {
 	protected static $language_columns = NULL;
 
 	/**
-	 * Filter the MLA_List_Table columns
+	 * Filter the "sticky" submenu URL parameters
 	 *
-	 * Inserts the language columns just after the item thumbnail column.
-	 * Defined as static because it is called before the List_Table object is created.
-	 * Added as a filter when the file is loaded.
+	 * Adds a language ('lang') parameter to the URL parameters that will be
+	 * retained when the submenu page refreshes.
 	 *
 	 * @since 2.11
 	 *
@@ -1565,7 +1564,7 @@ class MLA_WPML_Table {
 
 		if ( isset( $_REQUEST['lang'] ) ) {
 			$submenu_arguments['lang'] = $_REQUEST['lang'];
-		} elseif ( is_object( $sitepress ) ) {		 
+		} else {		 
 			$submenu_arguments['lang'] = $sitepress->get_current_language();
 		}
 
