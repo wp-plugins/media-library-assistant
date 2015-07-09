@@ -38,7 +38,7 @@ class MLA {
 	 *
 	 * @var	string
 	 */
-	const MLA_DEVELOPMENT_VERSION = '20150702';
+	const MLA_DEVELOPMENT_VERSION = '20150708';
 
 	/**
 	 * Slug for registering and enqueueing plugin style sheet
@@ -622,7 +622,7 @@ class MLA {
 		if ( is_null( $template_array ) ) {
 			$template_array = MLAData::mla_load_template( 'help-for-' . $file_suffix . '.tpl' );
 		}
-		
+
 		if ( empty( $template_array ) ) {
 			return;
 		}
@@ -938,7 +938,7 @@ class MLA {
 				}
 			} // foreach
 		}
-		
+
 		if ( ! empty( $custom_fields ) ) {
 			$new_data[ 'custom_updates' ] = $custom_fields;
 		}
@@ -957,7 +957,7 @@ class MLA {
 				} else {
 					$tax_action = 'replace';
 				}
-	
+
 				self::mla_debug_add( "mla_prepare_bulk_edits( {$post_id}, {$taxonomy}, {$tax_action} ) terms = " . var_export( $terms, true ), MLA::MLA_DEBUG_CATEGORY_AJAX );
 
 				/*
@@ -975,7 +975,7 @@ class MLA {
 					if ( ',' !== $comma ) {
 						$tags = str_replace( $comma, ',', $terms );
 					}
-	
+
 					$fragments = explode( ',', trim( $terms, " \n\t\r\0\x0B," ) );
 					$terms = array();
 					foreach( $fragments as $fragment ) {
@@ -985,20 +985,20 @@ class MLA {
 							$terms[] = $fragment;
 						}
 					} // foreach fragment
-	
+
 					$terms = array_unique( $terms );
 				}
-	
+
 				if ( empty( $terms ) && 'replace' != $tax_action ) {
 					continue;
 				}
-	
+
 				$post_terms = get_object_term_cache( $post_id, $taxonomy );
 				if ( false === $post_terms ) {
 					$post_terms = wp_get_object_terms( $post_id, $taxonomy );
 					wp_cache_add( $post_id, $post_terms, $taxonomy . '_relationships' );
 				}
-	
+
 				$current_terms = array();
 				foreach( $post_terms as $new_term ) {
 					if ( $hierarchical ) {
@@ -1008,7 +1008,7 @@ class MLA {
 					}
 				}
 				self::mla_debug_add( "mla_prepare_bulk_edits( {$post_id}, {$taxonomy}, {$tax_action} ) current_terms = " . var_export( $current_terms, true ), MLA::MLA_DEBUG_CATEGORY_AJAX );
-	
+
 				if ( 'add' == $tax_action ) {
 					/*
 					 * Add new terms; remove existing terms
@@ -1018,7 +1018,7 @@ class MLA {
 							unset( $terms[ $index ] );
 						}
 					}
-	
+
 					$do_update = ! empty( $terms );
 				} elseif ( 'remove' == $tax_action ) {
 					/*
@@ -1029,7 +1029,7 @@ class MLA {
 							unset( $terms[ $index ] );
 						}
 					}
-	
+
 					$do_update = ! empty( $terms );
 				} else { 
 					/*
@@ -1044,13 +1044,13 @@ class MLA {
 							break; // not a match; stop checking
 						}
 					}
-	
+
 					$do_update = ! empty( $current_terms );
 				}
 
 				self::mla_debug_add( "mla_prepare_bulk_edits( {$post_id}, {$taxonomy}, {$tax_action} ) do_update = " . var_export( $do_update, true ), MLA::MLA_DEBUG_CATEGORY_AJAX );
 				self::mla_debug_add( "mla_prepare_bulk_edits( {$post_id}, {$taxonomy}, {$tax_action} ) new terms = " . var_export( $terms, true ), MLA::MLA_DEBUG_CATEGORY_AJAX );
-	
+
 				if ( $do_update ) {
 					$tax_inputs[ $taxonomy ] = $terms;
 					$tax_actions[ $taxonomy ] = $tax_action;
@@ -1060,7 +1060,7 @@ class MLA {
 
 		$new_data[ 'tax_input' ] = $tax_inputs;
 		$new_data[ 'tax_action' ] = $tax_actions;
-		
+
 		return $new_data;
 	}
 
@@ -1260,6 +1260,30 @@ class MLA {
 	}
 
 	/**
+	 * Clear the Media/Assistant submenu Filter-by variables 
+	 *
+	 * @since 2.13
+	 *
+	 * @param	array	$preserves Filters to be retained
+	 *
+	 * @return	void
+	 */
+	public static function mla_clear_filter_by( $preserves = array() ) {
+		$filters = array( 'author', 'heading_suffix', 'ids', 'mla-metakey', 'mla-metavalue', 'mla-tax', 'mla-term', 'parent' );
+
+		$filters = apply_filters( 'mla_list_table_clear_filter_by_filters', $filters, $preserves );
+		$preserves = apply_filters( 'mla_list_table_clear_filter_by_preserves', $preserves, $filters );
+
+		foreach ( $filters as $filter ) {
+			if ( ! in_array( $filter, $preserves ) ) {
+				unset( $_REQUEST[ $filter ] );
+			}
+		}
+
+		do_action( 'mla_list_table_clear_filter_by' );
+	}
+
+	/**
 	 * Render the "Assistant" subpage in the Media section, using the list_table package
 	 *
 	 * @since 0.1
@@ -1341,14 +1365,7 @@ class MLA {
 		} // $bulk_action
 
 		if ( isset( $_REQUEST['clear_filter_by'] ) ) {
-			unset( $_REQUEST['heading_suffix'] );
-			unset( $_REQUEST['parent'] );
-			unset( $_REQUEST['author'] );
-			unset( $_REQUEST['mla-tax'] );
-			unset( $_REQUEST['mla-term'] );
-			unset( $_REQUEST['mla-metakey'] );
-			unset( $_REQUEST['mla-metavalue'] );
-			do_action( 'mla_list_table_clear_filter_by' );
+			self::mla_clear_filter_by();
 		}
 
 		/*
@@ -1747,7 +1764,7 @@ class MLA {
 	 */
 	private static function _bulk_edit_ajax_handler() {
 		self::mla_debug_add( '_bulk_edit_ajax_handler $_REQUEST = ' . var_export( $_REQUEST, true ), MLA::MLA_DEBUG_CATEGORY_AJAX );
-		
+
 		/*
 		 * The category taxonomy (edit screens) is a special case because 
 		 * post_categories_meta_box() changes the input name
@@ -2415,7 +2432,7 @@ class MLA {
 		if ( 'array' == $format ) {
 			return self::$mla_debug_messages;
 		}
-		
+
 		// format == 'string'
 		if ( '<p>' == $glue ) {
 			return '<p>' . implode( '</p><p>', self::$mla_debug_messages ) . '</p>';
@@ -2436,7 +2453,7 @@ class MLA {
 	 */
 	public static function mla_debug_flush( $destination = 'buffer', $stop_collecting = true ) {
 		$results = '';
-		
+
 		switch ( $destination ) {
 			case 'buffer':
 				$results = self::mla_debug_content();
@@ -2452,9 +2469,9 @@ class MLA {
 				}
 				break;
 		}
-		
+
 		self::$mla_debug_messages = array();
-		
+
 		if ( $stop_collecting ) {
 			self::$mla_debug_mode = 'none';
 		}
@@ -2481,12 +2498,12 @@ class MLA {
 	 */
 	public static function mla_debug_add( $message, $debug_level = NULL ) {
 		$mode = self::$mla_debug_mode;
-		
+
 		if ( NULL != $debug_level ) {
 			if ( ( 0 == ( MLA_DEBUG_LEVEL & 1 ) ) || ( 0 == ( MLA_DEBUG_LEVEL & $debug_level ) ) ) {
 				return;
 			}
-			
+
 			if ( 'none' == self::$mla_debug_mode ) {
 				$mode = 'log';
 			}

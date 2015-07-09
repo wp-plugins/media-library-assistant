@@ -863,11 +863,15 @@ class MLAMime {
 	 *
 	 * @since 1.40
 	 *
-	 * @param	string	A specification, e.g., "custom:Field,null" or "audio,application/vnd.*ms*"
+	 * @param	string|array	A specification, e.g., "custom:Field,null" or "audio,application/vnd.*ms*"
 	 *
 	 * @return	array	( ['prefix'] => string, ['name'] => string, ['value'] => string, ['option'] => string, optional ['error'] => string )
 	 */
 	public static function mla_parse_view_specification( $specification ) {
+			if ( is_array( $specification ) ) {
+				$specification = @implode( ',', $specification );
+			}
+
 			$result = array( 'prefix' => '', 'name' => '', 'value' => '', 'option' => '' );
 			$match_count = preg_match( '/^(.+):(.+)/', $specification, $matches );
 			if ( 1 == $match_count ) {

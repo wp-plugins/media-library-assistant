@@ -2370,11 +2370,11 @@ class MLASettings {
 		if ( ! MLAShortcodes::mla_ghostscript_present( $ghostscript_path, true ) ) {
 			$not_supported_warning .= '<br>&nbsp;&nbsp;' . __( 'Ghostscript support is not installed.', 'media-library-assistant' );
 		}
-		
+
 		if ( ! empty( $not_supported_warning ) ) {
 			MLAOptions::$mla_option_definitions['enable_mla_viewer']['help'] = '<strong>' . __( 'WARNING: MLA Viewer support may not be available', 'media-library-assistant' ) . ':</strong>' . $not_supported_warning;
 		}
-		
+
 		/*
 		 * Start with any page-level options
 		 */
@@ -3006,6 +3006,7 @@ class MLASettings {
 
 		$page_values = array();
 		$error_log_name =  ini_get( 'error_log' );
+		$error_log_exists = file_exists ( $error_log_name );
 
 		/*
 		 * Check for page-level actions
@@ -3024,6 +3025,8 @@ class MLASettings {
 			if ( $file_error ) {
 				/* translators: 1: ERROR tag 2: file type 3: file name */
 				$page_content['message'] = sprintf( __( '%1$s: The %2$s file ( %3$s ) could not be reset.', 'media-library-assistant' ), __( 'ERROR', 'media-library-assistant' ), __( 'Error Log', 'media-library-assistant' ), $error_log_name );
+			} else {
+				$error_log_exists = file_exists ( $error_log_name );
 			}
 		} elseif ( !empty( $_REQUEST['mla-debug-options-save'] ) ) {
 			check_admin_referer( MLA::MLA_ADMIN_NONCE_ACTION, MLA::MLA_ADMIN_NONCE_NAME );
@@ -3040,41 +3043,54 @@ class MLASettings {
 			}
 		}
 
-		/*
-		 * Add debug content
-		 */
-		$display_limit = absint( MLAOptions::mla_get_option( MLAOptions::MLA_DEBUG_DISPLAY_LIMIT ) );
-		if ( 0 < $display_limit ) {
-			$error_log_contents = @file_get_contents( $error_log_name, false, NULL, 0, $display_limit );
-		} else {
-			$error_log_contents = @file_get_contents( $error_log_name, false );
-		}
-		
-		if ( false === $error_log_contents ) {
-			$error_info = error_get_last();
-			if ( false !== ( $tail = strpos( $error_info['message'], '</a>]: ' ) ) ) {
-				$php_errormsg = ':<br>' . substr( $error_info['message'], $tail + 7 );
-			} else {
-				$php_errormsg = '.';
-			}
-
-			/* translators: 1: ERROR tag 2: file type 3: file name 4: error message*/
-			$page_content['message'] = sprintf( __( '%1$s: Reading the %2$s file ( %3$s ) "%4$s".', 'media-library-assistant' ), __( 'ERROR', 'media-library-assistant' ), __( 'Error Log', 'media-library-assistant' ), $error_log_name, $php_errormsg );
-			$error_log_contents = '';
-		} else {
+		if ( $error_log_exists ) {
+			/*
+			 * Add debug content
+			 */
 			$display_limit = absint( MLAOptions::mla_get_option( MLAOptions::MLA_DEBUG_DISPLAY_LIMIT ) );
 			if ( 0 < $display_limit ) {
-				$error_log_contents = substr( $error_log_contents, 0 - $display_limit );
+				$error_log_size = filesize( $error_log_name ); 
+				if ( $display_limit < $error_log_size ) {
+					$error_log_contents = @file_get_contents( $error_log_name, false, NULL, ( $error_log_size - $display_limit ), $display_limit );
+				} else {
+					$error_log_contents = @file_get_contents( $error_log_name, false );
+				}
+			} else {
+				$error_log_contents = @file_get_contents( $error_log_name, false );
 			}
-		}
+
+			if ( false === $error_log_contents ) {
+				$error_info = error_get_last();
+				if ( false !== ( $tail = strpos( $error_info['message'], '</a>]: ' ) ) ) {
+					$php_errormsg = ':<br>' . substr( $error_info['message'], $tail + 7 );
+				} else {
+					$php_errormsg = '.';
+				}
+
+				/* translators: 1: ERROR tag 2: file type 3: file name 4: error message*/
+				$page_content['message'] = sprintf( __( '%1$s: Reading the %2$s file ( %3$s ) "%4$s".', 'media-library-assistant' ), __( 'ERROR', 'media-library-assistant' ), __( 'Error Log', 'media-library-assistant' ), $error_log_name, $php_errormsg );
+				$error_log_contents = '';
+			} else {
+				if ( 0 < $display_limit ) {
+					$error_log_contents = substr( $error_log_contents, 0 - $display_limit );
+				}
+			}
+		} else {
+			$page_content['message'] = __( 'Error log file not found; click Reset to create one.', 'media-library-assistant' );
+			$error_log_contents = '';
+		} // file_exists
 
 		if ( current_user_can( 'upload_files' ) ) {
-			$args = array(
-				'page' => MLA::ADMIN_PAGE_SLUG,
-				'mla_download_file' => urlencode( $error_log_name ),
-				'mla_download_type' => 'text/plain'
-			);
-			$download_link = '<a class="button-secondary" href="' . add_query_arg( $args, wp_nonce_url( 'upload.php', MLA::MLA_ADMIN_NONCE_ACTION, MLA::MLA_ADMIN_NONCE_NAME ) ) . '" title="' . __( 'Download', 'media-library-assistant' ) . ' &#8220;' . __( 'Error Log', 'media-library-assistant' ) . '&#8221;">' . __( 'Download', 'media-library-assistant' ) . '</a>';
+			if ( $error_log_exists ) {
+				$args = array(
+					'page' => MLA::ADMIN_PAGE_SLUG,
+					'mla_download_file' => urlencode( $error_log_name ),
+					'mla_download_type' => 'text/plain'
+				);
+				$download_link = '<a class="button-secondary" href="' . add_query_arg( $args, wp_nonce_url( 'upload.php', MLA::MLA_ADMIN_NONCE_ACTION, MLA::MLA_ADMIN_NONCE_NAME ) ) . '" title="' . __( 'Download', 'media-library-assistant' ) . ' &#8220;' . __( 'Error Log', 'media-library-assistant' ) . '&#8221;">' . __( 'Download', 'media-library-assistant' ) . '</a>';
+			} else {
+				$download_link = '';
+			}
 
 			$args = array(
 				'page' => 'mla-settings-menu-debug',

@@ -177,10 +177,15 @@ All of the MLA source code has been annotated with "DocBlocks", a special type o
 * New: For IPTC/EXIF custom field mapping rules, **Format, Option and Delete Null Values** options can be specified and are handled like their equivalents in Custom Field mapping rules.
 * New: For field-level substitution parameters, the **id3:** prefix gives you access to all of the metadata present in audio and video files.
 * New: For field-level substitution parameters, the **,unpack** option lets you expand one level of an array and denote lower-level arrays with an (ARRAY) placeholder.
+* New: The IPTC: and EXIF: field-level substitution parameters can now use all of the format/option suffixes, e.g., ",url".
 * New: The `/media-library-assistant/examples/mla-custom-field-search-example.php.txt` example plugin has been extended to handle queries made in the Media Manager Modal (popup) Window "Search" box.
 * New: If Imagick and/or Ghostcript support is not present, an explicit warning message is displayed in the "Enable thumbnail substitution" portion of the Settings/Media Library Assistant MLA Gallery tab.
 * New: A new filter for the "Media/Assistant Submenu Hooks" allows you to modify the content of the dropdown Help menu. The `/media-library-assistant/examples/mla-list-table-hooks-example.php.txt` example plugin has been updated with the new filter.
 * New: A new `/media-library-assistant/examples/mla-custom-file-size-example.php.txt` example plugin has been added to demonstrate a simple example of changing the content of the "Item:" template part.
+* New: **Step-by-step instructions for creating custom style and markup templates** have been added to the "A Table-based Style and Markup Template Example" section of the Settings/Media Library Assistant Documentation tab.
+* New: When 'MLA_DEBUG_LEVEL' is set to 3 in the wp-config.php file, debug information for the Bulk Edit Ajax handler is written to the error log. This includes WPML- and Polylang- specific information.
+* Fix: Media Manager Modal (popup) Window enhancements work more reliably with plugins such as "SiteOrigin Page Builder Widgets".
+* Fix: When Polylang is active, missing translation information for media items is accomodated for Term Assignment.
 * Fix: When Polylang is active, "Show all languages" is selected after a Bulk Translate action so results from multiple languages can be displayed.
 * Fix: When Polylang is active, Quick and Bulk Edit taxonomy checklists are language-specific when "Refresh" is clicked after a Bulk Edit action.
 * Fix: The `/media-library-assistant/examples/mla-hooks-example.php.txt` example plugin has been updated to handle the new `captiontag_content` template substitution parameter.

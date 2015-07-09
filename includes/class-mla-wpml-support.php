@@ -197,7 +197,7 @@ class MLA_WPML {
 		} else {
 			$tax_inputs = array( $key => implode( ',', $terms ) );
 		}
-		
+
 		if ( 'checked' == MLAOptions::mla_get_option( 'term_assignment', false, false, MLA_WPML::$mla_language_option_definitions ) ) {
 			self::_build_tax_input( $post_id, $tax_inputs );
 			$tax_inputs = self::_apply_tax_input( $post_id );
@@ -338,6 +338,7 @@ class MLA_WPML {
 			$request['tax_input'] = self::_apply_tax_input( $post_id );
 		}
 
+		MLA::mla_debug_add( "MLA_WPML::bulk_action_item_request( {$post_id} ) \$request['tax_input'] = " . var_export( $request['tax_input'], true ), MLA::MLA_DEBUG_CATEGORY_AJAX );
 		return $request;
 	} // mla_list_table_bulk_action_item_request
 
@@ -560,6 +561,8 @@ class MLA_WPML {
 			} // translation
 		} // term
 
+		MLA::mla_debug_add( "MLA_WPML::_build_existing_terms( {$post_id} ) self::\$existing_terms = " . var_export( self::$existing_terms, true ), MLA::MLA_DEBUG_CATEGORY_AJAX );
+		MLA::mla_debug_add( "MLA_WPML::_build_existing_terms( {$post_id} ) self::\$relevant_terms = " . var_export( self::$relevant_terms, true ), MLA::MLA_DEBUG_CATEGORY_AJAX );
 		return;
 	}
 
@@ -588,7 +591,7 @@ class MLA_WPML {
 		$language_code = self::$existing_terms['language_code'];
 		$translation = self::$existing_terms[ $language_code ];
 		$terms_before = array();
-		
+
 		/*
 		 * Find all assigned terms and update the array
 		 */		
@@ -774,8 +777,9 @@ class MLA_WPML {
 					self::$tax_input[ $language ][ $taxonomy ] = implode( ',', $term_changes );
 				}
 			} // language
-
 		} // foreach taxonomy
+
+		MLA::mla_debug_add( "MLA_WPML::_build_tax_input( {$post_id} ) self::\$tax_input = " . var_export( self::$tax_input, true ), MLA::MLA_DEBUG_CATEGORY_AJAX );
 	} // _build_tax_input
 
 	/**
@@ -802,6 +806,8 @@ class MLA_WPML {
 			}
 		}
 
+		MLA::mla_debug_add( "MLA_WPML::_apply_tax_input( {$post_id} ) \$post_language = " . var_export( $post_language, true ), MLA::MLA_DEBUG_CATEGORY_AJAX );
+		MLA::mla_debug_add( "MLA_WPML::_apply_tax_input( {$post_id} ) self::\$tax_input[ \$post_language ] = " . var_export( self::$tax_input[ $post_language ], true ), MLA::MLA_DEBUG_CATEGORY_AJAX );
 		return self::$tax_input[ $post_language ];
 	} // _apply_tax_input
 
@@ -826,7 +832,7 @@ class MLA_WPML {
 		}
 
 		$terms_after = self::$existing_terms[ self::$existing_terms['language_code'] ];
-		
+
 		/*
 		 * Remove terms in common, leaving terms_after => add, terms_before => remove
 		 */
@@ -838,7 +844,7 @@ class MLA_WPML {
 				}
 			} // terms
 		} // taxonomies
-		
+
 		/*
 		 * Compute "replace" tax_inputs for the target translation
 		 */
@@ -848,7 +854,7 @@ class MLA_WPML {
 		foreach ( $terms_before as $taxonomy => $terms ) {
 			$translation_terms = isset( $translation[ $taxonomy ] ) ? $translation[ $taxonomy ] : array();
 			$terms_changed = false;
-			
+
 			// Remove common terms
 			foreach ( $terms_before[ $taxonomy ] as $ttid => $term ) {
 				if ( isset( self::$relevant_terms[ $ttid ]['translations'][ $language ] ) ) {
@@ -871,12 +877,12 @@ class MLA_WPML {
 					}
 				}
 			}
-			
+
 			if ( $terms_changed ) {
 				$synch_inputs[ $taxonomy ] = $translation_terms;
 			}
 		} // taxonomies
-		
+
 		/*
 		 * Convert synch terms to $tax_inputs format
 		 */
@@ -898,7 +904,7 @@ class MLA_WPML {
 				$tax_inputs[ $taxonomy_name ] = implode( ',', $input_terms );
 			}
 		} // synch_inputs
-		
+
 		return $tax_inputs;		
 	} // _apply_synch_input
 
@@ -1069,7 +1075,7 @@ class MLA_WPML {
 				 * Update terms because they have changed
 				 */
 				$terms_before = self::_update_existing_terms( $post_id );
-	
+
 				// $tax_input is a convenient source of language codes; ignore $tax_inputs
 				foreach( self::$tax_input as $language => $tax_inputs ) {
 					/*

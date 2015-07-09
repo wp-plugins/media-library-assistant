@@ -416,7 +416,7 @@ class MLAImageProcessor {
 			@unlink( $output_file );
 			return self::_mla_error_return( 'Image write exception: ' . $e->getMessage(), __LINE__ );
 		}
-		
+
 		// array based on $_FILE as seen in PHP file uploads
 		$results = array(
 			'name' => basename( $input_file ),

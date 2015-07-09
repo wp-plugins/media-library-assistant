@@ -133,7 +133,7 @@ class MLA_Thumbnail {
 		if ( 'media_page_mla-menu' != $file_suffix ) {
 			return $template_array;
 		}
-		
+
 		$template_array = MLAData::mla_load_template( $file_name );
 		$help_array = MLAData::mla_load_template( 'help-for-thumbnail_generation.tpl' );
 
@@ -141,10 +141,10 @@ class MLA_Thumbnail {
 			$template_array['sidebar'] .= $help_array['sidebar'];
 			unset( $help_array['sidebar'] );
 		}
-		
+
 		return array_merge( $template_array, $help_array );
 	}
-	
+
 	/**
 	 * Begin an MLA_List_Table bulk action
 	 *
@@ -159,7 +159,7 @@ class MLA_Thumbnail {
 		if ( self::MLA_GFI_ACTION != $bulk_action ) {
 			return $item_content;
 		}
-		
+
 		self::$bulk_action_options = array();
 		$request_options = isset( $_REQUEST['mla_thumbnail_options'] ) ? $_REQUEST['mla_thumbnail_options'] : array();
 		$request_options['ghostscript_path'] = MLAOptions::mla_get_option( 'ghostscript_path' );
@@ -167,13 +167,13 @@ class MLA_Thumbnail {
 		if ( empty( $request_options['existing_thumbnails'] ) ) {
 			$request_options['existing_thumbnails'] = 'keep';
 		}
-		
+
 		foreach ( $request_options as $key => $value ) {
 			if ( ! empty( $value ) ) {
 				self::$bulk_action_options[ $key ] = $value;
 			}
 		}
-		
+
 		// Convert checkboxes to booleans
 		self::$bulk_action_options['best_fit'] = isset( $request_options['best_fit'] );
 		self::$bulk_action_options['clear_filters'] = isset( $request_options['clear_filters'] );
@@ -184,7 +184,7 @@ class MLA_Thumbnail {
 			self::$bulk_action_options['frame'] = ( 0 < $page ) ? $page - 1 : 0;
 			unset( self::$bulk_action_options['page'] );
 		}
-		
+
 		return $item_content;
 	} // mla_list_table_begin_bulk_action
 
@@ -209,7 +209,7 @@ class MLA_Thumbnail {
 
 		/* translators: 1: post ID */
 		$item_prefix = sprintf( __( 'Item %1$d', 'media-library-assistant' ), $post_id ) . ', ';
-		
+
 		/*
 		 * If there is a real thumbnail image, no generation is required or allowed
 		 */
@@ -252,7 +252,7 @@ class MLA_Thumbnail {
 		if ( ! in_array( strtolower( pathinfo( $file, PATHINFO_EXTENSION ) ), array( 'ai', 'eps', 'pdf', 'ps' ) ) ) {
 			return array( 'message' => $item_prefix . __( 'unsupported file type.', 'media-library-assistant' ) );
 		}
-		
+
 		/*
 		 * Generate a thumbnail
 		 */
@@ -262,7 +262,7 @@ class MLA_Thumbnail {
 			/* translators: 1: ERROR tag 2: Item post ID */
 			return array( 'message' => sprintf( __( '%1$s: %2$sthumbnail generation failed', 'media-library-assistant' ), __( 'ERROR', 'media-library-assistant' ), $item_prefix ) . ' - ' . $results['error'] );
 		}
-		
+
 		/*
 		 * Adjust the file name for the new item
 		 */
@@ -276,7 +276,7 @@ class MLA_Thumbnail {
 		$results['name'] = $pathinfo['filename'] . '.' . $pathinfo['extension'];
 
 		$overrides = array( 'test_form' => false, 'test_size' => true, 'test_upload' => true, );
-	
+
 		// move the temporary file into the uploads directory
 		$results = wp_handle_sideload( $results, $overrides );
 
@@ -301,7 +301,7 @@ class MLA_Thumbnail {
 		unset( $item_data['ancestors'] );
 		unset( $item_data['post_category'] );
 		unset( $item_data['tags_input'] );
-		
+
 		// Insert the attachment.
 		$item_id = wp_insert_attachment( $item_data, $results['file'], $item_parent );
 		if ( empty( $item_id ) ) {
@@ -319,9 +319,9 @@ class MLA_Thumbnail {
 		// Assign the new item as the source item's Featured Image
 		delete_post_thumbnail( $post_id );
 		set_post_thumbnail( $post_id, $item_id );
-		
+
 		MLA_Thumbnail::$bulk_action_includes[] = $item_id;
-		
+
 		/* translators: 1: Item post ID, 2: new thumbnail item ID */
 		$item_content = array( 'message' => sprintf( __( '%1$sthumbnail generated as new item %2$s.', 'media-library-assistant' ), $item_prefix, $item_id ) );
 
@@ -344,8 +344,7 @@ class MLA_Thumbnail {
 		}
 
 		if ( ! empty( MLA_Thumbnail::$bulk_action_includes ) ) {
-			// Clear all the "Filter-by" parameters 
-			$_REQUEST['clear_filter_by'] = 'Clear Filter-by';
+			MLA::mla_clear_filter_by( array( 'ids' ) );
 
 			// Reset the current view to "All" to ensure that thumbnails are displayed
 			unset( $_REQUEST['post_mime_type'] );
@@ -355,7 +354,7 @@ class MLA_Thumbnail {
 			unset( $_GET['meta_query'] );
 			unset( $_REQUEST['meta_slug'] );
 			unset( $_GET['meta_slug'] );
-			
+
 			// Clear the "extra_nav" controls and the Search Media box, too
 			unset( $_REQUEST['m'] );
 			unset( $_POST['m'] );
@@ -366,11 +365,11 @@ class MLA_Thumbnail {
 			unset( $_REQUEST['s'] );
 			unset( $_POST['s'] );
 			unset( $_GET['s'] );
-			
+
 			$_REQUEST['ids'] = MLA_Thumbnail::$bulk_action_includes;
 			$_REQUEST['heading_suffix'] = __( 'Generated Thumbnails', 'media-library-assistant' );
 		}
-		
+
 		return $item_content;
 	} // mla_list_table_end_bulk_action
 

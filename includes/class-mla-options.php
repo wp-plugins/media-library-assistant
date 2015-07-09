@@ -1266,7 +1266,7 @@ class MLAOptions {
 					'type' => 'text',
 					'std' => '',
 					'size' => 5,
-					'help' => __( 'Enter the maximum number of debug log characters to display; enter zero for no limit.', 'media-library-assistant' )),
+					'help' => __( 'Enter the maximum number of debug log characters to display; enter zero or leave blank for no limit.', 'media-library-assistant' )),
 
 			/* Here are examples of the other option types
 			'textarea' =>
@@ -3843,7 +3843,7 @@ class MLAOptions {
 		$updates = array();
 		$update_all = ( 'iptc_exif_mapping' == $category );
 		$data_source_category = $update_all ? 'single_attachment_mapping' : 'custom_field_mapping';
-		
+
 		if ( NULL == $settings ) {
 			$settings = self::mla_get_option( 'iptc_exif_mapping' );
 		}
@@ -4143,13 +4143,13 @@ class MLAOptions {
 						'keep_existing' => $setting_value['keep_existing'],
 						'format' => $setting_value['format'],
 						'option' => $setting_value['option'] );
-						
+
 					$iptc_value = self::_evaluate_data_source( $post->ID, $data_source_category, $data_value, $attachment_metadata );
 					if ( ' ' == $iptc_value ) {
 						$iptc_value = '';
 					}
 				}
-				
+
 				$iptc_value = apply_filters( 'mla_mapping_iptc_value', $iptc_value, $setting_key, $post->ID, 'iptc_exif_custom_mapping', $attachment_metadata );
 
 				$exif_value = trim( $setting_value['exif_value'] );

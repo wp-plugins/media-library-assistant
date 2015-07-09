@@ -64,6 +64,7 @@
 <li class="method public "><a href="#mla_count_list_table_items" title="mla_count_list_table_items :: Get the total number of attachment posts"><span class="description">Get the total number of attachment posts</span><pre>mla_count_list_table_items()</pre></a></li>
 <li class="method public "><a href="#mla_exif_metadata_value" title="mla_exif_metadata_value :: Parse one EXIF metadata field"><span class="description">Parse one EXIF metadata field</span><pre>mla_exif_metadata_value()</pre></a></li>
 <li class="method public "><a href="#mla_expand_field_level_parameters" title="mla_expand_field_level_parameters :: Analyze a template, expanding Field-level Markup Substitution Parameters"><span class="description">Analyze a template, expanding Field-level Markup Substitution Parameters</span><pre>mla_expand_field_level_parameters()</pre></a></li>
+<li class="method public "><a href="#mla_fetch_attachment_id3_metadata" title="mla_fetch_attachment_id3_metadata :: Fetch and filter ID3 metadata for an audio or video attachment"><span class="description">Fetch and filter ID3 metadata for an audio or video attachment</span><pre>mla_fetch_attachment_id3_metadata()</pre></a></li>
 <li class="method public "><a href="#mla_fetch_attachment_image_metadata" title="mla_fetch_attachment_image_metadata :: Fetch and filter IPTC and EXIF, XMP or PDF metadata for an image attachment"><span class="description">Fetch and filter IPTC and EXIF, XMP or PDF metadata for an image attachment</span><pre>mla_fetch_attachment_image_metadata()</pre></a></li>
 <li class="method public "><a href="#mla_fetch_attachment_metadata" title="mla_fetch_attachment_metadata :: Fetch and filter meta data for an attachment"><span class="description">Fetch and filter meta data for an attachment</span><pre>mla_fetch_attachment_metadata()</pre></a></li>
 <li class="method public "><a href="#mla_fetch_attachment_parent_data" title="mla_fetch_attachment_parent_data :: Returns information about an attachment's parent, if found"><span class="description">Returns information about an attachment's parent, if found</span><pre>mla_fetch_attachment_parent_data()</pre></a></li>
@@ -73,6 +74,7 @@
 <li class="method public "><a href="#mla_get_attachment_by_id" title="mla_get_attachment_by_id :: Retrieve an Attachment array given a $post_id"><span class="description">Retrieve an Attachment array given a $post_id</span><pre>mla_get_attachment_by_id()</pre></a></li>
 <li class="method public "><a href="#mla_get_template_placeholders" title="mla_get_template_placeholders :: Analyze a template, returning an array of the placeholders it contains"><span class="description">Analyze a template, returning an array of the placeholders it contains</span><pre>mla_get_template_placeholders()</pre></a></li>
 <li class="method public "><a href="#mla_hex_dump" title="mla_hex_dump :: Format printable version of binary data"><span class="description">Format printable version of binary data</span><pre>mla_hex_dump()</pre></a></li>
+<li class="method public "><a href="#mla_id3_metadata_value" title="mla_id3_metadata_value :: Parse one ID3 (audio/visual) metadata field"><span class="description">Parse one ID3 (audio/visual) metadata field</span><pre>mla_id3_metadata_value()</pre></a></li>
 <li class="method public "><a href="#mla_iptc_metadata_value" title="mla_iptc_metadata_value :: Parse one IPTC metadata field"><span class="description">Parse one IPTC metadata field</span><pre>mla_iptc_metadata_value()</pre></a></li>
 <li class="method public "><a href="#mla_load_template" title="mla_load_template :: Load an HTML template from a file"><span class="description">Load an HTML template from a file</span><pre>mla_load_template()</pre></a></li>
 <li class="method public "><a href="#mla_parse_array_template" title="mla_parse_array_template :: Expand a template, replacing placeholders with their values"><span class="description">Expand a template, replacing placeholders with their values</span><pre>mla_parse_array_template()</pre></a></li>
@@ -285,7 +287,7 @@ as a Featured Image or inserted in the post as an image or link.</p></p>
 </div>
 <a name="mla_exif_metadata_value" id="mla_exif_metadata_value"></a><div class="element clickable method public mla_exif_metadata_value" data-toggle="collapse" data-target=".mla_exif_metadata_value .collapse">
 <h2>Parse one EXIF metadata field</h2>
-<pre>mla_exif_metadata_value(string $exif_key, string $item_metadata) : mixed</pre>
+<pre>mla_exif_metadata_value(string $exif_key, array $item_metadata, string $option, boolean $keep_existing) : mixed</pre>
 <div class="labels"></div>
 <div class="row collapse"><div class="detail-description">
 <p class="long_description"><p>Also handles the special pseudo-values 'ALL_EXIF' and 'ALL_IPTC'.</p></p>
@@ -299,7 +301,15 @@ as a Featured Image or inserted in the post as an image or link.</p></p>
 <code>string</code><p>field name</p></div>
 <div class="subelement argument">
 <h4>$item_metadata</h4>
-<code>string</code><p>metadata array containing iptc, exif, xmp and pdf metadata arrays</p></div>
+<code>array</code><p>metadata array containing iptc, exif, xmp and pdf metadata arrays</p></div>
+<div class="subelement argument">
+<h4>$option</h4>
+<code>string</code><p>data option; 'text'|'single'|'export'|'array'|'multi'</p>
+</div>
+<div class="subelement argument">
+<h4>$keep_existing</h4>
+<code>boolean</code><p>Optional: for option 'multi', retain existing values</p>
+</div>
 <h3>Returns</h3>
 <div class="subelement response">
 <code>mixed</code>string/array representation of metadata value or an empty string</div>
@@ -342,6 +352,30 @@ All but request and query require an attachment ID.</p></p>
 <h3>Returns</h3>
 <div class="subelement response">
 <code>array</code>( parameter => value ) for all field-level parameters and anything in $markup_values</div>
+</div></div>
+</div>
+<a name="mla_fetch_attachment_id3_metadata" id="mla_fetch_attachment_id3_metadata"></a><div class="element clickable method public mla_fetch_attachment_id3_metadata" data-toggle="collapse" data-target=".mla_fetch_attachment_id3_metadata .collapse">
+<h2>Fetch and filter ID3 metadata for an audio or video attachment</h2>
+<pre>mla_fetch_attachment_id3_metadata(int $post_id, string $path) : array</pre>
+<div class="labels"></div>
+<div class="row collapse"><div class="detail-description">
+<p class="long_description"><p>Adapted from /wp-admin/includes/media.php functions wp_add_id3_tag_data,
+wp_read_video_metadata and wp_read_audio_metadata</p></p>
+<table class="table table-bordered"><tr>
+<th>since</th>
+<td>2.13</td>
+</tr></table>
+<h3>Parameters</h3>
+<div class="subelement argument">
+<h4>$post_id</h4>
+<code>int</code><p>post ID of attachment</p></div>
+<div class="subelement argument">
+<h4>$path</h4>
+<code>string</code><p>optional; if $post_id is zero, path to the image file.</p>
+</div>
+<h3>Returns</h3>
+<div class="subelement response">
+<code>array</code>Meta data variables, including 'audio' and 'video'</div>
 </div></div>
 </div>
 <a name="mla_fetch_attachment_image_metadata" id="mla_fetch_attachment_image_metadata"></a><div class="element clickable method public mla_fetch_attachment_image_metadata" data-toggle="collapse" data-target=".mla_fetch_attachment_image_metadata .collapse">
@@ -440,7 +474,7 @@ as a Featured Image or inserted in the post as an image or link.</p></p>
 <div class="labels"></div>
 <div class="row collapse"><div class="detail-description">
 <p class="long_description"><p>Used primarily to extract fields from the _wp_attachment_metadata custom field.
-Could also be used with the ID3 metadata exposed in WordPress 3.6 and later.</p></p>
+Also used with the audio/video ID3 metadata exposed in WordPress 3.6 and later.</p></p>
 <table class="table table-bordered"><tr>
 <th>since</th>
 <td>1.30</td>
@@ -564,9 +598,39 @@ the posts and postmeta tables, and all references to the attachment.</p></p>
 <code>string</code>Printable representation of $data</div>
 </div></div>
 </div>
+<a name="mla_id3_metadata_value" id="mla_id3_metadata_value"></a><div class="element clickable method public mla_id3_metadata_value" data-toggle="collapse" data-target=".mla_id3_metadata_value .collapse">
+<h2>Parse one ID3 (audio/visual) metadata field</h2>
+<pre>mla_id3_metadata_value(string $id3_key, array $id3_metadata, string $option, boolean $keep_existing) : mixed</pre>
+<div class="labels"></div>
+<div class="row collapse"><div class="detail-description">
+<p class="long_description"><p>Also handles the special pseudo-value 'ALL_ID3'.</p></p>
+<table class="table table-bordered"><tr>
+<th>since</th>
+<td>2.13</td>
+</tr></table>
+<h3>Parameters</h3>
+<div class="subelement argument">
+<h4>$id3_key</h4>
+<code>string</code><p>field name</p></div>
+<div class="subelement argument">
+<h4>$id3_metadata</h4>
+<code>array</code><p>ID3 metadata array</p></div>
+<div class="subelement argument">
+<h4>$option</h4>
+<code>string</code><p>data option; 'text'|'single'|'export'|'array'|'multi'</p>
+</div>
+<div class="subelement argument">
+<h4>$keep_existing</h4>
+<code>boolean</code><p>Optional: for option 'multi', retain existing values</p>
+</div>
+<h3>Returns</h3>
+<div class="subelement response">
+<code>mixed</code>string/array representation of metadata value or an empty string</div>
+</div></div>
+</div>
 <a name="mla_iptc_metadata_value" id="mla_iptc_metadata_value"></a><div class="element clickable method public mla_iptc_metadata_value" data-toggle="collapse" data-target=".mla_iptc_metadata_value .collapse">
 <h2>Parse one IPTC metadata field</h2>
-<pre>mla_iptc_metadata_value(string $iptc_key, string $item_metadata) : mixed</pre>
+<pre>mla_iptc_metadata_value(string $iptc_key, array $item_metadata, string $option, boolean $keep_existing) : mixed</pre>
 <div class="labels"></div>
 <div class="row collapse"><div class="detail-description">
 <p class="long_description"></p>
@@ -581,7 +645,15 @@ the posts and postmeta tables, and all references to the attachment.</p></p>
 </div>
 <div class="subelement argument">
 <h4>$item_metadata</h4>
-<code>string</code><p>metadata array containing iptc, exif, xmp and pdf metadata arrays</p></div>
+<code>array</code><p>metadata array containing iptc, exif, xmp and pdf metadata arrays</p></div>
+<div class="subelement argument">
+<h4>$option</h4>
+<code>string</code><p>data option; 'text'|'single'|'export'|'array'|'multi'</p>
+</div>
+<div class="subelement argument">
+<h4>$keep_existing</h4>
+<code>boolean</code><p>Optional: for option 'multi', retain existing values</p>
+</div>
 <h3>Returns</h3>
 <div class="subelement response">
 <code>mixed</code>string/array representation of metadata value or an empty string</div>
@@ -1075,7 +1147,7 @@ and meta data for a single attachment</h2>
 </div>
 <a name="mla_xmp_metadata_value" id="mla_xmp_metadata_value"></a><div class="element clickable method public mla_xmp_metadata_value" data-toggle="collapse" data-target=".mla_xmp_metadata_value .collapse">
 <h2>Parse one XMP metadata field</h2>
-<pre>mla_xmp_metadata_value(string $xmp_key, string $option, boolean $keep_existing, string $xmp_metadata) : mixed</pre>
+<pre>mla_xmp_metadata_value(string $xmp_key, array $xmp_metadata, string $option, boolean $keep_existing) : mixed</pre>
 <div class="labels"></div>
 <div class="row collapse"><div class="detail-description">
 <p class="long_description"><p>Also handles the special pseudo-value 'ALL_XMP'.</p></p>
@@ -1088,6 +1160,9 @@ and meta data for a single attachment</h2>
 <h4>$xmp_key</h4>
 <code>string</code><p>field name</p></div>
 <div class="subelement argument">
+<h4>$xmp_metadata</h4>
+<code>array</code><p>XMP metadata array</p></div>
+<div class="subelement argument">
 <h4>$option</h4>
 <code>string</code><p>data option; 'text'|'single'|'export'|'array'|'multi'</p>
 </div>
@@ -1095,9 +1170,6 @@ and meta data for a single attachment</h2>
 <h4>$keep_existing</h4>
 <code>boolean</code><p>Optional: for option 'multi', retain existing values</p>
 </div>
-<div class="subelement argument">
-<h4>$xmp_metadata</h4>
-<code>string</code><p>XMP metadata array</p></div>
 <h3>Returns</h3>
 <div class="subelement response">
 <code>mixed</code>string/array representation of metadata value or an empty string</div>
@@ -1839,7 +1911,7 @@ ALT Text and custom field columns.</p></p>
 <div class="row"><footer class="span12">
             Template is built using <a href="http://twitter.github.com/bootstrap/">Twitter Bootstrap 2</a> and icons provided by <a href="http://glyphicons.com/">Glyphicons</a>.<br>
             Documentation is powered by <a href="http://www.phpdoc.org/">phpDocumentor 2.0.0a8</a> and<br>
-            generated on 2015-06-25T20:07:04-07:00.<br></footer></div>
+            generated on 2015-07-08T19:21:50-07:00.<br></footer></div>
 </div>
 </body>
 </html>

@@ -2351,7 +2351,7 @@ The Style and Markup templates give you great flexibility for the content and fo
 Style templates provide gallery-specific (or cloud-specific) CSS inline styles (you can code <code>mla_style=none</code> to suppress the addition of CSS inline styles entirely). Markup templates provide the HTML markup for 1) the beginning of the gallery, 2) the beginning of each row, 3) each gallery item, 4) the end of each row and 5) the end of the gallery. The attachment-specific markup parameters let you choose among most of the attachment fields, not just the caption.
 </p>
 <p>
-The MLA Gallery tab on the Settings page lets you add, change and delete custom templates. The default templates are also displayed on this tab for easy reference.
+The MLA Gallery tab on the Settings page lets you add, change and delete custom templates. The default templates are also displayed on this tab for easy reference. You can find a custom template example with step-by-step instructions in <a href="#mla_table_example"><strong>A Table-based Style and Markup Template Example</strong></a> below.
 </p>
 <p>
 In a template, substitution parameters are surrounded by opening ('[+') and closing ('+]') delimiters to separate them from the template text; see the default templates for many examples.
@@ -2733,8 +2733,35 @@ The Item markup section shows how to use the "terms", "custom", "iptc" and "exif
 		<td><code>&lt;/table&gt;</code></td>
 	</tr>
 </table>
+<p>
+To create the custom templates, follow the steps below. To define the custom style template:
+</p>
+<ol>
+<li>Navigate to the Settings/Media Library Assistant MLA Gallery tab.</li>
+<li>Scroll down to the bottom of the "Style Templates" section where you can see a blank "Name:" text box. Give your template a name, such as "table-style".</li>
+<li>Copy the template above and paste it into the "Styles:" text box.</li>
+<li>Review the content to make sure all the HTML and CSS markup is valid and not corrupted by the copy process.</li>
+<li>Scroll to the bottom of the page and click "Save Changes" to save your new style template.</li>
+</ol>
+<p>
+Markup templates are a bit more complicated because they have five parts, but the process is similar. 
+To define the custom markup template:
+</p>
+<ol>
+<li>Navigate to the Settings/Media Library Assistant MLA Gallery tab.</li>
+<li>Scroll down to the bottom of the "Markup Templates" section where you can see a blank "Name:" text box. Give your template a name, such as "table-markup".</li>
+<li>Copy the template parts from the above example and paste them into the corresponding part text boxes.</li>
+<li>Review the content to make sure all the HTML and CSS markup is valid and not corrupted by the copy process.</li>
+<li>Scroll to the bottom of the page and click "Save Changes" to save your new markup template.</li>
+</ol>
+<p>
+Once you have defined and saved your custom templates you can change your shortcode to use the templates:<br />
+&nbsp;<br />
+<code>[mla_gallery ... mla_style=table-style mla_markup=table-markup]</code><br />
+&nbsp;<br />
+It's a bit of work, but you only have to do it once.
 <a name="mla_variable_parameters"></a>
-&nbsp;
+</p>
 <p>
 <a href="#backtotop">Go to Top</a>
 </p>
@@ -2830,7 +2857,7 @@ There are eleven prefix values for field-level parameters. Prefix values must be
 		<br />&nbsp;<br />
 		A special exif "pseudo-value" is available; <strong>ALL_EXIF</strong> (<code>[+exif:ALL_EXIF+]</code>). It returns a string representation of all EXIF data. You can use the pseudo-value to examine the metadata in an image, find field names and see what values are embedded in the image.
 		<br />&nbsp;<br />
-		The ALL_EXIF value is altered in two ways. First, values of more than 256 characters are truncated to 256 characters. This prevents large fields such as image thumbnails from dominating the display. Second, array values are shown once, at their expanded level. For example the "COMPUTED" array is displayed as 'COMPUTED' => '(ARRAY)' and then 'COMPUTED.Width' => "2816", etc.<br />&nbsp;</td>
+		The ALL_EXIF value is altered in two ways. First, values of more than 256 characters are truncated to 256 characters. This prevents large fields such as image thumbnails from dominating the display. Second, array values are replaced by an "(ARRAY)" placeholder, e.g., <code>'COMPUTED' => '(ARRAY)'</code>. You can explore array values individually by coding something like <code>[+exif:COMPUTED,export+]</code> to expand all levels within the array or <code>[+exif:CAMERA,unpack+]</code> to expand one level within the array. You can go deeper in the array hierarchy with compound names, e.g., <code>[+exif:CAMERA.ShutterSpeed+]</code> or <code>[+exif:CAMERA.LensSpecification,unpack+]</code>.<br />&nbsp;</td>
 	</tr>
 	<tr>
 		<td style="padding-right: 10px; vertical-align: top; font-weight:bold">xmp</td>
@@ -2863,7 +2890,8 @@ MLA adds three fields of its own to the XMP metadata information:
 		<td>a special "pseudo value" that returns a string representation of all the metadata. You can use this pseudo-value to examine the metadata in a document, find field names and see what values are present.</td>
 	</tr>
 </table>
-		The ALL_XMP value is altered in two ways. First, values of more than 256 characters are truncated to 256 characters. This prevents large fields such as image thumbnails from dominating the display. Second, array values are shown once, at their expanded level. For example the "dc" array is displayed as 'dc' => '(ARRAY)' and then 'dc.creator' => "Author's name", etc.
+&nbsp;<br />
+		The ALL_XMP value is altered in two ways. First, values of more than 256 characters are truncated to 256 characters. This prevents large fields such as image thumbnails from dominating the display. Second, array values are replaced by an "(ARRAY)" placeholder, e.g., <code>'History' => '(ARRAY)'</code>. You can explore array values individually by coding something like <code>[+xmp:History,export+]</code> to expand all levels within the array or <code>[+xmp:mwg-rs,unpack+]</code> to expand one level within the array. You can go deeper in the array hierarchy with compound names, e.g., <code>[+xmp:mwg-rs.RegionList,unpack+]</code> or <code>[+xmp:mwg-rs.RegionList.*.Description.Name+]</code>.
 		<br />&nbsp;</td>
 	</tr>
 	<tr>

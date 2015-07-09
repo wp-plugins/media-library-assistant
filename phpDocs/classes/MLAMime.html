@@ -567,7 +567,7 @@ and get_allowed_mime_types().</p>
 </div>
 <a name="mla_parse_view_specification" id="mla_parse_view_specification"></a><div class="element clickable method public mla_parse_view_specification" data-toggle="collapse" data-target=".mla_parse_view_specification .collapse">
 <h2>Analyze a Library View/Post MIME Type specification, returning an array of the placeholders it contains</h2>
-<pre>mla_parse_view_specification(string $specification) : array</pre>
+<pre>mla_parse_view_specification(string | array $specification) : array</pre>
 <div class="labels"></div>
 <div class="row collapse"><div class="detail-description">
 <p class="long_description"></p>
@@ -578,7 +578,7 @@ and get_allowed_mime_types().</p>
 <h3>Parameters</h3>
 <div class="subelement argument">
 <h4>$specification</h4>
-<code>string</code><p>A specification, e.g., "custom:Field,null" or "audio,application/vnd.<em>ms</em>"</p>
+<code>stringarray</code><p>A specification, e.g., "custom:Field,null" or "audio,application/vnd.<em>ms</em>"</p>
 </div>
 <h3>Returns</h3>
 <div class="subelement response">
@@ -1288,7 +1288,7 @@ Defined as public because it's a filter.</p></p>
 <div class="row"><footer class="span12">
             Template is built using <a href="http://twitter.github.com/bootstrap/">Twitter Bootstrap 2</a> and icons provided by <a href="http://glyphicons.com/">Glyphicons</a>.<br>
             Documentation is powered by <a href="http://www.phpdoc.org/">phpDocumentor 2.0.0a8</a> and<br>
-            generated on 2015-06-25T20:07:04-07:00.<br></footer></div>
+            generated on 2015-07-08T19:21:50-07:00.<br></footer></div>
 </div>
 </body>
 </html>

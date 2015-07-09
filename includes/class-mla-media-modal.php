@@ -606,7 +606,7 @@ class MLAModal {
 
 		// Include mla javascript templates
 		$template_path = apply_filters( 'mla_media_modal_template_path', MLA_PLUGIN_PATH . 'includes/mla-media-modal-js-template.php', $screen);
-		
+
 		if ( ! empty( $template_path ) ) {
 			require_once $template_path;
 		}
@@ -942,24 +942,24 @@ class MLAModal {
 	 */
 	public static function mla_update_compat_fields_action() {
 		global $post;
-		
+
 		if ( empty( $_REQUEST['id'] ) || ! $post_id = absint( $_REQUEST['id'] ) ) {
 			wp_send_json_error();
 		}
-		
+
 		if ( empty( $post ) ) {
 			$post = get_post( $post_id ); // for filters and wp_popular_terms_checklist
 		}
 
 		do_action( 'mla_media_modal_begin_update_compat_fields', $post );
-		
+
 		$taxonomies = array();
 		$results = array();
 
 		foreach ( get_taxonomies( array ( 'show_ui' => true ), 'objects' ) as $key => $value ) {
 			if ( isset( $_REQUEST[ $key ] ) && MLAOptions::mla_taxonomy_support( $key ) ) {
 				$taxonomies[ $key ] = $value;
-				
+
 				if ( ! $use_checklist = $value->hierarchical ) {
 					$use_checklist =  MLAOptions::mla_taxonomy_support( $key, 'flat-checklist' );
 				}
@@ -971,12 +971,12 @@ class MLAModal {
 				}
 
 				$terms = apply_filters( 'mla_media_modal_update_compat_fields_terms', $terms, $key, $value, $post_id );
-				
+
 				if ( is_array( $terms ) ) { 
 					wp_set_object_terms( $post_id, $terms, $key, false );
 					delete_transient( MLA_OPTION_PREFIX . 't_term_counts_' . $key );
 				}
-				
+
 				if ( $use_checklist ) {
 					ob_start();
 					$popular_ids = wp_popular_terms_checklist( $key );
@@ -1013,7 +1013,7 @@ class MLAModal {
 
 					sort( $list );
 					$hidden_list = join( ',', $list );
-					
+
 					$results[$key]["object-terms"] = $object_terms;
 					$results[$key]["mla-attachments-{$post_id}-{$key}"] = "\t\t<input name='attachments[{$post_id}][{$key}]' class='the-tags' id='mla-attachments-{$post_id}-{$key}' type='hidden' value='{$hidden_list}'>\n";
 					$results[$key]["mla-tags-{$post_id}-{$key}"] = "\t\t<input name='mla_tags[{$post_id}][{$key}]' class='server-tags' id='mla-tags-{$post_id}-{$key}' type='hidden' value='{$hidden_list}'>\n";

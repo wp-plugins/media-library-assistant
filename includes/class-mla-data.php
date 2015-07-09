@@ -800,7 +800,7 @@ class MLAData {
 							$clean_data[ $key ] = $value;
 						}
 					}
-		
+
 					$text = sanitize_text_field( var_export( $clean_data, true) );
 				} else {
 					$text = sanitize_text_field( var_export( $record, true ) );
@@ -1179,13 +1179,7 @@ class MLAData {
 						}
 					}
 
-					$record = self::mla_iptc_metadata_value( $value['value'], $attachment_metadata );
-					if ( is_array( $record ) ) {
-						$markup_values[ $key ] = self::_process_field_level_array( $record, $value['option'], $keep_existing );
-					} else {
-						$markup_values[ $key ] = $record;
-					}
-
+					$markup_values[ $key ] = self::mla_iptc_metadata_value( $value['value'], $attachment_metadata, $value['option'], $keep_existing );
 					break;
 				case 'exif':
 					if ( is_null( $attachment_metadata ) ) {
@@ -1196,7 +1190,7 @@ class MLAData {
 						}
 					}
 
-					$record = self::mla_exif_metadata_value( $value['value'], $attachment_metadata );
+					$record = self::mla_exif_metadata_value( $value['value'], $attachment_metadata, $value['option'], $keep_existing );
 					if ( is_array( $record ) ) {
 						$markup_values[ $key ] = self::_process_field_level_array( $record, $value['option'], $keep_existing );
 					} else {
@@ -1213,7 +1207,7 @@ class MLAData {
 						}
 					}
 
-					$markup_values[ $key ] = self::mla_xmp_metadata_value( $value['value'], $value['option'], $keep_existing, $attachment_metadata['mla_xmp_metadata'] );
+					$markup_values[ $key ] = self::mla_xmp_metadata_value( $value['value'], $attachment_metadata['mla_xmp_metadata'], $value['option'], $keep_existing );
 					break;
 				case 'id3':
 					if ( is_null( $id3_metadata ) ) {
@@ -1224,7 +1218,7 @@ class MLAData {
 						}
 					}
 
-					$markup_values[ $key ] = self::mla_id3_metadata_value( $value['value'], $value['option'], $keep_existing, $id3_metadata );
+					$markup_values[ $key ] = self::mla_id3_metadata_value( $value['value'], $id3_metadata, $value['option'], $keep_existing );
 					break;
 				case 'pdf':
 					if ( is_null( $attachment_metadata ) ) {
@@ -1425,23 +1419,23 @@ class MLAData {
 		if ( NULL !== $offset && NULL !== $count ) {
 			$request = self::_prepare_list_table_query( $request, $offset, $count );
 			$request = apply_filters( 'mla_list_table_query_final_terms', $request );
-	
+
 			self::$mla_list_table_items = apply_filters( 'mla_list_table_query_custom_items', NULL, $request );
 			if ( is_null( self::$mla_list_table_items ) ) {
 				self::$mla_list_table_items = self::_execute_list_table_query( $request );
 			}
-			
+
 			return self::$mla_list_table_items->found_posts;
 		}
 
 		$request = self::_prepare_list_table_query( $request );
 		$request = apply_filters( 'mla_list_table_query_final_terms', $request );
-	
+
 		$results = apply_filters( 'mla_list_table_query_custom_items', NULL, $request );
 		if ( is_null( $results ) ) {
 			$results = self::_execute_list_table_query( $request );
 		}
-		
+
 		self::$mla_list_table_items = NULL;
 
 		return $results->found_posts;
@@ -1465,7 +1459,7 @@ class MLAData {
 		if ( NULL == self::$mla_list_table_items ) {
 			$request = self::_prepare_list_table_query( $request, $offset, $count );
 			$request = apply_filters( 'mla_list_table_query_final_terms', $request );
-	
+
 			self::$mla_list_table_items = apply_filters( 'mla_list_table_query_custom_items', NULL, $request );
 			if ( is_null( self::$mla_list_table_items ) ) {
 				self::$mla_list_table_items = self::_execute_list_table_query( $request );
@@ -2086,19 +2080,19 @@ class MLAData {
 	 */
 	private static function _wildcard_search_string( $search_string ) {
 		preg_match_all('/".*?("|$)|((?<=[\t ",+])|^)[^\t ",+]+/', $search_string, $matches);
-		
+
 		if ( is_array( $matches ) ) {
 			foreach ( $matches[0] as $term ) {
 				if ( '"' == substr( $term, 0, 1) ) {
 					continue;
 				}
-				
+
 				if ( false !== strpos( $term, '*' ) ) {
 					return true;
 				}
 			}
 		}
-		
+
 		return false;
 	}
 
@@ -2207,18 +2201,18 @@ class MLAData {
 						}
 					} else {
 						$is_wildcard_search = ( ! $quoted[ $index ] ) && self::_wildcard_search_string( $phrase );
-						
+
 						if ( $is_wildcard_search ) {
 							add_filter( 'terms_clauses', 'MLAData::mla_query_terms_clauses_filter', 0x7FFFFFFF, 3 );
 						}
-						
+
 						// WordPress encodes special characters, e.g., "&" as HTML entities in term names
 						$the_terms = get_terms( $terms_search_parameters['taxonomies'], array( 'name__like' => _wp_specialchars( $phrase ), 'fields' => 'all', 'hide_empty' => false ) );
-						
+
 						if ( $is_wildcard_search ) {
 							remove_filter( 'terms_clauses', 'MLAData::mla_query_terms_clauses_filter', 0x7FFFFFFF );
 						}
-						
+
 						// Invalid taxonomy will return WP_Error object
 						if ( ! is_array( $the_terms ) ) {
 							$the_terms = array();
@@ -2342,7 +2336,7 @@ class MLAData {
 						} else {
 							$sql_term = "'" . esc_sql( like_escape( $term ) ) . "'";
 						}
-						
+
 						/*
 						 * Convert wildcard * to SQL %
 						 */
@@ -2736,9 +2730,9 @@ class MLAData {
 		if ( empty( $args['name__like'] ) ) {
 			return $pieces;
 		}
-		
+
 		$term = $args['name__like'];
-		
+
 		/*
 		 * Escape any % in the source string
 		 */
@@ -2748,12 +2742,12 @@ class MLAData {
 		} else {
 			$sql_term = "'" . esc_sql( like_escape( $term ) ) . "'";
 		}
-		
+
 		/*
 		 * Convert wildcard * to SQL %
 		 */
 		$sql_term = str_replace( '*', '%', $sql_term );
-		
+
 		/*
 		 * Replace the LIKE pattern in the WHERE clause
 		 */
@@ -3058,7 +3052,7 @@ class MLAData {
 								$clean_data[ $key ] = $value;
 							}
 						}
-			
+
 						$haystack = var_export( $clean_data, true);
 					} else {
 						$haystack = var_export( $record, true );
@@ -3072,11 +3066,11 @@ class MLAData {
 					return $haystack;
 					break;
 				default:
-					$haystack = @implode( ', ', $haystack );
+					$haystack = self::_bin_to_utf8( @implode( ', ', $haystack ) );
 			} // $option
-		}
+		} // is_array
 
-		return sanitize_text_field( $haystack );
+		return sanitize_text_field( self::_bin_to_utf8( $haystack ) );
 	} // mla_find_array_element
 
 	/**
@@ -4876,26 +4870,19 @@ class MLAData {
 	 * @since 1.41
 	 *
 	 * @param	string	field name - IPTC Identifier or friendly name/slug
-	 * @param	string	metadata array containing iptc, exif, xmp and pdf metadata arrays
+	 * @param	array	metadata array containing iptc, exif, xmp and pdf metadata arrays
+	 * @param	string	data option; 'text'|'single'|'export'|'array'|'multi'
+	 * @param	boolean	Optional: for option 'multi', retain existing values
 	 *
 	 * @return	mixed	string/array representation of metadata value or an empty string
 	 */
-	public static function mla_iptc_metadata_value( $iptc_key, $item_metadata ) {
+	public static function mla_iptc_metadata_value( $iptc_key, $item_metadata, $option = 'text', $keep_existing = false ) {
 		// convert friendly name/slug to identifier
 		if ( array_key_exists( $iptc_key, self::$mla_iptc_keys ) ) {
 			$iptc_key = self::$mla_iptc_keys[ $iptc_key ];
 		}
 
-		$text = '';
-		if ( array_key_exists( $iptc_key, $item_metadata['mla_iptc_metadata'] ) ) {
-			$text = $item_metadata['mla_iptc_metadata'][ $iptc_key ];
-			if ( is_array( $text ) ) {
-				foreach ($text as $key => $value )
-					$text[ $key ] = self::_bin_to_utf8( $value );
-			} elseif ( is_string( $text ) ) {
-				$text = self::_bin_to_utf8( $text );
-			}
-		} elseif ( 'ALL_IPTC' == $iptc_key ) {
+		if ( 'ALL_IPTC' == $iptc_key ) {
 			$clean_data = array();
 			foreach ( $item_metadata['mla_iptc_metadata'] as $key => $value ) {
 				if ( is_array( $value ) ) {
@@ -4910,10 +4897,10 @@ class MLAData {
 				}
 			}
 
-			$text = var_export( $clean_data, true);
+			return var_export( $clean_data, true);
 		}
 
-		return $text;
+		return self::mla_find_array_element( $iptc_key, $item_metadata['mla_iptc_metadata'], $option, $keep_existing );
 	}
 
 	/**
@@ -4924,26 +4911,14 @@ class MLAData {
 	 * @since 1.13
 	 *
 	 * @param	string	field name
-	 * @param	string	metadata array containing iptc, exif, xmp and pdf metadata arrays
+	 * @param	array	metadata array containing iptc, exif, xmp and pdf metadata arrays
+	 * @param	string	data option; 'text'|'single'|'export'|'array'|'multi'
+	 * @param	boolean	Optional: for option 'multi', retain existing values
 	 *
 	 * @return	mixed	string/array representation of metadata value or an empty string
 	 */
-	public static function mla_exif_metadata_value( $exif_key, $item_metadata ) {
-		$text = '';
-		if ( array_key_exists( $exif_key, $item_metadata['mla_exif_metadata'] ) ) {
-			$text = $item_metadata['mla_exif_metadata'][ $exif_key ];
-			if ( is_array( $text ) ) {
-				foreach ($text as $key => $value ) {
-					if ( is_array( $value ) ) {
-						$text[ $key ] = self::_bin_to_utf8( var_export( $value, true ) );
-					} else {
-						$text[ $key ] = self::_bin_to_utf8( $value );
-					}
-				}
-			} elseif ( is_string( $text ) ) {
-				$text = self::_bin_to_utf8( $text );
-			}
-		} elseif ( 'ALL_EXIF' == $exif_key ) {
+	public static function mla_exif_metadata_value( $exif_key, $item_metadata, $option = 'text', $keep_existing = false ) {
+		if ( 'ALL_EXIF' == $exif_key ) {
 			$clean_data = array();
 			foreach ( $item_metadata['mla_exif_metadata'] as $key => $value ) {
 				if ( is_array( $value ) ) {
@@ -4955,7 +4930,7 @@ class MLAData {
 				}
 			}
 
-			$text = var_export( $clean_data, true);
+			return var_export( $clean_data, true);
 		} elseif ( 'ALL_IPTC' == $exif_key ) {
 			$clean_data = array();
 			foreach ( $item_metadata['mla_iptc_metadata'] as $key => $value ) {
@@ -4971,10 +4946,10 @@ class MLAData {
 				}
 			}
 
-			$text = var_export( $clean_data, true);
+			return var_export( $clean_data, true);
 		}
 
-		return $text;
+		return self::mla_find_array_element( $exif_key, $item_metadata['mla_exif_metadata'], $option, $keep_existing );
 	}
 
 	/**
@@ -4985,13 +4960,13 @@ class MLAData {
 	 * @since 2.10
 	 *
 	 * @param	string	field name
+	 * @param	array	XMP metadata array
 	 * @param	string	data option; 'text'|'single'|'export'|'array'|'multi'
 	 * @param	boolean	Optional: for option 'multi', retain existing values
-	 * @param	string	XMP metadata array
 	 *
 	 * @return	mixed	string/array representation of metadata value or an empty string
 	 */
-	public static function mla_xmp_metadata_value( $xmp_key, $option, $keep_existing, $xmp_metadata ) {
+	public static function mla_xmp_metadata_value( $xmp_key, $xmp_metadata, $option = 'text', $keep_existing = false ) {
 		if ( 'ALL_XMP' == $xmp_key ) {
 			$clean_data = array();
 			foreach ( $xmp_metadata as $key => $value ) {
@@ -5004,12 +4979,10 @@ class MLAData {
 				}
 			}
 
-			$text = var_export( $clean_data, true);
-		} else {
-			$text = self::mla_find_array_element($xmp_key, $xmp_metadata, $option, $keep_existing );
+			return var_export( $clean_data, true);
 		}
 
-		return $text;
+		return self::mla_find_array_element($xmp_key, $xmp_metadata, $option, $keep_existing );
 	}
 
 	/**
@@ -5020,13 +4993,13 @@ class MLAData {
 	 * @since 2.13
 	 *
 	 * @param	string	field name
+	 * @param	array	ID3 metadata array
 	 * @param	string	data option; 'text'|'single'|'export'|'array'|'multi'
 	 * @param	boolean	Optional: for option 'multi', retain existing values
-	 * @param	string	ID3 metadata array
 	 *
 	 * @return	mixed	string/array representation of metadata value or an empty string
 	 */
-	public static function mla_id3_metadata_value( $id3_key, $option, $keep_existing, $id3_metadata ) {
+	public static function mla_id3_metadata_value( $id3_key, $id3_metadata, $option, $keep_existing ) {
 		if ( 'ALL_ID3' == $id3_key ) {
 			$clean_data = array();
 			foreach ( $id3_metadata as $key => $value ) {
@@ -5039,12 +5012,10 @@ class MLAData {
 				}
 			}
 
-			$text = var_export( $clean_data, true);
-		} else {
-			$text = self::mla_find_array_element($id3_key, $id3_metadata, $option, $keep_existing );
+			return var_export( $clean_data, true);
 		}
 
-		return $text;
+		return self::mla_find_array_element($id3_key, $id3_metadata, $option, $keep_existing );
 	}
 
 	/**
@@ -5196,7 +5167,7 @@ class MLAData {
 		/* Don't execute PHP internal error handler */
 		return true;
 	}
-	
+
 	/**
 	 * Fetch and filter ID3 metadata for an audio or video attachment
 	 * 
@@ -5212,7 +5183,7 @@ class MLAData {
 	 */
 	public static function mla_fetch_attachment_id3_metadata( $post_id, $path = '' ) {
 		static $id3 = NULL;
-		
+
 		if ( 0 != $post_id ) {
 			$path = get_attached_file($post_id);
 		}
@@ -5221,11 +5192,11 @@ class MLAData {
 			if ( ! class_exists( 'getID3' ) ) {
 				require( ABSPATH . WPINC . '/ID3/getid3.php' );
 			}
-			
+
 			if ( NULL == $id3 ) {
 				$id3 = new getID3();
 			}
-			
+
 			$data = $id3->analyze( $path );
 		}
 
@@ -5233,7 +5204,7 @@ class MLAData {
 			$data['filesize'] = (int) $data['filesize'];
 		if ( ! empty( $data['playtime_seconds'] ) )
 			$data['length'] = (int) round( $data['playtime_seconds'] );
-		
+
 		// from wp_read_video_metadata
 		if ( ! empty( $data['video'] ) ) {
 			if ( ! empty( $data['video']['bitrate'] ) )
@@ -5243,12 +5214,12 @@ class MLAData {
 			if ( ! empty( $data['video']['resolution_y'] ) )
 				$data['height'] = (int) $data['video']['resolution_y'];
 		}
-		
+
 		// from wp_read_audio_metadata
 		if ( ! empty( $data['audio'] ) ) {
 			unset( $data['audio']['streams'] );
 		}
-	
+
 		// from wp_add_id3_tag_data
 		foreach ( array( 'id3v2', 'id3v1' ) as $version ) {
 			if ( ! empty( $data[ $version ]['comments'] ) ) {
@@ -5629,15 +5600,15 @@ class MLAData {
 		}
 
 		/*
-		 * Expand EXIF array values
-		 */
+		 * Expand EXIF array values - replaced by mla_find_array_element MLA v2.13
+		 * /
 		foreach ( $results['mla_exif_metadata'] as $exif_key => $exif_value ) {
 			if ( is_array( $exif_value ) ) {
 				foreach ( $exif_value as $key => $value ) {
 					$results['mla_exif_metadata'][ $exif_key . '.' . $key ] = $value;
 				}
 			} // is_array
-		}
+		} // */
 
 		return $results;
 	}

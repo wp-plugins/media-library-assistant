@@ -1743,7 +1743,7 @@ class MLA_List_Table extends WP_List_Table {
 			submit_button( __( 'Filter', 'media-library-assistant' ), 'secondary', 'mla_filter', false, array(
 				 'id' => 'post-query-submit' 
 			) );
-			
+
 			$term_search_taxonomies = MLAOptions::mla_supported_taxonomies('term-search');
 			if ( ! empty( $term_search_taxonomies ) ) {
 				submit_button( __( 'Terms Search', 'media-library-assistant' ), 'secondary', 'mla_filter', false, array(

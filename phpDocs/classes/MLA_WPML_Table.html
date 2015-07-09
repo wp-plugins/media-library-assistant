@@ -62,7 +62,7 @@
 <li class="method public "><a href="#mla_list_table_column_default" title="mla_list_table_column_default :: Supply a column value if no column-specific function has been defined"><span class="description">Supply a column value if no column-specific function has been defined</span><pre>mla_list_table_column_default()</pre></a></li>
 <li class="method public "><a href="#mla_list_table_get_columns" title="mla_list_table_get_columns :: Filter the MLA_List_Table columns"><span class="description">Filter the MLA_List_Table columns</span><pre>mla_list_table_get_columns()</pre></a></li>
 <li class="method public "><a href="#mla_list_table_new_instance" title="mla_list_table_new_instance :: Extend the MLA_List_Table class"><span class="description">Extend the MLA_List_Table class</span><pre>mla_list_table_new_instance()</pre></a></li>
-<li class="method public "><a href="#mla_list_table_submenu_arguments" title="mla_list_table_submenu_arguments :: Filter the MLA_List_Table columns"><span class="description">Filter the MLA_List_Table columns</span><pre>mla_list_table_submenu_arguments()</pre></a></li>
+<li class="method public "><a href="#mla_list_table_submenu_arguments" title='mla_list_table_submenu_arguments :: Filter the "sticky" submenu URL parameters'><span class="description">Filter the "sticky" submenu URL parameters</span><pre>mla_list_table_submenu_arguments()</pre></a></li>
 <li class="method public "><a href="#mla_views_media_page_mla_menu_filter" title='mla_views_media_page_mla_menu_filter :: Handler for filter "views_{$this-&gt;screen-&gt;id}" in /wp-admin/includes/class-wp-list-table.php'><span class="description">Handler for filter "views_{$this-&gt;screen-&gt;id}" in /wp-admin/includes/class-wp-list-table.php</span><pre>mla_views_media_page_mla_menu_filter()</pre></a></li>
 <li class="method public "><a href="#mla_wpml_media_view_upload_count_filter" title='mla_wpml_media_view_upload_count_filter :: Handler for filter "wpml-media_view-upload-count" in
 /plugins/wpml-media/inc/wpml-media.class.php'><span class="description">Handler for filter "wpml-media_view-upload-count" in
@@ -203,13 +203,12 @@ then creates the WPML_List_Table passing it a reference to the new "parent" obje
 </div></div>
 </div>
 <a name="mla_list_table_submenu_arguments" id="mla_list_table_submenu_arguments"></a><div class="element clickable method public mla_list_table_submenu_arguments" data-toggle="collapse" data-target=".mla_list_table_submenu_arguments .collapse">
-<h2>Filter the MLA_List_Table columns</h2>
+<h2>Filter the "sticky" submenu URL parameters</h2>
 <pre>mla_list_table_submenu_arguments(array $submenu_arguments, boolean $include_filters) : array</pre>
 <div class="labels"></div>
 <div class="row collapse"><div class="detail-description">
-<p class="long_description"><p>Inserts the language columns just after the item thumbnail column.
-Defined as static because it is called before the List_Table object is created.
-Added as a filter when the file is loaded.</p></p>
+<p class="long_description"><p>Adds a language ('lang') parameter to the URL parameters that will be
+retained when the submenu page refreshes.</p></p>
 <table class="table table-bordered"><tr>
 <th>since</th>
 <td>2.11</td>
@@ -385,7 +384,7 @@ The count is made language-specific by WPML filters when the current_language is
 <div class="row"><footer class="span12">
             Template is built using <a href="http://twitter.github.com/bootstrap/">Twitter Bootstrap 2</a> and icons provided by <a href="http://glyphicons.com/">Glyphicons</a>.<br>
             Documentation is powered by <a href="http://www.phpdoc.org/">phpDocumentor 2.0.0a8</a> and<br>
-            generated on 2015-06-25T20:07:04-07:00.<br></footer></div>
+            generated on 2015-07-08T19:21:50-07:00.<br></footer></div>
 </div>
 </body>
 </html>

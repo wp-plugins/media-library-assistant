@@ -259,13 +259,13 @@ var wp, wpAjax, ajaxurl, jQuery, _,
 			},
 
 			change: function() {
-				var // state = this.controller._state, 
+				var toolbar = $( this.el ).closest( 'div.media-toolbar' ), 
 					filter = this.filters[ this.el.value ];
 
 				if ( filter ) {
 					// silent because we must change the "s" prop before triggering an update
 					this.model.set( filter.props, { silent: true } );
-					$( '#mla-search-submit' ).click();
+					$( '#mla-search-submit', toolbar ).click();
 				}
 			}
 		});
@@ -334,13 +334,10 @@ var wp, wpAjax, ajaxurl, jQuery, _,
 			},
 
 			change: function() {
-				var // state = this.controller._state, 
-					filter = this.filters[ this.el.value ], newProps;
-
+				var filter = this.filters[ this.el.value ], newProps;
 				if ( filter ) {
 					newProps = { s: { 'mla_filter_month': filter.props.s.mla_filter_month }	};
-					this.model.set( newProps /*, { silent: true } */ );
-					$( '#mla-search-submit' ).click();
+					this.model.set( newProps );
 				}
 			}
 		});
@@ -407,13 +404,11 @@ var wp, wpAjax, ajaxurl, jQuery, _,
 			},
 
 			change: function() {
-				var // state = this.controller._state, 
-					filter = this.filters[ this.el.value ], newProps;
+				var filter = this.filters[ this.el.value ], newProps;
 
 				if ( filter ) {
 					newProps = { s: { 'mla_filter_term': filter.props.s.mla_filter_term }	};
-					this.model.set( newProps /*, { silent: true } */ );
-					$( '#mla-search-submit' ).click();
+					this.model.set( newProps );
 				}
 			}
 		});
@@ -443,6 +438,8 @@ var wp, wpAjax, ajaxurl, jQuery, _,
 			},
 
 			termsSearchOpen: function( event ) {
+				var toolbar = $( this.el ).closest( 'div.media-toolbar' );
+
 				if ( ( 'click' == event.type ) && ( 'mla_terms_search' === event.target.name ) ) {
 					mlaTaxonomy.termsSearch.open();
 
@@ -471,7 +468,7 @@ var wp, wpAjax, ajaxurl, jQuery, _,
 						}
 
 						mlaModal.settings.query[mlaModal.settings.state].termsSearch = termsSearch;
-						$( '#mla-search-submit' ).click();
+						$( '#mla-search-submit', toolbar ).click();
 						return false;
 					});
 
@@ -656,8 +653,7 @@ wp.media.view.MlaSearch.on( 'all', MlaSearchOn );
 			}, // */
 
 			createToolbar: function() {
-				var // id = this.model.attributes.id,
-					filters, state = this.controller._state;
+				var filters, state = this.controller._state;
 
 				mlaModal.settings.state = state;
 				if ( 'undefined' === typeof mlaModal.settings.query[ state ] ) {
@@ -729,7 +725,7 @@ this.listenTo( this.controller, 'all', this.toolbarEvent );
 			},
 
 			hideDefaultSearch: function() {
-				$( '#media-search-input' ).hide();
+				$( '#media-search-input', this.el ).hide();
 			},
 
 			updateFilters: function( taxonomy, selectMarkup ) {

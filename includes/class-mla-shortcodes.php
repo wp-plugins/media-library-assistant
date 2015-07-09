@@ -71,12 +71,12 @@ class MLAShortcodes {
 				MLA::mla_debug_add( '<strong>_ghostscript_present</strong>, ghostscript_present = ' . var_export( $ghostscript_present, true ) );
 				return $ghostscript_present;
 			}
-	
+
 			if ( 'checked' != MLAOptions::mla_get_option( 'enable_ghostscript_check' ) ) {
 				MLA::mla_debug_add( '<strong>_ghostscript_present</strong>, disabled' );
 				return $ghostscript_present = true;
 			}
-	
+
 			/*
 			 * Imagick must be installed as well
 			 */
@@ -85,7 +85,7 @@ class MLAShortcodes {
 				return $ghostscript_present = false;
 			}
 		} // not ghostscript_only
-		
+
 		/*
 		 * Look for exec() - from http://stackoverflow.com/a/12980534/866618
 		 */
@@ -415,7 +415,7 @@ class MLAShortcodes {
 				self::$mla_debug = false;
 			}
 		}
-		
+
 		/*
 		 * Determine output type
 		 */
@@ -565,7 +565,7 @@ class MLAShortcodes {
 			} else {
 				$arguments['mla_viewer_extensions'] = array();
 			}
-			
+
 			// convert limit (in MB) to float
 			$arguments['mla_viewer_limit'] = abs( 0.0 + $arguments['mla_viewer_limit'] );
 
@@ -709,7 +709,7 @@ class MLAShortcodes {
 			$row_open_template = '';
 		} else{
 			$row_open_template = MLAOptions::mla_fetch_gallery_template( $markup_values['mla_markup'] . '-row-open', 'markup' );
-		
+
 			if ( empty( $row_open_template ) ) {
 				$row_open_template = '';
 			}
@@ -727,7 +727,7 @@ class MLAShortcodes {
 			$row_close_template = '';
 		} else{
 			$row_close_template = MLAOptions::mla_fetch_gallery_template( $markup_values['mla_markup'] . '-row-close', 'markup' );
-		
+
 			if ( empty( $row_close_template ) ) {
 				$row_close_template = '';
 			}
@@ -1393,7 +1393,7 @@ class MLAShortcodes {
 				} else {
 					$item_values['last_in_row'] = '';
 				}
-				
+
 				/*
 				 * Conditional caption tag to replicate WP 4.1+,
 				 * now used in the default markup template.
@@ -1403,7 +1403,7 @@ class MLAShortcodes {
 				} else {
 					$item_values['captiontag_content'] = '';
 				}
-	
+
 				$item_values = apply_filters( 'mla_gallery_item_values', $item_values );
 				$item_template = apply_filters( 'mla_gallery_item_template', $item_template );
 				$parse_value = MLAData::mla_parse_template( $item_template, $item_values );
