@@ -171,6 +171,7 @@ All of the MLA source code has been annotated with "DocBlocks", a special type o
 == Changelog ==
 
 = 2.13 =
+* New: For **WordPress 4.3+**, the Media/Assistant submenu table has been updated to support the new **primary column** features.
 * New: For the Media/Assistant submenu table, the **"Thumbnail" bulk action** lets you easily **generate thumbnail images** for non-image items. These can be used as the Featured Image for `mla_viewer` processing. A settings option lets you disable this feature if desired.
 * New: For the Media/Assistant submenu table, **wildcard searches are now allowed in the Search Media box** using an asterisk ("*") as the wildcard placeholder. Pull down the Help menu on the screen and select the Search Media section for more information.
 * New: For the **Terms Search** popup window and `mla_terms_search` shortcode parameter, **wildcard searches are now allowed** using an asterisk ("*") as the wildcard placeholder.
@@ -178,6 +179,7 @@ All of the MLA source code has been annotated with "DocBlocks", a special type o
 * New: For field-level substitution parameters, the **id3:** prefix gives you access to all of the metadata present in audio and video files.
 * New: For field-level substitution parameters, the **,unpack** option lets you expand one level of an array and denote lower-level arrays with an (ARRAY) placeholder.
 * New: The IPTC: and EXIF: field-level substitution parameters can now use all of the format/option suffixes, e.g., ",url".
+* New: A "Bulk Edit Area" tab has been added to the Media/Add New/Upload New Media submenu help menu.
 * New: The `/media-library-assistant/examples/mla-custom-field-search-example.php.txt` example plugin has been extended to handle queries made in the Media Manager Modal (popup) Window "Search" box.
 * New: If Imagick and/or Ghostcript support is not present, an explicit warning message is displayed in the "Enable thumbnail substitution" portion of the Settings/Media Library Assistant MLA Gallery tab.
 * New: A new filter for the "Media/Assistant Submenu Hooks" allows you to modify the content of the dropdown Help menu. The `/media-library-assistant/examples/mla-list-table-hooks-example.php.txt` example plugin has been updated with the new filter.

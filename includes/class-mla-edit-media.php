@@ -164,6 +164,10 @@ class MLAEdit {
 	 */
 	public static function mla_admin_enqueue_scripts_action( $page_hook ) {
 		$suffix = defined('SCRIPT_DEBUG') && SCRIPT_DEBUG ? '' : '.min';
+		
+		/*
+		 * Add New Bulk Edit Area
+		 */
 		if ( 'media-new.php' == $page_hook && ( 'checked' == MLAOptions::mla_get_option( MLAOptions::MLA_ADD_NEW_BULK_EDIT ) ) ) {
 			wp_register_style( 'mla-add-new-bulk-edit', MLA_PLUGIN_URL . 'css/mla-add-new-bulk-edit.css', false, MLA::CURRENT_MLA_VERSION );
 			wp_enqueue_style( 'mla-add-new-bulk-edit' );
@@ -219,6 +223,7 @@ class MLAEdit {
 		}
 
 		/*
+		 * Media/Edit Media submenu
 		 * Register and queue the style sheet, if needed
 		 */
 		wp_register_style( self::JAVASCRIPT_EDIT_MEDIA_STYLES, MLA_PLUGIN_URL . 'css/mla-edit-media-style.css', false, MLA::CURRENT_MLA_VERSION );
@@ -411,7 +416,7 @@ class MLAEdit {
 		$set_parent_form = MLA::mla_set_parent_form( false );
 
 		$page_values = array(
-			'NOTE' => __( 'IMPORTANT: Make your entries BEFORE uploading new items.', 'media-library-assistant' ),
+			'NOTE' => __( 'IMPORTANT: Make your entries BEFORE uploading new items. Pull down the Help menu for more information.', 'media-library-assistant' ),
 			'Toggle' => __( 'Open Bulk Edit area', 'media-library-assistant' ),
 			'category_fieldset' => $category_fieldset,
 			'tag_fieldset' => $tag_fieldset,
@@ -655,6 +660,56 @@ class MLAEdit {
 	public static function mla_edit_add_help_tab( $admin_title, $title ) {
 		$screen = get_current_screen();
 
+		/*
+		 * Upload New Media Bulk Edit Area
+		 */
+		if ( ( 'media' == $screen->id ) && ( 'add' == $screen->action ) ) {
+			$template_array = MLAData::mla_load_template( 'help-for-upload-new-media.tpl' );
+			if ( empty( $template_array ) ) {
+				return $admin_title;
+			}
+	
+			/*
+			 * Replace sidebar content
+			 */
+			if ( !empty( $template_array['sidebar'] ) ) {
+				$page_values = array( 'settingsURL' => admin_url('options-general.php') );
+				$content = MLAData::mla_parse_template( $template_array['sidebar'], $page_values );
+				$screen->set_help_sidebar( $content );
+			}
+			unset( $template_array['sidebar'] );
+	
+			/*
+			 * Provide explicit control over tab order
+			 */
+			$tab_array = array();
+	
+			foreach ( $template_array as $id => $content ) {
+				$match_count = preg_match( '#\<!-- title="(.+)" order="(.+)" --\>#', $content, $matches, PREG_OFFSET_CAPTURE );
+	
+				if ( $match_count > 0 ) {
+					$tab_array[ $matches[ 2 ][ 0 ] ] = array(
+						 'id' => $id,
+						'title' => $matches[ 1 ][ 0 ],
+						'content' => $content 
+					);
+				} else {
+					/* translators: 1: ERROR tag 2: function name 3: template key */
+					error_log( sprintf( _x( '%1$s: %2$s discarding "%3$s"; no title/order', 'error_log', 'media-library-assistant' ), __( 'ERROR', 'media-library-assistant' ), 'mla_edit_add_help_tab', $id ), 0 );
+				}
+			}
+	
+			ksort( $tab_array, SORT_NUMERIC );
+			foreach ( $tab_array as $indx => $value ) {
+				$screen->add_help_tab( $value );
+			}
+			
+			return $admin_title;
+		}
+
+		/*
+		 * Media/Edit Media submenu
+		 */
 		if ( ( 'attachment' != $screen->id ) || ( 'attachment' != $screen->post_type ) || ( 'post' != $screen->base ) ) {
 			return $admin_title;
 		}

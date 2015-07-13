@@ -30,28 +30,6 @@ div.mla_errors {
 }
 
 /*
- * MLA List Table ID_parent column
- */
-td.column-ID_parent, th.column-ID_parent {
-	width: 100px;
-	max-width: 100px;
-}
-
-/*
- * MLA List Table icon/thumbnail column
- * These can be overridden by an options setting
- */
-img.mla_media_thumbnail_64_64 {
-	max-width: 64px;
-	max-height: 64px;
-}
-
-img.mla_media_thumbnail_80_60 {
-	max-width: 80px;
-	max-height: 60px;
-}
-
-/*
  * MLA List Table Terms Search and Clear Filter-by buttons
  */
 #mla-terms-search-open,
@@ -103,8 +81,10 @@ img.mla_media_thumbnail_80_60 {
 }
 
 .quick-edit-row-attachment fieldset.inline-edit-col-left label span.title,
+.quick-edit-row-attachment fieldset.inline-edit-col-right label span.title,
 .bulk-edit-row-attachment fieldset.inline-edit-col-right label span.title {
-	width: 6em
+	width: 6em;
+	line-height: 1.2
 }
 
 .quick-edit-row-attachment fieldset.inline-edit-col-center span.catshow,
@@ -113,6 +93,7 @@ img.mla_media_thumbnail_80_60 {
 }
 
 .quick-edit-row-attachment fieldset.inline-edit-col-left label span.input-text-wrap,
+.quick-edit-row-attachment fieldset.inline-edit-col-right label span.input-text-wrap,
 .bulk-edit-row-attachment fieldset.inline-edit-col-right label span.input-text-wrap {
 	margin-left: 6em
 }

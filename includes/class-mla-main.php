@@ -38,7 +38,7 @@ class MLA {
 	 *
 	 * @var	string
 	 */
-	const MLA_DEVELOPMENT_VERSION = '20150708';
+	const MLA_DEVELOPMENT_VERSION = '20150713';
 
 	/**
 	 * Slug for registering and enqueueing plugin style sheet
@@ -371,11 +371,111 @@ class MLA {
 			} // apply_filters mla_list_table_admin_action
 		} // (!empty($_REQUEST['mla_admin_action'])
 
-		if ( ( defined('WP_ADMIN') && WP_ADMIN ) && ( defined('DOING_AJAX') && DOING_AJAX ) ) {
-			add_action( 'wp_ajax_' . self::JAVASCRIPT_INLINE_EDIT_SLUG, 'MLA::mla_inline_edit_ajax_action' );
-			add_action( 'wp_ajax_' . self::JAVASCRIPT_INLINE_EDIT_SLUG . '-set-parent', 'MLA::mla_set_parent_ajax_action' );
-			add_action( 'wp_ajax_' . 'mla_find_posts', 'MLA::mla_find_posts_ajax_action' );
+		if ( defined('WP_ADMIN') && WP_ADMIN ) {
+			if ( defined('DOING_AJAX') && DOING_AJAX ) {
+				add_action( 'wp_ajax_' . self::JAVASCRIPT_INLINE_EDIT_SLUG, 'MLA::mla_inline_edit_ajax_action' );
+				add_action( 'wp_ajax_' . self::JAVASCRIPT_INLINE_EDIT_SLUG . '-set-parent', 'MLA::mla_set_parent_ajax_action' );
+				add_action( 'wp_ajax_' . 'mla_find_posts', 'MLA::mla_find_posts_ajax_action' );
+			} else {
+				add_action( 'admin_print_styles', 'MLA::mla_admin_print_styles_action' );
+			}
 		}
+	}
+
+	/**
+	 * Print optional in-lne styles for Media/Assistant submenu table
+	 *
+	 * @since 2.13
+	 */
+	public static function mla_admin_print_styles_action() {
+		echo "<style type='text/css'>\n";
+
+		/*
+		 * Optional - limit width of the views list
+		 */
+		$width_value = MLAOptions::mla_get_option( MLAOptions::MLA_TABLE_VIEWS_WIDTH );
+		if ( !empty( $width_value ) ) {
+			if ( is_numeric( $width_value ) ) {
+				$width_value .= 'px';
+			}
+
+			echo "  ul.subsubsub {\n";
+			echo "    width: {$width_value};\n";
+			echo "    max-width: {$width_value};\n";
+			echo "  }\n";
+		}
+
+		echo "  img.mla_media_thumbnail {\n";
+
+		/*
+		 * Optional - change the size of the thumbnail/icon images
+		 */
+		$icon_value = MLAOptions::mla_get_option( MLAOptions::MLA_TABLE_ICON_SIZE );
+		if ( 'checked' == MLAOptions::mla_get_option( MLAOptions::MLA_ENABLE_MLA_ICONS ) ) {
+			if ( empty( $icon_value ) ) {
+				$icon_value = 64;
+			} else
+			if ( is_numeric( $icon_value ) ) {
+				$icon_value = absint( $icon_value );
+			}
+			
+			$icon_width = $icon_height = $icon_value . 'px';;
+
+			echo "    width: {$icon_width};\n";
+			echo "    height: {$icon_height};\n";
+			echo "    max-width: {$icon_width};\n";
+			echo "    max-height: {$icon_height};\n";
+		} else {
+			if ( empty( $icon_value ) ) {
+				if ( MLATest::$wp_4dot3_plus ) {
+					$icon_value = 60;
+				} else {
+					$icon_value = 80;
+				}
+			}
+			
+			$icon_width = absint( $icon_value ) . 'px';
+			echo "    max-width: {$icon_width};\n";
+
+			if ( MLATest::$wp_4dot3_plus ) {
+				echo "    max-height: auto;\n";
+			} else {
+				$icon_height = ( absint( .75 * (float) $icon_value ) ) . 'px';
+				echo "    max-height: {$icon_height};\n";
+			}
+		}
+
+		echo "  }\n";
+
+		if ( MLATest::$wp_4dot3_plus ) {
+			/*
+			 * Primary column including icon and some margin
+			 */
+			$icon_width = ( $icon_value + 10 ) . 'px';;
+
+			echo "  table.attachments td.column-primary {\n";
+			echo "    position: relative;\n";
+			echo "  }\n";
+			echo "  table.attachments div.attachment-icon {\n";
+			echo "    position: absolute;\n";
+			echo "    top: 8px;\n";
+			echo "    left: 10px;\n";
+			echo "  }\n";
+			echo "  table.attachments div.attachment-info {\n";
+			echo "    margin-left: {$icon_width};\n";
+			echo "    min-height: {$icon_width};\n";
+			echo "  }\n";
+		} else {
+			/*
+			 * Separate ID_parent column
+			 */
+			echo "  td.column-ID_parent, th.column-ID_parent {\n";
+			echo "  	width: 100px;\n";
+			echo "  	max-width: 100px;\n";
+			echo "  }\n";
+		}
+
+		echo "</style>\n";
 	}
 
 	/**
@@ -1510,54 +1610,6 @@ class MLA {
 				echo "  <div class=\"{$messages_class}\"><p>\n";
 				echo '    ' . $page_content['message'] . "\n";
 				echo "  </p></div>\n"; // id="message"
-			}
-
-			/*
-			 * Optional - limit width of the views list
-			 */
-			$option_value = MLAOptions::mla_get_option( MLAOptions::MLA_TABLE_VIEWS_WIDTH );
-			if ( !empty( $option_value ) ) {
-				if ( is_numeric( $option_value ) ) {
-					$option_value .= 'px';
-				}
-
-				echo "  <style type='text/css'>\n";
-				echo "    ul.subsubsub {\n";
-				echo "      width: {$option_value};\n";
-				echo "      max-width: {$option_value};\n";
-				echo "    }\n";
-				echo "  </style>\n";
-			}
-
-			/*
-			 * Optional - change the size of the thumbnail/icon images
-			 */
-			$option_value = MLAOptions::mla_get_option( MLAOptions::MLA_TABLE_ICON_SIZE );
-			if ( !empty( $option_value ) ) {
-				if ( is_numeric( $option_value ) ) {
-					$option_value .= 'px';
-				}
-
-				if ( 'checked' == MLAOptions::mla_get_option( MLAOptions::MLA_ENABLE_MLA_ICONS ) ) {
-					$class = 'mla_media_thumbnail_64_64';
-				} else {
-					$class = 'mla_media_thumbnail_80_60';
-				}
-
-				echo "  <style type='text/css'>\n";
-				echo "  #icon.column-icon {\n";
-				echo "    width: {$option_value};\n";
-				echo "    max-width: {$option_value};\n";
-				//echo "    height: {$option_value};\n";
-				//echo "    max-height: {$option_value};\n";
-				echo "  }\n";
-				echo "  img.{$class} {\n";
-				echo "    width: {$option_value};\n";
-				echo "    max-width: {$option_value};\n";
-				echo "    height: {$option_value};\n";
-				echo "    max-height: {$option_value};\n";
-				echo "  }\n";
-				echo "  </style>\n";
 			}
 
 			//	Create an instance of our package class...

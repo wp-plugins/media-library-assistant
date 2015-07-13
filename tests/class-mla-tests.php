@@ -15,6 +15,15 @@
  */
 class MLATest {
 	/**
+	 * True if WordPress version is 4.3 or newer
+	 *
+	 * @since 2.13
+	 *
+	 * @var	boolean
+	 */
+	public static $wp_4dot3_plus = null;
+	
+	/**
 	 * Initialization function, similar to __construct()
 	 *
 	 * @since 0.60
@@ -22,6 +31,8 @@ class MLATest {
 	 * @return	void
 	 */
 	public static function initialize() {
+		MLATest::$wp_4dot3_plus = version_compare( get_bloginfo( 'version' ), '4.2.99', '>=' );
+
 		/*
 		 * This is the earliest effective place to add E_STRICT to error_reporting
 		 */

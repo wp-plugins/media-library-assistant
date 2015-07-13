@@ -22,7 +22,6 @@ if ( !class_exists( 'WP_List_Table' ) ) {
  * @since 0.1
  */
 class MLA_List_Table extends WP_List_Table {
-
 	/**
 	 * True if the current view is "Unattached"
 	 *
@@ -224,16 +223,15 @@ class MLA_List_Table extends WP_List_Table {
 	/**
 	 * Builds the $default_columns array with translated source texts.
 	 *
-	 * Called from MLA:mla_plugins_loaded_action because the $default_columns information might be
-	 * accessed from "front end" posts/pages.
+	 * Called from MLA:mla_plugins_loaded_action because the $default_columns information
+	 * might be accessed from "front end" posts/pages.
 	 *
 	 * @since 1.71
-	 *
-	 * @return	void
 	 */
 	public static function mla_localize_default_columns_array( ) {
 		/*
-		 * Build the default columns array at runtime to accomodate calls to the localization functions
+		 * Build the default columns array at runtime to accomodate calls to the
+		 * localization functions
 		 */
 		self::$default_columns = array(
 			'cb' => '<input type="checkbox" />', //Render a checkbox instead of text
@@ -473,6 +471,13 @@ class MLA_List_Table extends WP_List_Table {
 	 * @return	array	list of table columns
 	 */
 	public static function mla_manage_columns_filter( ) {
+		/*
+		 * For WP 4.3+ icon will be merged with the first visible preferred column
+		 */
+		if ( version_compare( get_bloginfo('version'), '4.2.99', '>' ) ) {
+			unset( self::$default_columns['icon'] );
+		}
+		
 		return apply_filters( 'mla_list_table_get_columns', self::$default_columns );
 	}
 
@@ -483,8 +488,6 @@ class MLA_List_Table extends WP_List_Table {
 	 * created in time to affect the "screen options" setup.
 	 *
 	 * @since 0.30
-	 *
-	 * @return	void
 	 */
 	public static function mla_admin_init_action( ) {
 		$taxonomies = get_taxonomies( array ( 'show_ui' => true ), 'names' );
@@ -508,13 +511,16 @@ class MLA_List_Table extends WP_List_Table {
 	 * calls the parent constructor to set some default configs.
 	 *
 	 * @since 0.1
-	 *
-	 * @return	void
 	 */
-	function __construct( ) {
+	public function __construct() {
 		$this->detached = isset( $_REQUEST['detached'] ) && ( '1' == $_REQUEST['detached'] );
 		$this->attached = isset( $_REQUEST['detached'] ) && ( '0' == $_REQUEST['detached'] );
 		$this->is_trash = isset( $_REQUEST['status'] ) && $_REQUEST['status'] == 'trash';
+
+		// MLA does not use this
+		$this->modes = array(
+			'list' => __( 'List View' ),
+		);
 
 		//Set parent defaults
 		parent::__construct( array(
@@ -533,6 +539,15 @@ class MLA_List_Table extends WP_List_Table {
 		 * They are added when the source file is loaded because the MLA_List_Table
 		 * object is created too late to be useful.
 		 */
+	}
+
+	/**
+	 * Checks the current user's permissions
+	 *
+	 * @return bool
+	 */
+	public function ajax_user_can() {
+		return current_user_can('upload_files');
 	}
 
 	/**
@@ -654,17 +669,37 @@ class MLA_List_Table extends WP_List_Table {
 	 * @return	string	HTML markup to be placed inside the column
 	 */
 	function column_icon( $item ) {
+		$icon_width = MLAOptions::mla_get_option( MLAOptions::MLA_TABLE_ICON_SIZE );
 		if ( 'checked' == MLAOptions::mla_get_option( MLAOptions::MLA_ENABLE_MLA_ICONS ) ) {
-			$dimensions = array( 64, 64 );
-			$thumb = wp_get_attachment_image( $item->ID, $dimensions, true, array( 'class' => 'mla_media_thumbnail_64_64' ) );
+			if ( empty( $icon_width ) ) {
+				$icon_width = $icon_height = 64;
+			} else {
+				$icon_width = $icon_height = absint( $icon_width );
+			}
 		} else {
-			$dimensions = array( 80, 60 );
-			$thumb = wp_get_attachment_image( $item->ID, $dimensions, true, array( 'class' => 'mla_media_thumbnail_80_60' ) );
+			if ( empty( $icon_width ) ) {
+				if ( MLATest::$wp_4dot3_plus ) {
+					$icon_width = 60;
+				} else {
+					$icon_width = 80;
+				}
+			} else {
+				$icon_width = absint( $icon_width );
+			}
+			
+			if ( MLATest::$wp_4dot3_plus ) {
+				$icon_height = $icon_width;
+			} else {
+				$icon_height = absint( .75 * (float) $icon_width );
+			}
 		}
 
+		$dimensions = array( $icon_width, $icon_height );
+		$thumb = wp_get_attachment_image( $item->ID, $dimensions, true, array( 'class' => 'mla_media_thumbnail' ) );
+
 		if ( in_array( $item->post_mime_type, array( 'image/svg+xml' ) ) ) {
-			$thumb = preg_replace( '/width=\"[^\"]*\"/', sprintf( 'width="%1$d"', $dimensions[1] ), $thumb );
-			$thumb = preg_replace( '/height=\"[^\"]*\"/', sprintf( 'height="%1$d"', $dimensions[0] ), $thumb );
+			$thumb = preg_replace( '/width=\"[^\"]*\"/', sprintf( 'width="%1$d"', $dimensions[0] ), $thumb );
+			$thumb = preg_replace( '/height=\"[^\"]*\"/', sprintf( 'height="%1$d"', $dimensions[1] ), $thumb );
 		}
 
 		if ( $this->is_trash || ! current_user_can( 'edit_post', $item->ID ) ) {
@@ -681,7 +716,7 @@ class MLA_List_Table extends WP_List_Table {
 			$edit_url = 'post.php?post=' . $item->ID . '&action=edit&mla_source=edit';
 		}
 
-		return sprintf( '<a href="%1$s" title="' . __( 'Edit', 'media-library-assistant' ) . ' &#8220;%2$s&#8221;">%3$s</a>', admin_url( $edit_url ), esc_attr( $item->post_title ), $thumb ); 
+		return sprintf( '<a href="%1$s" title="' . __( 'Edit', 'media-library-assistant' ) . ' &#8220;%2$s&#8221;">%3$s</a>', admin_url( $edit_url ), _draft_or_post_title( $item ), $thumb ); 
 	}
 
 	/**
@@ -716,7 +751,39 @@ class MLA_List_Table extends WP_List_Table {
 	}
 
 	/**
-	 * Add rollover actions to exactly one of the following displayed columns:
+	 * Get the name of the default primary column.
+	 *
+	 * @since 4.3.0
+	 * @access protected
+	 *
+	 * @return string Name of the default primary column, in this case, 'title'.
+	 */
+	protected function get_default_primary_column_name() {
+		$hidden_columns = $this->get_hidden_columns();
+		
+		$primary_column = '';
+		foreach ( array( 'ID_parent', 'title_name', 'post_title', 'post_name' ) as $column_name ) {
+			if ( ! in_array( $column_name, $hidden_columns ) ) {
+				$primary_column = $column_name;
+				break;
+			}
+		}
+		
+		// Fallback to the first visible column
+		if ( empty( $primary_column ) ) {
+			foreach ( $this->get_columns() as $column_name => $column_title ) {
+				if ( ( 'cb' !== $column_name ) && ! in_array( $column_name, $hidden_columns ) ) {
+					$primary_column = $column_name;
+					break;
+				}
+			}
+		}
+		
+		return $primary_column;
+	}
+
+	/**
+	 * Add rollover actions to the current primary column, one of:
 	 * 'ID_parent', 'title_name', 'post_title', 'post_name'
 	 *
 	 * @since 0.1
@@ -728,6 +795,7 @@ class MLA_List_Table extends WP_List_Table {
 	 */
 	protected function _build_rollover_actions( $item, $column ) {
 		$actions = array();
+		$att_title = _draft_or_post_title( $item );
 
 		if ( ( $this->rollover_id != $item->ID ) && !in_array( $column, $this->currently_hidden ) ) {
 			/*
@@ -773,10 +841,10 @@ class MLA_List_Table extends WP_List_Table {
 				$file = get_attached_file( $item->ID );
 				$download_args = array( 'page' => MLA::ADMIN_PAGE_SLUG, 'mla_download_file' => urlencode( $file ), 'mla_download_type' => $item->post_mime_type );
 
-				$actions['download'] = '<a href="' . add_query_arg( $download_args, wp_nonce_url( 'upload.php', MLA::MLA_ADMIN_NONCE_ACTION, MLA::MLA_ADMIN_NONCE_NAME ) ) . '" title="' . __( 'Download', 'media-library-assistant' ) . ' &#8220;' . esc_attr( $item->post_title ) . '&#8221;">' . __( 'Download', 'media-library-assistant' ) . '</a>';
+				$actions['download'] = '<a href="' . add_query_arg( $download_args, wp_nonce_url( 'upload.php', MLA::MLA_ADMIN_NONCE_ACTION, MLA::MLA_ADMIN_NONCE_NAME ) ) . '" title="' . __( 'Download', 'media-library-assistant' ) . ' &#8220;' . $att_title . '&#8221;">' . __( 'Download', 'media-library-assistant' ) . '</a>';
 			}
 
-			$actions['view']  = '<a href="' . site_url( ) . '?attachment_id=' . $item->ID . '" rel="permalink" title="' . __( 'View', 'media-library-assistant' ) . ' &#8220;' . esc_attr( $item->post_title ) . '&#8221;">' . __( 'View', 'media-library-assistant' ) . '</a>';
+			$actions['view']  = '<a href="' . site_url( ) . '?attachment_id=' . $item->ID . '" rel="permalink" title="' . __( 'View', 'media-library-assistant' ) . ' &#8220;' . $att_title . '&#8221;">' . __( 'View', 'media-library-assistant' ) . '</a>';
 
 			$actions = apply_filters( 'mla_list_table_build_rollover_actions', $actions, $item, $column );
 
@@ -881,6 +949,46 @@ class MLA_List_Table extends WP_List_Table {
 	}
 
 	/**
+	 * Format primary column before/after Wordpress v4.3
+	 *
+	 * For WordPress before 4.3, add rollover actions and inline_data to the
+	 * first visible column. For 4.3 and later, merge the icon with the primary
+	 * visible column and add div tags.
+	 *
+	 * @since 2.13
+	 * 
+	 * @param	object	A singular attachment (post) object
+	 * @param	string	Current column name
+	 * @param	string	Current column contents
+	 *
+	 * @return	string	Complete column content
+	 */
+	protected function _handle_primary_column( $item, $column_name, $column_content ) {
+		if ( MLATest::$wp_4dot3_plus ) {
+			static $primary_column = NULL;
+			
+			if ( NULL == $primary_column ) {
+				$primary_column = $this->get_default_primary_column_name();
+			}
+			
+			if ( $primary_column != $column_name ) {
+				return $column_content;
+			}
+			
+			list( $mime ) = explode( '/', $item->post_mime_type );
+			$final_content = "<div class=\"attachment-icon {$mime}-icon\">\n" . $this->column_icon( $item ) . "\n</div>\n";
+			return $final_content . "<div class=\"attachment-info\">\n" . $column_content . "\n</div>\n";
+		}
+		
+		$actions = $this->row_actions( $this->_build_rollover_actions( $item, $column_name ) );
+		if ( ! empty( $actions ) ) {
+			$column_content .= $actions . $this->_build_inline_data( $item );
+		}
+		
+		return $column_content;
+	}
+
+	/**
 	 * Supply the content for a custom column
 	 *
 	 * @since 0.1
@@ -889,7 +997,6 @@ class MLA_List_Table extends WP_List_Table {
 	 * @return	string	HTML markup to be placed inside the column
 	 */
 	function column_ID_parent( $item ) {
-		$row_actions = self::_build_rollover_actions( $item, 'ID_parent' );
 		if ( $item->post_parent ) {
 			if ( isset( $item->parent_title ) ) {
 				$parent_title = $item->parent_title;
@@ -906,11 +1013,8 @@ class MLA_List_Table extends WP_List_Table {
 			$parent = 'parent:0';
 		}
 
-		if ( !empty( $row_actions ) ) {
-			return sprintf( '%1$s<br><span style="color:silver">%2$s</span><br>%3$s%4$s', /*%1$s*/ $item->ID, /*%2$s*/ $parent, /*%3$s*/ $this->row_actions( $row_actions ), /*%4$s*/ $this->_build_inline_data( $item ) );
-		} else {
-			return sprintf( '%1$s<br><span style="color:silver">%2$s</span>', /*%1$s*/ $item->ID, /*%2$s*/ $parent );
-		}
+		$content = sprintf( '%1$s<br><span style="color:silver">%2$s</span>', /*%1$s*/ $item->ID, /*%2$s*/ $parent );
+		return $this->_handle_primary_column( $item, 'ID_parent', $content );
 	}
 
 	/**
@@ -922,19 +1026,13 @@ class MLA_List_Table extends WP_List_Table {
 	 * @return	string	HTML markup to be placed inside the column
 	 */
 	function column_title_name( $item ) {
-		$row_actions = self::_build_rollover_actions( $item, 'title_name' );
-		$post_title = esc_attr( $item->post_title );
-		$post_name = esc_attr( $item->post_name );
 		$errors = $item->mla_references['parent_errors'];
 		if ( '(' . __( 'NO REFERENCE TESTS', 'media-library-assistant' ) . ')' == $errors ) {
 			$errors = '';
 		}
 
-		if ( !empty( $row_actions ) ) {
-			return sprintf( '%1$s<br>%2$s<br>%3$s%4$s%5$s', /*%1$s*/ $post_title, /*%2$s*/ $post_name, /*%3$s*/ $errors, /*%4$s*/ $this->row_actions( $row_actions ), /*%5$s*/ $this->_build_inline_data( $item ) );
-		} else {
-			return sprintf( '%1$s<br>%2$s<br>%3$s', /*%1$s*/ $post_title, /*%2$s*/ $post_name, /*%3$s*/ $errors );
-		}
+		$content =  sprintf( '%1$s<br>%2$s<br>%3$s', /*%1$s*/ _draft_or_post_title( $item ), /*%2$s*/ esc_attr( $item->post_name ), /*%3$s*/ $errors );
+		return $this->_handle_primary_column( $item, 'title_name', $content );
 	}
 
 	/**
@@ -946,13 +1044,7 @@ class MLA_List_Table extends WP_List_Table {
 	 * @return	string	HTML markup to be placed inside the column
 	 */
 	function column_post_title( $item ) {
-		$row_actions = self::_build_rollover_actions( $item, 'post_title' );
-
-		if ( !empty( $row_actions ) ) {
-			return sprintf( '%1$s<br>%2$s%3$s', /*%1$s*/ esc_attr( $item->post_title ), /*%2$s*/ $this->row_actions( $row_actions ), /*%3$s*/ $this->_build_inline_data( $item ) );
-		} else {
-			return esc_attr( $item->post_title );
-		}
+		return $this->_handle_primary_column( $item, 'post_title', _draft_or_post_title( $item ) );
 	}
 
 	/**
@@ -964,13 +1056,7 @@ class MLA_List_Table extends WP_List_Table {
 	 * @return	string	HTML markup to be placed inside the column
 	 */
 	function column_post_name( $item ) {
-		$row_actions = self::_build_rollover_actions( $item, 'post_name' );
-
-		if ( !empty( $row_actions ) ) {
-			return sprintf( '%1$s<br>%2$s%3$s', /*%1$s*/ esc_attr( $item->post_name ), /*%2$s*/ $this->row_actions( $row_actions ), /*%3$s*/ $this->_build_inline_data( $item ) );
-		} else {
-			return esc_attr( $item->post_name );
-		}
+		return $this->_handle_primary_column( $item, 'post_name', esc_attr( $item->post_name ) );
 	}
 
 	/**
@@ -1414,7 +1500,7 @@ class MLA_List_Table extends WP_List_Table {
 			$parent = '(' . _x( 'Unattached', 'table_view_singular', 'media-library-assistant' ) . ')';
 		}
 
-		$set_parent = sprintf( '<a class="hide-if-no-js" id="mla-child-%2$s" onclick="mla.inlineEditAttachment.tableParentOpen( \'%1$s\',\'%2$s\',\'%3$s\' ); return false;" href="#the-list">%4$s</a><br>', /*%1$s*/ $item->post_parent, /*%2$s*/ $item->ID, /*%3$s*/ esc_attr( $item->post_title ), /*%4$s*/ __( 'Set Parent', 'media-library-assistant' ) );
+		$set_parent = sprintf( '<a class="hide-if-no-js" id="mla-child-%2$s" onclick="mla.inlineEditAttachment.tableParentOpen( \'%1$s\',\'%2$s\',\'%3$s\' ); return false;" href="#the-list">%4$s</a><br>', /*%1$s*/ $item->post_parent, /*%2$s*/ $item->ID, /*%3$s*/ _draft_or_post_title( $item ), /*%4$s*/ __( 'Set Parent', 'media-library-assistant' ) );
 
 		return $parent . "<br>\n" . $set_parent . "\n";
 	}
@@ -1425,7 +1511,6 @@ class MLA_List_Table extends WP_List_Table {
 	 * @since 1.42
 	 * 
 	 * @param	string	'top' | 'bottom'
-	 * @return	void
 	 */
 	function pagination( $which ) {
 		$save_uri = $_SERVER['REQUEST_URI'];
@@ -1772,8 +1857,6 @@ class MLA_List_Table extends WP_List_Table {
 	 * $this->set_pagination_args().
 	 *
 	 * @since 0.1
-	 *
-	 * @return	void
 	 */
 	function prepare_items( ) {
 		// Initialize $this->_column_headers
