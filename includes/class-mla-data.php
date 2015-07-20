@@ -2527,6 +2527,7 @@ class MLAData {
 		 */
 		if ( isset( self::$query_parameters['patterns'] ) ) {
 			foreach ( self::$query_parameters['patterns'] as $pattern ) {
+				$pattern = str_replace( '_', '\\\\_', $pattern );
 				$match_clause = '%' . str_replace( '%', '\\\\%', $pattern ) . '%';
 				$where_clause = str_replace( "LIKE '{$match_clause}'", "LIKE '{$pattern}'", $where_clause );
 			}
@@ -6070,8 +6071,10 @@ class MLAData {
 
 					switch ( $tax_action ) {
 						case 'add':
-							$action_name = __( 'Adding', 'media-library-assistant' );
-							$result = wp_set_post_terms( $post_id, $tags, $taxonomy, true );
+							if ( ! empty( $tags ) ) {
+								$action_name = __( 'Adding', 'media-library-assistant' );
+								$result = wp_set_post_terms( $post_id, $tags, $taxonomy, true );
+							}
 							break;
 						case 'remove':
 							$action_name = __( 'Removing', 'media-library-assistant' );

@@ -304,6 +304,7 @@
 &nbsp;<br />
 [+options_list+]
 <h4>[+Error Log+]</h4>
+[+Error Log Name+]
     <table>
         <tr>
             <td>

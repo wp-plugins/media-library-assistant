@@ -595,11 +595,18 @@ class MLA_Polylang {
 			return;
 		}
 
-		$language_details = (array) $polylang->model->get_post_language( $post_id );
-		if ( empty( $language_details ) ) {
+		$language_details = $polylang->model->get_post_language( $post_id );
+		MLA::mla_debug_add( "MLA_Polylang::_build_existing_terms( {$post_id} ) \$polylang->model->get_post_language = " . var_export( $language_details, true ), MLA::MLA_DEBUG_CATEGORY_AJAX );
+
+		if ( is_object( $language_details ) ) {
+			$language_details = (array) $language_details;
+		} else {
+			MLA::mla_debug_add( "MLA_Polylang::_build_existing_terms( {$post_id} ) pll_default_language() = " . var_export( pll_default_language(), true ), MLA::MLA_DEBUG_CATEGORY_AJAX );
 			$language_details = (array) $polylang->model->get_language( pll_default_language() );
+			MLA::mla_debug_add( "MLA_Polylang::_build_existing_terms( {$post_id} ) \$polylang->model->get_language( pll_default_language() ) = " . var_export( $language_details, true ), MLA::MLA_DEBUG_CATEGORY_AJAX );
 		}
 
+		MLA::mla_debug_add( "MLA_Polylang::_build_existing_terms( {$post_id} ) \$polylang->model->get_translations() = " . var_export( $polylang->model->get_translations( 'post', $post_id ), true ), MLA::MLA_DEBUG_CATEGORY_AJAX );
 		$translations = array();
 		foreach ( $polylang->model->get_translations( 'post', $post_id ) as $language_code => $translation ) {
 			$translations[ $language_code ] = array( 'element_id' => $translation );
@@ -664,13 +671,21 @@ class MLA_Polylang {
 	 */
 	private static function _update_existing_terms( $post_id ) {
 		global $polylang;
+		MLA::mla_debug_add( "MLA_Polylang::_update_existing_terms( {$post_id} ) initial self::\$existing_terms = " . var_export( self::$existing_terms, true ), MLA::MLA_DEBUG_CATEGORY_AJAX );
+		MLA::mla_debug_add( "MLA_Polylang::_update_existing_terms( {$post_id} ) initial self::\$relevant_terms = " . var_export( self::$relevant_terms, true ), MLA::MLA_DEBUG_CATEGORY_AJAX );
 
 		if ( $post_id != self::$existing_terms['element_id'] ) {
 			return false;
 		}
 
 		$language_code = self::$existing_terms['slug'];
-		$translation = self::$existing_terms[ $language_code ];
+
+		if ( isset( self::$existing_terms[ $language_code ] ) ) {
+			$translation = self::$existing_terms[ $language_code ];
+		} else {
+			$translation = array();
+		}
+
 		$terms_before = array();
 
 		/*
@@ -704,6 +719,8 @@ class MLA_Polylang {
 			} // translation
 		} // term
 
+		MLA::mla_debug_add( "MLA_Polylang::_update_existing_terms( {$post_id} ) final self::\$existing_terms = " . var_export( self::$existing_terms, true ), MLA::MLA_DEBUG_CATEGORY_AJAX );
+		MLA::mla_debug_add( "MLA_Polylang::_update_existing_terms( {$post_id} ) final self::\$relevant_terms = " . var_export( self::$relevant_terms, true ), MLA::MLA_DEBUG_CATEGORY_AJAX );
 		return $terms_before;
 	}
 
@@ -863,6 +880,7 @@ class MLA_Polylang {
 		} // foreach taxonomy
 
 		MLA::mla_debug_add( "MLA_Polylang::_build_tax_input( {$post_id} ) self::\$tax_input = " . var_export( self::$tax_input, true ), MLA::MLA_DEBUG_CATEGORY_AJAX );
+		MLA::mla_debug_add( "MLA_Polylang::_build_tax_input( {$post_id} ) self::\$relevant_terms = " . var_export( self::$relevant_terms, true ), MLA::MLA_DEBUG_CATEGORY_AJAX );
 	} // _build_tax_input
 
 	/**
@@ -1009,7 +1027,8 @@ class MLA_Polylang {
 	} // wp_insert_post_empty_content
 
 	/**
-	 * Filters taxonomy updates by language.
+	 * Filters taxonomy updates by language for Bulk Edit during Add New Media
+	 * and the Media/Edit Media screen
 	 *
 	 * @since 2.11
 	 *
@@ -1070,6 +1089,13 @@ class MLA_Polylang {
 
 			return;
 		} // Upload New Media Bulk Edit
+
+		/*
+		 * Check for and ignore the Bulk Edit action on the Media/Assistant screen
+		 */
+		if ( isset( $_REQUEST['bulk_action'] ) && 'bulk_edit' == $_REQUEST['bulk_action'] ) {
+			return;
+		}
 
 		/*
 		 * The category taxonomy (edit screens) is a special case because 
@@ -1350,7 +1376,6 @@ class MLA_Polylang {
 					unset( self::$existing_terms[ self::$existing_terms['slug'] ] );
 					self::$existing_terms['slug'] = $_REQUEST['inline_lang_choice'];
 				}
-
 			} // change language
 		}
 
@@ -1440,7 +1465,7 @@ class MLA_Polylang {
 		global $polylang;
 
 		// Language dropdown in Bulk Edit area
-		if ( isset( $_POST['inline_lang_choice'] ) ) {
+		if ( isset( $_POST['inline_lang_choice'] ) && ( '-1' != $_POST['inline_lang_choice'] ) ) {
 			$post = get_post( $post_id );
 			// save_post() does a check_admin_referer() security test
 			$_REQUEST['_wpnonce'] = wp_create_nonce( 'bulk-posts' );

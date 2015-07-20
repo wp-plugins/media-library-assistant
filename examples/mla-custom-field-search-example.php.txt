@@ -3,7 +3,7 @@
  * Extends the Media/Assistant "Search Media" box to custom field values
  *
  * @package MLA Custom Field Search Example
- * @version 1.03
+ * @version 1.04
  */
 
 /*
@@ -11,7 +11,7 @@ Plugin Name: MLA Custom Field Search Example
 Plugin URI: http://fairtradejudaica.org/media-library-assistant-a-wordpress-plugin/
 Description: Extends the Media/Assistant "Search Media" box to custom field values
 Author: David Lingren
-Version: 1.03
+Version: 1.04
 Author URI: http://fairtradejudaica.org/our-story/staff/
 
 Copyright 2014 - 2015 David Lingren
@@ -150,6 +150,8 @@ class MLACustomFieldSearchExample {
 		
 		if ( isset( self::$custom_field_parameters['debug'] ) ) {
 			MLAData::$query_parameters['debug'] = self::$custom_field_parameters['debug'];
+			MLAData::$search_parameters['debug'] = self::$custom_field_parameters['debug'];
+			MLA::mla_debug_mode( self::$custom_field_parameters['debug'] );
 		}
 		
 		// Apply default field name?

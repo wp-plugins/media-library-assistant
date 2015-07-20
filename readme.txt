@@ -185,11 +185,14 @@ All of the MLA source code has been annotated with "DocBlocks", a special type o
 * New: A new filter for the "Media/Assistant Submenu Hooks" allows you to modify the content of the dropdown Help menu. The `/media-library-assistant/examples/mla-list-table-hooks-example.php.txt` example plugin has been updated with the new filter.
 * New: A new `/media-library-assistant/examples/mla-custom-file-size-example.php.txt` example plugin has been added to demonstrate a simple example of changing the content of the "Item:" template part.
 * New: **Step-by-step instructions for creating custom style and markup templates** have been added to the "A Table-based Style and Markup Template Example" section of the Settings/Media Library Assistant Documentation tab.
+* New: On the Settings/Media LIbrary Assistant Debug tab, the error log file name is displayed just above the text area for log content, and better error messages are displayed if the log cannot be reset.
 * New: When 'MLA_DEBUG_LEVEL' is set to 3 in the wp-config.php file, debug information for the Bulk Edit Ajax handler is written to the error log. This includes WPML- and Polylang- specific information.
+* Fix: Wildcard searches containing an underscore character ("_") are now handled correctly. The `mla-custom-field-search-example.php.txt` example plugin has been updated as well.
 * Fix: Media Manager Modal (popup) Window enhancements work more reliably with plugins such as "SiteOrigin Page Builder Widgets".
 * Fix: When Polylang is active, missing translation information for media items is accomodated for Term Assignment.
 * Fix: When Polylang is active, "Show all languages" is selected after a Bulk Translate action so results from multiple languages can be displayed.
 * Fix: When Polylang is active, Quick and Bulk Edit taxonomy checklists are language-specific when "Refresh" is clicked after a Bulk Edit action.
+* Fix: During a Bulk Edit action, empty taxonomy "Add" actions no longer call wp_set_post_terms().
 * Fix: The `/media-library-assistant/examples/mla-hooks-example.php.txt` example plugin has been updated to handle the new `captiontag_content` template substitution parameter.
 * Fix: The default `_wpnonce` query argument is no longer used, eliminating a conflict between MLA and the "A5 Custom Login Page" plugin. 
 * Fix: For the Settings/Media Library Assistant Views and Uploads, the Quick Edit action has been fixed.

@@ -3023,8 +3023,15 @@ class MLASettings {
 			}
 
 			if ( $file_error ) {
-				/* translators: 1: ERROR tag 2: file type 3: file name */
-				$page_content['message'] = sprintf( __( '%1$s: The %2$s file ( %3$s ) could not be reset.', 'media-library-assistant' ), __( 'ERROR', 'media-library-assistant' ), __( 'Error Log', 'media-library-assistant' ), $error_log_name );
+				$error_info = error_get_last();
+				if ( false !== ( $tail = strpos( $error_info['message'], '</a>]: ' ) ) ) {
+					$php_errormsg = ':<br>' . substr( $error_info['message'], $tail + 7 );
+				} else {
+					$php_errormsg = '.';
+				}
+
+				/* translators: 1: ERROR tag 2: file type 3: file name 4: error message*/
+				$page_content['message'] = sprintf( __( '%1$s: Reseting the %2$s file ( %3$s ) "%4$s".', 'media-library-assistant' ), __( 'ERROR', 'media-library-assistant' ), __( 'Error Log', 'media-library-assistant' ), $error_log_name, $php_errormsg );
 			} else {
 				$error_log_exists = file_exists ( $error_log_name );
 			}
@@ -3076,7 +3083,11 @@ class MLASettings {
 				}
 			}
 		} else {
-			$page_content['message'] = __( 'Error log file not found; click Reset to create one.', 'media-library-assistant' );
+			if ( empty( $page_content['message'] ) ) {
+				/* translators: 1: file name */
+				$page_content['message'] = sprintf( __( 'Error log file (%1$s) not found; click Reset to create it.', 'media-library-assistant' ), $error_log_name );
+			}
+			
 			$error_log_contents = '';
 		} // file_exists
 
@@ -3110,6 +3121,7 @@ class MLASettings {
 			'form_url' => admin_url( 'options-general.php' ) . '?page=mla-settings-menu-debug&mla_tab=debug',
 			'options_list' => $options_list,
 			'Error Log' => $error_log_title,
+			'Error Log Name' => $error_log_name,
 			'error_log_text' => $error_log_contents,
 			'download_link' => $download_link,
 			'reset_link' => $reset_link,
