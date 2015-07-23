@@ -189,14 +189,16 @@ All of the MLA source code has been annotated with "DocBlocks", a special type o
 * New: When 'MLA_DEBUG_LEVEL' is set to 3 in the wp-config.php file, debug information for the Bulk Edit Ajax handler is written to the error log. This includes WPML- and Polylang- specific information.
 * Fix: Wildcard searches containing an underscore character ("_") are now handled correctly. The `mla-custom-field-search-example.php.txt` example plugin has been updated as well.
 * Fix: Media Manager Modal (popup) Window enhancements work more reliably with plugins such as "SiteOrigin Page Builder Widgets".
-* Fix: When Polylang is active, missing translation information for media items is accomodated for Term Assignment.
+* Fix: When Polylang is active,  **Term Assignment has been fixed**, accomodating missing translation information for media items and terms and resolving some term_id/term_taxonomy_id issues. 
 * Fix: When Polylang is active, "Show all languages" is selected after a Bulk Translate action so results from multiple languages can be displayed.
+* Fix: When Polylang is active, the Media/Assistant submenu table "Trash" view no longer shows the Translations column.
 * Fix: When Polylang is active, Quick and Bulk Edit taxonomy checklists are language-specific when "Refresh" is clicked after a Bulk Edit action.
 * Fix: During a Bulk Edit action, empty taxonomy "Add" actions no longer call wp_set_post_terms().
 * Fix: The `/media-library-assistant/examples/mla-hooks-example.php.txt` example plugin has been updated to handle the new `captiontag_content` template substitution parameter.
 * Fix: The default `_wpnonce` query argument is no longer used, eliminating a conflict between MLA and the "A5 Custom Login Page" plugin. 
 * Fix: For the Settings/Media Library Assistant Views and Uploads, the Quick Edit action has been fixed.
 * Fix: For the Media/Assistant submenu table and the Media Manager Modal (popup) Window, default table sorting on a custom field no longer causes WordPress Database Errors.
+* Fix: For the Media/Assistant submenu table, the "View" rollover action is no longer available in the "Trash" view (it never worked).
 * Fix: For the Media/Assistant Quick Edit and Bulk Edit actions, the Custom Field mapping rule "Delete Null Values" option is now handled correctly. When this option is specified, empty values will not be stored in the database.
 * Fix: The "single" option now returns just the first value of a custom field if it has multiple values.
 * Fix: The Terms Search button, terms dropdown filter and "terms" search checkbox are no longer displayed when no taxonomies selected for MLA support.

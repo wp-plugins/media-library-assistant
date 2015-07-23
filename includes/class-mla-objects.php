@@ -159,7 +159,7 @@ class MLAObjects {
 			/*
 			 * Adding or inline-editing a tag is done with AJAX, and there's no current screen object
 			 */
-			if ( isset( $_POST['action'] ) && in_array( $_POST['action'], array( 'add-tag', 'inline-save-tax' ) ) ) {
+			if ( defined('DOING_AJAX') && DOING_AJAX ) {
 				$taxonomy = !empty($_POST['taxonomy']) ? $_POST['taxonomy'] : 'post_tag';
 			} else {
 				$screen = get_current_screen();

@@ -844,8 +844,10 @@ class MLA_List_Table extends WP_List_Table {
 				$actions['download'] = '<a href="' . add_query_arg( $download_args, wp_nonce_url( 'upload.php', MLA::MLA_ADMIN_NONCE_ACTION, MLA::MLA_ADMIN_NONCE_NAME ) ) . '" title="' . __( 'Download', 'media-library-assistant' ) . ' &#8220;' . $att_title . '&#8221;">' . __( 'Download', 'media-library-assistant' ) . '</a>';
 			}
 
-			$actions['view']  = '<a href="' . site_url( ) . '?attachment_id=' . $item->ID . '" rel="permalink" title="' . __( 'View', 'media-library-assistant' ) . ' &#8220;' . $att_title . '&#8221;">' . __( 'View', 'media-library-assistant' ) . '</a>';
-
+			if ( ! $this->is_trash ) {
+				$actions['view']  = '<a href="' . site_url( ) . '?attachment_id=' . $item->ID . '" rel="permalink" title="' . __( 'View', 'media-library-assistant' ) . ' &#8220;' . $att_title . '&#8221;">' . __( 'View', 'media-library-assistant' ) . '</a>';
+			}
+			
 			$actions = apply_filters( 'mla_list_table_build_rollover_actions', $actions, $item, $column );
 
 			$this->rollover_id = $item->ID;
