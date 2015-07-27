@@ -270,6 +270,17 @@ class MLA_WPML {
 	 *					  'prevent_default' => true to bypass the MLA handler )
 	 */
 	public static function mla_list_table_inline_action( $item_content, $post_id ) {
+		global $sitepress;
+
+		// WPML does not preserve the current language for the Quick Edit Ajax action
+		$referer = wp_get_referer();
+		if ( $referer ) {
+			wp_parse_str( $referer, $args );
+			if ( isset( $args['lang'] ) ) {
+				$sitepress->switch_lang( $args['lang'], true );
+			}
+		}
+
 		self::_build_existing_terms( $post_id );
 
 		return $item_content;
@@ -892,6 +903,7 @@ class MLA_WPML {
 		 */
 		$new_terms = array();
 		foreach ( $taxonomies as $taxonomy ) {
+			$new_terms[ $taxonomy ] = array();
 			foreach( self::$existing_terms[ $source_language ][ $taxonomy ] as $ttid => $term ) {
 				$source_term = self::_get_relevant_term( 'term_taxonomy_id', $ttid, $taxonomy );
 				if ( isset( $source_term['translations'][ $language ] ) ) {
@@ -906,6 +918,7 @@ class MLA_WPML {
 		 */
 		$old_terms = array();
 		foreach ( $taxonomies as $taxonomy ) {
+			$old_terms[ $taxonomy ] = array();
 			foreach( self::$existing_terms[ $language ][ $taxonomy ] as $ttid => $term ) {
 				$source_term = self::_get_relevant_term( 'term_taxonomy_id', $ttid, $taxonomy );
 				if ( isset( $source_term['translations'][ $source_language ] ) ) {

@@ -375,11 +375,11 @@ Ten <code>[mla_gallery]</code> parameters provide an easy way to simulate thumbn
 </tr>
 <tr>
 <td style="padding-right: 10px; vertical-align: top; font-weight:bold">mla_viewer_width</td>
-<td>the maxinum width in pixels (default "150") of the thumbnail image. The height (unless also specified) will be adjusted to maintain the page proportions.</td>
+<td>the maximum width in pixels (default "150") of the thumbnail image. The height (unless also specified) will be adjusted to maintain the page proportions.</td>
 </tr>
 <tr>
 <td style="padding-right: 10px; vertical-align: top; font-weight:bold">mla_viewer_height</td>
-<td>the maxinum width in pixels (default "0") of the thumbnail image. The width (unless also specified) will be adjusted to maintain the page proportions.</td>
+<td>the maximum width in pixels (default "0") of the thumbnail image. The width (unless also specified) will be adjusted to maintain the page proportions.</td>
 </tr>
 <tr>
 <td style="padding-right: 10px; vertical-align: top; font-weight:bold">mla_viewer_best_fit</td>
@@ -994,7 +994,7 @@ The <code>[mla_tag_cloud]</code> shortcode function displays a list of taxonomy 
 <ul class="mla_settings">
 <li>Full support for WordPress categories, tags and custom taxonomies. You can select from any taxonomy or list of taxonomies defined in your site.</li>
 <li>Several display formats, including "flat","list" and "grid" (modeled after the <code>[mla_gallery]</code> display).</li>
-<li>Complete support for paginated clouds; display hundreds or thousands of terms in managable groups.</li>
+<li>Complete support for paginated clouds; display hundreds or thousands of terms in manageable groups.</li>
 <li>Control over the styles, markup and content of each cloud using Style and Markup Templates. You can customize the "list" and "grid" formats to suit any need.</li>
 <li>Access to a wide range of content using the term-specific and Field-level Substitution parameters. A powerful Content Template facility lets you assemble content from multiple sources and vary the results depending on which data elements contain non-empty values for a given term.</li>
 <li>Display Style and Display Content parameters for easy customization of the cloud display and the destination of the links behind each term.
@@ -1013,7 +1013,7 @@ The traditional tag cloud output is a "heat map" of term names where larger name
 <table>
 <tr>
 <td style="padding-right: 10px; vertical-align: top; font-weight:bold">flat</td>
-<td>Returns a sequence of hypelink tags without further HTML markup. The "separator" parameter content (default, one newline character) is inserted between each hyperlink. This is the default value.</td>
+<td>Returns a sequence of hyperlink tags without further HTML markup. The "separator" parameter content (default, one newline character) is inserted between each hyperlink. This is the default value.</td>
 </tr>
 <tr>
 <td style="padding-right: 10px; vertical-align: top; font-weight:bold">list</td>
@@ -1215,7 +1215,7 @@ The data selection parameters specify which taxonomy (or taxonomies) the terms a
 </tr>
 <tr>
 <td style="padding-right: 10px; vertical-align: top; font-weight:bold">post_type</td>
-<td>The <a href="http://codex.wordpress.org/Post_Types" title="WordPress Codex &quot;Post Types&quot; page" target="_blank">post type(s)</a> of the items to include in the term-specific counts. The default is "attachment". You can override the default if you want to count other types for which the taxonomy is registered, e.g., "post" to count Posts in the "category" and "post_tag" taxonomies. The <a href="http://codex.wordpress.org/Post_Types" title="WordPress Codex &quot;Post Types&quot; page" target="_blank">Codex Page</a> documents other post type values. Make sure your "post_status" and "post_type" values are consistant, e.g., use <code>post_type="attachment,post" post_status="inherit,publish"</code> together.</td>
+<td>The <a href="http://codex.wordpress.org/Post_Types" title="WordPress Codex &quot;Post Types&quot; page" target="_blank">post type(s)</a> of the items to include in the term-specific counts. The default is "attachment". You can override the default if you want to count other types for which the taxonomy is registered, e.g., "post" to count Posts in the "category" and "post_tag" taxonomies. The <a href="http://codex.wordpress.org/Post_Types" title="WordPress Codex &quot;Post Types&quot; page" target="_blank">Codex Page</a> documents other post type values. Make sure your "post_status" and "post_type" values are consistent, e.g., use <code>post_type="attachment,post" post_status="inherit,publish"</code> together.</td>
 </tr>
 <tr>
 <td style="padding-right: 10px; vertical-align: top; font-weight:bold">post_status</td>
@@ -1597,7 +1597,7 @@ Tag cloud <strong>item-specific substitution parameters</strong> for the Markup 
 </tr>
 <tr>
 <td style="padding-right: 10px; vertical-align: top; font-weight:bold">scaled_count</td>
-<td>scaled count value, for determining font size. The default fomula for scaling the count is <code>round(log10($tag->count + 1) * 100)</code></td>
+<td>scaled count value, for determining font size. The default formula for scaling the count is <code>round(log10($tag->count + 1) * 100)</code></td>
 </tr>
 <tr>
 <td style="padding-right: 10px; vertical-align: top; font-weight:bold">font_size</td>
@@ -1656,7 +1656,7 @@ Tag cloud <strong>item-specific substitution parameters</strong> for the Markup 
 </p>
 <h4>Tag Cloud Pagination Parameters</h4>
 <p>
-If you have a large number of terms in your cloud taxonomy you may want to paginate the cloud display, i.e., divide the cloud into two or more pages of a reasonable size. Pagination support for <code>[mla_tag_cloud]</code> is modeled on similar functions for<code>[mla_gallery]</code>, and you can find more explaination of the ideas behind pagination in the <a href="#mla_output_parameter"><strong>Support for Alternative Gallery Output, e.g., Pagination</strong></a> section. Five parameters are supplied for this purpose:
+If you have a large number of terms in your cloud taxonomy you may want to paginate the cloud display, i.e., divide the cloud into two or more pages of a reasonable size. Pagination support for <code>[mla_tag_cloud]</code> is modeled on similar functions for<code>[mla_gallery]</code>, and you can find more explanation of the ideas behind pagination in the <a href="#mla_output_parameter"><strong>Support for Alternative Gallery Output, e.g., Pagination</strong></a> section. Five parameters are supplied for this purpose:
 <table>
 <tr>
 <td style="padding-right: 10px; vertical-align: top; font-weight:bold">limit</td>
@@ -1864,7 +1864,7 @@ As you can tell from the number of parameters available, the <code>[mla_gallery]
 </ul>
 </p>
 <p>
-Perhaps the most popular Media Library Assistant feature is the ability to assign category and tag values to Media LIbrary Items and use the values to filter a gallery display. "Categories" and "Tags" are built-in WordPress "taxonomies" and have been used for a long time to organize posts and pages. WordPress does not have built-in support for using them with attachments, and that was one of the original motivations for MLA.
+Perhaps the most popular Media Library Assistant feature is the ability to assign category and tag values to Media Library Items and use the values to filter a gallery display. "Categories" and "Tags" are built-in WordPress "taxonomies" and have been used for a long time to organize posts and pages. WordPress does not have built-in support for using them with attachments, and that was one of the original motivations for MLA.
 </p>
 <p>
 With MLA you can extend Categories and Tags support to attachments. MLA also provides two additional taxonomies for your convenience, Att. Categories and Att. Tags. Because of the way WordPress works, using Categories and Tags for attachments as well as posts and pages can be complicated, so many people find that using the separate Att. Categories and Att. Tags is more convenient.
@@ -2789,7 +2789,7 @@ Field-level substitution parameters let you access query arguments, custom field
 	</tr>
 </table>
 <p>
-The next sections define each of the prefixs and option/format values. 
+The next sections define each of the prefix and option/format values. 
 <a name="field_level_prefixes"></a>
 </p>
 <h4>Prefix values</h4>
@@ -3353,7 +3353,7 @@ The IPTC specification defines all of the allowed fields and organizes them into
 The EXIF specification defines many "Tags Relating to Picture-taking Conditions". Some of these are processed by WordPress and added to the "image_meta" array (as aperture, camera, focal_length, iso, shutter_speed). The field-level values in this section supplement those values and provide convenient access to additional values as well.
 </p>
 <p>
-The native format of this data is somewhat complicated, so MLA converts the most common elements into more convenient formats. For example, "rational" values are expressed as decimal equialents or converted to forms more often seen in photographic applications. You can use the enhanced values as-is or use them in a Content Template to compose the format(s) you need. You can access the native values with the names defined in the EXIF specification, e.g., "ExposureTime". The enhanced values are provided in the "CAMERA" array and accessed with compound names, e.g., "CAMERA.ExposureTime". The MLA enhanced values are:</p>
+The native format of this data is somewhat complicated, so MLA converts the most common elements into more convenient formats. For example, "rational" values are expressed as decimal equivalents or converted to forms more often seen in photographic applications. You can use the enhanced values as-is or use them in a Content Template to compose the format(s) you need. You can access the native values with the names defined in the EXIF specification, e.g., "ExposureTime". The enhanced values are provided in the "CAMERA" array and accessed with compound names, e.g., "CAMERA.ExposureTime". The MLA enhanced values are:</p>
 <table>
 <tr style="font-weight: bold"><td>Field</td><td>Example</td><td>Content</td></tr>
 <tr>
@@ -3405,12 +3405,12 @@ The MLA enhanced values for "Other Tags" are:</p>
 <tr>
 <td style="padding-right: 10px; vertical-align: top; font-weight:bold">BodySerialNumber</td>
 <td style="padding-right: 10px; vertical-align: top">6033674</td>
-<td style="padding-right: 10px; vertical-align: top">the serial number of the camra body as an ASCII string.</td>
+<td style="padding-right: 10px; vertical-align: top">the serial number of the camera body as an ASCII string.</td>
 </tr>
 <tr>
 <td style="padding-right: 10px; vertical-align: top; font-weight:bold">LensSpecification</td>
 <td style="padding-right: 10px; vertical-align: top">"80/1, 400/1, 45/10, 56/10"</td>
-<td style="padding-right: 10px; vertical-align: top">a four-element array containing minimum focal length, maxinum focal length, minimum F number in the minimum focal length and minimum F number in the maximum focal length.</td>
+<td style="padding-right: 10px; vertical-align: top">a four-element array containing minimum focal length, maximum focal length, minimum F number in the minimum focal length and minimum F number in the maximum focal length.</td>
 </tr>
 <tr>
 <td style="padding-right: 10px; vertical-align: top; font-weight:bold">LensMinFocalLength</td>
@@ -3445,7 +3445,7 @@ The MLA enhanced values for "Other Tags" are:</p>
 <tr>
 <td style="padding-right: 10px; vertical-align: top; font-weight:bold">LensSerialNumber</td>
 <td style="padding-right: 10px; vertical-align: top"></td>
-<td style="padding-right: 10px; vertical-align: top">the serial number of the interchangable lens as an ASCII string.</td>
+<td style="padding-right: 10px; vertical-align: top">the serial number of the interchangeable lens as an ASCII string.</td>
 </tr>
 </table>
 <a name="mla_gps_values"></a>&nbsp;
@@ -4319,7 +4319,7 @@ You can combine "Keep" and "Multi" in useful ways. For example, you might enter 
 </dd>
 <dt>Format dropdown</dt>
 <dd>
-Sorting by custom fields in the Media/Assistant submenu is by string values. For numeric data this can cause odd-looking results, e.g., dimensions of "1200x768" will sort before "640x480". Numeic data sources are converted to strings and padded on the left with spaces if you use the "<strong>commas</strong>" format. This padding makes them sort more sensibly. The following example shows the results for the &quot;size_bytes[large]&quot; data source, sorted in ascending order:
+Sorting by custom fields in the Media/Assistant submenu is by string values. For numeric data this can cause odd-looking results, e.g., dimensions of "1200x768" will sort before "640x480". Numeric data sources are converted to strings and padded on the left with spaces if you use the "<strong>commas</strong>" format. This padding makes them sort more sensibly. The following example shows the results for the &quot;size_bytes[large]&quot; data source, sorted in ascending order:
 <table style="margin-left: 40px; margin-bottom: 10px;">
 <thead>
 <tr>
@@ -4572,7 +4572,7 @@ The Media Library Assistant has powerful tools for copying image metadata to:
 </ul>
 You can define the rules for mapping metadata on the "IPTC/EXIF" tab of the Settings page. You can choose to automatically apply the rules when new media are added to the Library (or not). You can click the "Map IPTC/EXIF metadata" button on the Edit Media/Edit Single Item screen or in the bulk edit area to selectively apply the rules to one or more images. You can click the "Map All Attachments Now" to apply the rules to <strong><em>ALL of the images in your library</em></strong> at one time.
 </p>
-<p>If you click any of the three "Map All Attachments, ... Now" buttons, the rules currently displayed in that category will be immediately applied to <strong>all</strong> of the attachments in your site. Rule changes are <strong>not</strong> saved when you click any of these buttons.<strong>THERE IS NO UNDO FOR THESE ACTIONS!</strong></p>
+<p>If you click any of the three "Map All Attachments, ... Now" buttons, the rules currently displayed in that category will be immediately applied to <strong>all</strong> of the attachments in your site. Rule changes are <strong>not</strong> saved when you click any of these buttons. THERE<strong> IS NO UNDO FOR THESE ACTIONS!</strong></p>
 <p>
 If you just want to add a custom field to the Media/Assistant submenu, the quick edit area and/or the bulk edit area go to the "Custom Fields" tab and follow the instructions there.
 <a name="iptc_exif_mapping_example"></a>
@@ -4640,7 +4640,7 @@ MLA provides enhanced access to GPS values within the EXIF metadata; more detail
 <br />&nbsp;<br />
 Two special exif "pseudo-values" are available; <strong>ALL_IPTC</strong> and <strong>ALL_EXIF</strong>. These return a string representation (in &quot;export&quot; format) of all IPTC or EXIF data respectively. You can use these pseudo-values to examine the metadata in an image, find field names and see what values are embedded in the image.
 <br />&nbsp;<br />
-You can also enter a Content Template here by coding the "template:" prefix at the beginning of the value. Do <strong>not</strong> add the "[+" and "+]" delimeters; the prefix is all you need. More information about using templates here is given below.
+You can also enter a Content Template here by coding the "template:" prefix at the beginning of the value. Do <strong>not</strong> add the "[+" and "+]" delimiters; the prefix is all you need. More information about using templates here is given below.
 </dd>
 <dt>Priority</dt>
 <dd>If both the IPTC Value and the EXIF Value are non-blank for a particular image, you can select which of the values will be used for the mapping.
@@ -4667,7 +4667,7 @@ In some cases multiple terms will be contained in a single IPTC or EXIF value. F
 </p>
 <h4>IPTC/EXIF mapping command buttons</h4>
 <p>
-To the right of each table heading is a "Map All Attachments, ... Now" button. When you click one of these buttons, the mapping rules in that table are applied to <strong><em>ALL of the images in the Media Library</em></strong>. This is a great way to bring your media items up to date, but it is <strong><em>NOT REVERSIBLE</em></strong>, so think carefully before you click! Each button applies the rules in just one category, so (for exmple) you can update taxonomy terms without disturbing standard or custom field values.
+To the right of each table heading is a "Map All Attachments, ... Now" button. When you click one of these buttons, the mapping rules in that table are applied to <strong><em>ALL of the images in the Media Library</em></strong>. This is a great way to bring your media items up to date, but it is <strong><em>NOT REVERSIBLE</em></strong>, so think carefully before you click! Each button applies the rules in just one category, so (for example) you can update taxonomy terms without disturbing standard or custom field values.
 </p>
 <p>
 These immediate mapping buttons <strong><em>DO NOT</em></strong> save any rules changes you've made, so you can make a temporary rule change and process your attachments without disturbing the standing rules.
@@ -4745,7 +4745,7 @@ Click this button to update all of the existing rules at one time. This is handy
 </p>
 <h4>EXIF/Template mapping with Content Templates</h4>
 <p>
-If you code the "template:" prefix at the beginning of the EXIF/Template value you have all the power of Content Templates at your disposal. Do <strong>not</strong> add the "[+" and "+]" delimeters; the prefix is all you need.
+If you code the "template:" prefix at the beginning of the EXIF/Template value you have all the power of Content Templates at your disposal. Do <strong>not</strong> add the "[+" and "+]" delimiters; the prefix is all you need.
 </p>
 <p>
 Within a template, all of the <a href="#field_level_data_sources">Data sources for custom field mapping</a> are available. For example, you can code <code>[+pixels+]</code> or <code>[+size_keys,single+]</code>.
@@ -5020,10 +5020,28 @@ The current Settings/Media Library Assistant tab list hook is:
 </p>
 <h3>MLA Debug Tab</h3>
 <p>
-If you are having trouble with some part of Media Library Assistant it may be helpful to look at the PHP error log. MLA writes messages to the log for a variety of reasons, and the information thay contain can be very helpful in finding the cause of a problem and resolving it.
+If you are having trouble with some part of Media Library Assistant it may be helpful to look at the PHP error log. MLA writes messages to the log for a variety of reasons, and the information they contain can be very helpful in finding the cause of a problem and resolving it.
+</p>
+<p>
+The existence and location of the error log can vary depending on your server configuration. WordPress includes some <code>wp-config.php</code> entries that can help. If you activate the Debug tab but can't access the error log you can try adding or updating these statements in your <code>wp-config.php</code> file:
+</p>
+<ul style="line-height: 1em; list-style-type:disc; margin-left: 20px ">
+<li><code>define( 'WP_DEBUG', 1 );</code>
+When WP_DEBUG is true, all PHP notices are reported. WordPress will also display notices, including one when a deprecated WordPress function, function argument, or file is used. Deprecated code may be removed from a later version.
+</li>
+<li><code>define( 'WP_DEBUG_LOG', 1 );</code>
+When WP_DEBUG_LOG is true, errors will be logged to wp-content/debug.log. WP_DEBUG_LOG defaults to false.
+</li>
+<li><code>define( 'WP_DEBUG_DISPLAY', 1 );</code>
+When WP_DEBUG_DISPLAY is true, WordPress will force errors to be displayed. WP_DEBUG_DISPLAY defaults to true. Defining it as null prevents WordPress from changing the global configuration setting. Defining WP_DEBUG_DISPLAY as false will force errors to be hidden.
+</li>
+</ul>
+<p>
+The full path and file name of the error log is displayed just above the text area that contains the log content. If the content doesn't display and/or you can't download the log file, you can try finding the log file at the location shown.
 </p>
 <p>
 To add the Debug tab to your Settings/Media Library Assistant submenu you must add an entry to your <code>wp-config.php</code> file:
+</p>
 <ul style="margin-left: 20px">
 <li><code>define( 'MLA_DEBUG_LEVEL', 1 );</code></li>
 </ul>
@@ -5031,12 +5049,15 @@ To add the Debug tab to your Settings/Media Library Assistant submenu you must a
 Once that line is added to the <code>wp-config.php</code> file the "Debug" tab will appear at the right of the tab list in the Settings/Media Library Assistant submenu. In addition, the value <code>MLA_DEBUG_LEVEL</code> will appear in the submenu title to remind you it has been set.
 </p>
 <p>
-The Debug Options screen begins with an "Error Log" title, followed by the PHP error reporting level in parentheses. Below the title is a text box with the current content of the PHP error log file. Below the text box are three action buttons:
+The Debug Options screen begins with an "Error Log" title, followed by the PHP error reporting level in parentheses. Below the title is the Debug Options section. The Display Limit value lets you limit the amount of log information copied to the text area for display. Setting a limit to, for example, 262144 will display the last 256 Kb of the file; this can be useful if the log file gets very large.
+</p>
+<p>
+Below the Debug Options section is a text area with the current content of the PHP error log file. Below the text box are three action buttons:
 </p>
 <ul style="margin-left: 20px">
 <li><strong>Download</strong> - click this button to download a copy of the error log to your system.</li>
 <li><strong>Reset</strong> - click this button to erase the contents of the error log.</li>
-<li><strong>Save Changes</strong> - this button doesn't do anything useful in the current MLA version.</li>
+<li><strong>Save Changes</strong> - click this button to save a new value for the Display Limit option.</li>
 </ul>
 <p>
 If you are having an MLA problem that includes error messages in the log, copying the messages and adding them to your Support Forum topic can be most helpful; thanks!
@@ -5061,7 +5082,7 @@ MLA detects the presence of either plugin and automatically adds several feature
 Each Media Library item can have one or more "translations". The item translations are linked and they use the same file in the Media Library. The linkage lets us know that "&iexcl;Hola Mundo!" (Spanish), "Bonjour Monde" (French) and "Hello world!" (English) are all translations of the same post/page. Post/page translation is optional; some posts/pages may not be defined for all languages. The language of the first translation entered for a post/page is noted as the "source language".
 </p>
 <p>
-Taxonomy terms can also have one or more translations, which are also linked. The linkage lets us know that "Accesorio Categor&iacute;a" (Spanish), "Cat&eacute;gorie Attachement" (French) and "Attachment Category" (English) are all translations of the same term. Term translation is optional; some terms may not be defined for all languages. The language of the first translation entered for a term is noted as the "source language".
+Taxonomy terms can also have one or more translations, which are also linked. The linkage lets us know that "Accesorio Categor&iacute;a" (Spanish), "Cat&eacute;gorie Attachment" (French) and "Attachment Category" (English) are all translations of the same term. Term translation is optional; some terms may not be defined for all languages. The language of the first translation entered for a term is noted as the "source language".
 </p>
 <p>
 When an item is uploaded to the Media Library it is assigned to the current language (note: <strong>avoid uploading items when you are in "All Languages"/"Show all languages" mode</strong>; bad things happen). WPML provides an option to duplicate the new item in all active languages; Polylang does not. MLA makes it easy to add translations to additional languages with the Translations column on the Media/Assistant submenu table. For Polylang, MLA provides Quick Translate and Bulk Translate actions as well.
@@ -5074,7 +5095,7 @@ Assigning language-specific terms to items with multiple translations can be com
 The <code>[mla_gallery]</code> shortcode selects items using the WordPress <code>WP_Query</code> class. Both WPML and Polylang use the hooks provided by <code>WP_Query</code> to return items in the current language. If you use taxonomy parameters in your shortcode you must make sure that the term name, slug or other value is in the same language as the post/page in which it is embedded. This is easily done when the post/page content is translated from one language to another.
 </p>
 <p>
-The <code>[mla_tag_cloud]</code> shortcode selects terms using the WordPress <code>wpdb</code> class. MLA adds language qualifiers to the database queries that compose the cloud so all terms displated are appropriate for the current language. No special coding or shortcode modification is required.
+The <code>[mla_tag_cloud]</code> shortcode selects terms using the WordPress <code>wpdb</code> class. MLA adds language qualifiers to the database queries that compose the cloud so all terms displayed are appropriate for the current language. No special coding or shortcode modification is required.
 </p>
 <h4>Media/Assistant submenu table</h4>
 <p>
@@ -5082,13 +5103,13 @@ Two columns are added to the table when WPML or Polylang is active:
 </p>
 <ul style="margin-left: 20px">
 <li><strong>Language</strong> - displays the language of the item. This column is only present when "All languages/Show all languages" is selected in the admin toolbar at the top of the screen.</li>
-<li><strong>"Translations"</strong> - displays the translation status of the item in all active languages. The column header displays the flag icon for the language. The column content will have a checkmark icon for the item's language, a pencil icon for an existing translation or a plus icon for a translation that does not exist. You can click any icon to go directly to the Media/Edit Media screen for that translation. If you click a plus icon, a new translation will be created and initialized with content and terms from the current item and you will go to the Media/Edit Media screen for the new translation.</li>
+<li><strong>"Translations"</strong> - displays the translation status of the item in all active languages. The column header displays the flag icon for the language. The column content will have a check mark icon for the item's language, a pencil icon for an existing translation or a plus icon for a translation that does not exist. You can click any icon to go directly to the Media/Edit Media screen for that translation. If you click a plus icon, a new translation will be created and initialized with content and terms from the current item and you will go to the Media/Edit Media screen for the new translation.</li>
 </ul>
 <p>
 When Polylang is active, several additional features are available:
 </p>
 <ul style="margin-left: 20px">
-<li><strong>A Language dropdown control</strong> is added to the Quick Edit and Bulk Edit areas. You can change the language of one or more items by selecting a new value in the dropdown and clicking Update. The new language must not have an exising translation; if a translation already exists the change will be ignored.</li>
+<li><strong>A Language dropdown control</strong> is added to the Quick Edit and Bulk Edit areas. You can change the language of one or more items by selecting a new value in the dropdown and clicking Update. The new language must not have an existing translation; if a translation already exists the change will be ignored.</li>
 <li><strong>Translation status links</strong> are added to the Quick Edit area, just below the Language dropdown control. If you click one of the pencil/plus translation status links, a new Quick Edit area will open for the translation you selected. A new translation is created if you click a plus status icon.</li>
 <li><strong>A Quick Translate rollover action</strong> can be added to each item (the default option setting is "unchecked"). If you activate this option, when you click the "Quick Translate" rollover action for an item the Quick Translate area opens, showing the Language dropdown control and the translation status links. From there, click "Set Language" to change the language assigned to the item or click one of the pencil/plus translation status links. A new Quick Edit area will open for the translation you selected. A new translation is created if you click a plus status icon.</li>
 <li><strong>A Translate action</strong> is added to the Bulk Actions dropdown control. If you click the box next to one or more items, select Translate in the Bulk Actions dropdown and click Apply, the Bulk Translate area will open. The center column contains a checkbox for each active language and an "All Languages" checkbox. Check the box(es) for the languages you want and then click "Bulk Translate". The Media/Assistant submenu table will be refreshed to display only the items you selected in the language(s) you selected. Existing translations will be displayed, and <strong>new translations will be created</strong> as needed so every item has a translation in every language selected.</li>
@@ -5128,7 +5149,7 @@ The "<strong>Replace</strong>" answer is the same as the individual/quick edit a
 </p>
 <strong>Term Synchronization</strong>
 <p>
-If you edit an item translation, for example to add or remove a term assignment, what should happen to the other translations of the same item? Term synchroniztion will add or remove the equivalent term in the other item translations if the equivalent term exists.
+If you edit an item translation, for example to add or remove a term assignment, what should happen to the other translations of the same item? Term synchronization will add or remove the equivalent term in the other item translations if the equivalent term exists.
 </p>
 <p>
 What about "untranslated" terms that do not have translations to all languages? Should an existing "French-only" (untranslated) term be preserved? It is, since there is no way to indicate that it should be removed.

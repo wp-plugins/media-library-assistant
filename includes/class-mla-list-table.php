@@ -584,12 +584,12 @@ class MLA_List_Table extends WP_List_Table {
 				$list = array();
 				foreach ( $terms as $term ) {
 					$term_name = esc_html( sanitize_term_field( 'name', $term->name, $term->term_id, $taxonomy, 'display' ) );
-					$list[] = sprintf( '<a href="%1$s" title="' . __( 'Filter by', 'media-library-assistant' ) . ' &#8220;%2$s&#8221;">%3$s</a>', esc_url( add_query_arg( array_merge( self::mla_submenu_arguments( false ), array(
+					$list[] = sprintf( '<a href="%1$s" title="' . __( 'Filter by', 'media-library-assistant' ) . ' &#8220;%2$s&#8221;">%3$s</a>', esc_url( add_query_arg( array_merge( array(
 						'page' => MLA::ADMIN_PAGE_SLUG,
 						'mla-tax' => $taxonomy,
 						'mla-term' => $term->slug,
 						'heading_suffix' => urlencode( $tax_object->label . ': ' . $term->name ) 
-					) ), 'upload.php' ) ), $term_name, $term_name );
+					), self::mla_submenu_arguments( false ) ), 'upload.php' ) ), $term_name, $term_name );
 				} // foreach $term
 
 				return join( ', ', $list );
@@ -617,12 +617,12 @@ class MLA_List_Table extends WP_List_Table {
 				if ( is_array( $value ) ) {
 					$list[] = 'array( ' . @implode( ', ', $value ) . ' )';
 				} else {
-					$list[] = sprintf( '<a href="%1$s" title="' . __( 'Filter by', 'media-library-assistant' ) . ' &#8220;%2$s&#8221;">%3$s</a>', esc_url( add_query_arg( array_merge( self::mla_submenu_arguments( false ), array(
+					$list[] = sprintf( '<a href="%1$s" title="' . __( 'Filter by', 'media-library-assistant' ) . ' &#8220;%2$s&#8221;">%3$s</a>', esc_url( add_query_arg( array_merge( array(
 						'page' => MLA::ADMIN_PAGE_SLUG,
 						'mla-metakey' => urlencode( self::$default_columns[ $column_name ] ),
 						'mla-metavalue' => urlencode( $value ),
 						'heading_suffix' => urlencode( self::$default_columns[ $column_name ] . ': ' . $value ) 
-					) ), 'upload.php' ) ), esc_html( substr( $value, 0, 64 ) ), esc_html( $value ) );
+					), self::mla_submenu_arguments( false ) ), 'upload.php' ) ), esc_html( substr( $value, 0, 64 ) ), esc_html( $value ) );
 				}
 			}
 
@@ -778,8 +778,29 @@ class MLA_List_Table extends WP_List_Table {
 				}
 			}
 		}
-		
+
 		return $primary_column;
+	}
+
+	/**
+	 * Generate and display row actions links.
+	 *
+	 * @since 2.13
+	 * @access protected
+	 *
+	 * @param object $item        Attachment being acted upon.
+	 * @param string $column_name Current column name.
+	 * @param string $primary     Primary column name.
+	 * @return string Row actions output for media attachments.
+	 */
+	protected function handle_row_actions( $item, $column_name, $primary ) {
+		if ( $primary === $column_name ) {
+			$actions = $this->row_actions( $this->_build_rollover_actions( $item, $column_name ) );
+			$actions .= $this->_build_inline_data( $item );
+			return $actions;
+		}
+
+		return '';
 	}
 
 	/**
@@ -1006,11 +1027,11 @@ class MLA_List_Table extends WP_List_Table {
 				$parent_title = sprintf( '%1$d %2$s', $item->post_parent, __( '(no title)', 'media-library-assistant' ) );
 			}
 
-			$parent = sprintf( '<a href="%1$s" title="' . __( 'Filter by', 'media-library-assistant' ) . ' ' . __( 'Parent ID', 'media-library-assistant' ) . '">(parent:%2$s)</a>', esc_url( add_query_arg( array_merge( self::mla_submenu_arguments( false ), array(
+			$parent = sprintf( '<a href="%1$s" title="' . __( 'Filter by', 'media-library-assistant' ) . ' ' . __( 'Parent ID', 'media-library-assistant' ) . '">(parent:%2$s)</a>', esc_url( add_query_arg( array_merge( array(
 					'page' => MLA::ADMIN_PAGE_SLUG,
 					'parent' => $item->post_parent,
 					'heading_suffix' => urlencode( __( 'Parent', 'media-library-assistant' ) . ': ' .  $parent_title ) 
-				) ), 'upload.php' ) ), (string) $item->post_parent );
+				), self::mla_submenu_arguments( false ) ), 'upload.php' ) ), (string) $item->post_parent );
 		} else {// $item->post_parent
 			$parent = 'parent:0';
 		}
@@ -1077,11 +1098,11 @@ class MLA_List_Table extends WP_List_Table {
 				$parent_title = __( '(no title: bad ID)', 'media-library-assistant' );
 			}
 
-			return sprintf( '<a href="%1$s" title="' . __( 'Filter by', 'media-library-assistant' ) . ' ' . __( 'Parent ID', 'media-library-assistant' ) . '">%2$s</a>', esc_url( add_query_arg( array_merge( self::mla_submenu_arguments( false ), array(
+			return sprintf( '<a href="%1$s" title="' . __( 'Filter by', 'media-library-assistant' ) . ' ' . __( 'Parent ID', 'media-library-assistant' ) . '">%2$s</a>', esc_url( add_query_arg( array_merge( array(
 				'page' => MLA::ADMIN_PAGE_SLUG,
 				'parent' => $item->post_parent,
 				'heading_suffix' => urlencode( __( 'Parent', 'media-library-assistant' ) . ': ' .  $parent_title ) 
-			) ), 'upload.php' ) ), (string) $item->post_parent );
+			), self::mla_submenu_arguments( false ) ), 'upload.php' ) ), (string) $item->post_parent );
 		} else {
 			return (string) $item->post_parent;
 		}
@@ -1300,12 +1321,12 @@ class MLA_List_Table extends WP_List_Table {
 				$alt_text = $item->mla_wp_attachment_image_alt;
 			}
 
-			return sprintf( '<a href="%1$s" title="' . __( 'Filter by', 'media-library-assistant' ) . ' &#8220;%2$s&#8221;">%3$s</a>', esc_url( add_query_arg( array_merge( self::mla_submenu_arguments( false ), array(
+			return sprintf( '<a href="%1$s" title="' . __( 'Filter by', 'media-library-assistant' ) . ' &#8220;%2$s&#8221;">%3$s</a>', esc_url( add_query_arg( array_merge( array(
 				'page' => MLA::ADMIN_PAGE_SLUG,
 				'mla-metakey' => '_wp_attachment_image_alt',
 				'mla-metavalue' => urlencode( $alt_text ),
 				'heading_suffix' => urlencode( __( 'ALT Text', 'media-library-assistant' ) . ': ' . $alt_text ) 
-			) ), 'upload.php' ) ), esc_html( $alt_text ), esc_html( $alt_text ) );
+			), self::mla_submenu_arguments( false ) ), 'upload.php' ) ), esc_html( $alt_text ), esc_html( $alt_text ) );
 		}
 
 		return '';
@@ -1344,11 +1365,11 @@ class MLA_List_Table extends WP_List_Table {
 	 * @return	string	HTML markup to be placed inside the column
 	 */
 	function column_post_mime_type( $item ) {
-		return sprintf( '<a href="%1$s" title="' . __( 'Filter by', 'media-library-assistant' ) . ' &#8220;%2$s&#8221;">%2$s</a>', esc_url( add_query_arg( array_merge( self::mla_submenu_arguments( false ), array(
+		return sprintf( '<a href="%1$s" title="' . __( 'Filter by', 'media-library-assistant' ) . ' &#8220;%2$s&#8221;">%2$s</a>', esc_url( add_query_arg( array_merge( array(
 			'page' => MLA::ADMIN_PAGE_SLUG,
 			'post_mime_type' => urlencode( $item->post_mime_type ),
 			'heading_suffix' => urlencode( __( 'MIME Type', 'media-library-assistant' ) . ': ' . $item->post_mime_type ) 
-		) ), 'upload.php' ) ), esc_html( $item->post_mime_type ), esc_html( $item->post_mime_type ) );
+		), self::mla_submenu_arguments( false ) ), 'upload.php' ) ), esc_html( $item->post_mime_type ), esc_html( $item->post_mime_type ) );
 	}
 
 	/**
@@ -1376,12 +1397,12 @@ class MLA_List_Table extends WP_List_Table {
 	function column_base_file( $item ) {
 		$base_file = isset( $item->mla_wp_attached_file ) ? $item->mla_wp_attached_file : '';
 
-		return sprintf( '<a href="%1$s" title="' . __( 'Filter by', 'media-library-assistant' ) . ' &#8220;%2$s&#8221;">%2$s</a>', esc_url( add_query_arg( array_merge( self::mla_submenu_arguments( false ), array(
+		return sprintf( '<a href="%1$s" title="' . __( 'Filter by', 'media-library-assistant' ) . ' &#8220;%2$s&#8221;">%2$s</a>', esc_url( add_query_arg( array_merge( array(
 			'page' => MLA::ADMIN_PAGE_SLUG,
 			'mla-metakey' => urlencode( '_wp_attached_file' ),
 			'mla-metavalue' => urlencode( $base_file ),
 			'heading_suffix' => urlencode( __( 'Base File', 'media-library-assistant' ) . ': ' . $base_file ) 
-		) ), 'upload.php' ) ), esc_html( $base_file ) );
+		), self::mla_submenu_arguments( false ) ), 'upload.php' ) ), esc_html( $base_file ) );
 	}
 
 	/**
@@ -1460,11 +1481,11 @@ class MLA_List_Table extends WP_List_Table {
 		$user = get_user_by( 'id', $item->post_author );
 
 		if ( isset( $user->data->display_name ) ) {
-			return sprintf( '<a href="%s" title="' . __( 'Filter by', 'media-library-assistant' ) . ' ' . __( 'Author', 'media-library-assistant' ) . '">%s</a>', esc_url( add_query_arg( array_merge( self::mla_submenu_arguments( false ), array(
+			return sprintf( '<a href="%s" title="' . __( 'Filter by', 'media-library-assistant' ) . ' ' . __( 'Author', 'media-library-assistant' ) . '">%s</a>', esc_url( add_query_arg( array_merge( array(
 				 'page' => MLA::ADMIN_PAGE_SLUG,
 				'author' => $item->post_author,
 				'heading_suffix' => urlencode( __( 'Author', 'media-library-assistant' ) . ': ' . $user->data->display_name ) 
-			) ), 'upload.php' ) ), esc_html( $user->data->display_name ) );
+			), self::mla_submenu_arguments( false ) ), 'upload.php' ) ), esc_html( $user->data->display_name ) );
 		}
 
 		return 'unknown';

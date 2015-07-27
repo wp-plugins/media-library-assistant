@@ -3,8 +3,8 @@ Contributors: dglingren
 Donate link: http://fairtradejudaica.org/make-a-difference/donate/
 Tags: attachment, attachments, documents, gallery, image, images, media, library, media library, tag cloud, media-tags, media tags, tags, media categories, categories, IPTC, EXIF, XMP, GPS, PDF, meta, metadata, photo, photos, photograph, photographs, photoblog, photo albums, lightroom, photoshop, MIME, mime-type, icon, upload, file extensions, WPML, Polylang, multilanguage, multilingual, localization
 Requires at least: 3.5.0
-Tested up to: 4.2.2
-Stable tag: 2.12
+Tested up to: 4.3
+Stable tag: 2.13
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -171,6 +171,7 @@ All of the MLA source code has been annotated with "DocBlocks", a special type o
 == Changelog ==
 
 = 2.13 =
+* New: I am delighted to announce **Dutch and Swedish translations** of the plugin's main screens. Many thanks to Harm Kramer and John Larsen for their contributions!
 * New: For **WordPress 4.3+**, the Media/Assistant submenu table has been updated to support the new **primary column** features.
 * New: For the Media/Assistant submenu table, the **"Thumbnail" bulk action** lets you easily **generate thumbnail images** for non-image items. These can be used as the Featured Image for `mla_viewer` processing. A settings option lets you disable this feature if desired.
 * New: For the Media/Assistant submenu table, **wildcard searches are now allowed in the Search Media box** using an asterisk ("*") as the wildcard placeholder. Pull down the Help menu on the screen and select the Search Media section for more information.
@@ -189,7 +190,7 @@ All of the MLA source code has been annotated with "DocBlocks", a special type o
 * New: When 'MLA_DEBUG_LEVEL' is set to 3 in the wp-config.php file, debug information for the Bulk Edit Ajax handler is written to the error log. This includes WPML- and Polylang- specific information.
 * Fix: Wildcard searches containing an underscore character ("_") are now handled correctly. The `mla-custom-field-search-example.php.txt` example plugin has been updated as well.
 * Fix: Media Manager Modal (popup) Window enhancements work more reliably with plugins such as "SiteOrigin Page Builder Widgets".
-* Fix: When Polylang is active,  **Term Assignment has been fixed**, accomodating missing translation information for media items and terms and resolving some term_id/term_taxonomy_id issues. 
+* Fix: When Polylang or WPML is active,  **Term Assignment has been fixed**, accomodating missing translation information for media items and terms and resolving some term_id/term_taxonomy_id issues. 
 * Fix: When Polylang is active, "Show all languages" is selected after a Bulk Translate action so results from multiple languages can be displayed.
 * Fix: When Polylang is active, the Media/Assistant submenu table "Trash" view no longer shows the Translations column.
 * Fix: When Polylang is active, Quick and Bulk Edit taxonomy checklists are language-specific when "Refresh" is clicked after a Bulk Edit action.
@@ -327,8 +328,8 @@ All of the MLA source code has been annotated with "DocBlocks", a special type o
 
 == Upgrade Notice ==
 
-= 2.12 =
-Fixes a defect in [mla_gallery] handling of the mla_caption parameter. Adds mla_debug=log option.
+= 2.13 =
+WordPress 4.3 updates. PDF Thumbnail image generator. Wildcard keyword/term searching. Several WPML and Polylang fixes. Dutch and Swedish translations! Twelve other enhancements, twelve other fixes.
 
 == Other Notes ==
 

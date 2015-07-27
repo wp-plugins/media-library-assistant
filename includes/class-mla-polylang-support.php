@@ -949,6 +949,7 @@ class MLA_Polylang {
 		 */
 		$new_terms = array();
 		foreach ( $taxonomies as $taxonomy ) {
+			$new_terms[ $taxonomy ] = array();
 			foreach( self::$existing_terms[ $source_language ][ $taxonomy ] as $ttid => $term ) {
 				$source_term = self::_get_relevant_term( 'term_taxonomy_id', $ttid, $taxonomy );
 				if ( isset( $source_term['translations'][ $language ] ) ) {
@@ -963,6 +964,7 @@ class MLA_Polylang {
 		 */
 		$old_terms = array();
 		foreach ( $taxonomies as $taxonomy ) {
+			$old_terms[ $taxonomy ] = array();
 			foreach( self::$existing_terms[ $language ][ $taxonomy ] as $ttid => $term ) {
 				$source_term = self::_get_relevant_term( 'term_taxonomy_id', $ttid, $taxonomy );
 				if ( isset( $source_term['translations'][ $source_language ] ) ) {
