@@ -188,28 +188,32 @@ try{document.forms.addtag['mla-view-slug'].focus();}catch(e){}
 					<fieldset class="inline-edit-col">
 						<div class="inline-edit-col">
 							<h4>[+Quick Edit+]</h4>
-							<label> <span class="title">[+Slug+]</span> <span class="input-text-wrap">
+							<label class="alignleft"> <span class="title">[+Slug+]</span> <span class="input-text-wrap">
 								<input type="text" name="slug" class="ptitle" value="" />
 								</span> </label>
-							<label> <span class="title">[+Specification+]</span> <span class="input-text-wrap">
+							<label class="alignleft"> <span class="title">[+Specification+]</span> <span class="input-text-wrap">
 								<input type="text" name="specification" class="ptitle" value="" />
 								</span> </label>
-							<label> <span class="title">[+Singular Label+]</span> <span class="input-text-wrap">
+							<label class="alignleft"> <span class="title">[+Singular Label+]</span> <span class="input-text-wrap">
 								<input type="text" name="singular" class="ptitle" value="" />
 								</span> </label>
-							<label> <span class="title">[+Plural Label+]</span> <span class="input-text-wrap">
+							<label class="alignleft"> <span class="title">[+Plural Label+]</span> <span class="input-text-wrap">
 								<input type="text" name="plural" class="ptitle" value="" />
 								</span> </label>
-							<br clear="all">
-							<span class="input-text-wrap">
-								<input type="checkbox" name="post_mime_type" class="ptitle" checked="checked" value="1" />
-								</span> <span class="title">[+Post MIME Type+]&nbsp;&nbsp;&nbsp;&nbsp;</span>
-							<span class="input-text-wrap">
-								<input type="checkbox" name="table_view" class="ptitle" checked="checked" value="1" />
-								</span> <span class="title">[+Table View+]&nbsp;&nbsp;&nbsp;&nbsp;</span> 
-							<span class="title">[+Menu Order+]</span> <span class="input-text-wrap">
-								<input class="inline-edit-menu-order" type="text" name="menu_order" class="ptitle" value="" />
-								</span>
+							<div class="inline-edit-group">
+								<label class="alignleft checkbox-label">
+									<input type="checkbox" name="post_mime_type" class="ptitle" checked="checked" value="1" />
+									<span class="checkbox-title">[+Post MIME Type+]</span>
+								</label>
+								<label class="alignleft checkbox-label">
+									<input type="checkbox" name="table_view" class="ptitle" checked="checked" value="1" />
+									<span class="checkbox-title">[+Table View+]</span> 
+								</label>
+								<label class="alignleft">
+									<span class="title">[+Menu Order+]</span>
+									<span class="input-text-wrap"><input type="text" name="menu_order" class="ptitle inline-edit-menu-order" value="" /></span>
+								</label>
+							</div>
 						</div>
 					</fieldset>
 					<p class="inline-edit-save submit"> <a accesskey="c" href="#inline-edit" title="Cancel" class="cancel button-secondary alignleft">[+Cancel+]</a> <a accesskey="s" href="#inline-edit" title="[+Update+]" class="save button-primary alignright">[+Update+]</a>

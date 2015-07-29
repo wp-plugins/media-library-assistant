@@ -15,6 +15,15 @@
  */
 class MLATest {
 	/**
+	 * True if WordPress version is 3.5.x
+	 *
+	 * @since 2.14
+	 *
+	 * @var	boolean
+	 */
+	public static $wp_3dot5 = null;
+	
+	/**
 	 * True if WordPress version is 4.3 or newer
 	 *
 	 * @since 2.13
@@ -31,6 +40,7 @@ class MLATest {
 	 * @return	void
 	 */
 	public static function initialize() {
+		MLATest::$wp_3dot5 = ( version_compare( get_bloginfo( 'version' ), '3.5.0', '>=' ) && version_compare( get_bloginfo( 'version' ), '3.5.99', '<=' ) );
 		MLATest::$wp_4dot3_plus = version_compare( get_bloginfo( 'version' ), '4.2.99', '>=' );
 
 		/*

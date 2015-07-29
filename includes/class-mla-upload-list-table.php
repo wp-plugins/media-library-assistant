@@ -154,6 +154,13 @@ class MLA_Upload_List_Table extends WP_List_Table {
 	 * @return	array	list of table columns
 	 */
 	public static function mla_manage_columns_filter( ) {
+		/*
+		 * For WP 4.3+ icon will be merged with the Extension/name column
+		 */
+		if ( MLATest::$wp_4dot3_plus ) {
+			unset( self::$default_columns['icon'] );
+		}
+		
 		return self::$default_columns;
 	}
 
@@ -188,6 +195,41 @@ class MLA_Upload_List_Table extends WP_List_Table {
 	}
 
 	/**
+	 * Print optional in-lne styles for Uploads submenu table
+	 *
+	 * @since 2.14
+	 */
+	public static function mla_admin_print_styles_action() {
+		if ( MLATest::$wp_4dot3_plus ) {
+			echo "<style type='text/css'>\n";
+			
+			// Any icon_type will do
+			$image_info = MLAMime::mla_get_icon_type_size( 'image' );
+
+			/*
+			 * Primary column including icon and some margin
+			 */
+			$icon_width = ( $image_info['width'] + 10 ) . 'px';
+			$icon_height = ( $image_info['height'] + 5 ) . 'px';
+
+			echo "  table.upload_types td.column-primary {\n";
+			echo "    position: relative;\n";
+			echo "  }\n";
+			echo "  table.upload_types div.upload_types-icon {\n";
+			echo "    position: absolute;\n";
+			echo "    top: 8px;\n";
+			echo "    left: 10px;\n";
+			echo "  }\n";
+			echo "  table.upload_types div.upload_types-info {\n";
+			echo "    margin-left: {$icon_width};\n";
+			echo "    min-height: {$icon_height};\n";
+			echo "  }\n";
+
+			echo "</style>\n";
+		}
+	}
+
+	/**
 	 * Called in the admin_init action because the list_table object isn't
 	 * created in time to affect the "screen options" setup.
 	 *
@@ -203,6 +245,7 @@ class MLA_Upload_List_Table extends WP_List_Table {
 		if ( isset( $_REQUEST['mla_tab'] ) && $_REQUEST['mla_tab'] == 'upload' ) {
 			add_filter( 'get_user_option_managesettings_page_' . MLASettings::MLA_SETTINGS_SLUG . '-uploadcolumnshidden', 'MLA_Upload_list_Table::mla_manage_hidden_columns_filter', 10, 3 );
 			add_filter( 'manage_settings_page_' . MLASettings::MLA_SETTINGS_SLUG . '-upload_columns', 'MLA_Upload_list_Table::mla_manage_columns_filter', 10, 0 );
+			add_action( 'admin_print_styles', 'MLA_Upload_List_Table::mla_admin_print_styles_action' );
 		}
 	}
 
@@ -215,6 +258,11 @@ class MLA_Upload_List_Table extends WP_List_Table {
 	 * @return	void
 	 */
 	function __construct( ) {
+		// MLA does not use this
+		$this->modes = array(
+			'list' => __( 'List View' ),
+		);
+
 		//Set parent defaults
 		parent::__construct( array(
 			'singular' => 'upload_type', //singular name of the listed records
@@ -226,6 +274,50 @@ class MLA_Upload_List_Table extends WP_List_Table {
 		/*
 		 * NOTE: There is one add_action call at the end of this source file.
 		 */
+	}
+
+	/**
+	 * Checks the current user's permissions
+	 *
+	 * @since 2.14
+	 *
+	 * @return bool
+	 */
+	public function ajax_user_can() {
+		return current_user_can('manage_options');
+	}
+
+	/**
+	 * Get the name of the default primary column.
+	 *
+	 * @since 2.14
+	 * @access protected
+	 *
+	 * @return string Name of the default primary column
+	 */
+	protected function get_default_primary_column_name() {
+		return 'name';
+	}
+
+	/**
+	 * Generate and display row actions links.
+	 *
+	 * @since 2.14
+	 * @access protected
+	 *
+	 * @param object $item        Attachment being acted upon.
+	 * @param string $column_name Current column name.
+	 * @param string $primary     Primary column name.
+	 * @return string Row actions output for media attachments.
+	 */
+	protected function handle_row_actions( $item, $column_name, $primary ) {
+		if ( $primary === $column_name ) {
+			$actions = $this->row_actions( $this->_build_rollover_actions( $item, $column_name ) );
+			$actions .= $this->_build_inline_data( $item );
+			return $actions;
+		}
+
+		return '';
 	}
 
 	/**
@@ -361,6 +453,14 @@ class MLA_Upload_List_Table extends WP_List_Table {
 	 * @return	string	HTML markup to be placed inside the column
 	 */
 	function column_name( $item ) {
+		if ( MLATest::$wp_4dot3_plus ) {
+			$content = "<div class=\"upload_types-icon\">\n";
+			$content .= self::column_icon( $item );
+			$content .= "\n</div>\n";
+			$content .= '<div class="upload_types-info">' . esc_attr( $item->slug ) . "</div>\n";
+			return $content;
+		}
+
 		$row_actions = self::_build_rollover_actions( $item, 'name' );
 		$slug = esc_attr( $item->slug );
 		return sprintf( '%1$s<br>%2$s%3$s', /*%1$s*/ $slug, /*%2$s*/ $this->row_actions( $row_actions ), /*%3$s*/ $this->_build_inline_data( $item ) );

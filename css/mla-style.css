@@ -198,6 +198,29 @@ div.mla_errors {
 }
 
 @media screen and ( max-width: 782px ) {
+	/* Quick Edit and Bulk Edit */
+	#wpbody-content .quick-edit-row-attachment .inline-edit-col-left,
+	#wpbody-content .quick-edit-row-attachment .inline-edit-col-right,
+	#wpbody-content .inline-edit-row-attachment .inline-edit-col-center,
+	#wpbody-content .bulk-edit-row-attachment .inline-edit-col-left,
+	#wpbody-content .bulk-edit-row-attachment .inline-edit-col-right {
+		float: none;
+		width: 100%;
+	}
+
+	.quick-edit-row-attachment fieldset.inline-edit-col-left label span.title,
+	.quick-edit-row-attachment fieldset.inline-edit-col-right label span.title,
+	.bulk-edit-row-attachment fieldset.inline-edit-col-right label span.title {
+		width: 100%;
+		line-height: 2.5
+	}
+
+	.quick-edit-row-attachment fieldset.inline-edit-col-left label span.input-text-wrap,
+	.quick-edit-row-attachment fieldset.inline-edit-col-right label span.input-text-wrap,
+	.bulk-edit-row-attachment fieldset.inline-edit-col-right label span.input-text-wrap {
+		margin-left: 0em
+	}
+
 	.bulk-progress-titles div {
 		font-size: 16px;
 	}
@@ -241,8 +264,12 @@ div.mla_errors {
 
 .quick-edit-row-upload fieldset.inline-edit-col label,
 .quick-edit-row-view fieldset.inline-edit-col label {
-	float:left;
-	width: 26em
+	width: 21em
+}
+
+.quick-edit-row-upload fieldset.inline-edit-col label.checkbox-label,
+.quick-edit-row-view fieldset.inline-edit-col label.checkbox-label {
+	width: 10.5em
 }
 
 .quick-edit-row-upload fieldset.inline-edit-col input.inline-edit-menu-order,
@@ -250,6 +277,44 @@ div.mla_errors {
 .quick-edit-row-view fieldset.inline-edit-col input.inline-edit-menu-order,
 .bulk-edit-row-view fieldset.inline-edit-col-right label.inline-edit-menu-order span.input-text-wrap {
 	width: 5em
+}
+
+@media screen and ( max-width: 782px ) {
+	#wpbody-content .bulk-edit-row-upload .inline-edit-col-left,
+	#wpbody-content .bulk-edit-row-view .inline-edit-col-left,
+	#wpbody-content .bulk-edit-row-upload .inline-edit-col-right,
+	#wpbody-content .bulk-edit-row-view .inline-edit-col-right {
+		float: none;
+		width: 100%
+	}
+	
+	.quick-edit-row-upload fieldset.inline-edit-col label span.title,
+	.bulk-edit-row-upload fieldset.inline-edit-col-right label span.title,
+	.quick-edit-row-view fieldset.inline-edit-col label span.title,
+	.bulk-edit-row-view fieldset.inline-edit-col-right label span.title {
+		width: 100%
+	}
+	
+	.quick-edit-row-upload fieldset.inline-edit-col label span.input-text-wrap,
+	.bulk-edit-row-upload fieldset.inline-edit-col-right label span.input-text-wrap,
+	.quick-edit-row-view fieldset.inline-edit-col label span.input-text-wrap,
+	.bulk-edit-row-view fieldset.inline-edit-col-right label span.input-text-wrap {
+		margin-left: 0px;
+		width: 100%
+	}
+	
+	.quick-edit-row-upload fieldset.inline-edit-col label,
+	.quick-edit-row-view fieldset.inline-edit-col label {
+		float: none;
+		width: 100%
+	}
+	
+	.quick-edit-row-upload fieldset.inline-edit-col input.inline-edit-menu-order,
+	.bulk-edit-row-upload fieldset.inline-edit-col-right label.inline-edit-menu-order span.input-text-wrap,
+	.quick-edit-row-view fieldset.inline-edit-col input.inline-edit-menu-order,
+	.bulk-edit-row-view fieldset.inline-edit-col-right label.inline-edit-menu-order span.input-text-wrap {
+		width: 100%
+	}
 }
 
 /*

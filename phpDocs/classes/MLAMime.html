@@ -69,6 +69,7 @@
 <li class="method public "><a href="#mla_get_core_icon_type" title="mla_get_core_icon_type :: Retrieve a standard icon type, i.e., without MLA filtering"><span class="description">Retrieve a standard icon type, i.e., without MLA filtering</span><pre>mla_get_core_icon_type()</pre></a></li>
 <li class="method public "><a href="#mla_get_current_icon_types" title="mla_get_current_icon_types :: Get an array of current Icon Type names"><span class="description">Get an array of current Icon Type names</span><pre>mla_get_current_icon_types()</pre></a></li>
 <li class="method public "><a href="#mla_get_icon_type_image" title="mla_get_icon_type_image :: Get an HTML img element representing an attachment icon"><span class="description">Get an HTML img element representing an attachment icon</span><pre>mla_get_icon_type_image()</pre></a></li>
+<li class="method public "><a href="#mla_get_icon_type_size" title="mla_get_icon_type_size :: Get an attachment icon height and width"><span class="description">Get an attachment icon height and width</span><pre>mla_get_icon_type_size()</pre></a></li>
 <li class="method public "><a href="#mla_get_optional_upload_mime" title="mla_get_optional_upload_mime :: Retrieve an MLA Optional Upload MIME Type given an ID"><span class="description">Retrieve an MLA Optional Upload MIME Type given an ID</span><pre>mla_get_optional_upload_mime()</pre></a></li>
 <li class="method public "><a href="#mla_get_post_mime_type" title="mla_get_post_mime_type :: Retrieve an MLA post_mime_type object"><span class="description">Retrieve an MLA post_mime_type object</span><pre>mla_get_post_mime_type()</pre></a></li>
 <li class="method public "><a href="#mla_get_post_mime_type_slug" title="mla_get_post_mime_type_slug :: Retrieve an MLA post_mime_type slug given a post_ID"><span class="description">Retrieve an MLA post_mime_type slug given a post_ID</span><pre>mla_get_post_mime_type_slug()</pre></a></li>
@@ -381,6 +382,25 @@ to the file for display purposes.</p>
 <h3>Returns</h3>
 <div class="subelement response">
 <code>string</code>HTML img element or empty string on failure.</div>
+</div></div>
+</div>
+<a name="mla_get_icon_type_size" id="mla_get_icon_type_size"></a><div class="element clickable method public mla_get_icon_type_size" data-toggle="collapse" data-target=".mla_get_icon_type_size .collapse">
+<h2>Get an attachment icon height and width</h2>
+<pre>mla_get_icon_type_size(string $icon_type) : array</pre>
+<div class="labels"></div>
+<div class="row collapse"><div class="detail-description">
+<p class="long_description"></p>
+<table class="table table-bordered"><tr>
+<th>since</th>
+<td>2.14</td>
+</tr></table>
+<h3>Parameters</h3>
+<div class="subelement argument">
+<h4>$icon_type</h4>
+<code>string</code><p>Icon Type, e.g., audio, video, spreadsheet</p></div>
+<h3>Returns</h3>
+<div class="subelement response">
+<code>array</code>( width, height )</div>
 </div></div>
 </div>
 <a name="mla_get_optional_upload_mime" id="mla_get_optional_upload_mime"></a><div class="element clickable method public mla_get_optional_upload_mime" data-toggle="collapse" data-target=".mla_get_optional_upload_mime .collapse">
@@ -1288,7 +1308,7 @@ Defined as public because it's a filter.</p></p>
 <div class="row"><footer class="span12">
             Template is built using <a href="http://twitter.github.com/bootstrap/">Twitter Bootstrap 2</a> and icons provided by <a href="http://glyphicons.com/">Glyphicons</a>.<br>
             Documentation is powered by <a href="http://www.phpdoc.org/">phpDocumentor 2.0.0a8</a> and<br>
-            generated on 2015-07-08T19:21:50-07:00.<br></footer></div>
+            generated on 2015-07-28T20:42:44-07:00.<br></footer></div>
 </div>
 </body>
 </html>

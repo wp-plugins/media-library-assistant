@@ -71,7 +71,7 @@ var jQuery,
 			this.revert();
 
 			// Open up the Bulk Translate area
-			$( '#mla-bulk-thumbnail td' ).attr( 'colspan', $( '.widefat:first thead th:visible' ).length );
+			$( '#mla-bulk-thumbnail td' ).attr( 'colspan', $( 'th:visible, td:visible', '.widefat:first thead' ).length );
 			$( 'table.widefat tbody' ).prepend( $( '#mla-bulk-thumbnail' ) );
 			$( '#mla-bulk-thumbnail' ).addClass( 'inline-translator' ).show();
 

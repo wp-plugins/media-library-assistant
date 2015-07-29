@@ -191,19 +191,21 @@ try{document.forms.addtag['mla-upload-slug'].focus();}catch(e){}
 					<fieldset class="inline-edit-col">
 						<div class="inline-edit-col">
 							<h4>[+Quick Edit+]</h4>
-							<label> <span class="title">[+Extension+]</span> <span class="input-text-wrap">
+							<label class="alignleft"> <span class="title">[+Extension+]</span> <span class="input-text-wrap">
 								<input type="text" name="slug" class="ptitle" value="" />
 								</span> </label>
-							<label> <span class="title">[+MIME Type+]</span> <span class="input-text-wrap">
+							<label class="alignleft"> <span class="title">[+MIME Type+]</span> <span class="input-text-wrap">
 								<input type="text" name="mime_type" class="ptitle" value="" />
 								</span> </label>
-							<br clear="all">
-							<label> <span class="title">[+Icon Type+]</span> <span class="input-text-wrap">
+							<div class="inline-edit-group">
+								<label class="alignleft checkbox-label">
+								<input type="checkbox" name="disabled" class="ptitle" checked="checked" value="1" />
+								</span> <span class="checkbox-title">[+Inactive+]</span>
+								</label> 
+								<label class="alignleft"> <span class="title">[+Icon Type+]</span> <span class="input-text-wrap">
 [+inline_icon_types+]
 								</span> </label>
-							<span class="input-text-wrap">
-								<input type="checkbox" name="disabled" class="ptitle" checked="checked" value="1" />
-								</span> <span class="title">[+Inactive+]</span> 
+							</div>
 						</div>
 					</fieldset>
 					<p class="inline-edit-save submit"> <a accesskey="c" href="#inline-edit" title="[+Cancel+]" class="cancel button-secondary alignleft">[+Cancel+]</a> <a accesskey="s" href="#inline-edit" title="[+Update Upload MIME+]" class="save button-primary alignright">[+Update+]</a>

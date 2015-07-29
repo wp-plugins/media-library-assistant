@@ -59,7 +59,10 @@
 <i class="icon-custom icon-method"></i> Methods</li>
 <li class="method public "><a href="#admin_enqueue_scripts" title="admin_enqueue_scripts :: Load the plugin's Style Sheet and Javascript files"><span class="description">Load the plugin's Style Sheet and Javascript files</span><pre>admin_enqueue_scripts()</pre></a></li>
 <li class="method public "><a href="#admin_init" title="admin_init :: Load the plugin's Ajax handler(s)"><span class="description">Load the plugin's Ajax handler(s)</span><pre>admin_init()</pre></a></li>
-<li class="method public "><a href="#edit_attachment" title="edit_attachment :: Filters taxonomy updates by language."><span class="description">Filters taxonomy updates by language.</span><pre>edit_attachment()</pre></a></li>
+<li class="method public "><a href="#attachment_fields_to_save" title='attachment_fields_to_save :: Captures "before update" term assignments from the Media/Edit Media screen'><span class="description">Captures "before update" term assignments from the Media/Edit Media screen</span><pre>attachment_fields_to_save()</pre></a></li>
+<li class="method public "><a href="#edit_attachment" title="edit_attachment :: Filters taxonomy updates by language for Bulk Edit during Add New Media
+and the Media/Edit Media screen"><span class="description">Filters taxonomy updates by language for Bulk Edit during Add New Media
+and the Media/Edit Media screen</span><pre>edit_attachment()</pre></a></li>
 <li class="method public "><a href="#initialize" title="initialize :: Initialization function, similar to __construct()"><span class="description">Initialization function, similar to __construct()</span><pre>initialize()</pre></a></li>
 <li class="method public "><a href="#mla_get_options_tablist" title='mla_get_options_tablist :: Adds the "Language" tab to the Settings/Media Library Assistant list'><span class="description">Adds the "Language" tab to the Settings/Media Library Assistant list</span><pre>mla_get_options_tablist()</pre></a></li>
 <li class="method public "><a href="#mla_get_terms_clauses" title="mla_get_terms_clauses :: MLA Tag Cloud Query Clauses"><span class="description">MLA Tag Cloud Query Clauses</span><pre>mla_get_terms_clauses()</pre></a></li>
@@ -96,8 +99,6 @@ Media Manager Modal Window ATTACHMENT DETAILS taxonomy</span><pre>mla_media_moda
 <li class="method public "><a href="#mla_render_language_tab" title='mla_render_language_tab :: Renders the Settings/Media Library Assistant "Language" tab'><span class="description">Renders the Settings/Media Library Assistant "Language" tab</span><pre>mla_render_language_tab()</pre></a></li>
 <li class="method public "><a href="#pll_translate_media" title="pll_translate_media :: Copies taxonomy terms from the source item to the new translated item"><span class="description">Copies taxonomy terms from the source item to the new translated item</span><pre>pll_translate_media()</pre></a></li>
 <li class="method public "><a href="#quick_translate" title="quick_translate :: Ajax handler to Quick Translate a single attachment"><span class="description">Ajax handler to Quick Translate a single attachment</span><pre>quick_translate()</pre></a></li>
-<li class="method public "><a href="#views_media_page_mla_menu" title="views_media_page_mla_menu :: Views for media page MLA Menu"><span class="description">Views for media page MLA Menu</span><pre>views_media_page_mla_menu()</pre></a></li>
-<li class="method public "><a href="#wp_insert_post_empty_content" title='wp_insert_post_empty_content :: Captures "before update" term assignments from the Media/Edit Media screen'><span class="description">Captures "before update" term assignments from the Media/Edit Media screen</span><pre>wp_insert_post_empty_content()</pre></a></li>
 <li class="nav-header private">» Private</li>
 <li class="method private "><a href="#_add_relevant_term" title="_add_relevant_term :: Adds a term and its translations to $relevant_terms"><span class="description">Adds a term and its translations to $relevant_terms</span><pre>_add_relevant_term()</pre></a></li>
 <li class="method private "><a href="#_apply_synch_input" title="_apply_synch_input :: Compute Term Synchronization replacement $tax_inputs"><span class="description">Compute Term Synchronization replacement $tax_inputs</span><pre>_apply_synch_input()</pre></a></li>
@@ -106,7 +107,6 @@ Media Manager Modal Window ATTACHMENT DETAILS taxonomy</span><pre>mla_media_moda
 <li class="method private "><a href="#_build_tax_input" title="_build_tax_input :: Build the $tax_input array"><span class="description">Build the $tax_input array</span><pre>_build_tax_input()</pre></a></li>
 <li class="method private "><a href="#_get_relevant_term" title="_get_relevant_term :: Finds a $relevant_term (if defined) given a key and (optional) a language"><span class="description">Finds a $relevant_term (if defined) given a key and (optional) a language</span><pre>_get_relevant_term()</pre></a></li>
 <li class="method private "><a href="#_get_translation" title="_get_translation :: Find or create an item translation"><span class="description">Find or create an item translation</span><pre>_get_translation()</pre></a></li>
-<li class="method private "><a href="#_get_view" title="_get_view :: PolyMLA custom views for the Media/Assistant submenu"><span class="description">PolyMLA custom views for the Media/Assistant submenu</span><pre>_get_view()</pre></a></li>
 <li class="method private "><a href="#_reset_language_settings" title="_reset_language_settings :: Delete saved settings, restoring default values"><span class="description">Delete saved settings, restoring default values</span><pre>_reset_language_settings()</pre></a></li>
 <li class="method private "><a href="#_save_language_settings" title="_save_language_settings :: Save Language settings to the options table"><span class="description">Save Language settings to the options table</span><pre>_save_language_settings()</pre></a></li>
 <li class="method private "><a href="#_update_existing_terms" title="_update_existing_terms :: Update the $existing_terms array"><span class="description">Update the $existing_terms array</span><pre>_update_existing_terms()</pre></a></li>
@@ -187,8 +187,28 @@ Polylang Multilingual plugin</p>
 </tr></table>
 </div></div>
 </div>
+<a name="attachment_fields_to_save" id="attachment_fields_to_save"></a><div class="element clickable method public attachment_fields_to_save" data-toggle="collapse" data-target=".attachment_fields_to_save .collapse">
+<h2>Captures "before update" term assignments from the Media/Edit Media screen</h2>
+<pre>attachment_fields_to_save(\WP_Post $post, array $attachment) </pre>
+<div class="labels"></div>
+<div class="row collapse"><div class="detail-description">
+<p class="long_description"></p>
+<table class="table table-bordered"><tr>
+<th>since</th>
+<td>2.13</td>
+</tr></table>
+<h3>Parameters</h3>
+<div class="subelement argument">
+<h4>$post</h4>
+<code>\WP_Post</code><p>The WP_Post object.</p></div>
+<div class="subelement argument">
+<h4>$attachment</h4>
+<code>array</code><p>An array of attachment metadata.</p></div>
+</div></div>
+</div>
 <a name="edit_attachment" id="edit_attachment"></a><div class="element clickable method public edit_attachment" data-toggle="collapse" data-target=".edit_attachment .collapse">
-<h2>Filters taxonomy updates by language.</h2>
+<h2>Filters taxonomy updates by language for Bulk Edit during Add New Media
+and the Media/Edit Media screen</h2>
 <pre>edit_attachment(integer $post_id) </pre>
 <div class="labels"></div>
 <div class="row collapse"><div class="detail-description">
@@ -640,7 +660,8 @@ for the Quick and Bulk Edit forms.</p></p>
 <pre>mla_list_table_prepare_items_total_items(integer $total_items, object $mla_list_table) : integer</pre>
 <div class="labels"></div>
 <div class="row collapse"><div class="detail-description">
-<p class="long_description"><p>A convenient place to add the query argument required for the "attached" custom view.</p></p>
+<p class="long_description"><p>A convenient place to add the query argument required for the
+"Bulk Translate" custom view.</p></p>
 <table class="table table-bordered"><tr>
 <th>since</th>
 <td>2.11</td>
@@ -662,9 +683,9 @@ for the Quick and Bulk Edit forms.</p></p>
 <pre>mla_list_table_submenu_arguments(array $submenu_arguments, object $include_filters) : array</pre>
 <div class="labels"></div>
 <div class="row collapse"><div class="detail-description">
-<p class="long_description"><p>Adds a language ('lang') parameter to the URL parameters that will be
-retained when the submenu page refreshes.
-Maintains the pll_view and list of Bulk Translate items in the URLs for
+<p class="long_description"><p>Adds a language ('lang') parameter to the URL parameters that
+will be retained when the submenu page refreshes.
+Maintains the list of Bulk Translate items in the URLs for
 paging through the results.</p></p>
 <table class="table table-bordered"><tr>
 <th>since</th>
@@ -812,46 +833,6 @@ Media Manager Modal Window ATTACHMENT DETAILS taxonomy</h2>
 </tr></table>
 </div></div>
 </div>
-<a name="views_media_page_mla_menu" id="views_media_page_mla_menu"></a><div class="element clickable method public views_media_page_mla_menu" data-toggle="collapse" data-target=".views_media_page_mla_menu .collapse">
-<h2>Views for media page MLA Menu</h2>
-<pre>views_media_page_mla_menu(array $views) : array</pre>
-<div class="labels"></div>
-<div class="row collapse"><div class="detail-description">
-<p class="long_description"><p>This filter gives you an opportunity to filter the list of available list table views.</p></p>
-<table class="table table-bordered"><tr>
-<th>since</th>
-<td>2.11</td>
-</tr></table>
-<h3>Parameters</h3>
-<div class="subelement argument">
-<h4>$views</h4>
-<code>array</code><p>An array of available list table views. format: view_slug => link to the view, with count</p>
-</div>
-<h3>Returns</h3>
-<div class="subelement response">
-<code>array</code>updated list table views.</div>
-</div></div>
-</div>
-<a name="wp_insert_post_empty_content" id="wp_insert_post_empty_content"></a><div class="element clickable method public wp_insert_post_empty_content" data-toggle="collapse" data-target=".wp_insert_post_empty_content .collapse">
-<h2>Captures "before update" term assignments from the Media/Edit Media screen</h2>
-<pre>wp_insert_post_empty_content(bool $maybe_empty, array $postarr) </pre>
-<div class="labels"></div>
-<div class="row collapse"><div class="detail-description">
-<p class="long_description"></p>
-<table class="table table-bordered"><tr>
-<th>since</th>
-<td>2.11</td>
-</tr></table>
-<h3>Parameters</h3>
-<div class="subelement argument">
-<h4>$maybe_empty</h4>
-<code>bool</code><p>Whether the post should be considered "empty".</p>
-</div>
-<div class="subelement argument">
-<h4>$postarr</h4>
-<code>array</code><p>Array of post data.</p></div>
-</div></div>
-</div>
 <a name="_add_relevant_term" id="_add_relevant_term"></a><div class="element clickable method private _add_relevant_term" data-toggle="collapse" data-target="._add_relevant_term .collapse">
 <h2>Adds a term and its translations to $relevant_terms</h2>
 <pre>_add_relevant_term(object $term, object $translations) </pre>
@@ -879,7 +860,7 @@ Media Manager Modal Window ATTACHMENT DETAILS taxonomy</h2>
 </div>
 <a name="_apply_synch_input" id="_apply_synch_input"></a><div class="element clickable method private _apply_synch_input" data-toggle="collapse" data-target="._apply_synch_input .collapse">
 <h2>Compute Term Synchronization replacement $tax_inputs</h2>
-<pre>_apply_synch_input(string $language, array $terms_before) : array</pre>
+<pre>_apply_synch_input(string $language) : array</pre>
 <div class="labels"></div>
 <div class="row collapse"><div class="detail-description">
 <p class="long_description"><p>Assumes the "current post" in $existing_terms is the source
@@ -898,10 +879,6 @@ and $existing_terms contains the target translation</p></p>
 <div class="subelement argument">
 <h4>$language</h4>
 <code>string</code><p>the target translation code</p></div>
-<div class="subelement argument">
-<h4>$terms_before</h4>
-<code>array</code><p>source terms before updates/Term Assignment</p>
-</div>
 <h3>Returns</h3>
 <div class="subelement response">
 <code>array</code>$tax_inputs for Term Synchronization</div>
@@ -1004,7 +981,7 @@ language-specific term_id to term_id/term_name mappings for all languages.</p></
 </div>
 <a name="_get_relevant_term" id="_get_relevant_term"></a><div class="element clickable method private _get_relevant_term" data-toggle="collapse" data-target="._get_relevant_term .collapse">
 <h2>Finds a $relevant_term (if defined) given a key and (optional) a language</h2>
-<pre>_get_relevant_term(string $field, mixed $value, string $taxonomy, string $language) </pre>
+<pre>_get_relevant_term(string $field, mixed $value, string $taxonomy, string $language, boolean $test_only) </pre>
 <div class="labels"></div>
 <div class="row collapse"><div class="detail-description">
 <p class="long_description"></p>
@@ -1032,6 +1009,10 @@ language-specific term_id to term_id/term_name mappings for all languages.</p></
 <div class="subelement argument">
 <h4>$language</h4>
 <code>string</code><p>code; string; optional</p></div>
+<div class="subelement argument">
+<h4>$test_only</h4>
+<code>boolean</code><p>false (default) to add missing term, true to leave term out</p>
+</div>
 </div></div>
 </div>
 <a name="_get_translation" id="_get_translation"></a><div class="element clickable method private _get_translation" data-toggle="collapse" data-target="._get_translation .collapse">
@@ -1054,29 +1035,6 @@ language-specific term_id to term_id/term_name mappings for all languages.</p></
 <h3>Returns</h3>
 <div class="subelement response">
 <code>integer</code>ID of the corresponding item in the desired language</div>
-</div></div>
-</div>
-<a name="_get_view" id="_get_view"></a><div class="element clickable method private _get_view" data-toggle="collapse" data-target="._get_view .collapse">
-<h2>PolyMLA custom views for the Media/Assistant submenu</h2>
-<pre>_get_view(string $view_slug, string $current_view) : mixed</pre>
-<div class="labels"></div>
-<div class="row collapse"><div class="detail-description">
-<p class="long_description"></p>
-<table class="table table-bordered"><tr>
-<th>since</th>
-<td>2.11</td>
-</tr></table>
-<h3>Parameters</h3>
-<div class="subelement argument">
-<h4>$view_slug</h4>
-<code>string</code><p>The slug for the custom view to evaluate</p></div>
-<div class="subelement argument">
-<h4>$current_view</h4>
-<code>string</code><p>The slug for the current custom view, or ''</p>
-</div>
-<h3>Returns</h3>
-<div class="subelement response">
-<code>mixed</code>HTML for link to display the view, false if count = zero</div>
 </div></div>
 </div>
 <a name="_reset_language_settings" id="_reset_language_settings"></a><div class="element clickable method private _reset_language_settings" data-toggle="collapse" data-target="._reset_language_settings .collapse">
@@ -1235,7 +1193,8 @@ because localization calls cannot be placed in the "public static" array definit
 <pre>$relevant_terms : array</pre>
 <div class="labels"></div>
 <div class="row collapse"><div class="detail-description">
-<p class="long_description"></p>
+<p class="long_description"><p>NOTE: WPML uses term_taxonomy_id as the "element_id" in its translations;
+Polylang uses term_id as the "element_id".</p></p>
 <table class="table table-bordered"><tr>
 <th>since</th>
 <td>2.11</td>
@@ -1299,7 +1258,7 @@ because localization calls cannot be placed in the "public static" array definit
 <div class="row"><footer class="span12">
             Template is built using <a href="http://twitter.github.com/bootstrap/">Twitter Bootstrap 2</a> and icons provided by <a href="http://glyphicons.com/">Glyphicons</a>.<br>
             Documentation is powered by <a href="http://www.phpdoc.org/">phpDocumentor 2.0.0a8</a> and<br>
-            generated on 2015-07-08T19:21:50-07:00.<br></footer></div>
+            generated on 2015-07-28T20:42:44-07:00.<br></footer></div>
 </div>
 </body>
 </html>

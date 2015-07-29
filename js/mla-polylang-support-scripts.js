@@ -122,7 +122,7 @@ var jQuery,
 			this.revert();
 
 			// Open up the Bulk Translate area
-			$( '#pll-bulk-translate td' ).attr( 'colspan', $( '.widefat:first thead th:visible' ).length );
+			$( '#pll-bulk-translate td' ).attr( 'colspan', $( 'th:visible, td:visible', '.widefat:first thead' ).length );
 			$( 'table.widefat tbody' ).prepend( $( '#pll-bulk-translate' ) );
 			$( '#pll-bulk-translate' ).addClass( 'inline-translator' ).show();
 
@@ -224,7 +224,7 @@ var jQuery,
 
 			// add the new Quick Translate row before its corresponding item
 			translateRow = $( '#pll-quick-translate' ).clone( true );
-			$( 'td', translateRow ).attr( 'colspan', $( '.widefat:first thead th:visible' ).length );
+			$( 'td', translateRow ).attr( 'colspan', $( 'th:visible, td:visible', '.widefat:first thead' ).length );
 
 			if ( $( t.what+id ).hasClass( 'alternate' ) )
 				$( translateRow ).addClass( 'alternate' );

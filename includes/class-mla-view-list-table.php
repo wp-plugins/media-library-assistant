@@ -204,6 +204,11 @@ class MLA_View_List_Table extends WP_List_Table {
 	 * @return	void
 	 */
 	function __construct( ) {
+		// MLA does not use this
+		$this->modes = array(
+			'list' => __( 'List View' ),
+		);
+
 		//Set parent defaults
 		parent::__construct( array(
 			'singular' => 'post_mime_type', //singular name of the listed records
@@ -215,6 +220,50 @@ class MLA_View_List_Table extends WP_List_Table {
 		/*
 		 * NOTE: There is one add_action call at the end of this source file.
 		 */
+	}
+
+	/**
+	 * Checks the current user's permissions
+	 *
+	 * @since 2.14
+	 *
+	 * @return bool
+	 */
+	public function ajax_user_can() {
+		return current_user_can('manage_options');
+	}
+
+	/**
+	 * Get the name of the default primary column.
+	 *
+	 * @since 2.14
+	 * @access protected
+	 *
+	 * @return string Name of the default primary column
+	 */
+	protected function get_default_primary_column_name() {
+		return 'name';
+	}
+
+	/**
+	 * Generate and display row actions links.
+	 *
+	 * @since 2.14
+	 * @access protected
+	 *
+	 * @param object $item        Attachment being acted upon.
+	 * @param string $column_name Current column name.
+	 * @param string $primary     Primary column name.
+	 * @return string Row actions output for media attachments.
+	 */
+	protected function handle_row_actions( $item, $column_name, $primary ) {
+		if ( $primary === $column_name ) {
+			$actions = $this->row_actions( $this->_build_rollover_actions( $item, $column_name ) );
+			$actions .= $this->_build_inline_data( $item );
+			return $actions;
+		}
+
+		return '';
 	}
 
 	/**
@@ -347,6 +396,10 @@ class MLA_View_List_Table extends WP_List_Table {
 	 * @return	string	HTML markup to be placed inside the column
 	 */
 	function column_name( $item ) {
+		if ( MLATest::$wp_4dot3_plus ) {
+			return esc_attr( $item->slug );
+		}
+
 		$row_actions = self::_build_rollover_actions( $item, 'name' );
 		$slug = esc_attr( $item->slug );
 		return sprintf( '%1$s<br>%2$s%3$s', /*%1$s*/ $slug, /*%2$s*/ $this->row_actions( $row_actions ), /*%3$s*/ $this->_build_inline_data( $item ) );

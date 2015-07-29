@@ -131,7 +131,7 @@ var jQuery,
 			var te = '', c = true;
 			this.revert();
 
-			$('#bulk-edit td').attr('colspan', $('.widefat:first thead th:visible').length);
+			$('#bulk-edit td').attr('colspan', $( 'th:visible, td:visible', '.widefat:first thead' ).length);
 			$('table.widefat tbody').prepend( $('#bulk-edit') );
 			$('#bulk-edit').addClass('inline-editor').show();
 
@@ -205,7 +205,7 @@ var jQuery,
 			var te = '', c = true;
 			this.revert();
 
-			$('#bulk-progress td').attr('colspan', $('.widefat:first thead th:visible').length);
+			$('#bulk-progress td').attr('colspan', $( 'th:visible, td:visible', '.widefat:first thead' ).length);
 			$('table.widefat tbody').prepend( $('#bulk-progress') );
 			$('#bulk-progress').addClass('inline-editor').show();
 			$('#cb-select-all-1' ).removeAttr( 'checked' );
@@ -379,7 +379,7 @@ var jQuery,
 
 			// add the new blank row
 			editRow = $('#inline-edit').clone(true);
-			$('td', editRow).attr('colspan', $('.widefat:first thead th:visible').length);
+			$('td', editRow).attr('colspan', $( 'th:visible, td:visible', '.widefat:first thead' ).length);
 
 			if ( $(t.what+id).hasClass('alternate') )
 				$(editRow).addClass('alternate');

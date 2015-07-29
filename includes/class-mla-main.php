@@ -38,7 +38,7 @@ class MLA {
 	 *
 	 * @var	string
 	 */
-	const MLA_DEVELOPMENT_VERSION = '';
+	const MLA_DEVELOPMENT_VERSION = '20150728';
 
 	/**
 	 * Slug for registering and enqueueing plugin style sheet
@@ -376,8 +376,6 @@ class MLA {
 				add_action( 'wp_ajax_' . self::JAVASCRIPT_INLINE_EDIT_SLUG, 'MLA::mla_inline_edit_ajax_action' );
 				add_action( 'wp_ajax_' . self::JAVASCRIPT_INLINE_EDIT_SLUG . '-set-parent', 'MLA::mla_set_parent_ajax_action' );
 				add_action( 'wp_ajax_' . 'mla_find_posts', 'MLA::mla_find_posts_ajax_action' );
-			} else {
-				add_action( 'admin_print_styles', 'MLA::mla_admin_print_styles_action' );
 			}
 		}
 	}
@@ -419,7 +417,7 @@ class MLA {
 				$icon_value = absint( $icon_value );
 			}
 			
-			$icon_width = $icon_height = $icon_value . 'px';;
+			$icon_width = $icon_height = $icon_value . 'px';
 
 			echo "    width: {$icon_width};\n";
 			echo "    height: {$icon_height};\n";
@@ -467,6 +465,13 @@ class MLA {
 			echo "  }\n";
 		} else {
 			/*
+			 * Override defaults in /wp-admin/load-styles.php
+			 */
+			echo "  .fixed td.column-icon, .fixed th.column-icon {\n";
+			echo "    width: {$icon_width};\n";
+			echo "  }\n";
+		
+			/*
 			 * Separate ID_parent column
 			 */
 			echo "  td.column-ID_parent, th.column-ID_parent {\n";
@@ -504,6 +509,11 @@ class MLA {
 		if ( 'media_page_' . self::ADMIN_PAGE_SLUG != $page_hook ) {
 			return;
 		}
+		
+		/*
+		 * Add the styles for variable-size icon and WP 4.3 primary column display 
+		 */
+		add_action( 'admin_print_styles', 'MLA::mla_admin_print_styles_action' );
 
 		wp_register_style( self::STYLESHEET_SLUG, MLA_PLUGIN_URL . 'css/mla-style.css', false, self::CURRENT_MLA_VERSION );
 		wp_enqueue_style( self::STYLESHEET_SLUG );
@@ -1080,7 +1090,12 @@ class MLA {
 					$terms = array();
 					foreach( $fragments as $fragment ) {
 						// WordPress encodes special characters, e.g., "&" as HTML entities in term names
-						$fragment = _wp_specialchars( trim( wp_unslash( $fragment ) ) );
+						if ( MLATest::$wp_3dot5 ) {
+							$fragment = _wp_specialchars( trim( stripslashes_deep( $fragment ) ) );
+						} else {
+							$fragment = _wp_specialchars( trim( wp_unslash( $fragment ) ) );
+						}
+
 						if ( ! empty( $fragment ) ) {
 							$terms[] = $fragment;
 						}
@@ -2226,7 +2241,7 @@ class MLA {
 		$set_parent_form = MLA::mla_set_parent_form();
 
 		$page_values = array(
-			'colspan' => count( $MLAListTable->get_columns() ),
+			'colspan' => $MLAListTable->get_column_count(),
 			'Quick Edit' => __( 'Quick Edit', 'media-library-assistant' ),
 			'Title' => __( 'Title', 'media-library-assistant' ),
 			'Name/Slug' => __( 'Name/Slug', 'media-library-assistant' ),

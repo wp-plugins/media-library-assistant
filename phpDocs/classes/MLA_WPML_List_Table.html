@@ -60,6 +60,7 @@
 <li class="method public inherited"><a href="#__construct" title="__construct :: Initializes some properties from $_REQUEST variables, then
 calls the parent constructor to set some default configs."><span class="description">Initializes some properties from $_REQUEST variables, then
 calls the parent constructor to set some default configs.</span><pre>__construct()</pre></a></li>
+<li class="method public inherited"><a href="#ajax_user_can" title="ajax_user_can :: Checks the current user's permissions"><span class="description">Checks the current user's permissions</span><pre>ajax_user_can()</pre></a></li>
 <li class="method public inherited"><a href="#column_ID_parent" title="column_ID_parent :: Supply the content for a custom column"><span class="description">Supply the content for a custom column</span><pre>column_ID_parent()</pre></a></li>
 <li class="method public inherited"><a href="#column_alt_text" title="column_alt_text :: Supply the content for a custom column"><span class="description">Supply the content for a custom column</span><pre>column_alt_text()</pre></a></li>
 <li class="method public inherited"><a href="#column_attached_to" title="column_attached_to :: Supply the content for a custom column"><span class="description">Supply the content for a custom column</span><pre>column_attached_to()</pre></a></li>
@@ -110,10 +111,13 @@ and the value is db column (or other criteria) to sort by.</span><pre>get_sortab
 <li class="nav-header protected">» Protected</li>
 <li class="method protected inherited"><a href="#_avail_mime_types" title="_avail_mime_types :: Get MIME types with one or more attachments for view preparation"><span class="description">Get MIME types with one or more attachments for view preparation</span><pre>_avail_mime_types()</pre></a></li>
 <li class="method protected inherited"><a href="#_build_inline_data" title="_build_inline_data :: Add hidden fields with the data for use in the inline editor"><span class="description">Add hidden fields with the data for use in the inline editor</span><pre>_build_inline_data()</pre></a></li>
-<li class="method protected inherited"><a href="#_build_rollover_actions" title="_build_rollover_actions :: Add rollover actions to exactly one of the following displayed columns:
-'ID_parent', 'title_name', 'post_title', 'post_name'"><span class="description">Add rollover actions to exactly one of the following displayed columns:
+<li class="method protected inherited"><a href="#_build_rollover_actions" title="_build_rollover_actions :: Add rollover actions to the current primary column, one of:
+'ID_parent', 'title_name', 'post_title', 'post_name'"><span class="description">Add rollover actions to the current primary column, one of:
 'ID_parent', 'title_name', 'post_title', 'post_name'</span><pre>_build_rollover_actions()</pre></a></li>
 <li class="method protected inherited"><a href="#_format_post_status" title="_format_post_status :: Translate post_status 'future', 'pending', 'draft' and 'trash' to label"><span class="description">Translate post_status 'future', 'pending', 'draft' and 'trash' to label</span><pre>_format_post_status()</pre></a></li>
+<li class="method protected inherited"><a href="#_handle_primary_column" title="_handle_primary_column :: Format primary column before/after Wordpress v4.3"><span class="description">Format primary column before/after Wordpress v4.3</span><pre>_handle_primary_column()</pre></a></li>
+<li class="method protected inherited"><a href="#get_default_primary_column_name" title="get_default_primary_column_name :: Get the name of the default primary column."><span class="description">Get the name of the default primary column.</span><pre>get_default_primary_column_name()</pre></a></li>
+<li class="method protected inherited"><a href="#handle_row_actions" title="handle_row_actions :: Generate and display row actions links."><span class="description">Generate and display row actions links.</span><pre>handle_row_actions()</pre></a></li>
 <li class="nav-header private">» Private</li>
 <li class="method private inherited"><a href="#_get_view" title="_get_view :: Returns HTML markup for one view that can be used with this table"><span class="description">Returns HTML markup for one view that can be used with this table</span><pre>_get_view()</pre></a></li>
 <li class="nav-header">
@@ -160,7 +164,7 @@ and the value is db column (or other criteria) to sort by.</span><pre>get_sortab
 <a name="__construct" id="__construct"></a><div class="element clickable method public __construct" data-toggle="collapse" data-target=".__construct .collapse">
 <h2>Initializes some properties from $_REQUEST variables, then
 calls the parent constructor to set some default configs.</h2>
-<pre>__construct() : void</pre>
+<pre>__construct() </pre>
 <div class="labels"><span class="label">Inherited</span></div>
 <div class="row collapse"><div class="detail-description">
 <p class="long_description"></p>
@@ -174,6 +178,26 @@ calls the parent constructor to set some default configs.</h2>
 <td>\MLA_List_Table::__construct()</td>
 </tr>
 </table>
+</div></div>
+</div>
+<a name="ajax_user_can" id="ajax_user_can"></a><div class="element clickable method public ajax_user_can" data-toggle="collapse" data-target=".ajax_user_can .collapse">
+<h2>Checks the current user's permissions</h2>
+<pre>ajax_user_can() : bool</pre>
+<div class="labels"><span class="label">Inherited</span></div>
+<div class="row collapse"><div class="detail-description">
+<p class="long_description"></p>
+<table class="table table-bordered">
+<tr>
+<th>since</th>
+<td>2.13</td>
+</tr>
+<tr>
+<th>inherited_from</th>
+<td>\MLA_List_Table::ajax_user_can()</td>
+</tr>
+</table>
+<h3>Returns</h3>
+<div class="subelement response"><code>bool</code></div>
 </div></div>
 </div>
 <a name="column_ID_parent" id="column_ID_parent"></a><div class="element clickable method public column_ID_parent" data-toggle="collapse" data-target=".column_ID_parent .collapse">
@@ -917,7 +941,7 @@ and the value is db column (or other criteria) to sort by.</h2>
 </div>
 <a name="mla_admin_init_action" id="mla_admin_init_action"></a><div class="element clickable method public mla_admin_init_action" data-toggle="collapse" data-target=".mla_admin_init_action .collapse">
 <h2>Adds support for taxonomy and custom field columns</h2>
-<pre>mla_admin_init_action() : void</pre>
+<pre>mla_admin_init_action() </pre>
 <div class="labels"><span class="label">Inherited</span></div>
 <div class="row collapse"><div class="detail-description">
 <p class="long_description"><p>Called in the admin_init action because the list_table object isn't
@@ -1011,11 +1035,11 @@ created in time to affect the "screen options" setup.</p></p>
 </div>
 <a name="mla_localize_default_columns_array" id="mla_localize_default_columns_array"></a><div class="element clickable method public mla_localize_default_columns_array" data-toggle="collapse" data-target=".mla_localize_default_columns_array .collapse">
 <h2>Builds the $default_columns array with translated source texts.</h2>
-<pre>mla_localize_default_columns_array() : void</pre>
+<pre>mla_localize_default_columns_array() </pre>
 <div class="labels"><span class="label">Inherited</span></div>
 <div class="row collapse"><div class="detail-description">
-<p class="long_description"><p>Called from MLA:mla_plugins_loaded_action because the $default_columns information might be
-accessed from "front end" posts/pages.</p></p>
+<p class="long_description"><p>Called from MLA:mla_plugins_loaded_action because the $default_columns information
+might be accessed from "front end" posts/pages.</p></p>
 <table class="table table-bordered">
 <tr>
 <th>since</th>
@@ -1113,7 +1137,7 @@ is not created in time for the call from screen.php.</p></p>
 </div>
 <a name="pagination" id="pagination"></a><div class="element clickable method public pagination" data-toggle="collapse" data-target=".pagination .collapse">
 <h2>Display the pagination, adding view, search and filter arguments</h2>
-<pre>pagination(string $which) : void</pre>
+<pre>pagination(string $which) </pre>
 <div class="labels"><span class="label">Inherited</span></div>
 <div class="row collapse"><div class="detail-description">
 <p class="long_description"></p>
@@ -1136,7 +1160,7 @@ is not created in time for the call from screen.php.</p></p>
 </div>
 <a name="prepare_items" id="prepare_items"></a><div class="element clickable method public prepare_items" data-toggle="collapse" data-target=".prepare_items .collapse">
 <h2>Prepares the list of items for displaying</h2>
-<pre>prepare_items() : void</pre>
+<pre>prepare_items() </pre>
 <div class="labels"><span class="label">Inherited</span></div>
 <div class="row collapse"><div class="detail-description">
 <p class="long_description"><p>This is where you prepare your data for display. This method will usually
@@ -1252,7 +1276,7 @@ but uses the output of wp_count_attachments() as input.</p></p>
 </div></div>
 </div>
 <a name="_build_rollover_actions" id="_build_rollover_actions"></a><div class="element clickable method protected _build_rollover_actions" data-toggle="collapse" data-target="._build_rollover_actions .collapse">
-<h2>Add rollover actions to exactly one of the following displayed columns:
+<h2>Add rollover actions to the current primary column, one of:
 'ID_parent', 'title_name', 'post_title', 'post_name'</h2>
 <pre>_build_rollover_actions(object $item, string $column) : array</pre>
 <div class="labels"><span class="label">Inherited</span></div>
@@ -1304,6 +1328,100 @@ but uses the output of wp_count_attachments() as input.</p></p>
 <h3>Returns</h3>
 <div class="subelement response">
 <code>string</code>Status label or empty string</div>
+</div></div>
+</div>
+<a name="_handle_primary_column" id="_handle_primary_column"></a><div class="element clickable method protected _handle_primary_column" data-toggle="collapse" data-target="._handle_primary_column .collapse">
+<h2>Format primary column before/after Wordpress v4.3</h2>
+<pre>_handle_primary_column(object $item, string $column_name, string $column_content) : string</pre>
+<div class="labels"><span class="label">Inherited</span></div>
+<div class="row collapse"><div class="detail-description">
+<p class="long_description"><p>For WordPress before 4.3, add rollover actions and inline_data to the
+first visible column. For 4.3 and later, merge the icon with the primary
+visible column and add div tags.</p></p>
+<table class="table table-bordered">
+<tr>
+<th>since</th>
+<td>2.13</td>
+</tr>
+<tr>
+<th>inherited_from</th>
+<td>\MLA_List_Table::_handle_primary_column()</td>
+</tr>
+</table>
+<h3>Parameters</h3>
+<div class="subelement argument">
+<h4>$item</h4>
+<code>object</code><p>A singular attachment (post) object</p>
+</div>
+<div class="subelement argument">
+<h4>$column_name</h4>
+<code>string</code><p>Current column name</p></div>
+<div class="subelement argument">
+<h4>$column_content</h4>
+<code>string</code><p>Current column contents</p></div>
+<h3>Returns</h3>
+<div class="subelement response">
+<code>string</code>Complete column content</div>
+</div></div>
+</div>
+<a name="get_default_primary_column_name" id="get_default_primary_column_name"></a><div class="element clickable method protected get_default_primary_column_name" data-toggle="collapse" data-target=".get_default_primary_column_name .collapse">
+<h2>Get the name of the default primary column.</h2>
+<pre>get_default_primary_column_name() : string</pre>
+<div class="labels"><span class="label">Inherited</span></div>
+<div class="row collapse"><div class="detail-description">
+<p class="long_description"></p>
+<table class="table table-bordered">
+<tr>
+<th>since</th>
+<td>2.13</td>
+</tr>
+<tr>
+<th>access</th>
+<td>protected</td>
+</tr>
+<tr>
+<th>inherited_from</th>
+<td>\MLA_List_Table::get_default_primary_column_name()</td>
+</tr>
+</table>
+<h3>Returns</h3>
+<div class="subelement response">
+<code>string</code>Name of the default primary column</div>
+</div></div>
+</div>
+<a name="handle_row_actions" id="handle_row_actions"></a><div class="element clickable method protected handle_row_actions" data-toggle="collapse" data-target=".handle_row_actions .collapse">
+<h2>Generate and display row actions links.</h2>
+<pre>handle_row_actions(object $item, string $column_name, string $primary) : string</pre>
+<div class="labels"><span class="label">Inherited</span></div>
+<div class="row collapse"><div class="detail-description">
+<p class="long_description"></p>
+<table class="table table-bordered">
+<tr>
+<th>since</th>
+<td>2.13</td>
+</tr>
+<tr>
+<th>access</th>
+<td>protected</td>
+</tr>
+<tr>
+<th>inherited_from</th>
+<td>\MLA_List_Table::handle_row_actions()</td>
+</tr>
+</table>
+<h3>Parameters</h3>
+<div class="subelement argument">
+<h4>$item</h4>
+<code>object</code><p>Attachment being acted upon.</p></div>
+<div class="subelement argument">
+<h4>$column_name</h4>
+<code>string</code><p>Current column name.</p></div>
+<div class="subelement argument">
+<h4>$primary</h4>
+<code>string</code><p>Primary column name.</p></div>
+<h3>Returns</h3>
+<div class="subelement response">
+<code>string</code>Row actions output for media attachments.</div>
 </div></div>
 </div>
 <a name="_get_view" id="_get_view"></a><div class="element clickable method private _get_view" data-toggle="collapse" data-target="._get_view .collapse">
@@ -1523,7 +1641,7 @@ MLA_List_Table::mla_admin_init_action.</p></p>
 <div class="row"><footer class="span12">
             Template is built using <a href="http://twitter.github.com/bootstrap/">Twitter Bootstrap 2</a> and icons provided by <a href="http://glyphicons.com/">Glyphicons</a>.<br>
             Documentation is powered by <a href="http://www.phpdoc.org/">phpDocumentor 2.0.0a8</a> and<br>
-            generated on 2015-07-08T19:21:50-07:00.<br></footer></div>
+            generated on 2015-07-28T20:42:44-07:00.<br></footer></div>
 </div>
 </body>
 </html>

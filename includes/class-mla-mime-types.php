@@ -1649,6 +1649,36 @@ class MLAMime {
 	}
 
 	/**
+	 * Get an attachment icon height and width
+	 *
+	 * @since 2.14
+	 *
+	 * @param	string	Icon Type, e.g., audio, video, spreadsheet
+	 *
+	 * @return	array	( width, height )
+	 */
+	public static function mla_get_icon_type_size( $icon_type ) {
+		$icon_file =  wp_mime_type_icon( $icon_type );
+		$image_info = getimagesize( $icon_file );
+
+		if ( $image_info ) {
+			if ( isset( $image_info[0] ) ) {
+				$image_info['width'] = $image_info[0];
+			} else {
+				$image_info['width'] = 0;
+			}
+			
+			if ( isset( $image_info[1] ) ) {
+				$image_info['height'] = $image_info[1];
+			} else {
+				$image_info['height'] = 0;
+			}
+		}
+
+		return $image_info;
+	}
+
+	/**
 	 * Get an HTML img element representing an attachment icon
 	 *
 	 * @since 1.40
@@ -1665,7 +1695,7 @@ class MLAMime {
 			$width = $size[0];
 			$height = $size[1];
 		} else {
-			@list($width, $height) = getimagesize($icon_file);
+			@list($width, $height) = getimagesize( $icon_file );
 		}
 
 		$hwstring = image_hwstring($width, $height);

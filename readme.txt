@@ -170,6 +170,12 @@ All of the MLA source code has been annotated with "DocBlocks", a special type o
 
 == Changelog ==
 
+= 2.14 =
+* New: WordPress v4.3 "primary column" support for the Settings/Media Library Assistant Views and Uploads tabs
+* Fix: WordPress v4.3 CSS style updates for the Quick Edit and Bulk Edit areas
+* Fix: For WordPress v4.2.x and earlier the Media/Assistant submenu table "icon" column width is adjusted for Icon Size values other than the default.
+* Fix: A few minor HTML markup issues on the Settings/Media Library Assistant General tab have been corrected.
+
 = 2.13 =
 * New: I am delighted to announce **Dutch and Swedish translations** of the plugin's main screens. Many thanks to Harm Kramer and John Larsen for their contributions!
 * New: For **WordPress 4.3+**, the Media/Assistant submenu table has been updated to support the new **primary column** features.
@@ -205,62 +211,11 @@ All of the MLA source code has been annotated with "DocBlocks", a special type o
 * Fix: The Terms Search button, terms dropdown filter and "terms" search checkbox are no longer displayed when no taxonomies selected for MLA support.
 * Fix: PHP Warning messages are no longer produced when the Bulk Edit area is used with no taxonomies selected for MLA support.
 
-= 2.12 =
-* New: For `[mla_gallery]` and `[mla_tag_cloud]`, the `mla_debug=log` parameter writes debug information to the error log instead of the page or post containing the shortcode.
-* New: On the Settings/Media Library Assistant Debug tab, a new option lets you limit the amount of error log content displayed in the text area.
-* Fix: For `[mla_gallery]`, **a defect in the default template's caption processing** (using the "captiontag_content"  attachment-specific substitution parameter) has been corrected. The defect caused improper handling of the `mla_caption` parameter in some cases.
+= 2.10 - 2.12 =
+* 2.12 - Fixes a defect in [mla_gallery] handling of the mla_caption parameter. Adds mla_debug=log option.
+* 2.11 - Enhanced WPML and new Polylang support. "Attached" Media/Assistant table view. Eight other enhancements, fifteen fixes.
+*2.10 - mla_viewer is back, with a Featured Image option! XMP support for image meta data. Eight other enhancements, twelve fixes.
 
-= 2.11 =
-* New: **Polylang support has been added.** See the [Other Notes section](http://wordpress.org/extend/plugins/media-library-assistant/other_notes/ "Click here, then scroll down") section or the Settings/Media Library Assistant Documentation tab for more information.
-* New: **WPML support has been enhanced.** In particular, 1) all taxonomy term assignments are verified/adjusted to be valid for the item's language, 2) taxonomy term assignments are synchronized across all the item's translations, 3) the Media/Assistant submenu table will include a "language management" column showing each item's translation status by language; you can click on an item's "pencil" or "plus" icon to edit an existing translation or duplicate the item in a new language, 4) when "All Languages" is selected, the Media/Assistant submenu table will include a "Language" column showing each item's language, and 5) the Settings/Media Library Assistant "Language" tab lets you select the enhancements you want. See the [Other Notes section](http://wordpress.org/extend/plugins/media-library-assistant/other_notes/ "Click here, then scroll down") section or the Settings/Media Library Assistant Documentation tab for more information.
-* New: **An "Attached" view has been added**, filtering the Media/Assistant submenu table to show only those items having a parent post/page. You can disable the new view, if desired, on the Settings/Media Library Assistant Views tab.
-* New: The Media/Assistant submenu table Quick Edit area now scrolls to the top of the viewport when it is opened.
-* New: Fifteen additional hooks have been added to the "Media Manager Enhancement filters (Hooks)". The `/examples/mla-media-modal-hooks-example.php.txt` file documents all the new additions. The example plugin includes code to add a "term elimination" taxonomy query to the standard "Query Attachments" terms.
-* New: Four new filters for the "Media/Assistant Submenu Hooks" allow you to 1) process row-level actions from the Edit Media screen and 2) modify the "prepare_items" query terms or substitute your own query results. The `/media-library-assistant/examples/mla-list-table-hooks-example.php.txt` example plugin has been updated with the new filters.
-* New: A new `/media-library-assistant/examples/mla-custom-field-search-example.php.txt` example plugin has been added to demonstrate the new "prepare_items" query terms filter, adding a custom field search to the Media/Assistant Search Media text box.
-* New: A new `/media-library-assistant/examples/mla-a-z-cloud-example.php.txt` example plugin has been added that combines MLA with the Collapse-o-matic plugin and custom database queries to produce an "alphabetic cloud" and custom `[mla_gallery]`.
-* New: For `[mla_gallery]`, when `mla_alt_shortcode=mla_tag_cloud`, parameters such as `mla_link_href` are passed through to be used by [`mla_tag_cloud]`.
-* New: Term-specific pagination has been added to the `/examples/twentytwelve-mla/image.php` file.
-* New: For `[mla_gallery]`, the **new "captiontag_content"** attachment-specific substitution parameter contains the complete HTML markup for the caption if both captiontag and caption are not empty. This can be used to omit empty caption tags (as it is in the default template).
-* Fix: For `[mla_gallery]`, the "captiontag" (&lt;dd&gt; or &lt;figcaption&gt;) now contains an **item-specific `id` attribute**, supporting the `aria-describedby` attribute in the thumbnail's &lt;img&gt; tag.
-* Fix: For `[mla_gallery]`, the **default HTML5 Row Open and Row Close template sections are now empty** for themes that register support for HTML5. This removes the `<!-- row-open -->` comment in the Row Open section and the `<br style="clear: both" />` tag in the Row Close section.
-* Fix: The obsolete "Attached" view has been removed from the `/examples/mla-custom-view-example.php.txt` file.
-* Fix: MLA enhanced icons for non-iage items are now properly displayed on the Media/Assistant submenu table.
-* Fix: Taxonomy terms containing "HTML special characters", e.g., ampersands, are now handled correctly for searching and editing.
-* Fix: The `mla_list_table_new_instance` filter is now called for Media/Assistant Set Parent and Quick Edit (Ajax) actions.
-* Fix: For IPTC/EXIF mapping, empty values returned from an "EXIF/Template" template no longer suppress IPTC values that are present.
-* Fix: For the Media/Library grid view, JavaScript errors initializing the Enhanced Media Search toolbar control have been eliminated.
-* Fix: For IPTC/EXIF and custom field mapping, handling of items with corrupted `attachment_matadata` has been improved to avoid PHP Notice and Warning messages.
-* Fix: When WPML is active, `[mla_tag_cloud]` returns language-specific terms.
-* Fix: The MLA `orientation` data source reliably returns "portrait" or "landscape". The WordPress `orientaton` value, when present, is available as `meta:image_meta.orientation`.
-* Fix: Media/Assistant filtering by numeric custom field values with leading spaces (such as `file_size`) has been restored.
-* Fix: Media/Assistant "Unattached" and "Trash" view handling updated for WP 4.2 changes.
-* Fix: JavaScript "spinner" handling updated for WP 4.2 changes.
-* Fix: Code and files for WordPress before version 3.5 has been removed.
-
-= 2.10 =
-* New: For the `[mla_gallery]` shortcode, the **Google File Viewer (mla_viewer) has been replaced** by two new featues. First, **a "Featured Image" can be assigned to Media Library items**; it will replace the MIME type icon as the thumbnail for the item. Second, **PDF documents can generate a thumbnail image** for the item if ImageMagick, Imagick and Ghostscript are available on the server. See the [Other Notes section](http://wordpress.org/extend/plugins/media-library-assistant/other_notes/ "Click here, then scroll down") section or the Settings/Media Library Assistant Documentation tab for more information.
-* New: **XMP metadata can be extracted from JPEG and TIFF images** and used in `[mla_gallery]` shortcodes and IPTC/EXIF or Custom Field mapping rules.
-* New: Several **simple MLA Gallery examples** have been added to the Documentation tab.
-* New: A Media/Assistant submenu table **custom view example plugin**, `mla-custom-view-example.php.txt` has been added to the `/media-library-assistant/examples/` directory. The example adds two custom views for "Attached" items and "Unpublished" items that are attached to a parent whose `post_status` is 'draft', 'future', 'pending' or 'trash' .
-* New: Two new filters for the "Media/Assistant Submenu Hooks" allow you to record or modify the new values for Bulk Edit fields. The `/media-library-assistant/examples/mla-list-table-hooks-example.php.txt` example plugin has been updated with the new filters.
-* New: A **Terms Search "exact"** option has been added to eliminate false matches such as "man" within "woman".
-* New: A new **field-level data source, "alt_text"** is available for use in shortcodes and mapping rules.
-* New: A new **field-level option value, "substr(s,l)"** is available for use in shortcodes and mapping rules. It uses the PHP substr() function to extract a portion of a field-level value.
-* New: If you add `define( 'MLA_DEBUG_LEVEL', 1 );` to your `wp-config.php` file a new Settings/Media Library Assistant **Debug tab** is available. The new tab lets you view, download and reset (empty) the PHP error log file.
-* New: The Development Version date and MLA debug level, if applicable, are now added to the title of the Settings/Media library Assistant submenu.
-* Fix: Text and Textarea option settings containing backslashes are now cleaned up with `stripslashes`.
-* Fix: In the Media Manager Modal Window, CSS styles have been updated to improve the layout of the toolbar.
-* Fix: If 'Enable "bulk edit" area' is checked, bulk edit on Add New uploads will be run even if all four "enable mapping" options are disabled.
-* Fix: **Terms Search performance** has been improved by eliminating redundant table joins.
-* Fix: For the Media/Assistant submenu table, **sorting on custom fields** now works correctly.
-* Fix: For the Media/Assistant submenu table, **Search Media with the terms option** now works correctly.
-* Fix: The `/media-library-assistant/examples/mla-acf-checkbox-example.php.txt` example plugin has been re-written to use the new filters and to confrom to changes made in MLA version 2.01.
-* Fix: The `/media-library-assistant/examples/mla-image-source-control-example.php.txt` example plugin has been re-written to use the new filters and to confrom to changes made in MLA version 2.01.
-* Fix: Where-used reporting now identifies posts and pages in the Trash.
-* Fix: For IPTC/EXIF mapping, single/double quotes in the EXIF/Template Value field are now handled correctly, without adding backslash characters to the new values.
-* Fix: Field-level option values containing multiple arguments are now parsed correctly.
-* Fix: Several changes to the Translation/Localization strings to reduce translation effort.
 
 = 2.00 - 2.02 =
 * 2.02 - Bulk Edit on Media/Add New, pause/restart IPTC/EXIF mapping, EXIF CAMERA fields, "timestamp", "date" and "fraction" format options. Six other enhancements, twelve fixes.

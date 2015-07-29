@@ -474,7 +474,7 @@ class MLA_List_Table extends WP_List_Table {
 		/*
 		 * For WP 4.3+ icon will be merged with the first visible preferred column
 		 */
-		if ( version_compare( get_bloginfo('version'), '4.2.99', '>' ) ) {
+		if ( MLATest::$wp_4dot3_plus ) {
 			unset( self::$default_columns['icon'] );
 		}
 		
@@ -543,6 +543,8 @@ class MLA_List_Table extends WP_List_Table {
 
 	/**
 	 * Checks the current user's permissions
+	 *
+	 * @since 2.13
 	 *
 	 * @return bool
 	 */
@@ -753,10 +755,10 @@ class MLA_List_Table extends WP_List_Table {
 	/**
 	 * Get the name of the default primary column.
 	 *
-	 * @since 4.3.0
+	 * @since 2.13
 	 * @access protected
 	 *
-	 * @return string Name of the default primary column, in this case, 'title'.
+	 * @return string Name of the default primary column
 	 */
 	protected function get_default_primary_column_name() {
 		$hidden_columns = $this->get_hidden_columns();

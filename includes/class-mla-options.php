@@ -694,7 +694,7 @@ class MLAOptions {
 
 			self::MLA_EDIT_MEDIA_SEARCH_TAXONOMY =>
 				array('tab' => 'general',
-					'name' => __( 'Enable enhanced "checklist" taxonomies', 'media-library-assistant' ),
+					'name' => __( 'Enable &quot;enhanced checklist&quot; taxonomies', 'media-library-assistant' ),
 					'type' => 'checkbox',
 					'std' => 'checked',
 					'help' => __( 'Check this option to enable the "? Search" feature for hierarchical taxonomies, e.g., Att. Categories.<br>&nbsp;&nbsp;This option also enables the "checklist-style" support for flat taxonomies, e.g., Att. Tags.', 'media-library-assistant' )),
@@ -715,7 +715,7 @@ class MLAOptions {
 
 			self::MLA_ADD_NEW_BULK_EDIT =>
 				array('tab' => 'general',
-					'name' => __( 'Enable "bulk edit" area', 'media-library-assistant' ),
+					'name' => __( 'Enable &quot;bulk edit&quot; area', 'media-library-assistant' ),
 					'type' => 'checkbox',
 					'std' => 'checked',
 					'help' => __( 'Check this option to enable the "Bulk Edit area" feature on the Media/Add New screen.', 'media-library-assistant' )),
@@ -786,7 +786,7 @@ class MLAOptions {
 					'name' => __( 'Media Manager Checklist meta boxes', 'media-library-assistant' ),
 					'type' => 'checkbox',
 					'std' => 'checked',
-					'help' => __( 'Check this option to enable MLA-enhanced meta boxes in the "ATTACHMENT DETAILS" pane.<br>&nbsp;&nbsp;This option is for any taxonomy that uses a <strong>"checklist-style"</strong> meta box.</strong>', 'media-library-assistant' )),
+					'help' => __( 'Check this option to enable MLA-enhanced meta boxes in the "ATTACHMENT DETAILS" pane.<br>&nbsp;&nbsp;This option is for any taxonomy that uses a <strong>"checklist-style"</strong> meta box.', 'media-library-assistant' )),
 
 			self::MLA_MEDIA_MODAL_DETAILS_TAG_METABOX =>
 				array('tab' => 'general',
@@ -4034,7 +4034,12 @@ class MLAOptions {
 					foreach ( $new_text as $text ) {
 							$fragments = explode( $delimiter, $text );
 							foreach( $fragments as $fragment ) {
-								$fragment = trim( wp_unslash( $fragment ) );
+								if ( MLATest::$wp_3dot5 ) {
+									$fragment = trim( stripslashes_deep( $fragment ) );
+								} else {
+									$fragment = trim( wp_unslash( $fragment ) );
+								}
+
 								if ( ! empty( $fragment ) ) {
 									$new_terms[] = $fragment;
 								}
