@@ -3071,7 +3071,8 @@ class MLAData {
 			} // $option
 		} // is_array
 
-		return sanitize_text_field( self::_bin_to_utf8( $haystack ) );
+//		return sanitize_text_field( self::_bin_to_utf8( $haystack ) ); changed in MLA v2.14
+		return self::_bin_to_utf8( $haystack );
 	} // mla_find_array_element
 
 	/**

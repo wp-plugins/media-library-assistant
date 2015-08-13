@@ -174,7 +174,9 @@ All of the MLA source code has been annotated with "DocBlocks", a special type o
 * New: WordPress v4.3 "primary column" support for the Settings/Media Library Assistant Views and Uploads tabs
 * Fix: WordPress v4.3 CSS style updates for the Quick Edit and Bulk Edit areas
 * Fix: For WordPress v4.2.x and earlier the Media/Assistant submenu table "icon" column width is adjusted for Icon Size values other than the default.
+* Fix: HTML tags are preserved in IPTC/EXIF values for mapping rules and data sources. This corrects a defect introduced in MLA v2.13 which removed the tags.
 * Fix: A few minor HTML markup issues on the Settings/Media Library Assistant General tab have been corrected.
+* Fix: For the Media/Assistant submenu table, proportional thumbnails have been restored to the "icon" column/element.
 
 = 2.13 =
 * New: I am delighted to announce **Dutch and Swedish translations** of the plugin's main screens. Many thanks to Harm Kramer and John Larsen for their contributions!

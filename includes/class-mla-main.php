@@ -38,7 +38,7 @@ class MLA {
 	 *
 	 * @var	string
 	 */
-	const MLA_DEVELOPMENT_VERSION = '20150728';
+	const MLA_DEVELOPMENT_VERSION = '20150812';
 
 	/**
 	 * Slug for registering and enqueueing plugin style sheet
@@ -412,15 +412,16 @@ class MLA {
 		if ( 'checked' == MLAOptions::mla_get_option( MLAOptions::MLA_ENABLE_MLA_ICONS ) ) {
 			if ( empty( $icon_value ) ) {
 				$icon_value = 64;
-			} else
-			if ( is_numeric( $icon_value ) ) {
-				$icon_value = absint( $icon_value );
+			} else {
+				if ( is_numeric( $icon_value ) ) {
+					$icon_value = absint( $icon_value );
+				}
 			}
 			
 			$icon_width = $icon_height = $icon_value . 'px';
 
-			echo "    width: {$icon_width};\n";
-			echo "    height: {$icon_height};\n";
+			echo "    width: auto;\n";
+			echo "    height: auto;\n";
 			echo "    max-width: {$icon_width};\n";
 			echo "    max-height: {$icon_height};\n";
 		} else {
@@ -449,7 +450,7 @@ class MLA {
 			/*
 			 * Primary column including icon and some margin
 			 */
-			$icon_width = ( $icon_value + 10 ) . 'px';;
+			$icon_width = ( $icon_value + 10 ) . 'px';
 
 			echo "  table.attachments td.column-primary {\n";
 			echo "    position: relative;\n";
