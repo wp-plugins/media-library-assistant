@@ -5,7 +5,7 @@
 <div id="icon-options-general" class="icon32"><br/></div>
 <div id="donate-button-div" style="text-align: center; width: 100px; height: 40px; float: right; clear:right; margin-top: 5px">
 <a href="http://fairtradejudaica.org/make-a-difference/donate/" title="Support our work" target="_blank" style="border: none;"><img border="0" src="[+donateURL+]" width="100" height="40" alt="[+Donate+]"></a></div>
-<h2>[+Media Library Assistant+] [+version+][+development+][+debug+] [+Settings+]</h2>
+<h2>[+Media Library Assistant+] [+version+][+development+] [+Settings+]</h2>
 [+messages+]
 [+tablist+]
 [+tab_content+]
@@ -302,7 +302,13 @@
 <h3>[+Debug Options+]</h3>
 <form action="[+form_url+]" method="post" class="mla-display-settings-page" id="mla-display-settings-debug-tab">
 &nbsp;<br />
+    <table class="optiontable">
 [+options_list+]
+	</table>
+<h3>[+Debug Settings+]</h3>
+    <table class="optiontable">
+[+settings_list+]
+	</table>
 <h4>[+Error Log+]</h4>
 [+Error Log Name+]
     <table>

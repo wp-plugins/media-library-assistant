@@ -8,8 +8,8 @@
 <p>When adding a new category on this screen, you&#8217;ll fill in the following fields:</p>
 <ul>
 <li><strong>Name</strong> - The name is how it appears on your site.</li>
-<li><strong>Slug</strong> - The &#8220;slug&#8221; is the URL-friendly version of the name. It is usually all lowercase and contains only letters, numbers, and hyphens.</li>
-<li><strong>Parent</strong> - Categories, unlike tags, can have a hierarchy. You might have a Landscape category, and under that have children categories for Mountains and Seashore. Totally optional. To create a subcategory, just choose another category from the Parent dropdown.</li>
+<li><strong>Slug</strong> - The &#8220;slug&#8221; is the URL-friendly version of the name. It is usually all lowercase and contains only letters, numbers and hyphens.</li>
+<li><strong>Parent</strong> - Categories, unlike tags, can have a hierarchy. You might for example have a Landscape category, and under that have children categories for Mountains and Seashore. Totally optional. To create a subcategory, just choose another category from the Parent dropdown.</li>
 <li><strong>Description</strong> - The description is not prominent by default; however, some themes may display it.</li>
 </ul>
 <!-- template="mla-attachments-column" -->

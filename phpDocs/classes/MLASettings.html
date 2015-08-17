@@ -92,6 +92,7 @@ add settings link in the Plugins section entry for MLA.</span><pre>mla_admin_men
 <li class="method private "><a href="#_compose_iptc_exif_tab" title="_compose_iptc_exif_tab :: Compose the IPTC/EXIF tab content for the Settings subpage"><span class="description">Compose the IPTC/EXIF tab content for the Settings subpage</span><pre>_compose_iptc_exif_tab()</pre></a></li>
 <li class="method private "><a href="#_compose_mla_gallery_tab" title="_compose_mla_gallery_tab :: Compose the MLA Gallery tab content for the Settings subpage"><span class="description">Compose the MLA Gallery tab content for the Settings subpage</span><pre>_compose_mla_gallery_tab()</pre></a></li>
 <li class="method private "><a href="#_compose_optional_upload_tab" title="_compose_optional_upload_tab :: Compose the Optional File Upload MIME Types tab content for the Settings subpage"><span class="description">Compose the Optional File Upload MIME Types tab content for the Settings subpage</span><pre>_compose_optional_upload_tab()</pre></a></li>
+<li class="method private "><a href="#_compose_settings_row" title="_compose_settings_row :: Compose the Debug tab Debug Settings content for one setting"><span class="description">Compose the Debug tab Debug Settings content for one setting</span><pre>_compose_settings_row()</pre></a></li>
 <li class="method private "><a href="#_compose_settings_tabs" title="_compose_settings_tabs :: Compose the navigation tabs for the Settings subpage"><span class="description">Compose the navigation tabs for the Settings subpage</span><pre>_compose_settings_tabs()</pre></a></li>
 <li class="method private "><a href="#_compose_upload_tab" title="_compose_upload_tab :: Compose the File Upload MIME Types tab content for the Settings subpage"><span class="description">Compose the File Upload MIME Types tab content for the Settings subpage</span><pre>_compose_upload_tab()</pre></a></li>
 <li class="method private "><a href="#_compose_view_tab" title="_compose_view_tab :: Compose the Post MIME Type Views tab content for the Settings subpage"><span class="description">Compose the Post MIME Type Views tab content for the Settings subpage</span><pre>_compose_view_tab()</pre></a></li>
@@ -708,6 +709,28 @@ in the "public static" array definition itself.</p></p>
 <h3>Returns</h3>
 <div class="subelement response">
 <code>array</code>'message' => status/error messages, 'body' => tab content</div>
+</div></div>
+</div>
+<a name="_compose_settings_row" id="_compose_settings_row"></a><div class="element clickable method private _compose_settings_row" data-toggle="collapse" data-target="._compose_settings_row .collapse">
+<h2>Compose the Debug tab Debug Settings content for one setting</h2>
+<pre>_compose_settings_row(string $label, string $value) : string</pre>
+<div class="labels"></div>
+<div class="row collapse"><div class="detail-description">
+<p class="long_description"></p>
+<table class="table table-bordered"><tr>
+<th>since</th>
+<td>2.14</td>
+</tr></table>
+<h3>Parameters</h3>
+<div class="subelement argument">
+<h4>$label</h4>
+<code>string</code><p>Display name for the setting</p></div>
+<div class="subelement argument">
+<h4>$value</h4>
+<code>string</code><p>Current value for the setting</p></div>
+<h3>Returns</h3>
+<div class="subelement response">
+<code>string</code>HTML table row markup for the label setting pair</div>
 </div></div>
 </div>
 <a name="_compose_settings_tabs" id="_compose_settings_tabs"></a><div class="element clickable method private _compose_settings_tabs" data-toggle="collapse" data-target="._compose_settings_tabs .collapse">
@@ -1339,7 +1362,7 @@ because Localization calls cannot be placed in the "public static" array definit
 <div class="row"><footer class="span12">
             Template is built using <a href="http://twitter.github.com/bootstrap/">Twitter Bootstrap 2</a> and icons provided by <a href="http://glyphicons.com/">Glyphicons</a>.<br>
             Documentation is powered by <a href="http://www.phpdoc.org/">phpDocumentor 2.0.0a8</a> and<br>
-            generated on 2015-07-28T20:42:44-07:00.<br></footer></div>
+            generated on 2015-08-16T20:58:57-07:00.<br></footer></div>
 </div>
 </body>
 </html>

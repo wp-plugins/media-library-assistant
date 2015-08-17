@@ -8,7 +8,7 @@
 <p>When adding a new tag on this screen, you&#8217;ll fill in the following fields:</p>
 <ul>
 <li><strong>Name</strong> - The name is how it appears on your site.</li>
-<li><strong>Slug</strong> - The &#8220;slug&#8221; is the URL-friendly version of the name. It is usually all lowercase and contains only letters, numbers, and hyphens.</li>
+<li><strong>Slug</strong> - The &#8220;slug&#8221; is the URL-friendly version of the name. It is usually all lowercase and contains only letters, numbers and hyphens.</li>
 <li><strong>Description</strong> - The description is not prominent by default; however, some themes may display it.</li>
 </ul>
 <!-- template="mla-attachments-column" -->

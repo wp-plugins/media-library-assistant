@@ -4,7 +4,7 @@ Donate link: http://fairtradejudaica.org/make-a-difference/donate/
 Tags: attachment, attachments, documents, gallery, image, images, media, library, media library, tag cloud, media-tags, media tags, tags, media categories, categories, IPTC, EXIF, XMP, GPS, PDF, meta, metadata, photo, photos, photograph, photographs, photoblog, photo albums, lightroom, photoshop, MIME, mime-type, icon, upload, file extensions, WPML, Polylang, multilanguage, multilingual, localization
 Requires at least: 3.5.0
 Tested up to: 4.3
-Stable tag: 2.13
+Stable tag: 2.14
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -171,7 +171,9 @@ All of the MLA source code has been annotated with "DocBlocks", a special type o
 == Changelog ==
 
 = 2.14 =
-* New: WordPress v4.3 "primary column" support for the Settings/Media Library Assistant Views and Uploads tabs
+* New: WordPress 4.3+ "primary column" support for the Settings/Media Library Assistant Views and Uploads tabs.
+* New: For the Settings/Media Library Assistant **Debug tab**, you can **specify a separate file** in your `/wp-content/` directory to receive MLA-specific logging/debug messages. Several useful debug settings are now displayed in the tab as well.
+* New: Harm Kramer has contributed **updates and additions to the Dutch translation**.
 * Fix: WordPress v4.3 CSS style updates for the Quick Edit and Bulk Edit areas
 * Fix: For WordPress v4.2.x and earlier the Media/Assistant submenu table "icon" column width is adjusted for Icon Size values other than the default.
 * Fix: HTML tags are preserved in IPTC/EXIF values for mapping rules and data sources. This corrects a defect introduced in MLA v2.13 which removed the tags.
@@ -284,6 +286,9 @@ All of the MLA source code has been annotated with "DocBlocks", a special type o
 * Initial release.
 
 == Upgrade Notice ==
+
+= 2.14 =
+Final WordPress 4.3 updates. New Debug tab features. Updated Dutch translation. Four other fixes.
 
 = 2.13 =
 WordPress 4.3 updates. PDF Thumbnail image generator. Wildcard keyword/term searching. Several WPML and Polylang fixes. Dutch and Swedish translations! Twelve other enhancements, twelve other fixes.

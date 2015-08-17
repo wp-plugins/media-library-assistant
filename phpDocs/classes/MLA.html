@@ -68,14 +68,15 @@
 <li class="method public "><a href="#mla_clear_filter_by" title="mla_clear_filter_by :: Clear the Media/Assistant submenu Filter-by variables"><span class="description">Clear the Media/Assistant submenu Filter-by variables</span><pre>mla_clear_filter_by()</pre></a></li>
 <li class="method public "><a href="#mla_debug_add" title="mla_debug_add :: Add a debug message to the collection"><span class="description">Add a debug message to the collection</span><pre>mla_debug_add()</pre></a></li>
 <li class="method public "><a href="#mla_debug_content" title="mla_debug_content :: Get debug information without clearing the buffer"><span class="description">Get debug information without clearing the buffer</span><pre>mla_debug_content()</pre></a></li>
+<li class="method public "><a href="#mla_debug_file" title="mla_debug_file :: Get/Set debug information collection output file for mode = 'log'"><span class="description">Get/Set debug information collection output file for mode = 'log'</span><pre>mla_debug_file()</pre></a></li>
 <li class="method public "><a href="#mla_debug_flush" title="mla_debug_flush :: Flush debug information and clear buffer"><span class="description">Flush debug information and clear buffer</span><pre>mla_debug_flush()</pre></a></li>
-<li class="method public "><a href="#mla_debug_mode" title="mla_debug_mode :: Set debug information collection mode"><span class="description">Set debug information collection mode</span><pre>mla_debug_mode()</pre></a></li>
+<li class="method public "><a href="#mla_debug_mode" title="mla_debug_mode :: Get/Set debug information collection mode"><span class="description">Get/Set debug information collection mode</span><pre>mla_debug_mode()</pre></a></li>
 <li class="method public "><a href="#mla_find_posts_ajax_action" title='mla_find_posts_ajax_action :: Ajax handler to fetch candidates for the "Set Parent" popup window'><span class="description">Ajax handler to fetch candidates for the "Set Parent" popup window</span><pre>mla_find_posts_ajax_action()</pre></a></li>
 <li class="method public "><a href="#mla_inline_edit_ajax_action" title="mla_inline_edit_ajax_action :: Ajax handler for inline editing"><span class="description">Ajax handler for inline editing</span><pre>mla_inline_edit_ajax_action()</pre></a></li>
 <li class="method public "><a href="#mla_load_media_action" title="mla_load_media_action :: Redirect to Media/Assistant if Media/Library is hidden"><span class="description">Redirect to Media/Assistant if Media/Library is hidden</span><pre>mla_load_media_action()</pre></a></li>
 <li class="method public "><a href="#mla_name_conflict_reporting_action" title="mla_name_conflict_reporting_action :: Displays name conflict error messages at the top of the Dashboard"><span class="description">Displays name conflict error messages at the top of the Dashboard</span><pre>mla_name_conflict_reporting_action()</pre></a></li>
 <li class="method public "><a href="#mla_parent_file_filter" title="mla_parent_file_filter :: Cleanup menus for Edit Tags/Categories page"><span class="description">Cleanup menus for Edit Tags/Categories page</span><pre>mla_parent_file_filter()</pre></a></li>
-<li class="method public "><a href="#mla_plugins_loaded_action" title="mla_plugins_loaded_action :: Load a plugin text domain"><span class="description">Load a plugin text domain</span><pre>mla_plugins_loaded_action()</pre></a></li>
+<li class="method public "><a href="#mla_plugins_loaded_action" title="mla_plugins_loaded_action :: Load a plugin text domain and alternate debug file"><span class="description">Load a plugin text domain and alternate debug file</span><pre>mla_plugins_loaded_action()</pre></a></li>
 <li class="method public "><a href="#mla_prepare_bulk_edits" title="mla_prepare_bulk_edits :: Prepare Bulk Edit field-level updates"><span class="description">Prepare Bulk Edit field-level updates</span><pre>mla_prepare_bulk_edits()</pre></a></li>
 <li class="method public "><a href="#mla_process_bulk_action" title="mla_process_bulk_action :: Process bulk action for one or more attachments"><span class="description">Process bulk action for one or more attachments</span><pre>mla_process_bulk_action()</pre></a></li>
 <li class="method public "><a href="#mla_render_admin_page" title='mla_render_admin_page :: Render the "Assistant" subpage in the Media section, using the list_table package'><span class="description">Render the "Assistant" subpage in the Media section, using the list_table package</span><pre>mla_render_admin_page()</pre></a></li>
@@ -88,6 +89,7 @@
 <li class="method private "><a href="#_bulk_edit_ajax_handler" title="_bulk_edit_ajax_handler :: Ajax handler for bulk editing and mapping"><span class="description">Ajax handler for bulk editing and mapping</span><pre>_bulk_edit_ajax_handler()</pre></a></li>
 <li class="method private "><a href="#_compose_post_type_select" title="_compose_post_type_select :: Compose a Post Type Options list with current selection"><span class="description">Compose a Post Type Options list with current selection</span><pre>_compose_post_type_select()</pre></a></li>
 <li class="method private "><a href="#_current_bulk_action" title="_current_bulk_action :: Get the current action selected from the bulk actions dropdown"><span class="description">Get the current action selected from the bulk actions dropdown</span><pre>_current_bulk_action()</pre></a></li>
+<li class="method private "><a href="#_debug_log" title="_debug_log :: Write a debug message to the appropriate log file"><span class="description">Write a debug message to the appropriate log file</span><pre>_debug_log()</pre></a></li>
 <li class="method private "><a href="#_delete_single_item" title="_delete_single_item :: Delete a single item permanently"><span class="description">Delete a single item permanently</span><pre>_delete_single_item()</pre></a></li>
 <li class="method private "><a href="#_process_bulk_value" title="_process_bulk_value :: Process bulk edit area fields, which may contain a Content Template"><span class="description">Process bulk edit area fields, which may contain a Content Template</span><pre>_process_bulk_value()</pre></a></li>
 <li class="method private "><a href="#_process_mla_download_file" title="_process_mla_download_file :: Process secure file download"><span class="description">Process secure file download</span><pre>_process_mla_download_file()</pre></a></li>
@@ -96,6 +98,7 @@
 <li class="nav-header">
 <i class="icon-custom icon-property"></i> Properties</li>
 <li class="nav-header private">» Private</li>
+<li class="property private "><a href="#%24mla_debug_file" title="$mla_debug_file :: Debug information output file for mode = 'log'"><span class="description">Debug information output file for mode = 'log'</span><pre>$mla_debug_file</pre></a></li>
 <li class="property private "><a href="#%24mla_debug_messages" title="$mla_debug_messages :: Accumulates debug messages"><span class="description">Accumulates debug messages</span><pre>$mla_debug_messages</pre></a></li>
 <li class="property private "><a href="#%24mla_debug_mode" title="$mla_debug_mode :: Debug information collection mode"><span class="description">Debug information collection mode</span><pre>$mla_debug_mode</pre></a></li>
 <li class="property private "><a href="#%24mla_language_support_error_messages" title="$mla_language_support_error_messages :: Accumulates error messages from name conflict tests"><span class="description">Accumulates error messages from name conflict tests</span><pre>$mla_language_support_error_messages</pre></a></li>
@@ -331,6 +334,27 @@ add settings link in the Plugins section entry for MLA.</p></p>
 <code>boolean</code>true if success else false</div>
 </div></div>
 </div>
+<a name="mla_debug_file" id="mla_debug_file"></a><div class="element clickable method public mla_debug_file" data-toggle="collapse" data-target=".mla_debug_file .collapse">
+<h2>Get/Set debug information collection output file for mode = 'log'</h2>
+<pre>mla_debug_file(string $file) : string</pre>
+<div class="labels"></div>
+<div class="row collapse"><div class="detail-description">
+<p class="long_description"><p>Note that WP_CONTENT_DIR will be pre-pended to the value, and a slash
+will be added to the front of the value if necessary.</p></p>
+<table class="table table-bordered"><tr>
+<th>since</th>
+<td>2.14</td>
+</tr></table>
+<h3>Parameters</h3>
+<div class="subelement argument">
+<h4>$file</h4>
+<code>string</code><p>Optional. The (optional path and) file name, relative to WP_CONTENT_DIR, or false/empty string to clear the value.</p>
+</div>
+<h3>Returns</h3>
+<div class="subelement response">
+<code>string</code>The previous file value, i.e., before the update, relative to WP_CONTENT_DIR</div>
+</div></div>
+</div>
 <a name="mla_debug_flush" id="mla_debug_flush"></a><div class="element clickable method public mla_debug_flush" data-toggle="collapse" data-target=".mla_debug_flush .collapse">
 <h2>Flush debug information and clear buffer</h2>
 <pre>mla_debug_flush(string $destination, boolean $stop_collecting) : string</pre>
@@ -356,8 +380,8 @@ add settings link in the Plugins section entry for MLA.</p></p>
 </div></div>
 </div>
 <a name="mla_debug_mode" id="mla_debug_mode"></a><div class="element clickable method public mla_debug_mode" data-toggle="collapse" data-target=".mla_debug_mode .collapse">
-<h2>Set debug information collection mode</h2>
-<pre>mla_debug_mode(string $mode) : boolean</pre>
+<h2>Get/Set debug information collection mode</h2>
+<pre>mla_debug_mode(string $mode) : string</pre>
 <div class="labels"></div>
 <div class="row collapse"><div class="detail-description">
 <p class="long_description"></p>
@@ -368,11 +392,11 @@ add settings link in the Plugins section entry for MLA.</p></p>
 <h3>Parameters</h3>
 <div class="subelement argument">
 <h4>$mode</h4>
-<code>string</code><p>Collection mode: 'buffer' (default), 'console', 'log' or 'none'</p>
+<code>string</code><p>Optional. New collection mode: 'none' (default), 'buffer', 'console' or 'log'</p>
 </div>
 <h3>Returns</h3>
 <div class="subelement response">
-<code>boolean</code>true if success else false</div>
+<code>string</code>The previous mode value, i.e., before the update</div>
 </div></div>
 </div>
 <a name="mla_find_posts_ajax_action" id="mla_find_posts_ajax_action"></a><div class="element clickable method public mla_find_posts_ajax_action" data-toggle="collapse" data-target=".mla_find_posts_ajax_action .collapse">
@@ -445,7 +469,7 @@ Adds filters for post type and pagination.</p></p>
 </div></div>
 </div>
 <a name="mla_plugins_loaded_action" id="mla_plugins_loaded_action"></a><div class="element clickable method public mla_plugins_loaded_action" data-toggle="collapse" data-target=".mla_plugins_loaded_action .collapse">
-<h2>Load a plugin text domain</h2>
+<h2>Load a plugin text domain and alternate debug file</h2>
 <pre>mla_plugins_loaded_action() : void</pre>
 <div class="labels"></div>
 <div class="row collapse"><div class="detail-description">
@@ -674,6 +698,22 @@ Defined as public because it's an action.</p></p>
 <code>string</code><code>false</code>The action name or False if no action was selected</div>
 </div></div>
 </div>
+<a name="_debug_log" id="_debug_log"></a><div class="element clickable method private _debug_log" data-toggle="collapse" data-target="._debug_log .collapse">
+<h2>Write a debug message to the appropriate log file</h2>
+<pre>_debug_log(string $message) </pre>
+<div class="labels"></div>
+<div class="row collapse"><div class="detail-description">
+<p class="long_description"></p>
+<table class="table table-bordered"><tr>
+<th>since</th>
+<td>2.14</td>
+</tr></table>
+<h3>Parameters</h3>
+<div class="subelement argument">
+<h4>$message</h4>
+<code>string</code><p>Message text</p></div>
+</div></div>
+</div>
 <a name="_delete_single_item" id="_delete_single_item"></a><div class="element clickable method private _delete_single_item" data-toggle="collapse" data-target="._delete_single_item .collapse">
 <h2>Delete a single item permanently</h2>
 <pre>_delete_single_item(array $post_id) : array</pre>
@@ -767,6 +807,18 @@ Defined as public because it's an action.</p></p>
 </div>
 <h3>
 <i class="icon-custom icon-property"></i> Properties</h3>
+<a name="%24mla_debug_file" id="$mla_debug_file"> </a><div class="element clickable property private $mla_debug_file" data-toggle="collapse" data-target=".$mla_debug_file .collapse">
+<h2>Debug information output file for mode = 'log'</h2>
+<pre>$mla_debug_file : string</pre>
+<div class="labels"></div>
+<div class="row collapse"><div class="detail-description">
+<p class="long_description"></p>
+<table class="table table-bordered"><tr>
+<th>since</th>
+<td>2.14</td>
+</tr></table>
+</div></div>
+</div>
 <a name="%24mla_debug_messages" id="$mla_debug_messages"> </a><div class="element clickable property private $mla_debug_messages" data-toggle="collapse" data-target=".$mla_debug_messages .collapse">
 <h2>Accumulates debug messages</h2>
 <pre>$mla_debug_messages : string</pre>
@@ -784,7 +836,7 @@ Defined as public because it's an action.</p></p>
 <pre>$mla_debug_mode : string</pre>
 <div class="labels"></div>
 <div class="row collapse"><div class="detail-description">
-<p class="long_description"></p>
+<p class="long_description"><p>Collection mode: 'buffer', 'console', 'log' or 'none' (default).</p></p>
 <table class="table table-bordered"><tr>
 <th>since</th>
 <td>2.12</td>
@@ -1040,7 +1092,7 @@ Defined as public because it's an action.</p></p>
 <div class="row"><footer class="span12">
             Template is built using <a href="http://twitter.github.com/bootstrap/">Twitter Bootstrap 2</a> and icons provided by <a href="http://glyphicons.com/">Glyphicons</a>.<br>
             Documentation is powered by <a href="http://www.phpdoc.org/">phpDocumentor 2.0.0a8</a> and<br>
-            generated on 2015-07-28T20:42:44-07:00.<br></footer></div>
+            generated on 2015-08-16T20:58:57-07:00.<br></footer></div>
 </div>
 </body>
 </html>

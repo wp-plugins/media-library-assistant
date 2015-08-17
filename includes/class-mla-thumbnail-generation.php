@@ -437,7 +437,7 @@ class MLA_Thumbnail {
 			'Options' => __( 'Options', 'media-library-assistant' ),
 			'Clear Filter-by' => __( 'Clear Filter-by', 'media-library-assistant' ),
 			'Cancel' => __( 'Cancel', 'media-library-assistant' ),
-			'Generate Thumbnails' => __( 'Generate Thumbnails', 'media-library-assistant' ),
+//			'Generate Thumbnails' => __( 'Generate Thumbnails', 'media-library-assistant' ),
 		);
 		$parse_value = MLAData::mla_parse_template( $page_template_array['page'], $page_values );
 

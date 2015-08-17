@@ -2991,6 +2991,26 @@ class MLASettings {
 	} // _save_debug_settings
 
 	/**
+	 * Compose the Debug tab Debug Settings content for one setting
+	 *
+	 * @since 2.14
+	 *
+	 * @param	string	$label Display name for the setting
+	 * @param	string	$value Current value for the setting
+ 	 *
+	 * @return	string	HTML table row markup for the label setting pair
+	 */
+	private static function _compose_settings_row( $label, $value ) {
+		$row = '<tr valign="top"><th scope="row" style="text-align:right;">' . "\n";
+        $row .= $label . "\n";
+        $row .= '</th><td style="text-align:left;">' . "\n";
+        $row .= $value . "\n";
+        $row .= '</td></tr>' . "\n";
+
+		return $row;        
+	} // _compose_settings_row
+
+	/**
 	 * Compose the Debug tab content for the Settings subpage
 	 *
 	 * @since 2.10
@@ -3005,11 +3025,34 @@ class MLASettings {
 		);
 
 		$page_values = array();
-		$error_log_name =  ini_get( 'error_log' );
+		
+		/*
+		 * Saving the options can change the log file name, so do it first
+		 */
+		if ( !empty( $_REQUEST['mla-debug-options-save'] ) ) {
+			check_admin_referer( MLA::MLA_ADMIN_NONCE_ACTION, MLA::MLA_ADMIN_NONCE_NAME );
+			$page_content = self::_save_debug_settings();
+		}
+		
+		/*
+		 * Find the appropriate error log file
+		 */
+		$error_log_name = MLAOptions::mla_get_option( MLAOptions::MLA_DEBUG_FILE );
+		if ( empty( $error_log_name ) ) {
+			$error_log_name =  ini_get( 'error_log' );
+		} else {
+			$first = substr( $error_log_name, 0, 1 );
+			if ( ( '/' != $first ) && ( '\\' != $first ) ) {
+				$error_log_name = '/' . $error_log_name;
+			}
+			
+			$error_log_name = WP_CONTENT_DIR . $error_log_name;
+		}
+		
 		$error_log_exists = file_exists ( $error_log_name );
 
 		/*
-		 * Check for page-level actions
+		 * Check for other page-level actions
 		 */
 		if ( isset( $_REQUEST['mla_reset_log'] ) && 'true' == $_REQUEST['mla_reset_log'] ) {
 			$file_error = false;
@@ -3035,9 +3078,6 @@ class MLASettings {
 			} else {
 				$error_log_exists = file_exists ( $error_log_name );
 			}
-		} elseif ( !empty( $_REQUEST['mla-debug-options-save'] ) ) {
-			check_admin_referer( MLA::MLA_ADMIN_NONCE_ACTION, MLA::MLA_ADMIN_NONCE_NAME );
-			$page_content = self::_save_debug_settings();
 		}
 
 		/*
@@ -3111,8 +3151,17 @@ class MLASettings {
 			$reset_link = '<a class="button-secondary" href="' . add_query_arg( $args, wp_nonce_url( 'options-general.php', MLA::MLA_ADMIN_NONCE_ACTION, MLA::MLA_ADMIN_NONCE_NAME ) ) . '" title="' . __( 'Reset', 'media-library-assistant' ) . ' &#8220;' . __( 'Error Log', 'media-library-assistant' ) . '&#8221;">' . __( 'Reset', 'media-library-assistant' ) . '</a>';
 		}
 
-		$error_level = ini_get( 'error_reporting' );
-		$error_log_title = __( 'Error Log', 'media-library-assistant' ) . ' (' . sprintf( '0x%1$04X', $error_level ) . ')';
+		/*
+		 * Gather the Debug Settings
+		 */
+		 $settings_list  = self::_compose_settings_row( 'MLA_DEBUG_LEVEL', sprintf( '0x%1$04X', MLA_DEBUG_LEVEL ) );
+		 $settings_list  .= self::_compose_settings_row( 'PHP error_reporting', sprintf( '0x%1$04X', ini_get( 'error_reporting' ) ) );
+		 $settings_list .= self::_compose_settings_row( 'PHP error_log', ini_get( 'error_log' ) );
+		 $settings_list .= self::_compose_settings_row( 'WP_DEBUG', WP_DEBUG ? 'true' : 'false' );
+		 $settings_list .= self::_compose_settings_row( 'WP_DEBUG_LOG', WP_DEBUG_LOG ? 'true' : 'false' );
+		 $settings_list .= self::_compose_settings_row( 'WP_DEBUG_DISPLAY', WP_DEBUG_DISPLAY ? 'true' : 'false' );
+		 $settings_list .= self::_compose_settings_row( 'WP_CONTENT_DIR', WP_CONTENT_DIR );
+
 		/*
 		 * Compose tab content
 		 */
@@ -3120,7 +3169,9 @@ class MLASettings {
 			'Debug Options' => __( 'Debug Options', 'media-library-assistant' ),
 			'form_url' => admin_url( 'options-general.php' ) . '?page=mla-settings-menu-debug&mla_tab=debug',
 			'options_list' => $options_list,
-			'Error Log' => $error_log_title,
+			'Debug Settings' => __( 'Debug Settings', 'media-library-assistant' ),
+			'settings_list' => $settings_list,
+			'Error Log' => __( 'Error Log', 'media-library-assistant' ),
 			'Error Log Name' => $error_log_name,
 			'error_log_text' => $error_log_contents,
 			'download_link' => $download_link,
@@ -3154,7 +3205,6 @@ class MLASettings {
 		 */
 		$development_version =  MLA::MLA_DEVELOPMENT_VERSION;
 		$development_version =  ( ! empty( $development_version ) ) ? ' (' . $development_version . ')' : '';
-		$debug_level =  MLA_DEBUG_LEVEL ? ' (' . sprintf( '0x%1$04X', MLA_DEBUG_LEVEL ) . ')' : '';
 		self::$page_template_array = MLAData::mla_load_template( 'admin-display-settings-page.tpl' );
 		$current_tab_slug = isset( $_REQUEST['mla_tab'] ) ? $_REQUEST['mla_tab']: 'general';
 		$current_tab = self::mla_get_options_tablist( $current_tab_slug );
@@ -3163,7 +3213,6 @@ class MLASettings {
 			'Donate' => __( 'Donate', 'media-library-assistant' ),
 			'version' => 'v' . MLA::CURRENT_MLA_VERSION,
 			'development' => $development_version,
-			'debug' => $debug_level,
 			'messages' => '',
 			'tablist' => self::_compose_settings_tabs( $current_tab_slug ),
 			'tab_content' => '',

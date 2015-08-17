@@ -233,7 +233,7 @@ Four <code>[mla_gallery]</code> parameters provide control over the placement, s
 <table>
 <tr>
 <td style="padding-right: 10px; vertical-align: top; font-weight:bold">columns</td>
-<td>specifies the number of columns. The gallery will include a break tag at the end of each row, and calculate the column width as appropriate. The default value is 3. If columns is set to 0, no row breaks will be included.</td>
+<td>specifies the number of columns. The gallery will include a break tag at the end of each row and calculate the column width as appropriate. The default value is 3. If columns is set to 0, no row breaks will be included.</td>
 </tr>
 <tr>
 <td style="padding-right: 10px; vertical-align: top; font-weight:bold">mla_float</td>
@@ -1223,7 +1223,7 @@ The data selection parameters specify which taxonomy (or taxonomies) the terms a
 </tr>
 <tr>
 <td style="padding-right: 10px; vertical-align: top; font-weight:bold">ids</td>
-<td>A comma-separated list of <strong>attachment ID</strong> values for an item-specific cloud. Only those terms assigned to the attachment(s) in the list will be included. You can have one or more IDs, and you can include assigned terms from one or more taxonomies. Do not use the "include" parameter if you use the "ids" parameter.</td>
+<td>A comma-separated list of <strong>attachment ID</strong> values for an item-specific cloud. Only those terms assigned to the attachment(s) in the list will be included. You can have one or more IDs and you can include assigned terms from one or more taxonomies. Do not use the "include" parameter if you use the "ids" parameter.</td>
 </tr>
 <tr>
 <td style="padding-right: 10px; vertical-align: top; font-weight:bold">no_count</td>
@@ -1417,7 +1417,7 @@ The following <strong>field-level substitution parameters</strong> are available
 <table>
 <tr>
 <td style="padding-right: 10px; vertical-align: top; font-weight:bold">request</td>
-<td>The parameters defined in the <code>$_REQUEST</code> array; the "query strings" sent from the browser. The PHP $_REQUEST variable is a superglobal Array that contains the contents of both $_GET, $_POST, and $_COOKIE arrays.</td>
+<td>The parameters defined in the <code>$_REQUEST</code> array; the "query strings" sent from the browser. The PHP $_REQUEST variable is a superglobal Array that contains the contents of both $_GET, $_POST and $_COOKIE arrays.</td>
 </tr>
 <tr>
 <td style="padding-right: 10px; vertical-align: top; font-weight:bold">query</td>
@@ -1864,7 +1864,7 @@ As you can tell from the number of parameters available, the <code>[mla_gallery]
 </ul>
 </p>
 <p>
-Perhaps the most popular Media Library Assistant feature is the ability to assign category and tag values to Media Library Items and use the values to filter a gallery display. "Categories" and "Tags" are built-in WordPress "taxonomies" and have been used for a long time to organize posts and pages. WordPress does not have built-in support for using them with attachments, and that was one of the original motivations for MLA.
+Perhaps the most popular Media Library Assistant feature is the ability to assign category and tag values to Media Library Items and use the values to filter a gallery display. "Categories" and "Tags" are built-in WordPress "taxonomies" and have been used for a long time to organize posts and pages. WordPress does not have built-in support for using them with attachments and that was one of the original motivations for MLA.
 </p>
 <p>
 With MLA you can extend Categories and Tags support to attachments. MLA also provides two additional taxonomies for your convenience, Att. Categories and Att. Tags. Because of the way WordPress works, using Categories and Tags for attachments as well as posts and pages can be complicated, so many people find that using the separate Att. Categories and Att. Tags is more convenient.
@@ -2799,7 +2799,7 @@ There are eleven prefix values for field-level parameters. Prefix values must be
 <table>
 	<tr>
 		<td style="padding-right: 10px; vertical-align: top; font-weight:bold">request</td>
-		<td>The parameters defined in the <code>$_REQUEST</code> array; the "query strings" sent from the browser. The PHP $_REQUEST variable is a superglobal Array that contains the contents of both $_GET, $_POST, and $_COOKIE arrays. It can be used to collect data sent with both the GET and POST methods. For example, if the URL is <code>http://www.mysite.com/mypage?myarg=myvalue</code> you can access the query string as <code>[+request:myarg+]</code>, which has the value "myvalue".</td>
+		<td>The parameters defined in the <code>$_REQUEST</code> array; the "query strings" sent from the browser. The PHP $_REQUEST variable is a superglobal Array that contains the contents of both $_GET, $_POST and $_COOKIE arrays. It can be used to collect data sent with both the GET and POST methods. For example, if the URL is <code>http://www.mysite.com/mypage?myarg=myvalue</code> you can access the query string as <code>[+request:myarg+]</code>, which has the value "myvalue".</td>
 	</tr>
 	<tr>
 		<td style="padding-right: 10px; vertical-align: top; font-weight:bold">query</td>
@@ -2897,7 +2897,7 @@ MLA adds three fields of its own to the XMP metadata information:
 	<tr>
 		<td style="padding-right: 10px; vertical-align: top; font-weight:bold">id3</td>
 		<td>
-		<a href="https://en.wikipedia.org/wiki/ID3" title="Wikipedia page for ID3" target="_blank">Wikipedia</a> says "ID3 is a metadata container most often used in conjunction with the MP3 audio file format. It allows information such as the title, artist, album, track number, and other information about the file to be stored in the file itself."
+		<a href="https://en.wikipedia.org/wiki/ID3" title="Wikipedia page for ID3" target="_blank">Wikipedia</a> says "ID3 is a metadata container most often used in conjunction with the MP3 audio file format. It allows information such as the title, artist, album, track number and other information about the file to be stored in the file itself."
 		WordPress includes a subset of the <a href="http://www.getid3.org/" title="Official getID3() site" target="_blank">getID3() PHP Media File Parser</a> with support for audio and video file formats. A few values are available for other file types but they are not very useful.<br />
 		&nbsp;<br />
 		You can also use [+id3:ALL_ID3+], a special "pseudo value" that returns a string representation of all the metadata. You can use this pseudo-value to examine the metadata in a file, find field names and see what values are present. The ALL_ID3 value is altered to limit the amount of information displayed. Values of more than 256 characters are truncated to 256 characters. This prevents large fields such as image thumbnails from dominating the display. Array values are replaced by an "(ARRAY)" placeholder, e.g., <code>'audio' => '(ARRAY)'</code>. You can explore array values individually by coding something like <code>[+id3:audio,export+]</code> to expand all levels within the array or <code>[+id3:audio,unpack+]</code> to expand one level within the array. You can go deeper in the array hierarchy with compound names, e.g., <code>[+id3:quicktime.moov.subatoms,unpack+]</code> or <code>[+id3:quicktime.moov.subatoms.*.name+]</code>.
@@ -3756,7 +3756,7 @@ Content Templates (templates) are one of the Field-level Markup Substitution Par
 	</tr>
 	<tr>
 		<td style="padding-right: 10px; vertical-align: top; font-weight:bold">Conditional</td>
-		<td>text and/or field-level substitution parameters that will be tested for missing values. Any field-level substitution parameter that is not valid, is empty or contains only whitespace will cause the entire conditional to be eliminated. Conditional elements are enclosed in parentheses. For example, <code>[+template: (ITPC Title: [+iptc:object-name+] ) +]</code>. If the IPTC field is missing or blank both it and the preceding "ITPC Title: " literal are eliminated.</td>
+		<td>text and/or field-level substitution parameters that will be tested for missing values. Any field-level substitution parameter that is not valid, is empty or contains only whitespace will cause the entire conditional to be eliminated. Conditional elements are enclosed in parentheses. For example, <code>[+template: (IPTC Title: [+iptc:object-name+] ) +]</code>. If the IPTC field is missing or blank both it and the preceding "IPTC Title: " literal are eliminated.</td>
 	</tr>
 	<tr>
 		<td style="padding-right: 10px; vertical-align: top; font-weight:bold">Choice</td>
@@ -3768,7 +3768,7 @@ Content Templates (templates) are one of the Field-level Markup Substitution Par
 	</tr>
 </table>
 <p>
-The conditional and choice elements are the key to templates' power, particularly with custom fields and metadata such as ITPC and EXIF. With the conditional element you can combine literal text with a substitution value and eliminate the text if the value is missing. With the choice element you can specify multiple sources for a value and decide the order in which they are tested. In the choice example above the text "Description: " will always be used, followed by the attachment's caption (if present) or the description value or the literal "none" if both of the other values are missing. In other words, each alternative of the choice element is evaluated as a conditional element; no need for more parentheses.
+The conditional and choice elements are the key to templates' power, particularly with custom fields and metadata such as IPTC and EXIF. With the conditional element you can combine literal text with a substitution value and eliminate the text if the value is missing. With the choice element you can specify multiple sources for a value and decide the order in which they are tested. In the choice example above the text "Description: " will always be used, followed by the attachment's caption (if present) or the description value or the literal "none" if both of the other values are missing. In other words, each alternative of the choice element is evaluated as a conditional element; no need for more parentheses.
 </p>
 <p>
 Conditional, choice and template elements can be nested as needed. For example, a conditional element can have a choice element within it or a choice alternative could include a conditional. Here's an example:
@@ -5037,7 +5037,7 @@ When WP_DEBUG_DISPLAY is true, WordPress will force errors to be displayed. WP_D
 </li>
 </ul>
 <p>
-The full path and file name of the error log is displayed just above the text area that contains the log content. If the content doesn't display and/or you can't download the log file, you can try finding the log file at the location shown.
+The full path and file name of the error log is displayed just above the text area that contains the log content. If the content doesn't display and/or you can't download the log file, you can try finding the log file at the location shown. If you can't access the PHP error log for any reason, you can write the MLA-specific messages to a separate file in your <code>/wp-content/</code> directory using the "Debug File" option explained below.
 </p>
 <p>
 To add the Debug tab to your Settings/Media Library Assistant submenu you must add an entry to your <code>wp-config.php</code> file:
@@ -5046,13 +5046,39 @@ To add the Debug tab to your Settings/Media Library Assistant submenu you must a
 <li><code>define( 'MLA_DEBUG_LEVEL', 1 );</code></li>
 </ul>
 <p>
-Once that line is added to the <code>wp-config.php</code> file the "Debug" tab will appear at the right of the tab list in the Settings/Media Library Assistant submenu. In addition, the value <code>MLA_DEBUG_LEVEL</code> will appear in the submenu title to remind you it has been set.
+Once that line is added to the <code>wp-config.php</code> file the "Debug" tab will appear at the right of the tab list in the Settings/Media Library Assistant submenu. The MLA_DEBUG_LEVEL is also used to turn categories of debug messages on and off. Each bit of the value has a separate meaning; the current definitions are:
+</p>
+<table>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">1, or 0x0001</td>
+<td>activates the Debug tab. PHP messages and some MLA error messages (such as the <code>[mla_gallery mla_debug=log]</code> messages) will be written to the file.</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">2, or 0x0002</td>
+<td>writes MLA-specific messages to the log for some of the "Ajax" functions such as bulk edit updates and mapping rule execution.</td>
+</tr>
+</table>
+<p>
+You can pick the logging categories you want by adding the above values together. For example, to log only PHP messages you can use <code>define( 'MLA_DEBUG_LEVEL', 1 );</code> or <code>define( 'MLA_DEBUG_LEVEL', 0x0001 );</code>. To add the "Ajax" messages you can use <code>define( 'MLA_DEBUG_LEVEL', 3 );</code> or <code>define( 'MLA_DEBUG_LEVEL', 0x0003 );</code>. The hexadecimal notation ( 0x0003 ) can be easier to understand when several options are involved.
 </p>
 <p>
-The Debug Options screen begins with an "Error Log" title, followed by the PHP error reporting level in parentheses. Below the title is the Debug Options section. The Display Limit value lets you limit the amount of log information copied to the text area for display. Setting a limit to, for example, 262144 will display the last 256 Kb of the file; this can be useful if the log file gets very large.
+The Debug Options screen begins with the "Debug Options" section, containing:
+</p>
+<table>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">Display&nbsp;Limit</td>
+<td>lets you limit the amount of log information copied to the text area for display. Setting a limit to, for example, 262144 will display the last 256 Kb of the file; this can be useful if the log file gets very large.</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">Debug&nbsp;File</td>
+<td>lets you specify a text file other than the PHP error log to receive the MLA-specific messages. The absolute path to the <code>/wp-content/</code> directory will be prepended to the value you enter. If the file does not exist an attempt will be made to create it. You can enter values such as "my-log.txt" or "/mylogs/my-log.txt". In the latter case, the "/mylogs/" directory must already exist; MLA will not create it.</td>
+</tr>
+</table>
+<p>
+Below the Debug Options section is a list of settings and values that are useful for debugging investigation. If you are posting error information in an MLA Support Forum topic, be sure to add these values to your post to get a quicker resolution to your question or problem.
 </p>
 <p>
-Below the Debug Options section is a text area with the current content of the PHP error log file. Below the text box are three action buttons:
+Below the Debug Settings section is a text area with the current content of the PHP (or MLA-specific) error log file. Below the text box are three action buttons:
 </p>
 <ul style="margin-left: 20px">
 <li><strong>Download</strong> - click this button to download a copy of the error log to your system.</li>

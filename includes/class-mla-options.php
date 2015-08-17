@@ -251,6 +251,11 @@ class MLAOptions {
 	const MLA_DEBUG_DISPLAY_LIMIT = 'debug_display_limit';
 
 	/**
+	 * Provides a unique name for the Debug alternate log file option
+	 */
+	const MLA_DEBUG_FILE = 'debug_file';
+
+	/**
 	 * Option setting for "Featured in" reporting
 	 *
 	 * This setting is false if the "Featured in" database access setting is "disabled", else true.
@@ -1267,6 +1272,14 @@ class MLAOptions {
 					'std' => '',
 					'size' => 5,
 					'help' => __( 'Enter the maximum number of debug log characters to display; enter zero or leave blank for no limit.', 'media-library-assistant' )),
+
+			self::MLA_DEBUG_FILE =>
+				array('tab' => 'debug',
+					'name' => __( 'Debug File', 'media-library-assistant' ),
+					'type' => 'text',
+					'std' => '',
+					'size' => 60,
+					'help' => __( 'Enter the name of an alternate, MLA-specific debug log file; leave blank to use the PHP error_log.', 'media-library-assistant' )),
 
 			/* Here are examples of the other option types
 			'textarea' =>

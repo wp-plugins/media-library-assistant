@@ -29,7 +29,7 @@ class MLA {
 	 *
 	 * @var	string
 	 */
-	const CURRENT_MLA_VERSION = '2.13';
+	const CURRENT_MLA_VERSION = '2.14';
 
 	/**
 	 * Current date for Development Version, empty for production versions
@@ -38,7 +38,7 @@ class MLA {
 	 *
 	 * @var	string
 	 */
-	const MLA_DEVELOPMENT_VERSION = '20150812';
+	const MLA_DEVELOPMENT_VERSION = '';
 
 	/**
 	 * Slug for registering and enqueueing plugin style sheet
@@ -279,7 +279,7 @@ class MLA {
 	}
 
 	/**
-	 * Load a plugin text domain
+	 * Load a plugin text domain and alternate debug file
 	 * 
 	 * The "add_action" for this function is in mla-plugin-loader.php, because the "initialize"
 	 * function above doesn't run in time.
@@ -310,6 +310,14 @@ class MLA {
 		MLA_Upload_List_Table::mla_localize_default_columns_array();
 		MLA_Upload_Optional_List_Table::mla_localize_default_columns_array();
 		MLA_View_List_Table::mla_localize_default_columns_array();
+		
+		/*
+		 * Set up alternate MLA debug log file
+		 */
+		$error_log_name = MLAOptions::mla_get_option( MLAOptions::MLA_DEBUG_FILE );
+		if ( ! empty( $error_log_name ) ) {
+			self::mla_debug_file( $error_log_name );
+		}
 	}
 
 	/**
@@ -2466,6 +2474,8 @@ class MLA {
 	/**
 	 * Debug information collection mode
 	 *
+	 * Collection mode: 'buffer', 'console', 'log' or 'none' (default).
+	 *
 	 * @since 2.12
 	 *
 	 * @var	string
@@ -2473,17 +2483,65 @@ class MLA {
 	private static $mla_debug_mode = 'none';
 
 	/**
-	 * Set debug information collection mode
+	 * Get/Set debug information collection mode
 	 * 
 	 * @since 2.12
 	 * 
-	 * @param	string	$mode Collection mode: 'buffer' (default), 'console', 'log' or 'none'
+	 * @param	string	$mode Optional. New collection mode: 'none' (default), 'buffer', 'console' or 'log'
 	 *
-	 * @return	boolean	true if success else false
+	 * @return	string	The previous mode value, i.e., before the update
 	 */
-	public static function mla_debug_mode( $mode = 'buffer' ) {
-		self::$mla_debug_mode = $mode;
-		return true;
+	public static function mla_debug_mode( $mode = false ) {
+		$old_mode = self::$mla_debug_mode;
+		
+		if ( $mode && in_array( $mode, array( 'none', 'buffer', 'console', 'log' ) ) ) {
+			self::$mla_debug_mode = $mode;
+		}
+		
+		return $old_mode;
+	}
+
+	/**
+	 * Debug information output file for mode = 'log'
+	 *
+	 * @since 2.14
+	 *
+	 * @var	string
+	 */
+	private static $mla_debug_file = NULL;
+
+	/**
+	 * Get/Set debug information collection output file for mode = 'log'
+	 * 
+	 * Note that WP_CONTENT_DIR will be pre-pended to the value, and a slash
+	 * will be added to the front of the value if necessary.
+	 *
+	 * @since 2.14
+	 * 
+	 * @param	string	$file Optional. The (optional path and) file name, relative to WP_CONTENT_DIR,
+	 * 					or false/empty string to clear the value.
+	 *
+	 * @return	string	The previous file value, i.e., before the update, relative to WP_CONTENT_DIR
+	 */
+	public static function mla_debug_file( $file = NULL ) {
+		if ( NULL === $file ) {
+			return self::$mla_debug_file;
+		}
+
+		$old_file = self::$mla_debug_file;
+		
+		if ( empty( $file ) ) {
+			self::$mla_debug_file = NULL;
+		} else {
+			$first = substr( $file, 0, 1 );
+			if ( ( '/' != $first ) && ( '\\' != $first ) ) {
+				$file = '/' . $file;
+			}
+
+			self::$mla_debug_file = $file;
+		}
+		
+		return $old_file;
 	}
 
 	/**
@@ -2533,7 +2591,7 @@ class MLA {
 				break;
 			case 'log':
 				foreach( self::$mla_debug_messages as $message ) {
-					error_log( $message, 0 );
+					self::_debug_log( $message );
 				}
 				break;
 		}
@@ -2545,6 +2603,28 @@ class MLA {
 		}
 
 		return $results;
+	}
+
+	/**
+	 * Write a debug message to the appropriate log file
+	 * 
+	 * @since 2.14
+	 * 
+	 * @param	string	$message Message text
+	 */
+	private static function _debug_log( $message ) {
+		if ( ! empty( self::$mla_debug_file ) ) {
+			// 'at' = append mode, text format
+			$file_handle = @fopen( WP_CONTENT_DIR . self::$mla_debug_file, 'at' );
+			if ( $file_handle ) {
+				@fwrite( $file_handle, sprintf( '[%1$s] %2$s%3$s', gmdate( 'd-M-Y H:i:s' ), $message, "\n" ) ); 
+				@fclose( $file_handle );
+
+				return;
+			}
+		}
+		
+		error_log( $message, 0 );
 	}
 
 	/**
@@ -2585,7 +2665,7 @@ class MLA {
 				trigger_error( $message, E_USER_WARNING );
 				break;
 			case 'log':
-				error_log( $message, 0 );
+				self::_debug_log( $message );
 				break;
 		}
 	}

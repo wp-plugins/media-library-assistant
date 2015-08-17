@@ -237,6 +237,10 @@ div.mla_errors {
 /*
  * MLA Settings page, Views and Uploads tab inline editing - adapted from load-styles.php
  */
+#wpbody-content .optiontable th {
+	padding-right: 10px;
+}
+
 #wpbody-content .bulk-edit-row-upload .inline-edit-col-left,
 #wpbody-content .bulk-edit-row-view .inline-edit-col-left {
 	width: 40%
