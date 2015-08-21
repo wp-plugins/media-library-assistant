@@ -170,6 +170,13 @@ All of the MLA source code has been annotated with "DocBlocks", a special type o
 
 == Changelog ==
 
+= 2.15 =
+* New: The Portable Object (".po") files are now included in the `/media-library-assistant/languages` directory, facilitating the translation update process.
+* Fix: The Settings/Media Library Assistant tab HTML heading tags have been adjusted to conform to the new WordPress v4.3+ standards.
+* Fix: The Settings/Media Library Assistant tab titles and option content is loaded later in the startup process, allowing their translation to other languages.
+* Fix: The Settings/Media Library Assistant "Donate" button is changed from an image to text, facilitating translation ro other languages.
+* Fix: An array initialization defect that caused a PHP warning message in PHP Version 7 has been corrected.
+
 = 2.14 =
 * New: WordPress 4.3+ "primary column" support for the Settings/Media Library Assistant Views and Uploads tabs.
 * New: For the Settings/Media Library Assistant **Debug tab**, you can **specify a separate file** in your `/wp-content/` directory to receive MLA-specific logging/debug messages. Several useful debug settings are now displayed in the tab as well.

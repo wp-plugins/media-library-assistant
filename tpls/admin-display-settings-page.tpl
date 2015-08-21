@@ -3,9 +3,10 @@
 &nbsp;
 <div class="wrap">
 <div id="icon-options-general" class="icon32"><br/></div>
-<div id="donate-button-div" style="text-align: center; width: 100px; height: 40px; float: right; clear:right; margin-top: 5px">
-<a href="http://fairtradejudaica.org/make-a-difference/donate/" title="Support our work" target="_blank" style="border: none;"><img border="0" src="[+donateURL+]" width="100" height="40" alt="[+Donate+]"></a></div>
-<h2>[+Media Library Assistant+] [+version+][+development+] [+Settings+]</h2>
+<div id="donate-button-div" style="float: right; clear:right;">
+	<a title="[+Support Our Work+]" class="button button-large button-primary" href="http://fairtradejudaica.org/make-a-difference/donate/">[+Donate+]</a>
+</div>
+<h1>[+Media Library Assistant+] [+version+][+development+] [+Settings+]</h1>
 [+messages+]
 [+tablist+]
 [+tab_content+]
@@ -23,11 +24,11 @@
             <a href="#backtotop">[+Go to Top+]</a>
         </td></tr>
         <tr><td colspan="2">
-            <h3 id="[+key+]">[+value+]</h3>
+            <h2 id="[+key+]">[+value+]</h2>
         </td></tr>
 <!-- template="subheader" -->
         <tr><td colspan="2">
-            <h4 id="[+key+]">[+value+]</h4>
+            <h3 id="[+key+]">[+value+]</h3>
         </td></tr>
 <!-- template="radio" -->
         <tr valign="top"><th scope="row" style="text-align:right;">
@@ -95,7 +96,7 @@
 <!-- template="tablist-item" -->
 <a data-tab-id="[+data-tab-id+]" class="nav-tab [+nav-tab-active+]" href="?page=[+settings-page+]&amp;mla_tab=[+data-tab-id+]">[+title+]</a>
 <!-- template="general-tab" -->
-<h3>[+General Processing Options+]</h3>
+<h2>[+General Processing Options+]</h2>
 <p>[+In this tab+]</p>
 [+shortcode_list+]
 <form action="[+form_url+]" method="post" class="mla-display-settings-page" id="mla-display-settings-general-tab">
@@ -114,10 +115,12 @@
 <p>
 <a href="#backtotop">[+Go to Top+]</a>
 </p>
-<h3>[+Support Our Work+]</h3>
+<h2>[+Support Our Work+]</h2>
 <table width="700" border="0" cellpadding="10">
 	<tr>
-		<td><a href="http://fairtradejudaica.org/make-a-difference/donate/" title="[+Donate to FTJ+]" target="_blank" style="border: none;"><img border="0" src="[+donateURL+]" width="100" height="40" alt="[+Donate+]"></a></td>
+		<td>
+			<a title="[+Donate to FTJ+]" class="button button-large button-primary" href="http://fairtradejudaica.org/make-a-difference/donate/">[+Donate+]</a>
+		</td>
 		<td>[+This plugin was+]</td>
 	</tr>
 </table>
@@ -191,19 +194,19 @@
 <hr width="650" align="left" />
 
 <!-- template="mla-gallery-tab" -->
-<h3>[+MLA Gallery Options+]</h3>
+<h2>[+MLA Gallery Options+]</h2>
 <p><a href="#style">[+Go to Style Templates+]</a></p>
 <p><a href="#markup">[+Go to Markup Templates+]</a></p>
 <p>[+In this tab+]</p>
 <form action="[+form_url+]" method="post" class="mla-display-settings-page" id="mla-display-settings-mla-gallery-tab">
 [+options_list+]
 <a name="style">&nbsp;<br />&nbsp;<br /><a href="#backtotop">[+Go to Top+]</a>
-<h4>[+Style Templates+]</h4>
+<h3>[+Style Templates+]</h3>
     <table class="optiontable">
 [+style_options_list+]
 	</table>
 <a name="markup">&nbsp;<br />&nbsp;<br /><a href="#backtotop">[+Go to Top+]</a>
-<h4>[+Markup Templates+]</h4>
+<h3>[+Markup Templates+]</h3>
     <table class="optiontable">
 [+markup_options_list+]
 	</table>
@@ -216,7 +219,7 @@
 
 <!-- template="mla-progress-div" -->
 <div class="wrap" id="mla-progress-div" style="display:none; border-bottom:1px solid #cccccc">
-	<h3>[+Mapping Progress+]</h3>
+	<h2>[+Mapping Progress+]</h2>
 	<p style="font-weight:bold">[+DO NOT+]:</p>
 	<ol>
 		<li>[+DO NOT Close+]</li>
@@ -242,7 +245,7 @@
 
 <!-- template="custom-field-tab" -->
 [+mla-progress-div+]
-<h3>[+Custom Field Options+]</h3>
+<h2>[+Custom Field Options+]</h2>
 <p>
 [+In this tab+]
 </p>
@@ -252,7 +255,7 @@
 <form action="[+form_url+]" method="post" class="mla-display-settings-page" id="mla-display-settings-custom-field-tab">
 &nbsp;<br />
 [+options_list+]
-<h4>[+Custom field mapping+]</h4>
+<h3>[+Custom field mapping+]</h3>
     <table class="optiontable">
 [+custom_options_list+]
 	</table>
@@ -268,7 +271,7 @@
 
 <!-- template="iptc-exif-tab" -->
 [+mla-progress-div+]
-<h3>[+IPTX/EXIF Options+]</h3>
+<h2>[+IPTX/EXIF Options+]</h2>
 <p>
 [+In this tab+]
 </p>
@@ -278,15 +281,15 @@
 <form action="[+form_url+]" method="post" class="mla-display-settings-page" id="mla-display-settings-iptc-exif-tab">
 &nbsp;<br />
 [+options_list+]
-<h4>[+Standard field mapping+] <input name="iptc-exif-options-process-standard" class="button-secondary mla-mapping" id="iptc-exif-options-process-standard" style="margin-left: 20px" type="submit" value="[+Map Standard Fields+]" /></h4>
+<h3>[+Standard field mapping+] <input name="iptc-exif-options-process-standard" class="button-secondary mla-mapping" id="iptc-exif-options-process-standard" style="margin-left: 20px" type="submit" value="[+Map Standard Fields+]" /></h3>
     <table class="optiontable">
 [+standard_options_list+]
 	</table>
-<h4>[+Taxonomy term mapping+] <input name="iptc-exif-options-process-taxonomy" class="button-secondary mla-mapping" id="iptc-exif-options-process-taxonomy" style="margin-left: 10px" type="submit" value="[+Map Taxonomy Terms+]" /></h4>
+<h3>[+Taxonomy term mapping+] <input name="iptc-exif-options-process-taxonomy" class="button-secondary mla-mapping" id="iptc-exif-options-process-taxonomy" style="margin-left: 10px" type="submit" value="[+Map Taxonomy Terms+]" /></h3>
     <table class="optiontable">
 [+taxonomy_options_list+]
 	</table>
-<h4>[+Custom field mapping+] <input name="iptc-exif-options-process-custom" class="button-secondary mla-mapping" id="iptc-exif-options-process-custom" style="margin-left: 25px" type="submit" value="[+Map Custom Fields+]" /></h4>
+<h3>[+Custom field mapping+] <input name="iptc-exif-options-process-custom" class="button-secondary mla-mapping" id="iptc-exif-options-process-custom" style="margin-left: 25px" type="submit" value="[+Map Custom Fields+]" /></h3>
     <table class="optiontable">
 [+custom_options_list+]
 	</table>
@@ -299,7 +302,7 @@
 </form>
 
 <!-- template="debug-tab" -->
-<h3>[+Debug Options+]</h3>
+<h2>[+Debug Options+]</h2>
 <form action="[+form_url+]" method="post" class="mla-display-settings-page" id="mla-display-settings-debug-tab">
 &nbsp;<br />
     <table class="optiontable">
@@ -309,7 +312,7 @@
     <table class="optiontable">
 [+settings_list+]
 	</table>
-<h4>[+Error Log+]</h4>
+<h3>[+Error Log+]</h3>
 [+Error Log Name+]
     <table>
         <tr>

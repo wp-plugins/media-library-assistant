@@ -38,7 +38,7 @@ class MLA {
 	 *
 	 * @var	string
 	 */
-	const MLA_DEVELOPMENT_VERSION = '';
+	const MLA_DEVELOPMENT_VERSION = '20150821';
 
 	/**
 	 * Slug for registering and enqueueing plugin style sheet
@@ -300,16 +300,6 @@ class MLA {
 		 */
 		load_textdomain( $text_domain, trailingslashit( WP_LANG_DIR ) . $text_domain . '/' . $text_domain . '-' . $locale . '.mo' );
 		load_plugin_textdomain( $text_domain, false, MLA_PLUGIN_BASENAME . '/languages/' );
-
-		/*
-		 * Now we can localize values in other plugin components
-		 */
-		MLAOptions::mla_localize_option_definitions_array();
-		MLASettings::mla_localize_tablist();
-		MLA_List_Table::mla_localize_default_columns_array();
-		MLA_Upload_List_Table::mla_localize_default_columns_array();
-		MLA_Upload_Optional_List_Table::mla_localize_default_columns_array();
-		MLA_View_List_Table::mla_localize_default_columns_array();
 		
 		/*
 		 * Set up alternate MLA debug log file

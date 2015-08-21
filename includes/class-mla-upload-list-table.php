@@ -167,7 +167,7 @@ class MLA_Upload_List_Table extends WP_List_Table {
 	/**
 	 * Builds the $default_columns array with translated source texts.
 	 *
-	 * Called from MLA:mla_plugins_loaded_action because the $default_columns information might be
+	 * Called from MLATest::initialize because the $default_columns information might be
 	 * accessed from "front end" posts/pages.
 	 *
 	 * @since 1.71

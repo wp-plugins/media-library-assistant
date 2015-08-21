@@ -70,7 +70,7 @@
 </p>
 </form>
 <!-- template="view-disabled" -->
-<h3>[+Support is disabled+]</h3>
+<h2>[+Support is disabled+]</h2>
 <form action="[+form_url+]" method="post" class="mla-display-settings-page" id="mla-display-settings-view-tab">
     <table class="optiontable">
 [+options_list+]
@@ -84,7 +84,7 @@
 </form>
 
 <!-- template="before-table" -->
-<h3>[+Library Views Processing+]</h3>
+<h2>[+Library Views Processing+]</h2>
 <p>[+In this tab+]</p>
 <p>[+You can find+]</p>
 <div id="ajax-response"></div>
@@ -127,7 +127,7 @@
 	<div id="col-left">
 		<div class="col-wrap">
 			<div class="form-wrap">
-				<h3>[+Add New View+]</h3>
+				<h2>[+Add New View+]</h2>
 				<form action="[+form_url+]" method="post" class="validate" id="mla-add-view">
 					<input type="hidden" name="page" value="mla-settings-menu-view" />
 					<input type="hidden" name="mla_tab" value="view" />

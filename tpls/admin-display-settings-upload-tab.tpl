@@ -7,7 +7,7 @@
             </select>
 
 <!-- template="single-item-edit" -->
-<h3>[+Edit Upload MIME+]</h3>
+<h2>[+Edit Upload MIME+]</h2>
 <form action="[+form_url+]" method="post" class="validate" id="mla-edit-upload">
 	<input type="hidden" name="page" value="mla-settings-menu-upload" />
 	<input type="hidden" name="mla_tab" value="upload" />
@@ -57,7 +57,7 @@
 </p>
 </form>
 <!-- template="upload-disabled" -->
-<h3>[+Support is disabled+]</h3>
+<h2>[+Support is disabled+]</h2>
 <form action="[+form_url+]" method="post" class="mla-display-settings-page" id="mla-display-settings-upload-tab">
     <table class="optiontable">
 [+options_list+]
@@ -75,7 +75,7 @@
 	<input type="hidden" name="page" value="mla-settings-menu-upload" />
 	<input type="hidden" name="mla_tab" value="upload" />
 	[+_wpnonce+]
-	<H3 style="width: 600px; float: left">[+Known File Extension+][+results+]</H3>
+	<h2 style="width: 600px; float: left">[+Known File Extension+][+results+]</h2>
 	<p class="search-box" style="margin-top: 1em">
 		<label class="screen-reader-text" for="mla-search-optional-uploads-input">[+Search Known MIME+]:</label>
 		<input type="search" id="mla-search-optional-uploads-input" name="s" value="[+s+]" />
@@ -98,7 +98,7 @@
 </div><!-- /col-container -->
 
 <!-- template="before-table" -->
-<h3>[+File Extension Processing+]</h3>
+<h2>[+File Extension Processing+]</h2>
 <p>[+In this tab+]</p>
 <p>[+You can find+]</p>
 <div id="ajax-response"></div>
@@ -141,7 +141,7 @@
 	<div id="col-left">
 		<div class="col-wrap">
 			<div class="form-wrap">
-				<h3>[+Add New Upload+]</h3>
+				<h2>[+Add New Upload+]</h2>
 						<p class="description">[+To search database+]</p>
 				<form action="[+form_url+]" method="post" class="validate" id="mla-add-upload">
 					<input type="hidden" name="page" value="mla-settings-menu-upload" />

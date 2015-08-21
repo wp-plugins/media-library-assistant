@@ -1225,8 +1225,8 @@ class MLASettings {
 	 * render => rendering function for tab messages and content. Usage:
 	 *     $tab_content = ['render']( );
 	 *
-	 * The array must be populated at runtime in MLASettings::mla_localize_tablist(),
-	 * because Localization calls cannot be placed in the "public static" array definition itself.
+	 * The array must be populated at runtime in MLASettings::mla_localize_tablist();
+	 * localization calls cannot be placed in the "public static" array definition itself.
 	 *
 	 * @since 0.80
 	 *
@@ -1237,8 +1237,8 @@ class MLASettings {
 	/**
 	 * Localize $mla_tablist array
 	 *
-	 * Localization must be done at runtime, and these calls cannot be placed
-	 * in the "public static" array definition itself.
+	 * Localization must be done at runtime; these calls cannot be placed in the
+	 * "public static" array definition itself. Called from MLATest::initialize.
 	 *
 	 * @since 1.70
 	 *
@@ -1371,7 +1371,6 @@ class MLASettings {
 			'form_url' => admin_url( 'options-general.php' ) . '?page=mla-settings-menu-general&mla_tab=general',
 			'options_list' => '',
 			'import_settings' => '',
-			'donateURL' => MLA_PLUGIN_URL . 'images/DonateButton.jpg',
 		);
 
 		/*
@@ -1763,7 +1762,7 @@ class MLASettings {
 			'settingsURL' => admin_url('options-general.php'),
 			'form_url' => admin_url( 'options-general.php' ) . '?page=mla-settings-menu-view&mla_tab=view',
 			'_wpnonce' => wp_nonce_field( MLA::MLA_ADMIN_NONCE_ACTION, MLA::MLA_ADMIN_NONCE_NAME, true, false ),
-			'results' => ! empty( $_REQUEST['s'] ) ? '<h3 style="float:left">' . __( 'Displaying search results for', 'media-library-assistant' ) . ': "' . $_REQUEST['s'] . '"</h3>' : '',
+			'results' => ! empty( $_REQUEST['s'] ) ? '<h2 style="float:left">' . __( 'Displaying search results for', 'media-library-assistant' ) . ': "' . $_REQUEST['s'] . '"</h2>' : '',
 			'Search Views' => __( 'Search Views', 'media-library-assistant' ),
 			's' => isset( $_REQUEST['s'] ) ? $_REQUEST['s'] : '',
 			'options_list' => $options_list,
@@ -2258,7 +2257,7 @@ class MLASettings {
 			'Status' => __( 'Status', 'media-library-assistant' ),
 			'No Change' => __( 'No Change', 'media-library-assistant' ),
 			'Active' => __( 'Active', 'media-library-assistant' ),
-			'results' => ! empty( $_REQUEST['s'] ) ? '<h3 style="float:left">' . __( 'Displaying search results for', 'media-library-assistant' ) . ': "' . $_REQUEST['s'] . '"</h3>' : '',
+			'results' => ! empty( $_REQUEST['s'] ) ? '<h2 style="float:left">' . __( 'Displaying search results for', 'media-library-assistant' ) . ': "' . $_REQUEST['s'] . '"</h2>' : '',
 			's' => isset( $_REQUEST['s'] ) ? $_REQUEST['s'] : '',
 			'icon_types' => self::mla_get_icon_type_dropdown( $page_template_array, 'mla_upload_item[icon_type]' ),
 			'inline_icon_types' => self::mla_get_icon_type_dropdown( $page_template_array, 'icon_type' ),
@@ -3209,7 +3208,7 @@ class MLASettings {
 		$current_tab_slug = isset( $_REQUEST['mla_tab'] ) ? $_REQUEST['mla_tab']: 'general';
 		$current_tab = self::mla_get_options_tablist( $current_tab_slug );
 		$page_values = array(
-			'donateURL' => MLA_PLUGIN_URL . 'images/DonateButton.jpg',
+			'Support Our Work' => __( 'Support Our Work', 'media-library-assistant' ),
 			'Donate' => __( 'Donate', 'media-library-assistant' ),
 			'version' => 'v' . MLA::CURRENT_MLA_VERSION,
 			'development' => $development_version,
@@ -3226,7 +3225,6 @@ class MLASettings {
 		if ( $current_tab ) {
 			if ( isset( $current_tab['render'] ) ) {
 				$handler = $current_tab['render'];
-//				$page_content = self::$handler(  );
 				$page_content = call_user_func( $handler );
 			} else {
 				$page_content = array( 'message' => __( 'ERROR', 'media-library-assistant' ) . ': ' . __( 'Cannot render content tab', 'media-library-assistant' ), 'body' => '' );

@@ -302,8 +302,8 @@ class MLAOptions {
 	/**
 	 * $mla_option_definitions defines the database options and admin page areas for setting/updating them
 	 *
-	 * The array must be populated at runtime in MLAOptions::mla_localize_option_definitions_array(),
-	 * because Localization calls cannot be placed in the "public static" array definition itself.
+	 * The array must be populated at runtime in MLAOptions::mla_localize_option_definitions_array();
+	 * localization calls cannot be placed in the "public static" array definition itself.
 	 *
 	 * Each option is defined by an array with the following elements:
 	 *
@@ -425,8 +425,8 @@ class MLAOptions {
 	/**
 	 * Localize $mla_option_definitions array
 	 *
-	 * Localization must be done at runtime, and these calls cannot be placed
-	 * in the "public static" array definition itself.
+	 * Localization must be done at runtime; these calls cannot be placed in the
+	 * "public static" array definition itself. Called from MLATest::initialize.
 	 *
 	 * @since 1.70
 	 *

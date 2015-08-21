@@ -1292,7 +1292,7 @@ class MLA_WPML {
 	public static function mla_render_language_tab() {
 		$page_content = array(
 			'message' => '',
-			'body' => '<h3>Language</h3>' 
+			'body' => '<h2>' . __( 'Language', 'media-library-assistant' ) . '</h2>' 
 		);
 
 		/*

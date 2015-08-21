@@ -48,6 +48,16 @@ class MLATest {
 		 */
 		//error_reporting( E_ALL | E_STRICT | E_DEPRECATED | E_USER_DEPRECATED | E_USER_ERROR | E_USER_WARNING );
 		//error_reporting( E_ALL | E_STRICT );
+
+		/*
+		 * This is the earliest effective place to localize values in other plugin components
+		 */
+		MLAOptions::mla_localize_option_definitions_array();
+		MLASettings::mla_localize_tablist();
+		MLA_List_Table::mla_localize_default_columns_array();
+		MLA_Upload_List_Table::mla_localize_default_columns_array();
+		MLA_Upload_Optional_List_Table::mla_localize_default_columns_array();
+		MLA_View_List_Table::mla_localize_default_columns_array();
 	}
 
 	/**
