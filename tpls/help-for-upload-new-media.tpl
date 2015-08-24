@@ -1,3 +1,5 @@
+<!-- loaded in class-mla-edit-media.php function mla_edit_add_help_tab for the Media/Upload New Media submenu screen -->
+<!-- invoked as /wp-admin/media-new.php -->
 <!-- template="mla-bulk-actions" -->
 <!-- title="Bulk Edit Area" order="10" -->
 <p>The &#8220;Bulk Edit Area&#8221; lets you change the metadata (author, parent, taxonomy terms) for all uploaded attachments as they are added to the Media Library. <strong>IMPORTANT: Make your entries BEFORE uploading new items.</strong>

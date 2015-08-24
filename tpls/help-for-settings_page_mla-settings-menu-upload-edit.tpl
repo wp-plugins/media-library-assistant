@@ -1,3 +1,5 @@
+<!-- loaded in class-mla-settings.php function mla_add_help_tab_action for the SettingsMedia Library Assistant submenu Uploads/Edit Upload MIME Type tab -->
+<!-- invoked as /wp-admin/options-general.php?mla_admin_action=single_item_edit_display&mla_admin_nonce=303a441dcb&page=mla-settings-menu-upload&mla_tab=upload&mla_item_slug=3g2 -->
 <!-- template="mla-overview" -->
 <!-- title="Overview" order="10" -->
 <p>This screen allows you to view all of the fields associated with an Upload MIME Type and to edit them. Hints and helpful information appear below some fields.</p>

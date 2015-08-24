@@ -1,3 +1,5 @@
+<!-- loaded in class-mla-main.php function mla_add_help_tab for the Media/Att. Category submenu screen -->
+<!-- invoked as /wp-admin/edit-tags.php?taxonomy=attachment_category&post_type=attachment -->
 <!-- template="mla-overview" -->
 <!-- title="Overview" order="10" -->
 <p>You can use Attachment Categories to define sections of your site and group related attachments. The default is &#8220;none&#8221;, i.e., the attachment is not associated with any category.</p>

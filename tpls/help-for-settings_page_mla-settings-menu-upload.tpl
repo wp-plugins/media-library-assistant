@@ -1,3 +1,5 @@
+<!-- loaded in class-mla-settings.php function mla_add_help_tab_action for the Settings/Media Library Assistant submenu Uploads tab -->
+<!-- invoked as /wp-admin/options-general.php?page=mla-settings-menu-upload&mla_tab=upload -->
 <!-- template="mla-overview" -->
 <!-- title="Overview" order="10" -->
 <p>The Uploads tab lets you manage the list of "Upload MIME Type" entries used to validate file formats uploaded to the Media Library and to assign MIME types based on file extensions.</p>

@@ -3,7 +3,7 @@
  * Provides an example of hooking the filters provided by the MLA_List_Table class
  *
  * @package MLA List Table Hooks Example
- * @version 1.04
+ * @version 1.05
  */
 
 /*
@@ -11,7 +11,7 @@ Plugin Name: MLA List Table Hooks Example
 Plugin URI: http://fairtradejudaica.org/media-library-assistant-a-wordpress-plugin/
 Description: Provides an example of hooking the filters provided by the MLA_List_Table class
 Author: David Lingren
-Version: 1.04
+Version: 1.05
 Author URI: http://fairtradejudaica.org/our-story/staff/
 
 Copyright 2014 - 2015 David Lingren
@@ -89,10 +89,10 @@ class MLAListTableHooksExample {
 		add_filter( 'mla_list_table_inline_fields', 'MLAListTableHooksExample::mla_list_table_inline_fields', 10, 1 );
 		add_filter( 'mla_list_table_inline_action', 'MLAListTableHooksExample::mla_list_table_inline_action', 10, 2 );
 
-		add_filter( 'mla_list_table_bulk_action_initial_request', 'MLAListTableHooksExample::mla_list_table_bulk_action_initial_request', 10, 2 );
+		add_filter( 'mla_list_table_bulk_action_initial_request', 'MLAListTableHooksExample::mla_list_table_bulk_action_initial_request', 10, 3 );
 		add_filter( 'mla_list_table_begin_bulk_action', 'MLAListTableHooksExample::mla_list_table_begin_bulk_action', 10, 2 );
 
-		add_filter( 'mla_list_table_bulk_action_item_request', 'MLAListTableHooksExample::mla_list_table_bulk_action_item_request', 10, 3 );
+		add_filter( 'mla_list_table_bulk_action_item_request', 'MLAListTableHooksExample::mla_list_table_bulk_action_item_request', 10, 4 );
 		add_filter( 'mla_list_table_bulk_action', 'MLAListTableHooksExample::mla_list_table_bulk_action', 10, 3 );
 		add_filter( 'mla_list_table_custom_bulk_action', 'MLAListTableHooksExample::mla_list_table_custom_bulk_action', 10, 3 );
 		add_filter( 'mla_list_table_end_bulk_action', 'MLAListTableHooksExample::mla_list_table_end_bulk_action', 10, 2 );

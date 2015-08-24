@@ -1,3 +1,5 @@
+<!-- loaded in class-mla-settings.php function mla_add_help_tab_action for the Settings/Media Library Assistant submenu Uploads/Known File Extension/MIME Type Associations tab -->
+<!-- invoked as /wp-admin/options-general.php?page=mla-settings-menu-upload&mla_tab=upload&mla-optional-uploads-search=Search&mla_admin_nonce=303a441dcb -->
 <!-- template="mla-overview" -->
 <!-- title="Overview" order="10" -->
 <p>The Known File Extension/MIME Type Associations list lets you add "Upload MIME Type" entries from over 1,500 existing association pairs. There can be several different MIME Type values for a given file extension. For example, the ".dif" extension is a video format and also a data interchange format (try it). </p>

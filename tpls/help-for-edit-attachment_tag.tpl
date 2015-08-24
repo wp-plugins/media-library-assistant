@@ -1,3 +1,5 @@
+<!-- loaded in class-mla-main.php function mla_add_help_tab for the Media/Att. Tag submenu screen -->
+<!-- invoked as /wp-admin/edit-tags.php?taxonomy=attachment_tag&post_type=attachment -->
 <!-- template="mla-overview" -->
 <!-- title="Overview" order="10" -->
 <p>You can assign keywords to your attachments using <strong>Attachment Tags</strong>. Unlike categories, tags have no hierarchy, meaning there&#8217;s no relationship from one tag to another.</p>

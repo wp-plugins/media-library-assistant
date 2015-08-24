@@ -1,3 +1,5 @@
+<!-- loaded in class-mla-settings.php function mla_add_help_tab_action for the Settings/Media Library Assistant submenu Views tab -->
+<!-- invoked as /wp-admin/options-general.php?page=mla-settings-menu-view&mla_tab=view -->
 <!-- template="mla-overview" -->
 <!-- title="Overview" order="10" -->
 <p>The Views tab lets you manage the list of "Post MIME Type" entries used to generate the views for the Media/Library and Media/Assistant submenu tables, as well as the "Add Media" media items filter. In addition, MLA lets you define more complex "Table Views" for the Media/Assistant submenu table using multiple MIME types and/or wildcard specifications in one column.</p>

@@ -1,3 +1,5 @@
+<!-- loaded in class-mla-main.php function mla_add_help_tab for the Media/Assistant submenu screen -->
+<!-- invoked as /wp-admin/upload.php?page=mla-menu -->
 <!-- template="mla-thumbnail-generation" -->
 <!-- title="Thumbnail Generation" order="95" -->
 <p>Media Library Assistant lets you assign a "Featured Image" to yourMedia Library items. For non-image items such as PDF documents this image can be used as the <code>mla_viewer</code> thumbnail image, avoiding the overhead of generating the image each time the gallery is composed. The "Thumbnail" Bulk Action makes it easy to generate thumbnail images and assign them to their corresponding non-image Media Library items.</p>

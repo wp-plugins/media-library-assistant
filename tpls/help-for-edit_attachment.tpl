@@ -1,3 +1,5 @@
+<!-- loaded in class-mla-edit-media.php function mla_edit_add_help_tab for the Media/Edit Media submenu screen -->
+<!-- invoked as /wp-admin/post.php?post=3446&action=edit&mla_source=edit (for example) -->
 <!-- template="mla-overview" -->
 <!-- title="MLA Enhancements" order="10" -->
 <p>Media Library Assistant adds several enhancements to the Edit Media screen:</p>

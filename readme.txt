@@ -171,7 +171,11 @@ All of the MLA source code has been annotated with "DocBlocks", a special type o
 == Changelog ==
 
 = 2.15 =
+* New: A new `/media-library-assistant/examples/mla-upload-bulk-edit-example.php.txt` example plugin has been added to demonstrate updates to the Title field from the Bulk Edit area on the Media/Upload New Media submenu.
+* New: The `/media-library-assistant/examples/mla-simple-mapping-hooks-example.php.txt` example plugin has been updated to demonstrate splitting an IPTC value with a regular expression (regex) and updating two custom fields with the results.
 * New: The Portable Object (".po") files are now included in the `/media-library-assistant/languages` directory, facilitating the translation update process.
+* New: Dutch translations contributed by Harm Kramer; thanks Harm!
+* New: Comments have been added to each "/tpls/help-for-*.tpl" template showing where in MLA the template is used. This should help with the translation of these templates to other languages.
 * Fix: The Settings/Media Library Assistant tab HTML heading tags have been adjusted to conform to the new WordPress v4.3+ standards.
 * Fix: The Settings/Media Library Assistant tab titles and option content is loaded later in the startup process, allowing their translation to other languages.
 * Fix: The Settings/Media Library Assistant "Donate" button is changed from an image to text, facilitating translation ro other languages.

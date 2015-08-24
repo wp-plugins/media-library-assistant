@@ -1,4 +1,5 @@
 <!-- loaded in class-mla-main.php function mla_add_help_tab for the Media/Assistant submenu screen -->
+<!-- invoked as /wp-admin/upload.php?page=mla-menu -->
 <!-- template="mla-overview" -->
 <!-- title="Overview" order="10" -->
 <p>All the files you&#8217;ve uploaded are listed in the Media/Assistant submenu table, ordered by the Title field. You can change the sort order by clicking on one of the blue column names. You can change the default sort order on the Settings screen.</p>
