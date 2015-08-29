@@ -44,10 +44,16 @@ class MLATest {
 		MLATest::$wp_4dot3_plus = version_compare( get_bloginfo( 'version' ), '4.2.99', '>=' );
 
 		/*
-		 * This is the earliest effective place to add E_STRICT to error_reporting
+		 * This is the earliest effective place to change error_reporting
 		 */
 		//error_reporting( E_ALL | E_STRICT | E_DEPRECATED | E_USER_DEPRECATED | E_USER_ERROR | E_USER_WARNING );
 		//error_reporting( E_ALL | E_STRICT );
+
+		MLA::$original_php_reporting = sprintf( '0x%1$04X', error_reporting() );
+		$php_reporting = trim( MLAOptions::mla_get_option( MLAOptions::MLA_DEBUG_REPLACE_PHP_REPORTING ) );
+		if ( ! empty( $php_reporting ) ) {
+			@error_reporting( 0 + $php_reporting );
+		}
 
 		/*
 		 * This is the earliest effective place to localize values in other plugin components

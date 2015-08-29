@@ -5062,6 +5062,9 @@ Once that line is added to the <code>wp-config.php</code> file the "Debug" tab w
 You can pick the logging categories you want by adding the above values together. For example, to log only PHP messages you can use <code>define( 'MLA_DEBUG_LEVEL', 1 );</code> or <code>define( 'MLA_DEBUG_LEVEL', 0x0001 );</code>. To add the "Ajax" messages you can use <code>define( 'MLA_DEBUG_LEVEL', 3 );</code> or <code>define( 'MLA_DEBUG_LEVEL', 0x0003 );</code>. The hexadecimal notation ( 0x0003 ) can be easier to understand when several options are involved.
 </p>
 <p>
+Although you can add logging categories to the <code>MLA_DEBUG_LEVEL</code> constant you will find it more convenient to add them in the "MLA Reporting" option on the Debug tab. There you can make changes without editing and uploading the `wp-config.php` file as your needs change. It is best to <code>define( 'MLA_DEBUG_LEVEL', 1 );</code> and make any other changes in the "MLA Reporting" option.
+</p>
+<p>
 The Debug Options screen begins with the "Debug Options" section, containing:
 </p>
 <table>
@@ -5072,6 +5075,18 @@ The Debug Options screen begins with the "Debug Options" section, containing:
 <tr>
 <td style="padding-right: 10px; vertical-align: top; font-weight:bold">Debug&nbsp;File</td>
 <td>lets you specify a text file other than the PHP error log to receive the MLA-specific messages. The absolute path to the <code>/wp-content/</code> directory will be prepended to the value you enter. If the file does not exist an attempt will be made to create it. You can enter values such as "my-log.txt" or "/mylogs/my-log.txt". In the latter case, the "/mylogs/" directory must already exist; MLA will not create it.</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">Replace&nbsp;PHP&nbsp;error_log&nbsp;file</td>
+<td>lets you change the PHP error_log destination. You can use this to add PHP Notice, Warning and Error messages to the MLA Debug File. It's best to leave this box unchecked unless you are actively monitoring the MLA Debug file so PHP messages go to the default location.</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">PHP&nbsp;Reporting</td>
+<td>Sets which PHP errors are reported, overriding the value set in the <code>php.ini</code> file and the <code>wp-config.php</code> file. Setting a limit to, for example, 0x7FFF will display all PHP Notices and "Strict" messages (E_ALL | E_STRICT). It's best to leave this box blank unless you are actively debugging MLA so the normal PHP error_level is observed.</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">MLA&nbsp;Reporting</td>
+<td>lets you change the MLA_DEBUG_LEVEL without modifying the <code>wp-config.php</code> file. You can change any of the additional reporting categories but not the lowest bit which turns the Debug tab on and off.</td>
 </tr>
 </table>
 <p>

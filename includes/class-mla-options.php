@@ -256,6 +256,21 @@ class MLAOptions {
 	const MLA_DEBUG_FILE = 'debug_file';
 
 	/**
+	 * Provides a unique name for the Debug replace PHP log file option
+	 */
+	const MLA_DEBUG_REPLACE_PHP_LOG = 'debug_replace_php_log';
+
+	/**
+	 * Provides a unique name for the Debug replace PHP error_reporting option
+	 */
+	const MLA_DEBUG_REPLACE_PHP_REPORTING = 'debug_replace_php_reporting';
+
+	/**
+	 * Provides a unique name for the Debug replace MLA_DEBUG_LEVEL option
+	 */
+	const MLA_DEBUG_REPLACE_LEVEL = 'debug_replace_level';
+
+	/**
 	 * Option setting for "Featured in" reporting
 	 *
 	 * This setting is false if the "Featured in" database access setting is "disabled", else true.
@@ -1280,6 +1295,29 @@ class MLAOptions {
 					'std' => '',
 					'size' => 60,
 					'help' => __( 'Enter the name of an alternate, MLA-specific debug log file; leave blank to use the PHP error_log.', 'media-library-assistant' )),
+
+			self::MLA_DEBUG_REPLACE_PHP_LOG =>
+				array('tab' => 'debug',
+					'name' => __( 'Replace PHP error_log file', 'media-library-assistant' ),
+					'type' => 'checkbox',
+					'std' => '',
+					'help' => __( 'Check this option to replace the PHP error_log file with the MLA Debug File.<br>&nbsp;&nbsp;allows capture of PHP messages in the MLA Debug File.', 'media-library-assistant' )),
+
+			self::MLA_DEBUG_REPLACE_PHP_REPORTING =>
+				array('tab' => 'debug',
+					'name' => __( 'PHP Reporting', 'media-library-assistant' ),
+					'type' => 'text',
+					'std' => '',
+					'size' => 10,
+					'help' => __( 'Enter a numeric error_reporting value, e.g., 0x7FFF or 32767; leave blank to use the existing PHP error_reporting value.', 'media-library-assistant' )),
+
+			self::MLA_DEBUG_REPLACE_LEVEL =>
+				array('tab' => 'debug',
+					'name' => __( 'MLA Reporting', 'media-library-assistant' ),
+					'type' => 'text',
+					'std' => '',
+					'size' => 10,
+					'help' => __( 'Enter a numeric MLA_DEBUG_LEVEL value, e.g., 0x0003 or 3; leave blank to use the existing MLA_DEBUG_LEVEL value.', 'media-library-assistant' )),
 
 			/* Here are examples of the other option types
 			'textarea' =>

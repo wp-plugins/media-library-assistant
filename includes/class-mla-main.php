@@ -38,7 +38,7 @@ class MLA {
 	 *
 	 * @var	string
 	 */
-	const MLA_DEVELOPMENT_VERSION = '20150821';
+	const MLA_DEVELOPMENT_VERSION = '20150828';
 
 	/**
 	 * Slug for registering and enqueueing plugin style sheet
@@ -279,6 +279,33 @@ class MLA {
 	}
 
 	/**
+	 * Original PHP error_log path and file
+	 *
+	 * @since 2.15
+	 *
+	 * @var	string
+	 */
+	public static $original_php_log = '?';
+
+	/**
+	 * Original PHP error_reporting value
+	 *
+	 * @since 2.15
+	 *
+	 * @var	string
+	 */
+	public static $original_php_reporting = '?';
+
+	/**
+	 * Effective MLA Debug Level, from MLA_DEBUG_LEVEL or override option
+	 *
+	 * @since 2.15
+	 *
+	 * @var	integer
+	 */
+	public static $mla_debug_level = 0;
+
+	/**
 	 * Load a plugin text domain and alternate debug file
 	 * 
 	 * The "add_action" for this function is in mla-plugin-loader.php, because the "initialize"
@@ -302,12 +329,40 @@ class MLA {
 		load_plugin_textdomain( $text_domain, false, MLA_PLUGIN_BASENAME . '/languages/' );
 		
 		/*
-		 * Set up alternate MLA debug log file
+		 * This must/will be repeated in class-mla-tests.php to reflect translations
 		 */
-		$error_log_name = MLAOptions::mla_get_option( MLAOptions::MLA_DEBUG_FILE );
-		if ( ! empty( $error_log_name ) ) {
-			self::mla_debug_file( $error_log_name );
-		}
+		MLAOptions::mla_localize_option_definitions_array();
+		
+		/*
+		 * Do not process debug options unless MLA_DEBUG_LEVEL is set in wp-config.php
+		 */
+		if ( MLA_DEBUG_LEVEL & 1 ) {
+			/*
+			 * Set up alternate MLA debug log file
+			 */
+			self::$original_php_log = ini_get( 'error_log' );
+			$error_log_name = MLAOptions::mla_get_option( MLAOptions::MLA_DEBUG_FILE ); 
+			if ( ! empty( $error_log_name ) ) {
+				self::mla_debug_file( $error_log_name );
+	
+				/*
+				 * Override PHP error_log file
+				 */
+				if ( 'checked' === MLAOptions::mla_get_option( MLAOptions::MLA_DEBUG_REPLACE_PHP_LOG ) ) {
+					$result = ini_set('error_log', WP_CONTENT_DIR . self::$mla_debug_file );
+				}
+			}
+	
+			/*
+			 * PHP error_reporting must be done later in class-mla-tests.php
+			 * Override MLA debug levels
+			 */
+			self::$mla_debug_level = MLA_DEBUG_LEVEL;
+			$mla_reporting = trim( MLAOptions::mla_get_option( MLAOptions::MLA_DEBUG_REPLACE_LEVEL ) );
+			if ( ! empty( $mla_reporting ) ) {
+				self::$mla_debug_level = ( 0 + $mla_reporting ) | 1;
+			}
+		} // MLA_DEBUG_LEVEL & 1
 	}
 
 	/**
@@ -2638,7 +2693,7 @@ class MLA {
 		$mode = self::$mla_debug_mode;
 
 		if ( NULL != $debug_level ) {
-			if ( ( 0 == ( MLA_DEBUG_LEVEL & 1 ) ) || ( 0 == ( MLA_DEBUG_LEVEL & $debug_level ) ) ) {
+			if ( ( 0 == ( self::$mla_debug_level & 1 ) ) || ( 0 == ( self::$mla_debug_level & $debug_level ) ) ) {
 				return;
 			}
 

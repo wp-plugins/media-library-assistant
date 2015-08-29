@@ -1,6 +1,6 @@
 <!-- template="single-item-edit" -->
 <div id="ajax-response"></div>
-<h3>[+Edit View+]</h3>
+<h2>[+Edit View+]</h2>
 <form action="[+form_url+]" method="post" class="validate" id="mla-edit-view">
 	<input type="hidden" name="page" value="mla-settings-menu-view" />
 	<input type="hidden" name="mla_tab" value="view" />

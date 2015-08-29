@@ -171,6 +171,8 @@ All of the MLA source code has been annotated with "DocBlocks", a special type o
 == Changelog ==
 
 = 2.15 =
+* New: When WPML is active, **MLA will fix a WPML defect that assigns the wrong term to flat taxonomies** if two or more translations have the same term name.
+* New: Options have been added to the Settings/Media Library Assistant Debug tab that allow control over the PHP error_log file, PHP error_reporting level and MLA_DEBUG_LEVEL without modifying the `wp-config.php` file.
 * New: A new `/media-library-assistant/examples/mla-upload-bulk-edit-example.php.txt` example plugin has been added to demonstrate updates to the Title field from the Bulk Edit area on the Media/Upload New Media submenu.
 * New: The `/media-library-assistant/examples/mla-simple-mapping-hooks-example.php.txt` example plugin has been updated to demonstrate splitting an IPTC value with a regular expression (regex) and updating two custom fields with the results.
 * New: The Portable Object (".po") files are now included in the `/media-library-assistant/languages` directory, facilitating the translation update process.

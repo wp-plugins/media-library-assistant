@@ -3089,6 +3089,15 @@ class MLASettings {
 			}
 		}
 
+		/*
+		 * Gather Debug Settings
+		 */
+		$display_limit = MLAOptions::mla_get_option( MLAOptions::MLA_DEBUG_DISPLAY_LIMIT );
+		$debug_file = MLAOptions::mla_get_option( MLAOptions::MLA_DEBUG_FILE );
+		$replace_php = MLAOptions::mla_get_option( MLAOptions::MLA_DEBUG_REPLACE_PHP_LOG );
+		$php_reporting = MLAOptions::mla_get_option( MLAOptions::MLA_DEBUG_REPLACE_PHP_REPORTING );
+		$mla_reporting = MLAOptions::mla_get_option( MLAOptions::MLA_DEBUG_REPLACE_LEVEL );
+
 		if ( $error_log_exists ) {
 			/*
 			 * Add debug content
@@ -3150,16 +3159,19 @@ class MLASettings {
 			$reset_link = '<a class="button-secondary" href="' . add_query_arg( $args, wp_nonce_url( 'options-general.php', MLA::MLA_ADMIN_NONCE_ACTION, MLA::MLA_ADMIN_NONCE_NAME ) ) . '" title="' . __( 'Reset', 'media-library-assistant' ) . ' &#8220;' . __( 'Error Log', 'media-library-assistant' ) . '&#8221;">' . __( 'Reset', 'media-library-assistant' ) . '</a>';
 		}
 
-		/*
-		 * Gather the Debug Settings
-		 */
-		 $settings_list  = self::_compose_settings_row( 'MLA_DEBUG_LEVEL', sprintf( '0x%1$04X', MLA_DEBUG_LEVEL ) );
-		 $settings_list  .= self::_compose_settings_row( 'PHP error_reporting', sprintf( '0x%1$04X', ini_get( 'error_reporting' ) ) );
-		 $settings_list .= self::_compose_settings_row( 'PHP error_log', ini_get( 'error_log' ) );
-		 $settings_list .= self::_compose_settings_row( 'WP_DEBUG', WP_DEBUG ? 'true' : 'false' );
-		 $settings_list .= self::_compose_settings_row( 'WP_DEBUG_LOG', WP_DEBUG_LOG ? 'true' : 'false' );
-		 $settings_list .= self::_compose_settings_row( 'WP_DEBUG_DISPLAY', WP_DEBUG_DISPLAY ? 'true' : 'false' );
-		 $settings_list .= self::_compose_settings_row( 'WP_CONTENT_DIR', WP_CONTENT_DIR );
+		$settings_list  = self::_compose_settings_row( 'Display Limit', $display_limit );
+		$settings_list .= self::_compose_settings_row( 'Debug File', $debug_file );
+		$settings_list .= self::_compose_settings_row( 'Replace PHP log', $replace_php );
+		$settings_list .= self::_compose_settings_row( 'PHP Reporting', $php_reporting );
+		$settings_list .= self::_compose_settings_row( 'MLA Reporting', $mla_reporting );
+		$settings_list .= self::_compose_settings_row( 'MLA_DEBUG_LEVEL', sprintf( '0x%1$04X', MLA_DEBUG_LEVEL ) );
+		$settings_list .= self::_compose_settings_row( 'PHP error_reporting', MLA::$original_php_reporting );
+		$settings_list .= self::_compose_settings_row( 'Old PHP error_log', MLA::$original_php_log );
+		$settings_list .= self::_compose_settings_row( 'New PHP error_log', ini_get( 'error_log' ) );
+		$settings_list .= self::_compose_settings_row( 'WP_DEBUG', WP_DEBUG ? 'true' : 'false' );
+		$settings_list .= self::_compose_settings_row( 'WP_DEBUG_LOG', WP_DEBUG_LOG ? 'true' : 'false' );
+		$settings_list .= self::_compose_settings_row( 'WP_DEBUG_DISPLAY', WP_DEBUG_DISPLAY ? 'true' : 'false' );
+		$settings_list .= self::_compose_settings_row( 'WP_CONTENT_DIR', WP_CONTENT_DIR );
 
 		/*
 		 * Compose tab content

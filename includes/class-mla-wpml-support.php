@@ -738,14 +738,14 @@ class MLA_WPML {
 					$taxonomy = get_taxonomy( $taxonomy_name );
 					$input_terms = array();
 					foreach ( $terms as $term ) {
-						if ( $taxonomy->hierarchical ) {
+						if ( true || $taxonomy->hierarchical ) {
 							$input_terms[] = $term->term_id;
 						} else {
 							$input_terms[] = $term->name;
 						}
 					} // term
 
-					if ( $taxonomy->hierarchical ) {
+					if ( true || $taxonomy->hierarchical ) {
 						$tax_inputs[ $taxonomy_name ] = $input_terms;
 					} else {
 						$tax_inputs[ $taxonomy_name ] = implode( ',', $input_terms );
@@ -826,14 +826,14 @@ class MLA_WPML {
 				 */
 				$term_changes = array();
 				foreach( $terms_after as $input_term ) {
-					if ( $hierarchical ) {
+					if ( true || $hierarchical ) {
 						$term_changes[] = $input_term->term_id;
 					} else {
 						$term_changes[] = $input_term->name;
 					}
 				} // input_term
 
-				if ( $hierarchical ) {
+				if ( true || $hierarchical ) {
 					self::$tax_input[ $language ][ $taxonomy ] = $term_changes;
 				} else {
 					self::$tax_input[ $language ][ $taxonomy ] = implode( ',', $term_changes );
@@ -986,20 +986,23 @@ class MLA_WPML {
 			$taxonomy = get_taxonomy( $taxonomy_name );
 			$input_terms = array();
 			foreach ( $terms as $term ) {
-				if ( $taxonomy->hierarchical ) {
+				if ( true || $taxonomy->hierarchical ) {
 					$input_terms[] = $term->term_id;
 				} else {
 					$input_terms[] = $term->name;
 				}
 			} // term
 
-			if ( $taxonomy->hierarchical ) {
+			if ( true || $taxonomy->hierarchical ) {
 				$tax_inputs[ $taxonomy_name ] = $input_terms;
 			} else {
 				$tax_inputs[ $taxonomy_name ] = implode( ',', $input_terms );
 			}
 		} // synch_inputs
 
+		$post_id = self::$existing_terms[ $language ]['element_id'];
+		MLA::mla_debug_add( "MLA_WPML::_apply_synch_input( {$post_id} ) \$language = " . var_export( $language, true ), MLA::MLA_DEBUG_CATEGORY_AJAX );
+		MLA::mla_debug_add( "MLA_WPML::_apply_synch_input( {$post_id} ) \$tax_inputs = " . var_export( $tax_inputs, true ), MLA::MLA_DEBUG_CATEGORY_AJAX );
 		return $tax_inputs;		
 	} // _apply_synch_input
 
