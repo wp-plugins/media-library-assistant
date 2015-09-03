@@ -206,7 +206,7 @@ class MLA_WPML {
 			self::_build_tax_input( $post_id, $tax_inputs );
 			$tax_inputs = self::_apply_tax_input( $post_id );
 
-			if ( $value->hierarchical ) {
+			if ( true || $value->hierarchical ) {
 				$terms = $tax_inputs[ $key ];
 			} else {
 				$terms = explode( ',', $tax_inputs[ $key ] );
@@ -282,12 +282,19 @@ class MLA_WPML {
 		}
 
 		self::_build_existing_terms( $post_id );
-
+		if ( isset( $_REQUEST['action'] ) && 'mla-inline-edit-scripts' === $_REQUEST['action'] && isset( $_REQUEST['tax_input'] ) ) {
+			MLA::mla_debug_add( "MLA_WPML::mla_list_table_inline_action( {$post_id} ) Quick Edit initial \$_REQUEST['tax_input'] = " . var_export( $_REQUEST['tax_input'], true ), MLA::MLA_DEBUG_CATEGORY_AJAX );
+			// Quick Edit calls update_single_item right after this filter
+			self::_build_tax_input( $post_id, $_REQUEST['tax_input'] );
+			$_REQUEST['tax_input'] = self::_apply_tax_input( $post_id );
+			MLA::mla_debug_add( "MLA_WPML::mla_list_table_inline_action( {$post_id} ) Quick Edit final \$_REQUEST['tax_input'] = " . var_export( $_REQUEST['tax_input'], true ), MLA::MLA_DEBUG_CATEGORY_AJAX );
+		}
+		
 		return $item_content;
 	} // mla_list_table_inline_action
 
 	/**
-	 * Captures the Bulk Edit parameters during "Upload New Media"
+	 * Captures the Bulk Edit, "Upload New Media" parameters
 	 *
 	 * @since 2.11
 	 *
@@ -298,32 +305,32 @@ class MLA_WPML {
 	 * @return	array	updated bulk action request parameters
 	 */
 	public static function mla_list_table_bulk_action_initial_request( $request, $bulk_action, $custom_field_map ) {
+		self::$bulk_edit_request = $request;
+		self::$bulk_edit_map = $custom_field_map;
+
 		/*
 		 * Check for Bulk Edit processing during Upload New Media
 		 */
-		if ( ( NULL == self::$upload_bulk_edit_args ) && ( 'edit' == $bulk_action ) && ! empty( $_REQUEST['mlaAddNewBulkEdit']['formString'] ) ) {
+		if ( ( NULL == self::$bulk_edit_request ) && ( 'edit' == $bulk_action ) && ! empty( $_REQUEST['mlaAddNewBulkEdit']['formString'] ) ) {
 			/*
 			 * Suppress WPML processing in wpml-media.class.php function save_attachment_actions,
 			 * which wipes out attachment meta data.
 			 */
 			global $action;
 			$action = 'upload-plugin';
-
-			self::$upload_bulk_edit_args = $request;
-			self::$upload_bulk_edit_map = $custom_field_map;
 		}
 
 		return $request;
 	} // mla_list_table_bulk_action_initial_request
 
 	/**
-	 * Custom Field Map during "Upload New Media"
+	 * Custom Field Map during Bulk Edit, "Upload New Media"
 	 *
 	 * @since 2.11
 	 *
 	 * @var	array	[ id ] => field name
 	 */
-	private static $upload_bulk_edit_map = NULL;
+	private static $bulk_edit_map = NULL;
 
 	/**
 	 * Bulk Edit parameters during "Upload New Media"
@@ -332,7 +339,7 @@ class MLA_WPML {
 	 *
 	 * @var	array	[ field ] => new value
 	 */
-	private static $upload_bulk_edit_args = NULL;
+	private static $bulk_edit_request = NULL;
 
 	/**
 	 * Converts Bulk Edit taxonomy inputs to language-specific values
@@ -347,11 +354,14 @@ class MLA_WPML {
 	 * @return	array	updated bulk action request parameters
 	 */
 	public static function mla_list_table_bulk_action_item_request( $request, $bulk_action, $post_id, $custom_field_map ) {
-		if ( 'edit' == $bulk_action && ( ! empty( $request['tax_input'] ) ) && ( 'checked' == MLAOptions::mla_get_option( 'term_assignment', false, false, MLA_WPML::$mla_language_option_definitions ) ) ) {
+		/*
+		 * Note that $request may be modified by previous items, so we must return to the initial vlues
+		 */
+		if ( 'edit' == $bulk_action && ( ! empty( self::$bulk_edit_request['tax_input'] ) ) && ( 'checked' == MLAOptions::mla_get_option( 'term_assignment', false, false, MLA_WPML::$mla_language_option_definitions ) ) ) {
 			self::_build_existing_terms( $post_id );
-			self::_build_tax_input( $post_id, $request['tax_input'], $request['tax_action'] );
+			self::_build_tax_input( $post_id, self::$bulk_edit_request['tax_input'], self::$bulk_edit_request['tax_action'] );
 			$request['tax_input'] = self::_apply_tax_input( $post_id );
-			foreach( $request['tax_action'] as $taxonomy => $action ) {
+			foreach( self::$bulk_edit_request['tax_action'] as $taxonomy => $action ) {
 				// _apply_tax_input changes a remove to a replace
 				if ( 'remove' == $action ) {
 					$request['tax_action'][ $taxonomy ] = 'replace';
@@ -359,8 +369,18 @@ class MLA_WPML {
 			}
 		}
 
-		MLA::mla_debug_add( "MLA_WPML::bulk_action_item_request( {$post_id} ) \$request['tax_input'] = " . var_export( $request['tax_input'], true ), MLA::MLA_DEBUG_CATEGORY_AJAX );
-		MLA::mla_debug_add( "MLA_WPML::bulk_action_item_request( {$post_id} ) \$request['tax_action'] = " . var_export( $request['tax_action'], true ), MLA::MLA_DEBUG_CATEGORY_AJAX );
+		if ( isset( $request['tax_input'] ) ) {
+			MLA::mla_debug_add( "MLA_WPML::bulk_action_item_request( {$bulk_action}, {$post_id} ) \$request['tax_input'] = " . var_export( $request['tax_input'], true ), MLA::MLA_DEBUG_CATEGORY_AJAX );
+		} else {
+			MLA::mla_debug_add( "MLA_WPML::bulk_action_item_request( {$bulk_action}, {$post_id} ) \$request['tax_input'] NOT SET", MLA::MLA_DEBUG_CATEGORY_AJAX );
+		}
+		
+		if ( isset( $request['tax_action'] ) ) {
+			MLA::mla_debug_add( "MLA_WPML::bulk_action_item_request( {$bulk_action}, {$post_id} ) \$request['tax_action'] = " . var_export( $request['tax_action'], true ), MLA::MLA_DEBUG_CATEGORY_AJAX );
+		} else {
+			MLA::mla_debug_add( "MLA_WPML::bulk_action_item_request( {$bulk_action}, {$post_id} ) \$request['tax_action'] NOT SET", MLA::MLA_DEBUG_CATEGORY_AJAX );
+		}
+		
 		return $request;
 	} // mla_list_table_bulk_action_item_request
 
@@ -1094,43 +1114,22 @@ class MLA_WPML {
 		/*
 		 * Check for Bulk Edit during Add New Media
 		 */
-		if ( is_array( self::$upload_bulk_edit_args ) ) {
-			if ( ! empty( self::$upload_bulk_edit_args['tax_input'] ) ) {
-				$tax_inputs = self::$upload_bulk_edit_args['tax_input'];
+		if ( is_array( self::$bulk_edit_request ) ) {
+			if ( ! empty( self::$bulk_edit_request['tax_input'] ) ) {
+				$tax_inputs = self::$bulk_edit_request['tax_input'];
 				if ( 'checked' == MLAOptions::mla_get_option( 'term_assignment', false, false, MLA_WPML::$mla_language_option_definitions ) ) {
-					self::_build_tax_input( $post_id, $tax_inputs, self::$upload_bulk_edit_args['tax_action'] );
+					self::_build_tax_input( $post_id, $tax_inputs, self::$bulk_edit_request['tax_action'] );
 					$tax_inputs = self::_apply_tax_input( $post_id );
 				}
 			} else {
 				$tax_inputs = NULL;
 			}
 
-			$updates = 	MLA::mla_prepare_bulk_edits( $post_id, self::$upload_bulk_edit_args, self::$upload_bulk_edit_map );
+			$updates = 	MLA::mla_prepare_bulk_edits( $post_id, self::$bulk_edit_request, self::$bulk_edit_map );
 			unset( $updates['tax_input'] );
 			unset( $updates['tax_action'] );
 
 			MLAData::mla_update_single_item( $post_id, $updates, $tax_inputs );
-
-			/*
-			 * Synchronize the changes to all other translations - NOT NEEDED
-			 */
-			if ( false && 'checked' == MLAOptions::mla_get_option( 'term_synchronization', false, false, MLA_WPML::$mla_language_option_definitions ) ) {
-				foreach( self::$tax_input as $language => $tax_inputs ) {
-					/*
-					 * Skip 'tax_input_post_id' and the language we've already updated
-					 */
-					if ( ( ! isset( self::$existing_terms[ $language ] ) ) || ( self::$existing_terms['language_code'] == $language ) ) {
-						continue;
-					}
-
-					// Other translations have no existing terms, so we don't need _apply_synch_input()
-					$translation = self::$existing_terms[ $language ];
-					$tax_inputs = self::_apply_tax_input( $translation['element_id'], $language );
-					$already_updating = $translation['element_id']; // prevent recursion
-					MLAData::mla_update_single_item( $translation['element_id'], $updates, $tax_inputs );
-					$already_updating = $post_id;
-				} // translation
-			} // do synchronization
 
 			return;
 		} // Upload New Media Bulk Edit

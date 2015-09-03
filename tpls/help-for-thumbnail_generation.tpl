@@ -7,15 +7,15 @@
 <table>
 <tr>
 <td style="padding-right: 10px; vertical-align: top; font-weight:bold">Width</td>
-<td>the maxinum width in pixels (default "150") of the thumbnail image. The height (unless also specified) will be adjusted to maintain the page proportions.</td>
+<td>the maximum width in pixels (default "150") of the thumbnail image. The height (unless also specified) will be adjusted to maintain the page proportions.</td>
 </tr>
 <tr>
 <td style="padding-right: 10px; vertical-align: top; font-weight:bold">Height</td>
-<td>the maxinum width in pixels (default "0") of the thumbnail image. The width (unless also specified) will be adjusted to maintain the page proportions.</td>
+<td>the maximum width in pixels (default "0") of the thumbnail image. The width (unless also specified) will be adjusted to maintain the page proportions.</td>
 </tr>
 <tr>
 <td style="padding-right: 10px; vertical-align: top; font-weight:bold">Best Fit</td>
-<td>retain page proportions when both height and width are explicitly stated. If unchecked, the image will be stretched as required to exactly fit the height and width. If checked, the image will be reduced in size to fit within the bounds, but proportions will be preserved. For example, a typical page is 612 pixels wide and 792 pixels tall. If you set width and height to 300 and set best_fit to true, the thumbnail will be reduced to 231 pixels wide by 300 pixels tall.</td>
+<td>retain page proportions when both height and width are explicitly stated. If unchecked, the image will be stretched as required to exactly fit the height and width. If checked, the image will be reduced in size to fit within the bounds, but proportions will be preserved. For example, a typical page is 612 pixels wide and 792 pixels tall. If you set width and height to 300 and set best fit to true, the thumbnail will be reduced to 231 pixels wide by 300 pixels tall.</td>
 </tr>
 <tr>
 <td style="padding-right: 10px; vertical-align: top; font-weight:bold">Page</td>

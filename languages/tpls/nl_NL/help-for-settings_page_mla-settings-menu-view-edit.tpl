@@ -1,3 +1,5 @@
+<!-- loaded in class-mla-settings.php function mla_add_help_tab_action for the Settings/Media Library Assistant submenu Views/Edit View tab -->
+<!-- invoked as /wp-admin/options-general.php?mla_admin_action=single_item_edit_display&mla_admin_nonce=303a441dcb&page=mla-settings-menu-view&mla_tab=view&mla_item_slug=all -->
 <!-- template="mla-overview" -->
 <!-- title="Overzicht" order="10" -->
 <p>Dit scherm maakt het mogelijk alle velden geassocieerd met een View te zien en ze te wijzigen. Hints en helpinformatie verschijnt onder sommige velden.</p>

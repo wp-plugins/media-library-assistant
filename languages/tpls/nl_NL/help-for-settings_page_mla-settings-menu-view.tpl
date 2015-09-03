@@ -1,3 +1,5 @@
+<!-- loaded in class-mla-settings.php function mla_add_help_tab_action for the Settings/Media Library Assistant submenu Views tab -->
+<!-- invoked as /wp-admin/options-general.php?page=mla-settings-menu-view&mla_tab=view -->
 <!-- template="mla-overview" -->
 <!-- title="Overzicht" order="10" -->
 <p>Met de Views tab kunt u de lijst van "Post MIME Typen" beheren die gebruikt worden voor de views van de Media/Bibliotheek en Media/Assistant submenu tabellen, evenals het "Voeg Media Toe" media items filter. Verder laat MLA u meer complexe "Tabel Views" defini&euml;ren voor de Media/Assistant submenu tabel door gebruikmaking van meerdere MIME typen en/of wildcard specificaties in &eacute;&eacute;n kolom.</p>

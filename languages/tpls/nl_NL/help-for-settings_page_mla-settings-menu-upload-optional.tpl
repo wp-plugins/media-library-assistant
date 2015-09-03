@@ -1,3 +1,5 @@
+<!-- loaded in class-mla-settings.php function mla_add_help_tab_action for the Settings/Media Library Assistant submenu Uploads/Known File Extension/MIME Type Associations tab -->
+<!-- invoked as /wp-admin/options-general.php?page=mla-settings-menu-upload&mla_tab=upload&mla-optional-uploads-search=Search&mla_admin_nonce=303a441dcb -->
 <!-- template="mla-overview" -->
 <!-- title="Overzicht" order="10" -->
 <p>Aan de Bekende Bestandsextensie/MIME Type Associaties lijst kunnen "Upload MIME Types" toegevoegd worden vanuit meer dan 1.500 bestaande associatie paren. Er kunnen verschillende MIME Type waarden bestaan voor een bepaalde bestandsextensie. Bijvoorbeeld, de ".dif" extensie is een video formaat maar ook een data uitwissel formaat (probeer maar). </p>

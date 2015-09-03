@@ -4336,19 +4336,31 @@ class MLAData {
 		 */
 		if ( ! isset( $results['Title'] ) ) {
 			if ( isset( $namespace_arrays['dc'] ) && isset( $namespace_arrays['dc']['title'] ) ) {
-				$results['Title'] = implode( ',', $namespace_arrays['dc']['title'] );
+				if ( is_array( $namespace_arrays['dc']['title'] ) ) {
+					$results['Title'] = @implode( ',', $namespace_arrays['dc']['title'] );
+				} else {
+					$results['Title'] = (string) $namespace_arrays['dc']['title'];
+				}
 			}
 		}
 
 		if ( ! isset( $results['Author'] ) ) {
 			if ( isset( $namespace_arrays['dc'] ) && isset( $namespace_arrays['dc']['creator'] ) ) {
-				$results['Author'] = implode( ',', $namespace_arrays['dc']['creator'] );
+				if ( is_array( $namespace_arrays['dc']['creator'] ) ) {
+					$results['Author'] = @implode( ',', $namespace_arrays['dc']['creator'] );
+				} else {
+					$results['Author'] = (string) $namespace_arrays['dc']['creator'];
+				}
 			}
 		}
 
 		if ( ! isset( $results['Subject'] ) ) {
 			if ( isset( $namespace_arrays['dc'] ) && isset( $namespace_arrays['dc']['description'] ) ) {
-				$results['Subject'] = implode( ',', $namespace_arrays['dc']['description'] );
+				if ( is_array( $namespace_arrays['dc']['description'] ) ) {
+					$results['Subject'] = @implode( ',', $namespace_arrays['dc']['description'] );
+				} else {
+					$results['Subject'] = (string) $namespace_arrays['dc']['description'];
+				}
 			}
 		}
 

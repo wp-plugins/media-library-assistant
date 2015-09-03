@@ -178,6 +178,7 @@ All of the MLA source code has been annotated with "DocBlocks", a special type o
 * New: The Portable Object (".po") files are now included in the `/media-library-assistant/languages` directory, facilitating the translation update process.
 * New: Dutch translations contributed by Harm Kramer; thanks Harm!
 * New: Comments have been added to each "/tpls/help-for-*.tpl" template showing where in MLA the template is used. This should help with the translation of these templates to other languages.
+* Fix: When WPML is active, a defect in Bulk Edit term assignment that copied terms from one item to subsequent items in the list has been corrected.
 * Fix: The Settings/Media Library Assistant tab HTML heading tags have been adjusted to conform to the new WordPress v4.3+ standards.
 * Fix: The Settings/Media Library Assistant tab titles and option content is loaded later in the startup process, allowing their translation to other languages.
 * Fix: The Settings/Media Library Assistant "Donate" button is changed from an image to text, facilitating translation ro other languages.

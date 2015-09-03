@@ -38,7 +38,7 @@ class MLA {
 	 *
 	 * @var	string
 	 */
-	const MLA_DEVELOPMENT_VERSION = '20150828';
+	const MLA_DEVELOPMENT_VERSION = '20150903';
 
 	/**
 	 * Slug for registering and enqueueing plugin style sheet
@@ -1932,7 +1932,7 @@ class MLA {
 		check_ajax_referer( self::MLA_ADMIN_NONCE_ACTION, MLA::MLA_ADMIN_NONCE_NAME );
 
 		if ( ! empty( $_REQUEST['bulk_action'] ) ) {
-			self::_bulk_edit_ajax_handler();
+			self::_bulk_edit_ajax_handler(); // calls wp_send_json_success and die()
 		}
 
 		if ( empty( $_REQUEST['post_ID'] ) ) {

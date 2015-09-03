@@ -1,3 +1,5 @@
+<!-- loaded in class-mla-main.php function mla_add_help_tab for the Media/Assistant submenu screen -->
+<!-- invoked as /wp-admin/upload.php?page=mla-menu -->
 <!-- template="mla-overview" -->
 <!-- title="Overzicht" order="10" -->
 <p>Alle bestanden die u heeft ge&uuml;pload worden getoond in het Media/Assistant submenu, gesorteerd op Titel. U kunt de sorteervolgorde wijzigen door op &eacute;&eacute;n van de blauwe kolomnamen te klikken. U kunt de default sorteervolgorde wijzigen op het Instellingen scherm.</p>

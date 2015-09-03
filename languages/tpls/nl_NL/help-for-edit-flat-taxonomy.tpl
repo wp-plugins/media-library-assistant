@@ -1,3 +1,5 @@
+<!-- loaded in class-mla-main.php function mla_add_help_tab for the Media/Tags submenu screen -->
+<!-- invoked as /wp-admin/edit-tags.php?taxonomy=post_tag&post_type=attachment -->
 <!-- template="mla-overview" -->
 <!-- title="Overzicht" order="10" -->
 <p>U kunt sleutelwoorden toekennen aan uw attachments door <strong>tags</strong>. In tegenstelling tot categorie&euml;n, hebben tags geen hierarchie, hetgeen betekent dat er geen relatie is tussen tags.</p>

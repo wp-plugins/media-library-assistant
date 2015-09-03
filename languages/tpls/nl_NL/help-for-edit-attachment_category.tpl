@@ -1,3 +1,5 @@
+<!-- loaded in class-mla-main.php function mla_add_help_tab for the Media/Att. Category submenu screen -->
+<!-- invoked as /wp-admin/edit-tags.php?taxonomy=attachment_category&post_type=attachment -->
 <!-- template="mla-overview" -->
 <!-- title="Overzicht" order="10" -->
 <p>U kunt Attachment Categorie&euml;n gebruiken om secties op uw site te defini&euml;ren van groep gerelateerde attachments. De default is &#8220;geen&#8221;, d.w.z., de attachment is niet gerelateerd met enige categorie.</p>

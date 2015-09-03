@@ -13,7 +13,7 @@
 <p>You can change the icon image associated with any file extension by selecting a new value from the dropdown list on the Edit Upload MIME Type screen or in the Quick Edit area. You can change the icon image for several extensions at once using the Bulk Edit action.</p>
 <p>If you have some other plugin or mechanism for handling the Upload MIME Type items, you can disable MLA support entirely. Clear the checkbox at the bottom-left corner of the screen and click "Save Changes".</p>
 <!-- template="mla-source-status" -->
-<!-- title="Source and Status" order="20" -->
+<!-- title="Source and Status" order="30" -->
 <p>The "Source" of an Upload MIME Type reveals where the extension/MIME Type association comes from:</p>
 <ul>
 <li><strong>core</strong>: WordPress defines a core set of extensions and associated MIME types, and this list changes with new WordPress releases. These are the "official" items. You can't delete them, but you can inactivate them so they are not used to validate file uploads.</li>
@@ -22,24 +22,24 @@
 </ul>
 <p>The "Status" of an item determines whether it is used by WordPress to validate file uploads and assign MIME types to attachments in your Media Library. Only "active" items are used in this way; making an item "inactive" will prevent further uploads with that extension but will NOT affect any attachments already in your Media Library.</p>
 <!-- template="mla-bulk-actions" -->
-<!-- title="Bulk Actions" order="30" -->
+<!-- title="Bulk Actions" order="40" -->
 <p>The &#8220;Bulk Actions&#8221; dropdown list works with the check box column to let you make changes to many items at once. Click the check box in the column title row to select all items on the page, or click the check box in a row to select items individually.</p>
 <p>Once you&#8217;ve selected the items you want, pick an action from the dropdown list and click Apply to perform the action on the selected items.</p>
 <p>When using Bulk Edit, you can change the Active/Inactive status for all selected items at once. To remove an item from the grouping, just click the x next to its name in the left column of the Bulk Edit area.</p>
 <p>The "Delete/Revert Custom" bulk action will only affect items with a "custom" source. It will delete items for which there is no standard source or it will replace the custom information with the standard information for items with a standard source.</p>
 <!-- template="mla-available-actions" -->
-<!-- title="Available Actions" order="40" -->
+<!-- title="Available Actions" order="50" -->
 <p>Hovering over a row in the Extension column reveals action links such as Edit, Quick Edit, Revert to Standard and Delete Permanently. Clicking Edit displays a simple screen to edit that individual item&#8217;s metadata. Clicking Quick Edit displays an inline form to edit the item's metadata without leaving the menu screen.</p>
 <p>If the current item source is "custom", one of two choices will appear. If the item has a standard source (core or mla), clicking Revert to Standard will replace the custom information with the corresponding standard source information. If the item does <strong>NOT</strong> have a standard source, clicking Delete Permanently will delete the custom item from the Uploads list.</p>
 <!-- template="mla-add-new" -->
-<!-- title="Add New Type" order="50" -->
+<!-- title="Add New Type" order="60" -->
 <p>The left-hand side of the screen contains all the fields you need to define a new item for the list. Extension and MIME Type are required; the other fields are not or have default values. There is more information about each field in the text under the value area.</p>
 <p><strong>NOTE:</strong> To save your work and add the item, you must scroll down to the bottom of the screen and click "Add Upload MIME Type".</p>
 <!-- template="mla-search" -->
-<!-- title="Searching Known Types" order="60" -->
+<!-- title="Searching Known Types" order="70" -->
 <p>You can search a list of over 1,500 known file extension to MIME type associations compiled from several Internet sources. The list shows alternative MIME types for the core and mla items as well as many other file extensions and MIME types you can add as custom items. Click the "Search Known Types" button at the bottom of the form.</p>
 <!-- template="mla-save-changes" -->
-<!-- title="Disable/Enable Uploads" order="70" -->
+<!-- title="Disable/Enable Uploads" order="80" -->
 <p>If you have some other plugin or mechanism for handling the Upload MIME Type items, you can disable MLA support entirely. Clear the checkbox at the bottom-left corner of the screen and click "Save Changes". The Uploads table will be replaced by a "disabled" screen and a checkbox that lets you turn MLA support back on when you want it.</p>
 <p><strong>NOTE:</strong> This option does <em><strong>NOT</strong></em> enable or disable uploading files; it simply turns off MLA support for managing the list of extensions and MIME types.</p>
 <!-- template="sidebar" -->
