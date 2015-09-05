@@ -3103,8 +3103,9 @@ class MLASettings {
 			 * Add debug content
 			 */
 			$display_limit = absint( MLAOptions::mla_get_option( MLAOptions::MLA_DEBUG_DISPLAY_LIMIT ) );
+			$error_log_size = filesize( $error_log_name ); 
+
 			if ( 0 < $display_limit ) {
-				$error_log_size = filesize( $error_log_name ); 
 				if ( $display_limit < $error_log_size ) {
 					$error_log_contents = @file_get_contents( $error_log_name, false, NULL, ( $error_log_size - $display_limit ), $display_limit );
 				} else {
@@ -3136,6 +3137,7 @@ class MLASettings {
 				$page_content['message'] = sprintf( __( 'Error log file (%1$s) not found; click Reset to create it.', 'media-library-assistant' ), $error_log_name );
 			}
 			
+			$error_log_size = 0;
 			$error_log_contents = '';
 		} // file_exists
 
@@ -3184,6 +3186,7 @@ class MLASettings {
 			'settings_list' => $settings_list,
 			'Error Log' => __( 'Error Log', 'media-library-assistant' ),
 			'Error Log Name' => $error_log_name,
+			'Error Log Size' => number_format( (float) $error_log_size ),
 			'error_log_text' => $error_log_contents,
 			'download_link' => $download_link,
 			'reset_link' => $reset_link,

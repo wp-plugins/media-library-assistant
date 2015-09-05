@@ -311,7 +311,7 @@ class MLA_WPML {
 		/*
 		 * Check for Bulk Edit processing during Upload New Media
 		 */
-		if ( ( NULL == self::$bulk_edit_request ) && ( 'edit' == $bulk_action ) && ! empty( $_REQUEST['mlaAddNewBulkEdit']['formString'] ) ) {
+		if ( ( NULL == self::$bulk_edit_request ) && ( 'edit' == $bulk_action ) && ! empty( $_REQUEST['mlaAddNewBulkEditFormString'] ) ) {
 			/*
 			 * Suppress WPML processing in wpml-media.class.php function save_attachment_actions,
 			 * which wipes out attachment meta data.

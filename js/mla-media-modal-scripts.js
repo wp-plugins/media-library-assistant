@@ -31,28 +31,28 @@ var wp, wpAjax, ajaxurl, jQuery, _,
 /*	for debug : trace every event triggered in the MediaFrame controller * /
 	var originalMediaFrameTrigger = wp.media.view.MediaFrame.prototype.trigger;
 	wp.media.view.MediaFrame.prototype.trigger = function(){
-		//console.log('MediaFrame Event: ', arguments[0]);
+		console.log('MediaFrame Event: ', arguments[0]);
 		originalMediaFrameTrigger.apply(this, Array.prototype.slice.call(arguments));
 	} // */
 
 /*	for debug : trace every event triggered in the view.Attachment controller * /
 	var originalAttachmentTrigger = wp.media.view.Attachment.prototype.trigger;
 	wp.media.view.Attachment.prototype.trigger = function(){
-		//console.log('view.Attachment Event: ', arguments[0]);
+		console.log('view.Attachment Event: ', arguments[0]);
 		originalAttachmentTrigger.apply(this, Array.prototype.slice.call(arguments));
 	} // */
 
 /*	for debug : trace every event triggered in the model.Attachment controller * /
 	var originalModelAttachmentTrigger = wp.media.model.Attachment.prototype.trigger;
 	wp.media.model.Attachment.prototype.trigger = function(){
-		//console.log('model.Attachment Event: ', arguments[0]);
+		console.log('model.Attachment Event: ', arguments[0]);
 		originalModelAttachmentTrigger.apply(this, Array.prototype.slice.call(arguments));
 	} // */
 
 /*	for debug : trace every event triggered in the view.AttachmentCompat controller * /
 	var originalAttachmentCompatTrigger = wp.media.view.AttachmentCompat.prototype.trigger;
 	wp.media.view.AttachmentCompat.prototype.trigger = function(){
-		//console.log('view.AttachmentCompat Event: ', arguments[0]);
+		console.log('view.AttachmentCompat Event: ', arguments[0]);
 
 		originalAttachmentCompatTrigger.apply(this, Array.prototype.slice.call(arguments));
 	} // */
@@ -60,7 +60,7 @@ var wp, wpAjax, ajaxurl, jQuery, _,
 /*	for debug : trace every event triggered in the model.Selection controller * /
 	var originalModelSelectionTrigger = wp.media.model.Selection.prototype.trigger;
 	wp.media.model.Selection.prototype.trigger = function(){
-		//console.log('model.Selection Event: ', arguments[0]);
+		console.log('model.Selection Event: ', arguments[0]);
 
 		originalModelSelectionTrigger.apply(this, Array.prototype.slice.call(arguments));
 	} // */
@@ -175,7 +175,7 @@ var wp, wpAjax, ajaxurl, jQuery, _,
 	}; // wp.media.ajax
 
 	/**
-	 * Extended Filters dropdown with more mimeTypes
+	 * Extended Filters dropdown with more Mime Types
 	 */
 	if ( mlaModal.settings.enableMimeTypes ) {
 		wp.media.view.AttachmentFilters.Mla = wp.media.view.AttachmentFilters.extend({
@@ -183,7 +183,7 @@ var wp, wpAjax, ajaxurl, jQuery, _,
 				var state = this.controller._state,
 					filters = {};
 
-				_.each( mlaModal.settings.mimeTypes || {}, function( text, key ) {
+				_.each( mlaModal.settings.allMimeTypes || {}, function( text, key ) {
 					if ( ( 'grid' === mlaModal.settings.screen ) || ( 'trash' !== key ) ) {
 						filters[ key ] = {
 							text: text,
@@ -228,6 +228,112 @@ var wp, wpAjax, ajaxurl, jQuery, _,
 				
 				if ( mlaModal.settings.query[state].filterMime != 'all' ) {
 					this.model.set( filters[ mlaModal.settings.query[state].filterMime ].props, { silent: false } );
+				}
+			},
+
+			select: function() {
+				var state = this.controller._state, 
+					model = this.model,
+					value = mlaModal.settings.query[state].filterMime,
+					props = model.toJSON();
+	
+				if ( false === mlaModal.settings.enableSearchBox ) {
+					if ( 'string' == typeof props.search ) {
+						mlaModal.settings.query[state].searchValue = props.search;
+					} else {
+						mlaModal.settings.query[state].searchValue = '';
+					}
+				}
+
+				_.find( this.filters, function( filter, id ) {
+					var equal = _.all( filter.props, function( prop, key ) {
+						return prop === ( _.isUndefined( props[ key ] ) ? null : props[ key ] );
+					});
+	
+					if ( equal ) {
+						return value = id;
+					}
+				});
+	
+				this.$el.val( value );
+			},
+
+			change: function() {
+				var toolbar = $( this.el ).closest( 'div.media-toolbar' ), 
+					filter = this.filters[ this.el.value ];
+
+				if ( filter ) {
+					// silent because we must change the "s" prop before triggering an update
+					this.model.set( filter.props, { silent: true } );
+					$( '#mla-search-submit', toolbar ).click();
+				}
+			}
+		});
+
+		wp.media.view.AttachmentFilters.MlaUploaded = wp.media.view.AttachmentFilters.extend({
+			createFilters: function() {
+				var type = this.model.get('type'),
+					types = wp.media.view.settings.mimeTypes,
+					text,
+					state = this.controller._state,
+					filters = {};
+
+				if ( types && type ) {
+					text = types[ type ];
+				}
+
+				_.each( mlaModal.settings.uploadMimeTypes || {}, function( text, key ) {
+					if ( ( 'grid' === mlaModal.settings.screen ) || ( 'trash' !== key ) ) {
+						filters[ key ] = {
+							text: text,
+							props: {
+								type:    key,
+								uploadedTo: null,
+								orderby: 'date',
+								order:   'DESC'
+							}
+						};
+					}
+				});
+
+				filters.all = {
+					text:  text || wp.media.view.l10n.allMediaItems,
+					props: {
+						uploadedTo: null,
+						orderby: 'date',
+						order:   'DESC'
+					},
+					priority: 10
+				};
+
+				filters.uploaded = {
+					text:  wp.media.view.l10n.uploadedToThisPost,
+					props: {
+						type:    null,
+						uploadedTo: wp.media.view.settings.post.id,
+						orderby: 'menuOrder',
+						order:   'ASC'
+					},
+					priority: 20
+				};
+
+				filters.unattached = {
+					text:  wp.media.view.l10n.unattached,
+					props: {
+						uploadedTo: 0,
+						orderby: 'menuOrder',
+						order:   'ASC'
+					},
+					priority: 50
+				};
+				
+				this.filters = filters;
+				if ( 'undefined' === typeof filters[ mlaModal.settings.query[state].filterUploaded ] ) {
+					mlaModal.settings.query[state].filterUploaded = 'all';
+				}
+				
+				if ( mlaModal.settings.query[state].filterUploaded != 'all' ) {
+					this.model.set( filters[ mlaModal.settings.query[state].filterUploaded ].props, { silent: false } );
 				}
 			},
 
@@ -680,6 +786,15 @@ this.listenTo( this.controller, 'all', this.toolbarEvent );
 					}).render() );
 				}
 
+				if ( ( 'uploaded' === filters ) && mlaModal.settings.enableMimeTypes ) {
+					this.toolbar.unset( 'filters', { silent: true } );
+					this.toolbar.set( 'filters', new wp.media.view.AttachmentFilters.MlaUploaded({
+						controller: this.controller,
+						model:      this.collection.props,
+						priority:   -80
+					}).render() );
+				}
+
 				if ( this.options.search && mlaModal.settings.enableMonthsDropdown ) {
 					this.toolbar.unset( 'dateFilter', { silent: true } );
 					this.toolbar.set( 'dateFilter', new wp.media.view.AttachmentFilters.MlaMonths({
@@ -707,8 +822,9 @@ this.listenTo( this.controller, 'all', this.toolbarEvent );
 
 				if ( this.options.search ) {
 					if ( mlaModal.settings.enableSearchBox ) {
+						this.listenTo( this.controller, 'content:activate', this.hideDefaultSearch );
+						this.listenTo( this.controller, 'router:render', this.hideDefaultSearch );
 						this.listenTo( this.controller, 'uploader:ready', this.hideDefaultSearch );
-						//this.toolbar.unset( 'search', { silent: true } );
 						this.toolbar.set( 'MlaSearch', new wp.media.view.MlaSearch({
 							controller: this.controller,
 							model:      this.collection.props,

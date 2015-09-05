@@ -313,7 +313,7 @@
 [+settings_list+]
 	</table>
 <h3>[+Error Log+]</h3>
-[+Error Log Name+]
+[+Error Log Name+] ( [+Error Log Size+] )
     <table>
         <tr>
             <td>

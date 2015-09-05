@@ -67,7 +67,7 @@ var jQuery,
 			uploader.bind( 'BeforeUpload', function( up, file ) {
 				var formString = $( '#file-form' ).serialize();
 				
-				up.settings.multipart_params.mlaAddNewBulkEdit['formString'] = formString;
+				up.settings.multipart_params.mlaAddNewBulkEditFormString = formString;
 			});
 		},
 

@@ -379,7 +379,8 @@ class MLAModal {
 				//'termsSearch' => NULL,
 				'searchClicks' => 0,
 			) ),			
-			'mimeTypes' => '',
+			'allMimeTypes' => array(),
+			'uploadMimeTypes' => array(),
 			'months' => '',
 			'termsClass' => array(),
 			'termsIndent' => '&nbsp;',
@@ -414,12 +415,15 @@ class MLAModal {
 
 		self::$mla_media_modal_settings['comma'] = _x( ',', 'tag_delimiter', 'media-library-assistant' );
 		self::$mla_media_modal_settings['ajaxNonce'] = wp_create_nonce( MLA::MLA_ADMIN_NONCE_ACTION, MLA::MLA_ADMIN_NONCE_NAME );
-		self::$mla_media_modal_settings['mimeTypes'] = MLAMime::mla_pluck_table_views();
-		self::$mla_media_modal_settings['mimeTypes']['detached'] = MLAOptions::$mla_option_definitions[ MLAOptions::MLA_POST_MIME_TYPES ]['std']['detached']['plural'];
-		self::$mla_media_modal_settings['mimeTypes']['attached'] = MLAOptions::$mla_option_definitions[ MLAOptions::MLA_POST_MIME_TYPES ]['std']['attached']['plural'];
+		self::$mla_media_modal_settings['allMimeTypes'] = MLAMime::mla_pluck_table_views();
+		self::$mla_media_modal_settings['allMimeTypes']['detached'] = MLAOptions::$mla_option_definitions[ MLAOptions::MLA_POST_MIME_TYPES ]['std']['detached']['plural'];
+		self::$mla_media_modal_settings['allMimeTypes']['attached'] = MLAOptions::$mla_option_definitions[ MLAOptions::MLA_POST_MIME_TYPES ]['std']['attached']['plural'];
 
+		/*
+		 * Trash items are allowed in the Media/Library Grid view
+		 */
 		if ( EMPTY_TRASH_DAYS && MEDIA_TRASH ) {
-			self::$mla_media_modal_settings['mimeTypes']['trash'] = MLAOptions::$mla_option_definitions[ MLAOptions::MLA_POST_MIME_TYPES ]['std']['trash']['plural'];
+			self::$mla_media_modal_settings['allMimeTypes']['trash'] = MLAOptions::$mla_option_definitions[ MLAOptions::MLA_POST_MIME_TYPES ]['std']['trash']['plural'];
 		}
 
 		self::$mla_media_modal_settings['months'] = self::_months_dropdown('attachment');
@@ -482,6 +486,7 @@ class MLAModal {
 		$search_defaults = MLAOptions::mla_get_option( MLAOptions::MLA_SEARCH_MEDIA_FILTER_DEFAULTS );
 		$initial_values = array(
 			'filterMime' => 'all',
+			'filterUploaded' => 'all',
 			'filterMonth' => 0,
 			'filterTerm' => 0,
 			'searchConnector' => $search_defaults['search_connector'],
@@ -506,6 +511,7 @@ class MLAModal {
 		 * back to the server in the query['s'] field.
 		 */ 
 		self::$mla_media_modal_settings['query']['initial']['filterMime'] = $initial_values['filterMime']; // post_mime_type 'image'; // 
+		self::$mla_media_modal_settings['query']['initial']['filterUploaded'] = $initial_values['filterUploaded']; // post_mime_type 'image'; // 
 		self::$mla_media_modal_settings['query']['initial']['filterMonth'] = $initial_values['filterMonth']; // mla_filter_month '201404'; // 
 		self::$mla_media_modal_settings['query']['initial']['filterTerm'] = $initial_values['filterTerm']; // mla_filter_term '175'; //
 		self::$mla_media_modal_settings['query']['initial']['searchConnector'] = $initial_values['searchConnector']; // mla_search_connector 'OR'; //

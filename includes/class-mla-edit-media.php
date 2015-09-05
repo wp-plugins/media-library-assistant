@@ -91,7 +91,7 @@ class MLAEdit {
 		/*
 		 * Check for Media/Add New bulk edit area updates
 		 */
-		if ( ! empty( $_REQUEST['mlaAddNewBulkEdit']['formString'] ) && ( 'checked' == MLAOptions::mla_get_option( MLAOptions::MLA_ADD_NEW_BULK_EDIT ) ) ) {
+		if ( ! empty( $_REQUEST['mlaAddNewBulkEditFormString'] ) && ( 'checked' == MLAOptions::mla_get_option( MLAOptions::MLA_ADD_NEW_BULK_EDIT ) ) ) {
 			/*
 			 * If any of the mapping rule options is enabled, use the MLA filter so this
 			 * filter is called after mapping rules have run. If none are enabled,
@@ -274,7 +274,7 @@ class MLAEdit {
 		 * The elements of this array come back as $_REQUEST elements when the
 		 * upload is submitted.
 		 */
-		$post_parms['mlaAddNewBulkEdit'] = array ( 'formData' => array() );
+		//$post_parms['mlaAddNewBulkEdit'] = array ( 'formData' => array() );
 		return $post_parms;
 	}
 
@@ -457,11 +457,11 @@ class MLAEdit {
 	 * @return	array	updated attachment metadata
 	 */
 	public static function mla_update_attachment_metadata_postfilter( $data, $post_id, $options = array( 'is_upload' => true ) ) {
-		if ( ( true == $options['is_upload'] ) && ! empty( $_REQUEST['mlaAddNewBulkEdit']['formString'] ) ) {
+		if ( ( true == $options['is_upload'] ) && ! empty( $_REQUEST['mlaAddNewBulkEditFormString'] ) ) {
 			/*
 			 * Clean up the inputs, which have everythng from the enclosing <form>
 			 */
-			$args = wp_parse_args( stripslashes( urldecode( $_REQUEST['mlaAddNewBulkEdit']['formString'] ) ) );
+			$args = wp_parse_args( stripslashes( urldecode( $_REQUEST['mlaAddNewBulkEditFormString'] ) ) );
 			unset( $args['parent'] );
 			unset( $args['children'] );
 			unset( $args['mla-set-parent-ajax-nonce'] );

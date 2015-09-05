@@ -1337,7 +1337,7 @@ class MLA_Polylang {
 	public static function mla_list_table_bulk_action_initial_request( $request, $bulk_action, $custom_field_map ) {
 		if ( 'edit' == $bulk_action ) {
 			// Check for Bulk Edit processing during Upload New Media
-			if ( ( NULL == self::$upload_bulk_edit_args ) && ! empty( $_REQUEST['mlaAddNewBulkEdit']['formString'] ) ) {
+			if ( ( NULL == self::$upload_bulk_edit_args ) && ! empty( $_REQUEST['mlaAddNewBulkEditFormString'] ) ) {
 				self::$upload_bulk_edit_args = $request;
 				self::$upload_bulk_edit_map = $custom_field_map;
 			}
