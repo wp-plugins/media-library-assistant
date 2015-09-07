@@ -73,6 +73,9 @@ var jQuery,
 			$('a.cancel', bulkRow).click(function(){
 				return mla.inlineEditAttachment.revert();
 			});
+			$('a.reset', bulkRow).click(function(){
+				return mla.inlineEditAttachment.doReset();
+			});
 			$('input[type="submit"]', bulkRow).click(function(e){
 				e.preventDefault();
 				return mla.inlineEditAttachment.bulkSave(e);
@@ -608,6 +611,35 @@ var jQuery,
 
 			$('#mla-set-parent-submit' ).off( 'click' );
 			mla.setParent.close();
+		},
+
+		doReset : function(){
+			var id = $('table.widefat tr.inline-editor').attr('id'),
+				bulkRow = $('table.widefat #bulk-edit'),
+				blankRow = $('#inlineedit #blank-bulk-edit'),
+				blankCategories = $('.inline-edit-categories', blankRow ).html(),
+				blankTags = $('.inline-edit-tags', blankRow ).html(),
+				blankFields = $('.inline-edit-fields', blankRow ).html();
+
+			if ( id ) {
+				if ( mla.settings.useSpinnerClass ) {
+					$('table.widefat .inline-edit-save .spinner').removeClass("is-active");
+				} else {
+					$('table.widefat .inline-edit-save .spinner').hide();
+				}
+
+				if ( 'bulk-edit' == id ) {
+					$('.inline-edit-categories', bulkRow ).html( blankCategories ),
+					$('.inline-edit-tags', bulkRow ).html( blankTags ),
+					$('.inline-edit-fields', bulkRow ).html( blankFields );
+
+					$('#bulk-edit-set-parent', bulkRow).on( 'click', function(){
+						return mla.inlineEditAttachment.bulkParentOpen();
+					});
+				}
+			}
+
+			return false;
 		},
 
 		revert : function(){

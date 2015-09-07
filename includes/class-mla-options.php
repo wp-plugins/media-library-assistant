@@ -152,6 +152,11 @@ class MLAOptions {
 	const MLA_ADD_NEW_BULK_EDIT = 'add_new_bulk_edit';
 
 	/**
+	 * Provides a unique name for the Media/Add New bulk edit "on top" option
+	 */
+	const MLA_ADD_NEW_BULK_EDIT_ON_TOP = 'add_new_bulk_edit_on_top';
+
+	/**
 	 * Provides a unique name for the Media Grid toolbar option, which
 	 * also controls the ATTACHMENT DETAILS enhancements
 	 */
@@ -739,6 +744,13 @@ class MLAOptions {
 					'type' => 'checkbox',
 					'std' => 'checked',
 					'help' => __( 'Check this option to enable the "Bulk Edit area" feature on the Media/Add New screen.', 'media-library-assistant' )),
+
+			self::MLA_ADD_NEW_BULK_EDIT_ON_TOP =>
+				array('tab' => 'general',
+					'name' => __( '&quot;bulk edit&quot; area on top', 'media-library-assistant' ),
+					'type' => 'checkbox',
+					'std' => '',
+					'help' => __( 'Check this option to move the "Bulk Edit area" to the top of the Media/Add New screen.', 'media-library-assistant' )),
 
 			'media_modal_header' =>
 				array('tab' => 'general',

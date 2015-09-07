@@ -3,8 +3,11 @@
 var jQuery,
 	mla_add_new_bulk_edit_vars,
 	mla = {
-		// Properties (for mla-set-parent-scripts)
+		// Properties (for mla-set-parent-scripts, too)
 		// mla.settings.uploadTitle
+		// mla.settings.toggleClose
+		// mla.settings.toggleOpen
+		// mla.settings.areaOnTop
 		// mla.settings.comma for flat taxonomy suggest
 		// mla.settings.ajaxFailError for setParent
 		// mla.settings.ajaxDoneError for setParent
@@ -32,29 +35,49 @@ var jQuery,
 	 */
 	mla.settings = typeof mla_add_new_bulk_edit_vars === 'undefined' ? {} : mla_add_new_bulk_edit_vars;
 	mla_add_new_bulk_edit_vars = void 0; // delete won't work on Globals
-
+	
+	if ( typeof mla.settings.areaOnTop === 'undefined' ) {
+		mla.settings.areaOnTop = false;
+	};
+	
 	mla.addNewBulkEdit = {
 		init: function() {
-			var button, bypass = $( '.upload-flash-bypass' ), 
-			    uploadDiv = $( '#mla-add-new-bulk-edit-div' ).hide(); // Start with area closed up
+			var toggleButton, resetButton, 
+				bypass = $( '.upload-flash-bypass' ), title = $( '#wpbody .wrap' ).children ( 'h2' ),
+				uploadContent, uploadDiv = $( '#mla-add-new-bulk-edit-div' ).hide(); // Start with area closed up
 
 			$( '#bulk-edit-set-parent', uploadDiv ).on( 'click', function(){
 				return mla.addNewBulkEdit.parentOpen();
 			});
 
-			// Move the Open/Close Bulk Edit area button to save space on the page
-			button = $( '#bulk-edit-toggle', uploadDiv ).detach();
-			button.appendTo( bypass );
+			// Move the Open/Close Bulk Edit area toggleButton to save space on the page
+			toggleButton = $( '#bulk-edit-toggle', uploadDiv ).detach();
+			resetButton = $( '#bulk-edit-reset', uploadDiv ).detach();
+			
+			if ( mla.settings.areaOnTop ) {
+				toggleButton.appendTo( title );
+				resetButton.appendTo( title );
+				uploadContent = uploadDiv.detach();
+				$( '#file-form' ).before( uploadContent );
+			} else {
+				toggleButton.appendTo( bypass );
+				resetButton.appendTo( bypass );
+			};
 
 			// Hook the "browser uploader" link to close the Bulk Edit area when it is in use
-			button.siblings( 'a' ).on( 'click', function(){
-				button.attr( 'title', mla.settings.toggleOpen );
-				button.attr( 'value', mla.settings.toggleOpen );
+			toggleButton.siblings( 'a' ).on( 'click', function(){
+				toggleButton.attr( 'title', mla.settings.toggleOpen );
+				toggleButton.attr( 'value', mla.settings.toggleOpen );
+				resetButton.hide();
 				uploadDiv.hide();
 			});
 
-			button.on( 'click', function(){
+			toggleButton.on( 'click', function(){
 				return mla.addNewBulkEdit.formToggle();
+			});
+			
+			resetButton.on( 'click', function(){
+				return mla.addNewBulkEdit.doReset();
 			});
 			
 			//auto-complete/suggested matches for flat taxonomies
@@ -71,16 +94,37 @@ var jQuery,
 			});
 		},
 
+		doReset : function(){
+			var bulkRow = $('#mla-add-new-bulk-edit-div'),
+				blankRow = $('#mla-blank-add-new-bulk-edit-div'),
+				blankCategories = $('.inline-edit-categories', blankRow ).html(),
+				blankTags = $('.inline-edit-tags', blankRow ).html(),
+				blankFields = $('.inline-edit-fields', blankRow ).html();
+
+			$('.inline-edit-categories', bulkRow ).html( blankCategories ),
+			$('.inline-edit-tags', bulkRow ).html( blankTags ),
+			$('.inline-edit-fields', bulkRow ).html( blankFields );
+
+			$('#bulk-edit-set-parent', bulkRow).on( 'click', function(){
+				return mla.addNewBulkEdit.parentOpen();
+			});
+
+			return false;
+		},
+
 		formToggle : function() {
-			var button = $( '#bulk-edit-toggle' ), area = $( '#mla-add-new-bulk-edit-div' );
+			var toggleButton = $( '#bulk-edit-toggle' ), resetButton = $( '#bulk-edit-reset' ), 
+				area = $( '#mla-add-new-bulk-edit-div' );
 			
 			// Expand/collapse the Bulk Edit area
 			if ( 'none' === area.css( 'display' ) ) {
-				button.attr( 'title', mla.settings.toggleClose );
-				button.attr( 'value', mla.settings.toggleClose );
+				toggleButton.attr( 'title', mla.settings.toggleClose );
+				toggleButton.attr( 'value', mla.settings.toggleClose );
+				resetButton.show();
 			} else {
-				button.attr( 'title', mla.settings.toggleOpen );
-				button.attr( 'value', mla.settings.toggleOpen );
+				toggleButton.attr( 'title', mla.settings.toggleOpen );
+				toggleButton.attr( 'value', mla.settings.toggleOpen );
+				resetButton.hide();
 			}
 			
 			area.slideToggle( 'slow' );

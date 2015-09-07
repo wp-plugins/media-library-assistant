@@ -38,7 +38,7 @@ class MLA {
 	 *
 	 * @var	string
 	 */
-	const MLA_DEVELOPMENT_VERSION = '20150904';
+	const MLA_DEVELOPMENT_VERSION = '20150907';
 
 	/**
 	 * Slug for registering and enqueueing plugin style sheet
@@ -2310,6 +2310,7 @@ class MLA {
 			'quick_middle_column' => $quick_middle_column,
 			'quick_right_column' => $quick_right_column,
 			'Cancel' => __( 'Cancel', 'media-library-assistant' ),
+			'Reset' => __( 'Reset', 'media-library-assistant' ),
 			'Update' => __( 'Update', 'media-library-assistant' ),
 			'Bulk Edit' => __( 'Bulk Edit', 'media-library-assistant' ),
 			'bulk_middle_column' => $bulk_middle_column,

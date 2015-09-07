@@ -184,13 +184,14 @@ class MLAEdit {
 
 			$script_variables = array(
 				'uploadTitle' => __( 'Upload New Media items', 'media-library-assistant' ),
+				'toggleOpen' => __( 'Open Bulk Edit area', 'media-library-assistant' ),
+				'toggleClose' => __( 'Close Bulk Edit area', 'media-library-assistant' ),
+				'areaOnTop' => ( 'checked' == MLAOptions::mla_get_option( MLAOptions::MLA_ADD_NEW_BULK_EDIT_ON_TOP ) ),
 				'comma' => _x( ',', 'tag_delimiter', 'media-library-assistant' ),
 				'ajaxFailError' => __( 'An ajax.fail error has occurred. Please reload the page and try again.', 'media-library-assistant' ),
 				'ajaxDoneError' => __( 'An ajax.done error has occurred. Please reload the page and try again.', 'media-library-assistant' ),
 				'useDashicons' => false,
 				'useSpinnerClass' => false,
-				'toggleOpen' => __( 'Open Bulk Edit area', 'media-library-assistant' ),
-				'toggleClose' => __( 'Close Bulk Edit area', 'media-library-assistant' ),
 			);
 
 			if ( version_compare( get_bloginfo( 'version' ), '3.8', '>=' ) ) {
@@ -418,6 +419,7 @@ class MLAEdit {
 		$page_values = array(
 			'NOTE' => __( 'IMPORTANT: Make your entries BEFORE uploading new items. Pull down the Help menu for more information.', 'media-library-assistant' ),
 			'Toggle' => __( 'Open Bulk Edit area', 'media-library-assistant' ),
+			'Reset' => __( 'Reset', 'media-library-assistant' ),
 			'category_fieldset' => $category_fieldset,
 			'tag_fieldset' => $tag_fieldset,
 			'authors' => $authors_dropdown,

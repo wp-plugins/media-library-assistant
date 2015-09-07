@@ -41,7 +41,8 @@ div.mla_errors {
  * MLA Inline editing - adapted from load-styles.php
  */
 .mla_bulk_taxonomy_options {
-	margin-bottom: 10px
+	margin-top: 8px;
+	margin-bottom: 8px
 }
 
 #wpbody-content .quick-edit-row-attachment .inline-edit-col-left {
@@ -78,6 +79,10 @@ div.mla_errors {
 
 #wpbody-content tr#bulk-progress .inline-edit-col-right {
 	width: 40%
+}
+
+.bulk-edit-row-attachment fieldset.inline-edit-col-left .reset {
+	margin-left: 5px
 }
 
 .quick-edit-row-attachment fieldset.inline-edit-col-left label span.title,
