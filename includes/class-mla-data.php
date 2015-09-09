@@ -889,7 +889,7 @@ class MLAData {
 
 					$index++;
 				} else { // backslash
-					if ( $delimiter == $byte || ',' == $byte ) {
+					if ( $delimiter == $byte || ( empty( $delimiter ) && ',' == $byte ) ) {
 						break;
 					}
 
@@ -926,6 +926,10 @@ class MLAData {
 			 * date "Returns a string formatted according to the given format string using the given integer"
 			 */
 			$format = empty( $args['args'] ) ? 'd/m/Y H:i:s' : $args['args'];
+			if ( is_array( $format ) ) {
+				$format = $format[0];
+			}
+			
 			$value = date( $format , (integer) $value );
 		} elseif ( 'date' == $args['format'] ) {
 			/*
@@ -935,6 +939,10 @@ class MLAData {
 			$format = empty( $args['args'] ) ? 'd/m/Y H:i:s' : $args['args'];
 			$timestamp = strtotime( $value );
 			if( false !== $timestamp ) {
+				if ( is_array( $format ) ) {
+					$format = $format[0];
+				}
+				
 				$value = date( $format, $timestamp );
 			}
 		} elseif ( 'fraction' == $args['format'] ) {
@@ -5897,6 +5905,11 @@ class MLAData {
 			);
 		}
 
+		$updates = apply_filters( 'mla_update_single_item', compact( array( 'new_data', 'tax_input', 'tax_actions' ) ), $post_id, $post_data );
+		$new_data = isset( $updates['new_data'] ) ? $updates['new_data'] : array();
+		$tax_input = isset( $updates['tax_input'] ) ? $updates['tax_input'] : NULL;
+		$tax_actions = isset( $updates['tax_actions'] ) ? $updates['tax_actions'] : NULL;
+
 		$message = '';
 		$updates = array( 'ID' => $post_id );
 		$new_data = stripslashes_deep( $new_data );
@@ -6146,7 +6159,16 @@ class MLAData {
 			self::mla_fetch_attachment_metadata( -1 );
 			self::mla_fetch_attachment_references( -1, 0 );
 
-			if ( wp_update_post( $updates ) ) {
+			// See if anything else has changed
+			if ( 1 <  count( $updates ) ) {
+				$result = wp_update_post( $updates );
+			} else {
+				$result = $post_id;
+			}
+			
+			do_action( 'mla_updated_single_item', $post_id, $result );
+			
+			if ( $result ) {
 				/* translators: 1: post ID */
 				$final_message = sprintf( __( 'Item %1$d updated.', 'media-library-assistant' ), $post_id );
 				/*

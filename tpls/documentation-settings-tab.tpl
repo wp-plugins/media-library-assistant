@@ -5057,6 +5057,10 @@ Once that line is added to the <code>wp-config.php</code> file the "Debug" tab w
 <td style="padding-right: 10px; vertical-align: top; font-weight:bold">2, or 0x0002</td>
 <td>writes MLA-specific messages to the log for some of the "Ajax" functions such as bulk edit updates and mapping rule execution.</td>
 </tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">4, or 0x0004</td>
+<td>writes MLA-specific messages to the log for calls to the WPML/Polylang support functions.</td>
+</tr>
 </table>
 <p>
 You can pick the logging categories you want by adding the above values together. For example, to log only PHP messages you can use <code>define( 'MLA_DEBUG_LEVEL', 1 );</code> or <code>define( 'MLA_DEBUG_LEVEL', 0x0001 );</code>. To add the "Ajax" messages you can use <code>define( 'MLA_DEBUG_LEVEL', 3 );</code> or <code>define( 'MLA_DEBUG_LEVEL', 0x0003 );</code>. The hexadecimal notation ( 0x0003 ) can be easier to understand when several options are involved.
@@ -5310,6 +5314,14 @@ The following hooks are defined in <code>/wp-admin/includes/class-mla-data.php</
 <tr>
 <td style="padding-right: 10px; vertical-align: top; font-weight:bold">mla_fetch_attachment_references</td>
 <td>Gives you an opportunity to modify or add to the "where-used" reference reporting information.</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">mla_update_single_item</td>
+<td>Gives you an opportunity to modify, delete or add to updates before they are applied.</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">mla_updated_single_item</td>
+<td>Gives you an opportunity to work with the item after updates have been applied.</td>
 </tr>
 </table>
 <p>

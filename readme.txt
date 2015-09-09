@@ -180,7 +180,12 @@ All of the MLA source code has been annotated with "DocBlocks", a special type o
 * New: The Portable Object (".po") files are now included in the `/media-library-assistant/languages` directory, facilitating the translation update process.
 * New: Harm Kramer has contributed **updates and additions to the Dutch translation**; thanks Harm!
 * New: Comments have been added to each "/tpls/help-for-*.tpl" template showing where in MLA the template is used. This should help with the translation of these templates to other languages.
+* New: Two new hooks, `mla_update_single_item` and `mla_update_single_item`, have been added to increase control over Media Library item updates, e.g., for taxonomy term updates.
 * New: The "mla_media_modal_initial_filters" and "mla_media_modal_settings" filters have been updated to allow control over the "uploaded" MIME type dropdown, e.g., on the "Create Gallery" and "Set Featured Image" views of the Media Manager Modal (popup) Window.
+* Fix: The Edit Taxonomy "Attachments" column is displayed correctly when othe plugins, e.g., Polylang, add columns to the submenu table.
+* Fix: When WPML or Polylang are active, **Term Assignment and Synchronization defects** when two or more translations have the same term name are corrected.
+* Fix: For item updates thet only affect postmeta and/or taxonomy values, `wp_update_post` is no longer called.
+* Fix: Commas are now accepted within quoted arguments of the "Field-level option/format values". Commas outside of quoted arguments of the `timestamp` and `date` format values no longer generate PHP Warning messages.
 * Fix: The Bulk Edit on Upload (Media/Add New) has been fixed for WordPress versions before 4.0.
 * Fix: When WPML is active, a defect in Bulk Edit term assignment that copied terms from one item to subsequent items in the list has been corrected.
 * Fix: The Settings/Media Library Assistant tab HTML heading tags have been adjusted to conform to the new WordPress v4.3+ standards.

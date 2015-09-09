@@ -38,7 +38,7 @@ class MLA {
 	 *
 	 * @var	string
 	 */
-	const MLA_DEVELOPMENT_VERSION = '20150907';
+	const MLA_DEVELOPMENT_VERSION = '20150908';
 
 	/**
 	 * Slug for registering and enqueueing plugin style sheet
@@ -2681,6 +2681,15 @@ class MLA {
 	 * @var	integer
 	 */
 	CONST MLA_DEBUG_CATEGORY_AJAX = 0x00000002;
+
+	/**
+	 * Constant to log WPML/Polylang action/filter activity
+	 *
+	 * @since 2.15
+	 *
+	 * @var	integer
+	 */
+	CONST MLA_DEBUG_CATEGORY_LANGUAGE = 0x00000004;
 
 	/**
 	 * Add a debug message to the collection

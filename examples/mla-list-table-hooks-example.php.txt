@@ -3,7 +3,7 @@
  * Provides an example of hooking the filters provided by the MLA_List_Table class
  *
  * @package MLA List Table Hooks Example
- * @version 1.05
+ * @version 1.06
  */
 
 /*
@@ -11,7 +11,7 @@ Plugin Name: MLA List Table Hooks Example
 Plugin URI: http://fairtradejudaica.org/media-library-assistant-a-wordpress-plugin/
 Description: Provides an example of hooking the filters provided by the MLA_List_Table class
 Author: David Lingren
-Version: 1.05
+Version: 1.06
 Author URI: http://fairtradejudaica.org/our-story/staff/
 
 Copyright 2014 - 2015 David Lingren
@@ -79,6 +79,8 @@ class MLAListTableHooksExample {
 		add_filter( 'mla_list_table_search_filter_fields', 'MLAListTableHooksExample::mla_list_table_search_filter_fields', 10, 2 );
 		add_filter( 'mla_list_table_search_filter_inner_clause', 'MLAListTableHooksExample::mla_list_table_search_filter_inner_clause', 10, 4 );
 		add_filter( 'mla_fetch_attachment_references', 'MLAListTableHooksExample::mla_fetch_attachment_references', 10, 3 );
+		add_filter( 'mla_update_single_item', 'MLAListTableHooksExample::mla_update_single_item', 10, 3 );
+		add_action( 'mla_updated_single_item', 'MLAListTableHooksExample::mla_updated_single_item', 10, 2 );
 
 		 /*
 		  * Defined in /media-library-assistant/includes/class-mla-main.php
@@ -328,6 +330,44 @@ class MLAListTableHooksExample {
 		 */
 		return $references;
 	} // mla_fetch_attachment_references
+
+	/**
+	 * Pre-process a Media Library item update action
+	 *
+	 * This filter gives you an opportunity to modify, delete or add to updates before they are applied.
+	 *
+	 * @since 1.06
+	 *
+	 * @param	array	$updates	( 'new_data' => array, 'tax_input' => array, 'tax_actions' => array ).
+	 * @param	integer	$post_id	ID of the item being updated.
+	 * @param	array	$post_data	current item content.
+	 */
+	public static function mla_update_single_item( $updates, $post_id, $post_data ) {
+		//error_log( 'MLAListTableHooksExample::mla_update_single_item $updates = ' . var_export( $updates, true ), 0 );
+		//error_log( 'MLAListTableHooksExample::mla_update_single_item $post_id = ' . var_export( $post_id, true ), 0 );
+		//error_log( 'MLAListTableHooksExample::mla_update_single_item $post_data = ' . var_export( $post_data, true ), 0 );
+		
+		/*
+		 * You can modify the content of any $updates element ot remove it to prevent updates
+		 */
+		 
+		return $updates;
+	} // mla_update_single_item
+
+	/**
+	 * POST-process a Media Library item update action
+	 *
+	 * This action gives you an opportunity to work with the item after updates have been applied.
+	 *
+	 * @since 1.06
+	 *
+	 * @param	integer	$post_id ID of the item that was updated.
+	 * @param	integer	$result	zero if the update failed else ID of the item that was updated.
+	 */
+	public static function mla_updated_single_item( $post_id, $result ) {
+		//error_log( 'MLAListTableHooksExample::mla_updated_single_item $post_id = ' . var_export( $post_id, true ), 0 );
+		//error_log( 'MLAListTableHooksExample::mla_updated_single_item $result = ' . var_export( $result, true ), 0 );
+	} // mla_updated_single_item
 
 	/**
 	 * Pre-process an MLA_List_Table admin action

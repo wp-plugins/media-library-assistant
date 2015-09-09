@@ -98,8 +98,8 @@ class MLAObjects {
 		foreach ( $taxonomies as $tax_name ) {
 			if ( MLAOptions::mla_taxonomy_support( $tax_name ) ) {
 				register_taxonomy_for_object_type( $tax_name, 'attachment');
-				add_filter( "manage_edit-{$tax_name}_columns", 'MLAObjects::mla_taxonomy_get_columns_filter', 10, 1 ); // $columns
-				add_filter( "manage_{$tax_name}_custom_column", 'MLAObjects::mla_taxonomy_column_filter', 10, 3 ); // $place_holder, $column_name, $tag->term_id
+				add_filter( "manage_edit-{$tax_name}_columns", 'MLAObjects::mla_taxonomy_get_columns_filter', 0x7FFFFFFF, 1 ); // $columns
+				add_filter( "manage_{$tax_name}_custom_column", 'MLAObjects::mla_taxonomy_column_filter', 0x7FFFFFFF, 3 ); // $place_holder, $column_name, $tag->term_id
 			} // taxonomy support
 		} // foreach
 	} // _build_taxonomies
@@ -120,12 +120,19 @@ class MLAObjects {
 		 */
 		if ( isset( $_POST['action'] ) && in_array( $_POST['action'], array( 'add-tag', 'inline-save-tax' ) ) ) {
 			$post_type = !empty($_POST['post_type']) ? $_POST['post_type'] : 'post';
+			$taxonomy = !empty($_POST['taxonomy']) ? $_POST['taxonomy'] : 'post_tag';
 		} else {
 			$screen = get_current_screen();
 			$post_type = !empty( $screen->post_type ) ? $screen->post_type : 'post';
+			$taxonomy = !empty( $screen->taxonomy ) ? $screen->taxonomy : 'post_tag';
 		}
 
 		if ( 'attachment' == $post_type ) {
+			$filter_columns = apply_filters( 'mla_taxonomy_get_columns_filter', NULL, $columns, $taxonomy );
+			if ( ! empty( $filter_columns ) ) {
+				return $filter_columns;
+			}
+			
 			if ( isset ( $columns[ 'posts' ] ) ) {
 				unset( $columns[ 'posts' ] );
 			}
@@ -142,16 +149,20 @@ class MLAObjects {
 	 *
 	 * @since 0.30
 	 *
-	 * @param	string	current column value; always ''
-	 * @param	array	name of the column
-	 * @param	array	ID of the term for which the count is desired
+	 * @param	string	current column value; filled in by earlier filter handlers
+	 * @param	string	name of the column
+	 * @param	integer	ID of the term for which the count is desired
 	 *
 	 * @return	array	HTML markup for the column content; number of attachments in the category
 	 *					and alink to retrieve a list of them
 	 */
-	public static function mla_taxonomy_column_filter( $place_holder, $column_name, $term_id ) {
+	public static function mla_taxonomy_column_filter( $current_value, $column_name, $term_id ) {
 		static $taxonomy = NULL, $tax_object = NULL, $count_terms = false, $terms = array();
 
+		if ( 'attachments' !== $column_name ) {
+			return $current_value;
+		}
+		
 		/*
 		 * Do these setup tasks once per page load
 		 */
