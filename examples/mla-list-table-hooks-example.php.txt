@@ -72,6 +72,12 @@ class MLAListTableHooksExample {
 		add_filter( 'manage_media_page_mla-menu_sortable_columns', 'MLAListTableHooksExample::manage_media_page_mla_menu_sortable_columns', 10, 1 );
 
 		 /*
+		  * Defined in /media-library-assistant/includes/class-mla-objects.php
+		  */
+		add_filter( 'mla_taxonomy_get_columns', 'MLAListTableHooksExample::mla_taxonomy_get_columns', 10, 3 );
+		add_filter( 'mla_taxonomy_column', 'MLAListTableHooksExample::mla_taxonomy_column', 10, 5 );
+
+		 /*
 		  * Defined in /media-library-assistant/includes/class-mla-data.php
 		  */
 		add_filter( 'mla_list_table_query_final_terms', 'MLAListTableHooksExample::mla_list_table_query_final_terms', 10, 1 );
@@ -122,7 +128,7 @@ class MLAListTableHooksExample {
 		add_filter( 'mla_list_table_prepare_items_total_items', 'MLAListTableHooksExample::mla_list_table_prepare_items_total_items', 10, 2 );
 		add_filter( 'mla_list_table_prepare_items_the_items', 'MLAListTableHooksExample::mla_list_table_prepare_items_the_items', 10, 2 );
 		add_action( 'mla_list_table_prepare_items', 'MLAListTableHooksExample::mla_list_table_prepare_items', 10, 1 );
-		
+
 		add_filter( 'mla_list_table_build_rollover_actions', 'MLAListTableHooksExample::mla_list_table_build_rollover_actions', 10, 3 );
 		add_filter( 'mla_list_table_build_inline_data', 'MLAListTableHooksExample::mla_list_table_build_inline_data', 10, 2 );
 
@@ -139,8 +145,6 @@ class MLAListTableHooksExample {
 	 *
 	 * @param	array	$views An array of available list table views.
 	 *					format: view_slug => link to the view, with count
-	 *
-	 * @return	array	updated list table views.
 	 */
 	public static function views_media_page_mla_menu( $views ) {
 		//error_log( 'MLAListTableHooksExample::views_media_page_mla_menu $views = ' . var_export( $views, true ), 0 );
@@ -156,8 +160,6 @@ class MLAListTableHooksExample {
 	 *
 	 * @param	array	$actions An array of the available bulk actions.
 	 *					format: action_slug => Action Label
-	 *
-	 * @return	array	updated available bulk actions.
 	 */
 	public static function bulk_actions_media_page_mla_menu( $actions ) {
 		//error_log( 'MLAListTableHooksExample::bulk_actions_media_page_mla_menu $actions = ' . var_export( $actions, true ), 0 );
@@ -174,8 +176,6 @@ class MLAListTableHooksExample {
 	 * @param	array	$months    The months drop-down query result objects.
 	 *					format: index => array( 'year' => year, 'month' => month )
 	 * @param	string	$post_type The post type, e.g., 'attachment'.
-	 *
-	 * @return	array	updated months query results.
 	 */
 	public static function months_dropdown_results( $months, $post_type ) {
 		//error_log( "MLAListTableHooksExample::months_dropdown_results ({$post_type}) \$months = " . var_export( $months[0], true ), 0 );
@@ -191,8 +191,6 @@ class MLAListTableHooksExample {
 	 * @since 1.00
 	 *
 	 * @param	integer	$per_page Number of items to be displayed. Default 20.
-	 *
-	 * @return	integer	updated items to be displayed.
 	 */
 	public static function mla_entries_per_page( $per_page ) {
 		//error_log( 'MLAListTableHooksExample::mla_entries_per_page $per_page = ' . var_export( $per_page, true ), 0 );
@@ -211,8 +209,6 @@ class MLAListTableHooksExample {
 	 *										or 'column_slug' => array( 'orderby', true )
 	 *
 	 * The second format will make the initial sorting order be descending.
-	 *
-	 * @return	array	updated array of sortable columns.
 	 */
 	public static function manage_media_page_mla_menu_sortable_columns( $sortable_columns ) {
 		//error_log( 'MLAListTableHooksExample::manage_media_page_mla_menu_sortable_columns $sortable_columns = ' . var_export( $sortable_columns, true ), 0 );
@@ -235,25 +231,23 @@ class MLAListTableHooksExample {
 	 *
 	 * @since 1.00
 	 *
-	 * @param	array	$active_fields	fields that will be searched.
-	 * @param	array	$all_fields		all of the fields that can be searched.
-	 *
-	 * @return	array	updated $active_fields.
+	 * @param	array	$active_fields	Fields that will be searched.
+	 * @param	array	$all_fields		All of the fields that can be searched.
 	 */
 	public static function mla_list_table_search_filter_fields( $active_fields, $all_fields ) {
 		//error_log( 'MLAListTableHooksExample::mla_list_table_search_filter_fields $active_fields = ' . var_export( $active_fields, true ), 0 );
 		//error_log( 'MLAListTableHooksExample::mla_list_table_search_filter_fields $all_fields = ' . var_export( $all_fields, true ), 0 );
-		
+
 		if ( in_array( 'name', $active_fields ) ) {
 			/* Uncomment next line to add File URL (guid) to the list of active search fields
 			   when the "Name" box below the Search Media text box is checked */ 
 			//$active_fields[] = 'guid';
 		}
-		
+
 		// Uncomment next line to ALWAYS add File URL (guid) to the list of active search fields
 		//$active_fields[] = 'guid';
 		self::$search_fields = $active_fields;
-		
+
 		return $active_fields;
 	} // mla_list_table_search_filter_fields
 
@@ -264,19 +258,17 @@ class MLAListTableHooksExample {
 	 *
 	 * @since 1.00
 	 *
-	 * @param	string	$inner_clause		current SQL inner WHERE clause.
+	 * @param	string	$inner_clause		Current SQL inner WHERE clause.
 	 * @param	string	$inner_connector	AND/OR connector between the search field clauses.
-	 * @param	string	$wpdb_posts			name of the POSTS database table.
-	 * @param	string	$sql_term			keyword value for the search.
-	 *
-	 * @return	string	updated $inner_clause.
+	 * @param	string	$wpdb_posts			Name of the POSTS database table.
+	 * @param	string	$sql_term			Keyword value for the search.
 	 */
 	public static function mla_list_table_search_filter_inner_clause( $inner_clause, $inner_connector, $wpdb_posts, $sql_term ) {
 		//error_log( 'MLAListTableHooksExample::mla_list_table_search_filter_fields $inner_clause = ' . var_export( $inner_clause, true ), 0 );
 		//error_log( 'MLAListTableHooksExample::mla_list_table_search_filter_fields $inner_connector = ' . var_export( $inner_connector, true ), 0 );
 		//error_log( 'MLAListTableHooksExample::mla_list_table_search_filter_fields $wpdb_posts = ' . var_export( $wpdb_posts, true ), 0 );
 		//error_log( 'MLAListTableHooksExample::mla_list_table_search_filter_fields $sql_term = ' . var_export( $sql_term, true ), 0 );
-		
+
 		if ( in_array( 'guid', self::$search_fields ) ) {
 			$inner_clause .= "{$inner_connector}({$wpdb_posts}.guid LIKE {$sql_term})";
 		}
@@ -285,23 +277,61 @@ class MLAListTableHooksExample {
 	} // mla_list_table_search_filter_inner_clause
 
 	/**
+	 * Pre-process the Edit Taxonomy submenu table columns
+	 *
+	 * This filter gives you an opportunity to change the columns defined
+	 * for the Edit Taxonomy submenu table(s).
+	 *
+	 * @since 1.06
+	 *
+	 * @param	NULL	$filter_columns NULL, indicating no changes to the default processing.
+	 * @param	array	$columns Column definitions for the edit taxonomy list table.
+	 * @param	string	$taxonomy Slug of the taxonomy for this submenu.
+	 */
+	public static function mla_taxonomy_get_columns( $filter_columns, $columns, $taxonomy ) {
+		//error_log( 'MLAListTableHooksExample::mla_taxonomy_get_columns $columns = ' . var_export( $columns, true ), 0 );
+		//error_log( 'MLAListTableHooksExample::mla_taxonomy_get_columns $taxonomy = ' . var_export( $taxonomy, true ), 0 );
+		return $filter_columns;
+	} // mla_taxonomy_get_columns
+
+	/**
+	 * Pre-process Edit Taxonomy submenu table column content
+	 *
+	 * This filter gives you an opportunity to change column content in
+	 * for the Edit Taxonomy submenu table(s).
+	 *
+	 * @since 1.06
+	 *
+	 * @param	NULL	$filter_content NULL, indicating no changes to the current content.
+	 * @param	string	$current_value Current column content.
+	 * @param	string	$column_name Slug of the column definition.
+	 * @param	integer	$term_id ID of the current term.
+	 * @param	string	$taxonomy Slug of the taxonomy for this submenu.
+	 */
+	public static function mla_taxonomy_column( $filter_content, $current_value, $column_name, $term_id, $taxonomy ) {
+		//error_log( 'MLAListTableHooksExample::mla_taxonomy_column $current_value = ' . var_export( $current_value, true ), 0 );
+		//error_log( 'MLAListTableHooksExample::mla_taxonomy_column $column_name = ' . var_export( $column_name, true ), 0 );
+		//error_log( 'MLAListTableHooksExample::mla_taxonomy_column $term_id = ' . var_export( $term_id, true ), 0 );
+		//error_log( 'MLAListTableHooksExample::mla_taxonomy_column $taxonomy = ' . var_export( $taxonomy, true ), 0 );
+		return $filter_content;
+	} // mla_taxonomy_column
+
+	/**
 	 * Process the "where-used" reference reporting results 
 	 *
 	 * This filter gives you an opportunity to modify or add to the "where-used" reference reporting information.
 	 *
 	 * @since 1.00
 	 *
-	 * @param	array	$references	current attachment reference information.
-	 * @param	integer	$post_id	attachment ID.
-	 * @param	integer	$parent_id	attachment's parent ID (or zero).
-	 *
-	 * @return	array	updated $references.
+	 * @param	array	$references	Current attachment reference information.
+	 * @param	integer	$post_id	Attachment ID.
+	 * @param	integer	$parent_id	Attachment's parent ID (or zero).
 	 */
 	public static function mla_fetch_attachment_references( $references, $post_id, $parent_id ) {
 		//error_log( 'MLAListTableHooksExample::mla_fetch_attachment_references $references = ' . var_export( $references, true ), 0 );
 		//error_log( 'MLAListTableHooksExample::mla_fetch_attachment_references $post_id = ' . var_export( $post_id, true ), 0 );
 		//error_log( 'MLAListTableHooksExample::mla_fetch_attachment_references $parent_id = ' . var_export( $parent_id, true ), 0 );
-		
+
 		/*
 		 * $references contains:
 		 *
@@ -340,13 +370,13 @@ class MLAListTableHooksExample {
 	 *
 	 * @param	array	$updates	( 'new_data' => array, 'tax_input' => array, 'tax_actions' => array ).
 	 * @param	integer	$post_id	ID of the item being updated.
-	 * @param	array	$post_data	current item content.
+	 * @param	array	$post_data	Current item content.
 	 */
 	public static function mla_update_single_item( $updates, $post_id, $post_data ) {
 		//error_log( 'MLAListTableHooksExample::mla_update_single_item $updates = ' . var_export( $updates, true ), 0 );
 		//error_log( 'MLAListTableHooksExample::mla_update_single_item $post_id = ' . var_export( $post_id, true ), 0 );
 		//error_log( 'MLAListTableHooksExample::mla_update_single_item $post_data = ' . var_export( $post_data, true ), 0 );
-		
+
 		/*
 		 * You can modify the content of any $updates element ot remove it to prevent updates
 		 */
@@ -362,7 +392,7 @@ class MLAListTableHooksExample {
 	 * @since 1.06
 	 *
 	 * @param	integer	$post_id ID of the item that was updated.
-	 * @param	integer	$result	zero if the update failed else ID of the item that was updated.
+	 * @param	integer	$result	Zero if the update failed else ID of the item that was updated.
 	 */
 	public static function mla_updated_single_item( $post_id, $result ) {
 		//error_log( 'MLAListTableHooksExample::mla_updated_single_item $post_id = ' . var_export( $post_id, true ), 0 );
@@ -378,9 +408,9 @@ class MLAListTableHooksExample {
 	 *
 	 * @since 1.03
 	 *
-	 * @param	boolean	$process_action	true, to let MLA process the requested action.
-	 * @param	string	$mla_admin_action	the requested action.
-	 * @param	integer	$mla_item_ID		zero (0), or the affected attachment.
+	 * @param	boolean	$process_action		true, to let MLA process the requested action.
+	 * @param	string	$mla_admin_action	The requested action.
+	 * @param	integer	$mla_item_ID		Zero (0), or the affected attachment.
 	 */
 	public static function mla_list_table_admin_action( $process_action, $mla_admin_action, $mla_item_ID ) {
 		//error_log( 'MLAListTableHooksExample::mla_list_table_admin_action $mla_admin_action = ' . var_export( $mla_admin_action, true ), 0 );
@@ -396,13 +426,13 @@ class MLAListTableHooksExample {
 	 *
 	 * @since 1.04
 	 *
-	 * @param	array	$template_array NULL, to indicate no replacement template.
-	 * @param	string	$file_name the complete name of the default template file.
-	 * @param	string	$file_suffix the $screen->id or hook suffix part of the  template file name.
+	 * @param	NULL	$template_array NULL, indicating no replacement template.
+	 * @param	string	$file_name The complete name of the default template file.
+	 * @param	string	$file_suffix The $screen->id or hook suffix part of the  template file name.
 	 */
 	public static function mla_list_table_help_template( $template_array, $file_name, $file_suffix ) {
 		//error_log( "MLAListTableHooksExample::mla_list_table_custom_admin_action( {$file_name}, {$file_suffix} )", 0 );
-		
+
 		// To augment the default template, first load the MLA standard value
 		// $template_array = MLAData::mla_load_template( $file_name );
 
@@ -418,8 +448,8 @@ class MLAListTableHooksExample {
 	 *
 	 * @since 1.03
 	 *
-	 * @param	string	$mla_admin_action	the requested action.
-	 * @param	integer	$mla_item_ID		zero (0), or the affected attachment.
+	 * @param	string	$mla_admin_action	The requested action.
+	 * @param	integer	$mla_item_ID		Zero (0), or the affected attachment.
 	 */
 	public static function mla_list_table_custom_admin_action( $mla_admin_action, $mla_item_ID ) {
 		//error_log( 'MLAListTableHooksExample::mla_list_table_custom_admin_action $mla_admin_action = ' . var_export( $mla_admin_action, true ), 0 );
@@ -434,16 +464,17 @@ class MLAListTableHooksExample {
 	 *
 	 * @since 1.00
 	 *
-	 * @param	array	$item_content	NULL, to indicate no handler.
-	 * @param	integer	$post_id		the affected attachment.
-	 *
-	 * @return	object	updated $item_content. NULL if no handler, otherwise
-	 *					( 'message' => error or status message(s), 'body' => '',
-	 *					  'prevent_default' => true to bypass the MLA handler )
+	 * @param	NULL	$item_content	NULL, indicating no handler.
+	 * @param	integer	$post_id		The affected attachment.
 	 */
 	public static function mla_list_table_inline_action( $item_content, $post_id ) {
-		//error_log( 'MLAListTableHooksExample::mla_list_table_inline_action $item_content = ' . var_export( $item_content, true ), 0 );
 		//error_log( 'MLAListTableHooksExample::mla_list_table_inline_action $post_id = ' . var_export( $post_id, true ), 0 );
+
+		/*
+		 * Return NULL if not handled here, otherwise
+		 *	array( 'message' => error or status message(s), 'body' => '',
+		 *	'prevent_default' => true to bypass the MLA handler )
+		 */
 		return $item_content;
 	} // mla_list_table_inline_action
 
@@ -455,11 +486,9 @@ class MLAListTableHooksExample {
 	 *
 	 * @since 1.02
 	 *
-	 * @param	array	$request		bulk action request parameters, including ['mla_bulk_action_do_cleanup'].
-	 * @param	string	$bulk_action	the requested action.
+	 * @param	array	$request		Bulk action request parameters, including ['mla_bulk_action_do_cleanup'].
+	 * @param	string	$bulk_action	The requested action.
 	 * @param	array	$custom_field_map	[ slug => field_name ]
-	 *
-	 * @return	array	updated bulk action request parameters
 	 */
 	public static function mla_list_table_bulk_action_initial_request( $request, $bulk_action, $custom_field_map ) {
 		//error_log( 'MLAListTableHooksExample::mla_list_table_bulk_action_initial_request $request = ' . var_export( $request, true ), 0 );
@@ -481,16 +510,17 @@ class MLAListTableHooksExample {
 	 *
 	 * @since 1.01
 	 *
-	 * @param	array	$item_content	NULL, to indicate no handler.
-	 * @param	string	$bulk_action	the requested action.
-	 *
-	 * @return	object	updated $item_content. NULL if no handler, otherwise
-	 *					( 'message' => error or status message(s), 'body' => '',
-	 *					  'prevent_default' => true to bypass the MLA handler )
+	 * @param	NULL	$item_content	NULL, indicating no handler.
+	 * @param	string	$bulk_action	The requested action.
 	 */
 	public static function mla_list_table_begin_bulk_action( $item_content, $bulk_action ) {
-		//error_log( 'MLAListTableHooksExample::mla_list_table_begin_bulk_action $item_content = ' . var_export( $item_content, true ), 0 );
 		//error_log( 'MLAListTableHooksExample::mla_list_table_begin_bulk_action $bulk_action = ' . var_export( $bulk_action, true ), 0 );
+
+		/*
+		 * Return NULL if not handled here, otherwise
+		 *	array( 'message' => error or status message(s), 'body' => '',
+		 *	'prevent_default' => true to bypass the MLA handler )
+		 */
 		return $item_content;
 	} // mla_list_table_begin_bulk_action
 
@@ -502,14 +532,10 @@ class MLAListTableHooksExample {
 	 *
 	 * @since 1.02
 	 *
-	 * @param	array	$request		bulk action request parameters, including ['mla_bulk_action_do_cleanup'].
-	 * @param	string	$bulk_action	the requested action.
-	 * @param	integer	$post_id		the affected attachment.
+	 * @param	array	$request		Bulk action request parameters, including ['mla_bulk_action_do_cleanup'].
+	 * @param	string	$bulk_action	The requested action.
+	 * @param	integer	$post_id		The affected attachment.
 	 * @param	array	$custom_field_map	[ slug => field_name ]
-	 *
-	 * @return	object	updated $item_content. NULL if no handler, otherwise
-	 *					( 'message' => error or status message(s), 'body' => '',
-	 *					  'prevent_default' => true to bypass the MLA handler )
 	 */
 	public static function mla_list_table_bulk_action_item_request( $request, $bulk_action, $post_id, $custom_field_map ) {
 		//error_log( 'MLAListTableHooksExample::mla_list_table_bulk_action_item_request $request = ' . var_export( $request, true ), 0 );
@@ -528,18 +554,19 @@ class MLAListTableHooksExample {
 	 *
 	 * @since 1.00
 	 *
-	 * @param	array	$item_content	NULL, to indicate no handler.
-	 * @param	string	$bulk_action	the requested action.
-	 * @param	integer	$post_id		the affected attachment.
-	 *
-	 * @return	object	updated $item_content. NULL if no handler, otherwise
-	 *					( 'message' => error or status message(s), 'body' => '',
-	 *					  'prevent_default' => true to bypass the MLA handler )
+	 * @param	NULL	$item_content	NULL, indicating no handler.
+	 * @param	string	$bulk_action	The requested action.
+	 * @param	integer	$post_id		The affected attachment.
 	 */
 	public static function mla_list_table_bulk_action( $item_content, $bulk_action, $post_id ) {
-		//error_log( 'MLAListTableHooksExample::mla_list_table_bulk_action $item_content = ' . var_export( $item_content, true ), 0 );
 		//error_log( 'MLAListTableHooksExample::mla_list_table_bulk_action $bulk_action = ' . var_export( $bulk_action, true ), 0 );
 		//error_log( 'MLAListTableHooksExample::mla_list_table_bulk_action $post_id = ' . var_export( $post_id, true ), 0 );
+
+		/*
+		 * Return NULL if not handled here, otherwise
+		 *	array( 'message' => error or status message(s), 'body' => '',
+		 *	'prevent_default' => true to bypass the MLA handler )
+		 */
 		return $item_content;
 	} // mla_list_table_bulk_action
 
@@ -552,18 +579,19 @@ class MLAListTableHooksExample {
 	 *
 	 * @since 1.00
 	 *
-	 * @param	array	$item_content	NULL, to indicate no handler.
-	 * @param	string	$bulk_action	the requested action.
-	 * @param	integer	$post_id		the affected attachment.
-	 *
-	 * @return	object	updated $item_content. NULL if no handler, otherwise
-	 *					( 'message' => error or status message(s), 'body' => '',
-	 *					  'prevent_default' => true to bypass the MLA handler )
+	 * @param	NULL	$item_content	NULL, indicating no handler.
+	 * @param	string	$bulk_action	The requested action.
+	 * @param	integer	$post_id		The affected attachment.
 	 */
 	public static function mla_list_table_custom_bulk_action( $item_content, $bulk_action, $post_id ) {
-		//error_log( 'MLAListTableHooksExample::mla_list_table_custom_bulk_action $item_content = ' . var_export( $item_content, true ), 0 );
 		//error_log( 'MLAListTableHooksExample::mla_list_table_custom_bulk_action $bulk_action = ' . var_export( $bulk_action, true ), 0 );
 		//error_log( 'MLAListTableHooksExample::mla_list_table_custom_bulk_action $post_id = ' . var_export( $post_id, true ), 0 );
+
+		/*
+		 * Return NULL if not handled here, otherwise
+		 *	array( 'message' => error or status message(s), 'body' => '',
+		 *	'prevent_default' => true to bypass the MLA handler )
+		 */
 		return $item_content;
 	} // mla_list_table_custom_bulk_action
 
@@ -576,16 +604,17 @@ class MLAListTableHooksExample {
 	 *
 	 * @since 1.01
 	 *
-	 * @param	array	$item_content	NULL, to indicate no handler.
-	 * @param	string	$bulk_action	the requested action.
-	 *
-	 * @return	object	updated $item_content. NULL if no handler, otherwise
-	 *					( 'message' => error or status message(s), 
-	 *					  'body' => '' or page content in place of the submenu table )
+	 * @param	NULL	$item_content	NULL, indicating no handler.
+	 * @param	string	$bulk_action	The requested action.
 	 */
 	public static function mla_list_table_end_bulk_action( $item_content, $bulk_action ) {
-		//error_log( 'MLAListTableHooksExample::mla_list_table_end_bulk_action $item_content = ' . var_export( $item_content, true ), 0 );
 		//error_log( 'MLAListTableHooksExample::mla_list_table_end_bulk_action $bulk_action = ' . var_export( $bulk_action, true ), 0 );
+
+		/*
+		 * Return NULL if not handled here, otherwise
+		 *	array( 'message' => error or status message(s), 'body' => '',
+		 *	'prevent_default' => true to bypass the MLA handler )
+		 */
 		return $item_content;
 	} // mla_list_table_end_bulk_action
 
@@ -597,19 +626,19 @@ class MLAListTableHooksExample {
 	 *
 	 * @since 1.00
 	 *
-	 * @param	array	$page_content 		NULL, to indicate no handler.
-	 * @param	string	$mla_admin_action	the requested action.
-	 * @param	integer	$mla_item_ID		zero (0), or the affected attachment.
-	 *
-	 * @return	object	updated $page_content. NULL if no handler, otherwise
-	 *					( 'message' => error or status message(s),
-	 *					  'body' => '' or page content in place of the submenu table,
-	 *					  'prevent_default' => true to bypass the MLA handler )
+	 * @param	NULL	$page_content 		NULL, indicating no handler.
+	 * @param	string	$mla_admin_action	The requested action.
+	 * @param	integer	$mla_item_ID		Zero (0), or the affected attachment.
 	 */
 	public static function mla_list_table_single_action( $page_content, $mla_admin_action, $mla_item_ID ) {
-		//error_log( 'MLAListTableHooksExample::mla_list_table_single_action $page_content = ' . var_export( $page_content, true ), 0 );
 		//error_log( 'MLAListTableHooksExample::mla_list_table_single_action $mla_admin_action = ' . var_export( $mla_admin_action, true ), 0 );
 		//error_log( 'MLAListTableHooksExample::mla_list_table_single_action $mla_item_ID = ' . var_export( $mla_item_ID, true ), 0 );
+
+		/*
+		 * Return NULL if not handled here, otherwise
+		 *	array( 'message' => error or status message(s), 'body' => '',
+		 *	'prevent_default' => true to bypass the MLA handler )
+		 */
 		return $page_content;
 	} // mla_list_table_single_action
 
@@ -621,18 +650,19 @@ class MLAListTableHooksExample {
 	 *
 	 * @since 1.00
 	 *
-	 * @param	array	$page_content 		NULL, to indicate no handler.
-	 * @param	string	$mla_admin_action	the requested action.
-	 * @param	integer	$mla_item_ID		zero (0), or the affected attachment.
-	 *
-	 * @return	object	updated $page_content. NULL if no handler, otherwise
-	 *					( 'message' => error or status message(s),
-	 *					  'body' => '' or page content in place of the submenu table )
+	 * @param	NULL	$page_content 		NULL, indicating no handler.
+	 * @param	string	$mla_admin_action	The requested action.
+	 * @param	integer	$mla_item_ID		Zero (0), or the affected attachment.
 	 */
 	public static function mla_list_table_custom_single_action( $page_content, $mla_admin_action, $mla_item_ID ) {
-		//error_log( 'MLAListTableHooksExample::mla_list_table_custom_single_action $page_content = ' . var_export( $page_content, true ), 0 );
 		//error_log( 'MLAListTableHooksExample::mla_list_table_custom_single_action $mla_admin_action = ' . var_export( $mla_admin_action, true ), 0 );
 		//error_log( 'MLAListTableHooksExample::mla_list_table_custom_single_action $mla_item_ID = ' . var_export( $mla_item_ID, true ), 0 );
+
+		/*
+		 * Return NULL if not handled here, otherwise
+		 *	array( 'message' => error or status message(s), 'body' => '',
+		 *	'prevent_default' => true to bypass the MLA handler )
+		 */
 		return $page_content;
 	} // mla_list_table_custom_single_action
 
@@ -642,8 +672,6 @@ class MLAListTableHooksExample {
 	 * This action gives you an opportunity to clear any custom submenu "Filter-by" parameters.
 	 *
 	 * @since 1.00
-	 *
-	 * @return	void
 	 */
 	public static function mla_list_table_clear_filter_by() {
 		//error_log( 'MLAListTableHooksExample::mla_list_table_clear_filter_by $_REQUEST = ' . var_export( $_REQUEST, true ), 0 );
@@ -656,12 +684,13 @@ class MLAListTableHooksExample {
 	 *
 	 * @since 1.00
 	 *
-	 * @param	object	$mla_list_table NULL, to indicate no extension/use the base class.
-	 *
-	 * @return	object	updated mla_list_table object.
+	 * @param	NULL	$mla_list_table NULL, indicating no extension/use the base class.
 	 */
 	public static function mla_list_table_new_instance( $mla_list_table ) {
-		//error_log( 'MLAListTableHooksExample::mla_list_table_new_instance $mla_list_table = ' . var_export( $mla_list_table, true ), 0 );
+		/*
+		 * Return NULL to use the base class, otherwise create an instance of
+		 * the extended class and return the class object.
+		 */
 		return $mla_list_table;
 	} // mla_list_table_new_instance
 
@@ -673,9 +702,7 @@ class MLAListTableHooksExample {
 	 *
 	 * @since 1.00
 	 *
-	 * @param	array	$item_values parameter_name => parameter_value pairs
-	 *
-	 * @return	array	updated substitution parameter name => value pairs
+	 * @param	array	$item_values [ parameter_name => parameter_value ] pairs
 	 */
 	public static function mla_list_table_inline_values( $item_values ) {
 		//error_log( 'MLAListTableHooksExample::mla_list_table_inline_values $item_values = ' . var_export( $item_values, true ), 0 );
@@ -690,9 +717,7 @@ class MLAListTableHooksExample {
 	 *
 	 * @since 1.00
 	 *
-	 * @param	string	template used to generate the HTML markup
-	 *
-	 * @return	string	updated template
+	 * @param	string	$item_template Template used to generate the HTML markup
 	 */
 	public static function mla_list_table_inline_template( $item_template ) {
 		//error_log( 'MLAListTableHooksExample::mla_list_table_inline_template $item_template = ' . var_export( $item_template, true ), 0 );
@@ -707,11 +732,9 @@ class MLAListTableHooksExample {
 	 * This filter gives you a final chance to modify and extend the HTML
 	 * markup used for the Quick and Bulk Edit forms.
 	 *
-	 * @param	string	HTML markup returned by the template parser
-	 * @param	string	template used to generate the HTML markup
-	 * @param	array	parameter_name => parameter_value pairs
-	 *
-	 * @return	array	updated HTML markup for the Quick and Bulk Edit forms
+	 * @param	string	$html_markup HTML markup returned by the template parser
+	 * @param	string	$item_template Template used to generate the HTML markup
+	 * @param	array	$item_values [ parameter_name => parameter_value ] pairs
 	 */
 	public static function mla_list_table_inline_parse( $html_markup, $item_template, $item_values ) {
 		//error_log( 'MLAListTableHooksExample::mla_list_table_inline_parse $html_markup = ' . var_export( $html_markup, true ), 0 );
@@ -729,8 +752,6 @@ class MLAListTableHooksExample {
 	 *
 	 * @param	array	$columns An array of columns.
 	 *					format: column_slug => Column Label
-	 *
-	 * @return	array	updated array of columns.
 	 */
 	public static function mla_list_table_get_columns( $columns ) {
 		//error_log( 'MLAListTableHooksExample::mla_list_table_get_columns $columns = ' . var_export( $columns, true ), 0 );
@@ -746,8 +767,6 @@ class MLAListTableHooksExample {
 	 *
 	 * @param	array	$hidden_columns An array of columns.
 	 *					format: index => column_slug
-	 *
-	 * @return	array	updated array of columns.
 	 */
 	public static function mla_list_table_get_hidden_columns( $hidden_columns ) {
 		//error_log( 'MLAListTableHooksExample::mla_list_table_get_hidden_columns $hidden_columns = ' . var_export( $hidden_columns, true ), 0 );
@@ -767,8 +786,6 @@ class MLAListTableHooksExample {
 	 *										or 'column_slug' => array( 'orderby', true )
 	 *
 	 * The second format will make the initial sorting order be descending.
-	 *
-	 * @return	array	updated array of columns.
 	 */
 	public static function mla_list_table_get_sortable_columns( $sortable_columns ) {
 		//error_log( 'MLAListTableHooksExample::mla_list_table_get_sortable_columns $sortable_columns = ' . var_export( $sortable_columns, true ), 0 );
@@ -785,8 +802,6 @@ class MLAListTableHooksExample {
 	 *
 	 * @param	array	$actions	An array of bulk actions.
 	 *								Format: 'slug' => 'Label'
-	 *
-	 * @return	array	updated array of actions.
 	 */
 	public static function mla_list_table_get_bulk_actions( $actions ) {
 		//error_log( 'MLAListTableHooksExample::mla_list_table_get_bulk_actions $actions = ' . var_export( $actions, true ), 0 );
@@ -800,13 +815,17 @@ class MLAListTableHooksExample {
 	 *
 	 * @since 1.00
 	 *
-	 * @param	string	NULL, indicating no default content
-	 * @param	array	A singular item (one full row's worth of data)
-	 * @param	array	The name/slug of the column to be processed
-	 * @return	string	Text or HTML to be placed inside the column
+	 * @param	NULL	$content NULL, indicating no default content
+	 * @param	array	$item A singular item (one full row's worth of data)
+	 * @param	array	$column_name The name/slug of the column to be processed
 	 */
 	public static function mla_list_table_column_default( $content, $item, $column_name ) {
 		//error_log( "MLAListTableHooksExample::mla_list_table_column_default ({$column_name}) \$item = " . var_export( $item, true ), 0 );
+
+		/*
+		 * Return NULL if the column is not handled, otherwise return a string
+		 * with the column content.
+		 */
 		return $content;
 	} // mla_list_table_column_default
 
@@ -820,8 +839,6 @@ class MLAListTableHooksExample {
 	 *
 	 * @param	array	$submenu_arguments	Current view, pagination and sort parameters.
 	 * @param	object	$include_filters	True to include "filter-by" parameters, e.g., year/month dropdown.
-	 *
-	 * @return	array	updated submenu_arguments.
 	 */
 	public static function mla_list_table_submenu_arguments( $submenu_arguments, $include_filters ) {
 		//error_log( 'MLAListTableHooksExample::mla_list_table_submenu_arguments $submenu_arguments = ' . var_export( $submenu_arguments, true ), 0 );
@@ -839,8 +856,6 @@ class MLAListTableHooksExample {
 	 *
 	 * @param	array	$pagination		Contains 'per_page', 'current_page'.
 	 * @param	object	$mla_list_table	The MLA_List_Table object, passed by reference.
-	 *
-	 * @return	array	updated pagination array.
 	 */
 	public static function mla_list_table_prepare_items_pagination( $pagination, $mla_list_table ) {
 		//error_log( 'MLAListTableHooksExample::mla_list_table_prepare_items_pagination $pagination = ' . var_export( $pagination, true ), 0 );
@@ -856,14 +871,16 @@ class MLAListTableHooksExample {
 	 *
 	 * @since 1.00
 	 *
-	 * @param	integer	$total_items	NULL, indicating no substitution.
+	 * @param	NULL	$total_items	NULL, indicating no substitution.
 	 * @param	object	$mla_list_table	The MLA_List_Table object, passed by reference.
-	 *
-	 * @return	integer	updated total_items.
 	 */
 	public static function mla_list_table_prepare_items_total_items( $total_items, $mla_list_table ) {
-		//error_log( 'MLAListTableHooksExample::mla_list_table_prepare_items_total_items $total_items = ' . var_export( $total_items, true ), 0 );
 		//error_log( 'MLAListTableHooksExample::mla_list_table_prepare_items_total_items $mla_list_table->get_pagenum() = ' . var_export( $mla_list_table->get_pagenum(), true ), 0 );
+
+		/*
+		 * Return NULL to let MLA calculate the total, otherwise return an integer
+		 * with the updated total.
+		 */
 		return $total_items;
 	} // mla_list_table_prepare_items_total_items
 
@@ -875,14 +892,16 @@ class MLAListTableHooksExample {
 	 *
 	 * @since 1.00
 	 *
-	 * @param	array	$items			NULL, indicating no substitution.
+	 * @param	NULL	$items			NULL, indicating no substitution.
 	 * @param	object	$mla_list_table	The MLA_List_Table object, passed by reference.
-	 *
-	 * @return	object	NULL or replacement $items array
 	 */
 	public static function mla_list_table_prepare_items_the_items( $items, $mla_list_table ) {
-		//error_log( 'MLAListTableHooksExample::mla_list_table_prepare_items_the_items $items = ' . var_export( $items, true ), 0 );
 		//error_log( 'MLAListTableHooksExample::mla_list_table_prepare_items_the_items $mla_list_table->get_pagenum() = ' . var_export( $mla_list_table->get_pagenum(), true ), 0 );
+
+		/*
+		 * Return NULL to use the default $items array, otherwise return an array
+		 * with the updated items array.
+		 */
 		return $items;
 	} // mla_list_table_prepare_items_the_items
 
@@ -894,9 +913,7 @@ class MLAListTableHooksExample {
 	 *
 	 * @since 1.03
 	 *
-	 * @param	array	WP_Query request prepared by "Prepare List Table Query"
-	 *
-	 * @return	array	updated WP_Query request
+	 * @param	array	$request WP_Query request prepared by "Prepare List Table Query"
 	 */
 	public static function mla_list_table_query_final_terms( $request ) {
 		//error_log( 'MLAListTableHooksExample::mla_list_table_query_final_terms $request = ' . var_export( $request, true ), 0 );
@@ -912,8 +929,8 @@ class MLAListTableHooksExample {
 	 *
 	 * @since 1.03
 	 *
-	 * @param	object	NULL, indicating no results substitution
-	 * @param	array	WP_Query request prepared by "Prepare List Table Query"
+	 * @param	object	$wp_query_object NULL, indicating no results substitution
+	 * @param	array	$request WP_Query request prepared by "Prepare List Table Query"
 	 */
 	public static function mla_list_table_query_custom_items( $wp_query_object, $request ) {
 		//error_log( 'MLAListTableHooksExample::mla_media_modal_query_custom_items $request = ' . var_export( $request, true ), 0 );
@@ -934,8 +951,6 @@ class MLAListTableHooksExample {
 	 * @since 1.00
 	 *
 	 * @param	object	$mla_list_table	The MLA_List_Table object, passed by reference.
-	 *
-	 * @return	void	actions do not return anything.
 	 */
 	public static function mla_list_table_prepare_items( $mla_list_table ) {
 		//error_log( 'MLAListTableHooksExample::mla_list_table_prepare_items $mla_list_table->get_pagenum() = ' . var_export( $mla_list_table->get_pagenum(), true ), 0 );
@@ -956,8 +971,6 @@ class MLAListTableHooksExample {
 	 * @param	array	$actions	The list of item "Rollover" actions.
 	 * @param	object	$item		The current Media Library item.
 	 * @param	string	$column		The List Table column slug.
-	 *
-	 * @return	array	updated		"Rollover" actions.
 	 */
 	public static function mla_list_table_build_rollover_actions( $actions, $item, $column ) {
 		//error_log( "MLAListTableHooksExample::mla_list_table_build_rollover_actions ({$column}) \$actions = " . var_export( $actions, true ), 0 );
@@ -974,8 +987,6 @@ class MLAListTableHooksExample {
 	 * @since 1.00
 	 *
 	 * @param	array	$fields	The field names for inline data.
-	 *
-	 * @return	string	updated fields for inline data.
 	 */
 	public static function mla_list_table_inline_fields( $fields ) {
 		//error_log( 'MLAListTableHooksExample::mla_list_table_inline_fields $fields = ' . var_export( $fields, true ), 0 );
@@ -992,8 +1003,6 @@ class MLAListTableHooksExample {
 	 *
 	 * @param	string	$inline_data	The HTML markup for inline data.
 	 * @param	object	$item			The current Media Library item.
-	 *
-	 * @return	string	updated HTML markup for inline data.
 	 */
 	public static function mla_list_table_build_inline_data( $inline_data, $item ) {
 		//error_log( 'MLAListTableHooksExample::mla_list_table_build_inline_data $inline_data = ' . var_export( $inline_data, true ), 0 );
@@ -1010,8 +1019,6 @@ class MLAListTableHooksExample {
 	 * @since 1.00
 	 *
 	 * @param	array	$views An array of available list table views.
-	 *
-	 * @return	array	updated list table views.
 	 */
 	public static function views_upload( $views ) {
 		//error_log( 'MLAListTableHooksExample::views_upload $views = ' . var_export( $views, true ), 0 );

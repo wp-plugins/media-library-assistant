@@ -180,9 +180,12 @@ All of the MLA source code has been annotated with "DocBlocks", a special type o
 * New: The Portable Object (".po") files are now included in the `/media-library-assistant/languages` directory, facilitating the translation update process.
 * New: Harm Kramer has contributed **updates and additions to the Dutch translation**; thanks Harm!
 * New: Comments have been added to each "/tpls/help-for-*.tpl" template showing where in MLA the template is used. This should help with the translation of these templates to other languages.
+* New: Two new hooks, `mla_taxonomy_get_columns` and `mla_taxonomy_column`, have been added to allow control of the Media/"Taxonomy Edit" submenu columns such as the "Attachments" column added by MLA.
 * New: Two new hooks, `mla_update_single_item` and `mla_update_single_item`, have been added to increase control over Media Library item updates, e.g., for taxonomy term updates.
 * New: The "mla_media_modal_initial_filters" and "mla_media_modal_settings" filters have been updated to allow control over the "uploaded" MIME type dropdown, e.g., on the "Create Gallery" and "Set Featured Image" views of the Media Manager Modal (popup) Window.
+* New: The `/examples/random-feature.php.txt` example plugin has been udpdated to allow for separate "post" and "item" taxonomies.
 * Fix: The Edit Taxonomy "Attachments" column is displayed correctly when othe plugins, e.g., Polylang, add columns to the submenu table.
+* Fix: When WPML or Polylang are active, flat taxonomy "auto-completion" suggestions for the Media/Assistant Quick Edit area and the Media/Edit Media screen are now language-specific.
 * Fix: When WPML or Polylang are active, **Term Assignment and Synchronization defects** when two or more translations have the same term name are corrected.
 * Fix: For item updates thet only affect postmeta and/or taxonomy values, `wp_update_post` is no longer called.
 * Fix: Commas are now accepted within quoted arguments of the "Field-level option/format values". Commas outside of quoted arguments of the `timestamp` and `date` format values no longer generate PHP Warning messages.
@@ -193,52 +196,9 @@ All of the MLA source code has been annotated with "DocBlocks", a special type o
 * Fix: The Settings/Media Library Assistant "Donate" button is changed from an image to text, facilitating translation ro other languages.
 * Fix: An array initialization defect that caused a PHP warning message in PHP Version 7 has been corrected.
 
-= 2.14 =
-* New: WordPress 4.3+ "primary column" support for the Settings/Media Library Assistant Views and Uploads tabs.
-* New: For the Settings/Media Library Assistant **Debug tab**, you can **specify a separate file** in your `/wp-content/` directory to receive MLA-specific logging/debug messages. Several useful debug settings are now displayed in the tab as well.
-* New: Harm Kramer has contributed **updates and additions to the Dutch translation**.
-* Fix: WordPress v4.3 CSS style updates for the Quick Edit and Bulk Edit areas
-* Fix: For WordPress v4.2.x and earlier the Media/Assistant submenu table "icon" column width is adjusted for Icon Size values other than the default.
-* Fix: HTML tags are preserved in IPTC/EXIF values for mapping rules and data sources. This corrects a defect introduced in MLA v2.13 which removed the tags.
-* Fix: A few minor HTML markup issues on the Settings/Media Library Assistant General tab have been corrected.
-* Fix: For the Media/Assistant submenu table, proportional thumbnails have been restored to the "icon" column/element.
-
-= 2.13 =
-* New: I am delighted to announce **Dutch and Swedish translations** of the plugin's main screens. Many thanks to Harm Kramer and John Larsen for their contributions!
-* New: For **WordPress 4.3+**, the Media/Assistant submenu table has been updated to support the new **primary column** features.
-* New: For the Media/Assistant submenu table, the **"Thumbnail" bulk action** lets you easily **generate thumbnail images** for non-image items. These can be used as the Featured Image for `mla_viewer` processing. A settings option lets you disable this feature if desired.
-* New: For the Media/Assistant submenu table, **wildcard searches are now allowed in the Search Media box** using an asterisk ("*") as the wildcard placeholder. Pull down the Help menu on the screen and select the Search Media section for more information.
-* New: For the **Terms Search** popup window and `mla_terms_search` shortcode parameter, **wildcard searches are now allowed** using an asterisk ("*") as the wildcard placeholder.
-* New: For IPTC/EXIF custom field mapping rules, **Format, Option and Delete Null Values** options can be specified and are handled like their equivalents in Custom Field mapping rules.
-* New: For field-level substitution parameters, the **id3:** prefix gives you access to all of the metadata present in audio and video files.
-* New: For field-level substitution parameters, the **,unpack** option lets you expand one level of an array and denote lower-level arrays with an (ARRAY) placeholder.
-* New: The IPTC: and EXIF: field-level substitution parameters can now use all of the format/option suffixes, e.g., ",url".
-* New: A "Bulk Edit Area" tab has been added to the Media/Add New/Upload New Media submenu help menu.
-* New: The `/media-library-assistant/examples/mla-custom-field-search-example.php.txt` example plugin has been extended to handle queries made in the Media Manager Modal (popup) Window "Search" box.
-* New: If Imagick and/or Ghostcript support is not present, an explicit warning message is displayed in the "Enable thumbnail substitution" portion of the Settings/Media Library Assistant MLA Gallery tab.
-* New: A new filter for the "Media/Assistant Submenu Hooks" allows you to modify the content of the dropdown Help menu. The `/media-library-assistant/examples/mla-list-table-hooks-example.php.txt` example plugin has been updated with the new filter.
-* New: A new `/media-library-assistant/examples/mla-custom-file-size-example.php.txt` example plugin has been added to demonstrate a simple example of changing the content of the "Item:" template part.
-* New: **Step-by-step instructions for creating custom style and markup templates** have been added to the "A Table-based Style and Markup Template Example" section of the Settings/Media Library Assistant Documentation tab.
-* New: On the Settings/Media LIbrary Assistant Debug tab, the error log file name is displayed just above the text area for log content, and better error messages are displayed if the log cannot be reset.
-* New: When 'MLA_DEBUG_LEVEL' is set to 3 in the wp-config.php file, debug information for the Bulk Edit Ajax handler is written to the error log. This includes WPML- and Polylang- specific information.
-* Fix: Wildcard searches containing an underscore character ("_") are now handled correctly. The `mla-custom-field-search-example.php.txt` example plugin has been updated as well.
-* Fix: Media Manager Modal (popup) Window enhancements work more reliably with plugins such as "SiteOrigin Page Builder Widgets".
-* Fix: When Polylang or WPML is active,  **Term Assignment has been fixed**, accomodating missing translation information for media items and terms and resolving some term_id/term_taxonomy_id issues. 
-* Fix: When Polylang is active, "Show all languages" is selected after a Bulk Translate action so results from multiple languages can be displayed.
-* Fix: When Polylang is active, the Media/Assistant submenu table "Trash" view no longer shows the Translations column.
-* Fix: When Polylang is active, Quick and Bulk Edit taxonomy checklists are language-specific when "Refresh" is clicked after a Bulk Edit action.
-* Fix: During a Bulk Edit action, empty taxonomy "Add" actions no longer call wp_set_post_terms().
-* Fix: The `/media-library-assistant/examples/mla-hooks-example.php.txt` example plugin has been updated to handle the new `captiontag_content` template substitution parameter.
-* Fix: The default `_wpnonce` query argument is no longer used, eliminating a conflict between MLA and the "A5 Custom Login Page" plugin. 
-* Fix: For the Settings/Media Library Assistant Views and Uploads, the Quick Edit action has been fixed.
-* Fix: For the Media/Assistant submenu table and the Media Manager Modal (popup) Window, default table sorting on a custom field no longer causes WordPress Database Errors.
-* Fix: For the Media/Assistant submenu table, the "View" rollover action is no longer available in the "Trash" view (it never worked).
-* Fix: For the Media/Assistant Quick Edit and Bulk Edit actions, the Custom Field mapping rule "Delete Null Values" option is now handled correctly. When this option is specified, empty values will not be stored in the database.
-* Fix: The "single" option now returns just the first value of a custom field if it has multiple values.
-* Fix: The Terms Search button, terms dropdown filter and "terms" search checkbox are no longer displayed when no taxonomies selected for MLA support.
-* Fix: PHP Warning messages are no longer produced when the Bulk Edit area is used with no taxonomies selected for MLA support.
-
-= 2.10 - 2.12 =
+= 2.10 - 2.14 =
+* 2.14 - Final WordPress 4.3 updates. New Debug tab features. Updated Dutch translation. Four other fixes.
+* 2.13 - WordPress 4.3 updates. PDF Thumbnail image generator. Wildcard keyword/term searching. Several WPML and Polylang fixes. Dutch and Swedish translations! Twelve other enhancements, twelve other fixes.
 * 2.12 - Fixes a defect in [mla_gallery] handling of the mla_caption parameter. Adds mla_debug=log option.
 * 2.11 - Enhanced WPML and new Polylang support. "Attached" Media/Assistant table view. Eight other enhancements, fifteen fixes.
 *2.10 - mla_viewer is back, with a Featured Image option! XMP support for image meta data. Eight other enhancements, twelve fixes.

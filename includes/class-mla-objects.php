@@ -128,7 +128,7 @@ class MLAObjects {
 		}
 
 		if ( 'attachment' == $post_type ) {
-			$filter_columns = apply_filters( 'mla_taxonomy_get_columns_filter', NULL, $columns, $taxonomy );
+			$filter_columns = apply_filters( 'mla_taxonomy_get_columns', NULL, $columns, $taxonomy );
 			if ( ! empty( $filter_columns ) ) {
 				return $filter_columns;
 			}
@@ -159,14 +159,34 @@ class MLAObjects {
 	public static function mla_taxonomy_column_filter( $current_value, $column_name, $term_id ) {
 		static $taxonomy = NULL, $tax_object = NULL, $count_terms = false, $terms = array();
 
+		/*
+		 * Do setup tasks once per page load
+		 */
+		if ( NULL == $taxonomy ) {
+			/*
+			 * Adding or inline-editing a tag is done with AJAX, and there's no current screen object
+			 */
+			if ( defined('DOING_AJAX') && DOING_AJAX ) {
+				$taxonomy = !empty($_POST['taxonomy']) ? $_POST['taxonomy'] : 'post_tag';
+			} else {
+				$screen = get_current_screen();
+				$taxonomy = !empty( $screen->taxonomy ) ? $screen->taxonomy : 'post_tag';
+			}
+		}
+		
+		$filter_content = apply_filters( 'mla_taxonomy_column', NULL, $current_value, $column_name, $term_id, $taxonomy );
+		if ( ! empty( $filter_content ) ) {
+			return $filter_content;
+		}
+			
 		if ( 'attachments' !== $column_name ) {
 			return $current_value;
 		}
 		
 		/*
-		 * Do these setup tasks once per page load
+		 * Do setup tasks once per page load
 		 */
-		if ( NULL == $taxonomy ) {
+		if ( NULL == $tax_object ) {
 			/*
 			 * Adding or inline-editing a tag is done with AJAX, and there's no current screen object
 			 */

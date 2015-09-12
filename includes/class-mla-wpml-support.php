@@ -167,6 +167,37 @@ class MLA_WPML {
 			add_action( 'admin_print_styles', 'MLA_WPML_Table::mla_list_table_add_icl_styles' );
 		}
 
+		if ( ( defined('WP_ADMIN') && WP_ADMIN ) && ( defined('DOING_AJAX') && DOING_AJAX ) ) {
+			global $sitepress;
+			
+			//Look for flat taxonomy autocomplete
+			if ( isset( $_GET['action'] ) && ( 'ajax-tag-search' == $_GET['action'] ) ) {
+				$current_language = $sitepress->get_current_language();
+	
+				// WPML will set the "Preview Language" from preview_id for Quick Edit
+				if ( ( 'all' === $current_language ) && ( ! isset( $_GET['preview_id'] ) ) ) {
+					if ( ! empty( $_SERVER[ 'HTTP_REFERER' ] ) ) {
+						$default_language = $sitepress->get_default_language();
+					
+						// Look for an ID from the Media/Edit Media screen
+						$query_string = parse_url( $_SERVER[ 'HTTP_REFERER' ], PHP_URL_QUERY );
+						$query = array();
+						parse_str( strval( $query_string ), $query );
+
+						if ( isset( $query['post'] ) ) {
+							$language_details = $sitepress->get_element_language_details( absint( $query['post'] ), 'post_attachment' );
+							$default_language = $language_details->language_code;
+							
+						}
+
+						// WPML overides switch_lang() from the HTTP_REFERER
+						$referer = remove_query_arg( 'lang', $_SERVER[ 'HTTP_REFERER' ] );
+						$_SERVER[ 'HTTP_REFERER' ] = add_query_arg( 'lang', $default_language, $referer );
+					} // HTTP_REFERER
+				} // no ID
+			} // ajax-tag-search
+		}
+
 		/*
 		 * Localize $mla_language_option_definitions array
 		 */
@@ -1480,6 +1511,7 @@ class MLA_WPML_Table {
 		add_filter( 'mla_list_table_submenu_arguments', array( $this, 'mla_list_table_submenu_arguments' ), 10, 2 );
 		add_filter( 'mla_list_table_get_columns', array( $this, 'mla_list_table_get_columns' ), 10, 1 );
 		add_filter( 'mla_list_table_column_default', array( $this, 'mla_list_table_column_default' ), 10, 3 );
+		//add_filter( 'mla_list_table_build_inline_data', array( $this, 'mla_list_table_build_inline_data' ), 10, 2 );
 
 		/*
 		 * Defined in /plugins/wpml-media/inc/wpml-media.class.php
@@ -1858,6 +1890,28 @@ class MLA_WPML_Table {
 		return $content;
 	} // mla_list_table_column_default_filter
 
+	/**
+	 * Filter the data for inline (Quick and Bulk) editing
+	 *
+	 * Adds a 'lang' value for the JS Quick Edit function.
+	 *
+	 * @since 2.15
+	 *
+	 * @param	string	$inline_data	The HTML markup for inline data.
+	 * @param	object	$item			The current Media Library item.
+	 *
+	 * @return	string	updated HTML markup for inline data.
+	 */
+	public static function mla_list_table_build_inline_data( $inline_data, $item ) {
+		global $sitepress;
+
+		$language_details = $sitepress->get_element_language_details( $item->ID, 'post_attachment' );
+		if ( isset( $language_details->language_code ) ) {
+			$inline_data .= "\n\t<div class=\"lang\">{$language_details->language_code}</div>";
+		}
+
+		return $inline_data;
+	} // mla_list_table_build_inline_data
 } // Class MLA_WPML_Table
 /*
  * Some actions and filters are added here, when the source file is loaded, because the

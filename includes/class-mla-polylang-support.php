@@ -109,7 +109,7 @@ class MLA_Polylang {
 		/*
 		 * Defined in /media-library-assistant/includes/class-mla-objects.php
 		 */
-		//add_filter( 'mla_taxonomy_get_columns_filter', 'MLA_Polylang::mla_taxonomy_get_columns_filter', 10, 3 );
+		//add_filter( 'mla_taxonomy_get_columns', 'MLA_Polylang::mla_taxonomy_get_columns', 10, 3 );
 
 		/*
 		 * Defined in /media-library-assistant/includes/class-mla-settings.php
@@ -1515,8 +1515,9 @@ class MLA_Polylang {
 	/**
 	 * MLA_List_Table inline edit item values
 	 *
-	 * Builds the Language dropdown and edit translation links
-	 * for the Quick and Bulk Edit forms.
+	 * Builds the Language dropdown and edit translation links for the
+	 * Quick and Bulk Edit forms, adding them to the 'custom_fields'
+	 * and 'bulk_custom_fields' substitution parameters.
 	 *
 	 * @since 2.11
 	 *
@@ -1550,6 +1551,7 @@ class MLA_Polylang {
 			$actions = "<input name=\"inline_translations\" type=\"hidden\" value=\"\">\n";
 			$actions .= "<input name=\"pll_quick_language\" type=\"hidden\" value=\"\">\n";
 			$actions .= "<input name=\"pll_quick_id\" type=\"hidden\" value=\"\">\n";
+			$actions .= "<input name=\"lang\" type=\"hidden\" value=\"\">\n";
 			$actions .= "<label class=\"alignleft\" style=\"clear: both;\">\n<span class=\"title\">Translate</span>\n";
 			$actions .= "<table class=\"pll-media-action-table\">\n";
 			foreach ($polylang->model->get_languages_list() as $language) {
@@ -1905,6 +1907,7 @@ class MLA_Polylang {
 	 * @return	string	updated fields for inline data.
 	 */
 	public static function mla_list_table_inline_fields( $fields ) {
+		$fields[] = 'lang';
 		$fields[] = 'old_lang';
 		$fields[] = 'inline_lang_choice';
 		$fields[] = 'inline_translations';
@@ -1929,22 +1932,24 @@ class MLA_Polylang {
 
 		$item_id = $item->ID;
 		$old_lang = $polylang->model->get_post_language( $item_id );
+		$translations = $polylang->model->get_translations( 'post', $item_id );
+
 		if ( isset( $old_lang->slug ) ) {
 			$old_lang = $old_lang->slug;
+			$translations[ $old_lang ] = $item_id;
 		} else {
 			$old_lang = '';
 		}
 
-		$translations = $polylang->model->get_translations( 'post', $item_id );
-		$translations[ $old_lang ] = $item_id;
 		$translations = json_encode( $translations );
 
+		$inline_data .= "\n\t<div class=\"lang\">{$old_lang}</div>";
 		$inline_data .= "\n\t<div class=\"old_lang\">{$old_lang}</div>";
 		$inline_data .= "\n\t<div class=\"inline_lang_choice\">{$old_lang}</div>";
 		$inline_data .= "\n\t<div class=\"inline_translations\">{$translations}</div>";
 
 		return $inline_data;
-	} // mla_list_table_build_inline_data_filter
+	} // mla_list_table_build_inline_data
 
 	/**
 	 * Not used in this version of the plugin
@@ -1957,7 +1962,7 @@ class MLA_Polylang {
 	 *
 	 * @return	array	NULL or replacement columns array.
 	 */
-	public static function mla_taxonomy_get_columns_filter( $filter_columns, $columns, $taxonomy ) {
+	public static function mla_taxonomy_get_columns( $filter_columns, $columns, $taxonomy ) {
 		return $filter_columns;
 	}
 

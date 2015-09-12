@@ -422,7 +422,7 @@ var jQuery,
 				var terms = $(this).text(),
 					taxname = $(this).attr('id').replace('_' + id, ''),
 					textarea = $('textarea.tax_input_' + taxname, editRow),
-					comma = mla.settings.comma;
+					comma = mla.settings.comma, langArgument;
 
 				if ( terms ) {
 					if ( ',' !== comma )
@@ -430,7 +430,14 @@ var jQuery,
 					textarea.val(terms);
 				}
 
-				textarea.suggest( ajaxurl + '?action=ajax-tag-search&tax=' + taxname, { delay: 500, minchars: 2, multiple: true, multipleSep: mla.settings.comma + ' ' } );
+			langArgument = $('.lang', rowData).text();
+			if ( 0 < langArgument.length ) {
+				langArgument = '&lang=' + langArgument;
+			} else {
+				langArgument = '';
+			}
+
+				textarea.suggest( ajaxurl + '?action=ajax-tag-search&tax=' + taxname + '&preview_id=' + id + langArgument, { delay: 500, minchars: 2, multiple: true, multipleSep: mla.settings.comma + ' ' } );
 			});
 
 			rowData = $(editRow).attr('id', 'edit-'+id).addClass('inline-editor').show().position().top;
@@ -443,8 +450,9 @@ var jQuery,
 		quickSave : function( id ) {
 			var params, fields, page = $('.post_status_page').val() || '';
 
-			if ( typeof(id) == 'object' )
+			if ( typeof(id) == 'object' ) {
 				id = mla.utility.getId(id);
+			}
 
 			if ( mla.settings.useSpinnerClass ) {
 				$('table.widefat .inline-edit-save .spinner').addClass("is-active");

@@ -7,7 +7,7 @@
  * for the post.
  *
  * @package Random Featured Image
- * @version 1.00
+ * @version 1.01
  */
 
 /*
@@ -15,8 +15,23 @@ Plugin Name: Random Featured Image
 Plugin URI: http://fairtradejudaica.org/media-library-assistant-a-wordpress-plugin/
 Description: Assigns a random image as the "post thumbnail"/"featured image".
 Author: David Lingren
-Version: 1.00
+Version: 1.01
 Author URI: http://fairtradejudaica.org/our-story/staff/
+
+Copyright 2015 David Lingren
+
+	This program is free software; you can redistribute it and/or modify
+	it under the terms of the GNU General Public License as published by
+	the Free Software Foundation; either version 2 of the License, or
+	(at your option) any later version.
+
+	This program is distributed in the hope that it will be useful,
+	but WITHOUT ANY WARRANTY; without even the implied warranty of
+	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+	GNU General Public License for more details.
+
+	You can get a copy of the GNU General Public License by writing to the
+	Free Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110, USA
 */
 
 /**
@@ -36,9 +51,10 @@ class RandomFeaturedImage {
 	const USE_SHORTCODE = false; //true;
 
 	/**
-	 * Select the taxonomy, e.g., 'category', 'post_tag', 'attachment_category', 'attachment_tag'
+	 * Select the taxonomies, e.g., 'category', 'post_tag', 'attachment_category', 'attachment_tag'
 	 */
-	const TAXONOMY = 'category';
+	const POST_TAXONOMY = 'category';
+	const ITEM_TAXONOMY = 'attachment_category';
 
 	/**
 	 * Initialization function, similar to __construct()
@@ -76,18 +92,18 @@ class RandomFeaturedImage {
 		if ( 'publish' != $post->post_status ) {
 			return;
 		}
-
-		$the_terms = get_the_terms( $post_ID, self::TAXONOMY );
+	
+		$the_terms = get_the_terms( $post_ID, self::POST_TAXONOMY );
 		if ( empty( $the_terms ) ) {
 			return;
 		}
-
+	
 		/*
 		 * Optional - filter out the default category
 		 */
-		if ( 'category' == self::TAXONOMY ) {
+		if ( 'category' == self::POST_TAXONOMY ) {
 			$default_category_id= get_option('default_category');
-
+	
 			foreach( $the_terms as $index => $term ) {
 				if ( $term->term_id == $default_category_id ) {
 					unset( $the_terms[ $index ] );
@@ -95,23 +111,23 @@ class RandomFeaturedImage {
 				}
 			}
 		}
-
+	
 		/*
 		 * Remove this if you want to assign a new random image each time the post is updated.
 		 */
 		if ( '' != get_the_post_thumbnail( $post_ID ) ) {
 			return;
 		}
-
+	
 		/*
 		 * Pick the term, e.g. the first value or perhaps a random value
 		 */
 		$chosen_name = $the_terms[0]->name;
-
+	
 		/*
 		 * Find the right [mla_gallery] parameter name for the taxonomy
 		 */
-		switch ( self::TAXONOMY ) {
+		switch ( self::ITEM_TAXONOMY ) {
 			case 'category':
 				$taxonomy = 'category_name';
 				break;
@@ -119,9 +135,9 @@ class RandomFeaturedImage {
 				$taxonomy = 'tag';
 				break;
 			default:
-				$taxonomy = self::TAXONOMY;
+				$taxonomy = self::ITEM_TAXONOMY;
 		}
-
+	
 		/*
 		 * Use a shortcode to finish the job, or parse the image ID our of gallery output
 		 */
@@ -134,7 +150,7 @@ class RandomFeaturedImage {
 			 * Compose a simple gallery and capture the output
 			 */
 			$gallery = do_shortcode( sprintf( '[mla_gallery %1$s="%2$s" orderby=rand posts_per_page=1 size=none link=none mla_style=none mla_caption="rfi_image_id={+attachment_ID+}"]', $taxonomy, $chosen_name, $post_ID ) );
-
+	
 			/*
 			 * Find the ID of the random image, if there is one,
 			 * then set the featured image.

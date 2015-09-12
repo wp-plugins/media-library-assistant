@@ -5292,6 +5292,19 @@ The following hooks are defined in <code>/wp-admin/includes/class-wp-list-table.
 </tr>
 </table>
 <p>
+The following hooks are defined in <code>/wp-admin/includes/class-mla-objects.php</code>:
+</p>
+<table>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">mla_taxonomy_get_columns</td>
+<td>Gives you an opportunity to change the columns defined for the Edit Taxonomy submenu table(s).</td>
+</tr>
+<tr>
+<td style="padding-right: 10px; vertical-align: top; font-weight:bold">mla_taxonomy_column</td>
+<td>Gives you an opportunity to change column content in the Edit Taxonomy submenu table(s).</td>
+</tr>
+</table>
+<p>
 The following hooks are defined in <code>/wp-admin/includes/class-mla-data.php</code>:
 </p>
 <table>
