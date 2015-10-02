@@ -360,7 +360,7 @@ class MLA_List_Table extends WP_List_Table {
 		}
 
 		if ( isset( $_REQUEST['meta_query'] ) ) {
-			$submenu_arguments['meta_query'] = $_REQUEST['meta_query'];
+			$submenu_arguments['meta_query'] = urlencode( stripslashes( $_REQUEST['meta_query'] ) );
 		}
 
 		/*
