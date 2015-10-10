@@ -15,7 +15,7 @@
           <fieldset id="mla-thumbnail-settings" class="inline-edit-col-right">
             <div class="inline-edit-col">
             <h4>([+See Documentation+])</h4>
-            <div class="inline-edit-group" style="clear: both;">
+            <div class="inline-edit-group clear">
 			<table><tr>
               <td><label> <span class="title">[+Width+]</span>
                 <input name="mla_thumbnail_options[width]" id="mla-thumbnail-options-width" type="text" size="5" value="" />
@@ -23,7 +23,7 @@
               <td><label> <span class="title">[+Height+]</span>
                 <input name="mla_thumbnail_options[height]" id="mla-thumbnail-options-height" type="text" size="5" value="" />
               </label></td>
-              <td style="text-align:left"><label>
+              <td class="textleft"><label>
                 <input name="mla_thumbnail_options[best_fit]" id="mla-thumbnail-options-best-fit" type="checkbox" value="checked" />
                 [+Best Fit+]
               </label></td>
@@ -58,7 +58,7 @@
               </label></td>
 			  </tr></table>
             </div> <!-- inline-edit-group -->
-<!--		<label class="alignleft" style="clear: both;">
+<!--		<label class="alignleft clear">
 			<span class="title" style="display: inline-block">[+Options+]</span>
             <input name="mla_thumbnail_options[clear_filters]" id="mla-thumbnail-options-clear-filters" type="checkbox" value="checked" checked="checked" />[+Clear Filter-by+]
 			</label> -->

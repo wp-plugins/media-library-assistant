@@ -34,7 +34,7 @@ div.mla_errors {
  */
 #mla-terms-search-open,
 #clear_filter_by {
-	margin: 1px 8px 0 0;
+	margin: 1px 0 0 8px;
 }
 
 /*
@@ -100,7 +100,7 @@ div.mla_errors {
 .quick-edit-row-attachment fieldset.inline-edit-col-left label span.input-text-wrap,
 .quick-edit-row-attachment fieldset.inline-edit-col-right label span.input-text-wrap,
 .bulk-edit-row-attachment fieldset.inline-edit-col-right label span.input-text-wrap {
-	margin-left: 6em
+	margin-right: 6em
 }
 
 .quick-edit-row-attachment fieldset.inline-edit-col-left label.inline-edit-post-parent span.input-text-wrap,
@@ -117,7 +117,7 @@ div.mla_errors {
 .quick-edit-row-attachment fieldset.inline-edit-col-left input#inline-edit-post-set-parent {
 	display:inline;
 	line-height: 16px;
-	margin: .2em .4em .2em .0em;
+	margin: .2em .0em .2em .4em;
 }
 
 .bulk-edit-row-attachment fieldset.inline-edit-col-right input#bulk-edit-set-parent {
@@ -132,7 +132,7 @@ div.mla_errors {
 
 .quick-edit-row-attachment fieldset.inline-edit-col-left label.inline-edit-author span.title {
 	width:auto;
-	margin-right: 0.5em;
+	margin-left: 0.5em;
 }
 
 .quick-edit-row-attachment fieldset.inline-edit-col-left label.inline-edit-menu-order span.input-text-wrap {
@@ -146,7 +146,7 @@ div.mla_errors {
 
 .inline-edit-save #bulk_map,
 .inline-edit-save #bulk_custom_field_map {
-	margin-right: 1em
+	margin-left: 1em
 }
 
 .bulk-progress-titles div a:before {
@@ -194,7 +194,7 @@ div.mla_errors {
 .bulk-progress-titles div a {
 	cursor: pointer;
 	display: block;
-	float: left;
+	float: right;
 	height: 18px;
 	margin: 0 3px 0 -2px;
 	overflow: hidden;
@@ -228,7 +228,7 @@ div.mla_errors {
 	.quick-edit-row-attachment fieldset.inline-edit-col-left label span.input-text-wrap,
 	.quick-edit-row-attachment fieldset.inline-edit-col-right label span.input-text-wrap,
 	.bulk-edit-row-attachment fieldset.inline-edit-col-right label span.input-text-wrap {
-		margin-left: 0em
+		margin-right: 0em
 	}
 
 	.bulk-progress-titles div {
@@ -247,7 +247,7 @@ div.mla_errors {
 /*
  * MLA Settings page, Views and Uploads tab inline editing - adapted from load-styles.php
  */
-
+ 
 #wpbody-content .bulk-edit-row-upload .inline-edit-col-left,
 #wpbody-content .bulk-edit-row-view .inline-edit-col-left {
 	width: 40%
@@ -269,7 +269,7 @@ div.mla_errors {
 .bulk-edit-row-upload fieldset.inline-edit-col-right label span.input-text-wrap,
 .quick-edit-row-view fieldset.inline-edit-col label span.input-text-wrap,
 .bulk-edit-row-view fieldset.inline-edit-col-right label span.input-text-wrap {
-	margin-left: 8em;
+	margin-right: 8em;
 	width: 12em
 }
 
@@ -333,17 +333,17 @@ div.mla_errors {
  */
 
 #wpbody-content .optiontable th {
-	padding-right: 10px;
+	padding-left: 10px;
 }
 
 .mla-settings-taxonomy-th {
 	padding: 0px 5px;
 	text-align:center;
-	border-right: 1px solid
+	border-left: 1px solid
 }
 
 .mla-settings-after-table {
-	margin-left: 10px;
+	margin-right: 10px;
 	margin-top: 10px;
 }
 
@@ -354,17 +354,17 @@ p.submit.mla-settings-submit {
 
 #mla-shortcode-list  {
 	width: 90%;
-	padding-left: 5%;
+	padding-right: 5%;
 }
 
 .mla-settings-help {
 	font-size: 8pt;
 	padding-bottom: 5px;
 }
-
+ 
 #mla-display-settings-iptc-exif-tab .mla-mapping,
 #mla-display-settings-custom-field-tab .mla-mapping {
-	margin-left: 10px;
+	margin-right: 10px;
 }
 
 ul.mla_settings { 
@@ -373,7 +373,7 @@ ul.mla_settings {
 }
 
 ul.mla_settings li { 
-	margin-left: 2em;
+	margin-right: 2em;
 }
 
 /*
@@ -384,12 +384,12 @@ ul.mla_settings li {
 	list-style-position:inside;
 	list-style:disc;
 	line-height: 15px;
-	padding-left: 20px
+	padding-right: 20px
 }
 
 .mla-doc-hook-label {
-	text-align: right;
-	padding: 0 1em 2em 0;
+	text-align: left;
+	padding: 0 0 2em 1em;
 	vertical-align: top;
 	font-weight:bold
 }
@@ -399,20 +399,20 @@ ul.mla_settings li {
 }
 
 .mla-doc-table-label {
-	text-align: right;
-	padding-right: 10px;
+	text-align: left;
+	padding-left: 10px;
 	vertical-align: top;
 	font-weight:bold
 }
 
 .mla-doc-table-sublabel {
-	padding-right: 10px;
+	padding-left: 10px;
 	vertical-align: top
 }
 
 .mla-doc-table-reverse {
-	text-align: right;
-	padding-right: 10px;
+	text-align: left;
+	padding-left: 10px;
 	vertical-align:top
 }
 
@@ -426,15 +426,15 @@ ul.mla_settings li {
 }
 
 .mla-doc-dropdown-padding {
-	padding-left: 40px
+	padding-right: 40px
 }
 
 #mla-doc-gallery-shortcode {
-	float:left;
-	margin-right: 15px
+	float:right;
+	margin-left: 15px
 }
 
 #mla-doc-cloud-shortcode {
-	float:left;
-	margin-left: 15px
+	float:right;
+	margin-right: 15px
 }

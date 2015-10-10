@@ -38,7 +38,7 @@ class MLA {
 	 *
 	 * @var	string
 	 */
-	const MLA_DEVELOPMENT_VERSION = '20151001';
+	const MLA_DEVELOPMENT_VERSION = '20151009';
 
 	/**
 	 * Slug for registering and enqueueing plugin style sheet
@@ -547,6 +547,8 @@ class MLA {
 	 * @return	void
 	 */
 	public static function mla_admin_enqueue_scripts_action( $page_hook ) {
+		global $wp_locale;
+		
 		$suffix = defined('SCRIPT_DEBUG') && SCRIPT_DEBUG ? '' : '.min';
 
 		if ( 'checked' != MLAOptions::mla_get_option( MLAOptions::MLA_SCREEN_DISPLAY_LIBRARY ) ) {
@@ -569,7 +571,12 @@ class MLA {
 		 */
 		add_action( 'admin_print_styles', 'MLA::mla_admin_print_styles_action' );
 
-		wp_register_style( self::STYLESHEET_SLUG, MLA_PLUGIN_URL . 'css/mla-style.css', false, self::CURRENT_MLA_VERSION );
+		if ( $wp_locale->is_rtl() ) {
+			wp_register_style( self::STYLESHEET_SLUG, MLA_PLUGIN_URL . 'css/mla-style-rtl.css', false, self::CURRENT_MLA_VERSION );
+		} else {
+			wp_register_style( self::STYLESHEET_SLUG, MLA_PLUGIN_URL . 'css/mla-style.css', false, self::CURRENT_MLA_VERSION );
+		}
+		
 		wp_enqueue_style( self::STYLESHEET_SLUG );
 
 		wp_register_style( self::STYLESHEET_SLUG . '-set-parent', MLA_PLUGIN_URL . 'css/mla-style-set-parent.css', false, self::CURRENT_MLA_VERSION );

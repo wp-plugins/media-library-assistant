@@ -27,7 +27,7 @@
       <input type="radio" name="tax_action[[+tax_attr+]]" id="tax_reset_[+tax_attr+]" value="replace" /> [+Replace+]&nbsp;
     </div>
 <!-- template="custom_field" -->
-      <label class="inline-edit-[+slug+]" style="clear:both"><span class="title">[+label+]</span><span class="input-text-wrap">
+      <label class="inline-edit-[+slug+] clear"><span class="title">[+label+]</span><span class="input-text-wrap">
         <input type="text" name="[+slug+]" value="" />
         </span></label>
 <!-- template="page" -->
@@ -76,8 +76,8 @@
   </fieldset>
 </div>
 <div id="mla-add-new-bulk-edit-div" style="display: none;">
-<input id="bulk-edit-toggle" title="[+Toggle+]" class="button-primary" type="button" name="bulk_edit_toggle" value="[+Toggle+]" style="float:right" />
-<input id="bulk-edit-reset" title="[+Reset+]" class="button-secondary" type="button" name="bulk_edit_reset" value="[+Reset+]" style="float:right; display:none" />
+<input id="bulk-edit-toggle" title="[+Toggle+]" class="button-primary alignright" type="button" name="bulk_edit_toggle" value="[+Toggle+]" />
+<input id="bulk-edit-reset" title="[+Reset+]" class="button-secondary alignright" type="button" name="bulk_edit_reset" value="[+Reset+]" style="display:none" />
 <strong>[+NOTE+]</strong><br />
 [+category_fieldset+]
 [+tag_fieldset+]

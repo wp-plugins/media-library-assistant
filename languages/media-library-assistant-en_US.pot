@@ -2,7 +2,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: Media Library Assistant\n"
-"POT-Creation-Date: 2015-08-29 11:33-0700\n"
+"POT-Creation-Date: 2015-10-09 19:32-0700\n"
 "PO-Revision-Date: 2015-08-21 21:38-0800\n"
 "Last-Translator: David Lingren <david@fairtradejudaica.org>\n"
 "Language-Team: David Lingren <david@fairtradejudaica.org>\n"
@@ -367,16 +367,16 @@ msgstr ""
 msgid "Upload New Media items"
 msgstr ""
 
-msgid "An ajax.fail error has occurred. Please reload the page and try again."
-msgstr ""
-
-msgid "An ajax.done error has occurred. Please reload the page and try again."
-msgstr ""
-
 msgid "Open Bulk Edit area"
 msgstr ""
 
 msgid "Close Bulk Edit area"
+msgstr ""
+
+msgid "An ajax.fail error has occurred. Please reload the page and try again."
+msgstr ""
+
+msgid "An ajax.done error has occurred. Please reload the page and try again."
 msgstr ""
 
 msgid "more"
@@ -397,6 +397,9 @@ msgstr ""
 msgid ""
 "IMPORTANT: Make your entries BEFORE uploading new items. Pull down the Help "
 "menu for more information."
+msgstr ""
+
+msgid "Reset"
 msgstr ""
 
 msgid "No Change"
@@ -1442,6 +1445,14 @@ msgstr ""
 
 msgid ""
 "Check this option to enable the \"Bulk Edit area\" feature on the Media/Add "
+"New screen."
+msgstr ""
+
+msgid "&quot;bulk edit&quot; area on top"
+msgstr ""
+
+msgid ""
+"Check this option to move the \"Bulk Edit area\" to the top of the Media/Add "
 "New screen."
 msgstr ""
 
@@ -2891,9 +2902,6 @@ msgstr ""
 #. translators: 1: file name
 #, php-format
 msgid "Error log file (%1$s) not found; click Reset to create it."
-msgstr ""
-
-msgid "Reset"
 msgstr ""
 
 msgid "Debug Options"

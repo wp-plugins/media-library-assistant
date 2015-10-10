@@ -3,7 +3,7 @@
 &nbsp;
 <div class="wrap">
 <div id="icon-options-general" class="icon32"><br/></div>
-<div id="donate-button-div" style="float: right; clear:right;">
+<div id="donate-button-div" class="alignright clear">
 	<a title="[+Support Our Work+]" class="button button-large button-primary" href="http://fairtradejudaica.org/make-a-difference/donate/">[+Donate+]</a>
 </div>
 <h1>[+Media Library Assistant+] [+version+][+development+] [+Settings+]</h1>
@@ -13,11 +13,11 @@
 </div><!-- wrap -->
 
 <!-- template="checkbox" -->
-        <tr valign="top"><td style="text-align:right;">
+        <tr valign="top"><td class="textright">
             <input type="checkbox" name="[+key+]" id="[+key+]" [+checked+] value="[+value+]" />
         </td><td>
 		    &nbsp;<strong>[+value+]</strong>
-            <div style="font-size:8pt;padding-bottom:10px;">&nbsp;&nbsp;[+help+]</div>
+            <div class="mla-settings-help">&nbsp;&nbsp;[+help+]</div>
 		</td></tr>
 <!-- template="header" -->
         <tr><td colspan="2">
@@ -31,27 +31,27 @@
             <h3 id="[+key+]">[+value+]</h3>
         </td></tr>
 <!-- template="radio" -->
-        <tr valign="top"><th scope="row" style="text-align:right;">
+        <tr valign="top"><th scope="row" class="textright">
             [+value+]
-        </th><td style="text-align:left;">
-            <span style="font-size:8pt;padding-bottom:10px;">&nbsp;&nbsp;[+help+]</span>
+        </th><td class="textleft">
+            <span class="mla-settings-help">&nbsp;&nbsp;[+help+]</span>
         </td></tr>
 [+options+]
         <tr valign="top"><td colspan="2" style="padding-bottom:10px;">
         </td></tr>
 <!-- template="radio-option" -->
-        <tr valign="top"><td style="text-align:right;">
+        <tr valign="top"><td class="textright">
             <input type="radio" name="[+key+]" [+checked+] value="[+option+]" />
         </td><td>
             &nbsp;[+value+]
         </td></tr>
 <!-- template="select" -->
-        <tr valign="top"><th scope="row" style="text-align:right;">
+        <tr valign="top"><th scope="row" class="textright">
             [+value+]
-        </th><td style="text-align:left;">
+        </th><td class="textleft">
             <select name="[+key+]" id="[+key+]">
 [+options+]
-            </select><div style="font-size:8pt;padding-bottom:10px;">&nbsp;&nbsp;[+help+]</div>
+            </select><div class="mla-settings-help">&nbsp;&nbsp;[+help+]</div>
         </td></tr>
 <!-- template="select-only" -->
             <select name="[+key+]" id="[+key+]">
@@ -60,20 +60,20 @@
 <!-- template="select-option" -->
                 <option [+selected+] value="[+value+]">[+text+]</option>
 <!-- template="text" -->
-        <tr valign="top"><th scope="row" style="text-align:right;">
+        <tr valign="top"><th scope="row" class="textright">
             [+value+]
-        </th><td style="text-align:left;">
+        </th><td class="textleft">
             <input name="[+key+]" id="[+key+]" type="text" size="[+size+]" value="[+text+]" />
-            <div style="font-size:8pt;padding-bottom:10px;">&nbsp;&nbsp;[+help+]</div>
+            <div class="mla-settings-help">&nbsp;&nbsp;[+help+]</div>
         </td></tr>
 <!-- template="textarea" -->
-        <tr valign="top"><th scope="row" style="text-align:right;">
+        <tr valign="top"><th scope="row" class="textright">
             [+value+]
-        </th><td style="text-align:left;">
+        </th><td class="textleft">
             <textarea name="[+key+]" id="[+key+]" rows="[+rows+]" cols="[+cols+]">
             [+text+]
             </textarea>
-            <div style="font-size:8pt;padding-bottom:10px;">&nbsp;&nbsp;[+help+]</div>
+            <div class="mla-settings-help">&nbsp;&nbsp;[+help+]</div>
         </td></tr>
 <!-- template="messages" -->
 <div class="[+mla_messages_class+]">
@@ -81,7 +81,7 @@
 [+messages+]
 </p></div>
 <!-- template="shortcode-list" -->
-<div id="mla-shortcode-list" style="width: 90%; padding-left: 5%; ">
+<div id="mla-shortcode-list">
 <p>[+Shortcodes made available+]:</p>
 <ol>
 [+shortcode_list+]
@@ -103,11 +103,11 @@
     <table class="optiontable">
 [+options_list+]
 	</table>
-    <p class="submit" style="padding-bottom: 0;">
+    <p class="submit mla-settings-submit">
         <input name="mla-general-options-save" type="submit" class="button-primary" value="[+Save Changes+]" />&nbsp;&nbsp;
         <input name="mla-general-options-export" type="submit" class="button-primary" value="[+Export ALL Settings+]" />
         [+import_settings+]
-        <input name="mla-general-options-reset" type="submit" class="button-primary" value="[+Delete General options+]"  style="float:right;"/>
+        <input name="mla-general-options-reset" type="submit" class="button-primary alignright" value="[+Delete General options+]"/>
     </p>
 [+_wpnonce+]
 [+_wp_http_referer+]
@@ -126,69 +126,69 @@
 </table>
 <!-- template="mla-gallery-default" -->
 		<td colspan="2" width="500">
-            <div style="font-size:8pt;padding-bottom:10px;">[+help+]</div>
+            <div class="mla-settings-help">[+help+]</div>
 		</td>
 <!-- template="mla-gallery-delete" -->
-		<td width="1%" style="text-align:right;">
+		<td width="1%" class="textright">
             <input type="checkbox" name="[+name+]" id="[+id+]" value="[+value+]" />
         </td><td width="500">
 		    &nbsp;<strong>[+value+]</strong>
-            <div style="font-size:8pt;padding-bottom:10px;">&nbsp;[+help+]</div>
+            <div class="mla-settings-help">&nbsp;[+help+]</div>
 		</td>
 <!-- template="mla-gallery-style" -->
 <table width="700">
-        <tr valign="top"><th width="1%" scope="row" style="text-align:right;">
+        <tr valign="top"><th width="1%" scope="row" class="textright">
             [+Name+]:
-        </th><td width="1%" style="text-align:left;">
+        </th><td width="1%" class="textleft">
             <input name="[+name_name+]" id="[+name_id+]" type="text" size="15" [+readonly+] value="[+name_text+]" />
         </td>
 		[+control_cells+]
 		</tr>
-        <tr valign="top"><th scope="row" style="text-align:right;">
+        <tr valign="top"><th scope="row" class="textright">
             [+Styles+]:
-        </th><td colspan="3" style="text-align:left;">
+        </th><td colspan="3" class="textleft">
             <textarea name="[+value_name+]" id="[+value_id+]" rows="11" cols="100" [+readonly+]>[+value_text+]</textarea>
-            <div style="font-size:8pt;padding-bottom:5px;">&nbsp;&nbsp;[+value_help+]</div>
+            <div class="mla-settings-help">&nbsp;&nbsp;[+value_help+]</div>
         </td></tr>
 </table>
 <!-- template="mla-gallery-markup" -->
 <table width="700">
-        <tr valign="top"><th width="1%" scope="row" style="text-align:right;">
+        <tr valign="top"><th width="1%" scope="row" class="textright">
             [+Name+]:
-        </th><td width="1%" style="text-align:left;">
+        </th><td width="1%" class="textleft">
             <input name="[+name_name+]" id="[+name_id+]" type="text" size="15" [+readonly+] value="[+name_text+]" />
         </td>
 		[+control_cells+]
 		</tr>
-        <tr valign="top"><th scope="row" style="text-align:right;">
+        <tr valign="top"><th scope="row" class="textright">
             [+Open+]:
-        </th><td colspan="3" style="text-align:left;">
+        </th><td colspan="3" class="textleft">
             <textarea name="[+open_name+]" id="[+open_id+]" rows="3" cols="100" [+readonly+]>[+open_text+]</textarea>
-            <div style="font-size:8pt;padding-bottom:5px;">&nbsp;&nbsp;[+open_help+]</div>
+            <div class="mla-settings-help">&nbsp;&nbsp;[+open_help+]</div>
         </td></tr>
-        <tr valign="top"><th scope="row" style="text-align:right;">
+        <tr valign="top"><th scope="row" class="textright">
             [+Row+]&nbsp;[+Open+]:
-        </th><td colspan="3" style="text-align:left;">
+        </th><td colspan="3" class="textleft">
             <textarea name="[+row_open_name+]" id="[+row_open_id+]" rows="3" cols="100" [+readonly+]>[+row_open_text+]</textarea>
-            <div style="font-size:8pt;padding-bottom:5px;">&nbsp;&nbsp;[+row_open_help+]</div>
+            <div class="mla-settings-help">&nbsp;&nbsp;[+row_open_help+]</div>
         </td></tr>
-        <tr valign="top"><th scope="row" style="text-align:right;">
+        <tr valign="top"><th scope="row" class="textright">
             [+Item+]:
-        </th><td colspan="3" style="text-align:left;">
+        </th><td colspan="3" class="textleft">
             <textarea name="[+item_name+]" id="[+item_id+]" rows="6" cols="100" [+readonly+]>[+item_text+]</textarea>
-            <div style="font-size:8pt;padding-bottom:5px;">&nbsp;&nbsp;[+item_help+]</div>
+            <div class="mla-settings-help">&nbsp;&nbsp;[+item_help+]</div>
         </td></tr>
-        <tr valign="top"><th scope="row" style="text-align:right;">
+        <tr valign="top"><th scope="row" class="textright">
             [+Row+]&nbsp;[+Close+]:
-        </th><td colspan="3" style="text-align:left;">
+        </th><td colspan="3" class="textleft">
             <textarea name="[+row_close_name+]" id="[+row_close_id+]" rows="3" cols="100" [+readonly+]>[+row_close_text+]</textarea>
-            <div style="font-size:8pt;padding-bottom:5px;">&nbsp;&nbsp;[+row_close_help+]</div>
+            <div class="mla-settings-help">&nbsp;&nbsp;[+row_close_help+]</div>
         </td></tr>
-        <tr valign="top"><th scope="row" style="text-align:right;">
+        <tr valign="top"><th scope="row" class="textright">
             [+Close+]:
-        </th><td colspan="3" style="text-align:left;">
+        </th><td colspan="3" class="textleft">
             <textarea name="[+close_name+]" id="[+close_id+]" rows="3" cols="100" [+readonly+]>[+close_text+]</textarea>
-            <div style="font-size:8pt;padding-bottom:5px;">&nbsp;&nbsp;[+close_help+]</div>
+            <div class="mla-settings-help">&nbsp;&nbsp;[+close_help+]</div>
         </td></tr>
 </table>
 <hr width="650" align="left" />
@@ -210,7 +210,7 @@
     <table class="optiontable">
 [+markup_options_list+]
 	</table>
-    <p class="submit" style="padding-bottom: 0;">
+    <p class="submit mla-settings-submit">
         <input name="mla-gallery-options-save" type="submit" class="button-primary" value="[+Save Changes+]" />
     </p>
 [+_wpnonce+]
@@ -259,11 +259,11 @@
     <table class="optiontable">
 [+custom_options_list+]
 	</table>
-    <p class="submit" style="padding-bottom: 0;">
+    <p class="submit mla-settings-submit">
         <input name="custom-field-options-save" class="button-primary" id="custom-field-options-save" type="submit" value="[+Save Changes+]" />
-        <input name="custom-field-options-map" class="button-secondary mla-mapping" id="custom-field-options-map" style="margin-left: 20px" type="submit" value="[+Map All Rules+]" />
-	<div style="font-size:8pt;padding-bottom:5px;">[+Click Save Changes+]</div>
-	<div style="font-size:8pt;padding-bottom:5px;">[+Click Map All+]</div>
+        <input name="custom-field-options-map" class="button-secondary mla-mapping" id="custom-field-options-map" type="submit" value="[+Map All Rules+]" />
+	<div class="mla-settings-help">[+Click Save Changes+]</div>
+	<div class="mla-settings-help">[+Click Map All+]</div>
     </p>
 [+_wpnonce+]
 [+_wp_http_referer+]
@@ -281,21 +281,21 @@
 <form action="[+form_url+]" method="post" class="mla-display-settings-page" id="mla-display-settings-iptc-exif-tab">
 &nbsp;<br />
 [+options_list+]
-<h3>[+Standard field mapping+] <input name="iptc-exif-options-process-standard" class="button-secondary mla-mapping" id="iptc-exif-options-process-standard" style="margin-left: 20px" type="submit" value="[+Map Standard Fields+]" /></h3>
+<h3>[+Standard field mapping+] <input name="iptc-exif-options-process-standard" class="button-secondary mla-mapping" id="iptc-exif-options-process-standard" type="submit" value="[+Map Standard Fields+]" /></h3>
     <table class="optiontable">
 [+standard_options_list+]
 	</table>
-<h3>[+Taxonomy term mapping+] <input name="iptc-exif-options-process-taxonomy" class="button-secondary mla-mapping" id="iptc-exif-options-process-taxonomy" style="margin-left: 10px" type="submit" value="[+Map Taxonomy Terms+]" /></h3>
+<h3>[+Taxonomy term mapping+] <input name="iptc-exif-options-process-taxonomy" class="button-secondary mla-mapping" id="iptc-exif-options-process-taxonomy" type="submit" value="[+Map Taxonomy Terms+]" /></h3>
     <table class="optiontable">
 [+taxonomy_options_list+]
 	</table>
-<h3>[+Custom field mapping+] <input name="iptc-exif-options-process-custom" class="button-secondary mla-mapping" id="iptc-exif-options-process-custom" style="margin-left: 25px" type="submit" value="[+Map Custom Fields+]" /></h3>
+<h3>[+Custom field mapping+] <input name="iptc-exif-options-process-custom" class="button-secondary mla-mapping" id="iptc-exif-options-process-custom" type="submit" value="[+Map Custom Fields+]" /></h3>
     <table class="optiontable">
 [+custom_options_list+]
 	</table>
-    <p class="submit" style="padding-bottom: 0;">
+    <p class="submit mla-settings-submit">
         <input name="iptc-exif-options-save" class="button-primary" id="iptc-exif-options-save" type="submit" value="[+Save Changes+]" />
-	<div style="font-size:8pt;padding-bottom:5px;">[+Click Save Changes+]</div>
+	<div class="mla-settings-help">[+Click Save Changes+]</div>
     </p>
 [+_wpnonce+]
 [+_wp_http_referer+]
@@ -326,9 +326,9 @@
             </td>
         </tr>
 	</table>
-    <p class="submit" style="padding-bottom: 0;">
+    <p class="submit mla-settings-submit">
         <input name="mla-debug-options-save" class="button-primary" id="mla-debug-options-save" type="submit" value="[+Save Changes+]" />
-	<div style="font-size:8pt;padding-bottom:5px;">[+Click Save Changes+]</div>
+	<div class="mla-settings-help">[+Click Save Changes+]</div>
     </p>
 [+_wpnonce+]
 [+_wp_http_referer+]

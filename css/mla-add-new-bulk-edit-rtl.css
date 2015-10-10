@@ -35,7 +35,7 @@
 }
 
 #mla-add-new-bulk-edit-div fieldset.inline-edit-col-right label span.input-text-wrap {
-	margin-left: 6em
+	margin-right: 6em
 }
 
 #mla-add-new-bulk-edit-div fieldset.inline-edit-col-right label.inline-edit-post-parent span.input-text-wrap {
@@ -54,7 +54,7 @@
 
 #mla-add-new-bulk-edit-div fieldset {
 	font-size: 12px;
-	float: left;
+	float: right;
 	margin: 0;
 	padding: 0;
 	width: 100%;
@@ -91,7 +91,7 @@
 	}
 
 	#mla-add-new-bulk-edit-div fieldset.inline-edit-col-right label span.input-text-wrap {
-		margin-left: 0em
+		margin-right: 0em
 	}
 }
 
@@ -121,13 +121,13 @@
 
 #mla-add-new-bulk-edit-div fieldset label span.title {
 	display: block;
-	float: left;
+	float: right;
 	width: 5em;
 }
 
 #mla-add-new-bulk-edit-div fieldset label span.input-text-wrap {
 	display: block;
-	margin-left: 5em;
+	margin-right: 5em;
 }
 
 #mla-add-new-bulk-edit-div .input-text-wrap input[type=text] {
@@ -171,7 +171,7 @@
 }
 
 #mla-add-new-bulk-edit-div ul.cat-checklist ul {
-	margin-left: 18px;
+	margin-right: 18px;
 }
 
 #mla-add-new-bulk-edit-div span.catshow {

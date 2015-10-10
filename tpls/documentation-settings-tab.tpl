@@ -1,8 +1,8 @@
 ﻿<!-- template="documentation-tab" -->
 <div class="mla-display-settings-page" id="mla-display-settings-documentation-tab" style="width:700px">
 <h3>Plugin and Shortcode Documentation. In this tab, jump to:</h3>
-<div style="float:left; margin-right: 15px;"><a href="#mla_gallery"><strong>MLA Gallery Shortcode</strong></a>
-<ul style="list-style-position:inside; list-style:disc; line-height: 15px; padding-left: 20px">
+<div id="mla-doc-gallery-shortcode"><a href="#mla_gallery"><strong>MLA Gallery Shortcode</strong></a>
+<ul class="mla-doc-toc-list">
 <li><a href="#gallery_substitution">Substitution Parameters</a></li>
 <li><a href="#gallery_display_style">Gallery Display Style</a></li>
 <li><a href="#gallery_display_content">Gallery Display Content</a></li>
@@ -29,8 +29,8 @@
 <li><a href="#debugging_output">Debugging Output</a></li>
 <li><a href="#mla_gallery_hooks">MLA Gallery Filters (Hooks)</a></li>
 </ul></div>
-<div style="float:left; margin-left: 15px;"><a href="#mla_tag_cloud"><strong>MLA Tag Cloud Shortcode</strong></a>
-<ul style="list-style-position:inside; list-style:disc; line-height: 15px; padding-left: 20px">
+<div  id="mla-doc-cloud-shortcode"><a href="#mla_tag_cloud"><strong>MLA Tag Cloud Shortcode</strong></a>
+<ul class="mla-doc-toc-list">
 <li><a href="#tag_cloud_output">Tag Cloud Output Formats</a></li>
 <li><a href="#tag_cloud_items">Tag Cloud Item Parameters</a></li>
 <li><a href="#tag_cloud_link">Tag Cloud Item Link</a></li>
@@ -47,7 +47,7 @@
 <li>
 <a href="#gallery_examples">MLA Gallery Examples</a>
 </li>
-<ul style="list-style-position:inside; list-style:disc; line-height: 15px; padding-left: 20px">
+<ul class="mla-doc-toc-list">
 <li><a href="#simple_examples">Simple Examples</a></li>
 <li><a href="#paginated_gallery">A Paginated Gallery</a></li>
 <li><a href="#cloud_and_gallery">Tag Cloud and Gallery</a></li>
@@ -65,7 +65,7 @@
 <li>
 <a href="#mla_gallery_templates"><strong>Style and Markup Templates</strong></a>
 </li>
-<ul style="list-style-position:inside; list-style:disc; line-height: 15px; padding-left: 20px">
+<ul class="mla-doc-toc-list">
 <li><a href="#gallery_specific">Gallery-specific substitution parameters</a></li>
 <li><a href="#mla_style_parameters">Substitution parameters for style templates</a></li>
 <li><a href="#mla_markup_parameters">Substitution parameters for markup templates</a></li>
@@ -77,7 +77,7 @@
 <li>
 <a href="#mla_variable_parameters"><strong>Field-level substitution parameters</strong></a>
 </li>
-<ul style="list-style-position:inside; list-style:disc; line-height: 15px; padding-left: 20px">
+<ul class="mla-doc-toc-list">
 <li><a href="#field_level_prefixes">Field-level prefix values</a></li>
 <li><a href="#field_level_formats">Field-level option/format values</a></li>
 <li><a href="#field_level_data_sources">Field-level data sources</a></li>
@@ -115,7 +115,7 @@
 <li>
 <a href="#mla_custom_field_mapping"><strong>Custom Field and Attachment Metadata Processing Options</strong></a>
 </li>
-<ul style="list-style-position:inside; list-style:disc; line-height: 15px; padding-left: 20px">
+<ul class="mla-doc-toc-list">
 <li><a href="#custom_field_mapping_example">Custom field mapping example</a></li>
 <li><a href="#custom_field_mapping_table">The custom field mapping table</a></li>
 <li><a href="#custom_field_mapping_buttons">Custom field mapping command buttons</a></li>
@@ -126,7 +126,7 @@
 <li>
 <a href="#mla_iptc_exif_mapping"><strong>IPTC &amp; EXIF Processing Options</strong></a>
 </li>
-<ul style="list-style-position:inside; list-style:disc; line-height: 15px; padding-left: 20px">
+<ul class="mla-doc-toc-list">
 <li><a href="#iptc_exif_mapping_example">IPTC/EXIF mapping example</a></li>
 <li><a href="#iptc_exif_mapping_tables">IPTC/EXIF mapping tables</a></li>
 <li><a href="#iptc_exif_mapping_buttons">IPTC/EXIF mapping command buttons</a></li>
@@ -144,12 +144,12 @@
 <h3>Translating/Localizing the plugin</h3>
 <p>
 If you would like to localize MLA to see the admin screens in your own language,
-have a look at the <a title="MLA Internationalization Guide.pdf" href="[+translate_url+]" target="_blank" style="font-size:14px; font-weight:bold">MLA Internationalization Guide</a>. You are encouraged to share your translation with other MLA users; the Guide tells you how!
+have a look at the <a title="MLA Internationalization Guide.pdf" href="[+translate_url+]" target="_blank" class="mla-doc-bold-link">MLA Internationalization Guide</a>. You are encouraged to share your translation with other MLA users; the Guide tells you how!
 </p>
 <h3>Plugin Code Documentation</h3>
 <p>
 If you are a developer interested in how this plugin is put together, you should
-have a look at the <a title="Consult the phpDocs documentation" href="[+phpDocs_url+]" target="_blank" style="font-size:14px; font-weight:bold">phpDocs documentation</a>.
+have a look at the <a title="Consult the phpDocs documentation" href="[+phpDocs_url+]" target="_blank" class="mla-doc-bold-link">phpDocs documentation</a>.
 </p>
 <a name="mla_gallery"></a>
 &nbsp;
@@ -182,27 +182,27 @@ All of the options/parameters documented for the <code>[gallery]</code> shortcod
 Substitution parameters are a powerful way to add general and attachment-specific values to the gallery display. For example, if you code "<code>mla_rollover_text='{+date+} : {+description+}'</code>, the rollover text will contain the upload date, a colon, and the full description of each gallery item. There are dozens of parameter names like `date` and `description` divided in several categories:
 <table>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold"><a href="#gallery_specific">Gallery-specific</a></td>
+<td class="mla-doc-table-label"><a href="#gallery_specific">Gallery-specific</a></td>
 <td>values that are known at the beginning of shortcode processing and remain the same for the entire shortcode, such as the ID and URL of the post/page in which the shortcode appears</td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold"><a href="#mla_style_parameters">Style</a></td>
+<td class="mla-doc-table-label"><a href="#mla_style_parameters">Style</a></td>
 <td>values that are known when the gallery-specific CSS inline styles are composed just before gallery output begins</td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold"><a href="#mla_markup_parameters">Markup</a></td>
+<td class="mla-doc-table-label"><a href="#mla_markup_parameters">Markup</a></td>
 <td>values that are known at the beginning of gallery output processing and remain the same for the entire gallery</td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold"><a href="#mla_attachment_parameters">Attachment-specific</a></td>
+<td class="mla-doc-table-label"><a href="#mla_attachment_parameters">Attachment-specific</a></td>
 <td  style="vertical-align: top">values that change for each item in the gallery, such as Title and Caption</td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold"><a href="#mla_variable_parameters">Field-level</a></td>
+<td class="mla-doc-table-label"><a href="#mla_variable_parameters">Field-level</a></td>
 <td>values from sources like shortcode parameters, query arguments, custom fields, taxonomy terms and attachment metadata. There are many, many values to choose from as well as options to reformat values and select array elements. You are encouraged to explore them.</td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold"><a href="#mla_template_parameters">Content Template</a></td>
+<td class="mla-doc-table-label"><a href="#mla_template_parameters">Content Template</a></td>
 <td>lets you compose a value from multiple substitution parameters and test for empty values, choose among two or more alternatives or suppress output entirely</td>
 </tr>
 </table>
@@ -219,11 +219,11 @@ Two <code>[mla_gallery]</code> parameters provide a way to apply custom style an
 </p>
 <table>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">mla_style</td>
+<td class="mla-doc-table-label">mla_style</td>
 <td>replaces the default style template for an <code>[mla_gallery]</code> shortcode. You can code "none" to suppress the addition of CSS inline styles entirely, or code "theme" to let your theme use the <code>use_default_gallery_style</code> filter to make the decision.</td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">mla_markup</td>
+<td class="mla-doc-table-label">mla_markup</td>
 <td>replaces the default markup template for an <code>[mla_gallery]</code> shortcode</td>
 </tr>
 </table>
@@ -232,19 +232,19 @@ Four <code>[mla_gallery]</code> parameters provide control over the placement, s
 </p>
 <table>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">columns</td>
+<td class="mla-doc-table-label">columns</td>
 <td>specifies the number of columns. The gallery will include a break tag at the end of each row and calculate the column width as appropriate. The default value is 3. If columns is set to 0, no row breaks will be included.</td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">mla_float</td>
+<td class="mla-doc-table-label">mla_float</td>
 <td>specifies the CSS float attribute of the ".gallery-item" style. Acceptable values are "left", "none", "right"; the default value is "right" if current locale is RTL, "left" on LTR (left-to-right inline flow, e.g., English).</td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">mla_margin</td>
+<td class="mla-doc-table-label">mla_margin</td>
 <td>specifies the CSS margin property of the ".gallery-item" style. The default value is "1.5%", a percent of the total gallery width. You can also specify any dimension value, e.g., "10px" or "2em", as well as the "auto" or "inherit" values. Finally, you can specify "none", which will remove the margin property from the styles template altogether.</td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">mla_itemwidth</td>
+<td class="mla-doc-table-label">mla_itemwidth</td>
 <td>specifies the CSS width attribute of the ".gallery-item" style. You can specify a percent of the total gallery width, e.g., "33.3%". You can also specify any dimension value, e.g., "10px" or "2em", as well as the "auto" or "inherit" values. You can specify "none", which will remove the width property from the styles template altogether.
 <br />&nbsp;<br />
 Two additional values, "calculate" (the default) and "exact",  calculate the width automatically, based on the "columns" and "mla_margin" values. For "calculate", the width is calculated by dividing 100% by the number of columns, then subtracting twice the margin. For example, the default value is (floor(1000/3)/10) - ( 2.0 * 1.5 ) = 30.3%. Adding in the left and right margins makes each column 33.3% and the total width will be 99.9%
@@ -263,15 +263,15 @@ Three parameters provide control over the XHTML tags used to enclose each part o
 </p>
 <table>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">itemtag</td>
+<td class="mla-doc-table-label">itemtag</td>
 <td>the name of the XHTML tag used to enclose each item in the gallery. The default is "dl"; if your theme supports HTML5, the default is "figure".</td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">icontag</td>
+<td class="mla-doc-table-label">icontag</td>
 <td>the name of the XHTML tag used to enclose each thumbnail icon in the gallery. The default is "dt"; if your theme supports HTML5, the default is "div".</td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">captiontag</td>
+<td class="mla-doc-table-label">captiontag</td>
 <td>the name of the XHTML tag used to enclose each caption. The default is "dd"; if your theme supports HTML5, the default is "figcaption".</td>
 </tr>
 </table>
@@ -288,51 +288,51 @@ Twelve <code>[mla_gallery]</code> parameters provide an easy way to control the 
 </p>
 <table>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">mla_output</td>
+<td class="mla-doc-table-label">mla_output</td>
 <td>completely replaces gallery output with links to the "previous" or "next" item/page or pagination links. Complete documentation is in the <a href="#mla_output_parameter"><strong>Support for Alternative Gallery Output, e.g., Pagination</strong></a> section below.</td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">mla_rollover_text</td>
+<td class="mla-doc-table-label">mla_rollover_text</td>
 <td>adds the HTML "title" attribute in the hyperlink for each gallery item. This is the attachment title text displayed when the mouse rolls or hovers over the gallery thumbnail. Note that as of WordPress 3.7 there is no default "title" attribute; for older WordPress versions this parameter will replace the default "title".</td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">mla_target</td>
+<td class="mla-doc-table-label">mla_target</td>
 <td>adds an HTML "target" attribute to the hyperlink for each gallery item; see below.</td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">mla_link_attributes</td>
+<td class="mla-doc-table-label">mla_link_attributes</td>
 <td>adds one or more HTML attributes to the hyperlink for each gallery item; see below.</td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">mla_link_class</td>
+<td class="mla-doc-table-label">mla_link_class</td>
 <td>adds an HTML "class" attribute to the hyperlink for each gallery item.</td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">mla_link_href</td>
+<td class="mla-doc-table-label">mla_link_href</td>
 <td>replaces the HTML "href" attribute in the hyperlink for each gallery item; see below.</td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">mla_link_text</td>
+<td class="mla-doc-table-label">mla_link_text</td>
 <td>replaces the thumbnail image or attachment title text displayed for each gallery item.</td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">mla_image_attributes</td>
+<td class="mla-doc-table-label">mla_image_attributes</td>
 <td>adds one or more HTML attributes to the "img" tag of the thumbnail image or icon displayed for each gallery item. Note that if you include an "alt" or "class" attribute in this parameter it will override and replace the corresponding attribute already present in the tag, including any "mla_image_class" or "mla_image_alt" value.</td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">mla_image_class</td>
+<td class="mla-doc-table-label">mla_image_class</td>
 <td><strong>adds</strong> one or more values to the HTML "class" attribute in the "img" tag of the thumbnail image or icon displayed for each gallery item. Existing class values are retained, not replaced.</td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">mla_image_alt</td>
+<td class="mla-doc-table-label">mla_image_alt</td>
 <td>replaces the HTML "alt" attribute in the "img" tag of the thumbnail image or icon displayed for each gallery item.</td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">mla_caption</td>
+<td class="mla-doc-table-label">mla_caption</td>
 <td>replaces the attachment caption text displayed beneath the thumbnail of each gallery item.</td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">mla_nolink_text</td>
+<td class="mla-doc-table-label">mla_nolink_text</td>
 <td>replaces the empty string displayed when there are no gallery items or no pagination link.</td>
 </tr>
 </table>
@@ -362,43 +362,43 @@ Ten <code>[mla_gallery]</code> parameters provide an easy way to simulate thumbn
 </p>
 <table>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">mla_viewer</td>
+<td class="mla-doc-table-label">mla_viewer</td>
 <td>must be "true" or "single" to enable thumbnail substitution. Use "true" unless you experience generation failures due to memory limitations on your server. Use "single" to generate one thumbnail at a time, which may be slower but requires less memory.</td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">mla_viewer_extensions</td>
+<td class="mla-doc-table-label">mla_viewer_extensions</td>
 <td>a comma-delimited list of the file extensions to be processed; the default is "ai,eps,pdf,ps" (do not include the dot (".") preceding the file extension). You may add or remove extensions (when support for additional types becomes available).</td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">mla_viewer_limit</td>
+<td class="mla-doc-table-label">mla_viewer_limit</td>
 <td>the upper limit in megabytes (default none) on the size of the file to be processed. You can set this to avoid processing large documents if performance becomes an issue.</td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">mla_viewer_width</td>
+<td class="mla-doc-table-label">mla_viewer_width</td>
 <td>the maximum width in pixels (default "150") of the thumbnail image. The height (unless also specified) will be adjusted to maintain the page proportions.</td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">mla_viewer_height</td>
+<td class="mla-doc-table-label">mla_viewer_height</td>
 <td>the maximum width in pixels (default "0") of the thumbnail image. The width (unless also specified) will be adjusted to maintain the page proportions.</td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">mla_viewer_best_fit</td>
+<td class="mla-doc-table-label">mla_viewer_best_fit</td>
 <td>retain page proportions (default "false") when both height and width are explicitly stated. If "false", the image will be stretched as required to exactly fit the height and width. If "true", the image will be reduced in size to fit within the bounds, but proportions will be preserved. For example, a typical page is 612 pixels wide and 792 pixels tall. If you set width and height to 300 and set best_fit to true, the thumbnail will be reduced to 231 pixels wide by 300 pixels tall.</td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">mla_viewer_page</td>
+<td class="mla-doc-table-label">mla_viewer_page</td>
 <td>the page number (default "1") to be used for the thumbnail image. If the page does not exist for a particular document the first page will be used instead.</td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">mla_viewer_resolution</td>
+<td class="mla-doc-table-label">mla_viewer_resolution</td>
 <td>the pixels/inch resolution (default 72) of the page before reduction. If you set this to a higher number, such as 300, you will improve thumbnail quality at the expense of additional processing time.</td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">mla_viewer_quality</td>
+<td class="mla-doc-table-label">mla_viewer_quality</td>
 <td>the compression quality (default 90) of the final page. You can set this to a value between 1 and 100 to get smaller files at the expense of image quality; 1 is smallest/worst and 100 is largest/best.</td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">mla_viewer_type</td>
+<td class="mla-doc-table-label">mla_viewer_type</td>
 <td>the MIME type, "image/jpeg" or "image/png", (default image/jpeg) of the final thumbnail. You can, for example, set this to "image/png" to retain a transparent background instead of the white jpeg background.</td>
 </tr>
 </table>
@@ -429,67 +429,67 @@ The Orderby parameter specifies which database field(s) are used to sort the gal
 </p>
 <table>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">none</td>
+<td class="mla-doc-table-label">none</td>
 <td>No order.</td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">ID</td>
+<td class="mla-doc-table-label">ID</td>
 <td>Order by post id. Note capitalization.</td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">author</td>
+<td class="mla-doc-table-label">author</td>
 <td>Order by author (id, not display name).</td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">date</td>
+<td class="mla-doc-table-label">date</td>
 <td>Order by date uploaded.</td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">description, content</td>
+<td class="mla-doc-table-label">description, content</td>
 <td>Order by attachment description.</td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">title</td>
+<td class="mla-doc-table-label">title</td>
 <td>Order by attachment title.</td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">caption, excerpt</td>
+<td class="mla-doc-table-label">caption, excerpt</td>
 <td>Order by attachment caption. </td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">slug, name</td>
+<td class="mla-doc-table-label">slug, name</td>
 <td>Order by attachment name.</td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">modified</td>
+<td class="mla-doc-table-label">modified</td>
 <td>Order by last modified date.</td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">parent</td>
+<td class="mla-doc-table-label">parent</td>
 <td>Order by post/page parent id.</td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">menu_order</td>
+<td class="mla-doc-table-label">menu_order</td>
 <td>Order by page order.</td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">mime_type</td>
+<td class="mla-doc-table-label">mime_type</td>
 <td>Order by attachment MIME type.</td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">comment_count</td>
+<td class="mla-doc-table-label">comment_count</td>
 <td>Order by number of comments.</td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">rand</td>
+<td class="mla-doc-table-label">rand</td>
 <td>Random order.</td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">&lt;keyname&gt;, meta_value,<br />meta_value_num</td>
+<td class="mla-doc-table-label">&lt;keyname&gt;, meta_value,<br />meta_value_num</td>
 <td style="vertical-align: top;">Order by custom field value. Note that a <em>'meta_key=keyname'</em> must also be present in the query. For example, to sort by a custom field called "Publication Date" and display the most recent items first, code <code>[mla_gallery meta_key="Publication Date" orderby=meta_value order=DESC]</code></td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">post__in</td>
+<td class="mla-doc-table-label">post__in</td>
 <td>Preserve order given in the <em>ids, include</em> or <em>post__in</em> array.</td>
 </tr>
 </table>
@@ -513,27 +513,27 @@ The Link parameter specifies the target and type of link from the gallery item t
 </p>
 <table>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">permalink, post</td>
+<td class="mla-doc-table-label">permalink, post</td>
 <td>Link to the attachment's "media page". This is the default value.</td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">file, full</td>
+<td class="mla-doc-table-label">file, full</td>
 <td>Link directly to the attachment file.</td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">thumbnail,&nbsp;medium,<br />large</td>
+<td class="mla-doc-table-label">thumbnail,&nbsp;medium,<br />large</td>
 <td>For image attachments, the size of the image file you want to link to.</td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold; font-style:italic">(other registered size)</td>
+<td class="mla-doc-table-label" style="font-style:italic">(other registered size)</td>
 <td>For image attachments, any additional image size that was registered with add_image_size(). If the specified size is not available or if the attachment is not an image, the link will go directly to the attachment file.</td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">span</td>
+<td class="mla-doc-table-label">span</td>
 <td>Substitutes a <code>&lt;span&gt;&lt;/span&gt;</code> tag for the hyperlink tag. You can use the "mla_link_attributes" and "mla_link_class" parameters to add attributes to the <code>&lt;span&gt;</code> tag. You can use the "mla_link_text" parameter to customize the text within the span.</td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">none</td>
+<td class="mla-doc-table-label">none</td>
 <td>Eliminates the hyperlink tag surrounding the thumbnail image or text. You can use the "mla_link_text" parameter to customize the contents.</td>
 </tr>
 </table>
@@ -544,11 +544,11 @@ The Link parameter specifies the target and type of link from the gallery item t
 <h4>Include, Exclude</h4>
 <table>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">include</td>
+<td class="mla-doc-table-label">include</td>
 <td>comma separated attachment IDs to show only the information from these attachments.</td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">exclude</td>
+<td class="mla-doc-table-label">exclude</td>
 <td>comma separated attachment IDs excludes the information from these attachments. Please note that include and exclude cannot be used together.</td>
 </tr>
 </table>
@@ -568,19 +568,19 @@ You can use the "post_parent" to override the default behavior. If you set "post
 </p>
 <table>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">none</td>
+<td class="mla-doc-table-label">none</td>
 <td>all the <strong>unattached</strong> items are displayed, i.e., items with post_parent equal to zero (0)</td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">current</td>
+<td class="mla-doc-table-label">current</td>
 <td>only the items attached to the current post/page are displayed, i.e., the post/page that contains the shortcode</td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">any</td>
+<td class="mla-doc-table-label">any</td>
 <td>all the <strong>attached</strong> items are displayed, i.e., items with post_parent not equal to zero (0)</td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">all</td>
+<td class="mla-doc-table-label">all</td>
 <td>all of the items are displayed, i.e., post_parent is ignored</td>
 </tr>
 </table>
@@ -605,23 +605,23 @@ The Category parameters search in the WordPress core &quot;Categories&quot; taxo
 </p>
 <table>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">cat (int)</td>
+<td class="mla-doc-table-label">cat (int)</td>
 <td>use category id.</td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">category,<br />category_name&nbsp;(string)</td>
+<td class="mla-doc-table-label">category,<br />category_name&nbsp;(string)</td>
 <td>use category slug (NOT name). As a convenience, MLA allows "category" as a synonym for "category_name".</td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">category__and (array)</td>
+<td class="mla-doc-table-label">category__and (array)</td>
 <td>use category id.</td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold; font-style:italic">category__in (array)</td>
+<td class="mla-doc-table-label" style="font-style:italic">category__in (array)</td>
 <td>use category id.</td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">category__not_in (array)</td>
+<td class="mla-doc-table-label">category__not_in (array)</td>
 <td>use category id.</td>
 </tr>
 </table>
@@ -663,14 +663,14 @@ The default behavior of the simple taxonomy query will match any of the terms in
 <table>
 <tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">tax_relation</td>
+<td class="mla-doc-table-label">tax_relation</td>
 <td>SQL operator to join multiple taxonomy queries; can be "AND" (the default) or "OR".</td>
 </tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">tax_operator</td>
+<td class="mla-doc-table-label">tax_operator</td>
 <td>SQL operator to join the terms within each taxonomy; can be "IN" (the default), "NOT IN" or "AND".</td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">tax_include_children</td>
+<td class="mla-doc-table-label">tax_include_children</td>
 <td>whether or not to include children for hierarchical taxonomies; can be "true" (the default) or "false". </td>
 </tr>
 </table>
@@ -717,19 +717,19 @@ Searching for keywords within the names of taxonomy terms is a completely differ
 </p>
 <table>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">mla_terms_phrases</td>
+<td class="mla-doc-table-label">mla_terms_phrases</td>
 <td>The word(s) or phrase(s) you are searching for.</td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">mla_terms_taxonomies</td>
+<td class="mla-doc-table-label">mla_terms_taxonomies</td>
 <td>A comma-separated list of the taxonomy or taxonomies in which to search. Enter the slug(s) for one or more of the taxonomies registered for Media Library items, e.g., attachment_category or attachment_tag.</td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">mla_phrase_connector</td>
+<td class="mla-doc-table-label">mla_phrase_connector</td>
 <td>Choose from OR to require that any one of the phrases must match for the search to succeed, or AND (the default) to require that all of the phrases must match.</td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">mla_term_connector</td>
+<td class="mla-doc-table-label">mla_term_connector</td>
 <td>If you enter multiple terms (separated by commas) in the <code>mla_terms_phrases</code> parameter, this parameter controls how they are connected. Choose from OR (the default) to require that any one of the terms must match for the search to succeed, or AND to require that all of the terms must match.</td>
 </tr>
 </table>
@@ -751,35 +751,35 @@ For compatibility with the WordPress <code>[gallery]</code> shortcode, these par
 Pagination parameters let you divide your <code>[mla_gallery]</code> display into two or more pages when the display includes a large number of items. These parameters work with MLA's <a href="#mla_output_parameter"><strong>Support for Alternative Gallery Output, e.g., Pagination</strong></a> to make it easy to construct multi-page galleries without resorting to PHP templates and code in your theme.
 <table>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">nopaging</td>
+<td class="mla-doc-table-label">nopaging</td>
 <td>The <code>[mla_gallery]</code> shortcode supplies <code>nopaging=true</code> as a default parameter. If you are working with a template that supports pagination you can replace this with specific values for "numberposts", "posts_per_page", "posts_per_archive_page", "paged" and/or "offset" . You can also pass "paged=current" to suppress the "nopaging" default; "current" will be replaced by the appropriate value (<code>get_query_var('paged')</code> or <code>get_query_var('page')</code>).</td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">numberposts,<br />posts_per_page</td>
+<td class="mla-doc-table-label">numberposts,<br />posts_per_page</td>
 <td>the number of items to display on each gallery page.</td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">posts_per_archive_page</td>
+<td class="mla-doc-table-label">posts_per_archive_page</td>
 <td>number of items to show per page - on archive pages only. Over-rides posts_per_page on pages where is_archive() or is_search() would be true. Not often used.</td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">paged</td>
+<td class="mla-doc-table-label">paged</td>
 <td>number of page. Show the items that would normally show up just on page X. The "paged=current" parameter is useful for "paginated single posts" (i.e. posts that include the <code>&lt;!--nextpage--&gt;</code> Quicktag one or more times). Simply make two or more copies of your <code>[mla_gallery]</code> shortcode separated by the Quicktag and include the "paged=current' in each copy. For true pagination it is better to use the "mla_paginate_current" parameter.</td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">offset</td>
+<td class="mla-doc-table-label">offset</td>
 <td>the number of terms to skip over before starting the current gallery page. This parameter is usually derived automatically from the more useful "mla_paginate_current" parameter.</td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">mla_paginate_current</td>
+<td class="mla-doc-table-label">mla_paginate_current</td>
 <td>the "current" gallery page; defaults to one (1) if not specified. MLA will usually manage this for you, looking for this parameter in the HTML $_REQUEST array if it is not coded in the gallery shortcode.</td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">mla_page_parameter</td>
+<td class="mla-doc-table-label">mla_page_parameter</td>
 <td>the name of the parameter containing the current page number; default "mla_paginate_current". You can change the name if you need multiple paginated galleries on one post/page. If you use this parameter, make sure you add it to the gallery shortcode and all pagination shortcodes for that gallery, and use the same unique value in all shortcodes for the specific gallery.</td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">mla_paginate_total</td>
+<td class="mla-doc-table-label">mla_paginate_total</td>
 <td>the highest page number you want to display; defaults to (total items / posts_per_page) if not specified, which is usually what you want. </td>
 </tr>
 </table>
@@ -809,17 +809,17 @@ The <code>[mla_gallery]</code> shortcode supports the simple custom field parame
 </p>
 <table>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">meta_key&nbsp;(string)</td>
+<td class="mla-doc-table-label">meta_key&nbsp;(string)</td>
 <td>Custom field key.</td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">meta_value&nbsp;(string)</td>
+<td class="mla-doc-table-label">meta_value&nbsp;(string)</td>
 <td>Custom field value.</td>
 </tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">meta_value_num&nbsp;(number)</td>
+<td class="mla-doc-table-label">meta_value_num&nbsp;(number)</td>
 <td>Custom field value.</td>
 </tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">meta_compare&nbsp;(string)</td>
+<td class="mla-doc-table-label">meta_compare&nbsp;(string)</td>
 <td>Operator to test the 'meta_value'. Possible values are '!=', '>', '>=', '<', or '<='. Default value is '='. </td>
 </tr>
 </table>
@@ -856,23 +856,23 @@ You can use the <code>mla_search_connector</code> and <code>mla_search_fields</c
 </p>
 <table>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">s</td>
+<td class="mla-doc-table-label">s</td>
 <td>The word(s) or phrase(s) you are searching for.</td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">mla_search_fields</td>
+<td class="mla-doc-table-label">mla_search_fields</td>
 <td>The fields in which to search. Choose from title, content, excerpt, name, terms. Searching on alt-text is not supported.</td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">mla_search_connector</td>
+<td class="mla-doc-table-label">mla_search_connector</td>
 <td>Choose from OR to require that any one of the phrases must match for the search to succeed, or AND (the default) to require that all of the phrases must match.</td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">sentence</td>
+<td class="mla-doc-table-label">sentence</td>
 <td>Add <code>sentence=true</code> to require that all of the words entered must match in sequence. This is equivalent to putting quotes around all of the words in your search.</td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">exact</td>
+<td class="mla-doc-table-label">exact</td>
 <td>Add <code>exact=true</code> to require that the entire field content must match the search text.</td>
 </tr>
 </table>
@@ -886,15 +886,15 @@ For applications that have very large numbers of attachments and taxonomy terms,
 </p>
 <table>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">cache_results</td>
+<td class="mla-doc-table-label">cache_results</td>
 <td>Post information cache.</td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">update_post_meta_cache</td>
+<td class="mla-doc-table-label">update_post_meta_cache</td>
 <td>Post meta information cache.</td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">update_post_term_cache</td>
+<td class="mla-doc-table-label">update_post_term_cache</td>
 <td>Post term information cache.</td>
 </tr>
 </table>
@@ -912,7 +912,7 @@ If you code <code>mla_debug=log</code> all of the information will be written to
 </p>
 <h4>MLA Gallery Filters and Actions (Hooks)</h4>
 <p>
-The <code>[mla_gallery]</code> shortcode supports a comprehensive set of filters and actions that give you complete control over gallery composition from PHP code in your theme or in another plugin. An example of using the hooks from a simple, stand-alone plugin can be found here: <a title="View the Hooks Example source code" href="[+examples_url+]mla-hooks-example.php.txt" target="_blank" style="font-size:14px; font-weight:bold">mla-hooks-example.php.txt</a>. To run the example:
+The <code>[mla_gallery]</code> shortcode supports a comprehensive set of filters and actions that give you complete control over gallery composition from PHP code in your theme or in another plugin. An example of using the hooks from a simple, stand-alone plugin can be found here: <a title="View the Hooks Example source code" href="[+examples_url+]mla-hooks-example.php.txt" target="_blank" class="mla-doc-bold-link">mla-hooks-example.php.txt</a>. To run the example:
 <ol>
 <li>Edit the code to, for example, uncomment the <code>error_log()</code> calls so you can see what is passed to the hooks you are interested in.</li>
 <li>Remove the ".txt" extension and save the "mla-hooks-example.php" file in your plugins directory.</li>
@@ -926,60 +926,60 @@ The example code documents each hook with comments in the filter/action function
 </p>
 <table>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">mla_raw_gallery_attributes</td>
-<td>called at the beginning of the gallery, before the attributes pass through the logic that handles the 'mla_page_parameter' and "request:" prefix processing.</td>
+<td class="mla-doc-hook-label">mla_raw_gallery_attributes</td>
+<td class="mla-doc-hook-definition">called at the beginning of the gallery, before the attributes pass through the logic that handles the 'mla_page_parameter' and "request:" prefix processing.</td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">mla_gallery_attributes,<br />mla_gallery_arguments</td>
-<td>called at the beginning of the gallery. You can record/modify shortcode parameter values before (attributes) or after (arguments) they are combined with all the defaults.</td>
+<td class="mla-doc-hook-label">mla_gallery_attributes,<br />mla_gallery_arguments</td>
+<td class="mla-doc-hook-definition">called at the beginning of the gallery. You can record/modify shortcode parameter values before (attributes) or after (arguments) they are combined with all the defaults.</td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">mla_gallery_initial_content</td>
-<td>called just after the <code>mla_gallery_attributes</code> filter, so you can inspect/modify any content enclosed by the <code>[mla_gallery]content[\mla_gallery]</code> "enclosing" shortcode format.</td>
+<td class="mla-doc-hook-label">mla_gallery_initial_content</td>
+<td class="mla-doc-hook-definition">called just after the <code>mla_gallery_attributes</code> filter, so you can inspect/modify any content enclosed by the <code>[mla_gallery]content[\mla_gallery]</code> "enclosing" shortcode format.</td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">mla_gallery_query_attributes,<br />mla_gallery_query_arguments</td>
-<td>called just before the <code>WP_Query->query()</code> call that selects gallery items, with query parameters before or after they are combined with defaults.</td>
+<td class="mla-doc-hook-label">mla_gallery_query_attributes,<br />mla_gallery_query_arguments</td>
+<td class="mla-doc-hook-definition">called just before the <code>WP_Query->query()</code> call that selects gallery items, with query parameters before or after they are combined with defaults.</td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">mla_gallery_wp_query_object</td>
-<td>called just after the <code>WP_Query->query()</code> call, so you can inspect/record the results.</td>
+<td class="mla-doc-hook-label">mla_gallery_wp_query_object</td>
+<td class="mla-doc-hook-definition">called just after the <code>WP_Query->query()</code> call, so you can inspect/record the results.</td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">mla_gallery_final_content</td>
-<td>called just after the <code>mla_gallery_wp_query_object</code> filter, so you can inspect/modify any content enclosed by the <code>[mla_gallery]content[\mla_gallery]</code> "enclosing" shortcode format before it is passed to the alternative gallery shortcode.</td>
+<td class="mla-doc-hook-label">mla_gallery_final_content</td>
+<td class="mla-doc-hook-definition">called just after the <code>mla_gallery_wp_query_object</code> filter, so you can inspect/modify any content enclosed by the <code>[mla_gallery]content[\mla_gallery]</code> "enclosing" shortcode format before it is passed to the alternative gallery shortcode.</td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">use_mla_gallery_style</td>
-<td>allow or suppress the inclusion of CSS styles in the gallery output.</td>
+<td class="mla-doc-hook-label">use_mla_gallery_style</td>
+<td class="mla-doc-hook-definition">allow or suppress the inclusion of CSS styles in the gallery output.</td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">mla_gallery_style</td>
-<td>an old filter retained for compatibility with earlier MLA versions.</td>
+<td class="mla-doc-hook-label">mla_gallery_style</td>
+<td class="mla-doc-hook-definition">an old filter retained for compatibility with earlier MLA versions.</td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">mla_gallery_style_values,<br /> mla_gallery_style_template,<br />mla_gallery_style_parse</td>
-<td>for manipulating the Style template.</td>
+<td class="mla-doc-hook-label">mla_gallery_style_values,<br /> mla_gallery_style_template,<br />mla_gallery_style_parse</td>
+<td class="mla-doc-hook-definition">for manipulating the Style template.</td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">mla_gallery_open_values,<br />mla_gallery_open_template,<br />mla_gallery_open_parse</td>
-<td>for manipulating the "Open" part of the Markup template.</td>
+<td class="mla-doc-hook-label">mla_gallery_open_values,<br />mla_gallery_open_template,<br />mla_gallery_open_parse</td>
+<td class="mla-doc-hook-definition">for manipulating the "Open" part of the Markup template.</td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">mla_gallery_row_open_values,<br />mla_gallery_row_open_template,<br />mla_gallery_row_open_parse</td>
-<td>for manipulating the "Row Open" part of the Markup template.</td>
+<td class="mla-doc-hook-label">mla_gallery_row_open_values,<br />mla_gallery_row_open_template,<br />mla_gallery_row_open_parse</td>
+<td class="mla-doc-hook-definition">for manipulating the "Row Open" part of the Markup template.</td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">mla_gallery_item_values,<br />mla_gallery_item_template,<br />mla_gallery_item_parse</td>
-<td>for manipulating the "Item" part of the Markup template.</td>
+<td class="mla-doc-hook-label">mla_gallery_item_values,<br />mla_gallery_item_template,<br />mla_gallery_item_parse</td>
+<td class="mla-doc-hook-definition">for manipulating the "Item" part of the Markup template.</td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">mla_gallery_row_close_values,<br />mla_gallery_row_close_template,<br />mla_gallery_row_close_parse</td>
-<td>for manipulating the "Row Close" part of the Markup template.</td>
+<td class="mla-doc-hook-label">mla_gallery_row_close_values,<br />mla_gallery_row_close_template,<br />mla_gallery_row_close_parse</td>
+<td class="mla-doc-hook-definition">for manipulating the "Row Close" part of the Markup template.</td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">mla_gallery_close_values,<br />mla_gallery_close_template,<br />mla_gallery_close_parse</td>
-<td>for manipulating the "Close" part of the Markup template.</td>
+<td class="mla-doc-hook-label">mla_gallery_close_values,<br />mla_gallery_close_template,<br />mla_gallery_close_parse</td>
+<td class="mla-doc-hook-definition">for manipulating the "Close" part of the Markup template.</td>
 </tr>
 </table>
 <a name="mla_tag_cloud"></a>
@@ -1012,19 +1012,19 @@ The traditional tag cloud output is a "heat map" of term names where larger name
 </p>
 <table>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">flat</td>
+<td class="mla-doc-table-label">flat</td>
 <td>Returns a sequence of hyperlink tags without further HTML markup. The "separator" parameter content (default, one newline character) is inserted between each hyperlink. This is the default value.</td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">list</td>
+<td class="mla-doc-table-label">list</td>
 <td>Returns hyperlinks enclosed by one of the HTML list tags; unordered (&lt;ul&gt;&lt;/ul&gt;), ordered (&lt;ol&gt;&lt;/ol&gt;) or definitions (&lt;dl&gt;&lt;/dl&gt;), which allow for each term to have a "caption". The "itemtag", "termtag" and "captiontag" parameters customize the list markup.</td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">grid</td>
+<td class="mla-doc-table-label">grid</td>
 <td>Modeled on the galleries produced by <code>[mla_gallery]</code>; a rectangular display with rows and columns. The tag parameters listed above, the "columns" parameter and the Display Style parameters customize the display.</td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">array</td>
+<td class="mla-doc-table-label">array</td>
 <td>Returns a PHP array of cloud hyperlinks. This output format is not available through the shortcode; it is allowed when the <code>MLAShortcodes::mla_tag_cloud()</code> function is called directly from your theme or plugin PHP code.</td>
 </tr>
 </table>
@@ -1038,39 +1038,39 @@ Each item in the tag cloud comprises a term name of varying size, a hyperlink su
 </p>
 <table>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">smallest</td>
+<td class="mla-doc-table-label">smallest</td>
 <td>The text size (default 8) of the tag with the smallest count value (units given by unit parameter).</td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">largest</td>
+<td class="mla-doc-table-label">largest</td>
 <td>The text size (default 22) of the tag with the highest count value (units given by the unit parameter).</td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">unit</td>
+<td class="mla-doc-table-label">unit</td>
 <td>Unit of measure as pertains to the smallest and largest values. This can be any CSS length value, e.g. pt (the default), px, em, %.</td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">separator</td>
+<td class="mla-doc-table-label">separator</td>
 <td>The text/space between tags. Default '\n' (whitespace)</td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">single_text</td>
+<td class="mla-doc-table-label">single_text</td>
 <td>The text for the "title" attribute (Rollover Text) when the count value is one. The default is '%d item". If you change the default, don't forget to include the '%d" placeholder.</td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">multiple_text</td>
+<td class="mla-doc-table-label">multiple_text</td>
 <td>The text for the "title" attribute (Rollover Text) when the count value is zero or more than one. The default is '%d items". If you change the default, don't forget to include the '%d" placeholder.</td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">link</td>
+<td class="mla-doc-table-label">link</td>
 <td>Chooses the destination of the item hyperlink; details in the next section below.</td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">current_item</td>
+<td class="mla-doc-table-label">current_item</td>
 <td>Identifies the current/selected item in the cloud. An integer value will be interpreted as a term id and anything else as a term slug. It will be ignored if it does not match an item in the cloud.</td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">current_item_class</td>
+<td class="mla-doc-table-label">current_item_class</td>
 <td>The class attribute for the current item in the cloud as determined by the "current_item" parameter (if specified), Defaults to "mla_current_item".</td>
 </tr>
 </table>
@@ -1084,23 +1084,23 @@ The Link parameter specifies the target and type of link from the tag cloud term
 </p>
 <table>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">view</td>
+<td class="mla-doc-table-label">view</td>
 <td>Link to the term's "archive page"; this is the default value. Support for archive pages, or "tag archives", is theme-dependent. There is an introduction to tag archives in the WordPress Codex at the bottom of the <a href="http://codex.wordpress.org/Function_Reference/wp_tag_cloud#Creating_a_Tag_Archive" title="Codex Tag Archive Discussion" target="_blank"><code>wp_tag_cloud</code> Function Reference</a>.</td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">edit</td>
+<td class="mla-doc-table-label">edit</td>
 <td>Link to the term's "edit tag/category" admin screen. This is only useful if the user is logged in and has the appropriate role or capabilities for accessing the edit screen.</td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold; font-style:italic">(mla_link_href)</td>
+<td class="mla-doc-table-label" style="font-style:italic">(mla_link_href)</td>
 <td>Link to a custom destination, typically another post/page. If the "mla_link_href" parameter is present the value of the "link" parameter is ignored. See the pagination example later in this section for more details.</td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">span</td>
+<td class="mla-doc-table-label">span</td>
 <td>Substitutes a <code>&lt;span&gt;&lt;/span&gt;</code> tag for the hyperlink tag. You can use the "mla_link_attributes" and "mla_link_class" parameters to add attributes to the <code>&lt;span&gt;</code> tag. You can use the "mla_link_text" parameter to customize the text within the span.</td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">none</td>
+<td class="mla-doc-table-label">none</td>
 <td>Eliminates the hyperlink tag surrounding the item text. You can use the "mla_link_text" parameter to customize the contents.</td>
 </tr>
 </table>
@@ -1114,11 +1114,11 @@ Two parameters provide a way to apply custom style and markup templates to your 
 </p>
 <table>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">mla_style</td>
+<td class="mla-doc-table-label">mla_style</td>
 <td>replaces the default style template for an <code>[mla_tag_cloud]</code> shortcode. You can code "none" to suppress the addition of CSS inline styles entirely.</td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">mla_markup</td>
+<td class="mla-doc-table-label">mla_markup</td>
 <td>replaces the default markup template for an <code>[mla_tag_cloud]</code> shortcode</td>
 </tr>
 </table>
@@ -1127,15 +1127,15 @@ Three parameters provide control over the placement, size and spacing of terms i
 </p>
 <table>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">mla_float</td>
+<td class="mla-doc-table-label">mla_float</td>
 <td>specifies the CSS float attribute of the ".tag-cloud-item" style. Acceptable values are "left", "none", "right"; the default value is "right" if current locale is RTL, "left" on LTR (left-to-right inline flow, e.g., English).</td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">mla_margin</td>
+<td class="mla-doc-table-label">mla_margin</td>
 <td>specifies the CSS margin property of the ".tag-cloud-item" style. The default value is "1.5%", a percent of the total grid width. You can also specify any dimension value, e.g., "10px" or "2em", as well as the "auto" or "inherit" values. Finally, you can specify "none", which will remove the margin property from the styles template altogether.</td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">mla_itemwidth</td>
+<td class="mla-doc-table-label">mla_itemwidth</td>
 <td>specifies the CSS width attribute of the ".tag-cloud-item" style. You can specify a percent of the total grid width, e.g., "33.3%". You can also specify any dimension value, e.g., "10px" or "2em", as well as the "auto" or "inherit" values. You can specify "none", which will remove the margin property from the styles template altogether.
 <br />&nbsp;<br />
 Two additional values, "calculate" (the default) and "exact",  calculate the width automatically, based on the "columns" and "mla_margin" values. For "calculate", the width is calculated by dividing 100% by the number of columns, then subtracting twice the margin. For example, the default value is (floor(1000/3)/10) - ( 2.0 * 1.5 ) = 30.3%. Adding in the left and right margins makes each column 33.3% and the total width will be 99.9%
@@ -1154,35 +1154,35 @@ Eight parameters provide an easy way to control the contents of tag cloud items 
 <table>
 <tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">mla_link_attributes</td>
+<td class="mla-doc-table-label">mla_link_attributes</td>
 <td>adds one or more HTML attributes to the hyperlink for each item; see below</td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">mla_link_class</td>
+<td class="mla-doc-table-label">mla_link_class</td>
 <td><strong>adds</strong> one or more classes to any already defined for the hyperlink </td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">mla_link_href</td>
+<td class="mla-doc-table-label">mla_link_href</td>
 <td>replaces the HTML "href" attribute in the hyperlink for each item; see below</td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">mla_link_text</td>
+<td class="mla-doc-table-label">mla_link_text</td>
 <td>replaces the term name text displayed for each item</td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">mla_nolink_text</td>
+<td class="mla-doc-table-label">mla_nolink_text</td>
 <td>replaces the empty string displayed when there are no cloud items or no pagination link</td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">mla_rollover_text</td>
+<td class="mla-doc-table-label">mla_rollover_text</td>
 <td>replaces the HTML "title" attribute in the hyperlink for each item. This is the attachment title text displayed when the mouse rolls or hovers over the term name</td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">mla_caption</td>
+<td class="mla-doc-table-label">mla_caption</td>
 <td>replaces the caption text displayed beneath each item. The caption appears for "grid" items and for "list" items when the "captiontag" parameter is present.</td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">mla_target</td>
+<td class="mla-doc-table-label">mla_target</td>
 <td>adds an HTML "target" attribute to the hyperlink for each gallery item; see below</td>
 </tr>
 <tr>
@@ -1206,77 +1206,77 @@ The data selection parameters specify which taxonomy (or taxonomies) the terms a
 </p>
 <table>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">taxonomy</td>
+<td class="mla-doc-table-label">taxonomy</td>
 <td>The taxonomy or taxonomies to retrieve terms from; default "post_tag". Use the name/slug of each taxonomy, not the display name, e.g., 'post_tag', 'category', 'attachment_tag', or 'attachment_category'. You can specify multiple taxonomies as a comma-separated string or (if you are calling <code>MLAShortcodes::mla_tag_cloud()</code> function directly from your theme or plugin PHP code) as an array.</td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">post_mime_type</td>
+<td class="mla-doc-table-label">post_mime_type</td>
 <td>The MIME type(s) of the items to include in the term-specific counts. The default is "all", which avoids the additional database effort required to filter by MIME type. You can override the default to, for example, display PDF documents (<code>post_mime_type=application/pdf</code>) or all image MIME types (<code>post_mime_type=image</code>). You can select several MIME types with a comma-separated list, e.g., <code>post_mime_type='audio,video'</code>. Wildcard specifications are also supported. For example, <code>post_mime_type='*/mpeg'</code> to select audio and video mpeg formats or <code>post_mime_type='application/*ms*'</code> to select all Microsoft application formats (Word, Excel, etc.).</td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">post_type</td>
+<td class="mla-doc-table-label">post_type</td>
 <td>The <a href="http://codex.wordpress.org/Post_Types" title="WordPress Codex &quot;Post Types&quot; page" target="_blank">post type(s)</a> of the items to include in the term-specific counts. The default is "attachment". You can override the default if you want to count other types for which the taxonomy is registered, e.g., "post" to count Posts in the "category" and "post_tag" taxonomies. The <a href="http://codex.wordpress.org/Post_Types" title="WordPress Codex &quot;Post Types&quot; page" target="_blank">Codex Page</a> documents other post type values. Make sure your "post_status" and "post_type" values are consistent, e.g., use <code>post_type="attachment,post" post_status="inherit,publish"</code> together.</td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">post_status</td>
+<td class="mla-doc-table-label">post_status</td>
 <td>The <a href="http://codex.wordpress.org/Post_Status" title="WordPress Codex &quot;Post Status&quot; page" target="_blank">post status value(s)</a> of the items to include in the term-specific counts. The default is "inherit", which counts attachments (Media Library Items). You can override the default if you want to count other values, e.g., "publish" to count published Posts in the "category" and "post_tag" taxonomies. If you code "private" and the user is not logged in, "private" will be removed. The <a href="http://codex.wordpress.org/Post_Status" title="WordPress Codex &quot;Post Status&quot; page" target="_blank">Codex page</a> documents other post status values.</td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">ids</td>
+<td class="mla-doc-table-label">ids</td>
 <td>A comma-separated list of <strong>attachment ID</strong> values for an item-specific cloud. Only those terms assigned to the attachment(s) in the list will be included. You can have one or more IDs and you can include assigned terms from one or more taxonomies. Do not use the "include" parameter if you use the "ids" parameter.</td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">no_count</td>
+<td class="mla-doc-table-label">no_count</td>
 <td>The default, "false", computes a term-specific count of the number of attachments assigned to that term. If you have a large number of terms and/or attachments, this can take a long time.<br />
 &nbsp;<br />
 You can code "true" to omit the attachment-counting process. If you do that, the "post_mime_type", "post_type", "post_status", "minimum", "number" and "orderby=count" parameters are also ignored, since they require counting the attachments.<br />
 &nbsp;</td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">include</td>
+<td class="mla-doc-table-label">include</td>
 <td>A comma-separated list of term ids (<strong>not</strong> names or slugs) to include. Only the terms in this list that are used in the taxonomies you specified will be retrieved.</td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">exclude</td>
+<td class="mla-doc-table-label">exclude</td>
 <td>A comma-separated list of term ids (<strong>not</strong> names or slugs) to exclude from the returned values.</td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">parent</td>
+<td class="mla-doc-table-label">parent</td>
 <td>Get direct children of this term id (only terms whose explicit parent is this value). If 0 is passed, only top-level terms are returned.</td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">minimum</td>
+<td class="mla-doc-table-label">minimum</td>
 <td>The minimum number of attachments that must be associated with the term for the term to be included. For example, "minimum=1" will omit "empty" terms.</td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">number</td>
+<td class="mla-doc-table-label">number</td>
 <td>The maximum number of "most popular" terms to return. The default, zero, returns them all. Terms are sorted by "count DESC, id ASC" to apply this constraint.</td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">orderby</td>
+<td class="mla-doc-table-label">orderby</td>
 <td>The sort order of the retrieved terms. Can be one or more of "count", "id" (term_id), "name" (the default), "none", "random", or "slug".</td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">order</td>
+<td class="mla-doc-table-label">order</td>
 <td>Can be "ASC" (ascending, the default) or "DESC" (descending).</td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">preserve_case</td>
+<td class="mla-doc-table-label">preserve_case</td>
 <td>Preserve upper- and lower-case distinctions when sorting by name. The default, "false", specifies a case-insensitive sort order.</td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">pad_counts</td>
+<td class="mla-doc-table-label">pad_counts</td>
 <td>True to include the count of all children in their parents' count. The default, "false", does not include children in their parents' count.<br />
 &nbsp;<br />
 The "pad_counts" parameter is only applied to the first (or only) taxonomy you specify, and that taxonomy must be hierarchical to see any difference in the counts.<br />
 &nbsp;</td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">limit</td>
+<td class="mla-doc-table-label">limit</td>
 <td>The number of terms to return. This parameter is used for pagination; it is applied <strong>after</strong> and separate from the "number" parameter above.</td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">offset</td>
+<td class="mla-doc-table-label">offset</td>
 <td>The number of terms to skip before returning the results. This parameter is used for pagination.</td>
 </tr>
 </table>
@@ -1300,27 +1300,27 @@ If you code <code>mla_debug=log</code> all of the information will be written to
 Substitution parameters are a powerful way to add general and attachment-specific values to the gallery display. For example, if you code "<code>mla_link_href="{+page_url+}?current_id={+term_id+}&amp;mla_cloud_current={+request:mla_cloud_current+}"</code>, the hyperlinks behind each cloud term will contain the page URL and the taxonomy term ID. There are many parameter names like `page_url` and `term_id` divided in several categories:
 <table>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">Cloud-specific</td>
+<td class="mla-doc-table-label">Cloud-specific</td>
 <td>values that are known at the beginning of shortcode processing and remain the same for the entire shortcode, such as the ID and URL of the post/page in which the shortcode appears</td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">Style</td>
+<td class="mla-doc-table-label">Style</td>
 <td>values that are known when the cloud-specific CSS inline styles are composed just before cloud output begins</td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">Markup</td>
+<td class="mla-doc-table-label">Markup</td>
 <td>values that are known at the beginning of cloud output processing and remain the same for the entire cloud</td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">Item-specific</a></td>
+<td class="mla-doc-table-label">Item-specific</a></td>
 <td  style="vertical-align: top">values that change for each term/item in the cloud, such as Name and Description</td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold"><a href="#mla_variable_parameters">Field-level</a></td>
+<td class="mla-doc-table-label"><a href="#mla_variable_parameters">Field-level</a></td>
 <td>additional values from sources like query arguments and shortcode parameters. The "request:" and "query:" field-level prefixes can be used in the cloud. The other prefixes are attachment-specific and have no meaning in a cloud</td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold"><a href="#mla_template_parameters">Content Template</a></td>
+<td class="mla-doc-table-label"><a href="#mla_template_parameters">Content Template</a></td>
 <td>lets you compose a value from multiple substitution parameters and test for empty values, choose among two or more alternatives or suppress output entirely</td>
 </tr>
 </table>
@@ -1334,72 +1334,72 @@ To use a substitution parameter in your shortcode, simply add "{+" before the su
 <strong>Cloud-specific substitution parameters</strong> are known at the beginning of shortcode processing and they do not change during processing. They can be used, for example, in any of the data selection parameters to change the items selected for the cloud based on information about the post/page on which the cloud appears. The cloud-specific substitution parameters are:
 <table>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">site_url</td>
+<td class="mla-doc-table-label">site_url</td>
 <td>absolute URL to the site directory, without trailing slash</td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">base_url</td>
+<td class="mla-doc-table-label">base_url</td>
 <td>absolute URL to the upload directory, without trailing slash</td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">base_dir</td>
+<td class="mla-doc-table-label">base_dir</td>
 <td>absolute (full) path to the upload directory, without trailing slash</td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">instance</td>
+<td class="mla-doc-table-label">instance</td>
 <td>starts at '1', incremented for each additional shortcode in the post/page</td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">selector</td>
+<td class="mla-doc-table-label">selector</td>
 <td>"mla_tag_cloud-{$instance}", e.g., mla_tag_cloud-1</td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">page_ID,<br />id</td>
+<td class="mla-doc-table-label">page_ID,<br />id</td>
 <td style="vertical-align: top">the <code>ID</code> value of the post/page in which the cloud appears</td>
 </tr>
 <tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">page_author</td>
+<td class="mla-doc-table-label">page_author</td>
 <td>the <code>post_author</code> value of the post/page in which the cloud appears</td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">page_date</td>
+<td class="mla-doc-table-label">page_date</td>
 <td>the <code>post_date</code> value of the post/page in which the cloud appears</td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">page_content</td>
+<td class="mla-doc-table-label">page_content</td>
 <td>the <code>post_content</code> value of the post/page in which the cloud appears</td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">page_title</td>
+<td class="mla-doc-table-label">page_title</td>
 <td>the <code>post_title</code> value of the post/page in which the cloud appears</td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">page_excerpt</td>
+<td class="mla-doc-table-label">page_excerpt</td>
 <td>the <code>post_excerpt</code> value of the post/page in which the cloud appears</td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">page_status</td>
+<td class="mla-doc-table-label">page_status</td>
 <td>the <code>post_status</code> value of the post/page in which the cloud appears</td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">page_name</td>
+<td class="mla-doc-table-label">page_name</td>
 <td>the <code>post_name</code> value of the post/page in which the cloud appears</td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">page_modified</td>
+<td class="mla-doc-table-label">page_modified</td>
 <td>the <code>post_modified</code> value of the post/page in which the cloud appears</td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">page_guid</td>
+<td class="mla-doc-table-label">page_guid</td>
 <td>the <code>post_guid</code> value of the post/page in which the cloud appears</td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">page_type</td>
+<td class="mla-doc-table-label">page_type</td>
 <td>the <code>post_type</code> value of the post/page in which the cloud appears</td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">page_url</td>
+<td class="mla-doc-table-label">page_url</td>
 <td>absolute URL to the page or post on which the cloud appears, if any, with trailing slash</td>
 </tr>
 </table>
@@ -1416,14 +1416,14 @@ For the "grid" output format, all of the Markup template sections are used. For 
 The following <strong>field-level substitution parameters</strong> are available in the Style template and any of the Markup template sections:</p>
 <table>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">request</td>
+<td class="mla-doc-table-label">request</td>
 <td>The parameters defined in the <code>$_REQUEST</code> array; the "query strings" sent from the browser. The PHP $_REQUEST variable is a superglobal Array that contains the contents of both $_GET, $_POST and $_COOKIE arrays.</td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">query</td>
+<td class="mla-doc-table-label">query</td>
 <td>The parameters defined in the <code>[mla_tag_cloud]</code> shortcode. For example, if your shortcode is <code>[mla gallery taxonomy=attachment_tag div-class=some_class]</code> you can access the parameters as <code>[+query:taxonomy+]</code> and <code>[+query:div-class+]</code> respectively. You can define your own parameters, e.g., "div-class"; they will be accessible as field-level data but will otherwise be ignored.</td>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">template</td>
+<td class="mla-doc-table-label">template</td>
 <td>A Content Template, which lets you compose a value from multiple substitution parameters and test for empty values, choosing among two or more alternatives or suppressing output entirely. See the <a href="#mla_template_parameters">Content Templates</a> section for details. Note that the formatting option is not supported for content templates.</td>
 </tr>
 </table>
@@ -1432,111 +1432,111 @@ Tag cloud substitution parameters for the <strong>Style template</strong> are:
 </p>
 <table>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">mla_style</td>
+<td class="mla-doc-table-label">mla_style</td>
 <td>shortcode parameter, default = 'tag-cloud'</td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">mla_markup</td>
+<td class="mla-doc-table-label">mla_markup</td>
 <td>shortcode parameter, default = 'tag-cloud-ul', or 'tag-cloud-dl' if the "captiontag" parameter is present.</td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">taxonomy</td>
+<td class="mla-doc-table-label">taxonomy</td>
 <td>the slug of the taxonomy on which the cloud is based. Multiple taxonomy slugs are joined with a dash to form a single value.</td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">current_item</td>
+<td class="mla-doc-table-label">current_item</td>
 <td>the current/selected item in the cloud, as entered in the shortcode parameters.</td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">itemtag</td>
+<td class="mla-doc-table-label">itemtag</td>
 <td>shortcode parameter, default = 'ul', or 'dl' if the "captiontag" parameter is present.</td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">termtag</td>
+<td class="mla-doc-table-label">termtag</td>
 <td>shortcode parameter, default = 'li', or 'dd' if the "captiontag" parameter is present.</td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">captiontag</td>
+<td class="mla-doc-table-label">captiontag</td>
 <td>shortcode parameter, default = '', i.e., no caption tag value.</td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">columns</td>
+<td class="mla-doc-table-label">columns</td>
 <td>shortcode parameter, default = '3'; only meaningful for the "grid" output format.</td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">itemwidth</td>
+<td class="mla-doc-table-label">itemwidth</td>
 <td>shortcode parameter, default is calculated by dividing 100% by the number of columns and subtracting twice the margin value, e.g., 30.3% for three columns and a margin value of 1.5%. Can also contain other dimensional values such as '10px' or CSS-specific values like 'auto' or 'inherit'.</td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">margin</td>
+<td class="mla-doc-table-label">margin</td>
 <td>shortcode parameter, default = '1.5%'. Can also contain other dimensional values such as '10px' or CSS-specific values like 'auto' or 'inherit'.</td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">float</td>
+<td class="mla-doc-table-label">float</td>
 <td>'right' if current locale is RTL, 'left' if not</td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">found_rows</td>
+<td class="mla-doc-table-label">found_rows</td>
 <td>the number of terms retrieved for the cloud</td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">min_count</td>
+<td class="mla-doc-table-label">min_count</td>
 <td>the smallest number of attachments associated with any term</td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">max_count</td>
+<td class="mla-doc-table-label">max_count</td>
 <td>the largest number of attachments associated with any term</td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">min_scaled_count</td>
+<td class="mla-doc-table-label">min_scaled_count</td>
 <td>the smallest scaled count associated with any term</td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">max_scaled_count</td>
+<td class="mla-doc-table-label">max_scaled_count</td>
 <td>the largest scaled count associated with any term</td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">spread</td>
+<td class="mla-doc-table-label">spread</td>
 <td>max_scaled_count - min_scaled_count</td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">smallest</td>
+<td class="mla-doc-table-label">smallest</td>
 <td>the text size of the tag with the smallest count value</td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">largest</td>
+<td class="mla-doc-table-label">largest</td>
 <td>the text size of the tag with the largest count value</td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">unit</td>
+<td class="mla-doc-table-label">unit</td>
 <td>Unit of measure as pertains to the smallest and largest values</td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">font_spread</td>
+<td class="mla-doc-table-label">font_spread</td>
 <td>largest - smallest</td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">font_step</td>
+<td class="mla-doc-table-label">font_step</td>
 <td>font_spread / spread</td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">separator</td>
+<td class="mla-doc-table-label">separator</td>
 <td>The text/space between tags</td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">single_text</td>
+<td class="mla-doc-table-label">single_text</td>
 <td>Rollover Text when the count value is one</td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">multiple_text</td>
+<td class="mla-doc-table-label">multiple_text</td>
 <td> Rollover Text when the count value is zero or more than one</td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">echo</td>
+<td class="mla-doc-table-label">echo</td>
 <td>whether the output is echoed directly to the browser (true) or returned to the caller (false). For a shortcode, always false.</td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">link</td>
+<td class="mla-doc-table-label">link</td>
 <td>the destination of the item hyperlink</td>
 </tr>
 </table>
@@ -1548,105 +1548,105 @@ Tag cloud <strong>item-specific substitution parameters</strong> for the Markup 
 </p>
 <table>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">index</td>
+<td class="mla-doc-table-label">index</td>
 <td>starts at '1', incremented for each item in the cloud</td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">last_in_row</td>
+<td class="mla-doc-table-label">last_in_row</td>
 <td>for the "grid" output format, set to "last_in_row" for the last item in each full cloud row, and to an empty string for all other items in the row. If the cloud ends with a partial row, the last_in_row parameter is not set.</td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">key</td>
+<td class="mla-doc-table-label">key</td>
 <td>set to the "tags" array key/index value. Only useful if the <code>mla_get_terms_query_results()</code> filter has altered the array keys.</td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">term_id</td>
+<td class="mla-doc-table-label">term_id</td>
 <td>the term id</td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">name</td>
+<td class="mla-doc-table-label">name</td>
 <td>the term display name</td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">slug</td>
+<td class="mla-doc-table-label">slug</td>
 <td>the term slug</td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">term_group</td>
+<td class="mla-doc-table-label">term_group</td>
 <td>the term group</td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">term_taxonomy_id</td>
+<td class="mla-doc-table-label">term_taxonomy_id</td>
 <td>the term-taxonomy id</td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">taxonomy</td>
+<td class="mla-doc-table-label">taxonomy</td>
 <td>the primary taxonomy for this term</td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">description</td>
+<td class="mla-doc-table-label">description</td>
 <td>the term description, if any</td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">parent</td>
+<td class="mla-doc-table-label">parent</td>
 <td>the direct parent of the term</td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">count</td>
+<td class="mla-doc-table-label">count</td>
 <td>the number of attachments associated with the term</td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">scaled_count</td>
+<td class="mla-doc-table-label">scaled_count</td>
 <td>scaled count value, for determining font size. The default formula for scaling the count is <code>round(log10($tag->count + 1) * 100)</code></td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">font_size</td>
+<td class="mla-doc-table-label">font_size</td>
 <td>the numeric portion of the CSS "font-size" attribute</td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">link_url</td>
+<td class="mla-doc-table-label">link_url</td>
 <td>the URL portion of "thelink" (below). Derived from editlink_url, termlink_url or mla_link_href.</td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">editlink_url</td>
+<td class="mla-doc-table-label">editlink_url</td>
 <td>URL of the term's "edit category/tag" page</td></tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">termlink_url</td>
+<td class="mla-doc-table-label">termlink_url</td>
 <td>URL of the term's archive page</td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">caption</td>
+<td class="mla-doc-table-label">caption</td>
 <td>if captiontag is not empty, contains term description or the mla_caption value</td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">link_attributes</td>
+<td class="mla-doc-table-label">link_attributes</td>
 <td>link attributes, if any, drawn from the mla_target, mla_link_attributes and mla_link_class parameters</td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">current_item_class</td>
+<td class="mla-doc-table-label">current_item_class</td>
 <td>set to "mla_current_item" for the current item in the cloud as determined by the "current_item" parameter, and to an empty string for all other items in the cloud.</td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">rollover_text</td>
+<td class="mla-doc-table-label">rollover_text</td>
 <td>the "title" attribute value, drawn from single_text/multiple_text or the mla_rollover_text parameters</td>
 </tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">link_style</td>
+<td class="mla-doc-table-label">link_style</td>
 <td>the CSS "style" attribute, drawn from the font_size and unit parameters</td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">link_text</td>
+<td class="mla-doc-table-label">link_text</td>
 <td>the text enclosed by the hyperlink, drawn from the term name or mla_link_text parameter</td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">editlink</td>
+<td class="mla-doc-table-label">editlink</td>
 <td>full hyperlink to the term's "edit category/tag" page, including all the Display Content parameters</td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">termlink</td>
+<td class="mla-doc-table-label">termlink</td>
 <td>full hyperlink to the term's archive page, including all the Display Content parameters</td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">thelink</td>
+<td class="mla-doc-table-label">thelink</td>
 <td>full hyperlink to the chosen destination as determined by the "link" and "mla_link_href" parameters</td>
 </tr>
 </table>
@@ -1659,23 +1659,23 @@ Tag cloud <strong>item-specific substitution parameters</strong> for the Markup 
 If you have a large number of terms in your cloud taxonomy you may want to paginate the cloud display, i.e., divide the cloud into two or more pages of a reasonable size. Pagination support for <code>[mla_tag_cloud]</code> is modeled on similar functions for<code>[mla_gallery]</code>, and you can find more explanation of the ideas behind pagination in the <a href="#mla_output_parameter"><strong>Support for Alternative Gallery Output, e.g., Pagination</strong></a> section. Five parameters are supplied for this purpose:
 <table>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">limit</td>
+<td class="mla-doc-table-label">limit</td>
 <td>the maximum number of terms to display in one cloud "page". Think of this as a "terms per page" value.</td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">offset</td>
+<td class="mla-doc-table-label">offset</td>
 <td>the number of terms to skip over before starting the current cloud page. This parameter is usually derived automatically from the more useful "mla_cloud_current" parameter.</td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">mla_page_parameter</td>
+<td class="mla-doc-table-label">mla_page_parameter</td>
 <td>the name of the parameter containing the current page number; default "mla_cloud_current". You can change the name if you need multiple paginated clouds on one post/page.</td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">mla_cloud_current</td>
+<td class="mla-doc-table-label">mla_cloud_current</td>
 <td>the current cloud page number. The name of this parameter can be changed to support multiple paginated clouds on one post/page. This parameter will automatically be added to the URLs generated by pagination output types and managed for you.</td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">term_id</td>
+<td class="mla-doc-table-label">term_id</td>
 <td>the id of the current term within the cloud. This parameter is used with the "previous_link", "current_link" and "next_link" output types. You <strong>must</strong> supply a term_id value when using these output types.</td>
 </tr>
 </table>
@@ -1686,26 +1686,26 @@ The <strong>"mla_output"</strong> parameter determines the type of output the sh
 </p>
 <table>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">next_link</td>
+<td class="mla-doc-table-label">next_link</td>
 <td>returns a link to the next cloud item, based on the "term_id" parameter value. The optional "<strong>,wrap</strong>" qualifier determines what happens at the end of the cloud. If you omit the qualifier, an empty string is returned for the "next_link" from the last item. If you code the ",wrap" qualifier, the "next_link" from the last item will be to the first item.</td>
 </tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">current_link</td>
+<td class="mla-doc-table-label">current_link</td>
 <td>returns a link to the current cloud item, based on the "term_id" parameter value. This gives you an easy way to provide a visual indication of where you are within the taxonomy. The "span" and  "none" link formats are often used with this mla_output type.</td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">previous_link</td>
+<td class="mla-doc-table-label">previous_link</td>
 <td>returns a link to the previous cloud item, based on the "term_id" parameter value. The optional "<strong>,wrap</strong>" qualifier determines what happens at the beginning of the cloud. If you omit the qualifier, an empty string is returned for the "previous_link" from the first item. If you code the ",wrap" qualifier, "previous_link" from the gallery item will be to the last item.</td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">next_page</td>
+<td class="mla-doc-table-label">next_page</td>
 <td>returns a link to the next "page" of cloud items, based on the "mla_cloud_current" parameter value. The optional "<strong>,wrap</strong>" or "<strong>,last</strong>" qualifiers determine what happens at the end of the taxonomy. If you omit the qualifier, an empty string is returned for the "next_page" if there are no more items in the taxonomy. If you code the ",wrap" qualifier, the "next_page" from the last page of items will be to the first page. If you code the ",last" qualifier, the "next_page" link will return to/remain on the last page.</td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">previous_page</td>
+<td class="mla-doc-table-label">previous_page</td>
 <td>returns a link to the previous "page" of cloud items, based on the "mla_cloud_current" parameter value. The optional "<strong>,wrap</strong>" or "<strong>,first</strong>" qualifiers determine what happens at the beginning of the taxonomy. If you omit the qualifier, an empty string is returned for the "previous_link" from the first page. If you code the ",wrap" qualifier, "previous_page" from the first page will be to the last page. If you code the ",first" qualifier, the "previous_link" link will return to/remain on the first page.</td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">paginate_links</td>
+<td class="mla-doc-table-label">paginate_links</td>
 <td>returns a link to cloud items at the start and end of the list and to pages around the current "cloud page" ( e.g.: &laquo; Previous 1 ... 3 4 5 6 7 ... 9 Next &raquo; ), based on the "mla_cloud_current" parameter value. The optional "<strong>,show_all</strong>" qualifier will show all of the cloud pages instead of a short list around the current page. The optional "<strong>,prev_next</strong>" qualifier will include the "&laquo; Previous" and "Next &raquo;" portions of the link list.</td>
 </tr>
 </table>
@@ -1780,7 +1780,7 @@ The "smallest=12" and "largest=12" parameters make "font-size" the same for all 
 </p>
 <h4>MLA Tag Cloud Filters (Hooks)</h4>
 <p>
-The <code>[mla_tag_cloud]</code> shortcode supports a comprehensive set of filters that give you complete control over cloud composition from PHP code in your theme or in another plugin. An example of using the hooks from a simple, stand-alone plugin can be found here: <a title="View the Tag Cloud Hooks Example source code" href="[+examples_url+]mla-cloud-hooks-example.php.txt" target="_blank" style="font-size:14px; font-weight:bold">mla-cloud-hooks-example.php.txt</a>. To run the example:
+The <code>[mla_tag_cloud]</code> shortcode supports a comprehensive set of filters that give you complete control over cloud composition from PHP code in your theme or in another plugin. An example of using the hooks from a simple, stand-alone plugin can be found here: <a title="View the Tag Cloud Hooks Example source code" href="[+examples_url+]mla-cloud-hooks-example.php.txt" target="_blank" class="mla-doc-bold-link">mla-cloud-hooks-example.php.txt</a>. To run the example:
 <ol>
 <li>Edit the code to, for example, uncomment the <code>error_log()</code> calls so you can see what is passed to the hooks you are interested in.</li>
 <li>Remove the ".txt" extension and save the "mla-cloud-hooks-example.php" file in your plugins directory. You can give the plugin and its file any (unique) name you like.</li>
@@ -1794,52 +1794,52 @@ The example code documents each hook with comments in the filter/action function
 </p>
 <table>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">mla_tag_cloud_attributes,<br />mla_tag_cloud_arguments</td>
-<td>called at the beginning of the cloud generation. You can record/modify shortcode parameter values before (attributes) or after (arguments) they are combined with all the defaults.</td>
+<td class="mla-doc-table-label">mla_tag_cloud_attributes,<br />mla_tag_cloud_arguments</td>
+<td class="mla-doc-hook-definition">called at the beginning of the cloud generation. You can record/modify shortcode parameter values before (attributes) or after (arguments) they are combined with all the defaults.</td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">mla_get_terms_query_attributes,<br />mla_get_terms_query_arguments</td>
-<td>called just before the <code>WP_Query->query()</code> call that selects gallery items, with query parameters before or after they are combined with defaults.</td>
+<td class="mla-doc-table-label">mla_get_terms_query_attributes,<br />mla_get_terms_query_arguments</td>
+<td class="mla-doc-hook-definition">called just before the <code>WP_Query->query()</code> call that selects gallery items, with query parameters before or after they are combined with defaults.</td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">mla_get_terms_clauses</td>
-<td>gives you a final opportunity to inspect or modify the SQL clauses for the data selection process.</td>
+<td class="mla-doc-table-label">mla_get_terms_clauses</td>
+<td class="mla-doc-hook-definition">gives you a final opportunity to inspect or modify the SQL clauses for the data selection process.</td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">mla_get_terms_query_results</td>
-<td>called just after the <code>$wpdb->get_results</code> call, so you can inspect/record or modify the results.</td>
+<td class="mla-doc-table-label">mla_get_terms_query_results</td>
+<td class="mla-doc-hook-definition">called just after the <code>$wpdb->get_results</code> call, so you can inspect/record or modify the results.</td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">mla_tag_cloud_scale</td>
-<td>called as the scaled_count (size) of each term is calculated, so you can modify the results.</td>
+<td class="mla-doc-table-label">mla_tag_cloud_scale</td>
+<td class="mla-doc-hook-definition">called as the scaled_count (size) of each term is calculated, so you can modify the results.</td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">use_mla_tag_cloud_style</td>
-<td>allow or suppress the inclusion of CSS styles in the tag cloud output.</td>
+<td class="mla-doc-table-label">use_mla_tag_cloud_style</td>
+<td class="mla-doc-hook-definition">allow or suppress the inclusion of CSS styles in the tag cloud output.</td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">mla_tag_cloud_style_values,<br /> mla_tag_cloud_style_template,<br />mla_tag_cloud_style_parse</td>
-<td>for manipulating the Style template.</td>
+<td class="mla-doc-table-label">mla_tag_cloud_style_values,<br /> mla_tag_cloud_style_template,<br />mla_tag_cloud_style_parse</td>
+<td class="mla-doc-hook-definition">for manipulating the Style template.</td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">mla_tag_cloud_open_values,<br />mla_tag_cloud_open_template,<br />mla_tag_cloud_open_parse</td>
-<td>for manipulating the "Open" part of the Markup template used in a "list" or "grid" cloud.</td>
+<td class="mla-doc-table-label">mla_tag_cloud_open_values,<br />mla_tag_cloud_open_template,<br />mla_tag_cloud_open_parse</td>
+<td class="mla-doc-hook-definition">for manipulating the "Open" part of the Markup template used in a "list" or "grid" cloud.</td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">mla_tag_cloud_row_open_values,<br />mla_tag_cloud_row_open_template,<br />mla_tag_cloud_row_open_parse</td>
-<td>for manipulating the "Row Open" part of the Markup template used in a "grid" cloud.</td>
+<td class="mla-doc-table-label">mla_tag_cloud_row_open_values,<br />mla_tag_cloud_row_open_template,<br />mla_tag_cloud_row_open_parse</td>
+<td class="mla-doc-hook-definition">for manipulating the "Row Open" part of the Markup template used in a "grid" cloud.</td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">mla_tag_cloud_item_values,<br />mla_tag_cloud_item_template,<br />mla_tag_cloud_item_parse</td>
-<td>for manipulating the "Item" part of the Markup template used in a "list" or "grid" cloud.</td>
+<td class="mla-doc-table-label">mla_tag_cloud_item_values,<br />mla_tag_cloud_item_template,<br />mla_tag_cloud_item_parse</td>
+<td class="mla-doc-hook-definition">for manipulating the "Item" part of the Markup template used in a "list" or "grid" cloud.</td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">mla_tag_cloud_row_close_values,<br />mla_tag_cloud_row_close_template,<br />mla_tag_cloud_row_close_parse</td>
-<td>for manipulating the "Row Close" part of the Markup template used in a "grid" cloud.</td>
+<td class="mla-doc-table-label">mla_tag_cloud_row_close_values,<br />mla_tag_cloud_row_close_template,<br />mla_tag_cloud_row_close_parse</td>
+<td class="mla-doc-hook-definition">for manipulating the "Row Close" part of the Markup template used in a "grid" cloud.</td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">mla_tag_cloud_close_values,<br />mla_tag_cloud_close_template,<br />mla_tag_cloud_close_parse</td>
-<td>for manipulating the "Close" part of the Markup template used in a "list" or "grid" cloud.</td>
+<td class="mla-doc-table-label">mla_tag_cloud_close_values,<br />mla_tag_cloud_close_template,<br />mla_tag_cloud_close_parse</td>
+<td class="mla-doc-hook-definition">for manipulating the "Close" part of the Markup template used in a "list" or "grid" cloud.</td>
 </tr>
 </table>
 <a name="gallery_examples"></a>
@@ -1854,7 +1854,7 @@ As you can tell from the number of parameters available, the <code>[mla_gallery]
 </p>
 <h4>Simple Examples</h4>
 <p>
-<ul style="list-style-position:inside; list-style:disc; line-height: 15px; padding-left: 20px">
+<ul class="mla-doc-toc-list">
 <li><code>[mla_gallery]</code> - will display all the images "attached" to the current post/page.</li>
 <li><code>[mla_gallery ids="1,3,2,4"]</code> - will display specific images on any post/page. The numbers are the ID values of the images. You can use the "Add Media..." popup window and "Create Gallery" to get the list, then change the shortcode name to "mla_gallery" if you want to add other <code>[mla_gallery]</code> specific parameters.</li>
 <li><code>[mla_gallery post_parent=all]</code> - will display all the images in your Media Library.</li>
@@ -1872,7 +1872,7 @@ With MLA you can extend Categories and Tags support to attachments. MLA also pro
 <p>
 To use a taxonomy you must create one or more "terms" within it. For example, you could create terms in the Category taxonomy like "Big Dog" and "Little Dog". For each term, WordPress automatically creates a "slug", e.g., "big-dog" and "little-dog" for the previous examples. Removing capital letters, spaces and punctuation makes it easier to organize and search the database. It's the slug you can use in [mla_gallery] shortcodes. To "<em>display the attachments that have been assigned to a single category/tag</em>", use the term's slug; for the four taxonomies we've discussed:
 </p>
-<ul style="list-style-position:inside; list-style:disc; line-height: 15px; padding-left: 20px">
+<ul class="mla-doc-toc-list">
 <li>Categories: <code>[mla_gallery category_name=big-dog]</code></li>
 <li>Tags: <code>[mla_gallery tag=big-dog]</code></li>
 <li>Att. Categories: <code>[mla_gallery attachment_category=big-dog]</code></li>
@@ -1913,7 +1913,7 @@ The <code>[mla_tag_cloud]</code> displays Att. Categories terms in the familiar 
 <p>
 The <code>[mla_gallery]</code> displays the images assigned to the selected attachment_category term. The <code>mla_nolink_text</code> parameter gives the text to display when the gallery is empty, e.g., before you click on a term. In this shortcode:
 </p>
-<ul style="list-style-position:inside; list-style:disc; line-height: 15px; padding-left: 20px">
+<ul class="mla-doc-toc-list">
 <li>The <code>template:</code> prefix says that this is a Content Template</li>
 <li>The parentheses "()" around the two elements are used to group them into a list of alternatives</li>
 <li>The vertical bar "|" between the two elements means "stop when you get a non-empty alternative"</li>
@@ -1975,30 +1975,30 @@ The <strong>"mla_output"</strong> parameter determines the type of output the sh
 </p>
 <table>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">gallery</td>
+<td class="mla-doc-table-label">gallery</td>
 <td>The default value; returns the traditional gallery of image thumbnails, captions, etc.</td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">next_link</td>
+<td class="mla-doc-table-label">next_link</td>
 <td>returns a link to the next gallery item. The optional "<strong>,wrap</strong>" qualifier determines what happens at the end of the gallery. If you omit the qualifier, an empty string is returned for the "next_link" from the last item in the gallery. If you code the ",wrap" qualifier, the "next_link" from the last item will be to the first gallery item.</td>
 </tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">current_link</td>
+<td class="mla-doc-table-label">current_link</td>
 <td>returns a link to the current gallery item. This gives you an easy way to provide a visual indication of where you are within the overall gallery. The "span" and  "none" link formats are often used with this mla_output type.</td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">previous_link</td>
+<td class="mla-doc-table-label">previous_link</td>
 <td>returns a link to the previous gallery item. The optional "<strong>,wrap</strong>" qualifier determines what happens at the beginning of the gallery. If you omit the qualifier, an empty string is returned for the "previous_link" from the first gallery item. If you code the ",wrap" qualifier, "previous_link" from the first gallery item will be to the last gallery item.</td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">next_page</td>
+<td class="mla-doc-table-label">next_page</td>
 <td>returns a link to the next "page" of gallery items. The optional "<strong>,wrap</strong>" or "<strong>,last</strong>" qualifiers determine what happens at the end of the gallery. If you omit the qualifier, an empty string is returned for the "next_page" if there are no more items in the gallery. If you code the ",wrap" qualifier, the "next_page" from the last page of items will be to the first page of gallery items. If you code the ",last" qualifier, the "next_page" link will return to/remain on the last page of gallery items.</td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">previous_page</td>
+<td class="mla-doc-table-label">previous_page</td>
 <td>returns a link to the previous "page" of gallery items. The optional "<strong>,wrap</strong>" or "<strong>,first</strong>" qualifiers determine what happens at the beginning of the gallery. If you omit the qualifier, an empty string is returned for the "previous_link" from the first page of gallery items. If you code the ",wrap" qualifier, "previous_page" from the first page of gallery items will be to the last page of gallery items. If you code the ",first" qualifier, the "previous_link" link will return to/remain on the first page of gallery items.</td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">paginate_links</td>
+<td class="mla-doc-table-label">paginate_links</td>
 <td>returns a link to gallery items at the start and end of the list and to pages around the current "gallery page" ( e.g.: &laquo; Previous 1 ... 3 4 5 6 7 ... 9 Next &raquo; ). The optional "<strong>,show_all</strong>" qualifier will show all of the gallery pages instead of a short list around the current page. The optional "<strong>,prev_next</strong>" qualifier will include the "&laquo; Previous" and "Next &raquo;" portions of the link list.</td>
 </tr>
 </table>
@@ -2008,7 +2008,7 @@ WordPress provides functions that generate links to the "<em>next/previous image
 </p>
 <table>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">id</td>
+<td class="mla-doc-table-label">id</td>
 <td>(optional) the ID of the "current" gallery item. If you omit this parameter, the default value is the ID of the current "post". The default value is only useful if you are enhancing the PHP code of the "image.php" template for the "Attachment Page" associated with a Media Library item.</td>
 </tr>
 </table>
@@ -2068,31 +2068,31 @@ Use the following parameters to specify the size of each gallery page and the cu
 </p>
 <table>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">posts_per_page</td>
+<td class="mla-doc-table-label">posts_per_page</td>
 <td>sets the number of gallery items on each gallery "page" </td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">numberposts</td>
+<td class="mla-doc-table-label">numberposts</td>
 <td>synonym for "posts_per_page" </td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">mla_paginate_current</td>
+<td class="mla-doc-table-label">mla_paginate_current</td>
 <td>the "current" gallery page; defaults to one (1) if not specified. MLA will usually manage this for you, adding it to the hyperlinks for the previous and next gallery pages. MLA will look for this parameter in the HTML $_REQUEST array if it is not coded in the gallery shortcode.</td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">mla_page_parameter</td>
+<td class="mla-doc-table-label">mla_page_parameter</td>
 <td>the name of the parameter containing the current page number; default "mla_paginate_current". You can change the name if you need multiple paginated galleries on one post/page. If you use this parameter, make sure you add it to the gallery shortcode and all pagination shortcodes for that gallery, and use the same unique value in all shortcodes for the specific gallery.</td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">mla_paginate_total</td>
+<td class="mla-doc-table-label">mla_paginate_total</td>
 <td>the highest page number you want to display; defaults to (total items / posts_per_page) if not specified, which is usually what you want. </td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">mla_paginate_rows</td>
+<td class="mla-doc-table-label">mla_paginate_rows</td>
 <td>If you have some other way of computing the total number of items you want to paginate you can use <code>mla_paginate_rows</code> to simplify your shortcode parameters and avoid redundant database access. If, for example, you want pagination controls for a gallery that you know has fifty items you can code <code>[mla_gallery mla_output=paginate_links mla_paginate_rows=50]</code> and then add any other page selection or gallery display content parameters you need.</td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">offset, paged</td>
+<td class="mla-doc-table-label">offset, paged</td>
 <td><strong>DO NOT USE THESE PARAMETERS; THEY WILL BREAK MLA PAGINATION</strong></td>
 </tr>
 </table>
@@ -2104,39 +2104,39 @@ The next or previous link returned can use the following Gallery Display Content
 </p>
 <table>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">mla_link_attributes</td>
+<td class="mla-doc-table-label">mla_link_attributes</td>
 <td>adds one or more HTML attributes to the hyperlink </td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">mla_link_class</td>
+<td class="mla-doc-table-label">mla_link_class</td>
 <td><strong>adds</strong> one or more classes to those already defined for the hyperlink </td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">mla_link_href</td>
+<td class="mla-doc-table-label">mla_link_href</td>
 <td>replaces the HTML &quot;href&quot; attribute in the hyperlink </td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">mla_link_text</td>
+<td class="mla-doc-table-label">mla_link_text</td>
 <td>replaces the link text </td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">mla_prev_text</td>
+<td class="mla-doc-table-label">mla_prev_text</td>
 <td>the "previous page" text (default "&laquo; Previous"); an alternative to "mla_link_text" for <code>mla_output=previous_page</code></td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">mla_next_text</td>
+<td class="mla-doc-table-label">mla_next_text</td>
 <td>the "next page" text (default "Next &raquo;") an alternative to "mla_link_text" for <code>mla_output=next_page</code></td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">mla_nolink_text</td>
+<td class="mla-doc-table-label">mla_nolink_text</td>
 <td>replaces the empty string displayed when there is no link and link text, e.g., no previous or next page link </td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">mla_rollover_text</td>
+<td class="mla-doc-table-label">mla_rollover_text</td>
 <td>replaces the HTML &quot;title&quot; attribute in the hyperlink. This is the text displayed when the mouse rolls or hovers over the link text </td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">mla_target</td>
+<td class="mla-doc-table-label">mla_target</td>
 <td>adds an HTML &quot;target&quot; attribute to the hyperlink </td>
 </tr>
 </table>
@@ -2145,63 +2145,63 @@ The next or previous link returned can use the following Gallery Display Content
 </p>
 <table>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">current_page</td>
+<td class="mla-doc-table-label">current_page</td>
 <td>the number of the current page</td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">new_page</td>
+<td class="mla-doc-table-label">new_page</td>
 <td>the number of the new (previous or next) page; zero for paginate_links</td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">last_page</td>
+<td class="mla-doc-table-label">last_page</td>
 <td>the number of the last/highest/maximum page</td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">posts_per_page</td>
+<td class="mla-doc-table-label">posts_per_page</td>
 <td>the number of items on each gallery page</td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">found_rows</td>
+<td class="mla-doc-table-label">found_rows</td>
 <td>the number of items in the gallery</td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">current_offset</td>
+<td class="mla-doc-table-label">current_offset</td>
 <td>the number of items skipped before the current page</td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">new_offset</td>
+<td class="mla-doc-table-label">new_offset</td>
 <td>the number of items skipped before the new page</td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">current_page_text</td>
+<td class="mla-doc-table-label">current_page_text</td>
 <td>'mla_paginate_current="[+current_page+]"'</td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">new_page_text</td>
+<td class="mla-doc-table-label">new_page_text</td>
 <td>'mla_paginate_current="[+new_page+]"'</td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">last_page_text</td>
+<td class="mla-doc-table-label">last_page_text</td>
 <td>'mla_paginate_total="[+last_page+]"'</td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">posts_per_page_text</td>
+<td class="mla-doc-table-label">posts_per_page_text</td>
 <td>'posts_per_page="[+posts_per_page+]"'</td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">scheme</td>
+<td class="mla-doc-table-label">scheme</td>
 <td>the HTTP protocol used to access the page; usually "http://" but might be "https://"</td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">http_host</td>
+<td class="mla-doc-table-label">http_host</td>
 <td>contents of the <em>Host:</em> header of the current request; usually a domain name such as "mysite.com" or an IP address</td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">request_uri</td>
+<td class="mla-doc-table-label">request_uri</td>
 <td>the URI given to access the page, e.g., "wordpress/2013/06/sample-post" or "wordpress/tag-gallery-page?attachment_tag=sample". MLA manages pagination by adding the "mla_paginate_current" query parameter to the URI value</td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">new_url</td>
+<td class="mla-doc-table-label">new_url</td>
 <td>concatenation of scheme + http_host + request_uri</td>
 </tr>
 </table>
@@ -2232,23 +2232,23 @@ The <strong>Page Selection Parameters</strong>, <strong>Gallery Display Content 
 <h4>Specific parameters for the <code>paginate_links</code> output type</h4>
 <table>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">mla_end_size</td>
+<td class="mla-doc-table-label">mla_end_size</td>
 <td>How many numbers (default 1) appear on either the start and the end list edges</td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">mla_mid_size</td>
+<td class="mla-doc-table-label">mla_mid_size</td>
 <td>How many numbers (default 2) appear to either side of current page, but not including current page</td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">mla_prev_text</td>
+<td class="mla-doc-table-label">mla_prev_text</td>
 <td>the "previous page" text (default "&laquo; Previous") , which appears when the ",prev_next" qualifier is added to the output_type</td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">mla_next_text</td>
+<td class="mla-doc-table-label">mla_next_text</td>
 <td>the "next page" text (default "Next &raquo;") , which appears when the ",prev_next" qualifier is added to the output_type</td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">mla_paginate_type</td>
+<td class="mla-doc-table-label">mla_paginate_type</td>
 <td>the format of the return value. "<strong>plain</strong>" (the default) returns a string with links separated by the newline character. "<strong>list</strong>" returns an unordered (ul) HTML list.</td>
 </tr>
 </table>
@@ -2277,11 +2277,11 @@ The <code>[mla_gallery]</code> shortcode can be used in combination with other g
 </p>
 <table>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">mla_alt_shortcode</td>
+<td class="mla-doc-table-label">mla_alt_shortcode</td>
 <td>the name of the shortcode to be called for gallery format and display</td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">mla_alt_ids_name</td>
+<td class="mla-doc-table-label">mla_alt_ids_name</td>
 <td>(optional, default "ids") the name of the parameter used to pass a list of attachment ID values to the alternate shortcode</td>
 </tr>
 </table>
@@ -2362,72 +2362,72 @@ In a template, substitution parameters are surrounded by opening ('[+') and clos
 Gallery-specific substitution parameters are known at the beginning of shortcode processing and they do not change during processing. They can be used, for example, in any of the data selection parameters to change the items selected for the gallery based on information about the post/page on which the gallery appears. The gallery-specific substitution parameters are:
 <table>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">site_url</td>
+<td class="mla-doc-table-label">site_url</td>
 <td>absolute URL to the site directory, without trailing slash</td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">base_url</td>
+<td class="mla-doc-table-label">base_url</td>
 <td>absolute URL to the upload directory, without trailing slash</td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">base_dir</td>
+<td class="mla-doc-table-label">base_dir</td>
 <td>absolute (full) path to the upload directory, without trailing slash</td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">instance</td>
+<td class="mla-doc-table-label">instance</td>
 <td>starts at '1', incremented for each additional shortcode in the post/page</td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">selector</td>
+<td class="mla-doc-table-label">selector</td>
 <td>"mla_gallery-{$instance}", e.g., mla_gallery-1</td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">page_ID,<br />id</td>
+<td class="mla-doc-table-label">page_ID,<br />id</td>
 <td style="vertical-align: top">the <code>ID</code> value of the post/page in which the gallery appears</td>
 </tr>
 <tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">page_author</td>
+<td class="mla-doc-table-label">page_author</td>
 <td>the <code>post_author</code> value of the post/page in which the gallery appears</td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">page_date</td>
+<td class="mla-doc-table-label">page_date</td>
 <td>the <code>post_date</code> value of the post/page in which the gallery appears</td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">page_content</td>
+<td class="mla-doc-table-label">page_content</td>
 <td>the <code>post_content</code> value of the post/page in which the gallery appears</td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">page_title</td>
+<td class="mla-doc-table-label">page_title</td>
 <td>the <code>post_title</code> value of the post/page in which the gallery appears</td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">page_excerpt</td>
+<td class="mla-doc-table-label">page_excerpt</td>
 <td>the <code>post_excerpt</code> value of the post/page in which the gallery appears</td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">page_status</td>
+<td class="mla-doc-table-label">page_status</td>
 <td>the <code>post_status</code> value of the post/page in which the gallery appears</td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">page_name</td>
+<td class="mla-doc-table-label">page_name</td>
 <td>the <code>post_name</code> value of the post/page in which the gallery appears</td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">page_modified</td>
+<td class="mla-doc-table-label">page_modified</td>
 <td>the <code>post_modified</code> value of the post/page in which the gallery appears</td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">page_guid</td>
+<td class="mla-doc-table-label">page_guid</td>
 <td>the <code>post_guid</code> value of the post/page in which the gallery appears</td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">page_type</td>
+<td class="mla-doc-table-label">page_type</td>
 <td>the <code>post_type</code> value of the post/page in which the gallery appears</td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">page_url</td>
+<td class="mla-doc-table-label">page_url</td>
 <td>absolute URL to the page or post on which the gallery appears, if any, with trailing slash</td>
 </tr>
 </table>
@@ -2440,43 +2440,43 @@ Gallery-specific substitution parameters are known at the beginning of shortcode
 All of the <a href="#gallery_specific">gallery-specific substitution parameters</a> are available for use in style templates. These additional substitution parameters are also available:
 <table>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">mla_style</td>
+<td class="mla-doc-table-label">mla_style</td>
 <td>shortcode parameter, default = 'default'</td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">mla_markup</td>
+<td class="mla-doc-table-label">mla_markup</td>
 <td>shortcode parameter, default = 'default'</td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">itemtag</td>
+<td class="mla-doc-table-label">itemtag</td>
 <td>shortcode parameter, default = 'dl', or 'figure' for HTML5 themes</td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">icontag</td>
+<td class="mla-doc-table-label">icontag</td>
 <td>shortcode parameter, default = 'dt', or 'div' for HTML5 themes</td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">captiontag</td>
+<td class="mla-doc-table-label">captiontag</td>
 <td>shortcode parameter, default = 'dd', or 'figcaption' for HTML5 themes</td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">columns</td>
+<td class="mla-doc-table-label">columns</td>
 <td>shortcode parameter, default = '3'</td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">itemwidth</td>
+<td class="mla-doc-table-label">itemwidth</td>
 <td>shortcode parameter, default is calculated by dividing 100% by the number of columns and subtracting twice the margin value, e.g., 30.3% for three columns and a margin value of 1.5%. Can also contain other dimensional values such as '10px' or CSS-specific values like 'auto' or 'inherit'.</td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">margin</td>
+<td class="mla-doc-table-label">margin</td>
 <td>shortcode parameter, default = '1.5%'. Can also contain other dimensional values such as '10px' or CSS-specific values like 'auto' or 'inherit'.</td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">float</td>
+<td class="mla-doc-table-label">float</td>
 <td>'right' if current locale is RTL, 'left' if not</td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">size_class</td>
+<td class="mla-doc-table-label">size_class</td>
 <td>shortcode 'size' parameter, default = 'thumbnail'</td>
 </tr>
 </table>
@@ -2505,155 +2505,155 @@ The item-level substitution parameter names are:
 </p>
 <table>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">index</td>
+<td class="mla-doc-table-label">index</td>
 <td>starts at '1', incremented for each attachment in the gallery</td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">last_in_row</td>
+<td class="mla-doc-table-label">last_in_row</td>
 <td>set to "last_in_row" for the last item in each full gallery row, and to an empty string for all other items in the row. If the gallery ends with a partial row, the last_in_row parameter is not set.</td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">caption</td>
+<td class="mla-doc-table-label">caption</td>
 <td>if captiontag is not empty, contains caption/post_excerpt</td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">captiontag_content</td>
+<td class="mla-doc-table-label">captiontag_content</td>
 <td>if both captiontag and caption are not empty, contains the complete HTML markup for the caption. This can be used to omit empty tags (as it is in the default template).</td>
 </tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">excerpt</td>
+<td class="mla-doc-table-label">excerpt</td>
 <td>always contains post_excerpt</td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">attachment_ID</td>
+<td class="mla-doc-table-label">attachment_ID</td>
 <td>attachment post ID</td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">mime_type</td>
+<td class="mla-doc-table-label">mime_type</td>
 <td>attachment post_mime_type</td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">menu_order</td>
+<td class="mla-doc-table-label">menu_order</td>
 <td>attachment menu_order</td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">date</td>
+<td class="mla-doc-table-label">date</td>
 <td>attachment post_date</td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">modified</td>
+<td class="mla-doc-table-label">modified</td>
 <td>attachment post_modified</td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">parent</td>
+<td class="mla-doc-table-label">parent</td>
 <td>attachment post_parent (ID)</td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">parent_title</td>
+<td class="mla-doc-table-label">parent_title</td>
 <td>post_title of the parent, or '(unattached)'</td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">parent_type</td>
+<td class="mla-doc-table-label">parent_type</td>
 <td>'post', 'page' or custom post type of the parent</td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">parent_date</td>
+<td class="mla-doc-table-label">parent_date</td>
 <td>upload date of the parent</td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">title</td>
+<td class="mla-doc-table-label">title</td>
 <td>attachment post_title</td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">slug</td>
+<td class="mla-doc-table-label">slug</td>
 <td>attachment post_name</td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">width</td>
+<td class="mla-doc-table-label">width</td>
 <td>width in pixels, for image types</td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">height</td>
+<td class="mla-doc-table-label">height</td>
 <td>height in pixels, for image types</td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">orientation</td>
+<td class="mla-doc-table-label">orientation</td>
 <td>"portrait" (height > width) or "landscape", for image types; empty for non-image types</td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">image_meta</td>
+<td class="mla-doc-table-label">image_meta</td>
 <td>image metadata, for image types</td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">image_alt</td>
+<td class="mla-doc-table-label">image_alt</td>
 <td>ALT text, for image types. If there are multiple values (unlikely) only the first value is available. If you need to process multiple values, use the field-level data source "alt_text".</td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">base_file</td>
+<td class="mla-doc-table-label">base_file</td>
 <td>path and file name relative to uploads directory</td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">path</td>
+<td class="mla-doc-table-label">path</td>
 <td>path portion of base_file</td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">file</td>
+<td class="mla-doc-table-label">file</td>
 <td>file name portion of base_file</td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">description</td>
+<td class="mla-doc-table-label">description</td>
 <td>attachment post_content</td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">file_url</td>
+<td class="mla-doc-table-label">file_url</td>
 <td>attachment guid</td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">author_id</td>
+<td class="mla-doc-table-label">author_id</td>
 <td>attachment post_author</td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">author</td>
+<td class="mla-doc-table-label">author</td>
 <td>author display_name, or 'unknown'</td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">link</td>
+<td class="mla-doc-table-label">link</td>
 <td>hyperlink to the attachment page (default) or file (shortcode 'link' parameter = "file")</td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">pagelink</td>
+<td class="mla-doc-table-label">pagelink</td>
 <td>always contains a hyperlink to the attachment page</td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">filelink</td>
+<td class="mla-doc-table-label">filelink</td>
 <td>always contains a hyperlink to the attachment file</td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">link_url</td>
+<td class="mla-doc-table-label">link_url</td>
 <td>the URL portion of <em>link</em></td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">pagelink_url</td>
+<td class="mla-doc-table-label">pagelink_url</td>
 <td>the URL portion of <em>pagelink</em></td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">filelink_url</td>
+<td class="mla-doc-table-label">filelink_url</td>
 <td>the URL portion of <em>filelink</em></td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">thumbnail_content</td>
+<td class="mla-doc-table-label">thumbnail_content</td>
 <td>complete content of the gallery item link. This will either be an "&lt;img ... &gt;" tag<br />or a text string for non-image items</td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">thumbnail_width</td>
+<td class="mla-doc-table-label">thumbnail_width</td>
 <td>for image/icon items, width of the gallery image/icon</td>
 </tr>
 <tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">thumbnail_height</td>
+<td class="mla-doc-table-label">thumbnail_height</td>
 <td>for image/icon items, height of the gallery image/icon</td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">thumbnail_url</td>
+<td class="mla-doc-table-label">thumbnail_url</td>
 <td>for image/icon items, URL of the gallery image/icon</td>
 </tr>
 </table>
@@ -2771,11 +2771,11 @@ Field-level substitution parameters let you access query arguments, custom field
 </p>
 <table>
 	<tr>
-		<td style="padding-right: 10px; vertical-align: top; font-weight:bold">prefix</td>
+		<td class="mla-doc-table-label">prefix</td>
 		<td>defines which type of field-level data you are accessing. It must immediately follow the opening ('[+' or '{+') delimiter and end with a colon (':'). There can be no spaces in this part of the parameter.</td>
 	</tr>
 	<tr>
-		<td style="padding-right: 10px; vertical-align: top; font-weight:bold">field name</td>
+		<td class="mla-doc-table-label">field name</td>
 		<td>defines which field-level data element you are accessing. It must immediately follow the colon (':'). There can be no spaces between the colon and the field name. Spaces are allowed within the field name to accommodate custom field names that contain them.<br />
 		&nbsp;<br />
 		 <strong>Compound names</strong> are used to access elements within arrays, e.g., <code>sizes.thumbnail.file</code> is used to specify the file name for the thumbnail version of an image. You can also use a "*" placeholder to denote "all elements at this level" and return an array of lower-level elements. For example, you can code <code>sizes.*.file</code> to return an array of file names for all of the image's intermediate sizes.<br />
@@ -2784,7 +2784,7 @@ Field-level substitution parameters let you access query arguments, custom field
 		&nbsp;</td>
 	</tr>
 	<tr>
-		<td style="padding-right: 10px; vertical-align: top; font-weight:bold">option/format value</td>
+		<td class="mla-doc-table-label">option/format value</td>
 		<td>if present, immediately follows the field name using a comma (,) separator and ends with the closing delimiter ('+]' or '+}'). There can be no spaces in this part of the parameter.</td>
 	</tr>
 </table>
@@ -2798,15 +2798,15 @@ There are eleven prefix values for field-level parameters. Prefix values must be
 </p>
 <table>
 	<tr>
-		<td style="padding-right: 10px; vertical-align: top; font-weight:bold">request</td>
+		<td class="mla-doc-table-label">request</td>
 		<td>The parameters defined in the <code>$_REQUEST</code> array; the "query strings" sent from the browser. The PHP $_REQUEST variable is a superglobal Array that contains the contents of both $_GET, $_POST and $_COOKIE arrays. It can be used to collect data sent with both the GET and POST methods. For example, if the URL is <code>http://www.mysite.com/mypage?myarg=myvalue</code> you can access the query string as <code>[+request:myarg+]</code>, which has the value "myvalue".</td>
 	</tr>
 	<tr>
-		<td style="padding-right: 10px; vertical-align: top; font-weight:bold">query</td>
+		<td class="mla-doc-table-label">query</td>
 		<td>The parameters defined in the <code>[mla_gallery]</code> shortcode. For example, if your shortcode is <code>[mla_gallery attachment_tag=my-tag div-class=some_class]</code> you can access the parameters as <code>[+query:attachment_tag+]</code> and <code>[+query:div-class+]</code> respectively. Only the parameters actually present in the shortcode are accessible; default values for parameters not actually present are not available. You can define your own parameters, e.g., "div-class"; they will be accessible as field-level data but will otherwise be ignored.</td>
 	</tr>
 	<tr>
-		<td style="padding-right: 10px; vertical-align: top; font-weight:bold">custom</td>
+		<td class="mla-doc-table-label">custom</td>
 		<td>WordPress Custom Fields, which you can define and populate on the Edit Media screen or map from various sources on the Settings/Media Library Assistant Custom and IPTC/EXIF tabs. The field name, or key, can contain spaces and some punctuation characters. You <strong><em>cannot use the plus sign ('+')</em></strong> in a field name you want to use with <code>[mla_gallery]</code>. Custom field names are case-sensitive; "client" and "Client" are not the same.
 		<br />&nbsp;<br />
 		For custom fields only, the <strong>",raw" option</strong> bypasses the code to sanitize the returned value. Use this option to allow HTML tags to be returned from a custom field.
@@ -2816,24 +2816,24 @@ There are eleven prefix values for field-level parameters. Prefix values must be
 		The ALL_CUSTOM value is altered in two ways. First, values of more than 256 characters are truncated to 256 characters. This prevents large fields from dominating the display. Second, array values are shown '(ARRAY)'.</td>
 	</tr>
 	<tr>
-		<td style="padding-right: 10px; vertical-align: top; font-weight:bold">terms</td>
+		<td class="mla-doc-table-label">terms</td>
 		<td>WordPress Category, tag or custom taxonomy terms. For this category, you code the name of the taxonomy as the field name. The term(s) associated with the attachment will be displayed in the <code>[mla_gallery]</code>. Note that you must use the name/slug string for taxonomy, not the "title" string. For example, use "attachment_category" or "attachment_tag", not "Att. Category" or "Attachment Category".</td>
 	</tr>
 	<tr>
-		<td style="padding-right: 10px; vertical-align: top; font-weight:bold">meta</td>
+		<td class="mla-doc-table-label">meta</td>
 		<td>WordPress attachment metadata, if any, embedded in the image/audio/video file. For this category, you can code any of the field names embedded in the _wp_attachment_metadata array. The "Attachment Metadata" display in the Media/Edit Media screen will show you the names and values of these fields. Note that the fields available differ among image, audio and video attachments.<br />
 		&nbsp;<br />
 		The "image_meta" portion of the attachment metadata is of particular interest. This array contains some "extended image metadata" drawn from IPTC and EXIF fields by WordPress and improved a bit. You can find more information in the Codex <a href="http://codex.wordpress.org/Function_Reference/wp_read_image_metadata" title="Codex information for image_meta" target="_blank">Function Reference/wp read image metadata</a>. For example, to get the ISO speed rating for an image, code <code>[+meta:image_meta.iso+]</code>.</td>
 	</tr>
 	<tr>
-		<td style="padding-right: 10px; vertical-align: top; font-weight:bold">pdf</td>
+		<td class="mla-doc-table-label">pdf</td>
 		<td>
 		The Document Information Dictionary (D.I.D.)and XMP metadata, if any, embedded in a PDF file. For this category, you can code any of the nine D.I.D. entries (Title, Author, Subject, Keywords, Creator, Producer, CreationDate, ModDate, Trapped). For many documents there is also a rich collection of additional metadata stored in XMP Metadata Streams; see the <a href="#pdf_metadata">Metadata in PDF documents</a> section below for details on accessing PDF metadata.<br />
 		&nbsp;<br />
 		You can find more PDF information at the <a href="http://www.adobe.com/devnet/pdf.html" title="Adobe PDF Technology Center" target="_blank">Adobe PDF Technology Center</a>.<br />&nbsp;</td>
 	</tr>
 	<tr>
-		<td style="padding-right: 10px; vertical-align: top; font-weight:bold">iptc</td>
+		<td class="mla-doc-table-label">iptc</td>
 		<td>
 		The IPTC (International Press Telecommunications Council) metadata, if any, embedded in the image file. For this category, you can code any of the IPTC DataSet tag and field identifiers, e.g., "2#025" for the Keywords field. You can also use the "friendly name" MLA defines for most of the IPTC fields; see the <a href="#mla_iptc_identifiers">table of identifiers and friendly names</a> below.<br />
 		&nbsp;<br />
@@ -2845,7 +2845,7 @@ There are eleven prefix values for field-level parameters. Prefix values must be
 		</td>
 	</tr>
 	<tr>
-		<td style="padding-right: 10px; vertical-align: top; font-weight:bold">exif</td>
+		<td class="mla-doc-table-label">exif</td>
 		<td>
 		The EXIF (EXchangeable Image File) metadata, if any, embedded in a JPEG DCT or TIFF Rev 6.0 image file. 
 		Though the specification is not currently maintained by any industry or standards organization, almost all camera manufacturers use it. It is also supported by many image editing programs such as Adobe PhotoShop.
@@ -2860,7 +2860,7 @@ There are eleven prefix values for field-level parameters. Prefix values must be
 		The ALL_EXIF value is altered in two ways. First, values of more than 256 characters are truncated to 256 characters. This prevents large fields such as image thumbnails from dominating the display. Second, array values are replaced by an "(ARRAY)" placeholder, e.g., <code>'COMPUTED' => '(ARRAY)'</code>. You can explore array values individually by coding something like <code>[+exif:COMPUTED,export+]</code> to expand all levels within the array or <code>[+exif:CAMERA,unpack+]</code> to expand one level within the array. You can go deeper in the array hierarchy with compound names, e.g., <code>[+exif:CAMERA.ShutterSpeed+]</code> or <code>[+exif:CAMERA.LensSpecification,unpack+]</code>.<br />&nbsp;</td>
 	</tr>
 	<tr>
-		<td style="padding-right: 10px; vertical-align: top; font-weight:bold">xmp</td>
+		<td class="mla-doc-table-label">xmp</td>
 		<td>
 Data defined by the <a href="https://www.adobe.com/products/xmp/" title="Adobe XMP site" target="_blank">Extensible Metadata Platform (XMP)</a> framework, if present. XMP metadata varies from image to image but is often extensive. MLA provides access to this data in three ways:
 <ol>
@@ -2878,15 +2878,15 @@ MLA adds three fields of its own to the XMP metadata information:
 <br />&nbsp;<br />
 <table>
 	<tr>
-		<td style="padding-right: 10px; vertical-align: top; font-weight:bold">xmptk</td>
+		<td class="mla-doc-table-label">xmptk</td>
 		<td>the XMP software used to create the metadata</td>
 	</tr>
 	<tr>
-		<td style="padding-right: 10px; vertical-align: top; font-weight:bold">xmlns</td>
+		<td class="mla-doc-table-label">xmlns</td>
 		<td>an array of the namespaces found in the document, such as <code>'dc' => 'http://purl.org/dc/elements/1.1/'</code></td>
 	</tr>
 	<tr>
-		<td style="padding-right: 10px; vertical-align: top; font-weight:bold">ALL_XMP</td>
+		<td class="mla-doc-table-label">ALL_XMP</td>
 		<td>a special "pseudo value" that returns a string representation of all the metadata. You can use this pseudo-value to examine the metadata in a document, find field names and see what values are present.</td>
 	</tr>
 </table>
@@ -2895,7 +2895,7 @@ MLA adds three fields of its own to the XMP metadata information:
 		<br />&nbsp;</td>
 	</tr>
 	<tr>
-		<td style="padding-right: 10px; vertical-align: top; font-weight:bold">id3</td>
+		<td class="mla-doc-table-label">id3</td>
 		<td>
 		<a href="https://en.wikipedia.org/wiki/ID3" title="Wikipedia page for ID3" target="_blank">Wikipedia</a> says "ID3 is a metadata container most often used in conjunction with the MP3 audio file format. It allows information such as the title, artist, album, track number and other information about the file to be stored in the file itself."
 		WordPress includes a subset of the <a href="http://www.getid3.org/" title="Official getID3() site" target="_blank">getID3() PHP Media File Parser</a> with support for audio and video file formats. A few values are available for other file types but they are not very useful.<br />
@@ -2904,7 +2904,7 @@ MLA adds three fields of its own to the XMP metadata information:
 		<br />&nbsp;</td>
 	</tr>
 	<tr>
-		<td style="padding-right: 10px; vertical-align: top; font-weight:bold">template</td>
+		<td class="mla-doc-table-label">template</td>
 		<td>A Content Template, which lets you compose a value from multiple substitution parameters and test for empty values, choosing among two or more alternatives or suppressing output entirely. See the <a href="#mla_template_parameters">Content Templates</a> section for details. Note that the formatting option is not supported for templates.</td>
 	</tr>
 </table>
@@ -2919,17 +2919,17 @@ Three "option" values change the treatment of fields with multiple values:
 </p>
 <table>
 	<tr>
-		<td style="padding-right: 10px; vertical-align: top; font-weight:bold">,single</td>
+		<td class="mla-doc-table-label">,single</td>
 		<td>If this option is present, only the first value of the field will be returned. Use this option to limit the data returned for a custom field, taxonomy or metadata field that can have many values. For example, if you code <code>[+meta:sizes.thumbnail,single+]</code> the result will be "20120313-ASK_5605-150x150.jpg".
 		</td>
 	</tr>
 	<tr>
-		<td style="padding-right: 10px; vertical-align: top; font-weight:bold">,export</td>
+		<td class="mla-doc-table-label">,export</td>
 		<td>If this option is present, the PHP <code>var_export</code> function is used to return a string representation of all the elements in an array field. For example, if you code <code>[+meta:sizes.thumbnail,export+]</code> the result will be "array ('file' => '20120313-ASK_5605-150x150.jpg', 'width' => 150, 'height' => 150, 'mime-type' => 'image/jpeg', )".
 		</td>
 	</tr>
 	<tr>
-		<td style="padding-right: 10px; vertical-align: top; font-weight:bold">,unpack</td>
+		<td class="mla-doc-table-label">,unpack</td>
 		<td>If this option is present, the top-level elements in an array field will be expanded; lower-level arrays will be denoted by a placeholder. For example, if you code <code>[+meta:sizes,unpack+]</code> the result will be "array ( 'thumbnail' => '(ARRAY)', 'medium' => '(ARRAY)', 'large' => '(ARRAY)', 'post-thumbnail' => '(ARRAY)', )".
 		</td>
 	</tr>
@@ -2939,35 +2939,35 @@ Eight "format" values help you reformat fields or encode them for use in HTML at
 </p>
 <table>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">,raw</td>
+<td class="mla-doc-table-label">,raw</td>
 <td>If you want to avoid filtering a value through the WordPress <code>sanitize_text_field()</code> function you can add the ",raw" option. This is helpful when, for example, you are using a field that contains HTML markup such as a hyperlink.</td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">,commas</td>
+<td class="mla-doc-table-label">,commas</td>
 <td>For numeric data source parameters such as "file_size" you can add the ",commas" option to format the value for display purposes.</td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">,attr</td>
+<td class="mla-doc-table-label">,attr</td>
 <td>If you use a substitution parameter in an HTML attribute such as the <code>title</code> attribute of a hyperlink (<code>a</code>) or <code>img</code> tag you can add the ",attr" option to encode the <, >, &, " and ' (less than, greater than, ampersand, double quote and single quote) characters.</td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">,url</td>
+<td class="mla-doc-table-label">,url</td>
 <td>If you use a substitution parameter in an HTML <code>href</code> attribute such as a hyperlink (<code>a</code>) or <code>img</code> tag you can add the ",url" option to convert special characters such as quotes, spaces and ampersands to their URL-encoded equivalents.</td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold; white-space:nowrap">,substr(s,l)</td>
+<td class="mla-doc-table-label" style="white-space:nowrap">,substr(s,l)</td>
 <td>If you need to limit the length of a value or extract a portion of it the ",substr" option will return part of the value. This option accepts one or two parameters, "start" (s) and "length" (l). The first character in the value is at position zero (0) so, for example, ",substr(2,3)" would return "cde" from a value of "abcdef". You can find complete information on "start" and "length", including the effect of negative values, at: <a href="http://php.net/manual/en/function.substr.php" title="PHP substr parameters" target="_blank">http://php.net/manual/en/function.substr.php</a>.</td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold; white-space:nowrap">,fraction(f,s)</td>
+<td class="mla-doc-table-label" style="white-space:nowrap">,fraction(f,s)</td>
 <td>Many of the EXIF metadata fields are expressed as "rational" quantities, i.e., separate numerator and denominator values separated by a slash. For example, <code>[+exif:ExposureTime+]</code> can be expressed as "1/200" seconds. The "fraction" format converts these to a more useful format.<br />&nbsp;<br />There two optional arguments; "f" (format_string)and "s" (show_fractions). The "format_string" (default "2") can either be the number of decimal places desired or a sprintf()-style format specification. For example, <code>[+exif:ExposureTime,fraction(4)+]</code> will display 7/6 as "+1.1667". A format specification such as '%1$.2f' will display 7/6 as "1.17". Numbers between -1 and +1, i.e. true fractions, will display in their original form, e.g., "1/6". If the optional "show_fractions" (default true) argument is "false" fractional values will convert to a decimal equivalent. For example, fraction(4,false) will display 1/6 as "+0.1667", and <code>[+exif:ExposureTime,fraction( '%1$.2f', false )+]</code> will display 1/6 as "0.17".</td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold; white-space:nowrap">,timestamp(f)</td>
+<td class="mla-doc-table-label" style="white-space:nowrap">,timestamp(f)</td>
 <td>Many date and time values such as <code>[+meta:image_meta.created_timestamp+]</code> are stored as a UNIX timestamp. The ",timestamp" format converts a timestamp into a variety of date and/or time string formats, using the PHP date() function. Details on the format_string argument can be found at: <a href="http://php.net/manual/en/function.date.php" title="PHP Date format parameters" target="_blank">http://php.net/manual/en/function.date.php</a>.<br />&nbsp;<br />The default format string is "d/m/Y H:i:s", e.g., "31/12/2014 23:59:00" (just before midnight on new year's eve). You could code <code>[+meta:image_meta.created_timestamp,timestamp('j F, Y')+]</code> to display "31 December, 2014".</td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold; white-space:nowrap">,date(f)</td>
+<td class="mla-doc-table-label" style="white-space:nowrap">,date(f)</td>
 <td>Many EXIF date and time values such as DateTimeOriginal and DateTimeDigitized are stored as strings with a format of "YYYY:MM:DD HH:MM:SS". You can parse this format and just about any English textual datetime description into a Unix timestamp, then format the result by using the ",date" format. This format first uses the PHP strtotime() function, then the date() function. The "Supported Date and Time Formats" can be found at: <a href="http://php.net/manual/en/datetime.formats.php" title="PHP Supported Date and Time Formats" target="_blank">http://php.net/manual/en/datetime.formats.php</a>.<br />&nbsp;<br />The default format string is "d/m/Y H:i:s", e.g., "31/12/2014 23:59:00" (just before midnight on new year's eve). You could code <code>[+exif:DateTimeOriginal,date('j F, Y')+]</code> to display "31 December, 2014".</td>
 </tr>
 </table>
@@ -2980,273 +2980,273 @@ Eight "format" values help you reformat fields or encode them for use in HTML at
 Each Media Library attachment item has a row in the "posts" database table that records information such as the Title, Author and Parent post/page. It also has an "attached file" with attributes like the file name and file size. All of this information and more is available as "field-level data sources" that can be used for <code>[mla_gallery]</code> or mapping purposes. The data sources are:
 <table>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">post_id, ID</td>
+<td class="mla-doc-table-label">post_id, ID</td>
 <td>the value stored in the attachment's "posts" database row.</td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">post_author</td>
+<td class="mla-doc-table-label">post_author</td>
 <td>the value stored in the attachment's "posts" database row.</td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">post_date</td>
+<td class="mla-doc-table-label">post_date</td>
 <td>the value stored in the attachment's "posts" database row.</td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">post_date_gmt</td>
+<td class="mla-doc-table-label">post_date_gmt</td>
 <td>the value stored in the attachment's "posts" database row.</td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">post_content</td>
+<td class="mla-doc-table-label">post_content</td>
 <td>the value stored in the attachment's "posts" database row.</td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">post_title</td>
+<td class="mla-doc-table-label">post_title</td>
 <td>the value stored in the attachment's "posts" database row.</td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">post_excerpt</td>
+<td class="mla-doc-table-label">post_excerpt</td>
 <td>the value stored in the attachment's "posts" database row.</td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">post_status</td>
+<td class="mla-doc-table-label">post_status</td>
 <td>the value stored in the attachment's "posts" database row.</td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">comment_status</td>
+<td class="mla-doc-table-label">comment_status</td>
 <td>the value stored in the attachment's "posts" database row.</td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">ping_status</td>
+<td class="mla-doc-table-label">ping_status</td>
 <td>the value stored in the attachment's "posts" database row.</td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">post_name</td>
+<td class="mla-doc-table-label">post_name</td>
 <td>the value stored in the attachment's "posts" database row.</td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">post_modified</td>
+<td class="mla-doc-table-label">post_modified</td>
 <td>the value stored in the attachment's "posts" database row.</td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">post_modified_gmt</td>
+<td class="mla-doc-table-label">post_modified_gmt</td>
 <td>the value stored in the attachment's "posts" database row.</td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">post_content_filtered</td>
+<td class="mla-doc-table-label">post_content_filtered</td>
 <td>the value stored in the attachment's "posts" database row.</td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">parent,<br />post_parent</td>
+<td class="mla-doc-table-label">parent,<br />post_parent</td>
 <td style="vertical-align: top">the value stored in the attachment's "posts" database row.</td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">guid</td>
+<td class="mla-doc-table-label">guid</td>
 <td>the value stored in the attachment's "posts" database row.</td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">menu_order</td>
+<td class="mla-doc-table-label">menu_order</td>
 <td>the value stored in the attachment's "posts" database row.</td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">mime_type,<br />post_mime_type</td>
+<td class="mla-doc-table-label">mime_type,<br />post_mime_type</td>
 <td style="vertical-align: top">the value stored in the attachment's "posts" database row.</td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">comment_count</td>
+<td class="mla-doc-table-label">comment_count</td>
 <td>the value stored in the attachment's "posts" database row.</td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">alt_text</td>
+<td class="mla-doc-table-label">alt_text</td>
 <td style="padding-bottom: 2em;">ALT text, for image types. If there are multiple values (unlikely) they will be returned as a comma-separated list. You can use the ",single" or ",export" option values to change that.</td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">absolute_path</td>
+<td class="mla-doc-table-label">absolute_path</td>
 <td>complete path portion of the attachment file, e.g., C:/site/wordpress/wp-content/uploads/2012/11/</td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">absolute_file_name</td>
+<td class="mla-doc-table-label">absolute_file_name</td>
 <td>complete path and file name of the attachment file, e.g., C:/site/wordpress/wp-content/uploads/2012/11/filename.ext</td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">base_file</td>
+<td class="mla-doc-table-label">base_file</td>
 <td>relative path (within uploads directory) and file name of the attachment file, e.g., 2012/11/image.jpg</td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">path</td>
+<td class="mla-doc-table-label">path</td>
 <td>path portion of the base_file value, e.g., 2012/11/</td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">file_name</td>
+<td class="mla-doc-table-label">file_name</td>
 <td>file name and extension portion of the base_file value, e.g., image.jpg</td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">name_only</td>
+<td class="mla-doc-table-label">name_only</td>
 <td>file name portion of the base_file value, e.g., image</td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">extension</td>
+<td class="mla-doc-table-label">extension</td>
 <td>extension portion of the base_file value, e.g., jpg</td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">file_size</td>
+<td class="mla-doc-table-label">file_size</td>
 <td>file size in bytes</td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">upload_date</td>
+<td class="mla-doc-table-label">upload_date</td>
 <td style="padding-bottom: 2em;">date and time attachment was added to the Media Library</td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">dimensions</td>
+<td class="mla-doc-table-label">dimensions</td>
 <td>for image types, width x height, e.g., 1024x768</td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">pixels</td>
+<td class="mla-doc-table-label">pixels</td>
 <td>for image types, size in pixels, e.g., 307200 for a 640x480 image</td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">width</td>
+<td class="mla-doc-table-label">width</td>
 <td>for image types, width in pixels</td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">height</td>
+<td class="mla-doc-table-label">height</td>
 <td>for image types, height in pixels</td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">orientation</td>
+<td class="mla-doc-table-label">orientation</td>
 <td>"portrait" (height > width) or "landscape", for image types; empty for non-image types</td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">hwstring_small</td>
+<td class="mla-doc-table-label">hwstring_small</td>
 <td>HTML dimensions of a "small" image, i.e., 128 or less width, 96 or less height. Not computed for images uploaded in WordPress 3.5 and later.</td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">size_keys</td>
+<td class="mla-doc-table-label">size_keys</td>
 <td>image size names for thumbnail versions of the image, e.g., "thumbnail, medium, large"</td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">size_names</td>
+<td class="mla-doc-table-label">size_names</td>
 <td>image file names for thumbnail versions of the image, e.g., "image-150x150.jpg, image-300x225.jpg, image-600x288.jpg"</td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">size_bytes</td>
+<td class="mla-doc-table-label">size_bytes</td>
 <td>file size in bytes for thumbnail versions of the image, e.g., "5127, 11829, 33968"</td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">size_pixels</td>
+<td class="mla-doc-table-label">size_pixels</td>
 <td>image size in pixels for thumbnail versions of the image, e.g., "22500, 67500, 172800"</td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">size_dimensions</td>
+<td class="mla-doc-table-label">size_dimensions</td>
 <td>image dimensions for thumbnail versions of the image, e.g., "150x150, 300x225, 600x288"</td>
 </tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">size_name[size]</td>
+<td class="mla-doc-table-label">size_name[size]</td>
 <td>image file name for a specific thumbnail version, e.g., size_name[medium] = "image-300x225.jpg"; set to empty string if the specified size does not exist. There will be a [size] choice for every thumbnail version registered with WordPress for the site.</td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">size_bytes[size]</td>
+<td class="mla-doc-table-label">size_bytes[size]</td>
 <td>file size in bytes for a specific thumbnail version, e.g., size_bytes[medium] = "11829"</td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">size_pixels[size]</td>
+<td class="mla-doc-table-label">size_pixels[size]</td>
 <td>image size in pixels for a specific thumbnail version, e.g., size_pixels[medium] = "67500"</td>
 </tr>
 <tr>
 <tr>
-<td style="width: 12em; padding-right: 10px; vertical-align: top; font-weight:bold">size_dimensions[size]</td>
+<td class="mla-doc-table-label" style="width: 12em">size_dimensions[size]</td>
 <td style="padding-bottom: 2em;">image dimensions for a specific thumbnail version, e.g., size_dimensions[medium] = "300x225"; set to empty string if the specified size does not exist. There will be a [size] choice for every thumbnail version registered with WordPress for the site.</td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">parent_date</td>
+<td class="mla-doc-table-label">parent_date</td>
 <td>for "attached" (post_parent not zero) objects, "published on" date of the parent object</td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">parent_type</td>
+<td class="mla-doc-table-label">parent_type</td>
 <td>for "attached" (post_parent not zero) objects, post type of the parent object</td>
 </tr>
 <tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">parent_title</td>
+<td class="mla-doc-table-label">parent_title</td>
 <td>for "attached" (post_parent not zero) objects, post title of the parent object</td>
 </tr>
 <tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">parent_issues</td>
+<td class="mla-doc-table-label">parent_issues</td>
 <td>summary of parent status (only) "issues", e.g., bad parent, invalid parent, unattached</td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">reference_issues</td>
+<td class="mla-doc-table-label">reference_issues</td>
 <td>summary of all reference and parent status "issues", e.g., orphan, bad parent, invalid parent, unattached</td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">featured_in</td>
+<td class="mla-doc-table-label">featured_in</td>
 <td>the title, post/page type and id number of each post/page for which this item is the "featured image"</td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">featured_in_title</td>
+<td class="mla-doc-table-label">featured_in_title</td>
 <td>the title of each post/page for which this item is the "featured image"</td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">inserted_in</td>
+<td class="mla-doc-table-label">inserted_in</td>
 <td>the title, post/page type and id number of each post/page where this item is inserted in the post/page content</td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">inserted_in_title</td>
+<td class="mla-doc-table-label">inserted_in_title</td>
 <td>the title of each post/page where this item is inserted in the post/page content</td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">gallery_in</td>
+<td class="mla-doc-table-label">gallery_in</td>
 <td>the title, post/page type and id number of each post/page where this item appears in a <code>[gallery]</code> shortcode</td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">gallery_in_title</td>
+<td class="mla-doc-table-label">gallery_in_title</td>
 <td>the title of each post/page where this item appears in a <code>[gallery]</code> shortcode</td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">mla_gallery_in</td>
+<td class="mla-doc-table-label">mla_gallery_in</td>
 <td>the title, post/page type and id number of each post/page where this item appears in an <code>[mla_gallery]</code> shortcode</td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">mla_gallery_in_title</td>
+<td class="mla-doc-table-label">mla_gallery_in_title</td>
 <td style="padding-bottom: 2em;">the title of each post/page where this item appears in an <code>[mla_gallery]</code> shortcode</td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">aperture</td>
+<td class="mla-doc-table-label">aperture</td>
 <td>for image types, the value stored in WordPress "image_meta" array</td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">credit</td>
+<td class="mla-doc-table-label">credit</td>
 <td>for image types, the value stored in WordPress "image_meta" array</td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">camera</td>
+<td class="mla-doc-table-label">camera</td>
 <td>for image types, the value stored in WordPress "image_meta" array</td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">caption</td>
+<td class="mla-doc-table-label">caption</td>
 <td>for image types, the value stored in WordPress "image_meta" array</td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">created_timestamp</td>
+<td class="mla-doc-table-label">created_timestamp</td>
 <td>for image types, the value stored in WordPress "image_meta" array</td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">copyright</td>
+<td class="mla-doc-table-label">copyright</td>
 <td>for image types, the value stored in WordPress "image_meta" array</td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">focal_length</td>
+<td class="mla-doc-table-label">focal_length</td>
 <td>for image types, the value stored in WordPress "image_meta" array</td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">iso</td>
+<td class="mla-doc-table-label">iso</td>
 <td>for image types, the value stored in WordPress "image_meta" array</td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">shutter_speed</td>
+<td class="mla-doc-table-label">shutter_speed</td>
 <td>for image types, the value stored in WordPress "image_meta" array</td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">title</td>
+<td class="mla-doc-table-label">title</td>
 <td>for image types, the value stored in WordPress "image_meta" array</td>
 </tr>
 </table>
@@ -3261,88 +3261,88 @@ The IPTC specification defines all of the allowed fields and organizes them into
 </p>
 <table>
 <tr><td colspan="3" style="font-weight:bold">Envelope Record</td></tr>
-<tr><td style="padding-right: 10px; vertical-align: top; font-weight:bold">model-version</td><td style="padding-right: 10px; vertical-align: top">1#000</td><td style="padding-right: 10px; vertical-align: top">2 octet binary IIM version number</td></tr>
-<tr><td style="padding-right: 10px; vertical-align: top; font-weight:bold">destination</td><td style="padding-right: 10px; vertical-align: top">1#005</td><td style="padding-right: 10px; vertical-align: top">Max 1024 characters of Destination (ISO routing information); repeatable</td></tr>
-<tr><td style="padding-right: 10px; vertical-align: top; font-weight:bold">file-format</td><td style="padding-right: 10px; vertical-align: top">1#020</td><td style="padding-right: 10px; vertical-align: top">2 octet binary file format number, see IPTC-NAA V4 Appendix A</td></tr>
-<tr><td style="padding-right: 10px; vertical-align: top; font-weight:bold">file-format-version</td><td style="padding-right: 10px; vertical-align: top">1#022</td><td style="padding-right: 10px; vertical-align: top">2 octet binary file format version number</td></tr>
-<tr><td style="padding-right: 10px; vertical-align: top; font-weight:bold">service-identifier</td><td style="padding-right: 10px; vertical-align: top">1#030</td><td style="padding-right: 10px; vertical-align: top">Max 10 characters of Service Identifier and product</td></tr>
-<tr><td style="padding-right: 10px; vertical-align: top; font-weight:bold">envelope-number</td><td style="padding-right: 10px; vertical-align: top">1#040</td><td style="padding-right: 10px; vertical-align: top">8 Character Envelope Number</td></tr>
-<tr><td style="padding-right: 10px; vertical-align: top; font-weight:bold">product-id</td><td style="padding-right: 10px; vertical-align: top">1#050</td><td style="padding-right: 10px; vertical-align: top">Max 32 characters subset of provider's overall service; repeatable</td></tr>
-<tr><td style="padding-right: 10px; vertical-align: top; font-weight:bold">envelope-priority</td><td style="padding-right: 10px; vertical-align: top">1#060</td><td style="padding-right: 10px; vertical-align: top">1 numeric character of envelope handling priority (not urgency)</td></tr>
-<tr><td style="padding-right: 10px; vertical-align: top; font-weight:bold">date-sent</td><td style="padding-right: 10px; vertical-align: top">1#070</td><td style="padding-right: 10px; vertical-align: top">8 numeric characters of Date Sent by service - CCYYMMDD</td></tr>
-<tr><td style="padding-right: 10px; vertical-align: top; font-weight:bold">time-sent</td><td style="padding-right: 10px; vertical-align: top">1#080</td><td style="padding-right: 10px; vertical-align: top">11 characters of Time Sent by service - HHMMSS±HHMM</td></tr>
-<tr><td style="padding-right: 10px; vertical-align: top; font-weight:bold">coded-character-set</td><td style="padding-right: 10px; vertical-align: top">1#090</td><td style="padding-right: 10px; vertical-align: top">Max 32 characters of control functions, etc.</td></tr>
-<tr><td style="padding-right: 10px; vertical-align: top; font-weight:bold">uno</td><td style="padding-right: 10px; vertical-align: top">1#100</td><td style="padding-right: 10px; vertical-align: top">14 to 80 characters of eternal, globally unique identification for objects</td></tr>
-<tr><td style="padding-right: 10px; vertical-align: top; font-weight:bold">arm-identifier</td><td style="padding-right: 10px; vertical-align: top">1#120</td><td style="padding-right: 10px; vertical-align: top">2 octet binary Abstract Relationship Model Identifier</td></tr>
-<tr><td style="padding-right: 10px; vertical-align: top; font-weight:bold">arm-version</td><td style="padding-right: 10px; vertical-align: top">1#122</td><td style="padding-right: 10px; vertical-align: top">2 octet binary Abstract Relationship Model Version</td></tr>
+<tr><td class="mla-doc-table-label">model-version</td><td class="mla-doc-table-sublabel">1#000</td><td class="mla-doc-table-sublabel">2 octet binary IIM version number</td></tr>
+<tr><td class="mla-doc-table-label">destination</td><td class="mla-doc-table-sublabel">1#005</td><td class="mla-doc-table-sublabel">Max 1024 characters of Destination (ISO routing information); repeatable</td></tr>
+<tr><td class="mla-doc-table-label">file-format</td><td class="mla-doc-table-sublabel">1#020</td><td class="mla-doc-table-sublabel">2 octet binary file format number, see IPTC-NAA V4 Appendix A</td></tr>
+<tr><td class="mla-doc-table-label">file-format-version</td><td class="mla-doc-table-sublabel">1#022</td><td class="mla-doc-table-sublabel">2 octet binary file format version number</td></tr>
+<tr><td class="mla-doc-table-label">service-identifier</td><td class="mla-doc-table-sublabel">1#030</td><td class="mla-doc-table-sublabel">Max 10 characters of Service Identifier and product</td></tr>
+<tr><td class="mla-doc-table-label">envelope-number</td><td class="mla-doc-table-sublabel">1#040</td><td class="mla-doc-table-sublabel">8 Character Envelope Number</td></tr>
+<tr><td class="mla-doc-table-label">product-id</td><td class="mla-doc-table-sublabel">1#050</td><td class="mla-doc-table-sublabel">Max 32 characters subset of provider's overall service; repeatable</td></tr>
+<tr><td class="mla-doc-table-label">envelope-priority</td><td class="mla-doc-table-sublabel">1#060</td><td class="mla-doc-table-sublabel">1 numeric character of envelope handling priority (not urgency)</td></tr>
+<tr><td class="mla-doc-table-label">date-sent</td><td class="mla-doc-table-sublabel">1#070</td><td class="mla-doc-table-sublabel">8 numeric characters of Date Sent by service - CCYYMMDD</td></tr>
+<tr><td class="mla-doc-table-label">time-sent</td><td class="mla-doc-table-sublabel">1#080</td><td class="mla-doc-table-sublabel">11 characters of Time Sent by service - HHMMSS±HHMM</td></tr>
+<tr><td class="mla-doc-table-label">coded-character-set</td><td class="mla-doc-table-sublabel">1#090</td><td class="mla-doc-table-sublabel">Max 32 characters of control functions, etc.</td></tr>
+<tr><td class="mla-doc-table-label">uno</td><td class="mla-doc-table-sublabel">1#100</td><td class="mla-doc-table-sublabel">14 to 80 characters of eternal, globally unique identification for objects</td></tr>
+<tr><td class="mla-doc-table-label">arm-identifier</td><td class="mla-doc-table-sublabel">1#120</td><td class="mla-doc-table-sublabel">2 octet binary Abstract Relationship Model Identifier</td></tr>
+<tr><td class="mla-doc-table-label">arm-version</td><td class="mla-doc-table-sublabel">1#122</td><td class="mla-doc-table-sublabel">2 octet binary Abstract Relationship Model Version</td></tr>
 <tr><td colspan="3" style="font-weight:bold">&nbsp;<br />Application Record</td></tr>
-<tr><td style="padding-right: 10px; vertical-align: top; font-weight:bold">record-version</td><td style="padding-right: 10px; vertical-align: top">2#000</td><td style="padding-right: 10px; vertical-align: top">2 octet binary Information Interchange Model, Part II version number</td></tr>
-<tr><td style="padding-right: 10px; vertical-align: top; font-weight:bold">object-type-reference</td><td style="padding-right: 10px; vertical-align: top">2#003</td><td style="padding-right: 10px; vertical-align: top">3 to 67 Characters of Object Type Reference number and optional text</td></tr>
-<tr><td style="padding-right: 10px; vertical-align: top; font-weight:bold">object-attribute-reference</td><td style="padding-right: 10px; vertical-align: top">2#004</td><td style="padding-right: 10px; vertical-align: top">3 to 67 Characters of Object Attribute Reference number and optional text; repeatable</td></tr>
-<tr><td style="padding-right: 10px; vertical-align: top; font-weight:bold">object-name</td><td style="padding-right: 10px; vertical-align: top">2#005</td><td style="padding-right: 10px; vertical-align: top">Max 64 characters of the object name or shorthand reference</td></tr>
-<tr><td style="padding-right: 10px; vertical-align: top; font-weight:bold">edit-status</td><td style="padding-right: 10px; vertical-align: top">2#007</td><td style="padding-right: 10px; vertical-align: top">Max 64 characters of the status of the objectdata</td></tr>
-<tr><td style="padding-right: 10px; vertical-align: top; font-weight:bold">editorial-update</td><td style="padding-right: 10px; vertical-align: top">2#008</td><td style="padding-right: 10px; vertical-align: top">2 numeric characters of the type of update this object provides</td></tr>
-<tr><td style="padding-right: 10px; vertical-align: top; font-weight:bold">urgency</td><td style="padding-right: 10px; vertical-align: top">2#010</td><td style="padding-right: 10px; vertical-align: top">1 numeric character of the editorial urgency of content</td></tr>
-<tr><td style="padding-right: 10px; vertical-align: top; font-weight:bold">subject-reference</td><td style="padding-right: 10px; vertical-align: top">2#012</td><td style="padding-right: 10px; vertical-align: top">13 to 236 characters of a structured definition of the subject matter; repeatable</td></tr>
-<tr><td style="padding-right: 10px; vertical-align: top; font-weight:bold">category</td><td style="padding-right: 10px; vertical-align: top">2#015</td><td style="padding-right: 10px; vertical-align: top">Max 3 characters of the subject of the objectdata, DEPRECATED</td></tr>
-<tr><td style="padding-right: 10px; vertical-align: top; font-weight:bold">supplemental-category</td><td style="padding-right: 10px; vertical-align: top">2#020</td><td style="padding-right: 10px; vertical-align: top">Max 32 characters (each) of further refinement of subject, DEPRECATED; repeatable</td></tr>
-<tr><td style="padding-right: 10px; vertical-align: top; font-weight:bold">fixture-identifier</td><td style="padding-right: 10px; vertical-align: top">2#022</td><td style="padding-right: 10px; vertical-align: top">Max 32 characters identifying recurring, predictable content</td></tr>
-<tr><td style="padding-right: 10px; vertical-align: top; font-weight:bold">keywords</td><td style="padding-right: 10px; vertical-align: top">2#025</td><td style="padding-right: 10px; vertical-align: top">Max 64 characters (each) of tags; repeatable</td></tr>
-<tr><td style="padding-right: 10px; vertical-align: top; font-weight:bold">content-location-code</td><td style="padding-right: 10px; vertical-align: top">2#026</td><td style="padding-right: 10px; vertical-align: top">3 characters of ISO3166 country code or IPTC-assigned code; repeatable</td></tr>
-<tr><td style="padding-right: 10px; vertical-align: top; font-weight:bold">content-location-name</td><td style="padding-right: 10px; vertical-align: top">2#027</td><td style="padding-right: 10px; vertical-align: top">Max 64 characters of publishable country/geographical location name; repeatable</td></tr>
+<tr><td class="mla-doc-table-label">record-version</td><td class="mla-doc-table-sublabel">2#000</td><td class="mla-doc-table-sublabel">2 octet binary Information Interchange Model, Part II version number</td></tr>
+<tr><td class="mla-doc-table-label">object-type-reference</td><td class="mla-doc-table-sublabel">2#003</td><td class="mla-doc-table-sublabel">3 to 67 Characters of Object Type Reference number and optional text</td></tr>
+<tr><td class="mla-doc-table-label">object-attribute-reference</td><td class="mla-doc-table-sublabel">2#004</td><td class="mla-doc-table-sublabel">3 to 67 Characters of Object Attribute Reference number and optional text; repeatable</td></tr>
+<tr><td class="mla-doc-table-label">object-name</td><td class="mla-doc-table-sublabel">2#005</td><td class="mla-doc-table-sublabel">Max 64 characters of the object name or shorthand reference</td></tr>
+<tr><td class="mla-doc-table-label">edit-status</td><td class="mla-doc-table-sublabel">2#007</td><td class="mla-doc-table-sublabel">Max 64 characters of the status of the objectdata</td></tr>
+<tr><td class="mla-doc-table-label">editorial-update</td><td class="mla-doc-table-sublabel">2#008</td><td class="mla-doc-table-sublabel">2 numeric characters of the type of update this object provides</td></tr>
+<tr><td class="mla-doc-table-label">urgency</td><td class="mla-doc-table-sublabel">2#010</td><td class="mla-doc-table-sublabel">1 numeric character of the editorial urgency of content</td></tr>
+<tr><td class="mla-doc-table-label">subject-reference</td><td class="mla-doc-table-sublabel">2#012</td><td class="mla-doc-table-sublabel">13 to 236 characters of a structured definition of the subject matter; repeatable</td></tr>
+<tr><td class="mla-doc-table-label">category</td><td class="mla-doc-table-sublabel">2#015</td><td class="mla-doc-table-sublabel">Max 3 characters of the subject of the objectdata, DEPRECATED</td></tr>
+<tr><td class="mla-doc-table-label">supplemental-category</td><td class="mla-doc-table-sublabel">2#020</td><td class="mla-doc-table-sublabel">Max 32 characters (each) of further refinement of subject, DEPRECATED; repeatable</td></tr>
+<tr><td class="mla-doc-table-label">fixture-identifier</td><td class="mla-doc-table-sublabel">2#022</td><td class="mla-doc-table-sublabel">Max 32 characters identifying recurring, predictable content</td></tr>
+<tr><td class="mla-doc-table-label">keywords</td><td class="mla-doc-table-sublabel">2#025</td><td class="mla-doc-table-sublabel">Max 64 characters (each) of tags; repeatable</td></tr>
+<tr><td class="mla-doc-table-label">content-location-code</td><td class="mla-doc-table-sublabel">2#026</td><td class="mla-doc-table-sublabel">3 characters of ISO3166 country code or IPTC-assigned code; repeatable</td></tr>
+<tr><td class="mla-doc-table-label">content-location-name</td><td class="mla-doc-table-sublabel">2#027</td><td class="mla-doc-table-sublabel">Max 64 characters of publishable country/geographical location name; repeatable</td></tr>
 
-<tr><td style="padding-right: 10px; vertical-align: top; font-weight:bold">release-date</td><td style="padding-right: 10px; vertical-align: top">2#030</td><td style="padding-right: 10px; vertical-align: top">8 numeric characters of Release Date (earliest use) - CCYYMMDD</td></tr>
-<tr><td style="padding-right: 10px; vertical-align: top; font-weight:bold">release-time</td><td style="padding-right: 10px; vertical-align: top">2#035</td><td style="padding-right: 10px; vertical-align: top">11 characters of Release Time (earliest use) - HHMMSS±HHMM</td></tr>
-<tr><td style="padding-right: 10px; vertical-align: top; font-weight:bold">expiration-date</td><td style="padding-right: 10px; vertical-align: top">2#037</td><td style="padding-right: 10px; vertical-align: top">8 numeric characters of Expiration Date (latest use) -  CCYYMDD</td></tr>
-<tr><td style="padding-right: 10px; vertical-align: top; font-weight:bold">expiration-time</td><td style="padding-right: 10px; vertical-align: top">2#038</td><td style="padding-right: 10px; vertical-align: top">11 characters of Expiration Time (latest use) - HHMMSS±HHMM</td></tr>
-<tr><td style="padding-right: 10px; vertical-align: top; font-weight:bold">special-instructions</td><td style="padding-right: 10px; vertical-align: top">2#040</td><td style="padding-right: 10px; vertical-align: top">Max 256 Characters of editorial instructions, e.g., embargoes and warnings</td></tr>
-<tr><td style="padding-right: 10px; vertical-align: top; font-weight:bold">action-advised</td><td style="padding-right: 10px; vertical-align: top">2#042</td><td style="padding-right: 10px; vertical-align: top">2 numeric characters of type of action this object provides to a previous object</td></tr>
-<tr><td style="padding-right: 10px; vertical-align: top; font-weight:bold">reference-service</td><td style="padding-right: 10px; vertical-align: top">2#045</td><td style="padding-right: 10px; vertical-align: top">Max 10 characters of the Service ID (1#030) of a prior envelope; repeatable</td></tr>
-<tr><td style="padding-right: 10px; vertical-align: top; font-weight:bold">reference-date</td><td style="padding-right: 10px; vertical-align: top">2#047</td><td style="padding-right: 10px; vertical-align: top">8 numeric characters of prior envelope Reference Date (1#070) - CCYYMMDD; repeatable</td></tr>
-<tr><td style="padding-right: 10px; vertical-align: top; font-weight:bold">reference-number</td><td style="padding-right: 10px; vertical-align: top">2#050</td><td style="padding-right: 10px; vertical-align: top">8 characters of prior envelope Reference Number (1#040); repeatable</td></tr>
-<tr><td style="padding-right: 10px; vertical-align: top; font-weight:bold">date-created</td><td style="padding-right: 10px; vertical-align: top">2#055</td><td style="padding-right: 10px; vertical-align: top">8 numeric characters of intellectual content Date Created - CCYYMMDD</td></tr>
-<tr><td style="padding-right: 10px; vertical-align: top; font-weight:bold">time-created</td><td style="padding-right: 10px; vertical-align: top">2#060</td><td style="padding-right: 10px; vertical-align: top">11 characters of intellectual content Time Created - HHMMSS±HHMM</td></tr>
-<tr><td style="padding-right: 10px; vertical-align: top; font-weight:bold">digital-creation-date</td><td style="padding-right: 10px; vertical-align: top">2#062</td><td style="padding-right: 10px; vertical-align: top">8 numeric characters of digital representation creation date - CCYYMMDD</td></tr>
-<tr><td style="padding-right: 10px; vertical-align: top; font-weight:bold">digital-creation-time</td><td style="padding-right: 10px; vertical-align: top">2#063</td><td style="padding-right: 10px; vertical-align: top">11 characters of digital representation creation time - HHMMSS±HHMM</td></tr>
-<tr><td style="padding-right: 10px; vertical-align: top; font-weight:bold">originating-program</td><td style="padding-right: 10px; vertical-align: top">2#065</td><td style="padding-right: 10px; vertical-align: top">Max 32 characters of the program used to create the objectdata</td></tr>
-<tr><td style="padding-right: 10px; vertical-align: top; font-weight:bold">program-version</td><td style="padding-right: 10px; vertical-align: top">2#070</td><td style="padding-right: 10px; vertical-align: top">Program Version - Max 10 characters of the version of the program used to create the objectdata</td></tr>
-<tr><td style="padding-right: 10px; vertical-align: top; font-weight:bold">object-cycle</td><td style="padding-right: 10px; vertical-align: top">2#075</td><td style="padding-right: 10px; vertical-align: top">1 character where a=morning, p=evening, b=both</td></tr>
-<tr><td style="padding-right: 10px; vertical-align: top; font-weight:bold">by-line</td><td style="padding-right: 10px; vertical-align: top">2#080</td><td style="padding-right: 10px; vertical-align: top">Max 32 Characters of the name of the objectdata creator, e.g., the writer, photographer; repeatable</td></tr>
-<tr><td style="padding-right: 10px; vertical-align: top; font-weight:bold">by-line-title</td><td style="padding-right: 10px; vertical-align: top">2#085</td><td style="padding-right: 10px; vertical-align: top">Max 32 characters of the title of the objectdata creator; repeatable</td></tr>
-<tr><td style="padding-right: 10px; vertical-align: top; font-weight:bold">city</td><td style="padding-right: 10px; vertical-align: top">2#090</td><td style="padding-right: 10px; vertical-align: top">Max 32 Characters of the city of objectdata origin</td></tr>
-<tr><td style="padding-right: 10px; vertical-align: top; font-weight:bold">sub-location</td><td style="padding-right: 10px; vertical-align: top">2#092</td><td style="padding-right: 10px; vertical-align: top">Max 32 Characters of the location within the city of objectdata origin</td></tr>
-<tr><td style="padding-right: 10px; vertical-align: top; font-weight:bold">province-or-state</td><td style="padding-right: 10px; vertical-align: top">2#095</td><td style="padding-right: 10px; vertical-align: top">Max 32 Characters of the objectdata origin Province or State</td></tr>
-<tr><td style="padding-right: 10px; vertical-align: top; font-weight:bold">country-or-primary-location-code</td><td style="padding-right: 10px; vertical-align: top">2#100</td><td style="padding-right: 10px; vertical-align: top">3 characters of ISO3166 or IPTC-assigned code for Country of objectdata origin</td></tr>
-<tr><td style="padding-right: 10px; vertical-align: top; font-weight:bold">country-or-primary-location-name</td><td style="padding-right: 10px; vertical-align: top">2#101</td><td style="padding-right: 10px; vertical-align: top">Max 64 characters of publishable country/geographical location name; repeatable</td></tr>
-<tr><td style="padding-right: 10px; vertical-align: top; font-weight:bold">original-transmission-reference</td><td style="padding-right: 10px; vertical-align: top">2#103</td><td style="padding-right: 10px; vertical-align: top">Max 32 characters of a code representing the location of original transmission</td></tr>
-<tr><td style="padding-right: 10px; vertical-align: top; font-weight:bold">headline</td><td style="padding-right: 10px; vertical-align: top">2#105</td><td style="padding-right: 10px; vertical-align: top">Max 256 Characters of a publishable entry providing a synopsis of the contents of the objectdata</td></tr>
-<tr><td style="padding-right: 10px; vertical-align: top; font-weight:bold">credit</td><td style="padding-right: 10px; vertical-align: top">2#110</td><td style="padding-right: 10px; vertical-align: top">Max 32 Characters that identifies the provider of the objectdata (Vs. the owner/creator)</td></tr>
-<tr><td style="padding-right: 10px; vertical-align: top; font-weight:bold">source</td><td style="padding-right: 10px; vertical-align: top">2#115</td><td style="padding-right: 10px; vertical-align: top">Max 32 Characters that identifies the original owner of the intellectual content</td></tr>
-<tr><td style="padding-right: 10px; vertical-align: top; font-weight:bold">copyright-notice</td><td style="padding-right: 10px; vertical-align: top">2#116</td><td style="padding-right: 10px; vertical-align: top">Max 128 Characters that contains any necessary copyright notice</td></tr>
-<tr><td style="padding-right: 10px; vertical-align: top; font-weight:bold">contact</td><td style="padding-right: 10px; vertical-align: top">2#118</td><td style="padding-right: 10px; vertical-align: top">Max 128 characters that identifies the person or organization which can provide further background information; repeatable</td></tr>
-<tr><td style="padding-right: 10px; vertical-align: top; font-weight:bold">caption-or-abstract</td><td style="padding-right: 10px; vertical-align: top">2#120</td><td style="padding-right: 10px; vertical-align: top">Max 2000 Characters of a textual description of the objectdata</td></tr>
-<tr><td style="padding-right: 10px; vertical-align: top; font-weight:bold">caption-writer-or-editor</td><td style="padding-right: 10px; vertical-align: top">2#122</td><td style="padding-right: 10px; vertical-align: top">Max 32 Characters that the identifies the person involved in the writing, editing or correcting the objectdata or caption/abstract; repeatable</td></tr>
-<tr><td style="padding-right: 10px; vertical-align: top; font-weight:bold">rasterized-caption</td><td style="padding-right: 10px; vertical-align: top">2#125</td><td style="padding-right: 10px; vertical-align: top">7360 binary octets of the rasterized caption - 1 bit per pixel, 460x128-pixel image</td></tr>
-<tr><td style="padding-right: 10px; vertical-align: top; font-weight:bold">image-type</td><td style="padding-right: 10px; vertical-align: top">2#130</td><td style="padding-right: 10px; vertical-align: top">2 characters of color composition type and information</td></tr>
-<tr><td style="padding-right: 10px; vertical-align: top; font-weight:bold">image-orientation</td><td style="padding-right: 10px; vertical-align: top">2#131</td><td style="padding-right: 10px; vertical-align: top">1 alphabetic character indicating the image area layout - P=portrait, L=landscape, S=square</td></tr>
-<tr><td style="padding-right: 10px; vertical-align: top; font-weight:bold">language-identifier</td><td style="padding-right: 10px; vertical-align: top">2#135</td><td style="padding-right: 10px; vertical-align: top">2 or 3 alphabetic characters containing the major national language of the object, according to the ISO 639:1988 codes</td></tr>
-<tr><td style="padding-right: 10px; vertical-align: top; font-weight:bold">audio-type</td><td style="padding-right: 10px; vertical-align: top">2#150</td><td style="padding-right: 10px; vertical-align: top">2 characters identifying monaural/stereo and exact type of audio content</td></tr>
-<tr><td style="padding-right: 10px; vertical-align: top; font-weight:bold">audio-sampling-rate</td><td style="padding-right: 10px; vertical-align: top">2#151</td><td style="padding-right: 10px; vertical-align: top">6 numeric characters representing the audio sampling rate in hertz (Hz)</td></tr>
-<tr><td style="padding-right: 10px; vertical-align: top; font-weight:bold">audio-sampling-resolution</td><td style="padding-right: 10px; vertical-align: top">2#152</td><td style="padding-right: 10px; vertical-align: top">2 numeric characters representing the number of bits in each audio sample</td></tr>
-<tr><td style="padding-right: 10px; vertical-align: top; font-weight:bold">audio-duration</td><td style="padding-right: 10px; vertical-align: top">2#153</td><td style="padding-right: 10px; vertical-align: top">6 numeric characters of the Audio Duration - HHMMSS</td></tr>
-<tr><td style="padding-right: 10px; vertical-align: top; font-weight:bold">audio-outcue</td><td style="padding-right: 10px; vertical-align: top">2#154</td><td style="padding-right: 10px; vertical-align: top">Max 64 characters of the content of the end of an audio objectdata</td></tr>
-<tr><td style="padding-right: 10px; vertical-align: top; font-weight:bold">objectdata-preview-file-format</td><td style="padding-right: 10px; vertical-align: top">2#200</td><td style="padding-right: 10px; vertical-align: top">2 octet binary file format of the ObjectData Preview</td></tr>
-<tr><td style="padding-right: 10px; vertical-align: top; font-weight:bold">objectdata-preview-file-format-version</td><td style="padding-right: 10px; vertical-align: top">2#201</td><td style="padding-right: 10px; vertical-align: top">2 octet binary particular version of the ObjectData Preview File Format</td></tr>
-<tr><td style="padding-right: 10px; vertical-align: top; font-weight:bold">objectdata-preview-data</td><td style="padding-right: 10px; vertical-align: top">2#202</td><td style="padding-right: 10px; vertical-align: top">Max 256000 binary octets containing the ObjectData Preview data</td></tr>
+<tr><td class="mla-doc-table-label">release-date</td><td class="mla-doc-table-sublabel">2#030</td><td class="mla-doc-table-sublabel">8 numeric characters of Release Date (earliest use) - CCYYMMDD</td></tr>
+<tr><td class="mla-doc-table-label">release-time</td><td class="mla-doc-table-sublabel">2#035</td><td class="mla-doc-table-sublabel">11 characters of Release Time (earliest use) - HHMMSS±HHMM</td></tr>
+<tr><td class="mla-doc-table-label">expiration-date</td><td class="mla-doc-table-sublabel">2#037</td><td class="mla-doc-table-sublabel">8 numeric characters of Expiration Date (latest use) -  CCYYMDD</td></tr>
+<tr><td class="mla-doc-table-label">expiration-time</td><td class="mla-doc-table-sublabel">2#038</td><td class="mla-doc-table-sublabel">11 characters of Expiration Time (latest use) - HHMMSS±HHMM</td></tr>
+<tr><td class="mla-doc-table-label">special-instructions</td><td class="mla-doc-table-sublabel">2#040</td><td class="mla-doc-table-sublabel">Max 256 Characters of editorial instructions, e.g., embargoes and warnings</td></tr>
+<tr><td class="mla-doc-table-label">action-advised</td><td class="mla-doc-table-sublabel">2#042</td><td class="mla-doc-table-sublabel">2 numeric characters of type of action this object provides to a previous object</td></tr>
+<tr><td class="mla-doc-table-label">reference-service</td><td class="mla-doc-table-sublabel">2#045</td><td class="mla-doc-table-sublabel">Max 10 characters of the Service ID (1#030) of a prior envelope; repeatable</td></tr>
+<tr><td class="mla-doc-table-label">reference-date</td><td class="mla-doc-table-sublabel">2#047</td><td class="mla-doc-table-sublabel">8 numeric characters of prior envelope Reference Date (1#070) - CCYYMMDD; repeatable</td></tr>
+<tr><td class="mla-doc-table-label">reference-number</td><td class="mla-doc-table-sublabel">2#050</td><td class="mla-doc-table-sublabel">8 characters of prior envelope Reference Number (1#040); repeatable</td></tr>
+<tr><td class="mla-doc-table-label">date-created</td><td class="mla-doc-table-sublabel">2#055</td><td class="mla-doc-table-sublabel">8 numeric characters of intellectual content Date Created - CCYYMMDD</td></tr>
+<tr><td class="mla-doc-table-label">time-created</td><td class="mla-doc-table-sublabel">2#060</td><td class="mla-doc-table-sublabel">11 characters of intellectual content Time Created - HHMMSS±HHMM</td></tr>
+<tr><td class="mla-doc-table-label">digital-creation-date</td><td class="mla-doc-table-sublabel">2#062</td><td class="mla-doc-table-sublabel">8 numeric characters of digital representation creation date - CCYYMMDD</td></tr>
+<tr><td class="mla-doc-table-label">digital-creation-time</td><td class="mla-doc-table-sublabel">2#063</td><td class="mla-doc-table-sublabel">11 characters of digital representation creation time - HHMMSS±HHMM</td></tr>
+<tr><td class="mla-doc-table-label">originating-program</td><td class="mla-doc-table-sublabel">2#065</td><td class="mla-doc-table-sublabel">Max 32 characters of the program used to create the objectdata</td></tr>
+<tr><td class="mla-doc-table-label">program-version</td><td class="mla-doc-table-sublabel">2#070</td><td class="mla-doc-table-sublabel">Program Version - Max 10 characters of the version of the program used to create the objectdata</td></tr>
+<tr><td class="mla-doc-table-label">object-cycle</td><td class="mla-doc-table-sublabel">2#075</td><td class="mla-doc-table-sublabel">1 character where a=morning, p=evening, b=both</td></tr>
+<tr><td class="mla-doc-table-label">by-line</td><td class="mla-doc-table-sublabel">2#080</td><td class="mla-doc-table-sublabel">Max 32 Characters of the name of the objectdata creator, e.g., the writer, photographer; repeatable</td></tr>
+<tr><td class="mla-doc-table-label">by-line-title</td><td class="mla-doc-table-sublabel">2#085</td><td class="mla-doc-table-sublabel">Max 32 characters of the title of the objectdata creator; repeatable</td></tr>
+<tr><td class="mla-doc-table-label">city</td><td class="mla-doc-table-sublabel">2#090</td><td class="mla-doc-table-sublabel">Max 32 Characters of the city of objectdata origin</td></tr>
+<tr><td class="mla-doc-table-label">sub-location</td><td class="mla-doc-table-sublabel">2#092</td><td class="mla-doc-table-sublabel">Max 32 Characters of the location within the city of objectdata origin</td></tr>
+<tr><td class="mla-doc-table-label">province-or-state</td><td class="mla-doc-table-sublabel">2#095</td><td class="mla-doc-table-sublabel">Max 32 Characters of the objectdata origin Province or State</td></tr>
+<tr><td class="mla-doc-table-label">country-or-primary-location-code</td><td class="mla-doc-table-sublabel">2#100</td><td class="mla-doc-table-sublabel">3 characters of ISO3166 or IPTC-assigned code for Country of objectdata origin</td></tr>
+<tr><td class="mla-doc-table-label">country-or-primary-location-name</td><td class="mla-doc-table-sublabel">2#101</td><td class="mla-doc-table-sublabel">Max 64 characters of publishable country/geographical location name; repeatable</td></tr>
+<tr><td class="mla-doc-table-label">original-transmission-reference</td><td class="mla-doc-table-sublabel">2#103</td><td class="mla-doc-table-sublabel">Max 32 characters of a code representing the location of original transmission</td></tr>
+<tr><td class="mla-doc-table-label">headline</td><td class="mla-doc-table-sublabel">2#105</td><td class="mla-doc-table-sublabel">Max 256 Characters of a publishable entry providing a synopsis of the contents of the objectdata</td></tr>
+<tr><td class="mla-doc-table-label">credit</td><td class="mla-doc-table-sublabel">2#110</td><td class="mla-doc-table-sublabel">Max 32 Characters that identifies the provider of the objectdata (Vs. the owner/creator)</td></tr>
+<tr><td class="mla-doc-table-label">source</td><td class="mla-doc-table-sublabel">2#115</td><td class="mla-doc-table-sublabel">Max 32 Characters that identifies the original owner of the intellectual content</td></tr>
+<tr><td class="mla-doc-table-label">copyright-notice</td><td class="mla-doc-table-sublabel">2#116</td><td class="mla-doc-table-sublabel">Max 128 Characters that contains any necessary copyright notice</td></tr>
+<tr><td class="mla-doc-table-label">contact</td><td class="mla-doc-table-sublabel">2#118</td><td class="mla-doc-table-sublabel">Max 128 characters that identifies the person or organization which can provide further background information; repeatable</td></tr>
+<tr><td class="mla-doc-table-label">caption-or-abstract</td><td class="mla-doc-table-sublabel">2#120</td><td class="mla-doc-table-sublabel">Max 2000 Characters of a textual description of the objectdata</td></tr>
+<tr><td class="mla-doc-table-label">caption-writer-or-editor</td><td class="mla-doc-table-sublabel">2#122</td><td class="mla-doc-table-sublabel">Max 32 Characters that the identifies the person involved in the writing, editing or correcting the objectdata or caption/abstract; repeatable</td></tr>
+<tr><td class="mla-doc-table-label">rasterized-caption</td><td class="mla-doc-table-sublabel">2#125</td><td class="mla-doc-table-sublabel">7360 binary octets of the rasterized caption - 1 bit per pixel, 460x128-pixel image</td></tr>
+<tr><td class="mla-doc-table-label">image-type</td><td class="mla-doc-table-sublabel">2#130</td><td class="mla-doc-table-sublabel">2 characters of color composition type and information</td></tr>
+<tr><td class="mla-doc-table-label">image-orientation</td><td class="mla-doc-table-sublabel">2#131</td><td class="mla-doc-table-sublabel">1 alphabetic character indicating the image area layout - P=portrait, L=landscape, S=square</td></tr>
+<tr><td class="mla-doc-table-label">language-identifier</td><td class="mla-doc-table-sublabel">2#135</td><td class="mla-doc-table-sublabel">2 or 3 alphabetic characters containing the major national language of the object, according to the ISO 639:1988 codes</td></tr>
+<tr><td class="mla-doc-table-label">audio-type</td><td class="mla-doc-table-sublabel">2#150</td><td class="mla-doc-table-sublabel">2 characters identifying monaural/stereo and exact type of audio content</td></tr>
+<tr><td class="mla-doc-table-label">audio-sampling-rate</td><td class="mla-doc-table-sublabel">2#151</td><td class="mla-doc-table-sublabel">6 numeric characters representing the audio sampling rate in hertz (Hz)</td></tr>
+<tr><td class="mla-doc-table-label">audio-sampling-resolution</td><td class="mla-doc-table-sublabel">2#152</td><td class="mla-doc-table-sublabel">2 numeric characters representing the number of bits in each audio sample</td></tr>
+<tr><td class="mla-doc-table-label">audio-duration</td><td class="mla-doc-table-sublabel">2#153</td><td class="mla-doc-table-sublabel">6 numeric characters of the Audio Duration - HHMMSS</td></tr>
+<tr><td class="mla-doc-table-label">audio-outcue</td><td class="mla-doc-table-sublabel">2#154</td><td class="mla-doc-table-sublabel">Max 64 characters of the content of the end of an audio objectdata</td></tr>
+<tr><td class="mla-doc-table-label">objectdata-preview-file-format</td><td class="mla-doc-table-sublabel">2#200</td><td class="mla-doc-table-sublabel">2 octet binary file format of the ObjectData Preview</td></tr>
+<tr><td class="mla-doc-table-label">objectdata-preview-file-format-version</td><td class="mla-doc-table-sublabel">2#201</td><td class="mla-doc-table-sublabel">2 octet binary particular version of the ObjectData Preview File Format</td></tr>
+<tr><td class="mla-doc-table-label">objectdata-preview-data</td><td class="mla-doc-table-sublabel">2#202</td><td class="mla-doc-table-sublabel">Max 256000 binary octets containing the ObjectData Preview data</td></tr>
 <tr><td colspan="3" style="font-weight:bold">&nbsp;<br />Pre ObjectData Descriptor Record</td></tr>
-<tr><td style="padding-right: 10px; vertical-align: top; font-weight:bold">size-mode</td><td style="padding-right: 10px; vertical-align: top">7#010</td><td style="padding-right: 10px; vertical-align: top">1 numeric character - 0=objectdata size not known, 1=objectdata size known at beginning of transfer</td></tr>
-<tr><td style="padding-right: 10px; vertical-align: top; font-weight:bold">max-subfile-size</td><td style="padding-right: 10px; vertical-align: top">7#020</td><td style="padding-right: 10px; vertical-align: top">4 octet binary maximum subfile dataset(s) size</td></tr>
-<tr><td style="padding-right: 10px; vertical-align: top; font-weight:bold">objectdata-size-announced</td><td style="padding-right: 10px; vertical-align: top">7#090</td><td style="padding-right: 10px; vertical-align: top">4 octet binary objectdata size if known at beginning of transfer</td></tr>
-<tr><td style="padding-right: 10px; vertical-align: top; font-weight:bold">maximum-objectdata-size</td><td style="padding-right: 10px; vertical-align: top">7#095</td><td style="padding-right: 10px; vertical-align: top">4 octet binary largest possible objectdata size</td></tr>
+<tr><td class="mla-doc-table-label">size-mode</td><td class="mla-doc-table-sublabel">7#010</td><td class="mla-doc-table-sublabel">1 numeric character - 0=objectdata size not known, 1=objectdata size known at beginning of transfer</td></tr>
+<tr><td class="mla-doc-table-label">max-subfile-size</td><td class="mla-doc-table-sublabel">7#020</td><td class="mla-doc-table-sublabel">4 octet binary maximum subfile dataset(s) size</td></tr>
+<tr><td class="mla-doc-table-label">objectdata-size-announced</td><td class="mla-doc-table-sublabel">7#090</td><td class="mla-doc-table-sublabel">4 octet binary objectdata size if known at beginning of transfer</td></tr>
+<tr><td class="mla-doc-table-label">maximum-objectdata-size</td><td class="mla-doc-table-sublabel">7#095</td><td class="mla-doc-table-sublabel">4 octet binary largest possible objectdata size</td></tr>
 <tr><td colspan="3" style="font-weight:bold">&nbsp;<br />ObjectData</td></tr>
-<tr><td style="padding-right: 10px; vertical-align: top; font-weight:bold">subfile</td><td style="padding-right: 10px; vertical-align: top">8#010</td><td style="padding-right: 10px; vertical-align: top">Subfile DataSet containing the objectdata itself; repeatable</td></tr>
+<tr><td class="mla-doc-table-label">subfile</td><td class="mla-doc-table-sublabel">8#010</td><td class="mla-doc-table-sublabel">Subfile DataSet containing the objectdata itself; repeatable</td></tr>
 <tr><td colspan="3" style="font-weight:bold">&nbsp;<br />Post ObjectData Descriptor Record</td></tr>
-<tr><td style="padding-right: 10px; vertical-align: top; font-weight:bold">confirmed-objectdata-size</td><td style="padding-right: 10px; vertical-align: top">9#010</td><td style="padding-right: 10px; vertical-align: top">4 octet binary total objectdata size</td></tr>
+<tr><td class="mla-doc-table-label">confirmed-objectdata-size</td><td class="mla-doc-table-sublabel">9#010</td><td class="mla-doc-table-sublabel">4 octet binary total objectdata size</td></tr>
 </table>
 <a name="mla_camera_values"></a>&nbsp;
 <p>
@@ -3357,34 +3357,34 @@ The native format of this data is somewhat complicated, so MLA converts the most
 <table>
 <tr style="font-weight: bold"><td>Field</td><td>Example</td><td>Content</td></tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">ExposureTime</td>
-<td style="padding-right: 10px; vertical-align: top">1.04, 1/250</td>
-<td style="padding-right: 10px; vertical-align: top">Exposure time, given in seconds.</td>
+<td class="mla-doc-table-label">ExposureTime</td>
+<td class="mla-doc-table-sublabel">1.04, 1/250</td>
+<td class="mla-doc-table-sublabel">Exposure time, given in seconds.</td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">ShutterSpeed from ExposureTime</td>
-<td style="padding-right: 10px; vertical-align: top">1.04, 1/250</td>
-<td style="padding-right: 10px; vertical-align: top">Derived from ExposureTime and more often converted to the more useful "one over something" format.</td>
+<td class="mla-doc-table-label">ShutterSpeed from ExposureTime</td>
+<td class="mla-doc-table-sublabel">1.04, 1/250</td>
+<td class="mla-doc-table-sublabel">Derived from ExposureTime and more often converted to the more useful "one over something" format.</td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">FNumber</td>
-<td style="padding-right: 10px; vertical-align: top">7.1, 8</td>
-<td style="padding-right: 10px; vertical-align: top">The F Number.</td>
+<td class="mla-doc-table-label">FNumber</td>
+<td class="mla-doc-table-sublabel">7.1, 8</td>
+<td class="mla-doc-table-sublabel">The F Number.</td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">ExposureBiasValue</td>
-<td style="padding-right: 10px; vertical-align: top">-1, +1/3</td>
-<td style="padding-right: 10px; vertical-align: top">The exposure bias. The unit is the APEX value, usually in the range of -99.99 to 99.99.</td>
+<td class="mla-doc-table-label">ExposureBiasValue</td>
+<td class="mla-doc-table-sublabel">-1, +1/3</td>
+<td class="mla-doc-table-sublabel">The exposure bias. The unit is the APEX value, usually in the range of -99.99 to 99.99.</td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">Flash</td>
-<td style="padding-right: 10px; vertical-align: top">no, yes</td>
-<td style="padding-right: 10px; vertical-align: top">The "flash fired" portion of the flash status.</td>
+<td class="mla-doc-table-label">Flash</td>
+<td class="mla-doc-table-sublabel">no, yes</td>
+<td class="mla-doc-table-sublabel">The "flash fired" portion of the flash status.</td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">FocalLength</td>
-<td style="padding-right: 10px; vertical-align: top">420, 500</td>
-<td style="padding-right: 10px; vertical-align: top">The actual focal length of the lens, in mm. It is not converted to the focal length of a 35mm film camera.</td>
+<td class="mla-doc-table-label">FocalLength</td>
+<td class="mla-doc-table-sublabel">420, 500</td>
+<td class="mla-doc-table-sublabel">The actual focal length of the lens, in mm. It is not converted to the focal length of a 35mm film camera.</td>
 </tr>
 </table>
 <p>
@@ -3393,59 +3393,59 @@ The MLA enhanced values for "Other Tags" are:</p>
 <table>
 <tr style="font-weight: bold"><td>Field</td><td>Example</td><td>Content</td></tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">ImageUniqueID</td>
-<td style="padding-right: 10px; vertical-align: top"></td>
-<td style="padding-right: 10px; vertical-align: top">an identifier assigned uniquely to each image. It is recorded as an ASCII string equivalent to hexadecimal notation and 128-bit fixed length.</td>
+<td class="mla-doc-table-label">ImageUniqueID</td>
+<td class="mla-doc-table-sublabel"></td>
+<td class="mla-doc-table-sublabel">an identifier assigned uniquely to each image. It is recorded as an ASCII string equivalent to hexadecimal notation and 128-bit fixed length.</td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">CameraOwnerName</td>
-<td style="padding-right: 10px; vertical-align: top"></td>
-<td style="padding-right: 10px; vertical-align: top">records the owner of a camera used in photography as an ASCII string.</td>
+<td class="mla-doc-table-label">CameraOwnerName</td>
+<td class="mla-doc-table-sublabel"></td>
+<td class="mla-doc-table-sublabel">records the owner of a camera used in photography as an ASCII string.</td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">BodySerialNumber</td>
-<td style="padding-right: 10px; vertical-align: top">6033674</td>
-<td style="padding-right: 10px; vertical-align: top">the serial number of the camera body as an ASCII string.</td>
+<td class="mla-doc-table-label">BodySerialNumber</td>
+<td class="mla-doc-table-sublabel">6033674</td>
+<td class="mla-doc-table-sublabel">the serial number of the camera body as an ASCII string.</td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">LensSpecification</td>
-<td style="padding-right: 10px; vertical-align: top">"80/1, 400/1, 45/10, 56/10"</td>
-<td style="padding-right: 10px; vertical-align: top">a four-element array containing minimum focal length, maximum focal length, minimum F number in the minimum focal length and minimum F number in the maximum focal length.</td>
+<td class="mla-doc-table-label">LensSpecification</td>
+<td class="mla-doc-table-sublabel">"80/1, 400/1, 45/10, 56/10"</td>
+<td class="mla-doc-table-sublabel">a four-element array containing minimum focal length, maximum focal length, minimum F number in the minimum focal length and minimum F number in the maximum focal length.</td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">LensMinFocalLength</td>
-<td style="padding-right: 10px; vertical-align: top">80</td>
-<td style="padding-right: 10px; vertical-align: top">minimum focal length element of the LensSpecification array.</td>
+<td class="mla-doc-table-label">LensMinFocalLength</td>
+<td class="mla-doc-table-sublabel">80</td>
+<td class="mla-doc-table-sublabel">minimum focal length element of the LensSpecification array.</td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">LensMaxFocalLength</td>
-<td style="padding-right: 10px; vertical-align: top">400</td>
-<td style="padding-right: 10px; vertical-align: top">maximum focal length element of the LensSpecification array.</td>
+<td class="mla-doc-table-label">LensMaxFocalLength</td>
+<td class="mla-doc-table-sublabel">400</td>
+<td class="mla-doc-table-sublabel">maximum focal length element of the LensSpecification array.</td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">LensMinFocalLengthFN</td>
-<td style="padding-right: 10px; vertical-align: top">4.5</td>
-<td style="padding-right: 10px; vertical-align: top">minimum F number in the minimum focal length element of the LensSpecification array.</td>
+<td class="mla-doc-table-label">LensMinFocalLengthFN</td>
+<td class="mla-doc-table-sublabel">4.5</td>
+<td class="mla-doc-table-sublabel">minimum F number in the minimum focal length element of the LensSpecification array.</td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">LensMaxFocalLengthFN</td>
-<td style="padding-right: 10px; vertical-align: top">5.6</td>
-<td style="padding-right: 10px; vertical-align: top">minimum F number in the maximum focal length element of the LensSpecification array.</td>
+<td class="mla-doc-table-label">LensMaxFocalLengthFN</td>
+<td class="mla-doc-table-sublabel">5.6</td>
+<td class="mla-doc-table-sublabel">minimum F number in the maximum focal length element of the LensSpecification array.</td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">LensMake</td>
-<td style="padding-right: 10px; vertical-align: top">Canon</td>
-<td style="padding-right: 10px; vertical-align: top">the lens manufacturer as an ASCII string.</td>
+<td class="mla-doc-table-label">LensMake</td>
+<td class="mla-doc-table-sublabel">Canon</td>
+<td class="mla-doc-table-sublabel">the lens manufacturer as an ASCII string.</td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">LensModel</td>
-<td style="padding-right: 10px; vertical-align: top">80.0-400.0 mm f/4.5-5.6</td>
-<td style="padding-right: 10px; vertical-align: top">the lens's model name and model number as an ASCII string.</td>
+<td class="mla-doc-table-label">LensModel</td>
+<td class="mla-doc-table-sublabel">80.0-400.0 mm f/4.5-5.6</td>
+<td class="mla-doc-table-sublabel">the lens's model name and model number as an ASCII string.</td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">LensSerialNumber</td>
-<td style="padding-right: 10px; vertical-align: top"></td>
-<td style="padding-right: 10px; vertical-align: top">the serial number of the interchangeable lens as an ASCII string.</td>
+<td class="mla-doc-table-label">LensSerialNumber</td>
+<td class="mla-doc-table-sublabel"></td>
+<td class="mla-doc-table-sublabel">the serial number of the interchangeable lens as an ASCII string.</td>
 </tr>
 </table>
 <a name="mla_gps_values"></a>&nbsp;
@@ -3461,194 +3461,194 @@ The native format of this data is somewhat complicated, so MLA converts the most
 <table>
 <tr style="font-weight: bold"><td>Field</td><td>Example</td><td>Content</td></tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">Version</td>
-<td style="padding-right: 10px; vertical-align: top">2.2.0.0</td>
-<td style="padding-right: 10px; vertical-align: top">The version of the GPS Information specification</td>
+<td class="mla-doc-table-label">Version</td>
+<td class="mla-doc-table-sublabel">2.2.0.0</td>
+<td class="mla-doc-table-sublabel">The version of the GPS Information specification</td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">LatitudeRef</td>
-<td style="padding-right: 10px; vertical-align: top">N or S</td>
-<td style="padding-right: 10px; vertical-align: top">Indicates whether the latitude is north or south latitude</td>
+<td class="mla-doc-table-label">LatitudeRef</td>
+<td class="mla-doc-table-sublabel">N or S</td>
+<td class="mla-doc-table-sublabel">Indicates whether the latitude is north or south latitude</td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">LatitudeRefS</td>
-<td style="padding-right: 10px; vertical-align: top">empty or "-"</td>
-<td style="padding-right: 10px; vertical-align: top">Blank for north, "-" for south</td>
+<td class="mla-doc-table-label">LatitudeRefS</td>
+<td class="mla-doc-table-sublabel">empty or "-"</td>
+<td class="mla-doc-table-sublabel">Blank for north, "-" for south</td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">Latitude</td>
-<td style="padding-right: 10px; vertical-align: top">44d 7' 34.0167" N</td>
-<td style="padding-right: 10px; vertical-align: top">Latitude expressed as degrees, minutes and seconds</td>
+<td class="mla-doc-table-label">Latitude</td>
+<td class="mla-doc-table-sublabel">44d 7' 34.0167" N</td>
+<td class="mla-doc-table-sublabel">Latitude expressed as degrees, minutes and seconds</td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">LatitudeD</td>
-<td style="padding-right: 10px; vertical-align: top">44</td>
-<td style="padding-right: 10px; vertical-align: top">Degree portion of Latitude</td>
+<td class="mla-doc-table-label">LatitudeD</td>
+<td class="mla-doc-table-sublabel">44</td>
+<td class="mla-doc-table-sublabel">Degree portion of Latitude</td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">LatitudeM</td>
-<td style="padding-right: 10px; vertical-align: top">7</td>
-<td style="padding-right: 10px; vertical-align: top">Minute portion of Latitude</td>
+<td class="mla-doc-table-label">LatitudeM</td>
+<td class="mla-doc-table-sublabel">7</td>
+<td class="mla-doc-table-sublabel">Minute portion of Latitude</td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">LatitudeS</td>
-<td style="padding-right: 10px; vertical-align: top">34.0167</td>
-<td style="padding-right: 10px; vertical-align: top">Second portion of Latitude</td>
+<td class="mla-doc-table-label">LatitudeS</td>
+<td class="mla-doc-table-sublabel">34.0167</td>
+<td class="mla-doc-table-sublabel">Second portion of Latitude</td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">LatitudeSDM</td>
-<td style="padding-right: 10px; vertical-align: top">44 7.5669</td>
-<td style="padding-right: 10px; vertical-align: top">Latitude expressed as degrees and decimal minutes (MinDec),<br />with a leading "-" for Southern values</td>
+<td class="mla-doc-table-label">LatitudeSDM</td>
+<td class="mla-doc-table-sublabel">44 7.5669</td>
+<td class="mla-doc-table-sublabel">Latitude expressed as degrees and decimal minutes (MinDec),<br />with a leading "-" for Southern values</td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">LatitudeSDD</td>
-<td style="padding-right: 10px; vertical-align: top">44.126116</td>
-<td style="padding-right: 10px; vertical-align: top">Latitude expressed as decimal degrees,<br />with a leading "-" for Southern values</td>
+<td class="mla-doc-table-label">LatitudeSDD</td>
+<td class="mla-doc-table-sublabel">44.126116</td>
+<td class="mla-doc-table-sublabel">Latitude expressed as decimal degrees,<br />with a leading "-" for Southern values</td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">LatitudeDM</td>
-<td style="padding-right: 10px; vertical-align: top">44 7.5669N</td>
-<td style="padding-right: 10px; vertical-align: top">Latitude expressed as degrees and decimal minutes (MinDec)</td>
+<td class="mla-doc-table-label">LatitudeDM</td>
+<td class="mla-doc-table-sublabel">44 7.5669N</td>
+<td class="mla-doc-table-sublabel">Latitude expressed as degrees and decimal minutes (MinDec)</td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">LatitudeDD</td>
-<td style="padding-right: 10px; vertical-align: top">44.126116N</td>
-<td style="padding-right: 10px; vertical-align: top">Latitude expressed as decimal degrees</td>
+<td class="mla-doc-table-label">LatitudeDD</td>
+<td class="mla-doc-table-sublabel">44.126116N</td>
+<td class="mla-doc-table-sublabel">Latitude expressed as decimal degrees</td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">LatitudeMinDec</td>
-<td style="padding-right: 10px; vertical-align: top">7.5669</td>
-<td style="padding-right: 10px; vertical-align: top">Decimal Minutes portion of Latitude</td>
+<td class="mla-doc-table-label">LatitudeMinDec</td>
+<td class="mla-doc-table-sublabel">7.5669</td>
+<td class="mla-doc-table-sublabel">Decimal Minutes portion of Latitude</td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">LatitudeDegDec</td>
-<td style="padding-right: 10px; vertical-align: top">.126116</td>
-<td style="padding-right: 10px; vertical-align: top">Decimal Degrees portion of Latitude</td>
+<td class="mla-doc-table-label">LatitudeDegDec</td>
+<td class="mla-doc-table-sublabel">.126116</td>
+<td class="mla-doc-table-sublabel">Decimal Degrees portion of Latitude</td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">LongitudeRef</td>
-<td style="padding-right: 10px; vertical-align: top">E or W</td>
-<td style="padding-right: 10px; vertical-align: top">Indicates whether the Longitude is east or west longitude</td>
+<td class="mla-doc-table-label">LongitudeRef</td>
+<td class="mla-doc-table-sublabel">E or W</td>
+<td class="mla-doc-table-sublabel">Indicates whether the Longitude is east or west longitude</td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">LongitudeRefS</td>
-<td style="padding-right: 10px; vertical-align: top">empty or "-"</td>
-<td style="padding-right: 10px; vertical-align: top">Blank for east, "-" for west</td>
+<td class="mla-doc-table-label">LongitudeRefS</td>
+<td class="mla-doc-table-sublabel">empty or "-"</td>
+<td class="mla-doc-table-sublabel">Blank for east, "-" for west</td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">Longitude</td>
-<td style="padding-right: 10px; vertical-align: top">145d 5' 9.2055" E</td>
-<td style="padding-right: 10px; vertical-align: top">Longitude expressed as degrees, minutes and seconds</td>
+<td class="mla-doc-table-label">Longitude</td>
+<td class="mla-doc-table-sublabel">145d 5' 9.2055" E</td>
+<td class="mla-doc-table-sublabel">Longitude expressed as degrees, minutes and seconds</td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">LongitudeD</td>
-<td style="padding-right: 10px; vertical-align: top">145</td>
-<td style="padding-right: 10px; vertical-align: top">Degree portion of Longitude</td>
+<td class="mla-doc-table-label">LongitudeD</td>
+<td class="mla-doc-table-sublabel">145</td>
+<td class="mla-doc-table-sublabel">Degree portion of Longitude</td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">LongitudeM</td>
-<td style="padding-right: 10px; vertical-align: top">5</td>
-<td style="padding-right: 10px; vertical-align: top">Minute portion of Longitude</td>
+<td class="mla-doc-table-label">LongitudeM</td>
+<td class="mla-doc-table-sublabel">5</td>
+<td class="mla-doc-table-sublabel">Minute portion of Longitude</td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">LongitudeS</td>
-<td style="padding-right: 10px; vertical-align: top">9.2055</td>
-<td style="padding-right: 10px; vertical-align: top">Second portion of Longitude</td>
+<td class="mla-doc-table-label">LongitudeS</td>
+<td class="mla-doc-table-sublabel">9.2055</td>
+<td class="mla-doc-table-sublabel">Second portion of Longitude</td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">LongitudeSDM</td>
-<td style="padding-right: 10px; vertical-align: top">145 5.1534</td>
-<td style="padding-right: 10px; vertical-align: top">Longitude expressed as degrees and decimal minutes (MinDec),<br />with a leading "-" for Western values</td>
+<td class="mla-doc-table-label">LongitudeSDM</td>
+<td class="mla-doc-table-sublabel">145 5.1534</td>
+<td class="mla-doc-table-sublabel">Longitude expressed as degrees and decimal minutes (MinDec),<br />with a leading "-" for Western values</td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">LongitudeSDD</td>
-<td style="padding-right: 10px; vertical-align: top">145.085890</td>
-<td style="padding-right: 10px; vertical-align: top">Longitude expressed as decimal degrees,<br />with a leading "-" for Western values</td>
+<td class="mla-doc-table-label">LongitudeSDD</td>
+<td class="mla-doc-table-sublabel">145.085890</td>
+<td class="mla-doc-table-sublabel">Longitude expressed as decimal degrees,<br />with a leading "-" for Western values</td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">LongitudeDM</td>
-<td style="padding-right: 10px; vertical-align: top">145 5.1534E</td>
-<td style="padding-right: 10px; vertical-align: top">Longitude expressed as degrees and decimal minutes (MinDec)</td>
+<td class="mla-doc-table-label">LongitudeDM</td>
+<td class="mla-doc-table-sublabel">145 5.1534E</td>
+<td class="mla-doc-table-sublabel">Longitude expressed as degrees and decimal minutes (MinDec)</td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">LongitudeDD</td>
-<td style="padding-right: 10px; vertical-align: top">145.085890E</td>
-<td style="padding-right: 10px; vertical-align: top">Longitude expressed as decimal degrees</td>
+<td class="mla-doc-table-label">LongitudeDD</td>
+<td class="mla-doc-table-sublabel">145.085890E</td>
+<td class="mla-doc-table-sublabel">Longitude expressed as decimal degrees</td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">LongitudeMinDec</td>
-<td style="padding-right: 10px; vertical-align: top">5.1534</td>
-<td style="padding-right: 10px; vertical-align: top">Decimal Minutes portion of Longitude</td>
+<td class="mla-doc-table-label">LongitudeMinDec</td>
+<td class="mla-doc-table-sublabel">5.1534</td>
+<td class="mla-doc-table-sublabel">Decimal Minutes portion of Longitude</td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">LongitudeDegDec</td>
-<td style="padding-right: 10px; vertical-align: top">.085890</td>
-<td style="padding-right: 10px; vertical-align: top">Decimal Degrees portion of Longitude</td>
+<td class="mla-doc-table-label">LongitudeDegDec</td>
+<td class="mla-doc-table-sublabel">.085890</td>
+<td class="mla-doc-table-sublabel">Decimal Degrees portion of Longitude</td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">AltitudeRef</td>
-<td style="padding-right: 10px; vertical-align: top">0 or 1</td>
-<td style="padding-right: 10px; vertical-align: top">0 = above sea level, 1 = below sea level</td>
+<td class="mla-doc-table-label">AltitudeRef</td>
+<td class="mla-doc-table-sublabel">0 or 1</td>
+<td class="mla-doc-table-sublabel">0 = above sea level, 1 = below sea level</td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">AltitudeRefS</td>
-<td style="padding-right: 10px; vertical-align: top">blank or "-"</td>
-<td style="padding-right: 10px; vertical-align: top">Blank above sea level, "-" below sea level</td>
+<td class="mla-doc-table-label">AltitudeRefS</td>
+<td class="mla-doc-table-sublabel">blank or "-"</td>
+<td class="mla-doc-table-sublabel">Blank above sea level, "-" below sea level</td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">Altitude</td>
-<td style="padding-right: 10px; vertical-align: top">247.0825</td>
-<td style="padding-right: 10px; vertical-align: top">Altitude in meters</td>
+<td class="mla-doc-table-label">Altitude</td>
+<td class="mla-doc-table-sublabel">247.0825</td>
+<td class="mla-doc-table-sublabel">Altitude in meters</td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">AltitudeFeet</td>
-<td style="padding-right: 10px; vertical-align: top">810.64</td>
-<td style="padding-right: 10px; vertical-align: top">Altitude in feet</td>
+<td class="mla-doc-table-label">AltitudeFeet</td>
+<td class="mla-doc-table-sublabel">810.64</td>
+<td class="mla-doc-table-sublabel">Altitude in feet</td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">TimeStamp</td>
-<td style="padding-right: 10px; vertical-align: top">01:00:34</td>
-<td style="padding-right: 10px; vertical-align: top">The time as UTC (Coordinated Universal Time)</td>
+<td class="mla-doc-table-label">TimeStamp</td>
+<td class="mla-doc-table-sublabel">01:00:34</td>
+<td class="mla-doc-table-sublabel">The time as UTC (Coordinated Universal Time)</td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">TimeStampH</td>
-<td style="padding-right: 10px; vertical-align: top">01</td>
-<td style="padding-right: 10px; vertical-align: top">The hours portion of TimeStamp</td>
+<td class="mla-doc-table-label">TimeStampH</td>
+<td class="mla-doc-table-sublabel">01</td>
+<td class="mla-doc-table-sublabel">The hours portion of TimeStamp</td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">TimeStampM</td>
-<td style="padding-right: 10px; vertical-align: top">00</td>
-<td style="padding-right: 10px; vertical-align: top">The minutes portion of TimeStamp</td>
+<td class="mla-doc-table-label">TimeStampM</td>
+<td class="mla-doc-table-sublabel">00</td>
+<td class="mla-doc-table-sublabel">The minutes portion of TimeStamp</td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">TimeStampS</td>
-<td style="padding-right: 10px; vertical-align: top">34</td>
-<td style="padding-right: 10px; vertical-align: top">The seconds portion of TimeStamp</td>
+<td class="mla-doc-table-label">TimeStampS</td>
+<td class="mla-doc-table-sublabel">34</td>
+<td class="mla-doc-table-sublabel">The seconds portion of TimeStamp</td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">DateStamp</td>
-<td style="padding-right: 10px; vertical-align: top">2013:08:09</td>
-<td style="padding-right: 10px; vertical-align: top">The date as UTC (Coordinated Universal Time)</td>
+<td class="mla-doc-table-label">DateStamp</td>
+<td class="mla-doc-table-sublabel">2013:08:09</td>
+<td class="mla-doc-table-sublabel">The date as UTC (Coordinated Universal Time)</td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">DateStampY</td>
-<td style="padding-right: 10px; vertical-align: top">2013</td>
-<td style="padding-right: 10px; vertical-align: top">The year portion of DateStamp</td>
+<td class="mla-doc-table-label">DateStampY</td>
+<td class="mla-doc-table-sublabel">2013</td>
+<td class="mla-doc-table-sublabel">The year portion of DateStamp</td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">DateStampM</td>
-<td style="padding-right: 10px; vertical-align: top">08</td>
-<td style="padding-right: 10px; vertical-align: top">The month portion of DateStamp</td>
+<td class="mla-doc-table-label">DateStampM</td>
+<td class="mla-doc-table-sublabel">08</td>
+<td class="mla-doc-table-sublabel">The month portion of DateStamp</td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">DateStampD</td>
-<td style="padding-right: 10px; vertical-align: top">09</td>
-<td style="padding-right: 10px; vertical-align: top">The day portion of DateStamp</td>
+<td class="mla-doc-table-label">DateStampD</td>
+<td class="mla-doc-table-sublabel">09</td>
+<td class="mla-doc-table-sublabel">The day portion of DateStamp</td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">MapDatum</td>
-<td style="padding-right: 10px; vertical-align: top">WGS-84</td>
-<td style="padding-right: 10px; vertical-align: top">The geodetic survey data used by the GPS receiver</td>
+<td class="mla-doc-table-label">MapDatum</td>
+<td class="mla-doc-table-sublabel">WGS-84</td>
+<td class="mla-doc-table-sublabel">The geodetic survey data used by the GPS receiver</td>
 </tr>
 </table>
 <a name="pdf_metadata"></a>
@@ -3662,39 +3662,39 @@ Metadata in PDF documents comes from two sources. Early versions of the PDF spec
 </p>
 <table>
 	<tr>
-		<td style="padding-right: 10px; vertical-align: top; font-weight:bold">Title</td>
+		<td class="mla-doc-table-label">Title</td>
 		<td>The document's title</td>
 	</tr>
 	<tr>
-		<td style="padding-right: 10px; vertical-align: top; font-weight:bold">Author</td>
+		<td class="mla-doc-table-label">Author</td>
 		<td>The name of the person who created the document</td>
 	</tr>
 	<tr>
-		<td style="padding-right: 10px; vertical-align: top; font-weight:bold">Subject</td>
+		<td class="mla-doc-table-label">Subject</td>
 		<td>The subject of the document</td>
 	</tr>
 	<tr>
-		<td style="padding-right: 10px; vertical-align: top; font-weight:bold">Keywords</td>
+		<td class="mla-doc-table-label">Keywords</td>
 		<td>Keywords associated with the document</td>
 	</tr>
 	<tr>
-		<td style="padding-right: 10px; vertical-align: top; font-weight:bold">Creator</td>
+		<td class="mla-doc-table-label">Creator</td>
 		<td>If the document was converted to PDF from another format, the name of the application (for example, Adobe FrameMaker&reg;) that created the original document from which it was converted</td>
 	</tr>
 	<tr>
-		<td style="padding-right: 10px; vertical-align: top; font-weight:bold">Producer</td>
+		<td class="mla-doc-table-label">Producer</td>
 		<td>If the document was converted to PDF from another format, the name of the application (for example, Acrobat Distiller) that converted it to PDF</td>
 	</tr>
 	<tr>
-		<td style="padding-right: 10px; vertical-align: top; font-weight:bold">CreationDate</td>
+		<td class="mla-doc-table-label">CreationDate</td>
 		<td>The date and time the document was created, in human-readable form</td>
 	</tr>
 	<tr>
-		<td style="padding-right: 10px; vertical-align: top; font-weight:bold">ModDate</td>
+		<td class="mla-doc-table-label">ModDate</td>
 		<td>The date and time the document was most recently modified, in human-readable form</td>
 	</tr>
 	<tr>
-		<td style="padding-right: 10px; vertical-align: top; font-weight:bold">Trapped</td>
+		<td class="mla-doc-table-label">Trapped</td>
 		<td>A keyword (True, False, Unknown) indicating whether the document has been modified to include trapping information</td>
 	</tr>
 </table>
@@ -3720,23 +3720,23 @@ MLA adds five fields of its own to the metadata information:
 </p>
 <table>
 	<tr>
-		<td style="padding-right: 10px; vertical-align: top; font-weight:bold">PDF_Version</td>
+		<td class="mla-doc-table-label">PDF_Version</td>
 		<td>the version of the PDF specification to which the file conforms. For a file conforming to PDF 1.7, this would be PDF−1.7</td>
 	</tr>
 	<tr>
-		<td style="padding-right: 10px; vertical-align: top; font-weight:bold">PDF_VersionNumber</td>
+		<td class="mla-doc-table-label">PDF_VersionNumber</td>
 		<td>the numeric portion of the PDF_Version. For a file conforming to PDF 1.7, this would be 1.7</td>
 	</tr>
 	<tr>
-		<td style="padding-right: 10px; vertical-align: top; font-weight:bold">xmptk</td>
+		<td class="mla-doc-table-label">xmptk</td>
 		<td>the XMP software used to create the metadata</td>
 	</tr>
 	<tr>
-		<td style="padding-right: 10px; vertical-align: top; font-weight:bold">xmlns</td>
+		<td class="mla-doc-table-label">xmlns</td>
 		<td>an array of the namespaces found in the document, such as <code>'dc' => 'http://purl.org/dc/elements/1.1/'</code></td>
 	</tr>
 	<tr>
-		<td style="padding-right: 10px; vertical-align: top; font-weight:bold">ALL_PDF</td>
+		<td class="mla-doc-table-label">ALL_PDF</td>
 		<td>a special "pseudo value" that returns a string representation of all the metadata. You can use this pseudo-value to examine the metadata in a document, find field names and see what values are present.</td>
 	</tr>
 </table>
@@ -3751,19 +3751,19 @@ Content Templates (templates) are one of the Field-level Markup Substitution Par
 </p>
 <table>
 	<tr>
-		<td style="padding-right: 10px; vertical-align: top; font-weight:bold">String</td>
+		<td class="mla-doc-table-label">String</td>
 		<td>text and/or field-level substitution parameters, e.g., <code>[+template: Base File - [+base_file+] +]</code></td>
 	</tr>
 	<tr>
-		<td style="padding-right: 10px; vertical-align: top; font-weight:bold">Conditional</td>
+		<td class="mla-doc-table-label">Conditional</td>
 		<td>text and/or field-level substitution parameters that will be tested for missing values. Any field-level substitution parameter that is not valid, is empty or contains only whitespace will cause the entire conditional to be eliminated. Conditional elements are enclosed in parentheses. For example, <code>[+template: (IPTC Title: [+iptc:object-name+] ) +]</code>. If the IPTC field is missing or blank both it and the preceding "IPTC Title: " literal are eliminated.</td>
 	</tr>
 	<tr>
-		<td style="padding-right: 10px; vertical-align: top; font-weight:bold">Choice</td>
+		<td class="mla-doc-table-label">Choice</td>
 		<td>two or more alternatives from which the first valid, non-empty value will be taken. Choice elements are separated by vertical bars ("|"), e.g., <code>[+template: Summary: ([+caption+]|[+description+]|[+title+]) +]</code></td>
 	</tr>
 	<tr>
-		<td style="padding-right: 10px; vertical-align: top; font-weight:bold">Template</td>
+		<td class="mla-doc-table-label">Template</td>
 		<td>another template. There is no particular advantage to nesting templates, but it works.</td>
 	</tr>
 </table>
@@ -3933,7 +3933,7 @@ If you change your mind you can close the window without making a change by clic
 Media Library Assistant adds several controls to the toolbar in the Media Manager Modal Window; more MIME type filters, year/month filter, taxonomy term filter and an enhanced Search media box. These features are supported by a comprehensive set of filters and actions that give you control over MMMW content from PHP code in your theme or in another plugin.
 </p>
 <p>
-An example of using the hooks from a simple, stand-alone plugin can be found here: <a title="View the Meta Box Hooks Example source code" href="[+examples_url+]mla-media-modal-hooks-example.php.txt" target="_blank" style="font-size:14px; font-weight:bold">mla-media-modal-hooks-example.php.txt</a>. To run the example:
+An example of using the hooks from a simple, stand-alone plugin can be found here: <a title="View the Meta Box Hooks Example source code" href="[+examples_url+]mla-media-modal-hooks-example.php.txt" target="_blank" class="mla-doc-bold-link">mla-media-modal-hooks-example.php.txt</a>. To run the example:
 </p>
 <ol>
 <li>Remove the ".txt" extension and save the "mla-media-modal-hooks-example.php" file in your plugins directory. You can give the plugin and its file any (unique) name you like.</li>
@@ -3946,60 +3946,60 @@ The following hooks are defined in <code>/wp-admin/includes/class-mla-media-moda
 </p>
 <table>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">mla_media_modal_form_fields</td>
-<td>Change the content of the Media Manager Modal Window ATTACHMENT DETAILS fields</td>
+<td class="mla-doc-table-label">mla_media_modal_form_fields</td>
+<td class="mla-doc-hook-definition">Change the content of the Media Manager Modal Window ATTACHMENT DETAILS fields</td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">mla_media_modal_months_dropdown</td>
-<td>Change the content of the Media Manager Modal Window Month & Year Dropdown control</td>
+<td class="mla-doc-table-label">mla_media_modal_months_dropdown</td>
+<td class="mla-doc-hook-definition">Change the content of the Media Manager Modal Window Month & Year Dropdown control</td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">mla_media_modal_terms_options</td>
-<td>Change the content of the Media Manager Modal Window Terms Dropdown control</td>
+<td class="mla-doc-table-label">mla_media_modal_terms_options</td>
+<td class="mla-doc-hook-definition">Change the content of the Media Manager Modal Window Terms Dropdown control</td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">mla_media_modal_initial_filters</td>
-<td>Change  the initial values of the Media Manager Modal Window toolbar controls</td>
+<td class="mla-doc-table-label">mla_media_modal_initial_filters</td>
+<td class="mla-doc-hook-definition">Change  the initial values of the Media Manager Modal Window toolbar controls</td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">mla_media_modal_settings</td>
-<td>Change the content of the Media Manager Modal Window toolbar controls</td>
+<td class="mla-doc-table-label">mla_media_modal_settings</td>
+<td class="mla-doc-hook-definition">Change the content of the Media Manager Modal Window toolbar controls</td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">mla_media_modal_strings</td>
-<td>Change the content of the string values passed Media Manager Modal Window toolbar controls</td>
+<td class="mla-doc-table-label">mla_media_modal_strings</td>
+<td class="mla-doc-hook-definition">Change the content of the string values passed Media Manager Modal Window toolbar controls</td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">mla_media_modal_template_path</td>
-<td>Change the path to the JavaScript template file or substitute your own template(s)</td>
+<td class="mla-doc-table-label">mla_media_modal_template_path</td>
+<td class="mla-doc-hook-definition">Change the path to the JavaScript template file or substitute your own template(s)</td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">mla_media_modal_begin_fill_compat_fields</td>
-<td>Replace the content of the Media Manager Modal Window ATTACHMENT DETAILS taxonomy meta boxes before the MLA results have been added</td>
+<td class="mla-doc-table-label">mla_media_modal_begin_fill_compat_fields</td>
+<td class="mla-doc-hook-definition">Replace the content of the Media Manager Modal Window ATTACHMENT DETAILS taxonomy meta boxes before the MLA results have been added</td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">mla_media_modal_end_fill_compat_fields</td>
-<td>Change the content of the Media Manager Modal Window ATTACHMENT DETAILS taxonomy meta boxes after MLA results have been added.</td>
+<td class="mla-doc-table-label">mla_media_modal_end_fill_compat_fields</td>
+<td class="mla-doc-hook-definition">Change the content of the Media Manager Modal Window ATTACHMENT DETAILS taxonomy meta boxes after MLA results have been added.</td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">mla_media_modal_begin_update_compat_fields</td>
-<td>Pre-process the $_REQUEST elements for the Media Manager Modal Window ATTACHMENT DETAILS taxonomy meta boxes updates</td>
+<td class="mla-doc-table-label">mla_media_modal_begin_update_compat_fields</td>
+<td class="mla-doc-hook-definition">Pre-process the $_REQUEST elements for the Media Manager Modal Window ATTACHMENT DETAILS taxonomy meta boxes updates</td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">mla_media_modal_update_compat_fields_terms</td>
-<td>Change the terms assigned to one Media Manager Modal Window ATTACHMENT DETAILS taxonomy</td>
+<td class="mla-doc-table-label">mla_media_modal_update_compat_fields_terms</td>
+<td class="mla-doc-hook-definition">Change the terms assigned to one Media Manager Modal Window ATTACHMENT DETAILS taxonomy</td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">mla_media_modal_end_update_compat_fields</td>
-<td>Change the content of one (or more) Media Manager Modal Window ATTACHMENT DETAILS taxonomy meta boxes with updated checkbox or tag/term lists</td>
+<td class="mla-doc-table-label">mla_media_modal_end_update_compat_fields</td>
+<td class="mla-doc-hook-definition">Change the content of one (or more) Media Manager Modal Window ATTACHMENT DETAILS taxonomy meta boxes with updated checkbox or tag/term lists</td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">mla_media_modal_query_initial_terms</td>
-<td>Change the terms of the Media Manager Modal Window "Query Attachments" query before they are pre-processed by the MLA handler</td>
+<td class="mla-doc-table-label">mla_media_modal_query_initial_terms</td>
+<td class="mla-doc-hook-definition">Change the terms of the Media Manager Modal Window "Query Attachments" query before they are pre-processed by the MLA handler</td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">mla_media_modal_query_filtered_terms</td>
-<td>Change the terms of the Media Manager Modal Window "Query Attachments" query after they are pre-processed by the Ajax handler</td>
+<td class="mla-doc-table-label">mla_media_modal_query_filtered_terms</td>
+<td class="mla-doc-hook-definition">Change the terms of the Media Manager Modal Window "Query Attachments" query after they are pre-processed by the Ajax handler</td>
 </tr>
 </table>
 <p>
@@ -4007,12 +4007,12 @@ The following hooks are defined in <code>/wp-admin/includes/class-mla_data.php</
 </p>
 <table>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">mla_media_modal_query_final_terms</td>
-<td>Change the terms of the Media Manager Modal Window "Query Attachments" query after they are processed by the "Prepare List Table Query" handler</td>
+<td class="mla-doc-table-label">mla_media_modal_query_final_terms</td>
+<td class="mla-doc-hook-definition">Change the terms of the Media Manager Modal Window "Query Attachments" query after they are processed by the "Prepare List Table Query" handler</td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">mla_media_modal_query_custom_items</td>
-<td>Substitute the results of the Media Manager Modal Window "Query Attachments" query with alternative results of your own</td>
+<td class="mla-doc-table-label">mla_media_modal_query_custom_items</td>
+<td class="mla-doc-hook-definition">Substitute the results of the Media Manager Modal Window "Query Attachments" query with alternative results of your own</td>
 </tr>
 </table>
 <p>
@@ -4027,7 +4027,7 @@ The following hooks are defined in <code>/wp-admin/includes/class-mla_data.php</
 Media Library Assistant adds support for the "Custom Fields" meta box to the Media/Edit Media screen. MLA also adds several meta boxes to this screen with more information about the item and where it is  used on your site. You can enable/disable the additional meta boxes with an option on the Settings/Media Library Assistant General tab.
 </p>
 <p>
-You can also make individual changes in which meta boxes are displayed and in their content by using one or more of the filters MLA provides. An example of using the hooks from a simple, stand-alone plugin can be found here: <a title="View the Meta Box Hooks Example source code" href="[+examples_url+]mla-metabox-hooks-example.php.txt" target="_blank" style="font-size:14px; font-weight:bold">mla-metabox-example.php.txt</a>. To run the example:
+You can also make individual changes in which meta boxes are displayed and in their content by using one or more of the filters MLA provides. An example of using the hooks from a simple, stand-alone plugin can be found here: <a title="View the Meta Box Hooks Example source code" href="[+examples_url+]mla-metabox-hooks-example.php.txt" target="_blank" class="mla-doc-bold-link">mla-metabox-example.php.txt</a>. To run the example:
 <ol>
 <li>Edit the code to, for example, uncomment the <code>error_log()</code> calls so you can see what is passed to the hooks you are interested in.</li>
 <li>Remove the ".txt" extension and save the "mla-metabox-example.php" file in your plugins directory. You can give the plugin and its file any (unique) name you like.</li>
@@ -4041,40 +4041,40 @@ The example code documents each hook with comments in the filter function that i
 </p>
 <table>
 <tr>
-<td style="padding 0 0 2em 1em; vertical-align: top; font-weight:bold">mla_edit_media_support</td>
-<td>suppress the addition of Custom Fields to the Edit Media screen. To suppress Custom Fields, return an empty array, i.e., <code>return array();</code></td>
+<td class="mla-doc-hook-label">mla_edit_media_support</td>
+<td class="mla-doc-hook-definition">suppress the addition of Custom Fields to the Edit Media screen. To suppress Custom Fields, return an empty array, i.e., <code>return array();</code></td>
 </tr>
 <tr>
-<td style="padding 0 0 2em 1em; vertical-align: top; font-weight:bold">mla_edit_media_meta_boxes</td>
-<td style="vertical-align: top">record the original list of meta box slugs. You can also remove elements from the array to suppress one or more meta boxes. To suppress a box, remove it from the array, e.g., <code>unset( $active_boxes['mla-menu-order'] );</code></td>
+<td class="mla-doc-hook-label">mla_edit_media_meta_boxes</td>
+<td class="mla-doc-hook-definition">record the original list of meta box slugs. You can also remove elements from the array to suppress one or more meta boxes. To suppress a box, remove it from the array, e.g., <code>unset( $active_boxes['mla-menu-order'] );</code></td>
 </tr>
 <tr>
-<td style="padding 0 0 2em 1em; vertical-align: top; font-weight:bold">mla_parent_info_meta_box</td>
-<td style="vertical-align: top">modify the text portion of the "Parent Info" meta box.</td>
+<td class="mla-doc-hook-label">mla_parent_info_meta_box</td>
+<td class="mla-doc-hook-definition">modify the text portion of the "Parent Info" meta box.</td>
 </tr>
 <tr>
-<td style="padding 0 0 2em 1em; vertical-align: top; font-weight:bold">mla_menu_order_meta_box</td>
-<td style="vertical-align: top">modify the "Menu Order" meta box.</td>
+<td class="mla-doc-hook-label">mla_menu_order_meta_box</td>
+<td class="mla-doc-hook-definition">modify the "Menu Order" meta box.</td>
 </tr>
 <tr>
-<td style="padding 0 0 2em 1em; vertical-align: top; font-weight:bold">mla_image_metadata_meta_box<br />mla_image_metadata_meta_box_html</td>
-<td style="vertical-align: top">modify the rows, columns and content of the "Attachment Metadata" meta box.</td>
+<td class="mla-doc-hook-label">mla_image_metadata_meta_box<br />mla_image_metadata_meta_box_html</td>
+<td class="mla-doc-hook-definition">modify the rows, columns and content of the "Attachment Metadata" meta box.</td>
 </tr>
 <tr>
-<td style="padding 0 0 2em 1em; vertical-align: top; font-weight:bold">mla_featured_in_meta_box<br />mla_featured_in_meta_box_html</td>
-<td style="vertical-align: top">modify the rows, columns and content of the "Featured in" meta box.</td>
+<td class="mla-doc-hook-label">mla_featured_in_meta_box<br />mla_featured_in_meta_box_html</td>
+<td class="mla-doc-hook-definition">modify the rows, columns and content of the "Featured in" meta box.</td>
 </tr>
 <tr>
-<td style="padding 0 0 2em 1em; vertical-align: top; font-weight:bold">mla_inserted_in_meta_box<br />mla_inserted_in_meta_box_html</td>
-<td style="vertical-align: top">modify the rows, columns and content of the "Inserted in" meta box.</td>
+<td class="mla-doc-hook-label">mla_inserted_in_meta_box<br />mla_inserted_in_meta_box_html</td>
+<td class="mla-doc-hook-definition">modify the rows, columns and content of the "Inserted in" meta box.</td>
 </tr>
 <tr>
-<td style="padding 0 0 2em 1em; vertical-align: top; font-weight:bold">mla_gallery_in_meta_box<br />mla_gallery_in_meta_box_html</td>
-<td style="vertical-align: top">modify the rows, columns and content of the "Gallery in" meta box.</td>
+<td class="mla-doc-hook-label">mla_gallery_in_meta_box<br />mla_gallery_in_meta_box_html</td>
+<td class="mla-doc-hook-definition">modify the rows, columns and content of the "Gallery in" meta box.</td>
 </tr>
 <tr>
-<td style="padding 0 0 2em 1em; vertical-align: top; font-weight:bold">mla_mla_gallery_in_meta_box<br />mla_mla_gallery_in_meta_box_html</td>
-<td style="vertical-align: top">modify the rows, columns and content of the "MLA Gallery in" meta box.</td>
+<td class="mla-doc-hook-label">mla_mla_gallery_in_meta_box<br />mla_mla_gallery_in_meta_box_html</td>
+<td class="mla-doc-hook-definition">modify the rows, columns and content of the "MLA Gallery in" meta box.</td>
 </tr>
 </table>
 <p>
@@ -4287,19 +4287,19 @@ Contains the name of the custom field or metadata element to which the rule appl
 Contains a list of data elements you can map to the custom field. You can also select "Metadata" or "Template" and use the text box below the dropdown to specify attachment metadata or a content template for the source.
 <table>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">-- None (select a value) --</td>
+<td class="mla-doc-table-label">-- None (select a value) --</td>
 <td>nothing, i.e., no change to existing value (if any). Use this source if you just want to add a custom field to the Media/Assistant submenu and/or the inline edit areas.</td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">--&nbsp;Metadata&nbsp;(see&nbsp;below)&nbsp;--</td>
+<td class="mla-doc-table-label">--&nbsp;Metadata&nbsp;(see&nbsp;below)&nbsp;--</td>
 <td>WordPress attachment metadata, from the <em>_wp_attachment_metadata</em> array. Enter the field you want in the text box below the dropdown list. More coding guidelines are given in the "<a href="#attachment_metadata_mapping">Adding or changing Attachment Metadata</a>" section above.</td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">--&nbsp;Template&nbsp;(see&nbsp;below)&nbsp;--</td>
+<td class="mla-doc-table-label">--&nbsp;Template&nbsp;(see&nbsp;below)&nbsp;--</td>
 <td style="padding-bottom: 2em;">A Content Template; enter the template text (without the "template:" prefix) in the text box below the dropdown list. More coding guidelines are given in the "<a href="#custom_field_mapping_with_templates">Custom field mapping with Content Templates</a>" section above.</td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">(other data source)</td>
+<td class="mla-doc-table-label">(other data source)</td>
 <td> See the <a href="#field_level_data_sources">Data sources for custom field mapping</a> section for definitions of the other data elements you can select from.
 </td>
 </tr>
@@ -4320,45 +4320,45 @@ You can combine "Keep" and "Multi" in useful ways. For example, you might enter 
 <dt>Format dropdown</dt>
 <dd>
 Sorting by custom fields in the Media/Assistant submenu is by string values. For numeric data this can cause odd-looking results, e.g., dimensions of "1200x768" will sort before "640x480". Numeric data sources are converted to strings and padded on the left with spaces if you use the "<strong>commas</strong>" format. This padding makes them sort more sensibly. The following example shows the results for the &quot;size_bytes[large]&quot; data source, sorted in ascending order:
-<table style="margin-left: 40px; margin-bottom: 10px;">
+<table class="mla-doc-dropdown-padding" style="margin-bottom: 10px;">
 <thead>
 <tr>
-<td style="width: 80px; text-align:left">
+<td class="textleft" style="width: 80px">
 Native
 </td>
-<td style="width: 80px; text-align:right">
+<td class="textright" style="width: 80px">
 Commas
 </td>
-<td style="padding-left: 40px; width: 80px; text-align:left">
+<td class="textleft mla-doc-dropdown-padding" style="width: 80px">
 Raw
 </td>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td>&nbsp;</td>
-<td style="text-align:right">&nbsp;</td>
-<td style="padding-left: 40px;">0</td>
+<td class="textleft">&nbsp;</td>
+<td class="textright">&nbsp;</td>
+<td class="textleft mla-doc-dropdown-padding">0</td>
 </tr>
 <tr>
-<td>374871</td>
-<td style="text-align:right">4,096</td>
-<td style="padding-left: 40px;">374871</td>
+<td class="textleft">374871</td>
+<td class="textright">4,096</td>
+<td class="textleft mla-doc-dropdown-padding">374871</td>
 </tr>
 <tr>
-<td>4096</td>
-<td style="text-align:right">8,192</td>
-<td style="padding-left: 40px;">4096</td>
+<td class="textleft">4096</td>
+<td class="textright">8,192</td>
+<td class="textleft mla-doc-dropdown-padding">4096</td>
 </tr>
 <tr>
-<td>440242</td>
-<td style="text-align:right">374,871</td>
-<td style="padding-left: 40px;">440242</td>
+<td class="textleft">440242</td>
+<td class="textright">374,871</td>
+<td class="textleft mla-doc-dropdown-padding">440242</td>
 </tr>
 <tr>
-<td>8192</td>
-<td style="text-align:right">440,242</td>
-<td style="padding-left: 40px;">8192</td>
+<td class="textleft">8192</td>
+<td class="textright">440,242</td>
+<td class="textleft mla-doc-dropdown-padding">8192</td>
 </tr>
 </tbody>
 </table>
@@ -4387,25 +4387,25 @@ If you select "<strong>-- Template (see below) --</strong>" as the data source y
 <dt>Option Dropdown</dt>
 <dd>
 Several data sources can return more than one value. For example, the "Inserted in" source can return a list of posts/pages that contain references to Media Library items. The format option dropdown can further refine your specification where multiple values exist. There are five options:
-<table style="margin-left: 40px; margin-bottom: 10px;">
+<table class="mla-doc-dropdown-padding" style="margin-bottom: 10px">
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">Text</td>
+<td class="mla-doc-table-label">Text</td>
 <td>(the default) stores a list of the data source values, separated by commas</td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">Single</td>
+<td class="mla-doc-table-label">Single</td>
 <td>stores the first value and discards any additional values, e.g., "mp4" for the "audio" example below</td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">Export</td>
+<td class="mla-doc-table-label">Export</td>
 <td>for single values, same as Text. For multiple values, stores all the field names and values (including nested arrays). For example, the below audio data would be returned in Export format as "array ('dataformat' => 'mp4', 'codec' => 'ISO/IEC 14496-3 AAC', 'sample_rate' => 48000, 'channels' => 2, 'bits_per_sample' => 16, 'lossless' => false, 'channelmode' => 'stereo')".</td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">Array</td>
+<td class="mla-doc-table-label">Array</td>
 <td>stores an array of values in a single instance (database row) of the custom field.</td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">Multi</td>
+<td class="mla-doc-table-label">Multi</td>
 <td>stores each unique value in a separate instance (database row) of the custom field. This is the most flexible format, as explained below.</td>
 </tr>
 </table>
@@ -4565,7 +4565,7 @@ Some image file formats such as JPEG DCT or TIFF Rev 6.0 support the addition of
 </p>
 <p>
 The Media Library Assistant has powerful tools for copying image metadata to:
-<ul style="line-height: 1em; list-style-type:disc; margin-left: 20px ">
+<ul class="mla-doc-toc-list">
 <li>the WordPress standard fields, e.g., the Caption</li>
 <li>taxonomy terms, e.g., in categories, tags or custom taxonomies</li>
 <li>WordPress Custom Fields</li>
@@ -4775,29 +4775,29 @@ You can use Content Templates in the EXIF/Template Value text box to extract met
 </p>
 <table>
 <tr style="font-weight: bold">
-<td style="padding-right: 10px; text-align: right">Field</td>
+<td class="mla-doc-table-reverse">Field</td>
 <td>EXIF/Template Value</td>
 <td>Priority</td>
 <td>Existing Text</td>
 <td>Delimiter(s)</td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; text-align: right; font-weight:bold">Title:</td>
-<td style="padding-right: 10px; vertical-align: top">template:([+pdf:Title+])</td>
+<td class="mla-doc-table-reverse" style="font-weight:bold">Title:</td>
+<td class="mla-doc-table-sublabel">template:([+pdf:Title+])</td>
 <td>EXIF</td>
 <td>Replace</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; text-align: right; font-weight:bold">Caption:</td>
-<td style="padding-right: 10px; vertical-align: top">template:([+pdf:Subject+])</td>
+<td class="mla-doc-table-reverse" style="font-weight:bold">Caption:</td>
+<td class="mla-doc-table-sublabel">template:([+pdf:Subject+])</td>
 <td>EXIF</td>
 <td>Replace</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; text-align: right; font-weight:bold">Att. Categories:</td>
-<td style="padding-right: 10px; vertical-align: top">template:([+pdf:Keywords,array+])</td>
+<td class="mla-doc-table-reverse" style="font-weight:bold">Att. Categories:</td>
+<td class="mla-doc-table-sublabel">template:([+pdf:Keywords,array+])</td>
 <td>EXIF</td>
 <td>Replace</td>
 <td>;,</td>
@@ -4805,7 +4805,7 @@ You can use Content Templates in the EXIF/Template Value text box to extract met
 </table>
 <p>
 The three rules have a similar structure:
-<ul style="line-height: 1em; list-style-type:disc; margin-left: 20px ">
+<ul class="mla-doc-toc-list">
 <li>"template:" (goes in the text box below "EXIF/Template Value") is used to access the pdf: values instead of the EXIF values.</li>
 <li>The values are surrounded by parentheses "(" and ")" so they will return an empty string for documents without meta data in the field and for other items such as images.
 </li>
@@ -4819,29 +4819,29 @@ If your Media Library contains a mix of images and PDF documents you will want a
 </p>
 <table>
 <tr style="font-weight: bold">
-<td style="padding-right: 10px; text-align: right">Field</td>
+<td class="mla-doc-table-reverse">Field</td>
 <td>EXIF/Template Value</td>
 <td>Priority</td>
 <td>Existing Text</td>
 <td>Delimiter(s)</td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; text-align: right; font-weight:bold">Title:</td>
-<td style="padding-right: 10px; vertical-align: top">template:([+pdf:Title+]|[+exif:Title+])</td>
+<td class="mla-doc-table-reverse" style="font-weight:bold">Title:</td>
+<td class="mla-doc-table-sublabel">template:([+pdf:Title+]|[+exif:Title+])</td>
 <td>EXIF</td>
 <td>Replace</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; text-align: right; font-weight:bold">Caption:</td>
-<td style="padding-right: 10px; vertical-align: top">template:([+pdf:Subject+]|[+exif:ImageDescription+])</td>
+<td class="mla-doc-table-reverse" style="font-weight:bold">Caption:</td>
+<td class="mla-doc-table-sublabel">template:([+pdf:Subject+]|[+exif:ImageDescription+])</td>
 <td>EXIF</td>
 <td>Replace</td>
 <td>&nbsp;</td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; text-align: right; font-weight:bold">Att. Categories:</td>
-<td style="padding-right: 10px; vertical-align: top">template:([+pdf:Keywords,array+]|[+iptc:2#025+])</td>
+<td class="mla-doc-table-reverse" style="font-weight:bold">Att. Categories:</td>
+<td class="mla-doc-table-sublabel">template:([+pdf:Keywords,array+]|[+iptc:2#025+])</td>
 <td>EXIF</td>
 <td>Replace</td>
 <td>;,</td>
@@ -4849,7 +4849,7 @@ If your Media Library contains a mix of images and PDF documents you will want a
 </table>
 <p>
 The three rules have similar changes:
-<ul style="line-height: 1em; list-style-type:disc; margin-left: 20px ">
+<ul class="mla-doc-toc-list">
 <li>A vertical bar ("|") separates the two data source specifications. This is the Content Template "Choice" operator, which takes the first non-blank alternative from among the choices.</li>
 <li>A second data source for images. The PDF documents will not have "exif:"/"iptc:" data sources, and images will not have "pdf:" data sources, so only one (at most) of the two alternatives will be non-blank.
 </li>
@@ -4882,7 +4882,7 @@ When WordPress uploads a new image file that contains IPTC and EXIF metadata it 
 </p>
 <p>
 The WordPress rules are somewhat complex; consult the source code if you need exact details. Roughly speaking, the priority order for mapping the post_title and post_name values from non-blank IPTC/EXIF metadata is:
-<ol style="line-height: 1.25em;  margin-left: 20px ">
+<ol>
 <li>EXIF "Title"</li>
 <li>EXIF "ImageDescription" (if less than 80 characters)</li>
 <li>IPTC 2#105 "headline"</li>
@@ -4890,7 +4890,7 @@ The WordPress rules are somewhat complex; consult the source code if you need ex
 <li>IPTC 2#120 "caption-or-abstract" (if less than 80 characters)</li>
 </ol>
 The priority order for mapping the post_content value from non-blank IPTC/EXIF metadata is:
-<ol style="line-height: 1.25em;  margin-left: 20px ">
+<ol>
 <li>EXIF "ImageDescription" (if different from post_title)</li>
 <li>IPTC 2#120 "caption-or-abstract" (if different from post_title)</li>
 </ol>
@@ -4901,7 +4901,7 @@ The priority order for mapping the post_content value from non-blank IPTC/EXIF m
 </p>
 <h3>MLA Custom Field and IPTC/EXIF Mapping Actions and Filters (Hooks)</h3>
 <p>
-The Custom Field and IPTC/EXIF Mapping tools support a comprehensive set of filters and actions that give you complete control over rule execution and value creation from PHP code in your theme or in another plugin. An example of using the hooks from a simple, stand-alone plugin can be found here: <a title="View the Mapping Hooks Example source code" href="[+examples_url+]mla-mapping-hooks-example.php.txt" target="_blank" style="font-size:14px; font-weight:bold">mla-mapping-hooks-example.php.txt</a>. To run the example:
+The Custom Field and IPTC/EXIF Mapping tools support a comprehensive set of filters and actions that give you complete control over rule execution and value creation from PHP code in your theme or in another plugin. An example of using the hooks from a simple, stand-alone plugin can be found here: <a title="View the Mapping Hooks Example source code" href="[+examples_url+]mla-mapping-hooks-example.php.txt" target="_blank" class="mla-doc-bold-link">mla-mapping-hooks-example.php.txt</a>. To run the example:
 <ol>
 <li>Edit the code to uncomment the <code>error_log()</code> calls so you can see what is passed to the hooks you are interested in.</li>
 <li>Remove the ".txt" extension and save the "mla-mapping-hooks-example.php" file in your plugins directory.</li>
@@ -4921,45 +4921,45 @@ The current mapping hooks are:
 </p>
 <table>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">mla_begin_mapping</td>
-<td>called once, before mapping rules for any/all attachment(s) are executed.</td>
+<td class="mla-doc-table-label">mla_begin_mapping</td>
+<td class="mla-doc-hook-definition">called once, before mapping rules for any/all attachment(s) are executed.</td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">mla_mapping_settings</td>
-<td>called once for each attachment, before any mapping rules are executed. You can add, change or delete rules from the settings/rules array.</td>
+<td class="mla-doc-table-label">mla_mapping_settings</td>
+<td class="mla-doc-hook-definition">called once for each attachment, before any mapping rules are executed. You can add, change or delete rules from the settings/rules array.</td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">mla_mapping_rule</td>
-<td>called once for each mapping rule, before the rule is evaluated. You can change the rule parameters, or prevent rule evaluation.</td>
+<td class="mla-doc-table-label">mla_mapping_rule</td>
+<td class="mla-doc-hook-definition">called once for each mapping rule, before the rule is evaluated. You can change the rule parameters, or prevent rule evaluation.</td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">mla_mapping_custom_value</td>
-<td>called once for each custom field mapping rule, after the rule is evaluated. You can change the new value produced by the rule.</td>
+<td class="mla-doc-table-label">mla_mapping_custom_value</td>
+<td class="mla-doc-hook-definition">called once for each custom field mapping rule, after the rule is evaluated. You can change the new value produced by the rule.</td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">mla_mapping_iptc_value</td>
-<td>called once for each IPTC/EXIF mapping rule, after the IPTC portion of the rule is evaluated. You can change the new value produced by the rule.</td>
+<td class="mla-doc-table-label">mla_mapping_iptc_value</td>
+<td class="mla-doc-hook-definition">called once for each IPTC/EXIF mapping rule, after the IPTC portion of the rule is evaluated. You can change the new value produced by the rule.</td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">mla_mapping_exif_value</td>
-<td>called once for each IPTC/EXIF mapping rule, after the EXIF portion of the rule is evaluated. You can change the new value produced by the rule.</td>
+<td class="mla-doc-table-label">mla_mapping_exif_value</td>
+<td class="mla-doc-hook-definition">called once for each IPTC/EXIF mapping rule, after the EXIF portion of the rule is evaluated. You can change the new value produced by the rule.</td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">mla_mapping_updates</td>
-<td>called AFTER all mapping rules are applied. You can add, change or remove updates for the attachment's standard fields, taxonomies and/or custom fields.</td>
+<td class="mla-doc-table-label">mla_mapping_updates</td>
+<td class="mla-doc-hook-definition">called AFTER all mapping rules are applied. You can add, change or remove updates for the attachment's standard fields, taxonomies and/or custom fields.</td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">mla_end_mapping</td>
-<td>called once, after mapping rules for any/all attachment(s) are executed. This is a good place to close files, perform cleanup, etc.</td>
+<td class="mla-doc-table-label">mla_end_mapping</td>
+<td class="mla-doc-hook-definition">called once, after mapping rules for any/all attachment(s) are executed. This is a good place to close files, perform cleanup, etc.</td>
 </tr>
 </table>
 <p>
-A second example plugin, <a title="View the Mapping Hooks Example source code" href="[+examples_url+]mla-metadata-mapping-hooks-example.php.txt" target="_blank" style="font-size:14px; font-weight:bold">mla-metadata-mapping-hooks-example.php.txt</a>, illustrates the metadata hooks. The current insert attachment/update attachment metadata hooks are:
+A second example plugin, <a title="View the Mapping Hooks Example source code" href="[+examples_url+]mla-metadata-mapping-hooks-example.php.txt" target="_blank" class="mla-doc-bold-link">mla-metadata-mapping-hooks-example.php.txt</a>, illustrates the metadata hooks. The current insert attachment/update attachment metadata hooks are:
 </p>
 <table>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">mla_upload_prefilter</td>
-<td>gives you an opportunity to record the original IPTC, EXIF and
+<td class="mla-doc-table-label">mla_upload_prefilter</td>
+<td class="mla-doc-hook-definition">gives you an opportunity to record the original IPTC, EXIF and
 WordPress image_metadata <strong>before</strong> the file is stored in the Media Library.
 You can also modify the file name that will be used in the Media Library.
 <br />&nbsp;<br />
@@ -4967,14 +4967,14 @@ Many plugins and image editing functions alter or destroy this information,
 so this may be your last change to preserve it.</td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">mla_upload_filter</td>
-<td>gives you an opportunity to record some additional metadata
+<td class="mla-doc-table-label">mla_upload_filter</td>
+<td class="mla-doc-hook-definition">gives you an opportunity to record some additional metadata
 for audio and video media <strong>after</strong> the file is stored in the Media Library.
 </td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">mla_add_attachment</td>
-<td>called at the end of the wp_insert_attachment() function,
+<td class="mla-doc-table-label">mla_add_attachment</td>
+<td class="mla-doc-hook-definition">called at the end of the wp_insert_attachment() function,
 after the file is in place and the post object has been created in the database.
 <br />&nbsp;<br />
 By this time, other plugins have probably run their own 'add_attachment' filters
@@ -4982,14 +4982,14 @@ and done their work/damage to metadata, etc.
 </td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">mla_update_attachment<br />_metadata_options</td>
-<td>lets you inspect or change the processing options that will
+<td class="mla-doc-table-label">mla_update_attachment<br />_metadata_options</td>
+<td class="mla-doc-hook-definition">lets you inspect or change the processing options that will
 control the MLA mapping rules in the update_attachment_metadata filter.
 </td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">mla_update_attachment<br />_metadata_prefilter</td>
-<td>called at the end of the wp_update_attachment_metadata() function,
+<td class="mla-doc-table-label">mla_update_attachment<br />_metadata_prefilter</td>
+<td class="mla-doc-hook-definition">called at the end of the wp_update_attachment_metadata() function,
 <strong>before</strong> any MLA mapping rules are applied. The prefilter gives you an
 opportunity to record or update the metadata before the mapping.
 <br />&nbsp;<br />
@@ -4998,8 +4998,8 @@ plugins that alter the attachment file.
 </td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">mla_update_attachment<br />_metadata_postfilter</td>
-<td>This filter is called <strong>after</strong> MLA mapping rules are applied during
+<td class="mla-doc-table-label">mla_update_attachment<br />_metadata_postfilter</td>
+<td class="mla-doc-hook-definition">This filter is called <strong>after</strong> MLA mapping rules are applied during
 wp_update_attachment_metadata() processing. The postfilter gives you
 an opportunity to record or update the metadata after the mapping.
 </td>
@@ -5010,7 +5010,7 @@ The current Settings/Media Library Assistant tab list hook is:
 </p>
 <table>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">mla_get_options_tablist</td>
+<td class="mla-doc-table-label">mla_get_options_tablist</td>
 <td>gives you an opportunity to remove one or more tabs from the list that appears on the Settings/Media Library Assistant screen.</td>
 </tr>
 </table>
@@ -5025,7 +5025,7 @@ If you are having trouble with some part of Media Library Assistant it may be he
 <p>
 The existence and location of the error log can vary depending on your server configuration. WordPress includes some <code>wp-config.php</code> entries that can help. If you activate the Debug tab but can't access the error log you can try adding or updating these statements in your <code>wp-config.php</code> file:
 </p>
-<ul style="line-height: 1em; list-style-type:disc; margin-left: 20px ">
+<ul class="mla-doc-toc-list">
 <li><code>define( 'WP_DEBUG', 1 );</code>
 When WP_DEBUG is true, all PHP notices are reported. WordPress will also display notices, including one when a deprecated WordPress function, function argument, or file is used. Deprecated code may be removed from a later version.
 </li>
@@ -5042,7 +5042,7 @@ The full path and file name of the error log is displayed just above the text ar
 <p>
 To add the Debug tab to your Settings/Media Library Assistant submenu you must add an entry to your <code>wp-config.php</code> file:
 </p>
-<ul style="margin-left: 20px">
+<ul class="mla-doc-toc-list">
 <li><code>define( 'MLA_DEBUG_LEVEL', 1 );</code></li>
 </ul>
 <p>
@@ -5050,15 +5050,15 @@ Once that line is added to the <code>wp-config.php</code> file the "Debug" tab w
 </p>
 <table>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">1, or 0x0001</td>
+<td class="mla-doc-table-label">1, or 0x0001</td>
 <td>activates the Debug tab. PHP messages and some MLA error messages (such as the <code>[mla_gallery mla_debug=log]</code> messages) will be written to the file.</td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">2, or 0x0002</td>
+<td class="mla-doc-table-label">2, or 0x0002</td>
 <td>writes MLA-specific messages to the log for some of the "Ajax" functions such as bulk edit updates and mapping rule execution.</td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">4, or 0x0004</td>
+<td class="mla-doc-table-label">4, or 0x0004</td>
 <td>writes MLA-specific messages to the log for calls to the WPML/Polylang support functions.</td>
 </tr>
 </table>
@@ -5073,23 +5073,23 @@ The Debug Options screen begins with the "Debug Options" section, containing:
 </p>
 <table>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">Display&nbsp;Limit</td>
+<td class="mla-doc-table-label">Display&nbsp;Limit</td>
 <td>lets you limit the amount of log information copied to the text area for display. Setting a limit to, for example, 262144 will display the last 256 Kb of the file; this can be useful if the log file gets very large.</td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">Debug&nbsp;File</td>
+<td class="mla-doc-table-label">Debug&nbsp;File</td>
 <td>lets you specify a text file other than the PHP error log to receive the MLA-specific messages. The absolute path to the <code>/wp-content/</code> directory will be prepended to the value you enter. If the file does not exist an attempt will be made to create it. You can enter values such as "my-log.txt" or "/mylogs/my-log.txt". In the latter case, the "/mylogs/" directory must already exist; MLA will not create it.</td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">Replace&nbsp;PHP&nbsp;error_log&nbsp;file</td>
+<td class="mla-doc-table-label">Replace&nbsp;PHP&nbsp;error_log&nbsp;file</td>
 <td>lets you change the PHP error_log destination. You can use this to add PHP Notice, Warning and Error messages to the MLA Debug File. It's best to leave this box unchecked unless you are actively monitoring the MLA Debug file so PHP messages go to the default location.</td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">PHP&nbsp;Reporting</td>
+<td class="mla-doc-table-label">PHP&nbsp;Reporting</td>
 <td>Sets which PHP errors are reported, overriding the value set in the <code>php.ini</code> file and the <code>wp-config.php</code> file. Setting a limit to, for example, 0x7FFF will display all PHP Notices and "Strict" messages (E_ALL | E_STRICT). It's best to leave this box blank unless you are actively debugging MLA so the normal PHP error_level is observed.</td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">MLA&nbsp;Reporting</td>
+<td class="mla-doc-table-label">MLA&nbsp;Reporting</td>
 <td>lets you change the MLA_DEBUG_LEVEL without modifying the <code>wp-config.php</code> file. You can change any of the additional reporting categories but not the lowest bit which turns the Debug tab on and off.</td>
 </tr>
 </table>
@@ -5099,7 +5099,7 @@ Below the Debug Options section is a list of settings and values that are useful
 <p>
 Below the Debug Settings section is a text area with the current content of the PHP (or MLA-specific) error log file. Below the text box are three action buttons:
 </p>
-<ul style="margin-left: 20px">
+<ul class="mla-doc-toc-list">
 <li><strong>Download</strong> - click this button to download a copy of the error log to your system.</li>
 <li><strong>Reset</strong> - click this button to erase the contents of the error log.</li>
 <li><strong>Save Changes</strong> - click this button to save a new value for the Display Limit option.</li>
@@ -5117,7 +5117,7 @@ Media Library Assistant provides integrates support for two popular "Multilangua
 <p>
 MLA detects the presence of either plugin and automatically adds several features that work with them:
 </p>
-<ul style="margin-left: 20px">
+<ul class="mla-doc-toc-list">
 <li><strong>Language-specific filtering</strong> of the <code>[mla_gallery]</code> and <code>[mla_tag_cloud]</code> shortcodes.</li>
 <li><strong>Media/Assistant submenu table enhancements</strong> for displaying and managing item translations.</li>
 <li><strong>Term Assignment and Term Synchronization</strong>, to match terms to language-specific items and automatically keep all translations for an item in synch.</li>
@@ -5146,14 +5146,14 @@ The <code>[mla_tag_cloud]</code> shortcode selects terms using the WordPress <co
 <p>
 Two columns are added to the table when WPML or Polylang is active:
 </p>
-<ul style="margin-left: 20px">
+<ul class="mla-doc-toc-list">
 <li><strong>Language</strong> - displays the language of the item. This column is only present when "All languages/Show all languages" is selected in the admin toolbar at the top of the screen.</li>
 <li><strong>"Translations"</strong> - displays the translation status of the item in all active languages. The column header displays the flag icon for the language. The column content will have a check mark icon for the item's language, a pencil icon for an existing translation or a plus icon for a translation that does not exist. You can click any icon to go directly to the Media/Edit Media screen for that translation. If you click a plus icon, a new translation will be created and initialized with content and terms from the current item and you will go to the Media/Edit Media screen for the new translation.</li>
 </ul>
 <p>
 When Polylang is active, several additional features are available:
 </p>
-<ul style="margin-left: 20px">
+<ul class="mla-doc-toc-list">
 <li><strong>A Language dropdown control</strong> is added to the Quick Edit and Bulk Edit areas. You can change the language of one or more items by selecting a new value in the dropdown and clicking Update. The new language must not have an existing translation; if a translation already exists the change will be ignored.</li>
 <li><strong>Translation status links</strong> are added to the Quick Edit area, just below the Language dropdown control. If you click one of the pencil/plus translation status links, a new Quick Edit area will open for the translation you selected. A new translation is created if you click a plus status icon.</li>
 <li><strong>A Quick Translate rollover action</strong> can be added to each item (the default option setting is "unchecked"). If you activate this option, when you click the "Quick Translate" rollover action for an item the Quick Translate area opens, showing the Language dropdown control and the translation status links. From there, click "Set Language" to change the language assigned to the item or click one of the pencil/plus translation status links. A new Quick Edit area will open for the translation you selected. A new translation is created if you click a plus status icon.</li>
@@ -5251,7 +5251,7 @@ Then synchronization handles common editing actions as follows:
 </p>
 <h3>Media/Assistant Submenu Actions and Filters (Hooks)</h3>
 <p>
-The Media/Assistant submenu supports a comprehensive set of filters and actions that give you control over table columns, inline actions and bulk actions from PHP code in your theme or in another plugin. An example of using the hooks from a simple, stand-alone plugin can be found here: <a title="View the Media/Assistant Submenu Example source code" href="[+examples_url+]mla-list-table-hooks-example.php.txt" target="_blank" style="font-size:14px; font-weight:bold">mla-list-table-hooks-example.php.txt</a>. To run the example:
+The Media/Assistant submenu supports a comprehensive set of filters and actions that give you control over table columns, inline actions and bulk actions from PHP code in your theme or in another plugin. An example of using the hooks from a simple, stand-alone plugin can be found here: <a title="View the Media/Assistant Submenu Example source code" href="[+examples_url+]mla-list-table-hooks-example.php.txt" target="_blank" class="mla-doc-bold-link">mla-list-table-hooks-example.php.txt</a>. To run the example:
 <ol>
 <li>Edit the code to uncomment the <code>error_log()</code> calls so you can see what is passed to the hooks you are interested in.</li>
 <li>Remove the ".txt" extension and save the "mla-list-table-hooks-example.php" file in your plugins directory.</li>
@@ -5271,24 +5271,24 @@ The following hooks are defined in <code>/wp-admin/includes/class-wp-list-table.
 </p>
 <table>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">views_media_page_mla_menu</td>
-<td>Filter the list of available list table views.</td>
+<td class="mla-doc-hook-label">views_media_page_mla_menu</td>
+<td class="mla-doc-hook-definition">Filter the list of available list table views.</td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">bulk_actions-media_page_mla-menu</td>
-<td>Filter the list table Bulk Actions drop-down. This WordPress filter can currently only be used to remove bulk actions.</td>
+<td class="mla-doc-hook-label">bulk_actions-media_page_mla-menu</td>
+<td class="mla-doc-hook-definition">Filter the list table Bulk Actions drop-down. This WordPress filter can currently only be used to remove bulk actions.</td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">months_dropdown_results</td>
-<td>Filter the 'Months' drop-down results.</td>
+<td class="mla-doc-hook-label">months_dropdown_results</td>
+<td class="mla-doc-hook-definition">Filter the 'Months' drop-down results.</td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">mla_entries_per_page</td>
-<td>Filter the number of items to be displayed on each page of the list table.</td>
+<td class="mla-doc-hook-label">mla_entries_per_page</td>
+<td class="mla-doc-hook-definition">Filter the number of items to be displayed on each page of the list table.</td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">manage_media_page_mla-menu_sortable_columns</td>
-<td>Filter the list table sortable columns for a specific screen.</td>
+<td class="mla-doc-hook-label">manage_media_page_mla-menu_sortable_columns</td>
+<td class="mla-doc-hook-definition">Filter the list table sortable columns for a specific screen.</td>
 </tr>
 </table>
 <p>
@@ -5296,12 +5296,12 @@ The following hooks are defined in <code>/wp-admin/includes/class-mla-objects.ph
 </p>
 <table>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">mla_taxonomy_get_columns</td>
-<td>Gives you an opportunity to change the columns defined for the Edit Taxonomy submenu table(s).</td>
+<td class="mla-doc-hook-label">mla_taxonomy_get_columns</td>
+<td class="mla-doc-hook-definition">Gives you an opportunity to change the columns defined for the Edit Taxonomy submenu table(s).</td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">mla_taxonomy_column</td>
-<td>Gives you an opportunity to change column content in the Edit Taxonomy submenu table(s).</td>
+<td class="mla-doc-hook-label">mla_taxonomy_column</td>
+<td class="mla-doc-hook-definition">Gives you an opportunity to change column content in the Edit Taxonomy submenu table(s).</td>
 </tr>
 </table>
 <p>
@@ -5309,32 +5309,32 @@ The following hooks are defined in <code>/wp-admin/includes/class-mla-data.php</
 </p>
 <table>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">mla_list_table_query_final_terms</td>
-<td>Gives you an opportunity to change the terms of the prepare_items query after they are processed by the "Prepare List Table Query" handler.</td>
+<td class="mla-doc-hook-label">mla_list_table_query_final_terms</td>
+<td class="mla-doc-hook-definition">Gives you an opportunity to change the terms of the prepare_items query after they are processed by the "Prepare List Table Query" handler.</td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">mla_list_table_query_custom_items</td>
-<td>Gives you an opportunity to substitute the results of the prepare_items query with alternative results of your own.</td>
+<td class="mla-doc-hook-label">mla_list_table_query_custom_items</td>
+<td class="mla-doc-hook-definition">Gives you an opportunity to substitute the results of the prepare_items query with alternative results of your own.</td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">mla_list_table_search_filter_fields</td>
-<td>Gives you an opportunity to add or remove any of the MLA standard fields for Search Media.</td>
+<td class="mla-doc-hook-label">mla_list_table_search_filter_fields</td>
+<td class="mla-doc-hook-definition">Gives you an opportunity to add or remove any of the MLA standard fields for Search Media.</td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">mla_list_table_search_filter_inner_clause</td>
-<td>Gives you an opportunity to modify or add to the inner WHERE clause for Search Media.</td>
+<td class="mla-doc-hook-label">mla_list_table_search_filter_inner_clause</td>
+<td class="mla-doc-hook-definition">Gives you an opportunity to modify or add to the inner WHERE clause for Search Media.</td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">mla_fetch_attachment_references</td>
-<td>Gives you an opportunity to modify or add to the "where-used" reference reporting information.</td>
+<td class="mla-doc-hook-label">mla_fetch_attachment_references</td>
+<td class="mla-doc-hook-definition">Gives you an opportunity to modify or add to the "where-used" reference reporting information.</td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">mla_update_single_item</td>
-<td>Gives you an opportunity to modify, delete or add to updates before they are applied.</td>
+<td class="mla-doc-hook-label">mla_update_single_item</td>
+<td class="mla-doc-hook-definition">Gives you an opportunity to modify, delete or add to updates before they are applied.</td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">mla_updated_single_item</td>
-<td>Gives you an opportunity to work with the item after updates have been applied.</td>
+<td class="mla-doc-hook-label">mla_updated_single_item</td>
+<td class="mla-doc-hook-definition">Gives you an opportunity to work with the item after updates have been applied.</td>
 </tr>
 </table>
 <p>
@@ -5342,72 +5342,72 @@ The following hooks are defined in <code>/media-library-assistant/includes/class
 </p>
 <table>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">mla_list_table_inline_fields</td>
-<td>Gives you an opportunity to name the fields passed to the JavaScript functions for Quick editing.</td>
+<td class="mla-doc-hook-label">mla_list_table_inline_fields</td>
+<td class="mla-doc-hook-definition">Gives you an opportunity to name the fields passed to the JavaScript functions for Quick editing.</td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">mla_list_table_inline_action</td>
-<td>Gives you an opportunity to pre-process an MLA_List_Table "Quick Edit" action before the MLA handler.</td>
+<td class="mla-doc-hook-label">mla_list_table_inline_action</td>
+<td class="mla-doc-hook-definition">Gives you an opportunity to pre-process an MLA_List_Table "Quick Edit" action before the MLA handler.</td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">mla_list_table_bulk_action_initial_request</td>
-<td>Gives you an opportunity to pre-process the request parameters for a bulk action before the action begins. DO NOT assume parameters come from the $_REQUEST super array!</td>
+<td class="mla-doc-hook-label">mla_list_table_bulk_action_initial_request</td>
+<td class="mla-doc-hook-definition">Gives you an opportunity to pre-process the request parameters for a bulk action before the action begins. DO NOT assume parameters come from the $_REQUEST super array!</td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">mla_list_table_begin_bulk_action</td>
-<td>Gives you an opportunity to pre-process an MLA_List_Table bulk action, standard or custom, before the MLA handler. The filter is called once before any of the items in $_REQUEST['cb_attachment'] are processed.</td>
+<td class="mla-doc-hook-label">mla_list_table_begin_bulk_action</td>
+<td class="mla-doc-hook-definition">Gives you an opportunity to pre-process an MLA_List_Table bulk action, standard or custom, before the MLA handler. The filter is called once before any of the items in $_REQUEST['cb_attachment'] are processed.</td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">mla_list_table_bulk_action_item_request</td>
-<td>Gives you an opportunity to pre-process the request parameters for each item during a bulk action. DO NOT assume parameters come from the $_REQUEST super array!</td>
+<td class="mla-doc-hook-label">mla_list_table_bulk_action_item_request</td>
+<td class="mla-doc-hook-definition">Gives you an opportunity to pre-process the request parameters for each item during a bulk action. DO NOT assume parameters come from the $_REQUEST super array!</td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">mla_list_table_bulk_action</td>
-<td>Gives you an opportunity to pre-process an MLA_List_Table bulk action, standard or custom, before the MLA handler. The filter is called once for each of the items in $_REQUEST['cb_attachment'].</td>
+<td class="mla-doc-hook-label">mla_list_table_bulk_action</td>
+<td class="mla-doc-hook-definition">Gives you an opportunity to pre-process an MLA_List_Table bulk action, standard or custom, before the MLA handler. The filter is called once for each of the items in $_REQUEST['cb_attachment'].</td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">mla_list_table_custom_bulk_action</td>
-<td>Gives you an opportunity to process an MLA_List_Table bulk action that MLA does not recognize. The filter is called once for each of the items in $_REQUEST['cb_attachment'].</td>
+<td class="mla-doc-hook-label">mla_list_table_custom_bulk_action</td>
+<td class="mla-doc-hook-definition">Gives you an opportunity to process an MLA_List_Table bulk action that MLA does not recognize. The filter is called once for each of the items in $_REQUEST['cb_attachment'].</td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">mla_list_table_end_bulk_action</td>
-<td>Gives you an opportunity to post-process an MLA_List_Table bulk action, standard or custom. The filter is called once after all of the items in $_REQUEST['cb_attachment'] are processed.</td>
+<td class="mla-doc-hook-label">mla_list_table_end_bulk_action</td>
+<td class="mla-doc-hook-definition">Gives you an opportunity to post-process an MLA_List_Table bulk action, standard or custom. The filter is called once after all of the items in $_REQUEST['cb_attachment'] are processed.</td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">mla_list_table_admin_action</td>
-<td>Gives you an opportunity to pre-process an MLA_List_Table item-level action, standard or custom, before the MLA handler. This filter is called before anything is output for the Media/Assistant submenu, so you can redirect to another admin screen if desired.</td>
+<td class="mla-doc-hook-label">mla_list_table_admin_action</td>
+<td class="mla-doc-hook-definition">Gives you an opportunity to pre-process an MLA_List_Table item-level action, standard or custom, before the MLA handler. This filter is called before anything is output for the Media/Assistant submenu, so you can redirect to another admin screen if desired.</td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">mla_list_table_custom_admin_action</td>
-<td>Gives you an opportunity to process an MLA_List_Table item-level action that MLA does not recognize. This filter is called before anything is output for the Media/Assistant submenu, so you can redirect to another admin screen if desired.</td>
+<td class="mla-doc-hook-label">mla_list_table_custom_admin_action</td>
+<td class="mla-doc-hook-definition">Gives you an opportunity to process an MLA_List_Table item-level action that MLA does not recognize. This filter is called before anything is output for the Media/Assistant submenu, so you can redirect to another admin screen if desired.</td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">mla_list_table_single_action</td>
-<td>Gives you an opportunity to pre-process an MLA_List_Table item-level action, standard or custom, before the MLA handler. This filter is called after the Media/Assistant submenu screen header is output but before the messages and submenu table are displayed.</td>
+<td class="mla-doc-hook-label">mla_list_table_single_action</td>
+<td class="mla-doc-hook-definition">Gives you an opportunity to pre-process an MLA_List_Table item-level action, standard or custom, before the MLA handler. This filter is called after the Media/Assistant submenu screen header is output but before the messages and submenu table are displayed.</td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">mla_list_table_custom_single_action</td>
-<td>Gives you an opportunity to process an MLA_List_Table page-level or single-item action that MLA does not recognize. This filter is called after the Media/Assistant submenu screen header is output but before the messages and submenu table are displayed.</td>
+<td class="mla-doc-hook-label">mla_list_table_custom_single_action</td>
+<td class="mla-doc-hook-definition">Gives you an opportunity to process an MLA_List_Table page-level or single-item action that MLA does not recognize. This filter is called after the Media/Assistant submenu screen header is output but before the messages and submenu table are displayed.</td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">mla_list_table_clear_filter_by</td>
-<td>Gives you an opportunity to clear any custom submenu "Filter-by" parameters.</td>
+<td class="mla-doc-hook-label">mla_list_table_clear_filter_by</td>
+<td class="mla-doc-hook-definition">Gives you an opportunity to clear any custom submenu "Filter-by" parameters.</td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">mla_list_table_new_instance</td>
-<td>Gives you an opportunity to extend the MLA_List_Table class.</td>
+<td class="mla-doc-hook-label">mla_list_table_new_instance</td>
+<td class="mla-doc-hook-definition">Gives you an opportunity to extend the MLA_List_Table class.</td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">mla_list_table_inline_values</td>
-<td>Gives you a chance to modify and extend the substitution values for the Quick and Bulk Edit forms.</td>
+<td class="mla-doc-hook-label">mla_list_table_inline_values</td>
+<td class="mla-doc-hook-definition">Gives you a chance to modify and extend the substitution values for the Quick and Bulk Edit forms.</td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">mla_list_table_inline_template</td>
-<td>Gives you a chance to modify and extend the template used for the Quick and Bulk Edit forms.</td>
+<td class="mla-doc-hook-label">mla_list_table_inline_template</td>
+<td class="mla-doc-hook-definition">Gives you a chance to modify and extend the template used for the Quick and Bulk Edit forms.</td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">mla_list_table_inline_parse</td>
-<td>Gives you a final chance to modify and extend the HTML markup used for the Quick and Bulk Edit forms.</td>
+<td class="mla-doc-hook-label">mla_list_table_inline_parse</td>
+<td class="mla-doc-hook-definition">Gives you a final chance to modify and extend the HTML markup used for the Quick and Bulk Edit forms.</td>
 </tr>
 </table>
 <p>
@@ -5415,56 +5415,56 @@ The following hooks are defined in <code>/wp-admin/includes/class-wp-list-table.
 </p>
 <table>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">mla_list_table_get_columns</td>
-<td>This MLA-specific filter gives you an opportunity to filter the list table columns.</td>
+<td class="mla-doc-hook-label">mla_list_table_get_columns</td>
+<td class="mla-doc-hook-definition">This MLA-specific filter gives you an opportunity to filter the list table columns.</td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">mla_list_table_get_hidden_columns</td>
-<td>This MLA-specific filter gives you an opportunity to filter the hidden list table columns.</td>
+<td class="mla-doc-hook-label">mla_list_table_get_hidden_columns</td>
+<td class="mla-doc-hook-definition">This MLA-specific filter gives you an opportunity to filter the hidden list table columns.</td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">mla_list_table_get_sortable_columns</td>
-<td>This MLA-specific filter gives you an opportunity to filter the sortable list table columns; a good alternative to the 'manage_media_page_mla_menu_sortable_columns' filter.</td>
+<td class="mla-doc-hook-label">mla_list_table_get_sortable_columns</td>
+<td class="mla-doc-hook-definition">This MLA-specific filter gives you an opportunity to filter the sortable list table columns; a good alternative to the 'manage_media_page_mla_menu_sortable_columns' filter.</td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">mla_list_table_get_bulk_actions</td>
-<td>This MLA-specific filter gives you an opportunity to filter the list of bulk actions; a good alternative to the 'bulk_actions-media_page_mla-menu' filter.</td>
+<td class="mla-doc-hook-label">mla_list_table_get_bulk_actions</td>
+<td class="mla-doc-hook-definition">This MLA-specific filter gives you an opportunity to filter the list of bulk actions; a good alternative to the 'bulk_actions-media_page_mla-menu' filter.</td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">mla_list_table_column_default</td>
-<td>Called when the MLA_List_Table can't find a value for a given column.</td>
+<td class="mla-doc-hook-label">mla_list_table_column_default</td>
+<td class="mla-doc-hook-definition">Called when the MLA_List_Table can't find a value for a given column.</td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">mla_list_table_submenu_arguments</td>
-<td>Gives you an opportunity to filter the URL parameters that will be retained when the submenu page refreshes.</td>
+<td class="mla-doc-hook-label">mla_list_table_submenu_arguments</td>
+<td class="mla-doc-hook-definition">Gives you an opportunity to filter the URL parameters that will be retained when the submenu page refreshes.</td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">mla_list_table_prepare_items_pagination</td>
-<td>Gives you an opportunity to filter the per_page and current_page parameters used for the prepare_items database query.</td>
+<td class="mla-doc-hook-label">mla_list_table_prepare_items_pagination</td>
+<td class="mla-doc-hook-definition">Gives you an opportunity to filter the per_page and current_page parameters used for the prepare_items database query.</td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">mla_list_table_prepare_items_total_items</td>
-<td>Gives you an opportunity to substitute your own $total_items parameter used for the prepare_items database query.</td>
+<td class="mla-doc-hook-label">mla_list_table_prepare_items_total_items</td>
+<td class="mla-doc-hook-definition">Gives you an opportunity to substitute your own $total_items parameter used for the prepare_items database query.</td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">mla_list_table_prepare_items_the_items</td>
-<td>Gives you an opportunity to substitute your own items array in place of the default prepare_items database query.</td>
+<td class="mla-doc-hook-label">mla_list_table_prepare_items_the_items</td>
+<td class="mla-doc-hook-definition">Gives you an opportunity to substitute your own items array in place of the default prepare_items database query.</td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">mla_list_table_prepare_items</td>
-<td>Gives you an opportunity to record or modify the results of the prepare_items database query. </td>
+<td class="mla-doc-hook-label">mla_list_table_prepare_items</td>
+<td class="mla-doc-hook-definition">Gives you an opportunity to record or modify the results of the prepare_items database query. </td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">mla_list_table_build_rollover_actions</td>
-<td>Gives you an opportunity to filter the list of "Rollover" actions giving item-level links such as "Quick Edit", "Move to Trash".</td>
+<td class="mla-doc-hook-label">mla_list_table_build_rollover_actions</td>
+<td class="mla-doc-hook-definition">Gives you an opportunity to filter the list of "Rollover" actions giving item-level links such as "Quick Edit", "Move to Trash".</td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">mla_list_table_build_inline_data</td>
-<td>Gives you an opportunity to filter the data passed to the JavaScript functions for Quick and Bulk editing.</td>
+<td class="mla-doc-hook-label">mla_list_table_build_inline_data</td>
+<td class="mla-doc-hook-definition">Gives you an opportunity to filter the data passed to the JavaScript functions for Quick and Bulk editing.</td>
 </tr>
 <tr>
-<td style="padding-right: 10px; vertical-align: top; font-weight:bold">views_upload</td>
-<td>Views for the "upload" page when WPML is active. This filter is hooked by WPML Media in wpml-media.class.php, and is only applied when WPML is active.</td>
+<td class="mla-doc-hook-label">views_upload</td>
+<td class="mla-doc-hook-definition">Views for the "upload" page when WPML is active. This filter is hooked by WPML Media in wpml-media.class.php, and is only applied when WPML is active.</td>
 </tr>
 </table>
 <p>

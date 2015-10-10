@@ -72,13 +72,20 @@ class MLA_Thumbnail {
 	 * @return	void
 	 */
 	public static function admin_enqueue_scripts( $page_hook ) {
+		global $wp_locale;
+		
 		$suffix = defined('SCRIPT_DEBUG') && SCRIPT_DEBUG ? '' : '.min';
 
 		if ( 'media_page_mla-menu' != $page_hook ) {
 			return;
 		}
 
-		wp_register_style( 'mla-thumbnail-generation', MLA_PLUGIN_URL . 'css/mla-thumbnail-generation.css', false, MLA::CURRENT_MLA_VERSION );
+		if ( $wp_locale->is_rtl() ) {
+			wp_register_style( 'mla-thumbnail-generation', MLA_PLUGIN_URL . 'css/mla-thumbnail-generation-rtl.css', false, MLA::CURRENT_MLA_VERSION );
+		} else {
+			wp_register_style( 'mla-thumbnail-generation', MLA_PLUGIN_URL . 'css/mla-thumbnail-generation.css', false, MLA::CURRENT_MLA_VERSION );
+		}
+		
 		wp_enqueue_style( 'mla-thumbnail-generation' );
 
 		wp_enqueue_script( 'mla-thumbnail-generation-scripts', MLA_PLUGIN_URL . "js/mla-thumbnail-generation-scripts{$suffix}.js", 

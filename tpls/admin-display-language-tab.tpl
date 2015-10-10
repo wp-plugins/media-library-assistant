@@ -5,9 +5,9 @@
     <table class="optiontable">
 [+options_list+]
 	</table>
-    <p class="submit" style="padding-bottom: 0;">
+    <p class="submit mla-settings-submit">
         <input name="mla-language-options-save" type="submit" class="button-primary" value="[+Save Changes+]" />&nbsp;&nbsp;
-        <input name="mla-language-options-reset" type="submit" class="button-primary" value="[+Delete Language options+]"  style="float:right;"/>
+        <input name="mla-language-options-reset" type="submit" class="button-primary alignright" value="[+Delete Language options+]"/>
     </p>
 [+_wpnonce+]
 [+_wp_http_referer+]

@@ -65,11 +65,11 @@
           <fieldset class="inline-edit-col-right">
             <div class="inline-edit-col">
               <h4>([+Add or Modify+])</h4>
-			<label class="alignleft" style="clear: both;">
+			<label class="alignleft clear">
 			<span class="title">[+Language+]</span>
 [+bulk_translate_actions+]
 			</label>
-			<label class="alignleft" style="clear: both;">
+			<label class="alignleft clear">
 			<span class="title">[+Options+]</span>
             <input type="checkbox" name="bulk_tr_options[clear_filters]" value="checked" />[+Clear Filter-by+]
 			</label>

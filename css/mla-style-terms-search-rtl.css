@@ -19,7 +19,7 @@
 #mla-terms-search-div .spinner {
 	padding: 4px 10px 0;
 	vertical-align: top;
-	float: right;
+	float: left;
 }
 
 #mla-terms-search-head-div {
@@ -87,14 +87,14 @@
 
 #mla-terms-search-search-div .spinner {
 	float: none;
-	left: 125px;
+	right: 125px;
 	position: absolute;
 	top: 18px;
 }
 
 #mla-terms-search-input,
 #mla-terms-search-search {
-	float: left;
+	float: right;
 }
 
 #mla-terms-search-input {
@@ -111,14 +111,14 @@
 #mla-terms-search-radio-phrases-div,
 #mla-terms-search-radio-terms-div {
 	display:inline-block;
-	margin-right: 10px;
+	margin-left: 10px;
 	padding: 0px 10px;
-	border-right: 1px solid #dfdfdf;
+	border-left: 1px solid #dfdfdf;
 }
 
 #mla-terms-search-exact-div {
 	display:inline-block;
-	padding-right: 10px;
+	padding-left: 10px;
 	vertical-align:top
 }
 

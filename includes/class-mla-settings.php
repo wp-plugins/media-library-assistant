@@ -337,7 +337,7 @@ class MLASettings {
 	 * @return	void
 	 */
 	public static function mla_admin_enqueue_scripts_action( $page_hook ) {
-		global $wpdb;
+		global $wpdb, $wp_locale;
 
 		/*
 		 * Without a tab value, there's nothing to do
@@ -346,7 +346,12 @@ class MLASettings {
 			return;
 		}
 
-		wp_register_style( MLA::STYLESHEET_SLUG, MLA_PLUGIN_URL . 'css/mla-style.css', false, MLA::CURRENT_MLA_VERSION );
+		if ( $wp_locale->is_rtl() ) {
+			wp_register_style( MLA::STYLESHEET_SLUG, MLA_PLUGIN_URL . 'css/mla-style-rtl.css', false, MLA::CURRENT_MLA_VERSION );
+		} else {
+			wp_register_style( MLA::STYLESHEET_SLUG, MLA_PLUGIN_URL . 'css/mla-style.css', false, MLA::CURRENT_MLA_VERSION );
+		}
+		
 		wp_enqueue_style( MLA::STYLESHEET_SLUG );
 
 		/*
@@ -1762,7 +1767,7 @@ class MLASettings {
 			'settingsURL' => admin_url('options-general.php'),
 			'form_url' => admin_url( 'options-general.php' ) . '?page=mla-settings-menu-view&mla_tab=view',
 			'_wpnonce' => wp_nonce_field( MLA::MLA_ADMIN_NONCE_ACTION, MLA::MLA_ADMIN_NONCE_NAME, true, false ),
-			'results' => ! empty( $_REQUEST['s'] ) ? '<h2 style="float:left">' . __( 'Displaying search results for', 'media-library-assistant' ) . ': "' . $_REQUEST['s'] . '"</h2>' : '',
+			'results' => ! empty( $_REQUEST['s'] ) ? '<h2 class="alignleft">' . __( 'Displaying search results for', 'media-library-assistant' ) . ': "' . $_REQUEST['s'] . '"</h2>' : '',
 			'Search Views' => __( 'Search Views', 'media-library-assistant' ),
 			's' => isset( $_REQUEST['s'] ) ? $_REQUEST['s'] : '',
 			'options_list' => $options_list,
@@ -1951,7 +1956,7 @@ class MLASettings {
 			'form_url' => admin_url( 'options-general.php' ) . '?page=mla-settings-menu-upload&mla_tab=upload',
 			'_wpnonce' => wp_nonce_field( MLA::MLA_ADMIN_NONCE_ACTION, MLA::MLA_ADMIN_NONCE_NAME, true, false ),
 			'Known File Extension' => __( 'Known File Extension/MIME Type Associations', 'media-library-assistant' ),
-			'results' => ! empty( $_REQUEST['s'] ) ? '<br>&nbsp;<br>' . __( 'Displaying search results for', 'media-library-assistant' ) . ': "' . $_REQUEST['s'] . '"' : '',
+			'results' => ! empty( $_REQUEST['s'] ) ? '<h2 class="alignleft">' . __( 'Displaying search results for', 'media-library-assistant' ) . ': "' . $_REQUEST['s'] . '"</h2>' : '',
 			'Search Known MIME' => __( 'Search Known MIME Types', 'media-library-assistant' ),
 			's' => isset( $_REQUEST['s'] ) ? $_REQUEST['s'] : '',
 			'To search by' => __( 'To search by extension, use ".", e.g., ".doc"', 'media-library-assistant' ),
@@ -2257,7 +2262,7 @@ class MLASettings {
 			'Status' => __( 'Status', 'media-library-assistant' ),
 			'No Change' => __( 'No Change', 'media-library-assistant' ),
 			'Active' => __( 'Active', 'media-library-assistant' ),
-			'results' => ! empty( $_REQUEST['s'] ) ? '<h2 style="float:left">' . __( 'Displaying search results for', 'media-library-assistant' ) . ': "' . $_REQUEST['s'] . '"</h2>' : '',
+			'results' => ! empty( $_REQUEST['s'] ) ? '<h2 class="alignleft">' . __( 'Displaying search results for', 'media-library-assistant' ) . ': "' . $_REQUEST['s'] . '"</h2>' : '',
 			's' => isset( $_REQUEST['s'] ) ? $_REQUEST['s'] : '',
 			'icon_types' => self::mla_get_icon_type_dropdown( $page_template_array, 'mla_upload_item[icon_type]' ),
 			'inline_icon_types' => self::mla_get_icon_type_dropdown( $page_template_array, 'icon_type' ),

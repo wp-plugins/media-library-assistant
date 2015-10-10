@@ -51,7 +51,7 @@
 	</td>
 	</tr>
 </table>
-<p class="submit">
+<p class="submit mla-settings-submit">
 <input name="cancel" type="submit" class="button-primary" value="[+Cancel+]" />&nbsp;
 <input name="update" type="submit" class="button-primary" value="[+Update+]" />&nbsp;
 </p>
@@ -62,7 +62,7 @@
     <table class="optiontable">
 [+options_list+]
 	</table>
-    <p class="submit" style="padding-bottom: 0;">
+    <p class="submit mla-settings-submit">
         <input name="mla-upload-options-save" type="submit" class="button-primary" value="[+Save Changes+]" />
     </p>
 	<input type="hidden" name="page" value="mla-settings-menu-upload" />
@@ -71,11 +71,12 @@
 </form>
 
 <!-- template="before-optional-uploads-table" -->
+<h2>[+Known File Extension+]</h2>
 <form action="[+form_url+]" method="get" id="mla-search-optional-uploads-form">
 	<input type="hidden" name="page" value="mla-settings-menu-upload" />
 	<input type="hidden" name="mla_tab" value="upload" />
 	[+_wpnonce+]
-	<h2 style="width: 600px; float: left">[+Known File Extension+][+results+]</h2>
+	[+results+]
 	<p class="search-box" style="margin-top: 1em">
 		<label class="screen-reader-text" for="mla-search-optional-uploads-input">[+Search Known MIME+]:</label>
 		<input type="search" id="mla-search-optional-uploads-input" name="s" value="[+s+]" />
@@ -91,7 +92,7 @@
 		[+_wpnonce+]
 		
 <!-- template="after-optional-uploads-table" -->
-		<p class="submit">
+		<p class="submit mla-settings-submit">
 		<input name="mla-optional-uploads-cancel" type="submit" class="button-primary" value="Cancel" />&nbsp;
 		</p>
 	</form><!-- /id=mla-search-uploads-filter --> 
@@ -126,12 +127,12 @@
 <!-- template="after-table" -->
 			</form><!-- /id=mla-search-uploads-filter --> 
 		</div><!-- /col-wrap --> 
-		<div style="margin-left: 10px; margin-top: 10px;">
+		<div class="mla-settings-after-table">
 		<form action="[+form_url+]" method="post" class="mla-display-settings-page" id="mla-display-settings-upload-tab">
 			<table class="optiontable">
 		[+options_list+]
 			</table>
-			<span class="submit" style="padding-bottom: 0;">
+			<span class="submit mla-settings-submit">
 				<input name="mla-upload-options-save" type="submit" class="button-primary" value="[+Save Changes+]" />
 			</span>
 		[+_wpnonce+]
@@ -172,7 +173,7 @@
 						<textarea name="mla_upload_item[description]" id="mla-upload-description" rows="5" cols="40">[+description+]</textarea>
 						<p class="description">[+The description can+]</p>
 					</div>
-					<p class="submit">
+					<p class="submit mla-settings-submit">
 						<input type="submit" name="mla-add-upload-submit" id="mla-add-upload-submit" class="button button-primary" value="[+Add Upload MIME+]" /> <a href="[+search_url+]" class="button">[+Search Known Types+]</a>
 					</p>
 				</form><!-- /id=mla-add-upload --> 

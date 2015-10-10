@@ -64,7 +64,7 @@
 	</td>
 	</tr>
 </table>
-<p class="submit">
+<p class="submit mla-settings-submit">
 <input name="cancel" type="submit" class="button-primary" value="[+Cancel+]" />&nbsp;
 <input name="update" type="submit" class="button-primary" value="[+Update+]" />&nbsp;
 </p>
@@ -75,7 +75,7 @@
     <table class="optiontable">
 [+options_list+]
 	</table>
-    <p class="submit" style="padding-bottom: 0;">
+    <p class="submit mla-settings-submit">
         <input name="mla-view-options-save" type="submit" class="button-primary" value="[+Save Changes+]" />
     </p>
 	<input type="hidden" name="page" value="mla-settings-menu-view" />
@@ -111,12 +111,12 @@
 <!-- template="after-table" -->
 			</form><!-- /id=mla-search-views-filter --> 
 		</div><!-- /col-wrap --> 
-		<div style="margin-left: 10px; margin-top: 10px;">
+		<div class="mla-settings-after-table">
 		<form action="[+form_url+]" method="post" class="mla-display-settings-page" id="mla-display-settings-view-tab">
 			<table class="optiontable">
 		[+options_list+]
 			</table>
-			<span class="submit" style="padding-bottom: 0;">
+			<span class="submit mla-settings-submit">
 				<input name="mla-view-options-save" type="submit" class="button-primary" value="[+Save Changes+]" />
 			</span>
 		[+_wpnonce+]
@@ -169,7 +169,7 @@
 						<textarea name="mla_view_item[description]" id="mla-view-description" rows="5" cols="40">[+description+]</textarea>
 						<p class="description">[+The description can+]</p>
 					</div>
-					<p class="submit">
+					<p class="submit mla-settings-submit">
 						<input type="submit" name="mla-add-view-submit" id="mla-add-view-submit" class="button button-primary" value="[+Add View+]" />
 					</p>
 				</form><!-- /id=mla-add-view --> 

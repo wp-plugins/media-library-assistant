@@ -555,6 +555,8 @@ class MLAModal {
 	 * @return	void
 	 */
 	public static function mla_wp_enqueue_media_action( ) {
+		global $wp_locale;
+		
 		/*
 		 * If we know what screen we're on we can test our enabling options
 		 */
@@ -574,7 +576,12 @@ class MLAModal {
 
 		$suffix = defined('SCRIPT_DEBUG') && SCRIPT_DEBUG ? '' : '.min';
 
-		wp_register_style( self::JAVASCRIPT_MEDIA_MODAL_STYLES, MLA_PLUGIN_URL . 'css/mla-media-modal-style.css', false, MLA::CURRENT_MLA_VERSION );
+		if ( $wp_locale->is_rtl() ) {
+			wp_register_style( self::JAVASCRIPT_MEDIA_MODAL_STYLES, MLA_PLUGIN_URL . 'css/mla-media-modal-style-rtl.css', false, MLA::CURRENT_MLA_VERSION );
+		} else {
+			wp_register_style( self::JAVASCRIPT_MEDIA_MODAL_STYLES, MLA_PLUGIN_URL . 'css/mla-media-modal-style.css', false, MLA::CURRENT_MLA_VERSION );
+		}
+
 		wp_enqueue_style( self::JAVASCRIPT_MEDIA_MODAL_STYLES );
 
 		wp_enqueue_script( self::JAVASCRIPT_MEDIA_MODAL_SLUG, MLA_PLUGIN_URL . "js/mla-media-modal-scripts{$suffix}.js", array( 'media-views', 'wp-lists', 'suggest' ), MLA::CURRENT_MLA_VERSION, false );
@@ -1161,12 +1168,18 @@ class MLAModal {
 	 * @return	void
 	 */
 	public static function mla_add_terms_search_scripts() {
+		global $wp_locale;
 		static $add_the_scripts = true;
 
 		$suffix = defined('SCRIPT_DEBUG') && SCRIPT_DEBUG ? '' : '.min';
 
 		if ( $add_the_scripts ) {
-			wp_register_style( MLA::STYLESHEET_SLUG . '-terms-search', MLA_PLUGIN_URL . 'css/mla-style-terms-search.css', false, MLA::CURRENT_MLA_VERSION );
+			if ( $wp_locale->is_rtl() ) {
+				wp_register_style( MLA::STYLESHEET_SLUG . '-terms-search', MLA_PLUGIN_URL . 'css/mla-style-terms-search-rtl.css', false, MLA::CURRENT_MLA_VERSION );
+			} else {
+				wp_register_style( MLA::STYLESHEET_SLUG . '-terms-search', MLA_PLUGIN_URL . 'css/mla-style-terms-search.css', false, MLA::CURRENT_MLA_VERSION );
+			}
+			
 			wp_enqueue_style( MLA::STYLESHEET_SLUG . '-terms-search' );
 
 			wp_enqueue_script( MLA::JAVASCRIPT_INLINE_EDIT_SLUG . '-terms-search', MLA_PLUGIN_URL . "js/mla-terms-search-scripts{$suffix}.js", 
