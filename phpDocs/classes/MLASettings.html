@@ -406,8 +406,8 @@ add settings link in the Plugins section entry for MLA.</h2>
 <pre>mla_localize_tablist() : void</pre>
 <div class="labels"></div>
 <div class="row collapse"><div class="detail-description">
-<p class="long_description"><p>Localization must be done at runtime, and these calls cannot be placed
-in the "public static" array definition itself.</p></p>
+<p class="long_description"><p>Localization must be done at runtime; these calls cannot be placed in the
+"public static" array definition itself. Called from MLATest::initialize.</p></p>
 <table class="table table-bordered"><tr>
 <th>since</th>
 <td>1.70</td>
@@ -1249,8 +1249,8 @@ Each tab is defined by an array with the following elements:</h2>
 render => rendering function for tab messages and content. Usage:
     $tab_content = <a href="">'render'</a>;</p>
 
-<p>The array must be populated at runtime in MLASettings::mla_localize_tablist(),
-because Localization calls cannot be placed in the "public static" array definition itself.</p></p>
+<p>The array must be populated at runtime in MLASettings::mla_localize_tablist();
+localization calls cannot be placed in the "public static" array definition itself.</p></p>
 <table class="table table-bordered"><tr>
 <th>since</th>
 <td>0.80</td>
@@ -1362,7 +1362,7 @@ because Localization calls cannot be placed in the "public static" array definit
 <div class="row"><footer class="span12">
             Template is built using <a href="http://twitter.github.com/bootstrap/">Twitter Bootstrap 2</a> and icons provided by <a href="http://glyphicons.com/">Glyphicons</a>.<br>
             Documentation is powered by <a href="http://www.phpdoc.org/">phpDocumentor 2.0.0a8</a> and<br>
-            generated on 2015-08-16T20:58:57-07:00.<br></footer></div>
+            generated on 2015-10-13T16:50:49-07:00.<br></footer></div>
 </div>
 </body>
 </html>

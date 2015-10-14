@@ -671,38 +671,7 @@ class MLA_List_Table extends WP_List_Table {
 	 * @return	string	HTML markup to be placed inside the column
 	 */
 	function column_icon( $item ) {
-		$icon_width = MLAOptions::mla_get_option( MLAOptions::MLA_TABLE_ICON_SIZE );
-		if ( 'checked' == MLAOptions::mla_get_option( MLAOptions::MLA_ENABLE_MLA_ICONS ) ) {
-			if ( empty( $icon_width ) ) {
-				$icon_width = $icon_height = 64;
-			} else {
-				$icon_width = $icon_height = absint( $icon_width );
-			}
-		} else {
-			if ( empty( $icon_width ) ) {
-				if ( MLATest::$wp_4dot3_plus ) {
-					$icon_width = 60;
-				} else {
-					$icon_width = 80;
-				}
-			} else {
-				$icon_width = absint( $icon_width );
-			}
-			
-			if ( MLATest::$wp_4dot3_plus ) {
-				$icon_height = $icon_width;
-			} else {
-				$icon_height = absint( .75 * (float) $icon_width );
-			}
-		}
-
-		$dimensions = array( $icon_width, $icon_height );
-		$thumb = wp_get_attachment_image( $item->ID, $dimensions, true, array( 'class' => 'mla_media_thumbnail' ) );
-
-		if ( in_array( $item->post_mime_type, array( 'image/svg+xml' ) ) ) {
-			$thumb = preg_replace( '/width=\"[^\"]*\"/', sprintf( 'width="%1$d"', $dimensions[0] ), $thumb );
-			$thumb = preg_replace( '/height=\"[^\"]*\"/', sprintf( 'height="%1$d"', $dimensions[1] ), $thumb );
-		}
+		$thumb = self::_build_item_thumbnail( $item );
 
 		if ( $this->is_trash || ! current_user_can( 'edit_post', $item->ID ) ) {
 			return $thumb;
@@ -880,6 +849,60 @@ class MLA_List_Table extends WP_List_Table {
 	}
 
 	/**
+	 * Generate item thumbnail image tag
+	 *
+	 * @since 2.15
+	 * 
+	 * @param	object	A singular attachment (post) object
+	 *
+	 * @return	string	HTML <img> for thumbnail
+	 */
+	protected function _build_item_thumbnail( $item ) {
+		static $thumb = NULL, $item_id = 0;
+		
+		if ( $item->ID == $item_id ) {
+			return $thumb;
+		} else {
+			$item_id = $item->ID;
+		}
+		
+		$icon_width = MLAOptions::mla_get_option( MLAOptions::MLA_TABLE_ICON_SIZE );
+		if ( 'checked' == MLAOptions::mla_get_option( MLAOptions::MLA_ENABLE_MLA_ICONS ) ) {
+			if ( empty( $icon_width ) ) {
+				$icon_width = $icon_height = 64;
+			} else {
+				$icon_width = $icon_height = absint( $icon_width );
+			}
+		} else {
+			if ( empty( $icon_width ) ) {
+				if ( MLATest::$wp_4dot3_plus ) {
+					$icon_width = 60;
+				} else {
+					$icon_width = 80;
+				}
+			} else {
+				$icon_width = absint( $icon_width );
+			}
+			
+			if ( MLATest::$wp_4dot3_plus ) {
+				$icon_height = $icon_width;
+			} else {
+				$icon_height = absint( .75 * (float) $icon_width );
+			}
+		}
+
+		$dimensions = array( $icon_width, $icon_height );
+		$thumb = wp_get_attachment_image( $item->ID, $dimensions, true, array( 'class' => 'mla_media_thumbnail' ) );
+
+		if ( in_array( $item->post_mime_type, array( 'image/svg+xml' ) ) ) {
+			$thumb = preg_replace( '/width=\"[^\"]*\"/', sprintf( 'width="%1$d"', $dimensions[0] ), $thumb );
+			$thumb = preg_replace( '/height=\"[^\"]*\"/', sprintf( 'height="%1$d"', $dimensions[1] ), $thumb );
+		}
+		
+		return $thumb;
+	}
+
+	/**
 	 * Add hidden fields with the data for use in the inline editor
 	 *
 	 * @since 0.20
@@ -890,6 +913,7 @@ class MLA_List_Table extends WP_List_Table {
 	 */
 	protected function _build_inline_data( $item ) {
 		$inline_data = "\r\n" . '<div class="hidden" id="inline_' . $item->ID . "\">\r\n";
+		$inline_data .= '	<div class="item_thumbnail">' . self::_build_item_thumbnail( $item ) . "</div>\r\n";
 		$inline_data .= '	<div class="post_title">' . esc_attr( $item->post_title ) . "</div>\r\n";
 		$inline_data .= '	<div class="post_name">' . esc_attr( $item->post_name ) . "</div>\r\n";
 		$inline_data .= '	<div class="post_excerpt">' . esc_attr( $item->post_excerpt ) . "</div>\r\n";

@@ -1064,8 +1064,8 @@ class MLA_WPML {
 	 *
 	 * @since 2.15
 	 *
-	 * @param WP_Post $post       The WP_Post object.
-	 * @param array   $attachment An array of attachment metadata.
+	 * @param	integer	$post_id ID of the item that was updated.
+	 * @param	integer	$result	Zero if the update failed else ID of the item that was updated.
 	 */
 	public static function mla_updated_single_item( $post_id, $result ) {
 		MLA::mla_debug_add( __LINE__ . " MLA_WPML::mla_updated_single_item( {$post_id}, {$result} )", MLA::MLA_DEBUG_CATEGORY_LANGUAGE );

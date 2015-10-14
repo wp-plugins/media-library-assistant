@@ -372,7 +372,7 @@ var jQuery,
 		},
 
 		quickEdit : function(id) {
-			var t = this, fields, editRow, rowData, fIndex;
+			var t = this, fields, editRow, rowData, icon, fIndex;
 			t.revert();
 
 			if ( typeof(id) == 'object' )
@@ -390,6 +390,12 @@ var jQuery,
 
 			// populate the data
 			rowData = $('#inline_'+id);
+			
+			icon = $('.item_thumbnail', rowData).html();
+			if ( icon.length ) {
+				$( '#item_thumbnail', editRow ).html( icon );
+			}
+			
 			if ( !$(':input[name="post_author"] option[value="' + $('.post_author', rowData).text() + '"]', editRow).val() ) {
 				// author no longer has edit caps, so we need to add them to the list of authors
 				$(':input[name="post_author"]', editRow).prepend('<option value="' + $('.post_author', rowData).text() + '">' + $('#' + t.type + '-' + id + ' .author').text() + '</option>');

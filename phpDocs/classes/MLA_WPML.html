@@ -66,7 +66,7 @@ and the Media/Edit Media screen</span><pre>edit_attachment()</pre></a></li>
 <li class="method public "><a href="#mla_get_options_tablist" title='mla_get_options_tablist :: Adds the "Language" tab to the Settings/Media Library Assistant list'><span class="description">Adds the "Language" tab to the Settings/Media Library Assistant list</span><pre>mla_get_options_tablist()</pre></a></li>
 <li class="method public "><a href="#mla_get_terms_clauses" title="mla_get_terms_clauses :: MLA Tag Cloud Query Clauses"><span class="description">MLA Tag Cloud Query Clauses</span><pre>mla_get_terms_clauses()</pre></a></li>
 <li class="method public "><a href="#mla_get_terms_query_arguments" title="mla_get_terms_query_arguments :: MLA Tag Cloud Query Arguments"><span class="description">MLA Tag Cloud Query Arguments</span><pre>mla_get_terms_query_arguments()</pre></a></li>
-<li class="method public "><a href="#mla_list_table_bulk_action_initial_request" title='mla_list_table_bulk_action_initial_request :: Captures the Bulk Edit parameters during "Upload New Media"'><span class="description">Captures the Bulk Edit parameters during "Upload New Media"</span><pre>mla_list_table_bulk_action_initial_request()</pre></a></li>
+<li class="method public "><a href="#mla_list_table_bulk_action_initial_request" title='mla_list_table_bulk_action_initial_request :: Captures the Bulk Edit, "Upload New Media" parameters'><span class="description">Captures the Bulk Edit, "Upload New Media" parameters</span><pre>mla_list_table_bulk_action_initial_request()</pre></a></li>
 <li class="method public "><a href="#mla_list_table_bulk_action_item_request" title="mla_list_table_bulk_action_item_request :: Converts Bulk Edit taxonomy inputs to language-specific values"><span class="description">Converts Bulk Edit taxonomy inputs to language-specific values</span><pre>mla_list_table_bulk_action_item_request()</pre></a></li>
 <li class="method public "><a href="#mla_list_table_custom_admin_action" title="mla_list_table_custom_admin_action :: Add a duplicate translation for an item, then redirect to the Media/Edit Media screen"><span class="description">Add a duplicate translation for an item, then redirect to the Media/Edit Media screen</span><pre>mla_list_table_custom_admin_action()</pre></a></li>
 <li class="method public "><a href="#mla_list_table_inline_action" title='mla_list_table_inline_action :: Captures the Quick Edit "before update" term assignments'><span class="description">Captures the Quick Edit "before update" term assignments</span><pre>mla_list_table_inline_action()</pre></a></li>
@@ -81,12 +81,14 @@ Media Manager Modal Window taxonomy updates</span><pre>mla_media_modal_end_updat
 Media Manager Modal Window ATTACHMENT DETAILS taxonomy"><span class="description">Applies Term Assignment to the terms assigned to one
 Media Manager Modal Window ATTACHMENT DETAILS taxonomy</span><pre>mla_media_modal_update_compat_fields_terms()</pre></a></li>
 <li class="method public "><a href="#mla_render_language_tab" title='mla_render_language_tab :: Renders the Settings/Media Library Assistant "Language" tab'><span class="description">Renders the Settings/Media Library Assistant "Language" tab</span><pre>mla_render_language_tab()</pre></a></li>
+<li class="method public "><a href="#mla_updated_single_item" title="mla_updated_single_item :: Applies Term Synchronization after item updates"><span class="description">Applies Term Synchronization after item updates</span><pre>mla_updated_single_item()</pre></a></li>
 <li class="method public "><a href="#post_updated_messages" title="post_updated_messages :: Adds translation update message for display at the top of the Edit Media screen"><span class="description">Adds translation update message for display at the top of the Edit Media screen</span><pre>post_updated_messages()</pre></a></li>
 <li class="method public "><a href="#wpml_media_create_duplicate_attachment" title="wpml_media_create_duplicate_attachment :: Copies taxonomy terms from the source item to the new translated item"><span class="description">Copies taxonomy terms from the source item to the new translated item</span><pre>wpml_media_create_duplicate_attachment()</pre></a></li>
 <li class="nav-header private">» Private</li>
 <li class="method private "><a href="#_add_relevant_term" title="_add_relevant_term :: Adds a term and its translations to $relevant_terms"><span class="description">Adds a term and its translations to $relevant_terms</span><pre>_add_relevant_term()</pre></a></li>
 <li class="method private "><a href="#_apply_synch_input" title="_apply_synch_input :: Compute Term Synchronization replacement $tax_inputs"><span class="description">Compute Term Synchronization replacement $tax_inputs</span><pre>_apply_synch_input()</pre></a></li>
 <li class="method private "><a href="#_apply_tax_input" title="_apply_tax_input :: Filter the $tax_input array to a specific language"><span class="description">Filter the $tax_input array to a specific language</span><pre>_apply_tax_input()</pre></a></li>
+<li class="method private "><a href="#_apply_term_synchronization" title="_apply_term_synchronization :: Apply Term Synchronization"><span class="description">Apply Term Synchronization</span><pre>_apply_term_synchronization()</pre></a></li>
 <li class="method private "><a href="#_build_existing_terms" title="_build_existing_terms :: Build the $existing_terms array"><span class="description">Build the $existing_terms array</span><pre>_build_existing_terms()</pre></a></li>
 <li class="method private "><a href="#_build_tax_input" title="_build_tax_input :: Build the $tax_input array"><span class="description">Build the $tax_input array</span><pre>_build_tax_input()</pre></a></li>
 <li class="method private "><a href="#_get_relevant_term" title="_get_relevant_term :: Finds a $relevant_term (if defined) given a key and (optional) a language"><span class="description">Finds a $relevant_term (if defined) given a key and (optional) a language</span><pre>_get_relevant_term()</pre></a></li>
@@ -100,12 +102,12 @@ admin page areas for setting/updating them"><span class="description">$mla_langu
 admin page areas for setting/updating them</span><pre>$mla_language_option_definitions</pre></a></li>
 <li class="nav-header private">» Private</li>
 <li class="property private "><a href="#%24all_query_parameters" title="$all_query_parameters :: Save the query arguments"><span class="description">Save the query arguments</span><pre>$all_query_parameters</pre></a></li>
+<li class="property private "><a href="#%24bulk_edit_map" title='$bulk_edit_map :: Custom Field Map during Bulk Edit, "Upload New Media"'><span class="description">Custom Field Map during Bulk Edit, "Upload New Media"</span><pre>$bulk_edit_map</pre></a></li>
+<li class="property private "><a href="#%24bulk_edit_request" title='$bulk_edit_request :: Bulk Edit parameters during "Upload New Media"'><span class="description">Bulk Edit parameters during "Upload New Media"</span><pre>$bulk_edit_request</pre></a></li>
 <li class="property private "><a href="#%24duplicate_attachments" title="$duplicate_attachments :: Duplicates created during media upload"><span class="description">Duplicates created during media upload</span><pre>$duplicate_attachments</pre></a></li>
 <li class="property private "><a href="#%24existing_terms" title="$existing_terms :: Taxonomy terms for the current item translation in the database"><span class="description">Taxonomy terms for the current item translation in the database</span><pre>$existing_terms</pre></a></li>
 <li class="property private "><a href="#%24relevant_terms" title="$relevant_terms :: Taxonomy terms and translations"><span class="description">Taxonomy terms and translations</span><pre>$relevant_terms</pre></a></li>
 <li class="property private "><a href="#%24tax_input" title="$tax_input :: Replacement tax_input values in all languages"><span class="description">Replacement tax_input values in all languages</span><pre>$tax_input</pre></a></li>
-<li class="property private "><a href="#%24upload_bulk_edit_args" title='$upload_bulk_edit_args :: Bulk Edit parameters during "Upload New Media"'><span class="description">Bulk Edit parameters during "Upload New Media"</span><pre>$upload_bulk_edit_args</pre></a></li>
-<li class="property private "><a href="#%24upload_bulk_edit_map" title='$upload_bulk_edit_map :: Custom Field Map during "Upload New Media"'><span class="description">Custom Field Map during "Upload New Media"</span><pre>$upload_bulk_edit_map</pre></a></li>
 </ul>
 </div>
 <div class="span8">
@@ -268,7 +270,7 @@ and the Media/Edit Media screen</h2>
 </div></div>
 </div>
 <a name="mla_list_table_bulk_action_initial_request" id="mla_list_table_bulk_action_initial_request"></a><div class="element clickable method public mla_list_table_bulk_action_initial_request" data-toggle="collapse" data-target=".mla_list_table_bulk_action_initial_request .collapse">
-<h2>Captures the Bulk Edit parameters during "Upload New Media"</h2>
+<h2>Captures the Bulk Edit, "Upload New Media" parameters</h2>
 <pre>mla_list_table_bulk_action_initial_request(array $request, string $bulk_action, array $custom_field_map) : array</pre>
 <div class="labels"></div>
 <div class="row collapse"><div class="detail-description">
@@ -461,6 +463,25 @@ Media Manager Modal Window ATTACHMENT DETAILS taxonomy</h2>
 <code>array</code>( 'message' => '', 'body' => '' )</div>
 </div></div>
 </div>
+<a name="mla_updated_single_item" id="mla_updated_single_item"></a><div class="element clickable method public mla_updated_single_item" data-toggle="collapse" data-target=".mla_updated_single_item .collapse">
+<h2>Applies Term Synchronization after item updates</h2>
+<pre>mla_updated_single_item(integer $post_id, integer $result) </pre>
+<div class="labels"></div>
+<div class="row collapse"><div class="detail-description">
+<p class="long_description"></p>
+<table class="table table-bordered"><tr>
+<th>since</th>
+<td>2.15</td>
+</tr></table>
+<h3>Parameters</h3>
+<div class="subelement argument">
+<h4>$post_id</h4>
+<code>integer</code><p>ID of the item that was updated.</p></div>
+<div class="subelement argument">
+<h4>$result</h4>
+<code>integer</code><p>Zero if the update failed else ID of the item that was updated.</p></div>
+</div></div>
+</div>
 <a name="post_updated_messages" id="post_updated_messages"></a><div class="element clickable method public post_updated_messages" data-toggle="collapse" data-target=".post_updated_messages .collapse">
 <h2>Adds translation update message for display at the top of the Edit Media screen</h2>
 <pre>post_updated_messages(array $messages) : array</pre>
@@ -580,6 +601,32 @@ and $existing_terms contains the target translation</p></p>
 <h3>Returns</h3>
 <div class="subelement response">
 <code>array</code>language-specific $tax_inputs</div>
+</div></div>
+</div>
+<a name="_apply_term_synchronization" id="_apply_term_synchronization"></a><div class="element clickable method private _apply_term_synchronization" data-toggle="collapse" data-target="._apply_term_synchronization .collapse">
+<h2>Apply Term Synchronization</h2>
+<pre>_apply_term_synchronization(integer $post_id) : array</pre>
+<div class="labels"></div>
+<div class="row collapse"><div class="detail-description">
+<p class="long_description"></p>
+<table class="table table-bordered">
+<tr>
+<th>since</th>
+<td>2.15</td>
+</tr>
+<tr>
+<th>uses</th>
+<td>\global\MLA_Polylang::$existing_terms</td>
+</tr>
+</table>
+<h3>Parameters</h3>
+<div class="subelement argument">
+<h4>$post_id</h4>
+<code>integer</code><p>the item we're synchronizing to</p>
+</div>
+<h3>Returns</h3>
+<div class="subelement response">
+<code>array</code>$tax_inputs for Term Synchronization</div>
 </div></div>
 </div>
 <a name="_build_existing_terms" id="_build_existing_terms"></a><div class="element clickable method private _build_existing_terms" data-toggle="collapse" data-target="._build_existing_terms .collapse">
@@ -772,6 +819,30 @@ because localization calls cannot be placed in the "public static" array definit
 </tr></table>
 </div></div>
 </div>
+<a name="%24bulk_edit_map" id="$bulk_edit_map"> </a><div class="element clickable property private $bulk_edit_map" data-toggle="collapse" data-target=".$bulk_edit_map .collapse">
+<h2>Custom Field Map during Bulk Edit, "Upload New Media"</h2>
+<pre>$bulk_edit_map : array</pre>
+<div class="labels"></div>
+<div class="row collapse"><div class="detail-description">
+<p class="long_description"></p>
+<table class="table table-bordered"><tr>
+<th>since</th>
+<td>2.11</td>
+</tr></table>
+</div></div>
+</div>
+<a name="%24bulk_edit_request" id="$bulk_edit_request"> </a><div class="element clickable property private $bulk_edit_request" data-toggle="collapse" data-target=".$bulk_edit_request .collapse">
+<h2>Bulk Edit parameters during "Upload New Media"</h2>
+<pre>$bulk_edit_request : array</pre>
+<div class="labels"></div>
+<div class="row collapse"><div class="detail-description">
+<p class="long_description"></p>
+<table class="table table-bordered"><tr>
+<th>since</th>
+<td>2.11</td>
+</tr></table>
+</div></div>
+</div>
 <a name="%24duplicate_attachments" id="$duplicate_attachments"> </a><div class="element clickable property private $duplicate_attachments" data-toggle="collapse" data-target=".$duplicate_attachments .collapse">
 <h2>Duplicates created during media upload</h2>
 <pre>$duplicate_attachments : array</pre>
@@ -821,30 +892,6 @@ Polylang uses term_id as the "element_id".</p></p>
 </tr></table>
 </div></div>
 </div>
-<a name="%24upload_bulk_edit_args" id="$upload_bulk_edit_args"> </a><div class="element clickable property private $upload_bulk_edit_args" data-toggle="collapse" data-target=".$upload_bulk_edit_args .collapse">
-<h2>Bulk Edit parameters during "Upload New Media"</h2>
-<pre>$upload_bulk_edit_args : array</pre>
-<div class="labels"></div>
-<div class="row collapse"><div class="detail-description">
-<p class="long_description"></p>
-<table class="table table-bordered"><tr>
-<th>since</th>
-<td>2.11</td>
-</tr></table>
-</div></div>
-</div>
-<a name="%24upload_bulk_edit_map" id="$upload_bulk_edit_map"> </a><div class="element clickable property private $upload_bulk_edit_map" data-toggle="collapse" data-target=".$upload_bulk_edit_map .collapse">
-<h2>Custom Field Map during "Upload New Media"</h2>
-<pre>$upload_bulk_edit_map : array</pre>
-<div class="labels"></div>
-<div class="row collapse"><div class="detail-description">
-<p class="long_description"></p>
-<table class="table table-bordered"><tr>
-<th>since</th>
-<td>2.11</td>
-</tr></table>
-</div></div>
-</div>
 </div>
 </div>
 </div>
@@ -852,7 +899,7 @@ Polylang uses term_id as the "element_id".</p></p>
 <div class="row"><footer class="span12">
             Template is built using <a href="http://twitter.github.com/bootstrap/">Twitter Bootstrap 2</a> and icons provided by <a href="http://glyphicons.com/">Glyphicons</a>.<br>
             Documentation is powered by <a href="http://www.phpdoc.org/">phpDocumentor 2.0.0a8</a> and<br>
-            generated on 2015-08-16T20:58:58-07:00.<br></footer></div>
+            generated on 2015-10-13T16:50:49-07:00.<br></footer></div>
 </div>
 </body>
 </html>

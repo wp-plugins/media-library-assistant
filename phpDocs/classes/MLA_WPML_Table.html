@@ -59,6 +59,7 @@
 <i class="icon-custom icon-method"></i> Methods</li>
 <li class="method public "><a href="#__construct" title="__construct :: The constructor contains add_action and add_filter calls."><span class="description">The constructor contains add_action and add_filter calls.</span><pre>__construct()</pre></a></li>
 <li class="method public "><a href="#mla_list_table_add_icl_styles" title="mla_list_table_add_icl_styles :: Add styles for the icl_translations table column"><span class="description">Add styles for the icl_translations table column</span><pre>mla_list_table_add_icl_styles()</pre></a></li>
+<li class="method public "><a href="#mla_list_table_build_inline_data" title="mla_list_table_build_inline_data :: Filter the data for inline (Quick and Bulk) editing"><span class="description">Filter the data for inline (Quick and Bulk) editing</span><pre>mla_list_table_build_inline_data()</pre></a></li>
 <li class="method public "><a href="#mla_list_table_column_default" title="mla_list_table_column_default :: Supply a column value if no column-specific function has been defined"><span class="description">Supply a column value if no column-specific function has been defined</span><pre>mla_list_table_column_default()</pre></a></li>
 <li class="method public "><a href="#mla_list_table_get_columns" title="mla_list_table_get_columns :: Filter the MLA_List_Table columns"><span class="description">Filter the MLA_List_Table columns</span><pre>mla_list_table_get_columns()</pre></a></li>
 <li class="method public "><a href="#mla_list_table_new_instance" title="mla_list_table_new_instance :: Extend the MLA_List_Table class"><span class="description">Extend the MLA_List_Table class</span><pre>mla_list_table_new_instance()</pre></a></li>
@@ -132,6 +133,28 @@ family of plugins, including WPML Media, for an MLA_List_Table object.</p>
 <th>since</th>
 <td>2.11</td>
 </tr></table>
+</div></div>
+</div>
+<a name="mla_list_table_build_inline_data" id="mla_list_table_build_inline_data"></a><div class="element clickable method public mla_list_table_build_inline_data" data-toggle="collapse" data-target=".mla_list_table_build_inline_data .collapse">
+<h2>Filter the data for inline (Quick and Bulk) editing</h2>
+<pre>mla_list_table_build_inline_data(string $inline_data, object $item) : string</pre>
+<div class="labels"></div>
+<div class="row collapse"><div class="detail-description">
+<p class="long_description"><p>Adds a 'lang' value for the JS Quick Edit function.</p></p>
+<table class="table table-bordered"><tr>
+<th>since</th>
+<td>2.15</td>
+</tr></table>
+<h3>Parameters</h3>
+<div class="subelement argument">
+<h4>$inline_data</h4>
+<code>string</code><p>The HTML markup for inline data.</p></div>
+<div class="subelement argument">
+<h4>$item</h4>
+<code>object</code><p>The current Media Library item.</p></div>
+<h3>Returns</h3>
+<div class="subelement response">
+<code>string</code>updated HTML markup for inline data.</div>
 </div></div>
 </div>
 <a name="mla_list_table_column_default" id="mla_list_table_column_default"></a><div class="element clickable method public mla_list_table_column_default" data-toggle="collapse" data-target=".mla_list_table_column_default .collapse">
@@ -387,7 +410,7 @@ The count is made language-specific by WPML filters when the current_language is
 <div class="row"><footer class="span12">
             Template is built using <a href="http://twitter.github.com/bootstrap/">Twitter Bootstrap 2</a> and icons provided by <a href="http://glyphicons.com/">Glyphicons</a>.<br>
             Documentation is powered by <a href="http://www.phpdoc.org/">phpDocumentor 2.0.0a8</a> and<br>
-            generated on 2015-08-16T20:58:58-07:00.<br></footer></div>
+            generated on 2015-10-13T16:50:49-07:00.<br></footer></div>
 </div>
 </body>
 </html>

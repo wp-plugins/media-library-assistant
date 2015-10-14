@@ -2385,10 +2385,10 @@ class MLAData {
 			$is_wildcard_search = self::_wildcard_search_string( $keyword_string );
 
 			/*
-			 * Interpret a numeric value as the ID of a specific attachment or the ID of
+			 * OBSOLETE: Interpret a numeric value as the ID of a specific attachment or the ID of
 			 * a parent post/page; add it to the regular text-based search.
 			 */
-			if ( is_numeric( $keyword_string ) ) {
+			if ( false and is_numeric( $keyword_string ) ) {
 				$id = absint( $keyword_string );
 				$numeric_clause = '( ( ' . $wpdb->posts . '.ID = ' . $id . ' ) OR ( ' . $wpdb->posts . '.post_parent = ' . $id . ' ) ) OR ';
 			}
@@ -2399,6 +2399,17 @@ class MLAData {
 				// v3.6.1 was '/".*?("|$)|((?<=[\r\n\t ",+])|^)[^\r\n\t ",+]+/'
 				preg_match_all('/".*?("|$)|((?<=[\t ",+])|^)[^\t ",+]+/', $keyword_string, $matches);
 				$keyword_array = array_map( 'MLAData::mla_search_terms_tidy', $matches[0]);
+				$numeric_array = array_filter( $keyword_array, 'is_numeric' );
+
+				/*
+				 * If all the "keywords" are numeric, interpret it/them as the ID(s) of a specific attachment
+				 * or the ID(s) of a parent post/page; add it/them to the regular text-based search.
+				 */
+				if ( count( $keyword_array ) == count( $numeric_array ) ) {
+					$numeric_array = implode( ',', $numeric_array );
+					$numeric_clause = '( ( ' . $wpdb->posts . '.ID IN (' . $numeric_array . ') ) OR ( ' . $wpdb->posts . '.post_parent IN (' . $numeric_array . ') ) ) OR ';
+
+				}
 			}
 
 			$fields = self::$search_parameters['mla_search_fields'];

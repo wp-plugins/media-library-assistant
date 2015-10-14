@@ -137,17 +137,21 @@ and meta data for a single attachment</span><pre>mla_update_single_item()</pre><
 <li class="property private "><a href="#%24mla_IPTC_EXIF_errors" title="$mla_IPTC_EXIF_errors :: Passes IPTC/EXIF parse errors between mla_IPTC_EXIF_error_handler
 and mla_fetch_attachment_image_metadata"><span class="description">Passes IPTC/EXIF parse errors between mla_IPTC_EXIF_error_handler
 and mla_fetch_attachment_image_metadata</span><pre>$mla_IPTC_EXIF_errors</pre></a></li>
-<li class="property private "><a href="#%24mla_alt_text_view" title="$mla_alt_text_view :: Provides a unique name for the ALT Text/custom field SQL View"><span class="description">Provides a unique name for the ALT Text/custom field SQL View</span><pre>$mla_alt_text_view</pre></a></li>
+<li class="property private "><a href="#%24mla_alt_text_view" title='$mla_alt_text_view :: Provides a unique name for the ALT Text "Search Media" SQL View'><span class="description">Provides a unique name for the ALT Text "Search Media" SQL View</span><pre>$mla_alt_text_view</pre></a></li>
 <li class="property private "><a href="#%24mla_galleries" title="$mla_galleries :: Objects containing [mla_gallery] shortcodes"><span class="description">Objects containing [mla_gallery] shortcodes</span><pre>$mla_galleries</pre></a></li>
 <li class="property private "><a href="#%24mla_iptc_descriptions" title="$mla_iptc_descriptions :: IPTC Dataset descriptions"><span class="description">IPTC Dataset descriptions</span><pre>$mla_iptc_descriptions</pre></a></li>
 <li class="property private "><a href="#%24mla_iptc_formats" title="$mla_iptc_formats :: IPTC file format identifiers and descriptions"><span class="description">IPTC file format identifiers and descriptions</span><pre>$mla_iptc_formats</pre></a></li>
 <li class="property private "><a href="#%24mla_iptc_image_types" title="$mla_iptc_image_types :: IPTC image type identifiers and descriptions"><span class="description">IPTC image type identifiers and descriptions</span><pre>$mla_iptc_image_types</pre></a></li>
 <li class="property private "><a href="#%24mla_iptc_records" title="$mla_iptc_records :: IPTC Dataset identifiers and names"><span class="description">IPTC Dataset identifiers and names</span><pre>$mla_iptc_records</pre></a></li>
 <li class="property private "><a href="#%24mla_list_table_items" title="$mla_list_table_items :: Cache the results of mla_count_list_table_items for reuse in mla_query_list_table_items"><span class="description">Cache the results of mla_count_list_table_items for reuse in mla_query_list_table_items</span><pre>$mla_list_table_items</pre></a></li>
+<li class="property private "><a href="#%24mla_orderby_view" title='$mla_orderby_view :: Provides a unique name for the custom field "orderby" SQL View'><span class="description">Provides a unique name for the custom field "orderby" SQL View</span><pre>$mla_orderby_view</pre></a></li>
+<li class="property private "><a href="#%24mla_table_view_custom" title='$mla_table_view_custom :: Provides a unique name for the "Table View custom:" SQL View'><span class="description">Provides a unique name for the "Table View custom:" SQL View</span><pre>$mla_table_view_custom</pre></a></li>
 <li class="property private "><a href="#%24wp_4dot0_plus" title="$wp_4dot0_plus :: WordPress version test for $wpdb-&gt;esc_like() Vs esc_sql()"><span class="description">WordPress version test for $wpdb-&gt;esc_like() Vs esc_sql()</span><pre>$wp_4dot0_plus</pre></a></li>
 <li class="nav-header">
 <i class="icon-custom icon-constant"></i> Constants</li>
-<li class="constant  "><a href="#MLA_ALT_TEXT_VIEW_SUFFIX" title="MLA_ALT_TEXT_VIEW_SUFFIX :: Provides a unique suffix for the ALT Text/custom field SQL View"><span class="description">Provides a unique suffix for the ALT Text/custom field SQL View</span><pre>MLA_ALT_TEXT_VIEW_SUFFIX</pre></a></li>
+<li class="constant  "><a href="#MLA_ALT_TEXT_VIEW_SUFFIX" title='MLA_ALT_TEXT_VIEW_SUFFIX :: Provides a unique suffix for the ALT Text "Search Media" SQL View'><span class="description">Provides a unique suffix for the ALT Text "Search Media" SQL View</span><pre>MLA_ALT_TEXT_VIEW_SUFFIX</pre></a></li>
+<li class="constant  "><a href="#MLA_ORDERBY_VIEW_SUFFIX" title='MLA_ORDERBY_VIEW_SUFFIX :: Provides a unique suffix for the custom field "orderby" SQL View'><span class="description">Provides a unique suffix for the custom field "orderby" SQL View</span><pre>MLA_ORDERBY_VIEW_SUFFIX</pre></a></li>
+<li class="constant  "><a href="#MLA_TABLE_VIEW_CUSTOM_SUFFIX" title='MLA_TABLE_VIEW_CUSTOM_SUFFIX :: Provides a unique suffix for the "Table View custom:" SQL View'><span class="description">Provides a unique suffix for the "Table View custom:" SQL View</span><pre>MLA_TABLE_VIEW_CUSTOM_SUFFIX</pre></a></li>
 </ul>
 </div>
 <div class="span8">
@@ -1702,8 +1706,9 @@ the "IPTC-NAA Information Interchange Model Version No. 4.1".</p></p>
 The parameters are set up in the _prepare_list_table_query function, and
 any further logic required to translate those values is contained in the filters.</p>
 
-<p>Array index values are: use_postmeta_view, postmeta_key, postmeta_value, patterns,
-detached, orderby, order, mla-metavalue, debug (also in search_parameters)</p></p>
+<p>Array index values are: use_alt_text_view, use_postmeta_view, use_orderby_view,
+alt_text_value, postmeta_key, postmeta_value, patterns, detached,
+orderby, order, mla-metavalue, debug (also in search_parameters)</p></p>
 <table class="table table-bordered"><tr>
 <th>since</th>
 <td>0.30</td>
@@ -1788,7 +1793,7 @@ and mla_fetch_attachment_image_metadata</h2>
 </div></div>
 </div>
 <a name="%24mla_alt_text_view" id="$mla_alt_text_view"> </a><div class="element clickable property private $mla_alt_text_view" data-toggle="collapse" data-target=".$mla_alt_text_view .collapse">
-<h2>Provides a unique name for the ALT Text/custom field SQL View</h2>
+<h2>Provides a unique name for the ALT Text "Search Media" SQL View</h2>
 <pre>$mla_alt_text_view : array</pre>
 <div class="labels"></div>
 <div class="row collapse"><div class="detail-description">
@@ -1877,6 +1882,30 @@ the "IPTC-NAA Information Interchange Model Version No. 4.1".</p></p>
 </tr></table>
 </div></div>
 </div>
+<a name="%24mla_orderby_view" id="$mla_orderby_view"> </a><div class="element clickable property private $mla_orderby_view" data-toggle="collapse" data-target=".$mla_orderby_view .collapse">
+<h2>Provides a unique name for the custom field "orderby" SQL View</h2>
+<pre>$mla_orderby_view : array</pre>
+<div class="labels"></div>
+<div class="row collapse"><div class="detail-description">
+<p class="long_description"></p>
+<table class="table table-bordered"><tr>
+<th>since</th>
+<td>2.15</td>
+</tr></table>
+</div></div>
+</div>
+<a name="%24mla_table_view_custom" id="$mla_table_view_custom"> </a><div class="element clickable property private $mla_table_view_custom" data-toggle="collapse" data-target=".$mla_table_view_custom .collapse">
+<h2>Provides a unique name for the "Table View custom:" SQL View</h2>
+<pre>$mla_table_view_custom : array</pre>
+<div class="labels"></div>
+<div class="row collapse"><div class="detail-description">
+<p class="long_description"></p>
+<table class="table table-bordered"><tr>
+<th>since</th>
+<td>2.15</td>
+</tr></table>
+</div></div>
+</div>
 <a name="%24wp_4dot0_plus" id="$wp_4dot0_plus"> </a><div class="element clickable property private $wp_4dot0_plus" data-toggle="collapse" data-target=".$wp_4dot0_plus .collapse">
 <h2>WordPress version test for $wpdb-&gt;esc_like() Vs esc_sql()</h2>
 <pre>$wp_4dot0_plus : boolean</pre>
@@ -1892,15 +1921,41 @@ the "IPTC-NAA Information Interchange Model Version No. 4.1".</p></p>
 <h3>
 <i class="icon-custom icon-constant"></i> Constants</h3>
 <a name="MLA_ALT_TEXT_VIEW_SUFFIX" id="MLA_ALT_TEXT_VIEW_SUFFIX"> </a><div class="element clickable constant  MLA_ALT_TEXT_VIEW_SUFFIX" data-toggle="collapse" data-target=".MLA_ALT_TEXT_VIEW_SUFFIX .collapse">
-<h2>Provides a unique suffix for the ALT Text/custom field SQL View</h2>
+<h2>Provides a unique suffix for the ALT Text "Search Media" SQL View</h2>
 <pre>MLA_ALT_TEXT_VIEW_SUFFIX </pre>
+<div class="labels"></div>
+<div class="row collapse"><div class="detail-description">
+<p class="long_description"><p>The SQL View is used to filter the Media/Assistant submenu table by
+ALT Text with the Search Media text box.</p></p>
+<table class="table table-bordered"><tr>
+<th>since</th>
+<td>0.40</td>
+</tr></table>
+</div></div>
+</div>
+<a name="MLA_ORDERBY_VIEW_SUFFIX" id="MLA_ORDERBY_VIEW_SUFFIX"> </a><div class="element clickable constant  MLA_ORDERBY_VIEW_SUFFIX" data-toggle="collapse" data-target=".MLA_ORDERBY_VIEW_SUFFIX .collapse">
+<h2>Provides a unique suffix for the custom field "orderby" SQL View</h2>
+<pre>MLA_ORDERBY_VIEW_SUFFIX </pre>
 <div class="labels"></div>
 <div class="row collapse"><div class="detail-description">
 <p class="long_description"><p>The SQL View is used to sort the Media/Assistant submenu table on
 ALT Text and custom field columns.</p></p>
 <table class="table table-bordered"><tr>
 <th>since</th>
-<td>0.40</td>
+<td>2.15</td>
+</tr></table>
+</div></div>
+</div>
+<a name="MLA_TABLE_VIEW_CUSTOM_SUFFIX" id="MLA_TABLE_VIEW_CUSTOM_SUFFIX"> </a><div class="element clickable constant  MLA_TABLE_VIEW_CUSTOM_SUFFIX" data-toggle="collapse" data-target=".MLA_TABLE_VIEW_CUSTOM_SUFFIX .collapse">
+<h2>Provides a unique suffix for the "Table View custom:" SQL View</h2>
+<pre>MLA_TABLE_VIEW_CUSTOM_SUFFIX </pre>
+<div class="labels"></div>
+<div class="row collapse"><div class="detail-description">
+<p class="long_description"><p>The SQL View is used to filter the Media/Assistant submenu table on
+custom field Table Views.</p></p>
+<table class="table table-bordered"><tr>
+<th>since</th>
+<td>2.15</td>
 </tr></table>
 </div></div>
 </div>
@@ -1911,7 +1966,7 @@ ALT Text and custom field columns.</p></p>
 <div class="row"><footer class="span12">
             Template is built using <a href="http://twitter.github.com/bootstrap/">Twitter Bootstrap 2</a> and icons provided by <a href="http://glyphicons.com/">Glyphicons</a>.<br>
             Documentation is powered by <a href="http://www.phpdoc.org/">phpDocumentor 2.0.0a8</a> and<br>
-            generated on 2015-08-16T20:58:57-07:00.<br></footer></div>
+            generated on 2015-10-13T16:50:49-07:00.<br></footer></div>
 </div>
 </body>
 </html>

@@ -97,6 +97,9 @@
 <li class="method private "><a href="#_trash_single_item" title="_trash_single_item :: Move a single item to Trash"><span class="description">Move a single item to Trash</span><pre>_trash_single_item()</pre></a></li>
 <li class="nav-header">
 <i class="icon-custom icon-property"></i> Properties</li>
+<li class="property public "><a href="#%24mla_debug_level" title="$mla_debug_level :: Effective MLA Debug Level, from MLA_DEBUG_LEVEL or override option"><span class="description">Effective MLA Debug Level, from MLA_DEBUG_LEVEL or override option</span><pre>$mla_debug_level</pre></a></li>
+<li class="property public "><a href="#%24original_php_log" title="$original_php_log :: Original PHP error_log path and file"><span class="description">Original PHP error_log path and file</span><pre>$original_php_log</pre></a></li>
+<li class="property public "><a href="#%24original_php_reporting" title="$original_php_reporting :: Original PHP error_reporting value"><span class="description">Original PHP error_reporting value</span><pre>$original_php_reporting</pre></a></li>
 <li class="nav-header private">» Private</li>
 <li class="property private "><a href="#%24mla_debug_file" title="$mla_debug_file :: Debug information output file for mode = 'log'"><span class="description">Debug information output file for mode = 'log'</span><pre>$mla_debug_file</pre></a></li>
 <li class="property private "><a href="#%24mla_debug_messages" title="$mla_debug_messages :: Accumulates debug messages"><span class="description">Accumulates debug messages</span><pre>$mla_debug_messages</pre></a></li>
@@ -121,6 +124,7 @@
 <li class="constant  "><a href="#MLA_ADMIN_SINGLE_TRASH" title="MLA_ADMIN_SINGLE_TRASH :: mla_admin_action value for moving a single item to the trash"><span class="description">mla_admin_action value for moving a single item to the trash</span><pre>MLA_ADMIN_SINGLE_TRASH</pre></a></li>
 <li class="constant  "><a href="#MLA_ADMIN_TERMS_SEARCH" title="MLA_ADMIN_TERMS_SEARCH :: mla_admin_action value for searching taxonomy terms"><span class="description">mla_admin_action value for searching taxonomy terms</span><pre>MLA_ADMIN_TERMS_SEARCH</pre></a></li>
 <li class="constant  "><a href="#MLA_DEBUG_CATEGORY_AJAX" title="MLA_DEBUG_CATEGORY_AJAX :: Constant to log Ajax debug activity"><span class="description">Constant to log Ajax debug activity</span><pre>MLA_DEBUG_CATEGORY_AJAX</pre></a></li>
+<li class="constant  "><a href="#MLA_DEBUG_CATEGORY_LANGUAGE" title="MLA_DEBUG_CATEGORY_LANGUAGE :: Constant to log WPML/Polylang action/filter activity"><span class="description">Constant to log WPML/Polylang action/filter activity</span><pre>MLA_DEBUG_CATEGORY_LANGUAGE</pre></a></li>
 <li class="constant  "><a href="#MLA_DEVELOPMENT_VERSION" title="MLA_DEVELOPMENT_VERSION :: Current date for Development Version, empty for production versions"><span class="description">Current date for Development Version, empty for production versions</span><pre>MLA_DEVELOPMENT_VERSION</pre></a></li>
 <li class="constant  "><a href="#STYLESHEET_SLUG" title="STYLESHEET_SLUG :: Slug for registering and enqueueing plugin style sheet"><span class="description">Slug for registering and enqueueing plugin style sheet</span><pre>STYLESHEET_SLUG</pre></a></li>
 </ul>
@@ -807,6 +811,42 @@ Defined as public because it's an action.</p></p>
 </div>
 <h3>
 <i class="icon-custom icon-property"></i> Properties</h3>
+<a name="%24mla_debug_level" id="$mla_debug_level"> </a><div class="element clickable property public $mla_debug_level" data-toggle="collapse" data-target=".$mla_debug_level .collapse">
+<h2>Effective MLA Debug Level, from MLA_DEBUG_LEVEL or override option</h2>
+<pre>$mla_debug_level : integer</pre>
+<div class="labels"></div>
+<div class="row collapse"><div class="detail-description">
+<p class="long_description"></p>
+<table class="table table-bordered"><tr>
+<th>since</th>
+<td>2.15</td>
+</tr></table>
+</div></div>
+</div>
+<a name="%24original_php_log" id="$original_php_log"> </a><div class="element clickable property public $original_php_log" data-toggle="collapse" data-target=".$original_php_log .collapse">
+<h2>Original PHP error_log path and file</h2>
+<pre>$original_php_log : string</pre>
+<div class="labels"></div>
+<div class="row collapse"><div class="detail-description">
+<p class="long_description"></p>
+<table class="table table-bordered"><tr>
+<th>since</th>
+<td>2.15</td>
+</tr></table>
+</div></div>
+</div>
+<a name="%24original_php_reporting" id="$original_php_reporting"> </a><div class="element clickable property public $original_php_reporting" data-toggle="collapse" data-target=".$original_php_reporting .collapse">
+<h2>Original PHP error_reporting value</h2>
+<pre>$original_php_reporting : string</pre>
+<div class="labels"></div>
+<div class="row collapse"><div class="detail-description">
+<p class="long_description"></p>
+<table class="table table-bordered"><tr>
+<th>since</th>
+<td>2.15</td>
+</tr></table>
+</div></div>
+</div>
 <a name="%24mla_debug_file" id="$mla_debug_file"> </a><div class="element clickable property private $mla_debug_file" data-toggle="collapse" data-target=".$mla_debug_file .collapse">
 <h2>Debug information output file for mode = 'log'</h2>
 <pre>$mla_debug_file : string</pre>
@@ -1061,6 +1101,18 @@ Defined as public because it's an action.</p></p>
 </tr></table>
 </div></div>
 </div>
+<a name="MLA_DEBUG_CATEGORY_LANGUAGE" id="MLA_DEBUG_CATEGORY_LANGUAGE"> </a><div class="element clickable constant  MLA_DEBUG_CATEGORY_LANGUAGE" data-toggle="collapse" data-target=".MLA_DEBUG_CATEGORY_LANGUAGE .collapse">
+<h2>Constant to log WPML/Polylang action/filter activity</h2>
+<pre>MLA_DEBUG_CATEGORY_LANGUAGE : integer</pre>
+<div class="labels"></div>
+<div class="row collapse"><div class="detail-description">
+<p class="long_description"></p>
+<table class="table table-bordered"><tr>
+<th>since</th>
+<td>2.15</td>
+</tr></table>
+</div></div>
+</div>
 <a name="MLA_DEVELOPMENT_VERSION" id="MLA_DEVELOPMENT_VERSION"> </a><div class="element clickable constant  MLA_DEVELOPMENT_VERSION" data-toggle="collapse" data-target=".MLA_DEVELOPMENT_VERSION .collapse">
 <h2>Current date for Development Version, empty for production versions</h2>
 <pre>MLA_DEVELOPMENT_VERSION : string</pre>
@@ -1092,7 +1144,7 @@ Defined as public because it's an action.</p></p>
 <div class="row"><footer class="span12">
             Template is built using <a href="http://twitter.github.com/bootstrap/">Twitter Bootstrap 2</a> and icons provided by <a href="http://glyphicons.com/">Glyphicons</a>.<br>
             Documentation is powered by <a href="http://www.phpdoc.org/">phpDocumentor 2.0.0a8</a> and<br>
-            generated on 2015-08-16T20:58:57-07:00.<br></footer></div>
+            generated on 2015-10-13T16:50:49-07:00.<br></footer></div>
 </div>
 </body>
 </html>
