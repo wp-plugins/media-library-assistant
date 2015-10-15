@@ -39,6 +39,7 @@
           <fieldset class="inline-edit-col-left">
             <div class="inline-edit-col">
               <h4>[+Quick Edit+]</h4>
+			  <div id="item_thumbnail"></div>
               <label> <span class="title">[+Title+]</span> <span class="input-text-wrap">
                 <input type="text" name="post_title" class="ptitle" value="" />
                 </span> </label>
