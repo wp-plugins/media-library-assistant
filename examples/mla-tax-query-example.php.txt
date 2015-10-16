@@ -1,7 +1,7 @@
 <?php
 /**
  * Provides a custom example of hooking the filters provided by the [mla_gallery] shortcode:
- *
+ *    
  *  - In the "mla_gallery_arguments" filter is an example of detecting MLA pagination, e.g.,
  *    mla_output="paginate_links,prev_next and supplying the count required to accomodate it.
  *
@@ -11,19 +11,22 @@
  *  - The "single_query()" and "double_query()" functions provide simplified, higher-performance
  *    alternatives to the standard WordPress tax_query.
  *
+ * A custom shortcode parameter, "my_custom_sql", activates the logic in this plugin. See the
+ * "mla_gallery_query_arguments" function for documentation on the parameter.
+ *
  * @package MLA tax query Example
- * @version 1.01
+ * @version 1.02
  */
 
 /*
 Plugin Name: MLA tax query Example
 Plugin URI: http://fairtradejudaica.org/media-library-assistant-a-wordpress-plugin/
-Description: Provides an example of hooking the filters provided by the [mla_gallery] shortcode
+Description: Replaces the WP_Query tax_query with a more efficient, direct SQL query
 Author: David Lingren
-Version: 1.01
+Version: 1.02
 Author URI: http://fairtradejudaica.org/our-story/staff/
 
-Copyright 2013, 2014 David Lingren
+Copyright 2013 - 2015 David Lingren
 
 	This program is free software; you can redistribute it and/or modify
 	it under the terms of the GNU General Public License as published by
@@ -42,7 +45,7 @@ Copyright 2013, 2014 David Lingren
 /**
  * Class MLA tax query Example hooks three of the filters provided by the [mla_gallery] shortcode
  *
- * Call it anything you want, but give it an unlikely and hopefully unique name. Hiding everything
+ * Call it anything you want, but give it an unlikely and hopefully unique name. Hiding enerything
  * else inside a class means this is the only name you have to worry about.
  *
  * @package MLA tax query Example
@@ -70,9 +73,9 @@ class MLATaxQueryExample {
 		 * $priority - default 10; lower runs earlier, higher runs later
 		 * $accepted_args - number of arguments your function accepts
 		 */
-		add_filter( 'mla_gallery_attributes', 'MLATaxQueryExample::mla_gallery_attributes_filter', 10, 1 );
-		add_filter( 'mla_gallery_arguments', 'MLATaxQueryExample::mla_gallery_arguments_filter', 10, 1 );
-		add_filter( 'mla_gallery_query_arguments', 'MLATaxQueryExample::mla_gallery_query_arguments_filter', 10, 1 );
+		add_filter( 'mla_gallery_attributes', 'MLATaxQueryExample::mla_gallery_attributes', 10, 1 );
+		add_filter( 'mla_gallery_arguments', 'MLATaxQueryExample::mla_gallery_arguments', 10, 1 );
+		add_filter( 'mla_gallery_query_arguments', 'MLATaxQueryExample::mla_gallery_query_arguments', 10, 1 );
 	}
 
 	/**
@@ -83,7 +86,16 @@ class MLATaxQueryExample {
 	 * @var	array
 	 */
 	private static $shortcode_attributes = array();
-	
+
+	/**
+	 * Save the keyword search attributes, if present
+	 *
+	 * @since 1.02
+	 *
+	 * @var	array
+	 */
+	private static $search_attributes = array();
+
 	/**
 	 * MLA Gallery (Display) Attributes
 	 *
@@ -99,19 +111,104 @@ class MLATaxQueryExample {
 	 *
 	 * @return	array	updated shortcode attributes
 	 */
-	public static function mla_gallery_attributes_filter( $shortcode_attributes ) {
+	public static function mla_gallery_attributes( $shortcode_attributes ) {
 		/*
 		 * Uncomment the error_log statements in any of the filters to see what's passed in
 		 */
-		//error_log( 'MLATaxQueryExample::mla_gallery_attributes_filter $shortcode_attributes = ' . var_export( $shortcode_attributes, true ), 0 );
-		
+		//error_log( __LINE__ . ' MLATaxQueryExample::mla_gallery_attributes $shortcode_attributes = ' . var_export( $shortcode_attributes, true ), 0 );
+
 		/*
 		 * Save the attributes for use in the later filters
 		 */
 		self::$shortcode_attributes = $shortcode_attributes;
 
+		/*
+		 * See if we are involved in processing this shortcode
+		 */
+		if ( isset( self::$shortcode_attributes['my_custom_sql'] ) ) {
+			unset( $shortcode_attributes['my_custom_sql'] );
+
+			// Determine output type; pagination or gallery display
+			if ( isset( self::$shortcode_attributes['mla_output'] ) ) {
+				$output_parameters = array_map( 'strtolower', array_map( 'trim', explode( ',', self::$shortcode_attributes['mla_output'] ) ) );
+				self::$shortcode_attributes['is_pagination'] = in_array( $output_parameters[0], array( 'previous_page', 'next_page', 'paginate_links' ) ); 
+			} else {
+				self::$shortcode_attributes['is_pagination'] = false; 
+			}
+
+			// Parameters passed to the posts_search filter function in MLAData
+			self::$search_attributes = array( 'debug' => 'none', 'sentence' => false, 'exact' => false, 'mla_search_connector' => 'AND' );
+			if ( ! empty( self::$shortcode_attributes['s'] ) ) {
+
+				foreach ( self::$shortcode_attributes as $key => $value ) {
+					switch ( $key ) {
+					case 'sentence':
+					case 'exact':
+						if ( ! empty( $value ) && ( 'true' == strtolower( $value ) ) ) {
+							self::$search_attributes[ $key ] = true;
+						} else {
+							self::$search_attributes[ $key ] = false;
+						}
+
+						unset( $shortcode_attributes[ $key ] );
+						break;
+					case 'mla_search_connector':
+						if ( ! empty( $value ) && ( 'OR' == strtoupper( $value ) ) ) {
+							self::$search_attributes[ $key ] = 'OR';
+						} else {
+							self::$search_attributes[ $key ] = 'AND';
+						}
+
+						unset( $shortcode_attributes[ $key ] );
+						break;
+					case 'mla_search_fields':
+						if ( ! empty( $value ) ) {
+							self::$search_attributes[ $key ] = $value;
+						}
+
+						unset( $shortcode_attributes[ $key ] );
+						break;
+					case 's':
+						self::$search_attributes[ $key ] = $value;
+						unset( $shortcode_attributes[ $key ] );
+						break;
+					default:
+						// ignore anything else
+					} // switch $key
+				} // foreach $shortcode_attributes 
+
+				// mla_terms_taxonomies is shared with keyword search.
+				self::$search_attributes['mla_terms_search']['taxonomies'] = MLAOptions::mla_supported_taxonomies( 'term-search' );
+
+				if ( empty( self::$search_attributes['mla_search_fields'] ) ) {
+					self::$search_attributes['mla_search_fields'] = array( 'title', 'content' );
+				} else {
+					self::$search_attributes['mla_search_fields'] = array_filter( array_map( 'trim', explode( ',', self::$search_attributes['mla_search_fields'] ) ) );
+					self::$search_attributes['mla_search_fields'] = array_intersect( array( 'title', 'content', 'excerpt', 'name' ), self::$search_attributes['mla_search_fields'] );
+				}
+			}
+
+			// Determine query type
+			if ( isset( self::$shortcode_attributes['post_mime_type'] ) || isset( self::$search_attributes['s'] ) ) {
+				self::$shortcode_attributes['is_double'] = true;
+			} else {
+				$my_query_vars = self::$shortcode_attributes['my_custom_sql'];
+				if ( empty( $my_query_vars ) ) {
+					$my_query_vars = array();
+				} elseif ( is_string( $my_query_vars ) ) {
+					$my_query_vars = shortcode_parse_atts( $my_query_vars );
+				}
+
+				if ( isset( $my_query_vars['order'] ) || isset( $my_query_vars['orderby'] ) ) {
+					self::$shortcode_attributes['is_double'] = true;
+				} else {
+					self::$shortcode_attributes['is_double'] = false;
+				}
+			}
+		} // my_custom_sql
+
 		return $shortcode_attributes;
-	} // mla_gallery_attributes_filter
+	} // mla_gallery_attributes
 
 	/**
 	 * Save the shortcode arguments
@@ -121,7 +218,7 @@ class MLATaxQueryExample {
 	 * @var	array
 	 */
 	private static $all_display_parameters = array();
-	
+
 	/**
 	 * MLA Gallery (Display) Arguments
 	 *
@@ -137,47 +234,26 @@ class MLATaxQueryExample {
 	 *
 	 * @return	array	updated gallery display arguments
 	 */
-	public static function mla_gallery_arguments_filter( $all_display_parameters ) {
+	public static function mla_gallery_arguments( $all_display_parameters ) {
 		if ( isset( self::$shortcode_attributes['my_custom_sql'] ) ) {
 			/*
 			 * Determine output type; if it's pagination, count the rows and add the result
 			 * to the parameters. See the "single_query()" and "double_query()" functions.
 			 */
-			$output_parameters = array_map( 'strtolower', array_map( 'trim', explode( ',', $all_display_parameters['mla_output'] ) ) );
-			$is_pagination = in_array( $output_parameters[0], array( 'previous_page', 'next_page', 'paginate_links' ) ); 
-	
-			if ( $is_pagination ) {
-				// Determine query type
-				if ( isset( self::$shortcode_attributes['post_mime_type'] ) ) {
-					$is_double = true;
-				} else {
-					$my_query_vars = self::$shortcode_attributes['my_custom_sql'];
-					if ( empty( $my_query_vars ) ) {
-						$my_query_vars = array();
-					} elseif ( is_string( $my_query_vars ) ) {
-						$my_query_vars = shortcode_parse_atts( $my_query_vars );
-					}
-
-					if ( isset( $my_query_vars['order'] ) || isset( $my_query_vars['orderby'] ) ) {
-						$is_double = true;
-					} else {
-						$is_double = false;
-					}
-				}
-
-				if ( $is_double ) {
+			if ( self::$shortcode_attributes['is_pagination'] ) {
+				if ( self::$shortcode_attributes['is_double'] ) {
 					$all_display_parameters['mla_paginate_rows'] = self::double_query( NULL, true );
 				} else {
 					$all_display_parameters['mla_paginate_rows'] = self::single_query( NULL, true );
 				}
 			}
 		} // my_custom_sql present
-		
-		//error_log( 'MLATaxQueryExample::mla_gallery_arguments_filter $all_display_parameters = ' . var_export( $all_display_parameters, true ), 0 );
+
+		//error_log( __LINE__ . ' MLATaxQueryExample::mla_gallery_arguments $all_display_parameters = ' . var_export( $all_display_parameters, true ), 0 );
 
 		self::$all_display_parameters = $all_display_parameters;
 		return $all_display_parameters;
-	} // mla_gallery_arguments_filter
+	} // mla_gallery_arguments
 
 	/**
 	 * MLA Gallery Query Arguments
@@ -191,7 +267,7 @@ class MLATaxQueryExample {
 	 *
 	 * @return	array	updated attachment query arguments
 	 */
-	public static function mla_gallery_query_arguments_filter( $all_query_parameters ) {
+	public static function mla_gallery_query_arguments( $all_query_parameters ) {
 		/*
 		 * This example executes a custom SQL query that is much simpler than the usual WordPress
 		 * WP_Query arguments. See the "single_query()" and "double_query()" functions.
@@ -207,30 +283,12 @@ class MLATaxQueryExample {
 		 * - include_children=true
 		 * - order and/or orderby
 		 *
-		 * The shortcode can also contain the post_mime_type parameter to further filter
-		 * the results. The double_query() function is called when the request contains
-		 * either post_mime_type or orderby/order parameters.
+		 * The shortcode can also contain the post_mime_type and/or keyword search parameters
+		 * to further filter the results. The double_query() function is called when the request
+		 * contains post_mime_type, keyword search or orderby/order parameters.
 		 */		
 		if ( isset( self::$shortcode_attributes['my_custom_sql'] ) ) {
-			// Determine query type
-			if ( isset( self::$shortcode_attributes['post_mime_type'] ) ) {
-				$is_double = true;
-			} else {
-				$my_query_vars = self::$shortcode_attributes['my_custom_sql'];
-				if ( empty( $my_query_vars ) ) {
-					$my_query_vars = array();
-				} elseif ( is_string( $my_query_vars ) ) {
-					$my_query_vars = shortcode_parse_atts( $my_query_vars );
-				}
-
-				if ( isset( $my_query_vars['order'] ) || isset( $my_query_vars['orderby'] ) ) {
-					$is_double = true;
-				} else {
-					$is_double = false;
-				}
-			}
-
-			if ( $is_double ) {
+			if ( self::$shortcode_attributes['is_double'] ) {
 				$all_query_parameters = self::double_query( $all_query_parameters );
 			} else {
 				$all_query_parameters = self::single_query( $all_query_parameters );
@@ -238,8 +296,8 @@ class MLATaxQueryExample {
 		}
 
 		return $all_query_parameters;
-	} // mla_gallery_query_arguments_filter
-	
+	} // mla_gallery_query_arguments
+
 	/**
 	 * Custom query support function, taxonomy terms only
 	 *
@@ -258,8 +316,8 @@ class MLATaxQueryExample {
 	 */
 	private static function single_query( $all_query_parameters, $is_pagination = false ) {
 		global $wpdb;
-		//error_log( 'MLATaxQueryExample::single_query $all_query_parameters = ' . var_export( $all_query_parameters, true ), 0 );
-		//error_log( 'MLATaxQueryExample::single_query $is_pagination = ' . var_export( $is_pagination, true ), 0 );
+		//error_log( __LINE__ . ' MLATaxQueryExample::single_query $all_query_parameters = ' . var_export( $all_query_parameters, true ), 0 );
+		//error_log( __LINE__ . ' MLATaxQueryExample::single_query $is_pagination = ' . var_export( $is_pagination, true ), 0 );
 
 		/*
 		 * This example executes a custom SQL query that is much simpler than the usual
@@ -273,7 +331,7 @@ class MLATaxQueryExample {
 		 * are ONLY used for Media Library image items, so we can omit the term_relationships/posts 
 		 * JOIN clause for tests on post_mime_type, post_type and post_status.
 		 */		
-		
+
 		// Make sure $my_query_vars is an array, even if it's empty
 		$my_query_vars = self::$shortcode_attributes['my_custom_sql'];
 		if ( empty( $my_query_vars ) ) {
@@ -284,14 +342,14 @@ class MLATaxQueryExample {
 
 		// Start with empty parameter values
 		$ttids = array();
-		
+
 		// Find taxonomy argument, if present, and collect terms
 		$taxonomies = get_taxonomies( array( 'object_type' => array( 'attachment' ) ), 'names' );
 		foreach( $taxonomies as $taxonomy ) {
 			if ( empty( $my_query_vars[ $taxonomy ] ) ) {
 				continue;
 			}
-			
+
 			// Found the taxonomy; collect the terms
 			$include_children =  isset( $my_query_vars['include_children'] ) && 'true' == strtolower( trim( $my_query_vars['include_children'] ) );
 
@@ -309,16 +367,16 @@ class MLATaxQueryExample {
 
 				if ( $include_children ) {
 					$args = array( 'child_of' => $term->term_id, 'hide_empty' => false );
-					$children = get_terms( $taxonomy, $args );
+					$children = get_terms( 'attachment_category', $args );
 					foreach( $children as $child ) {
 						$ttids[] = $child->term_taxonomy_id;
 					}
 				} // include_children
 			} // $term
-			
+
 			break;
 		}
-		
+
 		// Build an array of SQL clauses
 		$query = array();
 		$query_parameters = array();
@@ -339,9 +397,9 @@ class MLATaxQueryExample {
 				$placeholders[] = '%s';
 				$query_parameters[] = '0';
 		}
-			
+
 		$query[] = 'WHERE ( tr.term_taxonomy_id IN (' . join( ',', $placeholders ) . ') )';
-		
+
 		// ORDER BY clause would go here, if needed
 
 		if ( ! $is_pagination ) {
@@ -360,7 +418,7 @@ class MLATaxQueryExample {
 			} else {
 				$paged = $all_query_parameters['paged'];
 			}
-			
+
 			if ( empty( $paged ) ) {
 				$paged = 1;
 			} elseif ( 'current' == strtolower( $paged ) ) {
@@ -393,7 +451,7 @@ class MLATaxQueryExample {
 				$query_parameters[] = $offset;
 				$query_parameters[] = 0x7FFFFFFF; // big number!
 			}
-			
+
 			$all_query_parameters['nopaging'] = true;
 			$all_query_parameters['numberposts'] = 0;
 			$all_query_parameters['posts_per_page'] = 0;
@@ -406,10 +464,10 @@ class MLATaxQueryExample {
 		$query =  join(' ', $query);
 		if ( $is_pagination ) {
 			$count = $wpdb->get_var( $wpdb->prepare( $query, $query_parameters ) );
-			//error_log( 'MLATaxQueryExample::single_query $count = ' . var_export( $count, true ), 0 );
+			//error_log( __LINE__ . ' MLATaxQueryExample::single_query $count = ' . var_export( $count, true ), 0 );
 			return $count;
 		}
-		
+
 		$ids = $wpdb->get_results( $wpdb->prepare( $query, $query_parameters ) );
 		if ( is_array( $ids ) ) {
 			$includes = array();
@@ -421,7 +479,7 @@ class MLATaxQueryExample {
 			$all_query_parameters['include'] = '1'; // return no images
 		}
 
-		//error_log( 'MLATaxQueryExample::single_query $all_query_parameters = ' . var_export( $all_query_parameters, true ), 0 );
+		//error_log( __LINE__ . ' MLATaxQueryExample::single_query $all_query_parameters = ' . var_export( $all_query_parameters, true ), 0 );
 		return $all_query_parameters;
 	} // single_query
 
@@ -447,17 +505,19 @@ class MLATaxQueryExample {
 	 */
 	private static function double_query( $all_query_parameters, $is_pagination = false ) {
 		global $wpdb;
-		//error_log( 'MLATaxQueryExample::double_query $all_query_parameters = ' . var_export( $all_query_parameters, true ), 0 );
-		//error_log( 'MLATaxQueryExample::double_query $is_pagination = ' . var_export( $is_pagination, true ), 0 );
+		//error_log( __LINE__ . ' MLATaxQueryExample::double_query $all_query_parameters = ' . var_export( $all_query_parameters, true ), 0 );
+		//error_log( __LINE__ . ' MLATaxQueryExample::double_query $is_pagination = ' . var_export( $is_pagination, true ), 0 );
 
 		/*
 		 * This example executes two custom SQL queries that are more efficient than the usual
 		 * WordPress WP_Query arguments.
 		 *
-		 * The first query is on taxonomy and term(s) only, yielding a list of object_id (post ID) values.
-		 * The second query filters the list by post_mime_type, orders it and paginates it.
+		 * The first query is on taxonomy and term(s) only, yielding a list of object_id
+		 * (post ID) values.
+		 * The second query filters the list by post_mime_type and/or keyword search, orders
+		 * it and paginates it.
 		 */		
-		
+
 		// Make sure $my_query_vars is an array, even if it's empty
 		$my_query_vars = self::$shortcode_attributes['my_custom_sql'];
 		if ( empty( $my_query_vars ) ) {
@@ -468,14 +528,14 @@ class MLATaxQueryExample {
 
 		// Start with empty parameter values
 		$ttids = array();
-		
+
 		// Find taxonomy argument, if present, and collect terms
 		$taxonomies = get_taxonomies( array( 'object_type' => array( 'attachment' ) ), 'names' );
 		foreach( $taxonomies as $taxonomy ) {
 			if ( empty( $my_query_vars[ $taxonomy ] ) ) {
 				continue;
 			}
-			
+
 			// Found the taxonomy; collect the terms
 			$include_children =  isset( $my_query_vars['include_children'] ) && 'true' == strtolower( trim( $my_query_vars['include_children'] ) );
 
@@ -499,10 +559,10 @@ class MLATaxQueryExample {
 					}
 				} // include_children
 			} // $term
-			
+
 			break;
 		}
-		
+
 		// Build an array of SQL clauses for the term_relationships query
 		$query = array();
 		$query_parameters = array();
@@ -519,7 +579,7 @@ class MLATaxQueryExample {
 				$placeholders[] = '%s';
 				$query_parameters[] = '0';
 		}
-			
+
 		$query[] = 'WHERE ( tr.term_taxonomy_id IN (' . join( ',', $placeholders ) . ') )';
 		$query =  join(' ', $query);
 		$ids = $wpdb->get_results( $wpdb->prepare( $query, $query_parameters ) );
@@ -553,7 +613,7 @@ class MLATaxQueryExample {
 				$placeholders[] = '%s';
 				$query_parameters[] = '0';
 		}
-			
+
 		$query[] = 'WHERE ( ( p.ID IN (' . join( ',', $placeholders ) . ') )';
 
 		if ( ! empty( self::$shortcode_attributes['post_mime_type'] ) ) {
@@ -563,7 +623,24 @@ class MLATaxQueryExample {
 		} else {
 			$query[] = "AND (p.post_mime_type LIKE 'image/%%')";
 		}
-		
+
+		if ( isset( self::$search_attributes['s'] ) ) {
+			global $wpdb;
+			$prefix = $wpdb->posts . '.';
+
+			//error_log( __LINE__ . ' MLATaxQueryExample::double_query self::$search_attributes = ' . var_export( self::$search_attributes, true ), 0 );
+
+			MLAData::$search_parameters = self::$search_attributes;
+
+			$query_object = (object) array();
+			$search_clause = MLAData::mla_query_posts_search_filter( '', $query_object );
+			$search_clause = str_replace( array( $prefix, '%' ), array( 'p.', '%%' ), $search_clause );
+			//error_log( __LINE__ . ' MLATaxQueryExample::double_query $search_clause = ' . var_export( $search_clause, true ), 0 );
+			$query[] = $search_clause;
+
+			MLAData::$search_parameters = array( 'debug' => 'none' );
+		}
+
 		// Close the WHERE clause
 		$query[] = ')';
 
@@ -576,7 +653,7 @@ class MLATaxQueryExample {
 			$orderby = 'none';
 		}
 		$all_query_parameters['orderby'] = 'post__in';
-		
+
 		if ( ! empty( $my_query_vars['order'] ) ) {
 			$order = strtoupper( $my_query_vars['order'] );
 			if ( 'DESC' != $order ) {
@@ -586,7 +663,7 @@ class MLATaxQueryExample {
 			$order = 'ASC';
 		}
 		$all_query_parameters['order'] = 'ASC';
-		
+
 		switch ( $orderby ) {
 			case 'id':
 				$query[] = 'ORDER BY p.ID ' . $order;
@@ -652,7 +729,7 @@ class MLATaxQueryExample {
 			} else {
 				$paged = $all_query_parameters['paged'];
 			}
-			
+
 			if ( empty( $paged ) ) {
 				$paged = 1;
 			} elseif ( 'current' == strtolower( $paged ) ) {
@@ -685,7 +762,7 @@ class MLATaxQueryExample {
 				$query_parameters[] = $offset;
 				$query_parameters[] = 0x7FFFFFFF; // big number!
 			}
-			
+
 			$all_query_parameters['nopaging'] = true;
 			$all_query_parameters['numberposts'] = 0;
 			$all_query_parameters['posts_per_page'] = 0;
@@ -696,12 +773,16 @@ class MLATaxQueryExample {
 		} // ! is_pagination
 
 		$query =  join(' ', $query);
+		//error_log( __LINE__ . ' MLATaxQueryExample::double_query $query = ' . var_export( $query, true ), 0 );
+		//error_log( __LINE__ . ' MLATaxQueryExample::double_query $query_parameters = ' . var_export( $query_parameters, true ), 0 );
 		if ( $is_pagination ) {
 			$count = $wpdb->get_var( $wpdb->prepare( $query, $query_parameters ) );
+			//error_log( __LINE__ . ' MLATaxQueryExample::double_query $count = ' . var_export( $count, true ), 0 );
 			return $count;
 		}
-		
+
 		$ids = $wpdb->get_results( $wpdb->prepare( $query, $query_parameters ) );
+		//error_log( __LINE__ . ' MLATaxQueryExample::double_query $ids = ' . var_export( $ids, true ), 0 );
 		if ( is_array( $ids ) ) {
 			$includes = array();
 			foreach ( $ids as $id ) {
@@ -712,7 +793,7 @@ class MLATaxQueryExample {
 			$all_query_parameters['include'] = '1'; // return no items
 		}
 
-		//error_log( 'MLATaxQueryExample::double_query $all_query_parameters = ' . var_export( $all_query_parameters, true ), 0 );
+		//error_log( __LINE__ . ' MLATaxQueryExample::double_query $all_query_parameters = ' . var_export( $all_query_parameters, true ), 0 );
 		return $all_query_parameters;
 	} // double_query
 } // Class MLATaxQueryExample

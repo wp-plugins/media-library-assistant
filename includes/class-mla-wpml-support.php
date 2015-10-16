@@ -1885,6 +1885,11 @@ class MLA_WPML_Table {
 				$content .= '<img style="padding:1px;margin:2px;" border="0" src="' . ICL_PLUGIN_URL . '/res/img/' . $img . '" alt="' . $alt . '" width="16" height="16" />';
 				$content .= '</a>';
 			} // foreach language
+			
+			// Is this the original item or a translation?
+			if ( false && isset( $item->mla_item_wpml_media_processed ) && ( '1' == $item->mla_item_wpml_media_processed ) ) {
+				$content .= 'T';
+			}
 		}
 
 		return $content;
