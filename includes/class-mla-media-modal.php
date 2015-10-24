@@ -556,7 +556,7 @@ class MLAModal {
 	 */
 	public static function mla_wp_enqueue_media_action( ) {
 		global $wp_locale;
-		
+
 		/*
 		 * If we know what screen we're on we can test our enabling options
 		 */
@@ -1179,7 +1179,7 @@ class MLAModal {
 			} else {
 				wp_register_style( MLA::STYLESHEET_SLUG . '-terms-search', MLA_PLUGIN_URL . 'css/mla-style-terms-search.css', false, MLA::CURRENT_MLA_VERSION );
 			}
-			
+
 			wp_enqueue_style( MLA::STYLESHEET_SLUG . '-terms-search' );
 
 			wp_enqueue_script( MLA::JAVASCRIPT_INLINE_EDIT_SLUG . '-terms-search', MLA_PLUGIN_URL . "js/mla-terms-search-scripts{$suffix}.js", 

@@ -93,7 +93,7 @@ class MLAjhdeanMappingHooksExample {
 		if ( ! in_array( $category, array( 'iptc_exif_mapping', 'iptc_exif_standard_mapping' ) ) ) {
 			return $updates;
 		}
-		
+
 		/*
 		 * If $updates[ 'post_title' ] is set, some mapping rule
 		 * has been set up, so we respect the result. If not,
@@ -116,17 +116,17 @@ class MLAjhdeanMappingHooksExample {
 			'option' => 'raw'
 		);
 		$object_name = trim( MLAOptions::mla_get_data_source( $post_id, 'single_attachment_mapping', $my_setting, NULL ) );
-		
+
 		if ( ! empty( $object_name ) ) {
 			$object_link = strtolower( str_replace( array( ' ', '-', '_', '.' ), '-', $object_name ) );
 
 			$new_title = sprintf( '<a id="detail-title" target="blank" href="http://www.jhdstaging.jeffreyhdean.com/portfolio/%1$s/"> %2$s </a>', $object_link, $object_name );
-			
+
 			if ( $old_value != $new_title ) {
 				$updates[ 'post_title' ] = $new_title;
 			}
 		}
-		
+
 		return $updates;
 	} // mla_mapping_updates_filter
 } //MLAjhdeanMappingHooksExample

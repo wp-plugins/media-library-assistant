@@ -9,7 +9,7 @@ var jQuery,
 			inProcess: false,
 			doCancel: false
 		},
-	
+
 		// Utility functions
 		utility: {
 			getId : function( o ) {
@@ -18,7 +18,7 @@ var jQuery,
 				return parts[ parts.length - 1 ];
 			}
 		},
-	
+
 		// Components
 		setParent: null,
 		inlineEditAttachment: null
@@ -135,7 +135,16 @@ var jQuery,
 			this.revert();
 
 			$('#bulk-edit td').attr('colspan', $( 'th:visible, td:visible', '.widefat:first thead' ).length);
-			$('table.widefat tbody').prepend( $('#bulk-edit') );
+			/*
+			 * Insert the editor at the top of the table with an empty row above
+			 * in WP 4.2+ to maintain zebra striping.
+			 */
+			if ( mla.settings.useSpinnerClass ) {
+				$('table.widefat tbody').prepend( $('#bulk-edit') ).prepend('<tr class="hidden"></tr>');
+			} else {
+				$('table.widefat tbody').prepend( $('#bulk-edit') );
+			}
+
 			$('#bulk-edit').addClass('inline-editor').show();
 
 			$('tbody th.check-column input[type="checkbox"]').each(function(){
@@ -187,7 +196,7 @@ var jQuery,
 				success: 0,
 				failure: 0
 			};
-			
+
 			//mla.bulkEdit.ids = []; // clone doesn't do this.
 			mla.bulkEdit.chunkSize = +mla.settings.bulkChunkSize;
 			mla.bulkEdit.targetName = e.target.name;
@@ -213,7 +222,7 @@ var jQuery,
 			$('#bulk-progress').addClass('inline-editor').show();
 			$('#cb-select-all-1' ).removeAttr( 'checked' );
 			$('#cb-select-all-2' ).removeAttr( 'checked' );
-			
+
 			$('tbody th.check-column input[type="checkbox"]').each(function(){
 				if ( $(this).prop('checked') ) {
 					c = false;
@@ -271,50 +280,50 @@ var jQuery,
 
 			params = $.param( params ) + '&' + mla.bulkEdit.fields;
 			//console.log( params );
-			
+
 			// make ajax request
 			mla.bulkEdit.inProcess = true;
-			
+
 			if ( mla.settings.useSpinnerClass ) {
 				spinner.addClass("is-active");
 			} else {
 				spinner.show();
 			}
-			
+
 			statusMessage = mla.settings.bulkWaiting + ': ' + mla.bulkEdit.waiting
 				+ ', ' + mla.settings.bulkComplete + ': ' + mla.bulkEdit.complete
 				+ ', ' + mla.settings.bulkUnchanged + ': ' + mla.bulkEdit.unchanged
 				+ ', ' + mla.settings.bulkSuccess + ': ' + mla.bulkEdit.success
 				+ ', ' + mla.settings.bulkFailure + ': ' + mla.bulkEdit.failure;
 			results.html( statusMessage ).show();
-			
+
 			$.ajax( ajaxurl, {
 				type: 'POST',
 				data: params,
 				dataType: 'json'
 			}).always( function() {
-				
+
 				if ( mla.settings.useSpinnerClass ) {
 					spinner.removeClass("is-active");
 				} else {
 					spinner.hide();
 				}
-				
+
 			}).done( function( response, status ) {
 					var responseData = 'no response.data', responseMessage, items;
-					
+
 					if ( mla.settings.useSpinnerClass ) {
 						spinner.removeClass("is-active");
 					} else {
 						spinner.hide();
 					}
-					
+
 					if ( response ) {
 						if ( ! response.success ) {
 							if ( response.responseData ) {
 								responseData = response.data;
 							}
-							
+
 							results.html( JSON.stringify( response ) ).show();
 							mla.bulkEdit.offset = mla.bulkEdit.idsCount; // Stop
 						} else {
@@ -328,17 +337,17 @@ var jQuery,
 									result = response.data.item_results[ id ]['result'];
 									$( this ).html( title + ' (' + id + ') - ' + result );
 								}
-								
+
 								$( '#attachment-' + id ).remove();
 							});
-							
+
 							$( '#bulk-progress-complete' ).append( items );
 							mla.bulkEdit.complete += mla.bulkEdit.running;
 							mla.bulkEdit.running = 0;
 							mla.bulkEdit.unchanged += response.data.unchanged;
 							mla.bulkEdit.success += response.data.success;
 							mla.bulkEdit.failure += response.data.failure;
-							
+
 							responseMessage = mla.settings.bulkWaiting + ': ' + mla.bulkEdit.waiting
 								+ ', ' + mla.settings.bulkComplete + ': ' + mla.bulkEdit.complete
 								+ ', ' + mla.settings.bulkUnchanged + ': ' + mla.bulkEdit.unchanged
@@ -350,7 +359,7 @@ var jQuery,
 						results.html( mla.settings.error ).show();
 						mla.bulkEdit.offset = mla.bulkEdit.idsCount; // Stop
 					}
-					
+
 					if ( mla.bulkEdit.doCancel ) {
 						results.html( mla.settings.bulkCanceled + '. ' +  responseMessage ).show();
 					} else {
@@ -380,22 +389,31 @@ var jQuery,
 
 			fields = mla.settings.fields;
 
-			// add the new blank row
+			/*
+			 * add the new edit row with an extra blank row underneath
+			 * in WP 4.2+ to maintain zebra striping
+			 */
 			editRow = $('#inline-edit').clone(true);
 			$('td', editRow).attr('colspan', $( 'th:visible, td:visible', '.widefat:first thead' ).length);
 
-			if ( $(t.what+id).hasClass('alternate') )
-				$(editRow).addClass('alternate');
-			$(t.what+id).hide().after(editRow);
+			if ( mla.settings.useSpinnerClass ) {
+				$(t.what+id).hide().after(editRow).after('<tr class="hidden"></tr>');
+			} else {
+				if ( $(t.what+id).hasClass('alternate') ) {
+					$(editRow).addClass('alternate');
+				}
+
+				$(t.what+id).hide().after(editRow);
+			}
 
 			// populate the data
 			rowData = $('#inline_'+id);
-			
+
 			icon = $('.item_thumbnail', rowData).html();
 			if ( icon.length ) {
 				$( '#item_thumbnail', editRow ).html( icon );
 			}
-			
+
 			if ( !$(':input[name="post_author"] option[value="' + $('.post_author', rowData).text() + '"]', editRow).val() ) {
 				// author no longer has edit caps, so we need to add them to the list of authors
 				$(':input[name="post_author"]', editRow).prepend('<option value="' + $('.post_author', rowData).text() + '">' + $('#' + t.type + '-' + id + ' .author').text() + '</option>');
@@ -465,7 +483,7 @@ var jQuery,
 			} else {
 				$('table.widefat .inline-edit-save .spinner').show();
 			}
-				
+
 			params = {
 				action: mla.settings.ajax_action,
 				mla_admin_nonce: mla.settings.ajax_nonce,
@@ -489,7 +507,12 @@ var jQuery,
 
 					if ( response ) {
 						if ( -1 != response.indexOf( '<tr' ) ) {
-							$( mla.inlineEditAttachment.what + id ).remove();
+							if ( mla.settings.useSpinnerClass ) {
+								$( mla.inlineEditAttachment.what + id ).siblings('tr.hidden').addBack().remove();
+							} else {
+								$( mla.inlineEditAttachment.what + id ).remove();
+							}
+
 							$( '#edit-' + id ).before( response ).remove();
 							$( mla.inlineEditAttachment.what + id ).hide().fadeIn();
 						} else {
@@ -500,7 +523,7 @@ var jQuery,
 						$( '#edit-' + id + ' .inline-edit-save .error' ).html( mla.settings.error ).show();
 					}
 				}, 'html');
-			
+
 			return false;
 		},
 
@@ -591,7 +614,7 @@ var jQuery,
 				tableCell = $( '#attachment-' + postId + " td.attached_to" ).clone( true );
 				tableCell.html( '<span class="spinner"></span>' );
 				$( '#attachment-' + postId + " td.attached_to" ).replaceWith( tableCell );
-				
+
 				if ( mla.settings.useSpinnerClass ) {
 					$( '#attachment-' + postId + " td.attached_to .spinner" ).addClass("is-active");
 				} else {
@@ -667,7 +690,12 @@ var jQuery,
 				}
 
 				if ( 'bulk-edit' == id ) {
-					$('table.widefat #bulk-edit').removeClass('inline-editor').hide();
+					if ( mla.settings.useSpinnerClass ) {
+						$('table.widefat #bulk-edit').removeClass('inline-editor').hide().siblings('tr.hidden').remove();
+					} else {
+						$('table.widefat #bulk-edit').removeClass('inline-editor').hide();
+					}
+
 					$('#bulk-titles').html('');
 					$('#inlineedit').append( $('#bulk-edit') );
 				} else {
@@ -676,7 +704,12 @@ var jQuery,
 						$('#bulk-progress-waiting').html('');
 						$('#inlineedit').append( $('#bulk-progress') );
 					} else {
-						$('#'+id).remove();
+						if ( mla.settings.useSpinnerClass ) {
+							$('#'+id).siblings('tr.hidden').addBack().remove();
+						} else {
+							$('#'+id).remove();
+						}
+
 						id = id.substr( id.lastIndexOf('-') + 1 );
 						$(this.what+id).show();
 					}

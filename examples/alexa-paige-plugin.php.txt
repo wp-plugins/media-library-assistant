@@ -74,7 +74,7 @@ class AlexaPaigePlugin {
 		 * Add the custom shortcode for generating the checkbox form
 		 */
 		add_shortcode( 'axp_checkbox_form', 'AlexaPaigePlugin::axp_checkbox_form' );
-		
+
 		/*
 		 * add_filter parameters:
 		 * $tag - name of the hook you're filtering; defined by [mla_gallery]
@@ -104,7 +104,7 @@ class AlexaPaigePlugin {
 	 */
 	public static function axp_checkbox_form( $attr ) {
 		//error_log( 'AlexaPaigePlugin::axp_checkbox_form $attr = ' . var_export( $attr, true ), 0 );
-		
+
 		// Extract the checkbox_query parameters in $_REQUEST, so we can check the boxes
 		if ( isset( $_REQUEST['axp_taxonomies'] ) ) {
 			$axp_taxonomies = $_REQUEST['axp_taxonomies'];
@@ -152,7 +152,7 @@ class AlexaPaigePlugin {
 			if ( array_key_exists( $attr_key, $defaults ) ) {
 				$attr_value = str_replace( '{+', '[+', str_replace( '+}', '+]', $attr_value ) );
 				$replacement_values = MLAData::mla_expand_field_level_parameters( $attr_value );
-	
+
 				if ( ! empty( $replacement_values ) ) {
 					$attr[ $attr_key ] = MLAData::mla_parse_template( $attr_value, $replacement_values );
 				}
@@ -170,7 +170,7 @@ class AlexaPaigePlugin {
 		} elseif ( is_string( $arguments['exclude'] ) ) {
 			$exclude = explode( ',', $arguments['exclude'] );
 		}
-		
+
 		// Build the term list
 		$taxonomies = explode( ',', $arguments['taxonomy'] );
 		$display_taxonomies = array();
@@ -197,7 +197,7 @@ class AlexaPaigePlugin {
 			}
 		} // foreach taxonomy
 		//error_log( 'AlexaPaigePlugin::axp_checkbox_form $terms = ' . var_export( $terms, true ), 0 );
-		
+
 		// Re-organize by term name for display purposes
 		$display_terms = array ();
 		foreach ( $terms as $key => $term ) {
@@ -215,35 +215,35 @@ class AlexaPaigePlugin {
 			}
 		}
 		//error_log( 'AlexaPaigePlugin::axp_checkbox_form $display_terms = ' . var_export( $display_terms, true ), 0 );
-		
+
 		// Compose the form
 		$output  = '<form id="axp-checkbox-form" action="' . $arguments['action'] . '" method="get">' . "\n";
 		$output .= "<table>\n";
 		$output .= "<tr><td width=1%>\n";
 		$output .= $arguments['taxonomy_label'] . "\n";
 		$output .= "</td><td>\n";
-		
+
 		foreach ( $display_taxonomies as $key => $taxonomy ) {
 			$checked = ( in_array( $key, $axp_taxonomies ) ) ? 'checked=checked ' : '';
 			$output .= sprintf( '<input name="axp_taxonomies[]" id="axp-taxonomy-%1$s" type="checkbox" %2$svalue="%1$s">%3$s&nbsp;&nbsp;', $key, $checked, $taxonomy->label );
 		}
-		
+
 		$output .= "\n</td></tr>\n";
 		$output .= "<tr><td width=1%>\n";
 		$output .= $arguments['term_label'] . "\n";
 		$output .= "</td><td>\n";
-		
+
 		foreach ( $display_terms as $key => $term ) {
 			$checked = ( in_array( esc_attr( $term ), $axp_terms ) ) ? 'checked=checked ' : '';
 			$output .= sprintf( '<input name="axp_terms[]" id="axp-term-%1$s" type="checkbox" %2$svalue="%3$s">%4$s&nbsp;&nbsp;', sanitize_title( $term ), $checked, esc_attr( $term ), $key );
 		}
-		
+
 		$output .= "\n</td></tr>\n";
 		$output .= "</table>\n";
 		$output .= '<input id="axp-checkbox-form-submit" name="axp-checkbox-form-submit" type="submit" value="GO" />
 ' . "\n";
 		$output .= "</form>\n";
-		
+
 		//error_log( 'AlexaPaigePlugin::axp_checkbox_form $output = ' . var_export( $output, true ), 0 );
 		return $output;
 	} // axp_checkbox_form
@@ -256,7 +256,7 @@ class AlexaPaigePlugin {
 	 * @var	array
 	 */
 	private static $shortcode_attributes = array();
-	
+
 	/**
 	 * MLA Gallery (Display) Attributes
 	 *
@@ -275,7 +275,7 @@ class AlexaPaigePlugin {
 	 */
 	public static function axp_gallery_attributes_filter( $shortcode_attributes ) {
 		//error_log( 'AlexaPaigePlugin::axp_gallery_attributes_filter $shortcode_attributes = ' . var_export( $shortcode_attributes, true ), 0 );
-		
+
 		// Save the attributes for use in the later filters
 		self::$shortcode_attributes = $shortcode_attributes;
 
@@ -315,7 +315,7 @@ class AlexaPaigePlugin {
 				if ( is_string( $axp_terms ) ) {
 					$axp_terms = explode( ',', $axp_terms );
 				}
-				
+
 				// Convert to term_id values
 				$terms = array();
 				foreach ( $axp_terms as $key => $axp_term ) {
@@ -350,7 +350,7 @@ class AlexaPaigePlugin {
 							'terms'    => $terms,
 						);
 					}
-					
+
 					self::$shortcode_attributes['checkbox_query'] = $value;
 				} else {
 					// Add/modify the my_custom_sql parameter
@@ -365,17 +365,17 @@ class AlexaPaigePlugin {
 					} else {
 						$my_query_vars = array();
 					}
-					
+
 //error_log( 'AlexaPaigePlugin::axp_gallery_attributes_filter checkbox_query $my_query_vars = ' . var_export( $my_query_vars, true ), 0 );
 					$new_query_vars = array();
 					foreach( $my_query_vars as $key => $value ) {
 						$new_query_vars[] = $key . "='" . $value . "'";
 					}
-					
+
 					foreach( $axp_taxonomies as $taxonomy ) {
 						$new_query_vars[] = $taxonomy . "='" . implode( ',', $terms ) . "'";
 					}
-					
+
 					unset( self::$shortcode_attributes['checkbox_query'] );
 					self::$shortcode_attributes['my_custom_sql'] = implode( ' ', $new_query_vars );
 				} // my_custom_sql query
@@ -409,7 +409,7 @@ class AlexaPaigePlugin {
 			 */
 			$output_parameters = array_map( 'strtolower', array_map( 'trim', explode( ',', $all_display_parameters['mla_output'] ) ) );
 			$is_pagination = in_array( $output_parameters[0], array( 'previous_page', 'next_page', 'paginate_links' ) ); 
-	
+
 			if ( $is_pagination ) {
 				// Determine query type
 				if ( isset( self::$shortcode_attributes['post_mime_type'] ) ) {
@@ -436,7 +436,7 @@ class AlexaPaigePlugin {
 				}
 			}
 		} // my_custom_sql present
-		
+
 		//error_log( 'AlexaPaigePlugin::axp_gallery_arguments_filter $all_display_parameters = ' . var_export( $all_display_parameters, true ), 0 );
 
 		return $all_display_parameters;
@@ -450,7 +450,7 @@ class AlexaPaigePlugin {
 	 * @var	array
 	 */
 	private static $query_attributes = array();
-	
+
 	/**
 	 * MLA Gallery Query Attributes
 	 *
@@ -470,11 +470,11 @@ class AlexaPaigePlugin {
 	 */
 	public static function axp_gallery_query_attributes_filter( $query_attributes ) {
 		//error_log( 'AlexaPaigePlugin::axp_gallery_query_attributes_filter $query_attributes = ' . var_export( $query_attributes, true ), 0 );
-		
+
 		if ( isset( self::$shortcode_attributes['checkbox_query'] ) ) {
 			$query_attributes['tax_query'] = self::$shortcode_attributes['checkbox_query'];
 		} // valid checkbox_query=tax paraneter
-		
+
 		self::$query_attributes = $query_attributes;
 		return $query_attributes;
 	} // axp_gallery_query_attributes_filter
@@ -539,7 +539,7 @@ class AlexaPaigePlugin {
 		//error_log( 'AlexaPaigePlugin::axp_gallery_query_arguments_filter $all_query_parameters = ' . var_export( $all_query_parameters, true ), 0 );
 		return $all_query_parameters;
 	} // axp_gallery_query_arguments_filter
-	
+
 	/**
 	 * Save some of the WP_Query object properties
 	 *
@@ -548,7 +548,7 @@ class AlexaPaigePlugin {
 	 * @var	array
 	 */
 	private static $wp_query_properties = array();
-	
+
 	/**
 	 * MLA Gallery WP Query Object
 	 *
@@ -569,21 +569,21 @@ class AlexaPaigePlugin {
 	 */
 	public static function axp_gallery_wp_query_object_action( $query_arguments ) {
 		//error_log( 'AlexaPaigePlugin::axp_gallery_wp_query_object_action $query_arguments = ' . var_export( $query_arguments, true ), 0 );
-		
+
 		self::$wp_query_properties = array();
 		self::$wp_query_properties ['post_count'] = MLAShortcodes::$mla_gallery_wp_query_object->post_count;
-		
+
 		// If the "buddypress_urls" parameter is not present, we have nothing to do.
 		if ( empty( self::$shortcode_attributes['buddypress_urls'] ) ) {
 			return; // Don't need custom URLs
 		}
-		
+
 		if ( 0 == self::$wp_query_properties ['post_count'] ) {
 			return; // Empty gallery - nothing to do
 		}
-		
+
 		global $wpdb;
-		
+
 		// Assemble the WordPress attachment IDs
 		$post_info = array();
 		foreach( MLAShortcodes::$mla_gallery_wp_query_object->posts as $value ) {
@@ -597,7 +597,7 @@ class AlexaPaigePlugin {
 		$query[] = "SELECT rtm.id, rtm.media_id, rtm.media_author, rtm.media_type, rtm.cover_art, u.user_nicename FROM {$wpdb->prefix}rt_rtm_media AS rtm";
 		$query[] = "LEFT JOIN {$wpdb->users} as u";
 		$query[] = "ON (rtm.media_author = u.ID)";
-		
+
 		$placeholders = array();
 		foreach ( $post_info as $value ) {
 			$placeholders[] = '%s';
@@ -615,10 +615,10 @@ class AlexaPaigePlugin {
 				$post_info[ $value->media_id ] = $value;
 			}
 		}
-		
+
 		//error_log( 'AlexaPaigePlugin::axp_gallery_wp_query_object_action $post_info = ' . var_export( $post_info, true ), 0 );
 		self::$wp_query_properties ['post_info'] = $post_info;
-		
+
 		// Unlike Filters, Actions never return anything
 		return;
 	} // axp_gallery_wp_query_object_action
@@ -657,14 +657,14 @@ class AlexaPaigePlugin {
 			 */
 			$old_date = $item_values['date'];
 			$timestamp = mktime( substr( $old_date, 11, 2 ), substr( $old_date, 14, 2 ), substr( $old_date, 17, 2 ), substr( $old_date, 5, 2 ), substr( $old_date, 8, 2 ), substr( $old_date, 0, 4 ) );
-	
+
 //error_log( 'AlexaPaigePlugin::axp_gallery_item_values_filter date = ' . var_export( date( $format, $timestamp ), true ), 0 );
 			/*
 			 * Update the caption, replacing the substitution parameter with the formatted value.
 			 */
 			$item_values['caption'] = str_replace( $matches[0][0], date( $format, $timestamp ), $item_values['caption'] );
 		}
-		
+
 		/*
 		 * We use a shortcode parameter of our own to apply our filters on a gallery-by-gallery
 		 * basis, leaving other [mla_gallery] instances untouched. If the "buddypress_urls"
@@ -673,13 +673,13 @@ class AlexaPaigePlugin {
 		if ( ! isset( self::$shortcode_attributes['buddypress_urls'] ) ) {
 			return $item_values; // leave them unchanged
 		}
-		
+
 		if ( isset( self::$wp_query_properties ['post_info'][ $item_values['attachment_ID'] ] ) ) {
 			$post_info = self::$wp_query_properties ['post_info'][ $item_values['attachment_ID'] ];
 		} else {
 			return $item_values; // no matching rtMedia item
 		}
-		
+
 		$new_url = $item_values['site_url'] . '/members/' . $post_info->user_nicename . '/media/' . $post_info->id . '/';
 		$new_link = str_replace( $item_values['link_url'], $new_url, $item_values['link'] );
 
@@ -700,22 +700,22 @@ class AlexaPaigePlugin {
 			if ( ! empty( $post_info->cover_art ) ) {
 				if ( is_numeric( $post_info->cover_art ) ){
 					$thumbnail_info = wp_get_attachment_image_src( $post_info->cover_art, 'thumbnail' );
-	
+
 					if ( false === $thumbnail_info ) {
 						$thumbnail_info = wp_get_attachment_image_src( $post_info->cover_art, 'full' );
 					}
-					
+
 					if ( is_array( $thumbnail_info ) ) {
 						$post_info->cover_art = $thumbnail_info[ 0 ];
 					} else {
 						$post_info->cover_art = '';
 					}
 				}
-	
+
 				if ( ! empty( $post_info->cover_art ) ) {
 					$new_thumbnail = '<img width="150" height="150" src="' . $post_info->cover_art . '" class="attachment-thumbnail" alt="' . $item_values['thumbnail_content'] . '" />';
 					$new_link = str_replace( $item_values['thumbnail_content'] . '</a>', $new_thumbnail . '</a>', $new_link );
-					
+
 					$item_values['thumbnail_content'] = $new_thumbnail;
 					$item_values['thumbnail_width'] = '150';
 					$item_values['thumbnail_height'] = '150';
@@ -723,13 +723,13 @@ class AlexaPaigePlugin {
 				}
 			} // has cover art
 		} // use cover art
-		
+
 		$item_values['link_url'] = $new_url;
 		$item_values['link'] = $new_link;
-		
+
 		return $item_values;
 	} // axp_gallery_item_values_filter
-	
+
 	/**
 	 * Custom query support function, taxonomy terms only
 	 *
@@ -763,7 +763,7 @@ class AlexaPaigePlugin {
 		 * are ONLY used for Media Library image items, so we can omit the term_relationships/posts 
 		 * JOIN clause for tests on post_mime_type, post_type and post_status.
 		 */		
-		
+
 		// Make sure $my_query_vars is an array, even if it's empty
 		$my_query_vars = self::$shortcode_attributes['my_custom_sql'];
 		if ( empty( $my_query_vars ) ) {
@@ -774,14 +774,14 @@ class AlexaPaigePlugin {
 
 		// Start with empty parameter values
 		$ttids = array();
-		
+
 		// Find taxonomy argument, if present, and collect terms
 		$taxonomies = get_taxonomies( array( 'object_type' => array( 'attachment' ) ), 'names' );
 		foreach( $taxonomies as $taxonomy ) {
 			if ( empty( $my_query_vars[ $taxonomy ] ) ) {
 				continue;
 			}
-			
+
 			// Found the taxonomy; collect the terms
 			$include_children =  isset( $my_query_vars['include_children'] ) && 'true' == strtolower( trim( $my_query_vars['include_children'] ) );
 
@@ -805,10 +805,10 @@ class AlexaPaigePlugin {
 					}
 				} // include_children
 			} // $term
-			
+
 			break;
 		}
-		
+
 		// Build an array of SQL clauses
 		$query = array();
 		$query_parameters = array();
@@ -829,9 +829,9 @@ class AlexaPaigePlugin {
 				$placeholders[] = '%s';
 				$query_parameters[] = '0';
 		}
-			
+
 		$query[] = 'WHERE ( tr.term_taxonomy_id IN (' . join( ',', $placeholders ) . ') )';
-		
+
 		// ORDER BY clause would go here, if needed
 
 		if ( ! $is_pagination ) {
@@ -850,7 +850,7 @@ class AlexaPaigePlugin {
 			} else {
 				$paged = $all_query_parameters['paged'];
 			}
-			
+
 			if ( empty( $paged ) ) {
 				$paged = 1;
 			} elseif ( 'current' == strtolower( $paged ) ) {
@@ -883,7 +883,7 @@ class AlexaPaigePlugin {
 				$query_parameters[] = $offset;
 				$query_parameters[] = 0x7FFFFFFF; // big number!
 			}
-			
+
 			$all_query_parameters['nopaging'] = true;
 			$all_query_parameters['numberposts'] = 0;
 			$all_query_parameters['posts_per_page'] = 0;
@@ -901,7 +901,7 @@ class AlexaPaigePlugin {
 			//error_log( 'AlexaPaigePlugin::single_query $count = ' . var_export( $count, true ), 0 );
 			return $count;
 		}
-		
+
 		$ids = $wpdb->get_results( $wpdb->prepare( $query, $query_parameters ) );
 //error_log( 'AlexaPaigePlugin::single_query $ids = ' . var_export( $ids, true ), 0 );
 		if ( is_array( $ids ) ) {
@@ -950,7 +950,7 @@ class AlexaPaigePlugin {
 		 * The first query is on taxonomy and term(s) only, yielding a list of object_id (post ID) values.
 		 * The second query filters the list by post_mime_type, orders it and paginates it.
 		 */		
-		
+
 		// Make sure $my_query_vars is an array, even if it's empty
 		$my_query_vars = self::$shortcode_attributes['my_custom_sql'];
 		if ( empty( $my_query_vars ) ) {
@@ -962,14 +962,14 @@ class AlexaPaigePlugin {
 
 		// Start with empty parameter values
 		$ttids = array();
-		
+
 		// Find taxonomy argument, if present, and collect terms
 		$taxonomies = get_taxonomies( array( 'object_type' => array( 'attachment' ) ), 'names' );
 		foreach( $taxonomies as $taxonomy ) {
 			if ( empty( $my_query_vars[ $taxonomy ] ) ) {
 				continue;
 			}
-			
+
 			// Found the taxonomy; collect the terms
 			$include_children =  isset( $my_query_vars['include_children'] ) && 'true' == strtolower( trim( $my_query_vars['include_children'] ) );
 
@@ -996,7 +996,7 @@ class AlexaPaigePlugin {
 			} // $term
 //error_log( "AlexaPaigePlugin::double_query {$taxonomy} \$ttids = " . var_export( $ttids, true ), 0 );
 		}
-		
+
 		// Build an array of SQL clauses for the term_relationships query
 		$query = array();
 		$query_parameters = array();
@@ -1013,7 +1013,7 @@ class AlexaPaigePlugin {
 				$placeholders[] = '%s';
 				$query_parameters[] = '0';
 		}
-			
+
 		$query[] = 'WHERE ( tr.term_taxonomy_id IN (' . join( ',', $placeholders ) . ') )';
 		$query =  join(' ', $query);
 //error_log( 'AlexaPaigePlugin::double_query term_relationships $query = ' . var_export( $query, true ), 0 );
@@ -1051,7 +1051,7 @@ class AlexaPaigePlugin {
 				$placeholders[] = '%s';
 				$query_parameters[] = '0';
 		}
-			
+
 		$query[] = 'WHERE ( ( p.ID IN (' . join( ',', $placeholders ) . ') )';
 
 		if ( ! empty( self::$shortcode_attributes['post_mime_type'] ) ) {
@@ -1061,7 +1061,7 @@ class AlexaPaigePlugin {
 		} else {
 			$query[] = "AND (p.post_mime_type LIKE 'image/%%')";
 		}
-		
+
 		// Close the WHERE clause
 		$query[] = ')';
 
@@ -1070,13 +1070,13 @@ class AlexaPaigePlugin {
 		 */
 		$all_query_parameters['orderby'] = 'post__in';
 		$all_query_parameters['order'] = 'ASC';
-		
+
 		$orderby = 'none';
 		$order = 'ASC';
-		
+
 		if ( ! ( $is_pagination || empty( $my_query_vars['orderby'] ) ) ) {
 			$orderby = strtolower( $my_query_vars['orderby'] );
-			
+
 			if ( ! empty( $my_query_vars['order'] ) ) {
 				$order = strtoupper( $my_query_vars['order'] );
 				if ( 'DESC' != $order ) {
@@ -1150,7 +1150,7 @@ class AlexaPaigePlugin {
 			} else {
 				$paged = $all_query_parameters['paged'];
 			}
-			
+
 			if ( empty( $paged ) ) {
 				$paged = 1;
 			} elseif ( 'current' == strtolower( $paged ) ) {
@@ -1183,7 +1183,7 @@ class AlexaPaigePlugin {
 				$query_parameters[] = $offset;
 				$query_parameters[] = 0x7FFFFFFF; // big number!
 			}
-			
+
 			$all_query_parameters['nopaging'] = true;
 			$all_query_parameters['numberposts'] = 0;
 			$all_query_parameters['posts_per_page'] = 0;
@@ -1201,7 +1201,7 @@ class AlexaPaigePlugin {
 //error_log( 'AlexaPaigePlugin::double_query posts $count = ' . var_export( $count, true ), 0 );
 			return $count;
 		}
-		
+
 		$ids = $wpdb->get_results( $wpdb->prepare( $query, $query_parameters ) );
 //error_log( 'AlexaPaigePlugin::double_query posts $ids = ' . var_export( $ids, true ), 0 );
 		if ( is_array( $ids ) ) {

@@ -12,7 +12,7 @@ var jQuery,
 		// mlaThumbnail.settings.ajax_nonce
 		// mlaThumbnail.settings.error
 		settings: {},
-	
+
 		// Utility functions
 		utility: {
 			getId : function( o ) {
@@ -21,7 +21,7 @@ var jQuery,
 				return parts[ parts.length - 1 ];
 			}
 		},
-	
+
 		// Components
 		inlineThumbnail: null
 	};
@@ -97,7 +97,7 @@ var jQuery,
 				$( 'table.widefat input[value="' + id + '"]' ).prop( 'checked', false );
 				$( '#ttle'+id ).remove();
 			});
-			
+
 			$( 'html, body' ).animate( { scrollTop: 0 }, 'fast' );
 		},
 

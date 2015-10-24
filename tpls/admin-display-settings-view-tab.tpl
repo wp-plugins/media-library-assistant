@@ -107,7 +107,7 @@
 				<input type="hidden" name="page" value="mla-settings-menu-view" />
 				<input type="hidden" name="mla_tab" value="view" />
 				[+_wpnonce+]
-				
+
 <!-- template="after-table" -->
 			</form><!-- /id=mla-search-views-filter --> 
 		</div><!-- /col-wrap --> 
@@ -123,7 +123,7 @@
 		</form>
 		</div>
 	</div><!-- /col-right -->
-	
+
 	<div id="col-left">
 		<div class="col-wrap">
 			<div class="form-wrap">

@@ -60,7 +60,7 @@ class MLAMappingParentDataExample {
 			return;
 
 		add_filter( 'mla_mapping_updates', 'MLAMappingParentDataExample::mla_mapping_updates', 10, 5 );
-		
+
 		/*
 		 * Triggered by wp_insert_post and wp_publish_post in wp-includes/post.php 
 		 */
@@ -99,7 +99,7 @@ class MLAMappingParentDataExample {
 					break;
 				}
 			}
-			
+
 			if ( ! $found_it ) {
 				return $updates;
 			}
@@ -115,12 +115,12 @@ class MLAMappingParentDataExample {
 		} else {
 			$parent_value = '';
 		}
-		
+
 		// Add/replace the value if it has changed
 		if ( $old_value != $parent_value ) {
 			$updates['custom_updates'][ 'ref_offer' ] = $parent_value;
 		}
-		
+
 		return $updates;
 	} // mla_mapping_updates
 

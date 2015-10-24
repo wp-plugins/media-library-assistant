@@ -107,7 +107,7 @@ class MLACustomFieldSearchExample {
 				self::$custom_field_parameters = array();
 			}
 		} // isset s=custom:
-		
+
 		return $mla_list_table;
 	} // mla_list_table_new_instance
 
@@ -143,17 +143,17 @@ class MLACustomFieldSearchExample {
 		if ( ! ( isset( $request['offset'] ) && isset( $request['posts_per_page'] ) ) ) {
 			return $request;
 		}
-		
+
 		if ( empty( self::$custom_field_parameters ) ) {
 			return $request;
 		}
-		
+
 		if ( isset( self::$custom_field_parameters['debug'] ) ) {
 			MLAData::$query_parameters['debug'] = self::$custom_field_parameters['debug'];
 			MLAData::$search_parameters['debug'] = self::$custom_field_parameters['debug'];
 			MLA::mla_debug_mode( self::$custom_field_parameters['debug'] );
 		}
-		
+
 		// Apply default field name?
 		if ( '=' == substr( self::$custom_field_parameters['s'], 0, 1 ) ) {
 			$tokens = array( 'Orientation', substr( self::$custom_field_parameters['s'], 1 ) );
@@ -198,7 +198,7 @@ class MLACustomFieldSearchExample {
 			if ( ! is_numeric( $key ) ) {
 				continue;
 			}
-			
+
 			if ( in_array( $value['key'], array( 'File Size', 'pixels', 'width', 'height' ) ) ) {
 				if ( '=' == $value['compare'] ) {
 					$value['value'] = str_pad( $value['value'], 15, ' ', STR_PAD_LEFT );
@@ -207,7 +207,7 @@ class MLACustomFieldSearchExample {
 					$value['value'] = '%' . $value['value'];
 				}
 			}
-			
+
 			if ( 'LIKE' == $value['compare'] ) {
 				$patterns[] = $value['value'];
 			}
@@ -218,11 +218,11 @@ class MLACustomFieldSearchExample {
 		if ( ! empty( $padded_values ) ) {
 			MLAData::$query_parameters['mla-metavalue'] = $padded_values;
 		}
-		
+
 		if ( ! empty( $patterns ) ) {
 			MLAData::$query_parameters['patterns'] = $patterns;
 		}
-		
+
 		/*
 		 * Combine with an existing "custom view" meta_query, if present
 		 */

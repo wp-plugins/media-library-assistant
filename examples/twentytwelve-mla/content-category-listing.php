@@ -36,7 +36,7 @@ global $post;
 			} else {
 				$attr = array( 'taxonomy' => 'attachment_tag' );
 			}
-		
+
 			echo mla_taxonomy_terms_list( $attr ); 
 			?>
 			<?php wp_link_pages( array( 'before' => '<div class="page-links">' . __( 'Pages:', 'twentytwelve' ), 'after' => '</div>' ) ); ?>

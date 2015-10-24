@@ -298,14 +298,14 @@ div.mla_errors {
 		float: none;
 		width: 100%
 	}
-	
+
 	.quick-edit-row-upload fieldset.inline-edit-col label span.title,
 	.bulk-edit-row-upload fieldset.inline-edit-col-right label span.title,
 	.quick-edit-row-view fieldset.inline-edit-col label span.title,
 	.bulk-edit-row-view fieldset.inline-edit-col-right label span.title {
 		width: 100%
 	}
-	
+
 	.quick-edit-row-upload fieldset.inline-edit-col label span.input-text-wrap,
 	.bulk-edit-row-upload fieldset.inline-edit-col-right label span.input-text-wrap,
 	.quick-edit-row-view fieldset.inline-edit-col label span.input-text-wrap,
@@ -313,13 +313,13 @@ div.mla_errors {
 		margin-left: 0px;
 		width: 100%
 	}
-	
+
 	.quick-edit-row-upload fieldset.inline-edit-col label,
 	.quick-edit-row-view fieldset.inline-edit-col label {
 		float: none;
 		width: 100%
 	}
-	
+
 	.quick-edit-row-upload fieldset.inline-edit-col input.inline-edit-menu-order,
 	.bulk-edit-row-upload fieldset.inline-edit-col-right label.inline-edit-menu-order span.input-text-wrap,
 	.quick-edit-row-view fieldset.inline-edit-col input.inline-edit-menu-order,

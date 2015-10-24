@@ -160,7 +160,7 @@ class MLA_Upload_List_Table extends WP_List_Table {
 		if ( MLATest::$wp_4dot3_plus ) {
 			unset( self::$default_columns['icon'] );
 		}
-		
+
 		return self::$default_columns;
 	}
 
@@ -202,7 +202,7 @@ class MLA_Upload_List_Table extends WP_List_Table {
 	public static function mla_admin_print_styles_action() {
 		if ( MLATest::$wp_4dot3_plus ) {
 			echo "<style type='text/css'>\n";
-			
+
 			// Any icon_type will do
 			$image_info = MLAMime::mla_get_icon_type_size( 'image' );
 

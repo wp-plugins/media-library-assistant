@@ -131,7 +131,7 @@ class MLAAudioShortcodeExample {
 			$audio_args['src'] = $item_values['base_url'] . '/' . $item_values['base_file'];
 			$item_values['link'] = wp_audio_shortcode( $audio_args );
 		}
-		
+
 		return $item_values;
 	} // mla_gallery_item_values_filter
 } // Class MLAAudioShortcodeExample

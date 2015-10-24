@@ -167,7 +167,7 @@ class MLAACFExample {
 				$_REQUEST['custom_updates'][ self::ACF_CHECKBOX_FIELD ] = explode( ',', $_REQUEST['custom_updates'][ self::ACF_CHECKBOX_FIELD ] );
 			}
 		}
-		
+
 		return $item_content;
 	} // mla_list_table_inline_action
 
@@ -196,7 +196,7 @@ class MLAACFExample {
 				$request[ $slug ] = '';
 			}
 		}
-		
+
 		return $request;
 	} // mla_list_table_bulk_action_initial_request
 
@@ -240,7 +240,7 @@ class MLAACFExample {
 				$item_content = array( 'message' => sprintf( __( 'Adding %1$s = %2$s', 'media-library-assistant' ) . '<br>', self::ACF_CHECKBOX_FIELD, self::$acf_checkbox_value ) );
 			}
 		}
-		
+
 		return $item_content;
 	} // mla_list_table_bulk_action
 
@@ -262,7 +262,7 @@ class MLAACFExample {
 		 */
 		$item_values['custom_fields'] = str_replace( '>acf_checkbox<', '>' . self::ACF_CHECKBOX_TITLE . '<', $item_values['custom_fields'] );
 		$item_values['bulk_custom_fields'] = str_replace( '>acf_checkbox<', '>' . self::ACF_CHECKBOX_TITLE . '<', $item_values['bulk_custom_fields'] );
-		
+
 		return $item_values;
 	} // mla_list_table_inline_values
 
@@ -294,13 +294,13 @@ class MLAACFExample {
 		 */
 		if ( false !== $slug = array_search( self::ACF_CHECKBOX_FIELD, $columns ) ) {
 			self::$field_slugs[ self::ACF_CHECKBOX_FIELD ] = $slug;
-			
+
 			/*
 			 * Change the column slug so we can provide our own friendly content.
 			 * Replace the entry for the column we're capturing, preserving its place in the list
 			 */
 			$new_columns = array();
-					
+
 			foreach ( $columns as $key => $value ) {
 				if ( $key == $slug ) {
 					$new_columns[ self::ACF_CHECKBOX_FIELD ] = self::ACF_CHECKBOX_TITLE;
@@ -308,10 +308,10 @@ class MLAACFExample {
 					$new_columns[ $key ] = $value;
 				}
 			} // foreach column
-					
+
 			$columns = $new_columns;
 		}
-		
+
 		/*
 		 * Add a column of our own for the repeater "where-used" information
 		 */
@@ -341,7 +341,7 @@ class MLAACFExample {
 				$hidden_columns[ $index ] = self::ACF_CHECKBOX_FIELD;
 			}
 		}
-		
+
 		return $hidden_columns;
 	} // mla_list_table_get_hidden_columns
 
@@ -369,7 +369,7 @@ class MLAACFExample {
 			$slug = self::$field_slugs[ self::ACF_CHECKBOX_FIELD ];
 			if ( isset( $sortable_columns[ $slug ] ) ) {
 				$new_columns = array();
-				
+
 				foreach ( $sortable_columns as $key => $value ) {
 					if ( $key == $slug ) {
 						$new_columns[ self::ACF_CHECKBOX_FIELD ] = $value;
@@ -377,7 +377,7 @@ class MLAACFExample {
 						$new_columns[ $key ] = $value;
 					}
 				} // foreach column
-				
+
 				$sortable_columns = $new_columns;
 			} // slug found
 		} // slug exists
@@ -412,7 +412,7 @@ class MLAACFExample {
 			default:
 				$flag = '';
 		}
-		
+
 	return $flag;
 	}
 
@@ -443,7 +443,7 @@ class MLAACFExample {
 				return $values;
 			}
 		}
-		
+
 		/*
 		 * Retrieve and format the repeater field "where-used" information
 		 */
@@ -466,7 +466,7 @@ class MLAACFExample {
 					// key on post_id to remove duplicates
 					$parents[ $reference->post_id ] = $reference->post_id;
 				}
-				
+
 				$parents = implode( ',', $parents );
 				$references = $wpdb->get_results(
 					"
@@ -478,13 +478,13 @@ class MLAACFExample {
 
 				foreach ( $references as $reference ) {
 					$status = self::_format_post_status( $reference->post_status );
-					
+
 					if ( $reference->ID == $item->post_parent ) {
 						$parent = ',<br>' . __( 'PARENT', 'media-library-assistant' );
 					} else {
 						$parent = '';
 					}
-		
+
 					$content .= sprintf( '<a href="%1$s" title="' . __( 'Edit', 'media-library-assistant' ) . ' &#8220;%2$s&#8221;">%2$s</a> (%3$s %4$s%5$s%6$s), ',
 						/*%1$s*/ esc_url( add_query_arg( array('post' => $reference->ID, 'action' => 'edit'), 'post.php' ) ),
 						/*%2$s*/ esc_attr( $reference->post_title ),
@@ -495,7 +495,7 @@ class MLAACFExample {
 				} // foreach $reference
 			} // found $references
 		} // found repeater column
-		
+
 		return $content;
 	} // mla_list_table_column_default
 
@@ -519,7 +519,7 @@ class MLAACFExample {
 		if ( ! isset( self::$field_slugs[ self::ACF_CHECKBOX_FIELD ] ) ) {
 			return $inline_data;
 		}
-			
+
 		/*
 		 * Convert the ACF-compatible array to a comma-delimited list of
 		 * "checked" checkbox values.
@@ -538,7 +538,7 @@ class MLAACFExample {
 				$inline_data = $head . $value . $tail;
 			}
 		}
-		
+
 		return $inline_data;
 	} // mla_list_table_build_inline_data
 } // Class MLAACFExample

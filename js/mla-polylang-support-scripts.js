@@ -12,7 +12,7 @@ var jQuery,
 		// mlaPolylang.settings.ajax_nonce
 		// mlaPolylang.settings.error
 		settings: {},
-	
+
 		// Utility functions
 		utility: {
 			getId : function( o ) {
@@ -21,7 +21,7 @@ var jQuery,
 				return parts[ parts.length - 1 ];
 			}
 		},
-	
+
 		// Components
 		inlineTranslate: null
 	};
@@ -148,13 +148,13 @@ var jQuery,
 				$( 'table.widefat input[value="' + id + '"]' ).prop( 'checked', false );
 				$( '#ttle'+id ).remove();
 			});
-			
+
 			// Capture Language links
 			$( '#pll-bulk-translate .pll-media-action-table tr' ).each( function ( idx ){
 				//$( '.pll-media-action-column a', this ).off( 'click' );
 				$( '.pll-media-action-column a', this ).click( function( e ){
 					var bulkLanguage = $( this ).attr( 'pll_bulk_language' );
-					
+
 					$( ':input[name="pll_bulk_language"]', '#pll-bulk-translate' ).val( bulkLanguage );
 					$( '#pll-bulk-translate .pll-media-action-table a' ).prop( 'disabled', true );
 					$( '#pll-bulk-translate' ).css( 'opacity', '0.5' );
@@ -178,10 +178,10 @@ var jQuery,
 			// set up the quick translate entries
 			currentLanguage = $( ':input[name="old_lang"]', translateRow ).val();
 			translations = JSON.parse( $( ':input[name="inline_translations"]', translateRow ).val() );
-			
+
 			$( '.pll-media-action-table tr', translateRow ).each( function ( idx ){
 				var parts = $( this ).attr( 'class' ).split( '-' ), slug = parts[ parts.length - 1 ];
-				
+
 				if ( slug === currentLanguage ) {
 					$( '.pll-media-action-column input', this ).val( translations[ slug ] );
 					$( this ).hide();
@@ -198,18 +198,18 @@ var jQuery,
 					$( '.pll-media-action-column a', this ).attr( 'pll_quick_language', slug );
 					$( '.pll-media-action-column a', this ).attr( 'pll_quick_id', 0 );
 				}
-				
+
 				$( '.pll-media-action-column a', this ).off( 'click' );
 				$( '.pll-media-action-column a', this ).click( function( e ){
 					var quickLanguage = $( this ).attr( 'pll_quick_language' ), quickId = $( this ).attr( 'pll_quick_id' );
-					
+
 					$( ':input[name="pll_quick_language"]', translateRow ).val( quickLanguage );
 					$( ':input[name="pll_quick_id"]', translateRow ).val( quickId );
 					e.preventDefault();
 					return mlaPolylang.inlineTranslate.save( translateRow );
 				});
 			});
-			
+
 			return false;
 		},
 
@@ -241,10 +241,10 @@ var jQuery,
 			// set up the quick translate entries
 			currentLanguage = $( ':input[name="old_lang"]', translateRow ).val();
 			translations = JSON.parse( $( ':input[name="inline_translations"]', translateRow ).val() );
-			
+
 			$( '.pll-media-action-table tr', translateRow ).each( function ( idx ){
 				var parts = $( this ).attr( 'class' ).split( '-' ), slug = parts[ parts.length - 1 ];
-				
+
 				if ( slug === currentLanguage ) {
 					$( '.pll-media-action-column input', this ).val( translations[ slug ] );
 					$( this ).hide();
@@ -261,20 +261,20 @@ var jQuery,
 					$( '.pll-media-action-column a', this ).attr( 'pll_quick_language', slug );
 					$( '.pll-media-action-column a', this ).attr( 'pll_quick_id', 0 );
 				}
-				
+
 				$( '.pll-media-action-column a', this ).off( 'click' );
 				$( '.pll-media-action-column a', this ).click( function( e ){
 					var quickLanguage = $( this ).attr( 'pll_quick_language' ), quickId = $( this ).attr( 'pll_quick_id' );
-					
+
 					$( ':input[name="pll_quick_language"]', translateRow ).val( quickLanguage );
 					$( ':input[name="pll_quick_id"]', translateRow ).val( quickId );
 					return mlaPolylang.inlineTranslate.save( translateRow );
 				});
 			});
-			
+
 			rowData = $( translateRow ).attr( 'id', 'edit-'+id ).addClass( 'inline-translator' ).show().position().top;
 			$( 'html, body' ).animate( { scrollTop: rowData }, 'fast' );
-			
+
 			return false;
 		},
 
@@ -306,7 +306,7 @@ var jQuery,
 			$.post( ajaxurl, params,
 				function( response ) {
 					var newId, oldRow, rowId, rows, rIndex;
-					
+
 					if ( mla.settings.useSpinnerClass ) {
 						$( 'table.widefat .pll-quick-translate-save .spinner' ).removeClass("is-active");
 					} else {
@@ -317,24 +317,24 @@ var jQuery,
 						if ( -1 != response.indexOf( '<tr id="attachment' ) ) {
 							// Find all the rows in the response
 							rows = $( response ).closest( 'tr' );
-									
+
 							// Remove the selected item
 							newId = mlaPolylang.utility.getId( rows[ 0 ] );
 							oldRow = $( mlaPolylang.inlineTranslate.what + newId )
 							if ( 'undefined' != typeof oldRow ) {
 								oldRow.remove();
 							}
-	
+
 							// Replace the Quick Translate area with the selected item
 							$( '#edit-' + id ).before( rows[ 0 ] ).remove();
 							$( mlaPolylang.inlineTranslate.what + newId ).hide().fadeIn();
-							
+
 							// Update any other translations in the table
 							if ( 1 < rows.length ) { 
 								for ( rIndex = 1; rIndex < rows.length; rIndex++ ) {
 									rowId = mlaPolylang.utility.getId( rows[ rIndex ] );
 									oldRow = $( mlaPolylang.inlineTranslate.what + rowId )
-									
+
 									if ( 'undefined' != typeof oldRow ) {
 										oldRow.before( rows[ rIndex ] ).remove();
 										oldRow = $( mlaPolylang.inlineTranslate.what + rowId )
@@ -342,7 +342,7 @@ var jQuery,
 									}
 								}
 							} // other translations
-							
+
 							// Quick Edit a new selected item
 							if ( newId != id ) {
 								$( 'a.editinline', mlaPolylang.inlineTranslate.what + newId ).click();
@@ -355,7 +355,7 @@ var jQuery,
 						$( '#edit-' + id + ' .pll-quick-translate-save .error' ).html( mlaPolylang.settings.error ).show();
 					}
 				}, 'html' );
-			
+
 			return false;
 		},
 

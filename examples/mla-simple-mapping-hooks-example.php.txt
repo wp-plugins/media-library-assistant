@@ -95,7 +95,7 @@ class MLASimpleMappingHooksExample {
 			if ( preg_match( '/(.*)\|\|(.*)/', $headline, $matches ) ) {
 				$artist = trim( $matches[1] );
 				$event  = trim( $matches[2] );
-				
+
 				/*
 				 * You can update the field(s) directly or (preferred) let MLA do the updates
 				 */
@@ -124,14 +124,14 @@ class MLASimpleMappingHooksExample {
 		 * Remove or comment out the next line to apply the Title and ALT Text cleanup logic
 		 */
 		return $updates;
-		
+
 		/*
 		 * For the Title and ALT Text cleanup, we are only concerned with Standard Field mapping
 		 */
 		if ( ! in_array( $category, array( 'iptc_exif_mapping', 'iptc_exif_standard_mapping' ) ) ) {
 			return $updates;
 		}
-		
+
 		/*
 		 * If $updates[ 'post_title' ] is set, some mapping rule
 		 * has been set up, so we respect the result. If not,
@@ -154,7 +154,7 @@ class MLASimpleMappingHooksExample {
 			'option' => 'raw'
 		);
 		$object_name = trim( MLAOptions::mla_get_data_source( $post_id, 'single_attachment_mapping', $my_setting, NULL ) );
-		
+
 		/*
 		 * Clean up the Title value. If the cleanup has changed the value,
 		 * put the new value in the $updates array.
@@ -163,7 +163,7 @@ class MLASimpleMappingHooksExample {
 		if ( $old_value != $new_title ) {
 			$updates[ 'post_title' ] = $new_title;
 		}
-		
+
 		// Find the current ALT Text value
 		if ( isset( $updates[ 'image_alt' ] ) ) {
 			$old_value = $updates[ 'image_alt' ];
@@ -175,7 +175,7 @@ class MLASimpleMappingHooksExample {
 		if ( $old_value != $new_title ) {
 			$updates[ 'image_alt' ] = $new_title;
 		}
-		
+
 		/*
 		 * To stop this rule's updates, return an empty array, i.e., return array();
 		 */

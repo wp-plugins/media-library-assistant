@@ -22,7 +22,7 @@ class MLATest {
 	 * @var	boolean
 	 */
 	public static $wp_3dot5 = null;
-	
+
 	/**
 	 * True if WordPress version is 4.3 or newer
 	 *
@@ -31,7 +31,7 @@ class MLATest {
 	 * @var	boolean
 	 */
 	public static $wp_4dot3_plus = null;
-	
+
 	/**
 	 * Initialization function, similar to __construct()
 	 *
@@ -84,7 +84,7 @@ class MLATest {
 
 		return '';
 	}
-	
+
 	/**
 	 * Test that your WordPress version is at least that of the $min_version
 	 *
@@ -103,6 +103,6 @@ class MLATest {
 
 		return '';
 	}
-	
+
 } // class MLATest
 ?>

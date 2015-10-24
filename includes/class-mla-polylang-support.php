@@ -930,12 +930,12 @@ class MLA_Polylang {
 	 */
 	private static function _apply_synch_input( $language ) {
 		global $polylang;
-		
+
 		// Make sure there IS a target translation
 		if ( empty( self::$existing_terms[ $language ] ) ) {
 			return false;
 		}
-		
+
 		$source_language = self::$existing_terms['slug'];
 		$taxonomies = $polylang->model->get_translated_taxonomies();
 
@@ -953,7 +953,7 @@ class MLA_Polylang {
 				}
 			}
 		}
-		
+
 		/*
 		 * Find all destination terms with a source equivalent, record destination equivalent
 		 */
@@ -968,7 +968,7 @@ class MLA_Polylang {
 				}
 			}
 		}
-		
+
 		/*
 		 * Remove terms in common, leaving new_terms => add, old_terms => remove
 		 */
@@ -1172,22 +1172,22 @@ class MLA_Polylang {
 			} else {
 				$tax_inputs = array();
 			}
-	
+
 			if ( isset( $_REQUEST['post_category'] ) ) {
 				$tax_inputs['category'] = $_REQUEST['post_category'];
 			}
-	
+
 			if ( isset( $_REQUEST['tax_action'] ) ) {
 				$tax_actions = $_REQUEST['tax_action'];
 			} else {
 				$tax_actions = NULL;
 			}
-	
+
 			if ( ( ! empty( $tax_inputs ) ) && ( 'checked' == MLAOptions::mla_get_option( 'term_assignment', false, false, MLA_Polylang::$mla_language_option_definitions ) ) ) {
 				self::_build_tax_input( $post_id, $tax_inputs, $tax_actions );
 				$tax_inputs = self::_apply_tax_input( $post_id );
 			}
-	
+
 			if ( ! empty( $tax_inputs ) ) {
 				MLAData::mla_update_single_item( $post_id, array(), $tax_inputs );
 			}
@@ -1384,13 +1384,13 @@ class MLA_Polylang {
 		} else {
 			MLA::mla_debug_add( "MLA_Polylang::bulk_action_item_request( {$bulk_action}, {$post_id} ) \$request['tax_input'] NOT SET", MLA::MLA_DEBUG_CATEGORY_AJAX );
 		}
-		
+
 		if ( isset( $request['tax_action'] ) ) {
 			MLA::mla_debug_add( "MLA_Polylang::bulk_action_item_request( {$bulk_action}, {$post_id} ) \$request['tax_action'] = " . var_export( $request['tax_action'], true ), MLA::MLA_DEBUG_CATEGORY_AJAX );
 		} else {
 			MLA::mla_debug_add( "MLA_Polylang::bulk_action_item_request( {$bulk_action}, {$post_id} ) \$request['tax_action'] NOT SET", MLA::MLA_DEBUG_CATEGORY_AJAX );
 		}
-		
+
 		return $request;
 	} // mla_list_table_bulk_action_item_request
 

@@ -477,7 +477,7 @@ class MLA_List_Table extends WP_List_Table {
 		if ( MLATest::$wp_4dot3_plus ) {
 			unset( self::$default_columns['icon'] );
 		}
-		
+
 		return apply_filters( 'mla_list_table_get_columns', self::$default_columns );
 	}
 
@@ -731,7 +731,7 @@ class MLA_List_Table extends WP_List_Table {
 	 */
 	protected function get_default_primary_column_name() {
 		$hidden_columns = $this->get_hidden_columns();
-		
+
 		$primary_column = '';
 		foreach ( array( 'ID_parent', 'title_name', 'post_title', 'post_name' ) as $column_name ) {
 			if ( ! in_array( $column_name, $hidden_columns ) ) {
@@ -739,7 +739,7 @@ class MLA_List_Table extends WP_List_Table {
 				break;
 			}
 		}
-		
+
 		// Fallback to the first visible column
 		if ( empty( $primary_column ) ) {
 			foreach ( $this->get_columns() as $column_name => $column_title ) {
@@ -839,7 +839,7 @@ class MLA_List_Table extends WP_List_Table {
 			if ( ! $this->is_trash ) {
 				$actions['view']  = '<a href="' . site_url( ) . '?attachment_id=' . $item->ID . '" rel="permalink" title="' . __( 'View', 'media-library-assistant' ) . ' &#8220;' . $att_title . '&#8221;">' . __( 'View', 'media-library-assistant' ) . '</a>';
 			}
-			
+
 			$actions = apply_filters( 'mla_list_table_build_rollover_actions', $actions, $item, $column );
 
 			$this->rollover_id = $item->ID;
@@ -859,13 +859,13 @@ class MLA_List_Table extends WP_List_Table {
 	 */
 	protected function _build_item_thumbnail( $item ) {
 		static $thumb = NULL, $item_id = 0;
-		
+
 		if ( $item->ID == $item_id ) {
 			return $thumb;
 		} else {
 			$item_id = $item->ID;
 		}
-		
+
 		$icon_width = MLAOptions::mla_get_option( MLAOptions::MLA_TABLE_ICON_SIZE );
 		if ( 'checked' == MLAOptions::mla_get_option( MLAOptions::MLA_ENABLE_MLA_ICONS ) ) {
 			if ( empty( $icon_width ) ) {
@@ -883,7 +883,7 @@ class MLA_List_Table extends WP_List_Table {
 			} else {
 				$icon_width = absint( $icon_width );
 			}
-			
+
 			if ( MLATest::$wp_4dot3_plus ) {
 				$icon_height = $icon_width;
 			} else {
@@ -898,7 +898,7 @@ class MLA_List_Table extends WP_List_Table {
 			$thumb = preg_replace( '/width=\"[^\"]*\"/', sprintf( 'width="%1$d"', $dimensions[0] ), $thumb );
 			$thumb = preg_replace( '/height=\"[^\"]*\"/', sprintf( 'height="%1$d"', $dimensions[1] ), $thumb );
 		}
-		
+
 		return $thumb;
 	}
 
@@ -1015,25 +1015,25 @@ class MLA_List_Table extends WP_List_Table {
 	protected function _handle_primary_column( $item, $column_name, $column_content ) {
 		if ( MLATest::$wp_4dot3_plus ) {
 			static $primary_column = NULL;
-			
+
 			if ( NULL == $primary_column ) {
 				$primary_column = $this->get_default_primary_column_name();
 			}
-			
+
 			if ( $primary_column != $column_name ) {
 				return $column_content;
 			}
-			
+
 			list( $mime ) = explode( '/', $item->post_mime_type );
 			$final_content = "<div class=\"attachment-icon {$mime}-icon\">\n" . $this->column_icon( $item ) . "\n</div>\n";
 			return $final_content . "<div class=\"attachment-info\">\n" . $column_content . "\n</div>\n";
 		}
-		
+
 		$actions = $this->row_actions( $this->_build_rollover_actions( $item, $column_name ) );
 		if ( ! empty( $actions ) ) {
 			$column_content .= $actions . $this->_build_inline_data( $item );
 		}
-		
+
 		return $column_content;
 	}
 
@@ -1964,7 +1964,11 @@ class MLA_List_Table extends WP_List_Table {
 	 */
 	function single_row( $item ) {
 		static $row_class = '';
-		$row_class = ( $row_class == '' ? ' class="alternate"' : '' );
+
+		// WP 4.2+ uses "striped" CSS styles to implement "alternate"
+		if ( version_compare( get_bloginfo( 'version' ), '4.2', '<' ) ) {
+			$row_class = ( $row_class == '' ? ' class="alternate"' : '' );
+		}
 
 		echo '<tr id="attachment-' . $item->ID . '"' . $row_class . '>';
 		echo parent::single_row_columns( $item );

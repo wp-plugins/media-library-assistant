@@ -164,9 +164,9 @@ class MLAEdit {
 	 */
 	public static function mla_admin_enqueue_scripts_action( $page_hook ) {
 		global $wp_locale;
-		
+
 		$suffix = defined('SCRIPT_DEBUG') && SCRIPT_DEBUG ? '' : '.min';
-		
+
 		/*
 		 * Add New Bulk Edit Area
 		 */
@@ -178,7 +178,7 @@ class MLAEdit {
 				wp_register_style( 'mla-add-new-bulk-edit', MLA_PLUGIN_URL . 'css/mla-add-new-bulk-edit.css', false, MLA::CURRENT_MLA_VERSION );
 				wp_register_style( 'mla-add-new-bulk-edit' . '-set-parent', MLA_PLUGIN_URL . 'css/mla-style-set-parent.css', false, MLA::CURRENT_MLA_VERSION );
 			}
-			
+
 			wp_enqueue_style( 'mla-add-new-bulk-edit' );
 			wp_enqueue_style( 'mla-add-new-bulk-edit' . '-set-parent' );
 
@@ -677,7 +677,7 @@ class MLAEdit {
 			if ( empty( $template_array ) ) {
 				return $admin_title;
 			}
-	
+
 			/*
 			 * Replace sidebar content
 			 */
@@ -687,15 +687,15 @@ class MLAEdit {
 				$screen->set_help_sidebar( $content );
 			}
 			unset( $template_array['sidebar'] );
-	
+
 			/*
 			 * Provide explicit control over tab order
 			 */
 			$tab_array = array();
-	
+
 			foreach ( $template_array as $id => $content ) {
 				$match_count = preg_match( '#\<!-- title="(.+)" order="(.+)" --\>#', $content, $matches, PREG_OFFSET_CAPTURE );
-	
+
 				if ( $match_count > 0 ) {
 					$tab_array[ $matches[ 2 ][ 0 ] ] = array(
 						 'id' => $id,
@@ -707,12 +707,12 @@ class MLAEdit {
 					error_log( sprintf( _x( '%1$s: %2$s discarding "%3$s"; no title/order', 'error_log', 'media-library-assistant' ), __( 'ERROR', 'media-library-assistant' ), 'mla_edit_add_help_tab', $id ), 0 );
 				}
 			}
-	
+
 			ksort( $tab_array, SORT_NUMERIC );
 			foreach ( $tab_array as $indx => $value ) {
 				$screen->add_help_tab( $value );
 			}
-			
+
 			return $admin_title;
 		}
 

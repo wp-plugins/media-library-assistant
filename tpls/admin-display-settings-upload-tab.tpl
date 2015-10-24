@@ -90,7 +90,7 @@
 		<input type="hidden" name="page" value="mla-settings-menu-upload" />
 		<input type="hidden" name="mla_tab" value="upload" />
 		[+_wpnonce+]
-		
+
 <!-- template="after-optional-uploads-table" -->
 		<p class="submit mla-settings-submit">
 		<input name="mla-optional-uploads-cancel" type="submit" class="button-primary" value="Cancel" />&nbsp;
@@ -123,7 +123,7 @@
 				<input type="hidden" name="page" value="mla-settings-menu-upload" />
 				<input type="hidden" name="mla_tab" value="upload" />
 				[+_wpnonce+]
-				
+
 <!-- template="after-table" -->
 			</form><!-- /id=mla-search-uploads-filter --> 
 		</div><!-- /col-wrap --> 

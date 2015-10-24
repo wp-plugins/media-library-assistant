@@ -47,7 +47,7 @@ global $post;
 			if ( ! empty( $_REQUEST['my_taxonomy'] ) ) {
 				$attr['taxonomy'] = $_REQUEST['my_taxonomy'];
 			}
-		
+
 			if ( ! empty( $_REQUEST['my_term'] ) ) {
 				$attr['term'] = $_REQUEST['my_term'];
 			}
@@ -59,7 +59,7 @@ global $post;
 			if ( ! empty( $_REQUEST['posts_per_page'] ) ) {
 				$attr['posts_per_page'] = $_REQUEST['posts_per_page'];
 			}
-			
+
 			if ( ! empty( $_REQUEST['mla_paginate_current'] ) ) {
 				$attr['current_page'] = $_REQUEST['mla_paginate_current'];
 			}

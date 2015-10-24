@@ -61,7 +61,7 @@ class MLAFixedValuesExample {
 	 * initialization code sets it to false so the logic is quickly bypassed.
 	 */
 	private static $mla_fixed_values = NULL;
-	
+
     /**
      * MLA Gallery (Display) Attributes
      *
@@ -101,7 +101,7 @@ class MLAFixedValuesExample {
 		 *
 		 * You can have as many "mla_fixed_" parameters as you need for different values.
          */
-		
+
         if ( false === self::$mla_fixed_values ) {
             return $item_values; // leave them unchanged
         }

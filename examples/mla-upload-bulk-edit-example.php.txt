@@ -87,7 +87,7 @@ class MLAUploadBulkEditExample {
 		if ( ! ( isset( $request['screen'] ) && 'async-upload' == $request['screen'] && ! empty( $request['post_title'] ) ) ) {
 			return $request;
 		}
-		
+
 		// Retrieve the transient and continue the batch or start a new batch
 		$batch = get_transient( 'mla-upload-bulk-edit-example-batch' );
 		//error_log( __LINE__ . ' MLAUploadBulkEditExample::mla_list_table_bulk_action_item_request $batch = ' . var_export( $batch, true ), 0 );
@@ -96,7 +96,7 @@ class MLAUploadBulkEditExample {
 		if ( is_array( $batch ) && isset( $batch['post_title'] ) && ( $batch['post_title'] != $request['post_title'] )) {
 			$batch = false;
 		}
-		
+
 		// Increment or set the counter and modify the Title
 		if ( is_array( $batch ) && isset( $batch['post_title'] ) ) {
 			$batch['instance'] += 1;
@@ -105,7 +105,7 @@ class MLAUploadBulkEditExample {
 		}
 
 		$request['post_title'] .= ' ' . $batch['instance'];
-		
+
 		// Save the transient for more batch items
 		set_transient( 'mla-upload-bulk-edit-example-batch', $batch, 300 ); // five minutes
 

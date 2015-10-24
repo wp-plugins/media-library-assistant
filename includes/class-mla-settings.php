@@ -351,7 +351,7 @@ class MLASettings {
 		} else {
 			wp_register_style( MLA::STYLESHEET_SLUG, MLA_PLUGIN_URL . 'css/mla-style.css', false, MLA::CURRENT_MLA_VERSION );
 		}
-		
+
 		wp_enqueue_style( MLA::STYLESHEET_SLUG );
 
 		/*
@@ -3029,7 +3029,7 @@ class MLASettings {
 		);
 
 		$page_values = array();
-		
+
 		/*
 		 * Saving the options can change the log file name, so do it first
 		 */
@@ -3037,7 +3037,7 @@ class MLASettings {
 			check_admin_referer( MLA::MLA_ADMIN_NONCE_ACTION, MLA::MLA_ADMIN_NONCE_NAME );
 			$page_content = self::_save_debug_settings();
 		}
-		
+
 		/*
 		 * Find the appropriate error log file
 		 */
@@ -3049,10 +3049,10 @@ class MLASettings {
 			if ( ( '/' != $first ) && ( '\\' != $first ) ) {
 				$error_log_name = '/' . $error_log_name;
 			}
-			
+
 			$error_log_name = WP_CONTENT_DIR . $error_log_name;
 		}
-		
+
 		$error_log_exists = file_exists ( $error_log_name );
 
 		/*
@@ -3141,7 +3141,7 @@ class MLASettings {
 				/* translators: 1: file name */
 				$page_content['message'] = sprintf( __( 'Error log file (%1$s) not found; click Reset to create it.', 'media-library-assistant' ), $error_log_name );
 			}
-			
+
 			$error_log_size = 0;
 			$error_log_contents = '';
 		} // file_exists

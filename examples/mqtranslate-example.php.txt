@@ -75,7 +75,7 @@ class MLAmqTranslateExample {
 	 */
 	public static function mla_get_terms_query_results_filter( $tag_objects ) {
 		$tag_objects = qtrans_useTermLib( $tag_objects );
-		
+
 		return $tag_objects;
 	} // mla_get_terms_query_results_filter
 
@@ -90,11 +90,11 @@ class MLAmqTranslateExample {
 	 */
 	public static function mla_gallery_open_values_filter( $item_values ) {
 		global $q_config;
-		
+
 		if ( $q_config['language'] != $q_config['default_language'] ) {
 			$item_values['site_url'] = $item_values['site_url'] . '/' . $q_config['language'];
 		}
-		
+
 		return $item_values;
 	} // mla_gallery_open_values_filter
 } // Class MLAmqTranslateExample

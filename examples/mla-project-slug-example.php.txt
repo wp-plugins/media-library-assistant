@@ -82,7 +82,7 @@ class MLAProjectSlugExample {
 	public static function mla_gallery_attributes_filter( $shortcode_attributes ) {
 		if ( isset( $shortcode_attributes['parent_meta'] ) ) {
 			global $post;
-			
+
 			$values = explode( ',', $shortcode_attributes['parent_meta'] );
 			$meta_key = $values[0];
 			$taxonomy = ( isset( $values[1] ) ) ? $values[1] : 'attachment_category';

@@ -61,7 +61,7 @@ class MLADownloadZIPExample {
 		 */
 		if ( ! class_exists( 'ZipArchive' ) )
 			return;
-		
+
 		/*
 		 * add_filter parameters:
 		 * $tag - name of the hook you're filtering; defined by [mla_gallery]
@@ -87,7 +87,7 @@ class MLADownloadZIPExample {
 	 */
 	public static function admin_init_action() {
 		//error_log( 'MLADownloadZIPExample::admin_init_action $_REQUEST = ' . var_export( $_REQUEST, true ), 0 );
-		
+
 		$bulk_action = '';
 		if ( isset( $_REQUEST['action'] ) && 'download-zip' == $_REQUEST['action']) {
 			$bulk_action = 'download-zip';
@@ -102,7 +102,7 @@ class MLADownloadZIPExample {
 		if ( empty( $_REQUEST['cb_attachment'] ) ) {
 			return;
 		}
-		
+
 		/*
 		 * Create unique local names to handle the case where the same file name
 		 * appears in multiple year/month/ directories.
@@ -117,10 +117,10 @@ class MLADownloadZIPExample {
 				$suffix++;
 				$local_name = $path_info['filename'] . $suffix . '.' . $path_info['extension'];
 			}
-			
+
 			$file_names[ $local_name ] = $file_name;
 		}
-		
+
 		/*
 		 * Create the ZIP archive
 		 */
@@ -128,11 +128,11 @@ class MLADownloadZIPExample {
 		$prefix = ( defined( MLA_OPTION_PREFIX ) ) ? MLA_OPTION_PREFIX : 'mla_';
 		$date = date("Ymd_B");
 		$archive_name = $upload_dir['basedir'] . '/' . "{$prefix}_options_{$date}.zip";
-		
+
 		if ( file_exists( $archive_name ) ) {
 			@unlink( $archive_name );
 		}
-		
+
 		$zip = new ZipArchive();
 		if ( true !== $zip->open( $archive_name, ZIPARCHIVE::CREATE ) ) {
 			/* translators: 1: ZIP archive file name */
@@ -147,7 +147,7 @@ class MLADownloadZIPExample {
 				return;
 			}
 		}
-		
+
 		if ( true !== $zip->close() ) {
 			/* translators: 1: ZIP archive file name */
 			$_REQUEST['mla_admin_message'] = sprintf( __( 'ERROR: The ZIP archive ( %1$s ) could not be closed.', 'mla-zip-archive-example' ), $archive_name );
@@ -175,7 +175,7 @@ class MLADownloadZIPExample {
 	 */
 	public static function mla_list_table_get_bulk_actions( $actions ) {
 		//error_log( 'MLADownloadZIPExample::mla_list_table_get_bulk_actions $actions = ' . var_export( $actions, true ), 0 );
-		
+
 		$actions[ 'download-zip' ] = __( 'Download', 'mla-zip-archive-example' );
 		return $actions;
 	} // mla_list_table_get_bulk_actions

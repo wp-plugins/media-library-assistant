@@ -109,7 +109,7 @@ class MLAImageSourceControlExample {
 				$_REQUEST['custom_updates']['isc_image_source_own'] = '';
 			}
 		}
-		
+
 		return $item_content;
 	} // mla_list_table_inline_action
 
@@ -138,7 +138,7 @@ class MLAImageSourceControlExample {
 				$request[ $slug ] = '';
 			}
 		}
-		
+
 		return $request;
 	} // mla_list_table_bulk_action_initial_request
 
@@ -204,10 +204,10 @@ class MLAImageSourceControlExample {
 		 */
 		$item_values['custom_fields'] = str_replace( '>isc_image_source<', '>Source<', $item_values['custom_fields'] );
 		$item_values['bulk_custom_fields'] = str_replace( '>isc_image_source<', '>Source<', $item_values['bulk_custom_fields'] );
-		
+
 		$item_values['custom_fields'] = str_replace( '>isc_image_source_own<', '>Own<', $item_values['custom_fields'] );
 		$item_values['bulk_custom_fields'] = str_replace( '>isc_image_source_own<', '>Own<', $item_values['bulk_custom_fields'] );
-		
+
 		$item_values['custom_fields'] = str_replace( '>isc_image_source_url<', '>Source URL<', $item_values['custom_fields'] );
 		$item_values['bulk_custom_fields'] = str_replace( '>isc_image_source_url<', '>Source URL<', $item_values['bulk_custom_fields'] );
 
@@ -244,16 +244,16 @@ class MLAImageSourceControlExample {
 			self::$field_slugs['isc_image_source'] = $slug;
 			$columns[ $slug ] = 'Source';
 		}
-		
+
 		if ( false !== $slug = array_search( 'isc_image_source_own', $columns ) ) {
 			self::$field_slugs['isc_image_source_own'] = $slug;
-			
+
 			/*
 			 * Change the column slug so we can provide our own friendly content.
 			 * Replace the entry for the column we're capturing, preserving its place in the list
 			 */
 			$new_columns = array();
-					
+
 			foreach ( $columns as $key => $value ) {
 				if ( $key == $slug ) {
 					$new_columns['isc_image_source_own'] = 'Own';
@@ -261,10 +261,10 @@ class MLAImageSourceControlExample {
 					$new_columns[ $key ] = $value;
 				}
 			} // foreach column
-					
+
 			$columns = $new_columns;
 		}
-		
+
 		if ( false !== $slug = array_search( 'isc_image_source_url', $columns ) ) {
 			self::$field_slugs['isc_image_source_url'] = $slug;
 			$columns[ $slug ] = 'Source URL';
@@ -295,7 +295,7 @@ class MLAImageSourceControlExample {
 				$hidden_columns[ $index ] = 'isc_image_source_own';
 			}
 		}
-		
+
 		return $hidden_columns;
 	} // mla_list_table_get_hidden_columns_filter
 
@@ -323,7 +323,7 @@ class MLAImageSourceControlExample {
 			$slug = self::$field_slugs['isc_image_source_own'];
 			if ( isset( $sortable_columns[ $slug ] ) ) {
 				$new_columns = array();
-				
+
 				foreach ( $sortable_columns as $key => $value ) {
 					if ( $key == $slug ) {
 						$new_columns['isc_image_source_own'] = $value;
@@ -331,7 +331,7 @@ class MLAImageSourceControlExample {
 						$new_columns[ $key ] = $value;
 					}
 				} // foreach column
-				
+
 				$sortable_columns = $new_columns;
 			} // slug found
 		} // slug exists
@@ -363,7 +363,7 @@ class MLAImageSourceControlExample {
 				return 'yes';
 			}
 		}
-		
+
 		return $content;
 	} // mla_list_table_column_default_filter
 
@@ -387,7 +387,7 @@ class MLAImageSourceControlExample {
 		if ( ! isset( self::$field_slugs['isc_image_source_own'] ) ) {
 			return $inline_data;
 		}
-			
+
 		/*
 		 * Replace the ISC internal value with a "friendly" value
 		 */
@@ -405,7 +405,7 @@ class MLAImageSourceControlExample {
 		$head = substr( $inline_data, 0, $matches[1][0][1] );
 		$tail = substr( $inline_data, ( $matches[1][0][1] + strlen( $matches[1][0][0] ) ) );
 		$inline_data = $head . $value . $tail;
-		
+
 		return $inline_data;
 	} // mla_list_table_build_inline_data_filter
 } // Class MLAImageSourceControlExample

@@ -132,7 +132,7 @@ class MLAObjects {
 			if ( ! empty( $filter_columns ) ) {
 				return $filter_columns;
 			}
-			
+
 			if ( isset ( $columns[ 'posts' ] ) ) {
 				unset( $columns[ 'posts' ] );
 			}
@@ -173,16 +173,16 @@ class MLAObjects {
 				$taxonomy = !empty( $screen->taxonomy ) ? $screen->taxonomy : 'post_tag';
 			}
 		}
-		
+
 		$filter_content = apply_filters( 'mla_taxonomy_column', NULL, $current_value, $column_name, $term_id, $taxonomy );
 		if ( ! empty( $filter_content ) ) {
 			return $filter_content;
 		}
-			
+
 		if ( 'attachments' !== $column_name ) {
 			return $current_value;
 		}
-		
+
 		/*
 		 * Do setup tasks once per page load
 		 */

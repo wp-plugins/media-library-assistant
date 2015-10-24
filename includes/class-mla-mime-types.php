@@ -1667,7 +1667,7 @@ class MLAMime {
 			} else {
 				$image_info['width'] = 0;
 			}
-			
+
 			if ( isset( $image_info[1] ) ) {
 				$image_info['height'] = $image_info[1];
 			} else {

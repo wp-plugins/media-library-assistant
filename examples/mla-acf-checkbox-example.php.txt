@@ -126,7 +126,7 @@ class MLAACFCheckboxExample {
 				$_REQUEST['custom_updates']['acf_checkbox'] = explode( ',', $_REQUEST['custom_updates']['acf_checkbox'] );
 			}
 		}
-		
+
 		return $item_content;
 	} // mla_list_table_inline_action
 
@@ -155,7 +155,7 @@ class MLAACFCheckboxExample {
 				$request[ $slug ] = '';
 			}
 		}
-		
+
 		return $request;
 	} // mla_list_table_bulk_action_initial_request
 
@@ -199,7 +199,7 @@ class MLAACFCheckboxExample {
 				$item_content = array( 'message' => sprintf( __( 'Adding %1$s = %2$s', 'media-library-assistant' ) . '<br>', 'acf_checkbox', self::$acf_checkbox_value ) );
 			}
 		}
-		
+
 		return $item_content;
 	} // mla_list_table_bulk_action
 
@@ -221,7 +221,7 @@ class MLAACFCheckboxExample {
 		 */
 		$item_values['custom_fields'] = str_replace( '>acf_checkbox<', '>ACF Checkbox<', $item_values['custom_fields'] );
 		$item_values['bulk_custom_fields'] = str_replace( '>acf_checkbox<', '>ACF Checkbox<', $item_values['bulk_custom_fields'] );
-		
+
 		return $item_values;
 	} // mla_list_table_inline_values
 
@@ -253,13 +253,13 @@ class MLAACFCheckboxExample {
 		 */
 		if ( false !== $slug = array_search( 'acf_checkbox', $columns ) ) {
 			self::$field_slugs['acf_checkbox'] = $slug;
-			
+
 			/*
 			 * Change the column slug so we can provide our own friendly content.
 			 * Replace the entry for the column we're capturing, preserving its place in the list
 			 */
 			$new_columns = array();
-					
+
 			foreach ( $columns as $key => $value ) {
 				if ( $key == $slug ) {
 					$new_columns['acf_checkbox'] = 'acf_checkbox';
@@ -267,10 +267,10 @@ class MLAACFCheckboxExample {
 					$new_columns[ $key ] = $value;
 				}
 			} // foreach column
-					
+
 			$columns = $new_columns;
 		}
-		
+
 		return $columns;
 	} // mla_list_table_get_columns_filter
 
@@ -296,7 +296,7 @@ class MLAACFCheckboxExample {
 				$hidden_columns[ $index ] = 'acf_checkbox';
 			}
 		}
-		
+
 		return $hidden_columns;
 	} // mla_list_table_get_hidden_columns_filter
 
@@ -324,7 +324,7 @@ class MLAACFCheckboxExample {
 			$slug = self::$field_slugs['acf_checkbox'];
 			if ( isset( $sortable_columns[ $slug ] ) ) {
 				$new_columns = array();
-				
+
 				foreach ( $sortable_columns as $key => $value ) {
 					if ( $key == $slug ) {
 						$new_columns['acf_checkbox'] = $value;
@@ -332,7 +332,7 @@ class MLAACFCheckboxExample {
 						$new_columns[ $key ] = $value;
 					}
 				} // foreach column
-				
+
 				$sortable_columns = $new_columns;
 			} // slug found
 		} // slug exists
@@ -367,7 +367,7 @@ class MLAACFCheckboxExample {
 				return $values;
 			}
 		}
-		
+
 		return $content;
 	} // mla_list_table_column_default_filter
 
@@ -391,7 +391,7 @@ class MLAACFCheckboxExample {
 		if ( ! isset( self::$field_slugs['acf_checkbox'] ) ) {
 			return $inline_data;
 		}
-			
+
 		/*
 		 * Convert the ACF-compatible array to a comma-delimited list of
 		 * "checked" checkbox values.
@@ -410,7 +410,7 @@ class MLAACFCheckboxExample {
 				$inline_data = $head . $value . $tail;
 			}
 		}
-		
+
 		return $inline_data;
 	} // mla_list_table_build_inline_data_filter
 } // Class MLAACFCheckboxExample

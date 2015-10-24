@@ -38,7 +38,7 @@ class MLA {
 	 *
 	 * @var	string
 	 */
-	const MLA_DEVELOPMENT_VERSION = '20151015';
+	const MLA_DEVELOPMENT_VERSION = '20151023';
 
 	/**
 	 * Slug for registering and enqueueing plugin style sheet
@@ -327,12 +327,12 @@ class MLA {
 		 */
 		load_textdomain( $text_domain, trailingslashit( WP_LANG_DIR ) . $text_domain . '/' . $text_domain . '-' . $locale . '.mo' );
 		load_plugin_textdomain( $text_domain, false, MLA_PLUGIN_BASENAME . '/languages/' );
-		
+
 		/*
 		 * This must/will be repeated in class-mla-tests.php to reflect translations
 		 */
 		MLAOptions::mla_localize_option_definitions_array();
-		
+
 		/*
 		 * Do not process debug options unless MLA_DEBUG_LEVEL is set in wp-config.php
 		 */
@@ -344,7 +344,7 @@ class MLA {
 			$error_log_name = MLAOptions::mla_get_option( MLAOptions::MLA_DEBUG_FILE ); 
 			if ( ! empty( $error_log_name ) ) {
 				self::mla_debug_file( $error_log_name );
-	
+
 				/*
 				 * Override PHP error_log file
 				 */
@@ -352,7 +352,7 @@ class MLA {
 					$result = ini_set('error_log', WP_CONTENT_DIR . self::$mla_debug_file );
 				}
 			}
-	
+
 			/*
 			 * PHP error_reporting must be done later in class-mla-tests.php
 			 * Override MLA debug levels
@@ -470,7 +470,7 @@ class MLA {
 					$icon_value = absint( $icon_value );
 				}
 			}
-			
+
 			$icon_width = $icon_height = $icon_value . 'px';
 
 			echo "    width: auto;\n";
@@ -485,7 +485,7 @@ class MLA {
 					$icon_value = 80;
 				}
 			}
-			
+
 			$icon_width = absint( $icon_value ) . 'px';
 			echo "    max-width: {$icon_width};\n";
 
@@ -524,7 +524,7 @@ class MLA {
 			echo "  .fixed td.column-icon, .fixed th.column-icon {\n";
 			echo "    width: {$icon_width};\n";
 			echo "  }\n";
-		
+
 			/*
 			 * Separate ID_parent column
 			 */
@@ -548,7 +548,7 @@ class MLA {
 	 */
 	public static function mla_admin_enqueue_scripts_action( $page_hook ) {
 		global $wp_locale;
-		
+
 		$suffix = defined('SCRIPT_DEBUG') && SCRIPT_DEBUG ? '' : '.min';
 
 		if ( 'checked' != MLAOptions::mla_get_option( MLAOptions::MLA_SCREEN_DISPLAY_LIBRARY ) ) {
@@ -565,7 +565,7 @@ class MLA {
 		if ( 'media_page_' . self::ADMIN_PAGE_SLUG != $page_hook ) {
 			return;
 		}
-		
+
 		/*
 		 * Add the styles for variable-size icon and WP 4.3 primary column display 
 		 */
@@ -576,7 +576,7 @@ class MLA {
 		} else {
 			wp_register_style( self::STYLESHEET_SLUG, MLA_PLUGIN_URL . 'css/mla-style.css', false, self::CURRENT_MLA_VERSION );
 		}
-		
+
 		wp_enqueue_style( self::STYLESHEET_SLUG );
 
 		wp_register_style( self::STYLESHEET_SLUG . '-set-parent', MLA_PLUGIN_URL . 'css/mla-style-set-parent.css', false, self::CURRENT_MLA_VERSION );
@@ -2546,11 +2546,11 @@ class MLA {
 	 */
 	public static function mla_debug_mode( $mode = false ) {
 		$old_mode = self::$mla_debug_mode;
-		
+
 		if ( $mode && in_array( $mode, array( 'none', 'buffer', 'console', 'log' ) ) ) {
 			self::$mla_debug_mode = $mode;
 		}
-		
+
 		return $old_mode;
 	}
 
@@ -2582,7 +2582,7 @@ class MLA {
 		}
 
 		$old_file = self::$mla_debug_file;
-		
+
 		if ( empty( $file ) ) {
 			self::$mla_debug_file = NULL;
 		} else {
@@ -2593,7 +2593,7 @@ class MLA {
 
 			self::$mla_debug_file = $file;
 		}
-		
+
 		return $old_file;
 	}
 
@@ -2676,7 +2676,7 @@ class MLA {
 				return;
 			}
 		}
-		
+
 		error_log( $message, 0 );
 	}
 

@@ -169,16 +169,16 @@ class MLA_WPML {
 
 		if ( ( defined('WP_ADMIN') && WP_ADMIN ) && ( defined('DOING_AJAX') && DOING_AJAX ) ) {
 			global $sitepress;
-			
+
 			//Look for flat taxonomy autocomplete
 			if ( isset( $_GET['action'] ) && ( 'ajax-tag-search' == $_GET['action'] ) ) {
 				$current_language = $sitepress->get_current_language();
-	
+
 				// WPML will set the "Preview Language" from preview_id for Quick Edit
 				if ( ( 'all' === $current_language ) && ( ! isset( $_GET['preview_id'] ) ) ) {
 					if ( ! empty( $_SERVER[ 'HTTP_REFERER' ] ) ) {
 						$default_language = $sitepress->get_default_language();
-					
+
 						// Look for an ID from the Media/Edit Media screen
 						$query_string = parse_url( $_SERVER[ 'HTTP_REFERER' ], PHP_URL_QUERY );
 						$query = array();
@@ -187,7 +187,7 @@ class MLA_WPML {
 						if ( isset( $query['post'] ) ) {
 							$language_details = $sitepress->get_element_language_details( absint( $query['post'] ), 'post_attachment' );
 							$default_language = $language_details->language_code;
-							
+
 						}
 
 						// WPML overides switch_lang() from the HTTP_REFERER
@@ -306,7 +306,7 @@ class MLA_WPML {
 			$_REQUEST['tax_input'] = self::_apply_tax_input( $post_id );
 			MLA::mla_debug_add( "MLA_WPML::mla_list_table_inline_action( {$post_id} ) Quick Edit final \$_REQUEST['tax_input'] = " . var_export( $_REQUEST['tax_input'], true ), MLA::MLA_DEBUG_CATEGORY_AJAX );
 		}
-		
+
 		return $item_content;
 	} // mla_list_table_inline_action
 
@@ -395,13 +395,13 @@ class MLA_WPML {
 		} else {
 			MLA::mla_debug_add( "MLA_WPML::bulk_action_item_request( {$bulk_action}, {$post_id} ) \$request['tax_input'] NOT SET", MLA::MLA_DEBUG_CATEGORY_AJAX );
 		}
-		
+
 		if ( isset( $request['tax_action'] ) ) {
 			MLA::mla_debug_add( "MLA_WPML::bulk_action_item_request( {$bulk_action}, {$post_id} ) \$request['tax_action'] = " . var_export( $request['tax_action'], true ), MLA::MLA_DEBUG_CATEGORY_AJAX );
 		} else {
 			MLA::mla_debug_add( "MLA_WPML::bulk_action_item_request( {$bulk_action}, {$post_id} ) \$request['tax_action'] NOT SET", MLA::MLA_DEBUG_CATEGORY_AJAX );
 		}
-		
+
 		return $request;
 	} // mla_list_table_bulk_action_item_request
 
@@ -937,7 +937,7 @@ class MLA_WPML {
 				}
 			}
 		}
-		
+
 		/*
 		 * Find all destination terms with a source equivalent, record destination equivalent
 		 */
@@ -952,7 +952,7 @@ class MLA_WPML {
 				}
 			}
 		}
-		
+
 		/*
 		 * Remove terms in common, leaving new_terms => add, old_terms => remove
 		 */
@@ -1204,22 +1204,22 @@ class MLA_WPML {
 			} else {
 				$tax_inputs = array();
 			}
-	
+
 			if ( isset( $_REQUEST['post_category'] ) ) {
 				$tax_inputs['category'] = $_REQUEST['post_category'];
 			}
-	
+
 			if ( isset( $_REQUEST['tax_action'] ) ) {
 				$tax_actions = $_REQUEST['tax_action'];
 			} else {
 				$tax_actions = NULL;
 			}
-	
+
 			if ( ( ! empty( $tax_inputs ) ) && ( 'checked' == MLAOptions::mla_get_option( 'term_assignment', false, false, MLA_WPML::$mla_language_option_definitions ) ) ) {
 				self::_build_tax_input( $post_id, $tax_inputs, $tax_actions );
 				$tax_inputs = self::_apply_tax_input( $post_id );
 			}
-	
+
 			if ( ! empty( $tax_inputs ) ) {
 				MLAData::mla_update_single_item( $post_id, array(), $tax_inputs );
 				}
@@ -1885,7 +1885,7 @@ class MLA_WPML_Table {
 				$content .= '<img style="padding:1px;margin:2px;" border="0" src="' . ICL_PLUGIN_URL . '/res/img/' . $img . '" alt="' . $alt . '" width="16" height="16" />';
 				$content .= '</a>';
 			} // foreach language
-			
+
 			// Is this the original item or a translation?
 			if ( false && isset( $item->mla_item_wpml_media_processed ) && ( '1' == $item->mla_item_wpml_media_processed ) ) {
 				$content .= 'T';

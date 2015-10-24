@@ -42,7 +42,7 @@ class MNA_Pad_Counts_Walker extends Walker_Category {
 	 * @var array
 	 */
 	private $mla_terms = array();
-	
+
 	/**
 	 * Constructor - set the MLA Terms.
 	 *
@@ -60,7 +60,7 @@ class MNA_Pad_Counts_Walker extends Walker_Category {
 			$this->mla_terms[ $term->term_taxonomy_id ] = $term->count;
 		}
 	}
-	
+
 	/**
 	 * Start the element output.
 	 *
@@ -77,7 +77,7 @@ class MNA_Pad_Counts_Walker extends Walker_Category {
 		if ( isset( $this->mla_terms[ $taxonomy_object->term_taxonomy_id ] ) ) {
 			$taxonomy_object->count = $this->mla_terms[ $taxonomy_object->term_taxonomy_id ];
 		}
-		
+
 		parent::start_el( $output, $taxonomy_object, $depth, $args, $id );
 	}
 }// Class MNA_Pad_Counts_Walker
@@ -86,7 +86,7 @@ $taxonomies = get_object_taxonomies( 'attachment', 'objects' );
 
 foreach ( $taxonomies as $taxonomy ) {
 	echo '<h3>' . $taxonomy->labels->name . '</h3>';
-	
+
 	unset( $checklist_walker );
 	$checklist_walker = new MNA_Pad_Counts_Walker( $taxonomy->name );
 	$args = array(
@@ -101,7 +101,7 @@ foreach ( $taxonomies as $taxonomy ) {
 
 	echo '<h4>wp_list_categories</h4>';
 	wp_list_categories( $args );
-	
+
 	echo '<h4>mla_tag_cloud</h4>';
 	echo '<table><tr><td>pad_counts=false<br>';
 	echo do_shortcode( "[mla_tag_cloud taxonomy={$taxonomy->name} mla_output=list pad_counts=false]" );

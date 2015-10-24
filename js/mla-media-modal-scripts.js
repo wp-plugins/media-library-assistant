@@ -10,7 +10,7 @@ var wp, wpAjax, ajaxurl, jQuery, _,
 		initialHTML: {},
 		uploading: false,
 		cid: null,
-	
+
 		// Utility functions
 		utility: {
 			originalMediaAjax: null,
@@ -22,7 +22,7 @@ var wp, wpAjax, ajaxurl, jQuery, _,
 			fillCompatTaxonomies: null,
 			supportCompatTaxonomies: null
 		},
-	
+
 		// Components
 		tagBox: null
 	};
@@ -99,15 +99,15 @@ var wp, wpAjax, ajaxurl, jQuery, _,
 	if ( ! ( mlaModal.settings.enableMediaGrid || mlaModal.settings.enableMediaModal ) ) {
 		return;
 	}
-	
+
 	if ( ( 'grid' === mlaModal.settings.screen ) && false === mlaModal.settings.enableMediaGrid ) {
 		return;
 	}
-	
+
 	if ( ( 'modal' === mlaModal.settings.screen ) && false === mlaModal.settings.enableMediaModal ) {
 		return;
 	}
-	
+
 	/*
 	 * Parse outgoing Ajax requests, look for the 'query-attachments' action and stuff
 	 * our arguments into the "s" field because MMMW only monitors that one field.
@@ -115,7 +115,7 @@ var wp, wpAjax, ajaxurl, jQuery, _,
 	mlaModal.utility.originalMediaAjax = wp.media.ajax;
 	wp.media.ajax = function( action, options ) {
 		var state = mlaModal.settings.state, query, stype, s, searchValues;
-		
+
 		if ( _.isObject( action ) ) {
 			options = action;
 		} else {
@@ -220,12 +220,12 @@ var wp, wpAjax, ajaxurl, jQuery, _,
 						priority: 20
 					};
 				}
-				
+
 				this.filters = filters;
 				if ( 'undefined' === typeof filters[ mlaModal.settings.query[state].filterMime ] ) {
 					mlaModal.settings.query[state].filterMime = 'all';
 				}
-				
+
 				if ( mlaModal.settings.query[state].filterMime != 'all' ) {
 					this.model.set( filters[ mlaModal.settings.query[state].filterMime ].props, { silent: false } );
 				}
@@ -236,7 +236,7 @@ var wp, wpAjax, ajaxurl, jQuery, _,
 					model = this.model,
 					value = mlaModal.settings.query[state].filterMime,
 					props = model.toJSON();
-	
+
 				if ( false === mlaModal.settings.enableSearchBox ) {
 					if ( 'string' == typeof props.search ) {
 						mlaModal.settings.query[state].searchValue = props.search;
@@ -249,12 +249,12 @@ var wp, wpAjax, ajaxurl, jQuery, _,
 					var equal = _.all( filter.props, function( prop, key ) {
 						return prop === ( _.isUndefined( props[ key ] ) ? null : props[ key ] );
 					});
-	
+
 					if ( equal ) {
 						return value = id;
 					}
 				});
-	
+
 				this.$el.val( value );
 			},
 
@@ -326,12 +326,12 @@ var wp, wpAjax, ajaxurl, jQuery, _,
 					},
 					priority: 50
 				};
-				
+
 				this.filters = filters;
 				if ( 'undefined' === typeof filters[ mlaModal.settings.query[state].filterUploaded ] ) {
 					mlaModal.settings.query[state].filterUploaded = 'all';
 				}
-				
+
 				if ( mlaModal.settings.query[state].filterUploaded != 'all' ) {
 					this.model.set( filters[ mlaModal.settings.query[state].filterUploaded ].props, { silent: false } );
 				}
@@ -342,7 +342,7 @@ var wp, wpAjax, ajaxurl, jQuery, _,
 					model = this.model,
 					value = mlaModal.settings.query[state].filterMime,
 					props = model.toJSON();
-	
+
 				if ( false === mlaModal.settings.enableSearchBox ) {
 					if ( 'string' == typeof props.search ) {
 						mlaModal.settings.query[state].searchValue = props.search;
@@ -355,12 +355,12 @@ var wp, wpAjax, ajaxurl, jQuery, _,
 					var equal = _.all( filter.props, function( prop, key ) {
 						return prop === ( _.isUndefined( props[ key ] ) ? null : props[ key ] );
 					});
-	
+
 					if ( equal ) {
 						return value = id;
 					}
 				});
-	
+
 				this.$el.val( value );
 			},
 
@@ -400,7 +400,7 @@ var wp, wpAjax, ajaxurl, jQuery, _,
 				if ( 'undefined' === typeof filters[ mlaModal.settings.query[state].filterMonth ] ) {
 					mlaModal.settings.query[state].filterMonth = 0;
 				}
-				
+
 				if ( mlaModal.settings.query[state].filterMonth > 0 )
 					this.model.set( filters[ mlaModal.settings.query[state].filterMonth ].props, { silent: false } );
 			},
@@ -642,7 +642,7 @@ wp.media.view.MlaSearch.on( 'all', MlaSearchOn );
 					mlaModal.settings.query[ state ].searchValue = event.target.value;
 					return;
 				}
-				
+
 				if ( ( 'click' == event.type ) && ( 'mla_search_submit' != event.target.name ) ) {
 					return;
 				}
@@ -1190,7 +1190,7 @@ this.listenTo( this.controller, 'all', this.toolbarEvent );
 							if ( null !== mlaModal.utility.mlaAttachmentsBrowser ) {
 								mlaModal.utility.mlaAttachmentsBrowser.updateFilters( taxonomy, results[ taxonomy][ 'object-terms' ] );
 							}
-							
+
 							delete results[ taxonomy][ 'object-terms' ];
 						}
 
@@ -1246,7 +1246,7 @@ this.listenTo( this.controller, 'all', this.toolbarEvent );
 /*	for debug : trace every event triggered in the wp.media.model.Selection * /
 			selectionEvent: function( eventName, eventModel, eventContext, eventFlags ) {
 				var attributes = null, id = 0, cid = 'none';
-				
+
 				if ( 'undefined' != typeof eventModel.cid ) {
 					cid = eventModel.cid;
 				}
@@ -1309,7 +1309,7 @@ this.listenTo( this, 'all', this.selectionEvent );
 							delete changed.caption;
 							delete changed.alt;
 							delete changed.description;
-							
+
 							if ( ! _.isEmpty( changed ) ) {
 								hookCompat = true;
 							}
@@ -1338,7 +1338,7 @@ this.listenTo( this, 'all', this.selectionEvent );
 				$( '.compat-field-' + taxonomy + ' th', context ).click( { id: attachmentId, currentTaxonomy: taxonomy, el: context }, function( event ) {
 					mlaModal.utility.fillCompatTaxonomies( event.data );
 				});
-				
+
 				// Delete the default row, show the enhanced row
 				$( 'tr.compat-field-' + taxonomy, context ).each( function(){
 					if ( $(this).hasClass('mla-taxonomy-row') ) {
@@ -1369,7 +1369,7 @@ this.listenTo( this, 'all', this.selectionEvent );
 				$( '.compat-field-' + taxonomy + ' th', context ).click( { id: attachmentId, currentTaxonomy: taxonomy, el: context }, function( event ) {
 					mlaModal.utility.fillCompatTaxonomies( event.data );
 				});
-				
+
 				// Delete the default row, show the enhanced row
 				$( 'tr.compat-field-' + taxonomy, context ).each( function(){
 					if ( $(this).hasClass('mla-taxonomy-row') ) {

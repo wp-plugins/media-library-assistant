@@ -188,6 +188,8 @@ All of the MLA source code has been annotated with "DocBlocks", a special type o
 * New: The "mla_media_modal_initial_filters" and "mla_media_modal_settings" filters have been updated to allow control over the "uploaded" MIME type dropdown, e.g., on the "Create Gallery" and "Set Featured Image" views of the Media Manager Modal (popup) Window.
 * New: The `/examples/mla-tax-query-example.php.txt` example plugin has been updated to support keyword search parameters.
 * New: The `/examples/random-feature.php.txt` example plugin has been updated to allow for separate "post" and "item" taxonomies.
+* Fix: For the `[mla_gallery]` shortcode, keyword searches only on `terms` generate an empty result when no terms match the search string.
+* Fix: For the `[mla_gallery]` shortcode, keyword searches with special characters such as single and/or double quotes now work correctly.
 * Fix: Style sheets and HTML markup changes have been added to support sites with Right-to-left (TRL) languages.
 * Fix: For the Media/Assistant submenu table, combinations of ALT Text filtering in the Search Media box, sorting on custom field columns and Table Views based on custom field values now work correctly.
 * Fix: The Edit Taxonomy "Attachments" column is displayed correctly when othe plugins, e.g., Polylang, add columns to the submenu table.

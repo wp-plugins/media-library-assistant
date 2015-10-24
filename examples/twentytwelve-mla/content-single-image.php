@@ -110,7 +110,7 @@ if ( $query->have_posts() ) {
 			if ( ! empty( $_REQUEST['taxonomy'] ) ) {
 				$attr['taxonomy'] = $_REQUEST['taxonomy'];
 			}
-		
+
 			/*
 			 * You can change the default destination page by adding a query variable, e.g., 
 			 * "?page_path=some-other-page"
@@ -118,7 +118,7 @@ if ( $query->have_posts() ) {
 			if ( ! empty( $_REQUEST['page_path'] ) ) {
 				$attr['page_path'] = $_REQUEST['page_path'];
 			}
-				
+
 			mla_custom_terms_list( get_the_ID(), $attr ); // Child theme function
 			?>
 			</div><!-- .entry-terms -->

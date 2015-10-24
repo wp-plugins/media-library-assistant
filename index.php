@@ -12,7 +12,7 @@
 /*
 Plugin Name: Media Library Assistant
 Plugin URI: http://fairtradejudaica.org/media-library-assistant-a-wordpress-plugin/
-Description: 20151015 Enhances the Media Library; powerful [mla_gallery], taxonomy support, IPTC/EXIF processing, bulk & quick edit actions and where-used reporting.
+Description: 20151023 Enhances the Media Library; powerful [mla_gallery], taxonomy support, IPTC/EXIF processing, bulk & quick edit actions and where-used reporting.
 Author: David Lingren, Fair Trade Judaica
 Text Domain: media-library-assistant
 Domain Path: /languages
@@ -157,7 +157,7 @@ foreach ( $mla_name_conflict_candidates as $value => $type ) {
  */
 function mla_name_conflict_reporting_action () {
 	global $mla_name_conflict_error_messages;
-	
+
 	echo '<div class="error"><p><strong>The Media Library Assistant cannot load.</strong> Another plugin or theme has declared conflicting class, function or constant names:</p>'."\r\n";
 	echo "<ul>{$mla_name_conflict_error_messages}</ul>\r\n";
 	echo '<p>You must resolve these conflicts before this plugin can safely load.</p></div>'."\r\n";

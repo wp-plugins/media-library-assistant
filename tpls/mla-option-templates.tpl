@@ -33,7 +33,7 @@
           </table>
           <div style="font-size:8pt;padding-bottom:10px;">[+help+]</div>
         </td></tr>
-		
+
 <!-- template="taxonomy-row" -->
         <tr valign="top">
 		<td style="text-align:center;">

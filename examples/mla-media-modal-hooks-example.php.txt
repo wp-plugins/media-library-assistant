@@ -195,7 +195,7 @@ class MLAMediaModalExample {
 		//$initial_values['filterTerm'] = 175; // term ID in attachment_tags
 		//$initial_values['searchConnector'] = 'OR';
 		//$initial_values['searchValue'] = 'de la';
-		
+
 		return $initial_values;
 	} // mla_media_modal_initial_filters
 
@@ -430,10 +430,10 @@ class MLAMediaModalExample {
 		} else {
 			$tax_query = array();
 		}
-		
+
 		$tax_query[] = array( 'taxonomy' => 'attachment_category', 'operator' => 'NOT IN', 'field' => 'slug', 'terms' => 'admin' );
 		$request['tax_query'] = $tax_query;
-		
+
 		//error_log( 'MLAMediaModalExample::mla_media_modal_query_final_terms altered $request = ' . var_export( $request, true ), 0 );
 		return $request;
 	} // mla_media_modal_query_final_terms

@@ -9,11 +9,11 @@ var jQuery,
 			inProcess: false,
 			doCancel: false
 		},
-	
+
 		// Utility functions
 		utility: {
 		},
-	
+
 		// Components
 		inlineMapAttachment: null
 	};
@@ -42,7 +42,7 @@ var jQuery,
 			$('#mla-progress-resume', progressDiv).off( 'click' );
 			$('#mla-progress-resume', progressDiv).click( function(){
 				var totalItems = +mla.settings.totalItems, newOffset = + $( '#mla-progress-offset' ).val();
-				
+
 				if ( totalItems < newOffset ) {
 					newOffset = totalItems;
 				} else {
@@ -50,7 +50,7 @@ var jQuery,
 						newOffset = 0;
 					}
 				}
-				
+
 				if ( mla.bulkMap.inProcess ) {
 					mla.bulkMap.doCancel = true;
 					return false;
@@ -84,9 +84,9 @@ var jQuery,
 
 		bulkMap : function( action, initialOffset ) {
 			var oldComplete = 0, oldUnchanged = 0, oldSuccess = 0, oldSkip = 0, oldRedone = 0;
-			
+
 			initialOffset = +initialOffset;
-			
+
 			if ( 0 < initialOffset ) {
 				oldComplete = typeof mla.bulkMap.complete === 'undefined' ? 0 : mla.bulkMap.complete;
 				oldUnchanged = typeof mla.bulkMap.unchanged === 'undefined' ? 0 : mla.bulkMap.unchanged;
@@ -94,7 +94,7 @@ var jQuery,
 				oldSkip = typeof mla.bulkMap.skip === 'undefined' ? 0 : mla.bulkMap.skip;
 				oldRedone = typeof mla.bulkMap.redone === 'undefined' ? 0 : mla.bulkMap.redone;
 			}
-			
+
 			// See if we're skipping or re-processing any items
 			if ( oldComplete < initialOffset ) {
 				oldSkip += initialOffset - oldComplete;
@@ -103,7 +103,7 @@ var jQuery,
 					oldRedone += oldComplete - initialOffset;
 				}
 			}
-			
+
 			mla.bulkMap = {
 				inProcess: false,
 				doCancel: false,
@@ -156,7 +156,7 @@ var jQuery,
 			} else {
 				chunk = mla.bulkMap.chunkSize;
 			}
-			
+
 			mla.bulkMap.waiting -= chunk;
 			mla.bulkMap.running = chunk;
 
@@ -172,10 +172,10 @@ var jQuery,
 			};
 
 			params = $.param( params ) + '&' + mla.bulkMap.fields;
-			
+
 			// make ajax request
 			mla.bulkMap.inProcess = true;
-			
+
 			percentComplete = Math.floor( ( 100 * mla.bulkMap.complete ) / mla.settings.totalItems ) + '%';
 			$( '#mla-progress-meter' ).css( 'width', percentComplete );
 			$( '#mla-progress-meter' ).html( percentComplete );
@@ -183,11 +183,11 @@ var jQuery,
 			if ( 0 < mla.bulkMap.skip ) {
 				statusMessage += ', ' + mla.settings.bulkSkip + ': ' + mla.bulkMap.skip;
 			}
-			
+
 			if ( 0 < mla.bulkMap.redone ) {
 				statusMessage += ', ' + mla.settings.bulkRedone + ': ' + mla.bulkMap.redone;
 			}
-			
+
 			if ( mla.settings.useSpinnerClass ) {
 				spinner.addClass("is-active");
 			} else {
@@ -201,7 +201,7 @@ var jQuery,
 				+ ', ' + mla.settings.bulkUnchanged + ': ' + mla.bulkMap.unchanged
 				+ ', ' + mla.settings.bulkSuccess + ': ' + mla.bulkMap.success;
 			message.html( statusMessage ).show();
-			
+
 			$.ajax( ajaxurl, {
 				type: 'POST',
 				data: params,
@@ -214,13 +214,13 @@ var jQuery,
 				}
 			}).done( function( response, status ) {
 					var responseData = 'no response.data', responseMessage = '';
-					
+
 					if ( response ) {
 						if ( ! response.success ) {
 							if ( response.responseData ) {
 								responseData = response.data;
 							}
-							
+
 							error.html( JSON.stringify( response ) );
 							mla.bulkMap.waiting = 0; // Stop
 						} else {
@@ -234,23 +234,23 @@ var jQuery,
 								mla.bulkMap.running = 0;
 								mla.bulkMap.unchanged += response.data.unchanged;
 								mla.bulkMap.success += response.data.success;
-								
+
 								if ( 'undefined' !== typeof response.data.refresh ) {
 									mla.bulkMap.refresh = response.data.refresh;
 								}
-								
+
 								percentComplete = Math.floor( ( 100 * mla.bulkMap.complete ) / mla.settings.totalItems ) + '%';
 								$( '#mla-progress-meter' ).css( 'width', percentComplete );
 								$( '#mla-progress-meter' ).html( percentComplete );
-	
+
 								if ( 0 < mla.bulkMap.skip ) {
 									responseMessage += ', ' + mla.settings.bulkSkip + ': ' + mla.bulkMap.skip;
 								}
-								
+
 								if ( 0 < mla.bulkMap.redone ) {
 									responseMessage += ', ' + mla.settings.bulkRedone + ': ' + mla.bulkMap.redone;
 								}
-								
+
 								responseMessage = mla.settings.bulkWaiting + ': ' + mla.bulkMap.waiting
 									+ ', ' + mla.settings.bulkComplete + ': ' + mla.bulkMap.complete
 									+ responseMessage // skip and redone
@@ -263,7 +263,7 @@ var jQuery,
 						error.html( mla.settings.error );
 						mla.bulkMap.waiting = 0; // Stop
 					}
-					
+
 					if ( mla.bulkMap.doCancel ) {
 						message.html( mla.settings.bulkCanceled + '. ' +  responseMessage ).show();
 						$( '#mla-progress-resume' ).show();
@@ -281,7 +281,7 @@ var jQuery,
 					} else {
 						$( '#mla-progress-close' ).prop( 'disabled', false ).css( 'opacity', '1.0' );
 					}
-					
+
 					$( '#mla-progress-cancel' ).prop( 'disabled', true ).css( 'opacity', '0.5' );
 					mla.bulkMap.inProcess = false;
 			}).fail( function( jqXHR, status ) {

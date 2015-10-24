@@ -73,13 +73,13 @@ class MLAMetaboxHooksExample {
 
 		add_filter( 'mla_parent_info_meta_box', 'MLAMetaboxHooksExample::mla_parent_info_meta_box_filter', 10, 3 );
 		add_filter( 'mla_menu_order_meta_box', 'MLAMetaboxHooksExample::mla_menu_order_meta_box_filter', 10, 2 );
-		
+
 		add_filter( 'mla_image_metadata_meta_box', 'MLAMetaboxHooksExample::mla_image_metadata_meta_box_filter', 10, 3 );
 		add_filter( 'mla_image_metadata_meta_box_html', 'MLAMetaboxHooksExample::mla_image_metadata_meta_box_html_filter', 10, 4 );
 
 		add_filter( 'mla_featured_in_meta_box', 'MLAMetaboxHooksExample::mla_featured_in_meta_box_filter', 10, 3 );
 		add_filter( 'mla_featured_in_meta_box_html', 'MLAMetaboxHooksExample::mla_featured_in_meta_box_html_filter', 10, 4 );
-		
+
 		add_filter( 'mla_inserted_in_meta_box', 'MLAMetaboxHooksExample::mla_inserted_in_meta_box_filter', 10, 3 );
 		add_filter( 'mla_inserted_in_meta_box_html', 'MLAMetaboxHooksExample::mla_inserted_in_meta_box_html_filter', 10, 4 );
 
@@ -104,7 +104,7 @@ class MLAMetaboxHooksExample {
 	 */
 	private static $default_meta_boxes = array();
 	private static $active_meta_boxes = array();
-	
+
 	/**
 	 * MLA Edit Media Add Support Filter
 	 *
@@ -121,7 +121,7 @@ class MLAMetaboxHooksExample {
 		 * Uncomment the error_log statements in any of the filters to see what's passed in
 		 */
 		//error_log( 'MLAMetaboxHooksExample::mla_edit_media_support_filter $add_support = ' . var_export( $add_support, true ), 0 );
-		
+
 		// to suppress Custom Fields, return an empty array, i.e., return array();
 		return $add_support;
 	} // mla_edit_media_support_filter
@@ -144,17 +144,17 @@ class MLAMetaboxHooksExample {
 		 * Uncomment the error_log statements in any of the filters to see what's passed in
 		 */
 		//error_log( 'MLAMetaboxHooksExample::mla_edit_media_meta_boxes_filter $active_boxes = ' . var_export( $active_boxes, true ), 0 );
-		
+
 		/*
 		 * Save the information for use in the later filters
 		 */
 		self::$default_meta_boxes = $active_boxes;
 		// to suppress a box, remove it from the array, e.g., unset( $active_boxes['mla-menu-order'] );
 		self::$active_meta_boxes = $active_boxes;
-		
+
 		return $active_boxes;
 	} // mla_edit_media_meta_boxes_filter
-	
+
 	/**
 	 * MLA Parent Info Meta Box Filter
 	 *
@@ -172,7 +172,7 @@ class MLAMetaboxHooksExample {
 		//error_log( 'MLAMetaboxHooksExample::mla_parent_info_meta_box_filter $parent_info = ' . var_export( $parent_info, true ), 0 );
 		//error_log( 'MLAMetaboxHooksExample::mla_parent_info_meta_box_filter $references = ' . var_export( $references, true ), 0 );
 		//error_log( 'MLAMetaboxHooksExample::mla_parent_info_meta_box_filter $post = ' . var_export( $post, true ), 0 );
-		
+
 		return $parent_info;
 	} // mla_parent_info_meta_box_filter
 
@@ -191,10 +191,10 @@ class MLAMetaboxHooksExample {
 	public static function mla_menu_order_meta_box_filter( $menu_order, $post ) {
 		//error_log( 'MLAMetaboxHooksExample::mla_menu_order_meta_box_filter $menu_order = ' . var_export( $menu_order, true ), 0 );
 		//error_log( 'MLAMetaboxHooksExample::mla_menu_order_meta_box_filter $post = ' . var_export( $post, true ), 0 );
-		
+
 		return $menu_order;
 	} // mla_menu_order_meta_box_filter
-	
+
 	/**
 	 * MLA Attachment Metadata Meta Box Filter
 	 *
@@ -213,10 +213,10 @@ class MLAMetaboxHooksExample {
 		//error_log( 'MLAMetaboxHooksExample::mla_image_metadata_meta_box_filter $value = ' . var_export( $value, true ), 0 );
 		//error_log( 'MLAMetaboxHooksExample::mla_image_metadata_meta_box_filter $metadata = ' . var_export( $metadata, true ), 0 );
 		//error_log( 'MLAMetaboxHooksExample::mla_image_metadata_meta_box_filter $post = ' . var_export( $post, true ), 0 );
-		
+
 		return $value;
 	} // mla_image_metadata_meta_box_filter
-	
+
 	/**
 	 * MLA Attachment Metadata Meta Box HTML Filter
 	 *
@@ -237,10 +237,10 @@ class MLAMetaboxHooksExample {
 		//error_log( 'MLAMetaboxHooksExample::mla_image_metadata_meta_box_html_filter $value = ' . var_export( $value, true ), 0 );
 		//error_log( 'MLAMetaboxHooksExample::mla_image_metadata_meta_box_html_filter $metadata = ' . var_export( $metadata, true ), 0 );
 		//error_log( 'MLAMetaboxHooksExample::mla_image_metadata_meta_box_html_filter $post = ' . var_export( $post, true ), 0 );
-		
+
 		return $html;
 	} // mla_image_metadata_meta_box_html_filter
-	
+
 	/**
 	 * MLA Featured in Meta Box Filter
 	 *
@@ -258,10 +258,10 @@ class MLAMetaboxHooksExample {
 		//error_log( 'MLAMetaboxHooksExample::mla_featured_in_meta_box_filter $features = ' . var_export( $features, true ), 0 );
 		//error_log( 'MLAMetaboxHooksExample::mla_featured_in_meta_box_filter $references = ' . var_export( $references, true ), 0 );
 		//error_log( 'MLAMetaboxHooksExample::mla_featured_in_meta_box_filter $post = ' . var_export( $post, true ), 0 );
-		
+
 		return $features;
 	} // mla_featured_in_meta_box_filter
-	
+
 	/**
 	 * MLA Featured in Meta Box HTML Filter
 	 *
@@ -281,10 +281,10 @@ class MLAMetaboxHooksExample {
 		//error_log( 'MLAMetaboxHooksExample::mla_featured_in_meta_box_html_filter $features = ' . var_export( $features, true ), 0 );
 		//error_log( 'MLAMetaboxHooksExample::mla_featured_in_meta_box_html_filter $references = ' . var_export( $references, true ), 0 );
 		//error_log( 'MLAMetaboxHooksExample::mla_featured_in_meta_box_html_filter $post = ' . var_export( $post, true ), 0 );
-		
+
 		return $html;
 	} // mla_featured_in_meta_box_html_filter
-	
+
 	/**
 	 * MLA Inserted in Meta Box Filter
 	 *
@@ -302,7 +302,7 @@ class MLAMetaboxHooksExample {
 		//error_log( 'MLAMetaboxHooksExample::mla_inserted_in_meta_box_filter $inserts = ' . var_export( $inserts, true ), 0 );
 		//error_log( 'MLAMetaboxHooksExample::mla_inserted_in_meta_box_filter $references = ' . var_export( $references, true ), 0 );
 		//error_log( 'MLAMetaboxHooksExample::mla_inserted_in_meta_box_filter $post = ' . var_export( $post, true ), 0 );
-		
+
 		// Comment out this return statement to fall through to the example code that simplifies the display
 		return $inserts;
 
@@ -319,22 +319,22 @@ class MLAMetaboxHooksExample {
 				$base_references[ $reference->ID ] = $reference;
 			}
 		}
-			
+
 		foreach ( $base_references as $reference ) {
 			$new_inserts[] = $reference->post_title;
 			$new_inserts[] = '(' . get_permalink( $reference->ID, false ) . ')';
 		}
-		
+
 		// Uncomment these lines to display the arguments in the meta box
 		//$new_inserts[] = '----- debug information -----';
 		//$new_inserts[] = '$inserts = ' . var_export( $inserts, true );
 		//$new_inserts[] = '$references = ' . var_export( $references, true );
 		//$new_inserts[] = '$post = ' . var_export( $post, true );
-		
+
 		$inserts['inserts'] = implode( "\n", $new_inserts );
 		return $inserts;
 	} // mla_inserted_in_meta_box_filter
-	
+
 	/**
 	 * MLA Inserted in Meta Box HTML Filter
 	 *
@@ -357,7 +357,7 @@ class MLAMetaboxHooksExample {
 
 		return $html;
 	} // mla_inserted_in_meta_box_html_filter
-	
+
 	/**
 	 * MLA Gallery in Meta Box Filter
 	 *
@@ -375,10 +375,10 @@ class MLAMetaboxHooksExample {
 		//error_log( 'MLAMetaboxHooksExample::mla_gallery_in_meta_box_filter $galleries = ' . var_export( $galleries, true ), 0 );
 		//error_log( 'MLAMetaboxHooksExample::mla_gallery_in_meta_box_filter $references = ' . var_export( $references, true ), 0 );
 		//error_log( 'MLAMetaboxHooksExample::mla_gallery_in_meta_box_filter $post = ' . var_export( $post, true ), 0 );
-		
+
 		return $galleries;
 	} // mla_gallery_in_meta_box_filter
-	
+
 	/**
 	 * MLA Gallery in Meta Box HTML Filter
 	 *
@@ -398,10 +398,10 @@ class MLAMetaboxHooksExample {
 		//error_log( 'MLAMetaboxHooksExample::mla_gallery_in_meta_box_html_filter $galleries = ' . var_export( $galleries, true ), 0 );
 		//error_log( 'MLAMetaboxHooksExample::mla_gallery_in_meta_box_html_filter $references = ' . var_export( $references, true ), 0 );
 		//error_log( 'MLAMetaboxHooksExample::mla_gallery_in_meta_box_html_filter $post = ' . var_export( $post, true ), 0 );
-		
+
 		return $html;
 	} // mla_gallery_in_meta_box_html_filter
-	
+
 	/**
 	 * MLA MLA Gallery in Meta Box Filter
 	 *
@@ -419,10 +419,10 @@ class MLAMetaboxHooksExample {
 		//error_log( 'MLAMetaboxHooksExample::mla_mla_gallery_in_meta_box_filter $galleries = ' . var_export( $galleries, true ), 0 );
 		//error_log( 'MLAMetaboxHooksExample::mla_mla_gallery_in_meta_box_filter $references = ' . var_export( $references, true ), 0 );
 		//error_log( 'MLAMetaboxHooksExample::mla_mla_gallery_in_meta_box_filter $post = ' . var_export( $post, true ), 0 );
-		
+
 		return $galleries;
 	} // mla_mla_gallery_in_meta_box_filter
-	
+
 	/**
 	 * MLA MLA Gallery in Meta Box HTML Filter
 	 *
@@ -442,7 +442,7 @@ class MLAMetaboxHooksExample {
 		//error_log( 'MLAMetaboxHooksExample::mla_mla_gallery_in_meta_box_html_filter $galleries = ' . var_export( $galleries, true ), 0 );
 		//error_log( 'MLAMetaboxHooksExample::mla_mla_gallery_in_meta_box_html_filter $references = ' . var_export( $references, true ), 0 );
 		//error_log( 'MLAMetaboxHooksExample::mla_mla_gallery_in_meta_box_html_filter $post = ' . var_export( $post, true ), 0 );
-		
+
 		return $html;
 	} // mla_mla_gallery_in_meta_box_html_filter
 } //MLAMetaboxHooksExample

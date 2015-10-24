@@ -36,7 +36,7 @@ if ( ! is_admin() ) {
  */
 function mla_after_setup_theme_action() {
 	$domain = 'mla-child-theme';
-	
+
 	load_theme_textdomain( $domain, trailingslashit( WP_LANG_DIR ) . $domain );
 	load_theme_textdomain( $domain, get_stylesheet_directory() . '/languages' );
 
@@ -56,10 +56,10 @@ add_action( 'after_setup_theme', 'mla_after_setup_theme_action' );
  */
 function mla_wp_title_filter( $title, $sep, $seplocation ) {
 	$sep = " {$sep} ";
-	
+
 	if ( is_page() ) {
 		$page = single_post_title( '', false );
-		
+
 		/*
 		 * Match specific page titles and replace the default, page title,
 		 * with more interesting term or file information.
@@ -80,7 +80,7 @@ function mla_wp_title_filter( $title, $sep, $seplocation ) {
 			}
 		}
 	} // is_page
-	
+
 	return $title;
 }
 add_filter( 'wp_title', 'mla_wp_title_filter', 10, 3 );
@@ -115,7 +115,7 @@ function mla_tag_gallery( $attr = NULL ) {
 	 */
 	$taxonomy = get_taxonomy( $taxonomy );
 	$term = get_term_by( 'slug', $term, $taxonomy->name );
-	
+
 	if ( empty( $taxonomy ) ) {
 		$output = __( 'Taxonomy does not exist.', 'mla-child-theme' );
 	}
@@ -142,7 +142,7 @@ function mla_tag_gallery( $attr = NULL ) {
  */
 function mla_paginated_term_gallery( $attr = NULL ) {
 	global $wpdb;
-	
+
 	/*
 	 * Make sure $attr is an array, even if it's empty
 	 */
@@ -169,7 +169,7 @@ function mla_paginated_term_gallery( $attr = NULL ) {
 	 */
 	$taxonomy = get_taxonomy( $taxonomy );
 	$term = get_term_by( 'slug', $term, $taxonomy->name );
-	
+
 	if ( empty( $taxonomy ) ) {
 		echo __( 'Taxonomy does not exist.', 'mla-child-theme' );
 		return;
@@ -241,7 +241,7 @@ function mla_custom_terms_list( $ID, $attr = NULL ) {
 	if ( empty( $terms ) ) {
 		return '';
 	}
-	
+
 	/* translators: 1: taxonomy slug */
 	$output = '<h3>' . sprintf( __( 'Terms list for taxonomy: %1$s', 'mla-child-theme' ), $taxonomy ) . '</h3>';
 	/* translators: 1: term name */
@@ -283,7 +283,7 @@ function mla_taxonomy_terms_list( $attr = NULL ) {
 	if ( empty( $terms ) ) {
 		return __( 'There are no non-empty taxonomy values', 'mla-child-theme' );
 	}
-	
+
 	/* translators: 1: taxonomy slug */
 	$output = '<h3>' . sprintf( __( 'Terms list for taxonomy: %1$s', 'mla-child-theme' ), $taxonomy ) . '</h3>';
 	foreach ( $terms as $term ) {
@@ -304,7 +304,7 @@ function mla_insert_social_tags() {
 		if ( empty( $post->post_content ) ) {
 			return;
 		}
-		
+
 		$count = preg_match( '/\[mla_gallery.*attachment_category="([^\"]*)\"/', $post->post_content, $mla_matches );
 		if ( $count ) {
 			$matched_category = $mla_matches[1]; // for preg_match
@@ -314,13 +314,13 @@ function mla_insert_social_tags() {
 				foreach ( $mla_matches[1] as $match ) {
 					echo sprintf( '<meta property="og:image" content="%1$s" />', $match ) . "\n";
 				}
-				
+
 				echo sprintf( '<meta name="twitter:image:src" content="%1$s" />', $mla_matches[1][0] ) . "\n";
 			}
-			
+
 			return;
 		} // found mla_gallery
-		
+
 		$count = preg_match( '/\[gallery.*ids="([^\"]*)\"/', $post->post_content, $mla_matches );
 		if ( $count ) {
 			$matched_posts = $mla_matches[1]; // for preg_match
@@ -330,10 +330,10 @@ function mla_insert_social_tags() {
 				foreach ( $mla_matches[1] as $match ) {
 					echo sprintf( '<meta property="og:image" content="%1$s" />', $match ) . "\n";
 				}
-				
+
 				echo sprintf( '<meta name="twitter:image:src" content="%1$s" />', $mla_matches[1][0] ) . "\n";
 			}
-			
+
 		}
 	} // found gallery
 }

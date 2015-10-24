@@ -106,7 +106,7 @@ class MLAFileSizeExample {
 		if ( ! isset( self::$shortcode_attributes['my_filter'] ) ) {
 			return $item_values; // leave them unchanged
 		}
-		
+
 		// Add a formatted file size element to the existing caption.
 		if ( 'file size' == self::$shortcode_attributes['my_filter'] ) {
 
@@ -116,7 +116,7 @@ class MLAFileSizeExample {
 				'option' => 'raw'
 			);
 			$file_size = (float) MLAOptions::mla_get_data_source( $item_values['attachment_ID'], 'single_attachment_mapping', $my_setting, NULL );
-			
+
 			if ( 1048576 < $file_size ) {
 				$file_size = number_format( ($file_size/1048576), 3 ).' MB';
 			} elseif ( 10240 < $file_size ) {
@@ -128,7 +128,7 @@ class MLAFileSizeExample {
 			// Compose a new caption, adding the file size.
 			return self::_update_caption( $item_values, sprintf( '%1$s<br>Size: %2$s', $item_values['caption'], $file_size ) );
 		}
-		
+
 		return $item_values;
 	} // mla_gallery_item_values_filter
 } // Class MLAFileSizeExample

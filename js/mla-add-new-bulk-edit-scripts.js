@@ -14,7 +14,7 @@ var jQuery,
 		// mla.settings.useDashicons for setParent
 		// mla.settings.useSpinnerClass for setParent
 		settings: {},
-	
+
 		// Utility functions
 		utility: {
 			getId : function( o ) {
@@ -23,7 +23,7 @@ var jQuery,
 				return parts[ parts.length - 1 ];
 			}
 		},
-	
+
 		// Components
 		addNewBulkEdit: null,
 		setParent: null
@@ -35,11 +35,11 @@ var jQuery,
 	 */
 	mla.settings = typeof mla_add_new_bulk_edit_vars === 'undefined' ? {} : mla_add_new_bulk_edit_vars;
 	mla_add_new_bulk_edit_vars = void 0; // delete won't work on Globals
-	
+
 	if ( typeof mla.settings.areaOnTop === 'undefined' ) {
 		mla.settings.areaOnTop = false;
 	};
-	
+
 	mla.addNewBulkEdit = {
 		init: function() {
 			var toggleButton, resetButton, 
@@ -53,7 +53,7 @@ var jQuery,
 			// Move the Open/Close Bulk Edit area toggleButton to save space on the page
 			toggleButton = $( '#bulk-edit-toggle', uploadDiv ).detach();
 			resetButton = $( '#bulk-edit-reset', uploadDiv ).detach();
-			
+
 			if ( mla.settings.areaOnTop ) {
 				toggleButton.appendTo( title );
 				resetButton.appendTo( title );
@@ -75,11 +75,11 @@ var jQuery,
 			toggleButton.on( 'click', function(){
 				return mla.addNewBulkEdit.formToggle();
 			});
-			
+
 			resetButton.on( 'click', function(){
 				return mla.addNewBulkEdit.doReset();
 			});
-			
+
 			//auto-complete/suggested matches for flat taxonomies
 			$( 'textarea.mla_tags', uploadDiv ).each(function(){
 				var taxname = $(this).attr('name').replace(']', '').replace('tax_input[', '');
@@ -89,7 +89,7 @@ var jQuery,
 
 			uploader.bind( 'BeforeUpload', function( up, file ) {
 				var formString = $( '#file-form' ).serialize();
-				
+
 				up.settings.multipart_params.mlaAddNewBulkEditFormString = formString;
 			});
 		},
@@ -115,7 +115,7 @@ var jQuery,
 		formToggle : function() {
 			var toggleButton = $( '#bulk-edit-toggle' ), resetButton = $( '#bulk-edit-reset' ), 
 				area = $( '#mla-add-new-bulk-edit-div' );
-			
+
 			// Expand/collapse the Bulk Edit area
 			if ( 'none' === area.css( 'display' ) ) {
 				toggleButton.attr( 'title', mla.settings.toggleClose );
@@ -126,7 +126,7 @@ var jQuery,
 				toggleButton.attr( 'value', mla.settings.toggleOpen );
 				resetButton.hide();
 			}
-			
+
 			area.slideToggle( 'slow' );
 		},
 

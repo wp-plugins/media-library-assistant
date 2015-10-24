@@ -5,11 +5,11 @@ var jQuery, wpAjax,
 	mlaTaxonomy = {
 		// Properties
 		settings: {},
-	
+
 		// Utility functions
 		utility: {
 		},
-	
+
 		// Components
 		termsSearch: null
 	};

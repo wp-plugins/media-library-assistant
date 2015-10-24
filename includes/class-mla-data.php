@@ -89,7 +89,7 @@ class MLAData {
 	 */
 	public static function initialize() {
 		global $table_prefix;
-		
+
 		self::$mla_alt_text_view = $table_prefix . MLA_OPTION_PREFIX . self::MLA_ALT_TEXT_VIEW_SUFFIX;
 		self::$mla_orderby_view = $table_prefix . MLA_OPTION_PREFIX . self::MLA_ORDERBY_VIEW_SUFFIX;
 		self::$mla_table_view_custom = $table_prefix . MLA_OPTION_PREFIX . self::MLA_TABLE_VIEW_CUSTOM_SUFFIX;
@@ -970,7 +970,7 @@ class MLAData {
 			if ( is_array( $format ) ) {
 				$format = $format[0];
 			}
-			
+
 			$value = date( $format , (integer) $value );
 		} elseif ( 'date' == $args['format'] ) {
 			/*
@@ -983,7 +983,7 @@ class MLAData {
 				if ( is_array( $format ) ) {
 					$format = $format[0];
 				}
-				
+
 				$value = date( $format, $timestamp );
 			}
 		} elseif ( 'fraction' == $args['format'] ) {
@@ -2381,17 +2381,8 @@ class MLAData {
 		if ( isset( self::$search_parameters['s'] ) ) {
 
 			// WordPress v3.7 says: there are no line breaks in <input /> fields
-			$keyword_string = str_replace( array( "\r", "\n" ), '', self::$search_parameters['s'] );
+			$keyword_string = stripslashes( str_replace( array( "\r", "\n" ), '', self::$search_parameters['s'] ) );
 			$is_wildcard_search = self::_wildcard_search_string( $keyword_string );
-
-			/*
-			 * OBSOLETE: Interpret a numeric value as the ID of a specific attachment or the ID of
-			 * a parent post/page; add it to the regular text-based search.
-			 */
-			if ( false and is_numeric( $keyword_string ) ) {
-				$id = absint( $keyword_string );
-				$numeric_clause = '( ( ' . $wpdb->posts . '.ID = ' . $id . ' ) OR ( ' . $wpdb->posts . '.post_parent = ' . $id . ' ) ) OR ';
-			}
 
 			if ( $is_wildcard_search || self::$search_parameters['sentence'] || self::$search_parameters['exact'] ) {
 				$keyword_array = array( $keyword_string );
@@ -2532,7 +2523,7 @@ class MLAData {
 						 * If "Terms" is the only field and no terms are present,
 						 * the search must fail.
 						 */
-						if ( array( 'terms' ) == $fields ) {
+						if ( ( 1 == count( $fields ) ) && ( 'terms' == array_shift( $fields ) ) ) {
 							$tax_clause = '1=0';
 						}
 					} else {
@@ -6274,9 +6265,9 @@ class MLAData {
 			} else {
 				$result = $post_id;
 			}
-			
+
 			do_action( 'mla_updated_single_item', $post_id, $result );
-			
+
 			if ( $result ) {
 				/* translators: 1: post ID */
 				$final_message = sprintf( __( 'Item %1$d updated.', 'media-library-assistant' ), $post_id );

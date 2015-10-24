@@ -75,7 +75,7 @@ class MLAViewerReplacement {
 	 * Save the shortcode arguments
 	 */
 	private static $all_display_parameters = array();
-	
+
 	/**
 	 * MLA Gallery (Display) Arguments
 	 *
@@ -93,7 +93,7 @@ class MLAViewerReplacement {
 	 * @return	array	updated gallery display arguments
 	 */
 	public static function mla_gallery_arguments_filter( $all_display_parameters ) {
-		
+
 		self::$all_display_parameters = $all_display_parameters;
 		return $all_display_parameters;
 	} // mla_gallery_arguments_filter
@@ -129,7 +129,7 @@ class MLAViewerReplacement {
 		if ( false === strpos( self::$all_display_parameters['mla_viewer_extensions'], $extension ) ) {
 	        return $item_values;
 		}
-	
+
 		// You can use MLAOptions::mla_get_data_source() to get anything available.
 		$mla_viewer_caption = str_replace( '{+', '[+', str_replace( '+}', '+]', self::$shortcode_attributes['mla_viewer_caption'] ) );
 		$data_source = array(

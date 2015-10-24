@@ -77,18 +77,18 @@ class MLACustomNolinkExample {
 
 		// Look for our custom parameter, nolink=true
 		if ( isset( $atts['nolink'] ) && 'true' == strtolower( trim( $atts['nolink'] ) ) ) {
-			
+
 			// Disable Jetpack Carousel, which always runs with Jetpack installed even if not activated
 			$start = strpos( $html, 'data-carousel-extra' );
 			if ( false !== $start ) {
 				$length = strlen( 'data-carousel-extra' );
 				$html = substr_replace( $html, 'data-carousel-disabled', $start, $length );
 			}
-	
+
 			// Find all the hyperlinks in the gallery
 			$match_count = preg_match_all( '!(<a [^>]*?>)(<img [^>]*?>)(</a>)!', $html, $matches, PREG_OFFSET_CAPTURE );
 			if ( $match_count ) {
-				
+
 				// Replace the links with just the <img> tags
 				for ( $index = $match_count - 1; $index >= 0; $index-- ) {
 					$replacement = $matches[2][ $index ][0];
@@ -98,7 +98,7 @@ class MLACustomNolinkExample {
 				}
 			}
 		}
-		
+
 		return $html;
 	}
 } // Class MLACustomNolinkExample
