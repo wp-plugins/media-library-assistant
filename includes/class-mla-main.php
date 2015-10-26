@@ -29,7 +29,7 @@ class MLA {
 	 *
 	 * @var	string
 	 */
-	const CURRENT_MLA_VERSION = '2.14';
+	const CURRENT_MLA_VERSION = '2.15';
 
 	/**
 	 * Current date for Development Version, empty for production versions
@@ -38,7 +38,7 @@ class MLA {
 	 *
 	 * @var	string
 	 */
-	const MLA_DEVELOPMENT_VERSION = '20151023';
+	const MLA_DEVELOPMENT_VERSION = '';
 
 	/**
 	 * Slug for registering and enqueueing plugin style sheet

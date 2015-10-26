@@ -4,7 +4,7 @@ Donate link: http://fairtradejudaica.org/make-a-difference/donate/
 Tags: attachment, attachments, documents, gallery, image, images, media, library, media library, tag cloud, media-tags, media tags, tags, media categories, categories, IPTC, EXIF, XMP, GPS, PDF, meta, metadata, photo, photos, photograph, photographs, photoblog, photo albums, lightroom, photoshop, MIME, mime-type, icon, upload, file extensions, WPML, Polylang, multilanguage, multilingual, localization
 Requires at least: 3.5.0
 Tested up to: 4.3
-Stable tag: 2.14
+Stable tag: 2.15
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -191,6 +191,7 @@ All of the MLA source code has been annotated with "DocBlocks", a special type o
 * Fix: For the `[mla_gallery]` shortcode, keyword searches only on `terms` generate an empty result when no terms match the search string.
 * Fix: For the `[mla_gallery]` shortcode, keyword searches with special characters such as single and/or double quotes now work correctly.
 * Fix: Style sheets and HTML markup changes have been added to support sites with Right-to-left (TRL) languages.
+* Fix: For the Media/Assistant submenu table, WordPress 4.2+ alternate-row coloring (striping) for the Quick Edit and Bulk Edit areas has been fixed.
 * Fix: For the Media/Assistant submenu table, combinations of ALT Text filtering in the Search Media box, sorting on custom field columns and Table Views based on custom field values now work correctly.
 * Fix: The Edit Taxonomy "Attachments" column is displayed correctly when othe plugins, e.g., Polylang, add columns to the submenu table.
 * Fix: When WPML or Polylang are active, flat taxonomy "auto-completion" suggestions for the Media/Assistant Quick Edit area and the Media/Edit Media screen are now language-specific.
@@ -278,11 +279,8 @@ All of the MLA source code has been annotated with "DocBlocks", a special type o
 
 == Upgrade Notice ==
 
-= 2.14 =
-Final WordPress 4.3 updates. New Debug tab features. Updated Dutch translation. Four other fixes.
-
-= 2.13 =
-WordPress 4.3 updates. PDF Thumbnail image generator. Wildcard keyword/term searching. Several WPML and Polylang fixes. Dutch and Swedish translations! Twelve other enhancements, twelve other fixes.
+= 2.15 =
+Bulk Edit Reset button, Debug tab enhancements, Quick Edit thumbnails, new examples and hooks. Sixteen enhancements in all, sixteen fixes.
 
 == Other Notes ==
 
