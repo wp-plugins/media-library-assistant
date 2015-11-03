@@ -230,6 +230,7 @@ class MLAShortcodes {
 	 */
 	public static function mla_gallery_shortcode( $attr, $content = NULL ) {
 		global $post;
+
 		/*
 		 * Some do_shortcode callers may not have a specific post in mind
 		 */

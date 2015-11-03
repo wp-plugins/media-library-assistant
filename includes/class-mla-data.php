@@ -1931,10 +1931,13 @@ class MLAData {
 		} else { // custom field
 			switch ( self::$query_parameters['orderby'] ) {
 				/*
-				 * '_wp_attachment_image_alt' is special; we'll handle it in the JOIN and ORDERBY filters
+				 * '_wp_attachment_image_alt' is special; it can have NULL values,
+				 * so we'll handle it in the JOIN and ORDERBY filters
 				 */
 				case '_wp_attachment_image_alt':
 					self::$query_parameters['use_orderby_view'] = true;
+					self::$query_parameters['postmeta_key'] = '_wp_attachment_image_alt';
+
 					if ( isset($clean_request['orderby']) ) {
 						unset($clean_request['orderby']);
 					}
@@ -4297,11 +4300,14 @@ class MLAData {
 		}
 
 		$xmp_string = "<?xml version='1.0'?>\n" . substr($xmp_chunk, $start_tag, ( $end_tag + 12 ) - $start_tag );
+		// experimental damage repair for GodsHillPC 
+		$xmp_string = str_replace( "\000", '0', $xmp_string );
 		$xmp_values = array();
 		$xml_parser = xml_parser_create('UTF-8');
 		if ( xml_parser_set_option( $xml_parser, XML_OPTION_SKIP_WHITE, 0 ) && xml_parser_set_option( $xml_parser, XML_OPTION_CASE_FOLDING, 0 ) ) {
-			if (xml_parse_into_struct( $xml_parser, $xmp_string, $xmp_values ) == 0) {
+			if ( 0 == xml_parse_into_struct( $xml_parser, $xmp_string, $xmp_values ) ) {
 				error_log( __( 'ERROR', 'media-library-assistant' ) . ': ' . _x( 'mla_parse_xmp_metadata xml_parse_into_struct failed.', 'error_log', 'media-library-assistant' ), 0 );
+				$xmp_values = array();
 			}
 		} else {
 			error_log( __( 'ERROR', 'media-library-assistant' ) . ': ' . _x( 'mla_parse_xmp_metadata set option failed.', 'error_log', 'media-library-assistant' ), 0 );
