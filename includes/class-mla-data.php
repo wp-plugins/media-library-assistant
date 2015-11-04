@@ -4250,6 +4250,36 @@ class MLAData {
 	}
 
 	/**
+	 * Search the namespace array for a non-empty value
+	 * 
+	 * @since 2.10
+	 *
+	 * @param	array	namespace array
+	 * @param	string	namespace
+	 * @param	string	key
+	 *
+	 * @return	string	trimmed value of the key within the namespace
+	 */
+	private static function _nonempty_value( &$namespace_array, $namespace, $key ) {
+		$result = '';
+		
+		if ( isset( $namespace_array[ $namespace ] ) && isset( $namespace_array[ $namespace ][ $key ] ) ) {
+			if ( is_array( $namespace_array[ $namespace ][ $key ] ) ) {
+				$result = @implode( ',', $namespace_array[ $namespace ][ $key ] );
+			} else {
+				$result = (string) $namespace_array[ $namespace ][ $key ];
+			}
+		}
+		
+		$trim_value = trim( $result, " \n\t\r\0\x0B," );
+		if ( empty( $trim_value ) ) {
+			$result = '';
+		}
+		
+		return $result;
+	}
+
+	/**
 	 * Extract XMP meta data from a file
 	 * 
 	 * @since 2.10
@@ -4260,6 +4290,7 @@ class MLAData {
 	 * @return	mixed	array of metadata values or NULL on failure
 	 */
 	public static function mla_parse_xmp_metadata( $file_name, $file_offset ) {
+//error_log( __LINE__ . " MLAData::mla_parse_xmp_metadata( {$file_name}, {$file_offset} ) ", 0 );
 		$chunksize = 16384;			
 		$xmp_chunk = file_get_contents( $file_name, true, NULL, $file_offset, $chunksize );
 
@@ -4300,6 +4331,8 @@ class MLAData {
 		}
 
 		$xmp_string = "<?xml version='1.0'?>\n" . substr($xmp_chunk, $start_tag, ( $end_tag + 12 ) - $start_tag );
+//error_log( __LINE__ . " MLAData::mla_parse_xmp_metadata xmp_string = " . var_export( $xmp_string, true ), 0 );
+//error_log( __LINE__ . "  MLAData::mla_parse_xmp_metadata xmp_string = \r\n" . MLAData::mla_hex_dump( $xmp_string ), 0 );
 		// experimental damage repair for GodsHillPC 
 		$xmp_string = str_replace( "\000", '0', $xmp_string );
 		$xmp_values = array();
@@ -4318,12 +4351,14 @@ class MLAData {
 		if ( empty( $xmp_values ) ) {
 			return NULL;
 		}
+//error_log( __LINE__ . " MLAData::mla_parse_xmp_metadata xmp_values = " . var_export( $xmp_values, true ), 0 );
 
 		$levels = array();
 		$current_level = 0;
 		$results = array();
 		$xmlns = array();
-		foreach ( $xmp_values as $value ) {
+		foreach ( $xmp_values as $index => $value ) {
+//error_log( __LINE__ . " MLAData::mla_parse_xmp_metadata xmp_values( {$index} ) value = " . var_export( $value, true ), 0 );
 			$language = 'x-default';
 			$node_attributes = array();
 			if ( isset( $value['attributes'] ) ) {
@@ -4367,10 +4402,15 @@ class MLAData {
 				case 'close':
 					if ( 0 < --$current_level ) {
 						$top_level = array_pop( $levels );
+//error_log( __LINE__ . " MLAData::mla_parse_xmp_metadata xmp_values( {$index} ) top_level = " . var_export( $top_level, true ), 0 );
 						if ( 'rdf:li' == $top_level['key'] ) {
 							$levels[ $current_level ]['values'][] = $top_level['values'];
 						} else {
-							$levels[ $current_level ]['values'][ $top_level['key'] ] = $top_level['values'];
+							if ( isset( $levels[ $current_level ]['values'][ $top_level['key'] ] ) ) {
+								$levels[ $current_level ]['values'][ $top_level['key'] ] = array_merge( $levels[ $current_level ]['values'][ $top_level['key'] ], $top_level['values'] );
+							} else {
+								$levels[ $current_level ]['values'][ $top_level['key'] ] = $top_level['values'];
+							}
 						}
 					}
 					break;
@@ -4405,7 +4445,10 @@ class MLAData {
 						$levels[ $current_level ]['values'][ $value['tag'] ] = $complete_value;
 					}
 			} // switch on type
+//error_log( __LINE__ . " MLAData::mla_parse_xmp_metadata xmp_values( {$index}, {$current_level} ) levels = " . var_export( $levels, true ), 0 );
 		} // foreach value
+//error_log( __LINE__ . " MLAData::mla_parse_xmp_metadata levels = " . var_export( $levels, true ), 0 );
+//error_log( __LINE__ . " MLAData::mla_parse_xmp_metadata xmlns = " . var_export( $xmlns, true ), 0 );
 
 		/*
 		 * Parse "namespace:name" names into arrays of simple names
@@ -4435,6 +4478,7 @@ class MLAData {
 				}
 			} // found namespace
 		}
+//error_log( __LINE__ . " MLAData::mla_parse_xmp_metadata results = " . var_export( $results, true ), 0 );
 
 		/*
 		 * Try to populate all the PDF-standard keys (except Trapped)
@@ -4448,32 +4492,23 @@ class MLAData {
 		 * ModDate - The date and time the document was most recently modified
 		 */
 		if ( ! isset( $results['Title'] ) ) {
-			if ( isset( $namespace_arrays['dc'] ) && isset( $namespace_arrays['dc']['title'] ) ) {
-				if ( is_array( $namespace_arrays['dc']['title'] ) ) {
-					$results['Title'] = @implode( ',', $namespace_arrays['dc']['title'] );
-				} else {
-					$results['Title'] = (string) $namespace_arrays['dc']['title'];
-				}
+			$replacement = self::_nonempty_value( $namespace_arrays, 'dc', 'title' );
+			if ( ! empty( $replacement ) ) {
+				$results['Title'] = $replacement;
 			}
 		}
 
 		if ( ! isset( $results['Author'] ) ) {
-			if ( isset( $namespace_arrays['dc'] ) && isset( $namespace_arrays['dc']['creator'] ) ) {
-				if ( is_array( $namespace_arrays['dc']['creator'] ) ) {
-					$results['Author'] = @implode( ',', $namespace_arrays['dc']['creator'] );
-				} else {
-					$results['Author'] = (string) $namespace_arrays['dc']['creator'];
-				}
+			$replacement = self::_nonempty_value( $namespace_arrays, 'dc', 'creator' );
+			if ( ! empty( $replacement ) ) {
+				$results['Author'] = $replacement;
 			}
 		}
 
 		if ( ! isset( $results['Subject'] ) ) {
-			if ( isset( $namespace_arrays['dc'] ) && isset( $namespace_arrays['dc']['description'] ) ) {
-				if ( is_array( $namespace_arrays['dc']['description'] ) ) {
-					$results['Subject'] = @implode( ',', $namespace_arrays['dc']['description'] );
-				} else {
-					$results['Subject'] = (string) $namespace_arrays['dc']['description'];
-				}
+			$replacement = self::_nonempty_value( $namespace_arrays, 'dc', 'description' );
+			if ( ! empty( $replacement ) ) {
+				$results['Subject'] = $replacement;
 			}
 		}
 
@@ -4507,13 +4542,13 @@ class MLAData {
 		if ( isset( $namespace_arrays['dc'] ) && isset( $namespace_arrays['dc']['subject'] ) ) {
 			if ( is_array( $namespace_arrays['dc']['subject'] ) ) {
 				foreach ( $namespace_arrays['dc']['subject'] as $term ) {
-					$term = trim( $term );
+					$term = trim( $term, " \n\t\r\0\x0B," );
 					if ( ! empty( $term ) ) {
 						$keywords[ $term ] = $term;
 					}
 				}
 			} elseif ( is_string( $namespace_arrays['dc']['subject'] ) ) {
-				$term = trim ( $namespace_arrays['dc']['subject'] );
+				$term = trim ( $namespace_arrays['dc']['subject'], " \n\t\r\0\x0B," );
 				if ( ! empty( $term ) ) {
 					$keywords[ $term ] = $term;
 				}
@@ -4535,28 +4570,40 @@ class MLAData {
 //		}
 
 		if ( ! isset( $results['Creator'] ) ) {
-			if ( isset( $namespace_arrays['xmp'] ) && isset( $namespace_arrays['xmp']['CreatorTool'] ) ) {
-				$results['Creator'] = $namespace_arrays['xmp']['CreatorTool'];
-			} elseif ( isset( $namespace_arrays['xap'] ) && isset( $namespace_arrays['xap']['CreatorTool'] ) ) {
-				$results['Creator'] = $namespace_arrays['xap']['CreatorTool'];
-			} elseif ( ! empty( $results['Producer'] ) ) {
-				$results['Creator'] = $results['Producer'];
+			$replacement = self::_nonempty_value( $namespace_arrays, 'xmp', 'CreatorTool' );
+			if ( ! empty( $replacement ) ) {
+				$results['Creator'] = $replacement;
+			} else {
+				$replacement = self::_nonempty_value( $namespace_arrays, 'xap', 'CreatorTool' );
+				if ( ! empty( $replacement ) ) {
+					$results['Creator'] = $replacement;
+				} elseif ( ! empty( $results['Producer'] ) ) {
+					$results['Creator'] = $results['Producer'];
+				}
 			}
 		}
 
 		if ( ! isset( $results['CreationDate'] ) ) {
-			if ( isset( $namespace_arrays['xmp'] ) && isset( $namespace_arrays['xmp']['CreateDate'] ) ) {
-				$results['CreationDate'] = $namespace_arrays['xmp']['CreateDate'];
-			} elseif ( isset( $namespace_arrays['xap'] ) && isset( $namespace_arrays['xap']['CreateDate'] ) ) {
-				$results['CreationDate'] = $namespace_arrays['xap']['CreateDate'];
+			$replacement = self::_nonempty_value( $namespace_arrays, 'xmp', 'CreateDate' );
+			if ( ! empty( $replacement ) ) {
+				$results['CreationDate'] = $replacement;
+			} else {
+				$replacement = self::_nonempty_value( $namespace_arrays, 'xap', 'CreateDate' );
+				if ( ! empty( $replacement ) ) {
+					$results['CreationDate'] = $replacement;
+				}
 			}
 		}
 
 		if ( ! isset( $results['ModDate'] ) ) {
-			if ( isset( $namespace_arrays['xmp'] ) && isset( $namespace_arrays['xmp']['ModifyDate'] ) ) {
-				$results['ModDate'] = $namespace_arrays['xmp']['ModifyDate'];
-			} elseif ( isset( $namespace_arrays['xap'] ) && isset( $namespace_arrays['xap']['ModifyDate'] ) ) {
-				$results['ModDate'] = $namespace_arrays['xap']['ModifyDate'];
+			$replacement = self::_nonempty_value( $namespace_arrays, 'xmp', 'ModifyDate' );
+			if ( ! empty( $replacement ) ) {
+				$results['ModDate'] = $replacement;
+			} else {
+				$replacement = self::_nonempty_value( $namespace_arrays, 'xap', 'ModifyDate' );
+				if ( ! empty( $replacement ) ) {
+					$results['ModDate'] = $replacement;
+				}
 			}
 		}
 
