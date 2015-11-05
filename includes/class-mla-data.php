@@ -5058,19 +5058,21 @@ class MLAData {
 
 		if ( 'ALL_IPTC' == $iptc_key ) {
 			$clean_data = array();
-			foreach ( $item_metadata['mla_iptc_metadata'] as $key => $value ) {
-				if ( is_array( $value ) ) {
-					foreach ($value as $text_key => $text )
-						$value[ $text_key ] = self::_bin_to_utf8( $text );
-
-					$clean_data[ $key ] = 'ARRAY(' . implode( ',', $value ) . ')';
-				} elseif ( is_string( $value ) ) {
-					$clean_data[ $key ] = self::_bin_to_utf8( substr( $value, 0, 256 ) );
-				} else {
-					$clean_data[ $key ] = self::_bin_to_utf8( $value );
+			if ( isset( $item_metadata['mla_iptc_metadata'] ) && is_array( $item_metadata['mla_iptc_metadata'] ) ) {
+				foreach ( $item_metadata['mla_iptc_metadata'] as $key => $value ) {
+					if ( is_array( $value ) ) {
+						foreach ($value as $text_key => $text )
+							$value[ $text_key ] = self::_bin_to_utf8( $text );
+	
+						$clean_data[ $key ] = 'ARRAY(' . implode( ',', $value ) . ')';
+					} elseif ( is_string( $value ) ) {
+						$clean_data[ $key ] = self::_bin_to_utf8( substr( $value, 0, 256 ) );
+					} else {
+						$clean_data[ $key ] = self::_bin_to_utf8( $value );
+					}
 				}
 			}
-
+			
 			return var_export( $clean_data, true);
 		}
 
@@ -5094,32 +5096,36 @@ class MLAData {
 	public static function mla_exif_metadata_value( $exif_key, $item_metadata, $option = 'text', $keep_existing = false ) {
 		if ( 'ALL_EXIF' == $exif_key ) {
 			$clean_data = array();
-			foreach ( $item_metadata['mla_exif_metadata'] as $key => $value ) {
-				if ( is_array( $value ) ) {
-					$clean_data[ $key ] = '(ARRAY)';
-				} elseif ( is_string( $value ) ) {
-					$clean_data[ $key ] = self::_bin_to_utf8( substr( $value, 0, 256 ) );
-				} else {
-					$clean_data[ $key ] = $value;
+			if ( isset( $item_metadata['mla_exif_metadata'] ) && is_array( $item_metadata['mla_exif_metadata'] ) ) {
+				foreach ( $item_metadata['mla_exif_metadata'] as $key => $value ) {
+					if ( is_array( $value ) ) {
+						$clean_data[ $key ] = '(ARRAY)';
+					} elseif ( is_string( $value ) ) {
+						$clean_data[ $key ] = self::_bin_to_utf8( substr( $value, 0, 256 ) );
+					} else {
+						$clean_data[ $key ] = $value;
+					}
 				}
 			}
 
 			return var_export( $clean_data, true);
 		} elseif ( 'ALL_IPTC' == $exif_key ) {
 			$clean_data = array();
-			foreach ( $item_metadata['mla_iptc_metadata'] as $key => $value ) {
-				if ( is_array( $value ) ) {
-					foreach ($value as $text_key => $text )
-						$value[ $text_key ] = self::_bin_to_utf8( $text );
-
-					$clean_data[ $key ] = 'ARRAY(' . implode( ',', $value ) . ')';
-				} elseif ( is_string( $value ) ) {
-					$clean_data[ $key ] = self::_bin_to_utf8( substr( $value, 0, 256 ) );
-				} else {
-					$clean_data[ $key ] = self::_bin_to_utf8( $value );
+			if ( isset( $item_metadata['mla_iptc_metadata'] ) && is_array( $item_metadata['mla_iptc_metadata'] ) ) {
+				foreach ( $item_metadata['mla_iptc_metadata'] as $key => $value ) {
+					if ( is_array( $value ) ) {
+						foreach ($value as $text_key => $text )
+							$value[ $text_key ] = self::_bin_to_utf8( $text );
+	
+						$clean_data[ $key ] = 'ARRAY(' . implode( ',', $value ) . ')';
+					} elseif ( is_string( $value ) ) {
+						$clean_data[ $key ] = self::_bin_to_utf8( substr( $value, 0, 256 ) );
+					} else {
+						$clean_data[ $key ] = self::_bin_to_utf8( $value );
+					}
 				}
 			}
-
+			
 			return var_export( $clean_data, true);
 		}
 
@@ -5143,16 +5149,18 @@ class MLAData {
 	public static function mla_xmp_metadata_value( $xmp_key, $xmp_metadata, $option = 'text', $keep_existing = false ) {
 		if ( 'ALL_XMP' == $xmp_key ) {
 			$clean_data = array();
-			foreach ( $xmp_metadata as $key => $value ) {
-				if ( is_array( $value ) ) {
-					$clean_data[ $key ] = '(ARRAY)';
-				} elseif ( is_string( $value ) ) {
-					$clean_data[ $key ] = self::_bin_to_utf8( substr( $value, 0, 256 ) );
-				} else {
-					$clean_data[ $key ] = $value;
+			if ( is_array( $xmp_metadata ) ) {
+				foreach ( $xmp_metadata as $key => $value ) {
+					if ( is_array( $value ) ) {
+						$clean_data[ $key ] = '(ARRAY)';
+					} elseif ( is_string( $value ) ) {
+						$clean_data[ $key ] = self::_bin_to_utf8( substr( $value, 0, 256 ) );
+					} else {
+						$clean_data[ $key ] = $value;
+					}
 				}
 			}
-
+			
 			return var_export( $clean_data, true);
 		}
 
@@ -5176,16 +5184,18 @@ class MLAData {
 	public static function mla_id3_metadata_value( $id3_key, $id3_metadata, $option, $keep_existing ) {
 		if ( 'ALL_ID3' == $id3_key ) {
 			$clean_data = array();
-			foreach ( $id3_metadata as $key => $value ) {
-				if ( is_array( $value ) ) {
-					$clean_data[ $key ] = '(ARRAY)';
-				} elseif ( is_string( $value ) ) {
-					$clean_data[ $key ] = self::_bin_to_utf8( substr( $value, 0, 256 ) );
-				} else {
-					$clean_data[ $key ] = $value;
+			if ( is_array( $id3_metadata ) ) {
+				foreach ( $id3_metadata as $key => $value ) {
+					if ( is_array( $value ) ) {
+						$clean_data[ $key ] = '(ARRAY)';
+					} elseif ( is_string( $value ) ) {
+						$clean_data[ $key ] = self::_bin_to_utf8( substr( $value, 0, 256 ) );
+					} else {
+						$clean_data[ $key ] = $value;
+					}
 				}
 			}
-
+			
 			return var_export( $clean_data, true);
 		}
 
@@ -5221,16 +5231,18 @@ class MLAData {
 			}
 		} elseif ( 'ALL_PDF' == $pdf_key ) {
 			$clean_data = array();
-			foreach ( $item_metadata['mla_pdf_metadata'] as $key => $value ) {
-				if ( is_array( $value ) ) {
-					$clean_data[ $key ] = '(ARRAY)';
-				} elseif ( is_string( $value ) ) {
-					$clean_data[ $key ] = self::_bin_to_utf8( substr( $value, 0, 256 ) );
-				} else {
-					$clean_data[ $key ] = $value;
+			if ( isset( $item_metadata['mla_pdf_metadata'] ) && is_array( $item_metadata['mla_pdf_metadata'] ) ) {
+				foreach ( $item_metadata['mla_pdf_metadata'] as $key => $value ) {
+					if ( is_array( $value ) ) {
+						$clean_data[ $key ] = '(ARRAY)';
+					} elseif ( is_string( $value ) ) {
+						$clean_data[ $key ] = self::_bin_to_utf8( substr( $value, 0, 256 ) );
+					} else {
+						$clean_data[ $key ] = $value;
+					}
 				}
 			}
-
+			
 			$text = var_export( $clean_data, true);
 		} // ALL_PDF
 
