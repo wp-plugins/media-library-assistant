@@ -171,9 +171,14 @@ All of the MLA source code has been annotated with "DocBlocks", a special type o
 == Changelog ==
 
 = 2.16 =
+* New: When WPML is active a dropdown control is added to the Bulk Edit on Upload form so the default "make new media available in all languages" option can be changed on an upload-by-upload basis.
 * New: A new `/media-library-assistant/examples/mla-dynamic-references-example.php.txt` example plugin has been added to demonstrate dynamic "where-used" reporting that populates one or more custom fields.
 * New: When WPML is active but WPML Media is not installed/active, a warning message now appears on the Settings/Media lLibrary Assistant Language tab.
-* Fix: When WPML is active but WPML Media is not installed/active, taxonomy term assignment in the QUick Edit and Bulk Edit areas has been fixed.
+* New: Three new filters have been added to support adding fields to the Bulk Edit on Upload area. Examples of the new filters have been added to the `/examples/mla-list-table-hooks-example.php.txt` file.
+* Fix: When WPML is active, updates from the Bulk Edit on Upload form are copied to the duplicate items created by "make new media available in all languages" option.
+* Fix: A failure to update ALT Text values in the Bulk Edit on Upload area has been corrected.
+* Fix: A conflict with Visual Composer use of Media Manager "Upload Files" has been resolved.
+* Fix: When WPML is active but WPML Media is not installed/active, taxonomy term assignment in the Quick Edit and Bulk Edit areas has been fixed.
 * Fix: Parsing enhancements return more and cleaner XMP data from some PDF documents.
 * Fix: Damaged XMP data in an item no longer causes PHP Warning messages. In addition, NULL characters in XMP data are changed to printable zero characters ('0') to allow some damage to be repaired.
 * Fix: Sorting the Media/Assistant submenu table by the ALT Text column has been fixed.

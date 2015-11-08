@@ -5292,7 +5292,7 @@ The following hooks are defined in <code>/wp-admin/includes/class-wp-list-table.
 </tr>
 </table>
 <p>
-The following hooks are defined in <code>/wp-admin/includes/class-mla-objects.php</code>:
+The following hooks are defined in <code>/media-library-assistant/includes/class-mla-objects.php</code>:
 </p>
 <table>
 <tr>
@@ -5305,7 +5305,7 @@ The following hooks are defined in <code>/wp-admin/includes/class-mla-objects.ph
 </tr>
 </table>
 <p>
-The following hooks are defined in <code>/wp-admin/includes/class-mla-data.php</code>:
+The following hooks are defined in <code>/media-library-assistant/includes/class-mla-data.php</code>:
 </p>
 <table>
 <tr>
@@ -5411,7 +5411,7 @@ The following hooks are defined in <code>/media-library-assistant/includes/class
 </tr>
 </table>
 <p>
-The following hooks are defined in <code>/wp-admin/includes/class-wp-list-table.php</code>:
+The following hooks are defined in <code>/media-library-assistant/includes/class-mla-list-table.php</code>:
 </p>
 <table>
 <tr>
@@ -5465,6 +5465,23 @@ The following hooks are defined in <code>/wp-admin/includes/class-wp-list-table.
 <tr>
 <td class="mla-doc-hook-label">views_upload</td>
 <td class="mla-doc-hook-definition">Views for the "upload" page when WPML is active. This filter is hooked by WPML Media in wpml-media.class.php, and is only applied when WPML is active.</td>
+</tr>
+</table>
+<p>
+The following hooks are defined in <code>/media-library-assistant/includes/class-mla-edit-media.php</code>:
+</p>
+<table>
+<tr>
+<td class="mla-doc-hook-label">mla_upload_bulk_edit_form_values</td>
+<td class="mla-doc-hook-definition">Gives you a chance to modify and extend the substitution values for the Bulk Edit on Upload form.</td>
+</tr>
+<tr>
+<td class="mla-doc-hook-label">mla_upload_bulk_edit_form_template</td>
+<td class="mla-doc-hook-definition">Gives you a chance to modify and extend the template used for the Bulk Edit on Upload form.</td>
+</tr>
+<tr>
+<td class="mla-doc-hook-label">mla_upload_bulk_edit_form_parse</td>
+<td class="mla-doc-hook-definition">Gives you a final chance to modify and extend the HTML markup used for the Bulk Edit on Upload form.</td>
 </tr>
 </table>
 <p>

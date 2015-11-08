@@ -113,6 +113,7 @@ and meta data for a single attachment</span><pre>mla_update_single_item()</pre><
 <li class="method private "><a href="#_find_template_substring" title="_find_template_substring :: Find a complete template, balancing opening and closing delimiters"><span class="description">Find a complete template, balancing opening and closing delimiters</span><pre>_find_template_substring()</pre></a></li>
 <li class="method private "><a href="#_find_test_substring" title="_find_test_substring :: Find a complete (test) element, balancing opening and closing delimiters"><span class="description">Find a complete (test) element, balancing opening and closing delimiters</span><pre>_find_test_substring()</pre></a></li>
 <li class="method private "><a href="#_match_quoted_phrase" title="_match_quoted_phrase :: Isolates keyword match results to word boundaries"><span class="description">Isolates keyword match results to word boundaries</span><pre>_match_quoted_phrase()</pre></a></li>
+<li class="method private "><a href="#_nonempty_value" title="_nonempty_value :: Search the namespace array for a non-empty value"><span class="description">Search the namespace array for a non-empty value</span><pre>_nonempty_value()</pre></a></li>
 <li class="method private "><a href="#_parse_arguments" title="_parse_arguments :: Process an argument list within a field-level parameter format specification"><span class="description">Process an argument list within a field-level parameter format specification</span><pre>_parse_arguments()</pre></a></li>
 <li class="method private "><a href="#_parse_field_level_template" title='_parse_field_level_template :: Convert field-level "template:" string into its component parts'><span class="description">Convert field-level "template:" string into its component parts</span><pre>_parse_field_level_template()</pre></a></li>
 <li class="method private "><a href="#_parse_iso8601_date" title="_parse_iso8601_date :: Parse a ISO 8601 Timestamp"><span class="description">Parse a ISO 8601 Timestamp</span><pre>_parse_iso8601_date()</pre></a></li>
@@ -1383,6 +1384,31 @@ and meta data for a single attachment</h2>
 <code>boolean</code>$needle is a word match within $haystack</div>
 </div></div>
 </div>
+<a name="_nonempty_value" id="_nonempty_value"></a><div class="element clickable method private _nonempty_value" data-toggle="collapse" data-target="._nonempty_value .collapse">
+<h2>Search the namespace array for a non-empty value</h2>
+<pre>_nonempty_value(array $namespace_array, string $namespace, string $key) : string</pre>
+<div class="labels"></div>
+<div class="row collapse"><div class="detail-description">
+<p class="long_description"></p>
+<table class="table table-bordered"><tr>
+<th>since</th>
+<td>2.10</td>
+</tr></table>
+<h3>Parameters</h3>
+<div class="subelement argument">
+<h4>$namespace_array</h4>
+<code>array</code><p>namespace array</p></div>
+<div class="subelement argument">
+<h4>$namespace</h4>
+<code>string</code><p>namespace</p></div>
+<div class="subelement argument">
+<h4>$key</h4>
+<code>string</code><p>key</p></div>
+<h3>Returns</h3>
+<div class="subelement response">
+<code>string</code>trimmed value of the key within the namespace</div>
+</div></div>
+</div>
 <a name="_parse_arguments" id="_parse_arguments"></a><div class="element clickable method private _parse_arguments" data-toggle="collapse" data-target="._parse_arguments .collapse">
 <h2>Process an argument list within a field-level parameter format specification</h2>
 <pre>_parse_arguments(string $argument_string) : array</pre>
@@ -1966,7 +1992,7 @@ custom field Table Views.</p></p>
 <div class="row"><footer class="span12">
             Template is built using <a href="http://twitter.github.com/bootstrap/">Twitter Bootstrap 2</a> and icons provided by <a href="http://glyphicons.com/">Glyphicons</a>.<br>
             Documentation is powered by <a href="http://www.phpdoc.org/">phpDocumentor 2.0.0a8</a> and<br>
-            generated on 2015-10-13T16:50:49-07:00.<br></footer></div>
+            generated on 2015-11-08T12:42:28-08:00.<br></footer></div>
 </div>
 </body>
 </html>

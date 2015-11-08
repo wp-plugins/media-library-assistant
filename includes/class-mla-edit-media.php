@@ -446,7 +446,10 @@ class MLAEdit {
 			'set_parent_form' => $set_parent_form,
 		);
 
-		echo MLAData::mla_parse_template( $page_template_array['page'], $page_values );
+		$page_values = apply_filters( 'mla_upload_bulk_edit_form_values', $page_values );
+		$page_template = apply_filters( 'mla_upload_bulk_edit_form_template', $page_template_array['page'] );
+		$parse_value = MLAData::mla_parse_template( $page_template, $page_values );
+		echo apply_filters( 'mla_upload_bulk_edit_form_parse', $parse_value, $page_template, $page_values );
 	}
 
 	/**

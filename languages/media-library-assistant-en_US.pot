@@ -2,7 +2,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: Media Library Assistant\n"
-"POT-Creation-Date: 2015-10-09 19:32-0700\n"
+"POT-Creation-Date: 2015-11-08 12:30-0800\n"
 "PO-Revision-Date: 2015-08-21 21:38-0800\n"
 "Last-Translator: David Lingren <david@fairtradejudaica.org>\n"
 "Language-Team: David Lingren <david@fairtradejudaica.org>\n"
@@ -2712,7 +2712,10 @@ msgstr ""
 msgid "Ghostscript support is not installed."
 msgstr ""
 
-msgid "WARNING: MLA Viewer support may not be available"
+msgid "WARNING:"
+msgstr ""
+
+msgid " MLA Viewer support may not be available"
 msgstr ""
 
 msgid ""
@@ -3379,6 +3382,15 @@ msgid "Order"
 msgstr ""
 
 msgid "Duplicate translation created; update as desired."
+msgstr ""
+
+msgid "Make media available in all languages"
+msgstr ""
+
+msgid " WPML Media is not installed."
+msgstr ""
+
+msgid " WPML Media is not active."
 msgstr ""
 
 #. translators: 1: - 4: page subheader values

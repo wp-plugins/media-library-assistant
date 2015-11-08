@@ -6122,7 +6122,7 @@ class MLAData {
 				 * should not get a value, e.g., text or PDF documents
 				 */
 				case 'bulk_image_alt':
-					if ( empty( $post_data[ 'mla_wp_attachment_metadata' ] ) ) {
+					if ( 'image/' !== substr( $post_data[ 'post_mime_type' ], 0, 6 ) ) {
 						break;
 					}
 					// fallthru

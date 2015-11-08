@@ -50,19 +50,24 @@ class MLA_WPML {
 		add_filter( 'post_updated_messages', 'MLA_WPML::post_updated_messages', 10, 1 );
 
 		/*
-		 * Defined in wp-includes/post.php function wp_insert_post
-		 */
-		add_action( 'edit_attachment', 'MLA_WPML::edit_attachment', 10, 1 );
-
-		/*
 		 * Defined in wp-admin/includes/post.php function edit_post
 		 */
 		add_filter( 'attachment_fields_to_save', 'MLA_WPML::attachment_fields_to_save', 10, 2 );
+
+		/*
+		 * Defined in wp-includes/post.php function wp_insert_post
+		 */
+		add_action( 'edit_attachment', 'MLA_WPML::edit_attachment', 10, 1 );
 
 		 /*
 		  * Defined in /media-library-assistant/includes/class-mla-data.php
 		  */
 		add_action( 'mla_updated_single_item', 'MLA_WPML::mla_updated_single_item', 10, 2 );
+
+		/*
+		 * Defined in /media-library-assistant/includes/class-mla-edit-media.php
+		 */
+		add_filter( 'mla_upload_bulk_edit_form_values', 'MLA_WPML::mla_upload_bulk_edit_form_values', 10, 1 );
 
 		 /*
 		  * Defined in /media-library-assistant/includes/class-mla-media-modal.php
@@ -202,6 +207,29 @@ class MLA_WPML {
 		 * Localize $mla_language_option_definitions array
 		 */
 		self::mla_localize_language_option_definitions();
+		
+		/*
+		 * Apply the "Always Translate Media" override
+		 */
+		if ( ! empty( $_REQUEST['mlaAddNewBulkEditFormString'] ) && class_exists( 'WPML_Media' ) && ( 'checked' == MLAOptions::mla_get_option( MLAOptions::MLA_ADD_NEW_BULK_EDIT ) ) ) {
+			$content_defaults = WPML_Media::get_setting( 'new_content_settings' );
+			$wpml_value = isset( $content_defaults['always_translate_media'] ) && $content_defaults['always_translate_media'];
+
+			$args = wp_parse_args( stripslashes( urldecode( $_REQUEST['mlaAddNewBulkEditFormString'] ) ) );
+			if ( isset( $args['mla_always_translate_media'] ) ) {
+				$form_value = 'true' == $args['mla_always_translate_media'];
+			} else {
+				$form_value = $wpml_value;
+			}
+
+			if ( $form_value !== $wpml_value ) {
+				self::$wpml_content_defaults = $content_defaults;
+				$content_defaults['always_translate_media'] = $form_value;
+				WPML_Media::update_setting( 'new_content_settings', $content_defaults );
+			} else {
+				self::$wpml_content_defaults = NULL;
+			}
+		}
 	}
 
 	/**
@@ -332,6 +360,24 @@ class MLA_WPML {
 		 * Check for Bulk Edit processing during Upload New Media
 		 */
 		if ( ! empty( $_REQUEST['mlaAddNewBulkEditFormString'] ) ) {
+			/*
+			 * If always_translate_media is set there will be translations present
+			 * that must be added to the Bulk Edit list.
+			 */
+			if ( ! empty( self::$duplicate_attachments ) ) {
+				foreach( self::$duplicate_attachments as $id => $language ) {
+					$request['cb_attachment'][] = $id;
+				}
+			}
+			
+			/*
+			 * It is now safe to restore the WPML option settings if they have been
+			 * changed for this upload
+			 */
+			if ( ! empty( self::$wpml_content_defaults ) ) {
+				WPML_Media::update_setting( 'new_content_settings', self::$wpml_content_defaults );
+			}
+						
 			/*
 			 * Suppress WPML processing in wpml-media.class.php function save_attachment_actions,
 			 * which wipes out attachment meta data.
@@ -1088,6 +1134,16 @@ class MLA_WPML {
 	}
 
 	/**
+	 * WPML Option settings to restore when always_translate_media is changed in
+	 * Bulk Edit on Upload area
+	 *
+	 * @since 2.16
+	 *
+	 * @var	array	NULL or ( always_translate_media, duplicate_media, duplicate_featured )
+	 */
+	private static $wpml_content_defaults = NULL;
+
+	/**
 	 * Duplicates created during media upload
 	 *
 	 * @since 2.11
@@ -1236,6 +1292,38 @@ class MLA_WPML {
 	} // edit_attachment
 
 	/**
+	 * Modify and extend the substitution values used for the Bulk Edit on Upload form.
+	 *
+	 * @since 2.16
+	 *
+	 * @param	array	$page_values [ parameter_name => parameter_value ] pairs
+	 */
+	public static function mla_upload_bulk_edit_form_values( $page_values ) {
+		/*
+		 * Add markup to the $page_values ['custom_fields'] element for the "Always translate" checkbox
+		 */
+		if ( class_exists( 'WPML_Media' ) ) {
+			$content_defaults = WPML_Media::get_setting( 'new_content_settings' );
+			if ( isset( $content_defaults['always_translate_media'] ) && $content_defaults['always_translate_media'] ) {
+				$true_selected = 'selected="selected"';
+				$false_selected = '';
+			} else {
+				$true_selected = '';
+				$false_selected = 'selected="selected"';
+			}
+			
+			$page_values['custom_fields'] .= '      <label class="inline-edit-c_0 clear"><span class="title">WPML</span><span class="input-text-wrap">' . "\n";
+			$page_values['custom_fields'] .= '      <select name="mla_always_translate_media">' . "\n";
+			$page_values['custom_fields'] .= '        <option ' . $true_selected . ' value="true">' . __( 'Yes', 'media-library-assistant' ) . '&nbsp;</option>' . "\n";
+			$page_values['custom_fields'] .= '        <option ' . $false_selected . ' value="false">' . __( 'No', 'media-library-assistant' ) . '&nbsp;</option>' . "\n";
+			$page_values['custom_fields'] .= '      </select><span>&nbsp;' . __( 'Make media available in all languages', 'media-library-assistant' ) . '</span>' . "\n";
+			$page_values['custom_fields'] .= '      </span></label>' . "\n";
+		}
+		
+ 		return $page_values;
+	} // mla_upload_bulk_edit_form_values
+
+	/**
 	 * Adds the "Language" tab to the Settings/Media Library Assistant list
 	 *
 	 * @since 2.11
@@ -1361,7 +1449,6 @@ class MLA_WPML {
 		$installed = false;
 		$active = false;
 		$wpml_media = SitePress::get_installed_plugins();
-//error_log( __LINE__ . ' mla_render_language_tab wpml_plugins_list = ' . var_export( $wpml_media, true ), 0 );
 		if ( isset( $wpml_media['WPML Media'] ) ) {
 			$wpml_media = $wpml_media['WPML Media'];
 			if ( ! empty( $wpml_media['plugin'] ) ) {
@@ -1372,9 +1459,9 @@ class MLA_WPML {
 		
 		$wpml_media = '';
 		if ( ! $installed ) {
-			$wpml_media = '<p><strong>' . __( 'Warning:' ) . __( ' WPML Media is not installed.', 'media-library-assistant' ) . '</strong></p>';
+			$wpml_media = '<p><strong>' . __( 'WARNING:', 'media-library-assistant' ) . __( ' WPML Media is not installed.', 'media-library-assistant' ) . '</strong></p>';
 		} elseif ( ! $active ) {
-			$wpml_media = '<p><strong>' . __( 'Warning:' ) . __( ' WPML Media is not active.', 'media-library-assistant' ) . '</strong></p>';
+			$wpml_media = '<p><strong>' . __( 'WARNING:', 'media-library-assistant' ) . __( ' WPML Media is not active.', 'media-library-assistant' ) . '</strong></p>';
 		}
 		
 		$page_values = array(

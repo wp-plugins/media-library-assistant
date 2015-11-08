@@ -485,6 +485,7 @@ class MLAShortcodes {
 			} else {
 				$output = '';
 			}
+
 			/*
 			 * Execute the alternate gallery shortcode with the new parameters
 			 */

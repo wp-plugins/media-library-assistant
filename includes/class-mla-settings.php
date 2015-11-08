@@ -2376,7 +2376,7 @@ class MLASettings {
 		}
 
 		if ( ! empty( $not_supported_warning ) ) {
-			MLAOptions::$mla_option_definitions['enable_mla_viewer']['help'] = '<strong>' . __( 'WARNING: MLA Viewer support may not be available', 'media-library-assistant' ) . ':</strong>' . $not_supported_warning;
+			MLAOptions::$mla_option_definitions['enable_mla_viewer']['help'] = '<strong>' . __( 'WARNING:', 'media-library-assistant' ) . __( ' MLA Viewer support may not be available', 'media-library-assistant' ) . ':</strong>' . $not_supported_warning;
 		}
 
 		/*

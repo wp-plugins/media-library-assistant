@@ -82,6 +82,7 @@ Media Manager Modal Window ATTACHMENT DETAILS taxonomy"><span class="description
 Media Manager Modal Window ATTACHMENT DETAILS taxonomy</span><pre>mla_media_modal_update_compat_fields_terms()</pre></a></li>
 <li class="method public "><a href="#mla_render_language_tab" title='mla_render_language_tab :: Renders the Settings/Media Library Assistant "Language" tab'><span class="description">Renders the Settings/Media Library Assistant "Language" tab</span><pre>mla_render_language_tab()</pre></a></li>
 <li class="method public "><a href="#mla_updated_single_item" title="mla_updated_single_item :: Applies Term Synchronization after item updates"><span class="description">Applies Term Synchronization after item updates</span><pre>mla_updated_single_item()</pre></a></li>
+<li class="method public "><a href="#mla_upload_bulk_edit_form_values" title="mla_upload_bulk_edit_form_values :: Modify and extend the substitution values used for the Bulk Edit on Upload form."><span class="description">Modify and extend the substitution values used for the Bulk Edit on Upload form.</span><pre>mla_upload_bulk_edit_form_values()</pre></a></li>
 <li class="method public "><a href="#post_updated_messages" title="post_updated_messages :: Adds translation update message for display at the top of the Edit Media screen"><span class="description">Adds translation update message for display at the top of the Edit Media screen</span><pre>post_updated_messages()</pre></a></li>
 <li class="method public "><a href="#wpml_media_create_duplicate_attachment" title="wpml_media_create_duplicate_attachment :: Copies taxonomy terms from the source item to the new translated item"><span class="description">Copies taxonomy terms from the source item to the new translated item</span><pre>wpml_media_create_duplicate_attachment()</pre></a></li>
 <li class="nav-header private">» Private</li>
@@ -108,6 +109,9 @@ admin page areas for setting/updating them</span><pre>$mla_language_option_defin
 <li class="property private "><a href="#%24existing_terms" title="$existing_terms :: Taxonomy terms for the current item translation in the database"><span class="description">Taxonomy terms for the current item translation in the database</span><pre>$existing_terms</pre></a></li>
 <li class="property private "><a href="#%24relevant_terms" title="$relevant_terms :: Taxonomy terms and translations"><span class="description">Taxonomy terms and translations</span><pre>$relevant_terms</pre></a></li>
 <li class="property private "><a href="#%24tax_input" title="$tax_input :: Replacement tax_input values in all languages"><span class="description">Replacement tax_input values in all languages</span><pre>$tax_input</pre></a></li>
+<li class="property private "><a href="#%24wpml_content_defaults" title="$wpml_content_defaults :: WPML Option settings to restore when always_translate_media is changed in
+Bulk Edit on Upload area"><span class="description">WPML Option settings to restore when always_translate_media is changed in
+Bulk Edit on Upload area</span><pre>$wpml_content_defaults</pre></a></li>
 </ul>
 </div>
 <div class="span8">
@@ -482,6 +486,23 @@ Media Manager Modal Window ATTACHMENT DETAILS taxonomy</h2>
 <code>integer</code><p>Zero if the update failed else ID of the item that was updated.</p></div>
 </div></div>
 </div>
+<a name="mla_upload_bulk_edit_form_values" id="mla_upload_bulk_edit_form_values"></a><div class="element clickable method public mla_upload_bulk_edit_form_values" data-toggle="collapse" data-target=".mla_upload_bulk_edit_form_values .collapse">
+<h2>Modify and extend the substitution values used for the Bulk Edit on Upload form.</h2>
+<pre>mla_upload_bulk_edit_form_values(array $page_values) </pre>
+<div class="labels"></div>
+<div class="row collapse"><div class="detail-description">
+<p class="long_description"></p>
+<table class="table table-bordered"><tr>
+<th>since</th>
+<td>2.16</td>
+</tr></table>
+<h3>Parameters</h3>
+<div class="subelement argument">
+<h4>$page_values</h4>
+<code>array</code><p>[ parameter_name => parameter_value ] pairs</p>
+</div>
+</div></div>
+</div>
 <a name="post_updated_messages" id="post_updated_messages"></a><div class="element clickable method public post_updated_messages" data-toggle="collapse" data-target=".post_updated_messages .collapse">
 <h2>Adds translation update message for display at the top of the Edit Media screen</h2>
 <pre>post_updated_messages(array $messages) : array</pre>
@@ -616,7 +637,7 @@ and $existing_terms contains the target translation</p></p>
 </tr>
 <tr>
 <th>uses</th>
-<td>\global\MLA_Polylang::$existing_terms</td>
+<td>\global\MLA_WPML::$existing_terms</td>
 </tr>
 </table>
 <h3>Parameters</h3>
@@ -892,6 +913,19 @@ Polylang uses term_id as the "element_id".</p></p>
 </tr></table>
 </div></div>
 </div>
+<a name="%24wpml_content_defaults" id="$wpml_content_defaults"> </a><div class="element clickable property private $wpml_content_defaults" data-toggle="collapse" data-target=".$wpml_content_defaults .collapse">
+<h2>WPML Option settings to restore when always_translate_media is changed in
+Bulk Edit on Upload area</h2>
+<pre>$wpml_content_defaults : array</pre>
+<div class="labels"></div>
+<div class="row collapse"><div class="detail-description">
+<p class="long_description"></p>
+<table class="table table-bordered"><tr>
+<th>since</th>
+<td>2.16</td>
+</tr></table>
+</div></div>
+</div>
 </div>
 </div>
 </div>
@@ -899,7 +933,7 @@ Polylang uses term_id as the "element_id".</p></p>
 <div class="row"><footer class="span12">
             Template is built using <a href="http://twitter.github.com/bootstrap/">Twitter Bootstrap 2</a> and icons provided by <a href="http://glyphicons.com/">Glyphicons</a>.<br>
             Documentation is powered by <a href="http://www.phpdoc.org/">phpDocumentor 2.0.0a8</a> and<br>
-            generated on 2015-10-13T16:50:49-07:00.<br></footer></div>
+            generated on 2015-11-08T12:42:28-08:00.<br></footer></div>
 </div>
 </body>
 </html>
