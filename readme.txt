@@ -170,11 +170,14 @@ All of the MLA source code has been annotated with "DocBlocks", a special type o
 
 == Changelog ==
 
-= 2.16 =
+= 2.20 =
+* New: Nic Mare has contributed a **partial German translation**; thanks Nic!
 * New: When WPML is active a dropdown control is added to the Bulk Edit on Upload form so the default "make new media available in all languages" option can be changed on an upload-by-upload basis.
 * New: A new `/media-library-assistant/examples/mla-dynamic-references-example.php.txt` example plugin has been added to demonstrate dynamic "where-used" reporting that populates one or more custom fields.
 * New: When WPML is active but WPML Media is not installed/active, a warning message now appears on the Settings/Media lLibrary Assistant Language tab.
 * New: Three new filters have been added to support adding fields to the Bulk Edit on Upload area. Examples of the new filters have been added to the `/examples/mla-list-table-hooks-example.php.txt` file.
+* Fix: When WPML is active, attachment metadata is copied to and mapping rules are run on all duplicate items created by "make new media available in all languages" option.
+* Fix: When WPML is active, IPTC/EXIF and Custom Field mapping rules are run against all items, regardless of the current language setting.
 * Fix: When WPML is active, updates from the Bulk Edit on Upload form are copied to the duplicate items created by "make new media available in all languages" option.
 * Fix: A failure to update ALT Text values in the Bulk Edit on Upload area has been corrected.
 * Fix: A conflict with Visual Composer use of Media Manager "Upload Files" has been resolved.

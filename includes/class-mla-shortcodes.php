@@ -72,7 +72,7 @@ class MLAShortcodes {
 				return $ghostscript_present;
 			}
 
-			if ( 'checked' != MLAOptions::mla_get_option( 'enable_ghostscript_check' ) ) {
+			if ( 'checked' != MLACore::mla_get_option( 'enable_ghostscript_check' ) ) {
 				MLA::mla_debug_add( '<strong>_ghostscript_present</strong>, disabled' );
 				return $ghostscript_present = true;
 			}
@@ -288,11 +288,11 @@ class MLAShortcodes {
 
 		$mla_arguments = array_merge( array(
 			'mla_output' => 'gallery',
-			'mla_style' => MLAOptions::mla_get_option('default_style'),
-			'mla_markup' => MLAOptions::mla_get_option('default_markup'),
+			'mla_style' => MLACore::mla_get_option('default_style'),
+			'mla_markup' => MLACore::mla_get_option('default_markup'),
 			'mla_float' => is_rtl() ? 'right' : 'left',
-			'mla_itemwidth' => MLAOptions::mla_get_option('mla_gallery_itemwidth'),
-			'mla_margin' => MLAOptions::mla_get_option('mla_gallery_margin'),
+			'mla_itemwidth' => MLACore::mla_get_option('mla_gallery_itemwidth'),
+			'mla_margin' => MLACore::mla_get_option('mla_gallery_margin'),
 			'mla_target' => '',
 			'mla_debug' => false,
 
@@ -332,7 +332,7 @@ class MLAShortcodes {
 			'itemtag' => $html5 ? 'figure' : 'dl',
 			'icontag' => $html5 ? 'div' : 'dt',
 			'captiontag' => $html5 ? 'figcaption' : 'dd',
-			'columns' => MLAOptions::mla_get_option('mla_gallery_columns'),
+			'columns' => MLACore::mla_get_option('mla_gallery_columns'),
 			'link' => 'permalink', // or 'post' or file' or a registered size
 			// Photonic-specific
 			'id' => NULL,
@@ -522,7 +522,7 @@ class MLAShortcodes {
 
 		$size = $size_class = $arguments['size'];
 		if ( 'icon' == strtolower( $size) ) {
-			if ( 'checked' == MLAOptions::mla_get_option( MLAOptions::MLA_ENABLE_MLA_ICONS ) ) {
+			if ( 'checked' == MLACore::mla_get_option( MLACore::MLA_ENABLE_MLA_ICONS ) ) {
 				$size = array( 64, 64 );
 			} else {
 				$size = array( 60, 60 );
@@ -546,7 +546,7 @@ class MLAShortcodes {
 		/*
 		 * Check for Imagick thumbnail generation arguments
 		 */
-		if ( 'checked' == MLAOptions::mla_get_option( 'enable_mla_viewer' ) ) {
+		if ( 'checked' == MLACore::mla_get_option( 'enable_mla_viewer' ) ) {
 			if ( ! empty( $arguments['mla_viewer'] ) && ( 'single' == strtolower( $arguments['mla_viewer'] ) ) ) {
 				$arguments['mla_single_thread'] = true;	
 				$arguments['mla_viewer'] = 'true';
@@ -561,7 +561,7 @@ class MLAShortcodes {
 			/*
 			 * Test for Ghostscript here so debug messages can be recorded
 			 */
-			$ghostscript_path = MLAOptions::mla_get_option( 'ghostscript_path' );
+			$ghostscript_path = MLACore::mla_get_option( 'ghostscript_path' );
 			if ( self::mla_ghostscript_present( $ghostscript_path ) ) {
 				$arguments['mla_viewer_extensions'] = array_filter( array_map( 'trim', explode( ',', $arguments['mla_viewer_extensions'] ) ) );
 			} else {
@@ -880,7 +880,7 @@ class MLAShortcodes {
 				$item_values['author'] = __( 'unknown', 'media-library-assistant' );
 			}
 
-			$post_meta = MLAData::mla_fetch_attachment_metadata( $attachment->ID );
+			$post_meta = MLAQuery::mla_fetch_attachment_metadata( $attachment->ID );
 			$base_file = $post_meta['mla_wp_attached_file'];
 			$sizes = isset( $post_meta['mla_wp_attachment_metadata']['sizes'] ) ? $post_meta['mla_wp_attachment_metadata']['sizes'] : array();
 
@@ -1212,7 +1212,7 @@ class MLAShortcodes {
 				$item_values['thumbnail_height'] = '';
 				$item_values['thumbnail_url'] = '';
 
-				if ( 'checked' == MLAOptions::mla_get_option( 'enable_featured_image' ) ) {
+				if ( 'checked' == MLACore::mla_get_option( 'enable_featured_image' ) ) {
 					/*
 					 * Look for the "Featured Image" as an alternate thumbnail for PDFs, etc.
 					 */
@@ -1286,7 +1286,7 @@ class MLAShortcodes {
 						 * Non-standard location, if not empty. Write the value to a file that can be
 						 * found by the stand-alone (no WordPress) image stream processor.
 						 */
-						$ghostscript_path = MLAOptions::mla_get_option( 'ghostscript_path' );
+						$ghostscript_path = MLACore::mla_get_option( 'ghostscript_path' );
 						if ( ! empty( $ghostscript_path ) ) {
 							if ( false !== @file_put_contents( dirname( __FILE__ ) . '/' . 'mla-ghostscript-path.txt', $ghostscript_path ) ) {
 								$args['mla_ghostscript_path'] = 'custom';
@@ -1480,8 +1480,8 @@ class MLAShortcodes {
 			'mla_style' => NULL,
 			'mla_markup' => NULL,
 			'mla_float' => is_rtl() ? 'right' : 'left',
-			'mla_itemwidth' => MLAOptions::mla_get_option('mla_tag_cloud_itemwidth'),
-			'mla_margin' => MLAOptions::mla_get_option('mla_tag_cloud_margin'),
+			'mla_itemwidth' => MLACore::mla_get_option('mla_tag_cloud_itemwidth'),
+			'mla_margin' => MLACore::mla_get_option('mla_tag_cloud_margin'),
 			'mla_target' => '',
 			'mla_debug' => false,
 
@@ -1516,7 +1516,7 @@ class MLAShortcodes {
 			'itemtag' => 'ul',
 			'termtag' => 'li',
 			'captiontag' => '',
-			'columns' => MLAOptions::mla_get_option('mla_tag_cloud_columns')
+			'columns' => MLACore::mla_get_option('mla_tag_cloud_columns')
 			),
 			$mla_arguments
 		);
@@ -1642,8 +1642,8 @@ class MLAShortcodes {
 		$output_parameters = array_map( 'strtolower', array_map( 'trim', explode( ',', $arguments['mla_output'] ) ) );
 
 		if ( $is_grid = 'grid' == $output_parameters[0] ) {
-			$default_style = MLAOptions::mla_get_option('default_tag_cloud_style');
-			$default_markup = MLAOptions::mla_get_option('default_tag_cloud_markup');
+			$default_style = MLACore::mla_get_option('default_tag_cloud_style');
+			$default_markup = MLACore::mla_get_option('default_tag_cloud_markup');
 
 			if ( NULL == $arguments['mla_style'] ) {
 				$arguments['mla_style'] = $default_style;
@@ -2308,7 +2308,7 @@ class MLAShortcodes {
 	private static function _registered_dimensions() {
 		global $_wp_additional_image_sizes;
 
-		if ( 'checked' == MLAOptions::mla_get_option( MLAOptions::MLA_ENABLE_MLA_ICONS ) ) {
+		if ( 'checked' == MLACore::mla_get_option( MLACore::MLA_ENABLE_MLA_ICONS ) ) {
 			$sizes = array( 'icon' => array( 64, 64 ) );
 		} else {
 			$sizes = array( 'icon' => array( 60, 60 ) );
@@ -3547,7 +3547,7 @@ class MLAShortcodes {
 			 * mla_terms_taxonomies is shared with keyword search.
 			 */
 			if ( empty( MLAData::$search_parameters['mla_terms_taxonomies'] ) ) {
-				MLAData::$search_parameters['mla_terms_search']['taxonomies'] = MLAOptions::mla_supported_taxonomies( 'term-search' );
+				MLAData::$search_parameters['mla_terms_search']['taxonomies'] = MLACore::mla_supported_taxonomies( 'term-search' );
 			} else {
 				MLAData::$search_parameters['mla_terms_search']['taxonomies'] = array_filter( array_map( 'trim', explode( ',', MLAData::$search_parameters['mla_terms_taxonomies'] ) ) );
 			}

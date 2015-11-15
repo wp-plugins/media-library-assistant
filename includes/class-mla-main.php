@@ -38,7 +38,7 @@ class MLA {
 	 *
 	 * @var	string
 	 */
-	const MLA_DEVELOPMENT_VERSION = '20151108';
+	const MLA_DEVELOPMENT_VERSION = '20151114';
 
 	/**
 	 * Slug for registering and enqueueing plugin style sheet
@@ -222,7 +222,7 @@ class MLA {
 	public static function initialize( ) {
 		global $sitepress, $polylang;
 
-		if ( 'checked' == MLAOptions::mla_get_option( 'enable_featured_image_generation' ) ) {
+		if ( 'checked' == MLACore::mla_get_option( 'enable_featured_image_generation' ) ) {
 			if ( class_exists( 'MLA_Thumbnail' ) ) {
 				self::$mla_language_support_error_messages .= "<li>class MLA_Thumbnail</li>";
 			} else {
@@ -279,24 +279,6 @@ class MLA {
 	}
 
 	/**
-	 * Original PHP error_log path and file
-	 *
-	 * @since 2.15
-	 *
-	 * @var	string
-	 */
-	public static $original_php_log = '?';
-
-	/**
-	 * Original PHP error_reporting value
-	 *
-	 * @since 2.15
-	 *
-	 * @var	string
-	 */
-	public static $original_php_reporting = '?';
-
-	/**
 	 * Effective MLA Debug Level, from MLA_DEBUG_LEVEL or override option
 	 *
 	 * @since 2.15
@@ -331,7 +313,7 @@ class MLA {
 		/*
 		 * This must/will be repeated in class-mla-tests.php to reflect translations
 		 */
-		MLAOptions::mla_localize_option_definitions_array();
+		MLACore::mla_localize_option_definitions_array();
 
 		/*
 		 * Do not process debug options unless MLA_DEBUG_LEVEL is set in wp-config.php
@@ -340,15 +322,14 @@ class MLA {
 			/*
 			 * Set up alternate MLA debug log file
 			 */
-			self::$original_php_log = ini_get( 'error_log' );
-			$error_log_name = MLAOptions::mla_get_option( MLAOptions::MLA_DEBUG_FILE ); 
+			$error_log_name = MLACore::mla_get_option( MLACore::MLA_DEBUG_FILE ); 
 			if ( ! empty( $error_log_name ) ) {
 				self::mla_debug_file( $error_log_name );
 
 				/*
 				 * Override PHP error_log file
 				 */
-				if ( 'checked' === MLAOptions::mla_get_option( MLAOptions::MLA_DEBUG_REPLACE_PHP_LOG ) ) {
+				if ( 'checked' === MLACore::mla_get_option( MLACore::MLA_DEBUG_REPLACE_PHP_LOG ) ) {
 					$result = ini_set('error_log', WP_CONTENT_DIR . self::$mla_debug_file );
 				}
 			}
@@ -358,7 +339,7 @@ class MLA {
 			 * Override MLA debug levels
 			 */
 			self::$mla_debug_level = MLA_DEBUG_LEVEL;
-			$mla_reporting = trim( MLAOptions::mla_get_option( MLAOptions::MLA_DEBUG_REPLACE_LEVEL ) );
+			$mla_reporting = trim( MLACore::mla_get_option( MLACore::MLA_DEBUG_REPLACE_LEVEL ) );
 			if ( ! empty( $mla_reporting ) ) {
 				self::$mla_debug_level = ( 0 + $mla_reporting ) | 1;
 			}
@@ -424,7 +405,7 @@ class MLA {
 			} // apply_filters mla_list_table_admin_action
 		} // (!empty($_REQUEST['mla_admin_action'])
 
-		if ( defined('WP_ADMIN') && WP_ADMIN ) {
+		if ( is_admin() ) {
 			if ( defined('DOING_AJAX') && DOING_AJAX ) {
 				add_action( 'wp_ajax_' . self::JAVASCRIPT_INLINE_EDIT_SLUG, 'MLA::mla_inline_edit_ajax_action' );
 				add_action( 'wp_ajax_' . self::JAVASCRIPT_INLINE_EDIT_SLUG . '-set-parent', 'MLA::mla_set_parent_ajax_action' );
@@ -444,7 +425,7 @@ class MLA {
 		/*
 		 * Optional - limit width of the views list
 		 */
-		$width_value = MLAOptions::mla_get_option( MLAOptions::MLA_TABLE_VIEWS_WIDTH );
+		$width_value = MLACore::mla_get_option( MLACore::MLA_TABLE_VIEWS_WIDTH );
 		if ( !empty( $width_value ) ) {
 			if ( is_numeric( $width_value ) ) {
 				$width_value .= 'px';
@@ -461,8 +442,8 @@ class MLA {
 		/*
 		 * Optional - change the size of the thumbnail/icon images
 		 */
-		$icon_value = MLAOptions::mla_get_option( MLAOptions::MLA_TABLE_ICON_SIZE );
-		if ( 'checked' == MLAOptions::mla_get_option( MLAOptions::MLA_ENABLE_MLA_ICONS ) ) {
+		$icon_value = MLACore::mla_get_option( MLACore::MLA_TABLE_ICON_SIZE );
+		if ( 'checked' == MLACore::mla_get_option( MLACore::MLA_ENABLE_MLA_ICONS ) ) {
 			if ( empty( $icon_value ) ) {
 				$icon_value = 64;
 			} else {
@@ -551,7 +532,7 @@ class MLA {
 
 		$suffix = defined('SCRIPT_DEBUG') && SCRIPT_DEBUG ? '' : '.min';
 
-		if ( 'checked' != MLAOptions::mla_get_option( MLAOptions::MLA_SCREEN_DISPLAY_LIBRARY ) ) {
+		if ( 'checked' != MLACore::mla_get_option( MLACore::MLA_SCREEN_DISPLAY_LIBRARY ) ) {
 			wp_register_style( self::STYLESHEET_SLUG . '-nolibrary', MLA_PLUGIN_URL . 'css/mla-nolibrary.css', false, self::CURRENT_MLA_VERSION );
 			wp_enqueue_style( self::STYLESHEET_SLUG . '-nolibrary' );
 		}
@@ -591,8 +572,8 @@ class MLA {
 		MLAModal::mla_add_terms_search_scripts();
 
 		$fields = array( 'post_title', 'post_name', 'post_excerpt', 'post_content', 'image_alt', 'post_parent', 'post_parent_title', 'menu_order', 'post_author' );
-		$custom_fields = MLAOptions::mla_custom_field_support( 'quick_edit' );
-		$custom_fields = array_merge( $custom_fields, MLAOptions::mla_custom_field_support( 'bulk_edit' ) );
+		$custom_fields = MLACore::mla_custom_field_support( 'quick_edit' );
+		$custom_fields = array_merge( $custom_fields, MLACore::mla_custom_field_support( 'bulk_edit' ) );
 		foreach ( $custom_fields as $slug => $details ) {
 			$fields[] = $slug;
 		}
@@ -613,7 +594,7 @@ class MLA {
 			'bulkSuccess' => __( 'Succeeded', 'media-library-assistant' ),
 			'bulkFailure' => __( 'Failed', 'media-library-assistant' ),
 			'bulkCanceled' => __( 'CANCELED', 'media-library-assistant' ),
-			'bulkChunkSize' => MLAOptions::mla_get_option( MLAOptions::MLA_BULK_CHUNK_SIZE ),
+			'bulkChunkSize' => MLACore::mla_get_option( MLACore::MLA_BULK_CHUNK_SIZE ),
 			'comma' => _x( ',', 'tag_delimiter', 'media-library-assistant' ),
 			'useSpinnerClass' => false,
 			'ajax_action' => self::JAVASCRIPT_INLINE_EDIT_SLUG,
@@ -641,18 +622,18 @@ class MLA {
 	public static function mla_admin_menu_action( ) {
 		global $submenu;
 
-		if ( 'checked' != MLAOptions::mla_get_option( MLAOptions::MLA_SCREEN_DISPLAY_LIBRARY ) ) {
+		if ( 'checked' != MLACore::mla_get_option( MLACore::MLA_SCREEN_DISPLAY_LIBRARY ) ) {
 			add_action( 'load-upload.php', 'MLA::mla_load_media_action' );
 		}
 
-		$page_title = MLAOptions::mla_get_option( MLAOptions::MLA_SCREEN_PAGE_TITLE );
+		$page_title = MLACore::mla_get_option( MLACore::MLA_SCREEN_PAGE_TITLE );
 		if ( empty( $page_title ) ) {
-			$page_title = MLAOptions::mla_get_option( MLAOptions::MLA_SCREEN_PAGE_TITLE, true );
+			$page_title = MLACore::mla_get_option( MLACore::MLA_SCREEN_PAGE_TITLE, true );
 		}
 
-		$menu_title = MLAOptions::mla_get_option( MLAOptions::MLA_SCREEN_MENU_TITLE );
+		$menu_title = MLACore::mla_get_option( MLACore::MLA_SCREEN_MENU_TITLE );
 		if ( empty( $menu_title ) ) {
-			$menu_title = MLAOptions::mla_get_option( MLAOptions::MLA_SCREEN_MENU_TITLE, true );
+			$menu_title = MLACore::mla_get_option( MLACore::MLA_SCREEN_MENU_TITLE, true );
 		}
 
 		$hook = add_submenu_page( 'upload.php', $page_title, $menu_title, 'upload_files', self::ADMIN_PAGE_SLUG, 'MLA::mla_render_admin_page' );
@@ -679,10 +660,10 @@ class MLA {
 		/*
 		 * If we are suppressing the Media/Library submenu, force Media/Assistant to come first
 		 */
-		if ( 'checked' != MLAOptions::mla_get_option( MLAOptions::MLA_SCREEN_DISPLAY_LIBRARY ) ) {
+		if ( 'checked' != MLACore::mla_get_option( MLACore::MLA_SCREEN_DISPLAY_LIBRARY ) ) {
 			$menu_position = 4;
 		} else {
-			$menu_position = (integer) MLAOptions::mla_get_option( MLAOptions::MLA_SCREEN_ORDER );
+			$menu_position = (integer) MLACore::mla_get_option( MLACore::MLA_SCREEN_ORDER );
 		}
 
 		if ( $menu_position && is_array( $submenu['upload.php'] ) ) {
@@ -708,7 +689,7 @@ class MLA {
 	 * @return	void
 	 */
 	public static function mla_load_media_action( ) {
-		if ( 'checked' != MLAOptions::mla_get_option( MLAOptions::MLA_SCREEN_DISPLAY_LIBRARY ) ) {
+		if ( 'checked' != MLACore::mla_get_option( MLACore::MLA_SCREEN_DISPLAY_LIBRARY ) ) {
 			$query_args = '?page=' . self::ADMIN_PAGE_SLUG;
 
 			/*
@@ -904,7 +885,7 @@ class MLA {
 		/*
 		 * Make sure the "Assistant" submenu line is bolded if the Media/Library submenu is hidden
 		 */
-		if ( 'checked' != MLAOptions::mla_get_option( MLAOptions::MLA_SCREEN_DISPLAY_LIBRARY ) &&
+		if ( 'checked' != MLACore::mla_get_option( MLACore::MLA_SCREEN_DISPLAY_LIBRARY ) &&
 		     'upload.php' == $parent_file && 'upload.php' == $submenu_file ) {
 			$submenu_file = 'upload.php?page=' . self::ADMIN_PAGE_SLUG;
 		}
@@ -1252,7 +1233,7 @@ class MLA {
 	 */
 	public static function mla_process_bulk_action( $bulk_action, $request = NULL ) {
 		$page_content = array( 'message' => '', 'body' => '', 'unchanged' => 0, 'success' => 0, 'failure' => 0, 'item_results' => array() );
-		$custom_field_map = MLAOptions::mla_custom_field_support( 'bulk_edit' );
+		$custom_field_map = MLACore::mla_custom_field_support( 'bulk_edit' );
 
 		/*
 		 * do_cleanup will remove the bulk edit elements from the $_REQUEST super array.
@@ -1413,7 +1394,7 @@ class MLA {
 				unset( $_REQUEST['tax_input'] );
 				unset( $_REQUEST['tax_action'] );
 
-				foreach ( MLAOptions::mla_custom_field_support( 'bulk_edit' ) as $slug => $details ) {
+				foreach ( MLACore::mla_custom_field_support( 'bulk_edit' ) as $slug => $details ) {
 					unset( $_REQUEST[ $slug ] );
 				}
 
@@ -1493,9 +1474,9 @@ class MLA {
 
 		$bulk_action = self::_current_bulk_action();
 
-		$page_title = MLAOptions::mla_get_option( MLAOptions::MLA_SCREEN_PAGE_TITLE );
+		$page_title = MLACore::mla_get_option( MLACore::MLA_SCREEN_PAGE_TITLE );
 		if ( empty( $page_title ) ) {
-			$page_title = MLAOptions::mla_get_option( MLAOptions::MLA_SCREEN_PAGE_TITLE, true );
+			$page_title = MLACore::mla_get_option( MLACore::MLA_SCREEN_PAGE_TITLE, true );
 		}
 
 		echo "<div class=\"wrap\">\n";
@@ -1957,7 +1938,7 @@ class MLA {
 		 * Custom field support
 		 */
 		$custom_fields = array();
-		foreach ( MLAOptions::mla_custom_field_support( 'quick_edit' ) as $slug => $details ) {
+		foreach ( MLACore::mla_custom_field_support( 'quick_edit' ) as $slug => $details ) {
 			if ( isset( $_REQUEST[ $slug ] ) ) {
 				$value = trim( $_REQUEST[ $slug ] );
 				unset ( $_REQUEST[ $slug ] );
@@ -2050,7 +2031,6 @@ class MLA {
 	 * Compose a Post Type Options list with current selection
  	 *
 	 * @since 1.90
-	 * @uses $mla_option_templates contains row and table templates
 	 *
 	 * @param	array 	template parts
 	 * @param	string 	current selection or 'all' (default)
@@ -2165,9 +2145,9 @@ class MLA {
 		$hierarchical_taxonomies = array();
 		$flat_taxonomies = array();
 		foreach ( $taxonomies as $tax_name => $tax_object ) {
-			if ( $tax_object->hierarchical && $tax_object->show_ui && MLAOptions::mla_taxonomy_support($tax_name, 'quick-edit') ) {
+			if ( $tax_object->hierarchical && $tax_object->show_ui && MLACore::mla_taxonomy_support($tax_name, 'quick-edit') ) {
 				$hierarchical_taxonomies[$tax_name] = $tax_object;
-			} elseif ( $tax_object->show_ui && MLAOptions::mla_taxonomy_support($tax_name, 'quick-edit') ) {
+			} elseif ( $tax_object->show_ui && MLACore::mla_taxonomy_support($tax_name, 'quick-edit') ) {
 				$flat_taxonomies[$tax_name] = $tax_object;
 			}
 		}
@@ -2189,7 +2169,7 @@ class MLA {
 		}
 
 		$custom_fields = '';
-		foreach ( MLAOptions::mla_custom_field_support( 'quick_edit' ) as $slug => $details ) {
+		foreach ( MLACore::mla_custom_field_support( 'quick_edit' ) as $slug => $details ) {
 			  $page_values = array(
 				  'slug' => $slug,
 				  'label' => esc_attr( $details['name'] ),
@@ -2291,7 +2271,7 @@ class MLA {
 		}
 
 		$bulk_custom_fields = '';
-		foreach ( MLAOptions::mla_custom_field_support( 'bulk_edit' ) as $slug => $details ) {
+		foreach ( MLACore::mla_custom_field_support( 'bulk_edit' ) as $slug => $details ) {
 			  $page_values = array(
 				  'slug' => $slug,
 				  'label' => esc_attr( $details['name'] ),

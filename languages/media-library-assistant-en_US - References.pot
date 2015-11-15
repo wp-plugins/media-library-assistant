@@ -2,7 +2,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: Media Library Assistant\n"
-"POT-Creation-Date: 2015-11-08 12:32-0800\n"
+"POT-Creation-Date: 2015-11-08 17:27-0800\n"
 "PO-Revision-Date: 2015-08-21 21:38-0800\n"
 "Last-Translator: David Lingren <david@fairtradejudaica.org>\n"
 "Language-Team: David Lingren <david@fairtradejudaica.org>\n"
@@ -496,7 +496,9 @@ msgstr ""
 msgid "Description"
 msgstr ""
 
-#: includes/class-mla-data.php:6191 includes/class-mla-list-table.php:1059
+#: includes/class-mla-data.php:6191 includes/class-mla-list-table.php:1056
+#: includes/class-mla-list-table.php:1059
+#: includes/class-mla-list-table.php:1062
 #: includes/class-mla-list-table.php:1130 includes/class-mla-options.php:4571
 #: includes/class-mla-options.php:4949
 msgid "Parent"
@@ -4698,6 +4700,11 @@ msgstr ""
 
 #: includes/class-mla-upload-optional-list-table.php:414
 msgid "Select these entries"
+msgstr ""
+
+#: includes/class-mla-view-list-table.php:172
+msgctxt "list_table_column"
+msgid "Slug"
 msgstr ""
 
 #: includes/class-mla-view-list-table.php:173

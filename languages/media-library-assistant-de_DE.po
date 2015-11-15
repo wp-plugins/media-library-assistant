@@ -1,20 +1,20 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: Media Library Assistant\n"
-"POT-Creation-Date: 2015-11-08 20:19-0800\n"
-"PO-Revision-Date: 2015-11-08 20:19-0800\n"
+"POT-Creation-Date: 2015-11-06 14:37+0100\n"
+"PO-Revision-Date: 2015-11-06 15:34+0100\n"
 "Language-Team: David Lingren <david@fairtradejudaica.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Generator: Poedit 1.8.4\n"
+"X-Generator: Poedit 1.8.6\n"
 "X-Poedit-Basepath: ..\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 "X-Poedit-KeywordsList: __;_e;__ngettext:1,2;_n:1,2;__ngettext_noop:1,2;"
 "_n_noop:1,2;_c;_nc:4c,1,2;_x:1,2c;_nx:4c,1,2;_nx_noop:4c,1,2;_ex:1,2c\n"
 "X-Poedit-SourceCharset: UTF-8\n"
-"Last-Translator: David Lingren <david@fairtradejudaica.org>\n"
-"Language: en_US\n"
+"Last-Translator: \n"
+"Language: de\n"
 "X-Poedit-SearchPath-0: includes\n"
 "X-Poedit-SearchPath-1: tests\n"
 "X-Poedit-SearchPath-2: index.php\n"
@@ -198,7 +198,7 @@ msgid "UNUSED"
 msgstr ""
 
 msgid "UNATTACHED"
-msgstr ""
+msgstr "NICHT ZUGEWIESEN"
 
 msgid "INVALID PARENT"
 msgstr ""
@@ -217,10 +217,10 @@ msgid "mla_parse_xmp_metadata set option failed."
 msgstr ""
 
 msgid "Yes"
-msgstr ""
+msgstr "Ja"
 
 msgid "No"
-msgstr ""
+msgstr "Keine"
 
 #. translators: 1: meta_key
 #, php-format
@@ -273,7 +273,7 @@ msgid "Could not retrieve Attachment."
 msgstr ""
 
 msgid "Title"
-msgstr ""
+msgstr "Titel"
 
 #. translators: 1: ERROR tag 2: old_value
 #, php-format
@@ -302,19 +302,19 @@ msgid "%1$s: Could not change ALT Text from \"%2$s\" to \"%3$s\""
 msgstr ""
 
 msgid "Caption"
-msgstr ""
+msgstr "Beschriftung"
 
 msgid "Description"
-msgstr ""
+msgstr "Beschreibung"
 
 msgid "Parent"
 msgstr ""
 
 msgid "Menu Order"
-msgstr ""
+msgstr "Menüreihenfolge"
 
 msgid "Author"
-msgstr ""
+msgstr "Autor"
 
 msgid "Comments"
 msgstr ""
@@ -379,19 +379,19 @@ msgid "An ajax.done error has occurred. Please reload the page and try again."
 msgstr ""
 
 msgid "more"
-msgstr ""
+msgstr "mehr"
 
 msgid "less"
-msgstr ""
+msgstr "weniger"
 
 msgid "Add"
-msgstr ""
+msgstr "hinzufügen"
 
 msgid "Remove"
-msgstr ""
+msgstr "entfernen"
 
 msgid "Replace"
-msgstr ""
+msgstr "ersetzen"
 
 msgid ""
 "IMPORTANT: Make your entries BEFORE uploading new items. Pull down the Help "
@@ -405,16 +405,16 @@ msgid "No Change"
 msgstr ""
 
 msgid "Allow"
-msgstr ""
+msgstr "erlauben"
 
 msgid "Do not allow"
-msgstr ""
+msgstr "verweigern"
 
 msgid "Parent ID"
-msgstr ""
+msgstr "übergeordnete ID"
 
 msgid "Select"
-msgstr ""
+msgstr "auswählen"
 
 msgid "Custom field mapping updated."
 msgstr ""
@@ -424,16 +424,16 @@ msgstr ""
 
 #. translators: date_i18n format for last modified date and time
 msgid "M j, Y @ G:i"
-msgstr ""
+msgstr "d.m.Y @ H:i"
 
 msgid "Last modified"
-msgstr ""
+msgstr "zuletzt bearbeitet"
 
 msgid "Map Custom Field metadata for this item"
-msgstr ""
+msgstr "Metadaten benutzerdefinierten Felder zuordnen"
 
 msgid "Map Custom Field metadata"
-msgstr ""
+msgstr "Metadaten benutzerdefinierten Felder zuordnen"
 
 msgid "Map IPTC/EXIF metadata for this item"
 msgstr ""
@@ -445,19 +445,19 @@ msgid "Parent Info"
 msgstr ""
 
 msgid "Attachment Metadata"
-msgstr ""
+msgstr "Datei-Metadaten"
 
 msgid "Featured in"
-msgstr ""
+msgstr "Beitragsbild in"
 
 msgid "Inserted in"
-msgstr ""
+msgstr "Eingefügt in"
 
 msgid "Gallery in"
-msgstr ""
+msgstr "Galerie in"
 
 msgid "MLA Gallery in"
-msgstr ""
+msgstr "MLA Galerie in"
 
 #. translators: 1: ERROR tag 2: function name 3: template key
 #, php-format
@@ -493,19 +493,19 @@ msgid "+ %s"
 msgstr ""
 
 msgid "Search"
-msgstr ""
+msgstr "Suche"
 
 msgctxt "list_table_column"
 msgid "ID/Parent"
-msgstr ""
+msgstr "ID/Übergeordnet"
 
 msgctxt "list_table_column"
 msgid "Title/Name"
-msgstr ""
+msgstr "Titel/Name"
 
 msgctxt "list_table_column"
 msgid "Title"
-msgstr ""
+msgstr "Titel"
 
 msgctxt "list_table_column"
 msgid "Name"
@@ -513,27 +513,27 @@ msgstr ""
 
 msgctxt "list_table_column"
 msgid "Parent ID"
-msgstr ""
+msgstr "übergeordnete ID"
 
 msgctxt "list_table_column"
 msgid "Menu Order"
-msgstr ""
+msgstr "Menüreihenfolge"
 
 msgctxt "list_table_column"
 msgid "Featured in"
-msgstr ""
+msgstr "Beitragbild in"
 
 msgctxt "list_table_column"
 msgid "Inserted in"
-msgstr ""
+msgstr "Eingefügt in"
 
 msgctxt "list_table_column"
 msgid "Gallery in"
-msgstr ""
+msgstr "Galerie in"
 
 msgctxt "list_table_column"
 msgid "MLA Gallery in"
-msgstr ""
+msgstr "MLA Galerie in"
 
 msgctxt "list_table_column"
 msgid "ALT Text"
@@ -541,48 +541,48 @@ msgstr ""
 
 msgctxt "list_table_column"
 msgid "Caption"
-msgstr ""
+msgstr "Beschriftung"
 
 msgctxt "list_table_column"
 msgid "Description"
-msgstr ""
+msgstr "Beschreibung"
 
 msgctxt "list_table_column"
 msgid "MIME Type"
-msgstr ""
+msgstr "MIME Typ"
 
 msgctxt "list_table_column"
 msgid "File URL"
-msgstr ""
+msgstr "Datei URL"
 
 msgctxt "list_table_column"
 msgid "Base File"
-msgstr ""
+msgstr "Dateiname"
 
 msgctxt "list_table_column"
 msgid "Date"
-msgstr ""
+msgstr "Datum"
 
 msgctxt "list_table_column"
 msgid "Last Modified"
-msgstr ""
+msgstr "zuletzt bearbeitet"
 
 msgctxt "list_table_column"
 msgid "Author"
-msgstr ""
+msgstr "Autor"
 
 msgctxt "list_table_column"
 msgid "Attached to"
-msgstr ""
+msgstr "zugewiesen bei"
 
 msgid "All"
-msgstr ""
+msgstr "alle"
 
 msgid "List View"
 msgstr ""
 
 msgid "None"
-msgstr ""
+msgstr "nichts"
 
 msgid "Filter by"
 msgstr ""
@@ -596,16 +596,16 @@ msgid "column_default: %1$s, %2$s"
 msgstr ""
 
 msgid "Edit"
-msgstr ""
+msgstr "Bearbeiten"
 
 msgid "Trash"
-msgstr ""
+msgstr "löschen"
 
 msgid "Restore this item from the Trash"
 msgstr ""
 
 msgid "Restore"
-msgstr ""
+msgstr "wiederherstellen"
 
 msgid "Edit this item"
 msgstr ""
@@ -620,37 +620,37 @@ msgid "Move this item to the Trash"
 msgstr ""
 
 msgid "Move to Trash"
-msgstr ""
+msgstr "in den Papierkorb"
 
 msgid "Delete this item Permanently"
 msgstr ""
 
 msgid "Delete Permanently"
-msgstr ""
+msgstr "Dauerhaft löschen"
 
 msgid "Download"
 msgstr ""
 
 msgid "View"
-msgstr ""
+msgstr "Ansicht"
 
 msgid "(no title)"
-msgstr ""
+msgstr "(kein Titel)"
 
 msgid "(no title: bad ID)"
 msgstr ""
 
 msgid "Disabled"
-msgstr ""
+msgstr "deaktiviert"
 
 msgid "MIME Type"
-msgstr ""
+msgstr "MIME Typ"
 
 msgid "Base File"
-msgstr ""
+msgstr "bearbeiten"
 
 msgid "Unpublished"
-msgstr ""
+msgstr "unveröffentlicht"
 
 #. translators: 1: upload/last modified date and time
 #, php-format
@@ -665,11 +665,11 @@ msgstr ""
 #. translators: format for upload/last modified date
 #. translators: date format in table columns, see http://php.net/date
 msgid "Y/m/d"
-msgstr ""
+msgstr "d.m.Y"
 
 msgctxt "table_view_singular"
 msgid "Unattached"
-msgstr ""
+msgstr "nicht zugewiesen"
 
 msgid "Set Parent"
 msgstr ""
@@ -677,17 +677,17 @@ msgstr ""
 msgctxt "uploaded files"
 msgid "All"
 msgid_plural "All"
-msgstr[0] ""
-msgstr[1] ""
+msgstr[0] "Alle"
+msgstr[1] "Alle"
 
 msgid "Filter"
 msgstr ""
 
 msgid "Terms Search"
-msgstr ""
+msgstr "Begriffsuche"
 
 msgid "Clear Filter-by"
-msgstr ""
+msgstr "Filter zurücksetzen"
 
 msgid "Empty Trash"
 msgstr ""
@@ -702,10 +702,10 @@ msgid "Bulk Edit items"
 msgstr ""
 
 msgid "Waiting"
-msgstr ""
+msgstr "Warte"
 
 msgid "Complete"
-msgstr ""
+msgstr "Komplett"
 
 msgid "Unchanged"
 msgstr ""
@@ -717,7 +717,7 @@ msgid "Failed"
 msgstr ""
 
 msgid "CANCELED"
-msgstr ""
+msgstr "ABGEBROCHEN"
 
 #, php-format
 msgid "Item permanently deleted."
@@ -731,7 +731,7 @@ msgid "Item %1$d moved to Trash."
 msgstr ""
 
 msgid "Entries per page"
-msgstr ""
+msgstr "Einträge pro Seite"
 
 msgid "You are not allowed to edit Attachment: "
 msgstr ""
@@ -785,7 +785,7 @@ msgid "Type"
 msgstr ""
 
 msgid "Date"
-msgstr ""
+msgstr "Datum"
 
 msgid "Status"
 msgstr ""
@@ -803,7 +803,7 @@ msgid "You are not allowed to edit this Attachment."
 msgstr ""
 
 msgid "Update"
-msgstr ""
+msgstr "aktualisieren"
 
 msgid "All Post Types"
 msgstr ""
@@ -812,7 +812,7 @@ msgid "For"
 msgstr ""
 
 msgid "Unattached"
-msgstr ""
+msgstr "nicht zugewiesen"
 
 msgid "Cancel"
 msgstr ""
@@ -872,7 +872,7 @@ msgid "%1$s %2$d"
 msgstr ""
 
 msgid "Search Box"
-msgstr ""
+msgstr "Suchfeld"
 
 msgid "Loading..."
 msgstr ""
@@ -885,7 +885,7 @@ msgstr ""
 #. translators: %s: add new Upload MIME Type
 #, php-format
 msgid "Add New %1$s"
-msgstr ""
+msgstr "%1$s erstellen"
 
 msgid "Choose from the most used tags"
 msgstr ""
@@ -987,27 +987,27 @@ msgstr ""
 
 msgctxt "table_view_singular"
 msgid "All"
-msgstr ""
+msgstr "Alle"
 
 msgctxt "table_view_plural"
 msgid "All"
-msgstr ""
+msgstr "Alle"
 
 msgctxt "table_view_singular"
 msgid "Active"
-msgstr ""
+msgstr "Benutzt"
 
 msgctxt "table_view_plural"
 msgid "Active"
-msgstr ""
+msgstr "Benutzt"
 
 msgctxt "table_view_singular"
 msgid "Inactive"
-msgstr ""
+msgstr "Unbenutzt"
 
 msgctxt "table_view_plural"
 msgid "Inactive"
-msgstr ""
+msgstr "Unbenutzt"
 
 msgctxt "table_view_singular"
 msgid "WordPress"
@@ -1027,11 +1027,11 @@ msgstr ""
 
 msgctxt "table_view_singular"
 msgid "Custom"
-msgstr ""
+msgstr "Eigene"
 
 msgctxt "table_view_plural"
 msgid "Custom"
-msgstr ""
+msgstr "Eigene"
 
 msgid "icon"
 msgstr ""
@@ -1043,7 +1043,7 @@ msgid "Extension is required"
 msgstr ""
 
 msgid "Extension"
-msgstr ""
+msgstr "Erweiterung"
 
 #. translators: 1: ERROR tag 2: slug
 #, php-format
@@ -1098,64 +1098,64 @@ msgstr ""
 
 msgctxt "taxonomy_name_plural"
 msgid "Att. Categories"
-msgstr ""
+msgstr "Datei-Kategorien"
 
 msgctxt "taxonomy_name_singular"
 msgid "Att. Category"
-msgstr ""
+msgstr "Datei-Kategorie"
 
 msgid "Search Att. Categories"
-msgstr ""
+msgstr "Suche Datei-Kategorien"
 
 msgid "All Att. Categories"
-msgstr ""
+msgstr "Alle Datei-Kategorien"
 
 msgid "Parent Att. Category"
-msgstr ""
+msgstr "Übergeordnete Datei-Kategorie"
 
 msgid "Edit Att. Category"
-msgstr ""
+msgstr "Datei-Kategorie bearbeiten"
 
 msgid "Update Att. Category"
-msgstr ""
+msgstr "Datei-Kategorie aktualisieren"
 
 msgid "Att. Category"
-msgstr ""
+msgstr "Datei-Kategorie"
 
 msgid "New Att. Category Name"
-msgstr ""
+msgstr "Neuer Datei-Kategoriename"
 
 msgctxt "taxonomy_name_plural"
 msgid "Att. Tags"
-msgstr ""
+msgstr "Datei-Schlagwörter"
 
 msgctxt "taxonomy_name_singular"
 msgid "Att. Tag"
-msgstr ""
+msgstr "Datei-Schlagwort"
 
 msgid "Search Att. Tags"
-msgstr ""
+msgstr "Suche Datei-Schlagwörter"
 
 msgid "All Att. Tags"
-msgstr ""
+msgstr "Alle Daei-Schlagwörter"
 
 msgid "Parent Att. Tag"
-msgstr ""
+msgstr "Übergeordnetes Datei-Schlagwort"
 
 msgid "Edit Att. Tag"
-msgstr ""
+msgstr "Datei-Schlagwort bearbeiten"
 
 msgid "Update Att. Tag"
-msgstr ""
+msgstr "Datei-Schlagwort aktualisieren"
 
 msgid "Att. Tag"
-msgstr ""
+msgstr "Datei-Schlagwort"
 
 msgid "New Att. Tag Name"
-msgstr ""
+msgstr "Neuer Datei-Schlagwortname"
 
 msgid "Attachments"
-msgstr ""
+msgstr "Anhänge"
 
 #. translators: 1: ERROR tag 2: taxonomy 3: error message
 #, php-format
@@ -1207,7 +1207,7 @@ msgid "Where-used database access tuning"
 msgstr ""
 
 msgid "Enabled"
-msgstr ""
+msgstr "aktiviert"
 
 msgid "Search database posts and pages for Featured Image attachments."
 msgstr ""
@@ -1241,7 +1241,7 @@ msgid ""
 msgstr ""
 
 msgid "Taxonomy Support"
-msgstr ""
+msgstr "Taxonomie-Unterstützung"
 
 msgid "Compute Attachments Column"
 msgstr ""
@@ -1293,32 +1293,32 @@ msgid ""
 msgstr ""
 
 msgid "Media/Assistant Screen Options"
-msgstr ""
+msgstr "Medien-Assistent Ansichtsoptionen"
 
 msgid "Admin Menu Options"
-msgstr ""
+msgstr "Adminmenü-Einstellungen"
 
 msgid "Page Title"
-msgstr ""
+msgstr "Seitenüberschrift"
 
 #. translators: Name of the plugin/theme
 msgid "Media Library Assistant"
-msgstr ""
+msgstr "Medien-Assistent"
 
 msgid "Enter the title for the Media/Assistant submenu page"
 msgstr ""
 
 msgid "Menu Title"
-msgstr ""
+msgstr "Menütitel"
 
 msgid "Assistant"
-msgstr ""
+msgstr "Assistent"
 
 msgid "Enter the title for the Media/Assistant submenu entry"
 msgstr ""
 
 msgid "Submenu Order"
-msgstr ""
+msgstr "Untermenü-Reihenfolge"
 
 msgid ""
 "Enter the position of the Media/Assistant submenu entry.<br>&nbsp;&nbsp;0 = "
@@ -1328,18 +1328,20 @@ msgid ""
 msgstr ""
 
 msgid "Display Media/Library"
-msgstr ""
+msgstr "Medienübersicht anzeigen"
 
 msgid ""
 "Check/uncheck this option to display/remove the WordPress Media/Library "
 "submenu entry."
 msgstr ""
+"Häkchen entfernen, wenn die Standardmedienübersicht von Wordpress "
+"ausgeblendet werden soll."
 
 msgid "Table Defaults"
-msgstr ""
+msgstr "Voreinstellungen Tabellenansicht"
 
 msgid "Order By"
-msgstr ""
+msgstr "Sortiere nach"
 
 msgid "Title/Name"
 msgstr ""
@@ -1348,25 +1350,25 @@ msgid "Select the column for the sort order of the Assistant table listing."
 msgstr ""
 
 msgid "Order"
-msgstr ""
+msgstr "Reihenfolge"
 
 msgid "Ascending"
-msgstr ""
+msgstr "aufsteigend"
 
 msgid "Descending"
-msgstr ""
+msgstr "absteigend"
 
 msgid "Choose the sort order."
-msgstr ""
+msgstr "Wählen Sie die Sortierreihenfolge"
 
 msgid "Views Width"
-msgstr ""
+msgstr "Ansichtsweite"
 
 msgid "Enter the width for the views list, in pixels (px) or percent (%)"
 msgstr ""
 
 msgid "Icon Size"
-msgstr ""
+msgstr "Icon-Größe"
 
 msgid "Enter the size of the thumbnail/icon images, in pixels"
 msgstr ""
@@ -1397,10 +1399,10 @@ msgid ""
 msgstr ""
 
 msgid "Search Media Defaults"
-msgstr ""
+msgstr "Voreinstellungen Mediensuche"
 
 msgid "Display Search Controls"
-msgstr ""
+msgstr "Zeige Suchmöglichkeiten"
 
 msgid ""
 "Check/uncheck this option to display/hide the and/or connector and search "
@@ -1414,7 +1416,7 @@ msgid ""
 msgstr ""
 
 msgid "Media/Edit Media Enhancements"
-msgstr ""
+msgstr "Medien"
 
 msgid "Enable &quot;enhanced checklist&quot; taxonomies"
 msgstr ""
@@ -1778,11 +1780,11 @@ msgstr ""
 
 msgctxt "table_view_singular"
 msgid "Image"
-msgstr ""
+msgstr "Bild"
 
 msgctxt "table_view_plural"
 msgid "Images"
-msgstr ""
+msgstr "Bilder"
 
 msgctxt "post_mime_types_description"
 msgid "All image subtypes"
@@ -1790,11 +1792,11 @@ msgstr ""
 
 msgctxt "table_view_singular"
 msgid "Audio"
-msgstr ""
+msgstr "Audio"
 
 msgctxt "table_view_plural"
 msgid "Audio"
-msgstr ""
+msgstr "Audio"
 
 msgctxt "post_mime_types_description"
 msgid "All audio subtypes"
@@ -1802,11 +1804,11 @@ msgstr ""
 
 msgctxt "table_view_singular"
 msgid "Video"
-msgstr ""
+msgstr "Video"
 
 msgctxt "table_view_plural"
 msgid "Video"
-msgstr ""
+msgstr "Videos"
 
 msgctxt "post_mime_types_description"
 msgid "All video subtypes"
@@ -1830,7 +1832,7 @@ msgstr ""
 
 msgctxt "table_view_plural"
 msgid "Applications"
-msgstr ""
+msgstr "Applikation"
 
 msgctxt "post_mime_types_description"
 msgid "All application subtypes"
@@ -1838,15 +1840,15 @@ msgstr ""
 
 msgctxt "table_view_plural"
 msgid "Unattached"
-msgstr ""
+msgstr "nicht zugewiesen"
 
 msgctxt "table_view_singular"
 msgid "Attached"
-msgstr ""
+msgstr "zugewiesen"
 
 msgctxt "table_view_plural"
 msgid "Attached"
-msgstr ""
+msgstr "zugewiesen"
 
 msgctxt "table_view_singular"
 msgid "Trash"
@@ -1983,16 +1985,16 @@ msgid "Reset custom %1$s"
 msgstr ""
 
 msgid "and"
-msgstr ""
+msgstr "und"
 
 msgid "or"
-msgstr ""
+msgstr "oder"
 
 msgid "Name"
-msgstr ""
+msgstr "Name"
 
 msgid "Terms"
-msgstr ""
+msgstr "Begriffe"
 
 msgid "None (select a value)"
 msgstr ""
@@ -2336,13 +2338,13 @@ msgid "WPML &amp; Polylang Multilingual Support; the MLA Language Tab"
 msgstr ""
 
 msgid "Save Changes"
-msgstr ""
+msgstr "Änderungen speichern"
 
 msgid "Delete Language options and restore default settings"
 msgstr ""
 
 msgid "Go to Top"
-msgstr ""
+msgstr "nach oben"
 
 msgid "Language settings saved."
 msgstr ""
@@ -2369,7 +2371,7 @@ msgid "Reprocessed"
 msgstr ""
 
 msgid "Settings"
-msgstr ""
+msgstr "Einstellungen"
 
 msgid "Views per page"
 msgstr ""
@@ -2405,28 +2407,28 @@ msgid "%1$s: %2$s unknown type = \"%3$s\""
 msgstr ""
 
 msgid "General"
-msgstr ""
+msgstr "Allgemein"
 
 msgid "Views"
-msgstr ""
+msgstr "Ansichten"
 
 msgid "Uploads"
 msgstr ""
 
 msgid "MLA Gallery"
-msgstr ""
+msgstr "MLA Galerie"
 
 msgid "Custom Fields"
-msgstr ""
+msgstr "Benutzerdefinierte Felder"
 
 msgid "Documentation"
-msgstr ""
+msgstr "Dokumentation"
 
 msgid "Debug"
 msgstr ""
 
 msgid "General Processing Options"
-msgstr ""
+msgstr "Allgemeine Optionen"
 
 #. translators: 1: - 4: page subheader values
 #, php-format
@@ -2582,7 +2584,7 @@ msgid "Search Views"
 msgstr ""
 
 msgid "Add View"
-msgstr ""
+msgstr "Ansicht hinzufügen"
 
 msgid "<strong>Quick Edit</strong>"
 msgstr ""
@@ -2611,7 +2613,7 @@ msgid ""
 msgstr ""
 
 msgid "Inactive"
-msgstr ""
+msgstr "Unbenutzt"
 
 msgid ""
 "Check this box if you want to remove this entry from the list of Upload MIME "
@@ -2676,7 +2678,7 @@ msgid "Search Known Types"
 msgstr ""
 
 msgid "Active"
-msgstr ""
+msgstr "Benutzt"
 
 msgid "MLA Gallery Options"
 msgstr ""
@@ -2711,10 +2713,7 @@ msgstr ""
 msgid "Ghostscript support is not installed."
 msgstr ""
 
-msgid "WARNING:"
-msgstr ""
-
-msgid " MLA Viewer support may not be available"
+msgid "WARNING: MLA Viewer support may not be available"
 msgstr ""
 
 msgid ""
@@ -3311,7 +3310,7 @@ msgstr ""
 
 msgctxt "list_table_column"
 msgid "Extension"
-msgstr ""
+msgstr "Erweiterung"
 
 msgctxt "list_table_column"
 msgid "Icon Type"
@@ -3319,7 +3318,7 @@ msgstr ""
 
 msgctxt "list_table_column"
 msgid "Source"
-msgstr ""
+msgstr "Quelle"
 
 msgctxt "list_table_column"
 msgid "Status"
@@ -3357,10 +3356,6 @@ msgid "Select these entries"
 msgstr ""
 
 msgctxt "list_table_column"
-msgid "Slug"
-msgstr ""
-
-msgctxt "list_table_column"
 msgid "Specification"
 msgstr ""
 
@@ -3387,15 +3382,6 @@ msgstr ""
 msgid "Duplicate translation created; update as desired."
 msgstr ""
 
-msgid "Make media available in all languages"
-msgstr ""
-
-msgid " WPML Media is not installed."
-msgstr ""
-
-msgid " WPML Media is not active."
-msgstr ""
-
 #. translators: 1: - 4: page subheader values
 #, php-format
 msgid ""
@@ -3413,7 +3399,7 @@ msgid "Add translation to %s"
 msgstr ""
 
 msgid "Search Media"
-msgstr ""
+msgstr "Medien durchsuchen"
 
 msgid "The Media Library Assistant cannot load."
 msgstr ""

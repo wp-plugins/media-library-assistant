@@ -826,6 +826,7 @@ this.listenTo( this.controller, 'all', this.toolbarEvent );
 						this.listenTo( this.controller, 'content:activate', this.hideDefaultSearch );
 						this.listenTo( this.controller, 'router:render', this.hideDefaultSearch );
 						this.listenTo( this.controller, 'uploader:ready', this.hideDefaultSearch );
+						this.listenTo( this.controller, 'edit:activate', this.hideDefaultSearch );
 						this.toolbar.set( 'MlaSearch', new wp.media.view.MlaSearch({
 							controller: this.controller,
 							model:      this.collection.props,

@@ -12,7 +12,7 @@
 /*
 Plugin Name: Media Library Assistant
 Plugin URI: http://fairtradejudaica.org/media-library-assistant-a-wordpress-plugin/
-Description: 20151108 Enhances the Media Library; powerful [mla_gallery], taxonomy support, IPTC/EXIF processing, bulk & quick edit actions and where-used reporting.
+Description: 20151114 Enhances the Media Library; powerful [mla_gallery], taxonomy support, IPTC/EXIF processing, bulk & quick edit actions and where-used reporting.
 Author: David Lingren, Fair Trade Judaica
 Text Domain: media-library-assistant
 Domain Path: /languages
@@ -36,6 +36,7 @@ Copyright 2011-2015 David Lingren
 */
 
 defined( 'ABSPATH' ) or die();
+//error_log( __LINE__ . ' MEMORY index.php ' . number_format( memory_get_peak_usage( true ) ), 0);
 
 /*
  * Translation strings for the plugin data in the comment block above; MUST MATCH
@@ -169,8 +170,8 @@ function mla_name_conflict_reporting_action () {
 if ( empty( $mla_name_conflict_error_messages ) ) {
 	require_once('includes/mla-plugin-loader.php');
 
-	register_activation_hook( __FILE__, array( 'MLASettings', 'mla_activation_hook' ) );
-	register_deactivation_hook( __FILE__, array( 'MLASettings', 'mla_deactivation_hook' ) );
+	//register_activation_hook( __FILE__, array( 'MLASettings', 'mla_activation_hook' ) );
+	//register_deactivation_hook( __FILE__, array( 'MLASettings', 'mla_deactivation_hook' ) );
 }
 else {
 	add_action( 'admin_notices', 'mla_name_conflict_reporting_action' );
