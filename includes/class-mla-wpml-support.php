@@ -1202,6 +1202,7 @@ class MLA_WPML {
 		global $sitepress;
 		static $already_adding = 0;
 
+		MLA::mla_debug_add( __LINE__ . " MLA_WPML::wpml_media_create_duplicate_attachment( {$attachment_id}, {$duplicated_attachment_id}, {$already_adding} )", MLA::MLA_DEBUG_CATEGORY_LANGUAGE );
 		if ( $already_adding == $duplicated_attachment_id ) {
 			return;
 		} else {
@@ -1264,6 +1265,10 @@ class MLA_WPML {
 	 * @return	array	updated attachment metadata
 	 */
 	public static function mla_update_attachment_metadata_postfilter( $data, $post_id, $options ) {
+		$uploading =  var_export( ! empty( $options['is_upload'] ), true );
+		$duplicating =  var_export( self::$updating_duplicates, true );
+		MLA::mla_debug_add( __LINE__ . " MLA_WPML::mla_update_attachment_metadata_postfilter( {$post_id}, {$uploading}, {$duplicating} ) data = " . var_export( $data, true ), MLA::MLA_DEBUG_CATEGORY_LANGUAGE );
+
 		if ( ! empty( $options['is_upload'] ) && ! self::$updating_duplicates ) {
 			/*
 			 * If always_translate_media is set there will be translations present
@@ -1274,13 +1279,22 @@ class MLA_WPML {
 				
 				foreach( self::$duplicate_attachments as $id => $language ) {
 					$meta = get_post_meta( $id, '_wp_attachment_metadata', true );
+					MLA::mla_debug_add( __LINE__ . " MLA_WPML::mla_update_attachment_metadata_postfilter( {$id}, {$language} ) attachment_metadata = " . var_export( $meta, true ), MLA::MLA_DEBUG_CATEGORY_LANGUAGE );
 					if ( is_array( $meta ) ) {
 						continue;
 					}
 					
+					/*
+					 * update_post_meta is required twice; first to set it for mapping rules,
+					 * second to repair the damage done by WPML synchronize_attachment_metadata
+					 */
 					update_post_meta( $id, '_wp_attachment_metadata', $data );
 					MLAOptions::mla_add_attachment_action( $id );
 					MLAOptions::mla_update_attachment_metadata_filter( $data, $id );
+					update_post_meta( $id, '_wp_attachment_metadata', $data );
+
+					$meta = get_post_meta( $id, '_wp_attachment_metadata', false );
+					MLA::mla_debug_add( __LINE__ . " MLA_WPML::mla_update_attachment_metadata_postfilter( {$id}, {$language} ) attachment_metadata = " . var_export( $meta, true ), MLA::MLA_DEBUG_CATEGORY_LANGUAGE );
 				}
 
 				self::$updating_duplicates = false;

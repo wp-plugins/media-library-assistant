@@ -38,7 +38,7 @@ class MLA {
 	 *
 	 * @var	string
 	 */
-	const MLA_DEVELOPMENT_VERSION = '20151114';
+	const MLA_DEVELOPMENT_VERSION = '20151115';
 
 	/**
 	 * Slug for registering and enqueueing plugin style sheet
