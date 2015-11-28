@@ -43,7 +43,7 @@ var jQuery,
 	mla.addNewBulkEdit = {
 		init: function() {
 			var toggleButton, resetButton, 
-				bypass = $( '.upload-flash-bypass' ), title = $( '#wpbody .wrap' ).children ( 'h2' ),
+				bypass = $( '.upload-flash-bypass' ), title = $( '#wpbody .wrap' ).children ( 'h1, h2' ),
 				uploadContent, uploadDiv = $( '#mla-add-new-bulk-edit-div' ).hide(); // Start with area closed up
 
 			$( '#bulk-edit-set-parent', uploadDiv ).on( 'click', function(){
@@ -79,6 +79,10 @@ var jQuery,
 			resetButton.on( 'click', function(){
 				return mla.addNewBulkEdit.doReset();
 			});
+
+			if ( mla.settings.areaOpen ) {
+				mla.addNewBulkEdit.formToggle();
+			};
 
 			//auto-complete/suggested matches for flat taxonomies
 			$( 'textarea.mla_tags', uploadDiv ).each(function(){

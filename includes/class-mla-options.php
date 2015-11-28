@@ -1704,7 +1704,7 @@ class MLAOptions {
 			case 'parent_type':
 			case 'parent_title':
 				if ( is_null( $parent_info ) ) {
-					$parent_info = MLAData::mla_fetch_attachment_parent_data( MLAOptions::_evaluate_post_information( $post_id, $category, 'post_parent' ) );
+					$parent_info = MLAQuery::mla_fetch_attachment_parent_data( MLAOptions::_evaluate_post_information( $post_id, $category, 'post_parent' ) );
 				}
 
 				if ( isset( $parent_info[ $data_source ] ) ) {
@@ -2763,6 +2763,8 @@ class MLAOptions {
 					}
 				}
 
+				$new_text = apply_filters( 'mla_mapping_new_text', $new_text, $setting_key, $post->ID, 'iptc_exif_standard_mapping', $attachment_metadata );
+
 				if ( is_array( $new_text ) ) {
 					$new_text = implode( ',', $new_text );
 				}
@@ -2818,6 +2820,10 @@ class MLAOptions {
 			$tax_actions =  array();
 
 			foreach ( $settings['taxonomy'] as $setting_key => $setting_value ) {
+				if ( ! MLACore::mla_taxonomy_support($setting_key, 'support') ) {
+					continue;
+				}
+							
 				/*
 				 * Convert checkbox value(s)
 				 */
@@ -2908,6 +2914,8 @@ class MLAOptions {
 					} // foreach $text
 					$new_text = array_unique( $new_terms );
 				} // foreach $delimiter
+
+				$new_text = apply_filters( 'mla_mapping_new_text', $new_text, $setting_key, $post->ID, 'iptc_exif_taxonomy_mapping', $attachment_metadata );
 
 				if ( empty( $new_text ) ) {
 					continue;
@@ -3054,6 +3062,8 @@ class MLAOptions {
 						$new_text = $iptc_value;
 					}
 				}
+
+				$new_text = apply_filters( 'mla_mapping_new_text', $new_text, $setting_key, $post->ID, 'iptc_exif_custom_mapping', $attachment_metadata );
 
 				if ( $setting_value['keep_existing'] ) {
 					if ( 'meta:' == substr( $setting_name, 0, 5 ) ) {
@@ -3669,6 +3679,10 @@ class MLAOptions {
 						$taxonomies = get_taxonomies( array ( 'show_ui' => true ), 'objects' );
 
 						foreach ( $taxonomies as $row_name => $row_value ) {
+							if ( ! MLACore::mla_taxonomy_support($row_name, 'support') ) {
+								continue;
+							}
+							
 							$row_values = array (
 								'key' => esc_attr( $row_name ),
 								'name' => esc_html( $row_value->labels->name ),

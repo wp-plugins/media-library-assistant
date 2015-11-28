@@ -785,6 +785,13 @@ class MLAReferences {
 			}
 		} // cached
 
+		/* 
+		 * The MLAShortcodes class is only loaded when needed.
+		 */
+		if ( !class_exists( 'MLAShortcodes' ) ) {
+			require_once( MLA_PLUGIN_PATH . 'includes/class-mla-shortcodes.php' );
+		}
+		
 		/*
 		 * $galleries_array is null, so build the array
 		 */

@@ -278,7 +278,7 @@ class MLA_Upload_Optional_List_Table extends WP_List_Table {
 			$view_args['orderby'] = $_REQUEST['orderby'];
 		}
 
-		$actions['select'] = '<a href="' . add_query_arg( $view_args, wp_nonce_url( '?mla_admin_action=' . MLA::MLA_ADMIN_SINGLE_EDIT_UPDATE, MLA::MLA_ADMIN_NONCE_ACTION, MLA::MLA_ADMIN_NONCE_NAME ) ) . '" title="' . __( 'Select this entry', 'media-library-assistant' ) . '">' . __( 'Select', 'media-library-assistant' ) . '</a>';
+		$actions['select'] = '<a href="' . add_query_arg( $view_args, wp_nonce_url( '?mla_admin_action=' . MLA::MLA_ADMIN_SINGLE_EDIT_UPDATE, MLACore::MLA_ADMIN_NONCE_ACTION, MLACore::MLA_ADMIN_NONCE_NAME ) ) . '" title="' . __( 'Select this entry', 'media-library-assistant' ) . '">' . __( 'Select', 'media-library-assistant' ) . '</a>';
 
 		return $actions;
 	}

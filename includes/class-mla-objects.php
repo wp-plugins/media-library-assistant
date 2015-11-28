@@ -204,6 +204,13 @@ class MLAObjects {
 				$terms = get_transient( MLA_OPTION_PREFIX . 't_term_counts_' . $taxonomy );
 
 				if ( ! is_array( $terms ) ) {
+					/* 
+					 * The MLAShortcodes class is only loaded when needed.
+					 */
+					if ( !class_exists( 'MLAShortcodes' ) ) {
+						require_once( MLA_PLUGIN_PATH . 'includes/class-mla-shortcodes.php' );
+					}
+		
 					$cloud = MLAShortcodes::mla_get_terms( array(
 						'taxonomy' => $taxonomy,
 						'fields' => 't.term_id, t.name, t.slug, COUNT(p.ID) AS `count`',
@@ -239,7 +246,7 @@ class MLAObjects {
 		}
 
 		return sprintf( '<a href="%1$s">%2$s</a>', esc_url( add_query_arg(
-				array( 'page' => MLA::ADMIN_PAGE_SLUG, 'mla-tax' => $taxonomy, 'mla-term' => $term->slug, 'heading_suffix' => urlencode( $tax_object->label . ':' . $term->name ) ), 'upload.php' ) ), $column_text );
+				array( 'page' => MLACore::ADMIN_PAGE_SLUG, 'mla-tax' => $taxonomy, 'mla-term' => $term->slug, 'heading_suffix' => urlencode( $tax_object->label . ':' . $term->name ) ), 'upload.php' ) ), $column_text );
 	}
 } //Class MLAObjects
 

@@ -74,18 +74,31 @@ if ( ! empty( $mla_plugin_loader_error_messages ) ) {
 //error_log( __LINE__ . ' MEMORY mla-plugin-loader.php class-mla-core.php ' . number_format( memory_get_peak_usage( true ) ), 0);
 
 	if( defined('DOING_AJAX') && DOING_AJAX ) {
-		require_once( MLA_PLUGIN_PATH . 'includes/class-mla-data-query.php' );
-		add_action( 'init', 'MLAQuery::initialize', 0x7FFFFFFF );
-//error_log( __LINE__ . ' MEMORY mla-plugin-loader.php class-mla-data-query.php ' . number_format( memory_get_peak_usage( true ) ), 0);
-		
 		/*
-		 * Ajax handlers
+		 * Quick and Bulk Edit requires full support for content templates, etc.
+		 * IPTC/EXIF and Custom Field mapping require full support, too.
 		 */
-		require_once( MLA_PLUGIN_PATH . 'includes/class-mla-ajax.php' );
-		add_action( 'init', 'MLA_Ajax::initialize', 0x7FFFFFFF );
+		$ajax_only = true;
+		if ( isset( $_REQUEST['action'] ) ) {
+			if ( in_array( $_REQUEST['action'], array( MLACore::JAVASCRIPT_INLINE_EDIT_SLUG, 'mla-inline-mapping-iptc-exif-scripts', 'mla-inline-mapping-custom-scripts' ) ) ) {
+				$ajax_only = false;
+			}
+		}
+		
+		if ( $ajax_only ) {
+			require_once( MLA_PLUGIN_PATH . 'includes/class-mla-data-query.php' );
+			add_action( 'init', 'MLAQuery::initialize', 0x7FFFFFFF );
+//error_log( __LINE__ . ' MEMORY mla-plugin-loader.php class-mla-data-query.php ' . number_format( memory_get_peak_usage( true ) ), 0);
+			
+			/*
+			 * Ajax handlers
+			 */
+			require_once( MLA_PLUGIN_PATH . 'includes/class-mla-ajax.php' );
+			add_action( 'init', 'MLA_Ajax::initialize', 0x7FFFFFFF );
 //error_log( __LINE__ . ' MEMORY mla-plugin-loader.php class-mla-ajax.php ' . number_format( memory_get_peak_usage( true ) ), 0);
-	
-//return;
+		
+			return;
+		}
 	}
 
 	/*

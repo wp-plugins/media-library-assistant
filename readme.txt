@@ -171,11 +171,21 @@ All of the MLA source code has been annotated with "DocBlocks", a special type o
 == Changelog ==
 
 = 2.20 =
-* New: Nic Mare has contributed a **partial German translation**; thanks Nic!
+* New: When WPML is active, a "Term Replication" option has been added to the Settings/Media Library Assistant Language tab. When checked, the option causes new terms added by IPTC/EXIF Taxonomy term mapping rules to be added to all active languages. If not checked, new values are only added to the default language for the site.
 * New: When WPML is active a dropdown control is added to the Bulk Edit on Upload form so the default "make new media available in all languages" option can be changed on an upload-by-upload basis.
-* New: A new `/media-library-assistant/examples/mla-dynamic-references-example.php.txt` example plugin has been added to demonstrate dynamic "where-used" reporting that populates one or more custom fields.
 * New: When WPML is active but WPML Media is not installed/active, a warning message now appears on the Settings/Media lLibrary Assistant Language tab.
+* Fix: When WPML or Polylang is active, a **"Term Replication" option** has been added to control translations for taxonomy terms added by IPTC/EXIF Taxonomy term mapping rules.
+* New: Nic Mare has contributed a **partial German translation**; thanks Nic!
+* New: A new `/media-library-assistant/examples/mla-unattached-fixit.php.txt` example plugin has been added to demonstrate trashing/deleting unattached Media Library items.
+* New: A new `/media-library-assistant/examples/mla-dynamic-references-example.php.txt` example plugin has been added to demonstrate dynamic "where-used" reporting that populates one or more custom fields.
+* New: A new `/media-library-assistant/examples/mla-insert-fixit.php.txt` example plugin has been added to demonstrate synchronizing Media Library values to and from post/page inserted images.
 * New: Three new filters have been added to support adding fields to the Bulk Edit on Upload area. Examples of the new filters have been added to the `/examples/mla-list-table-hooks-example.php.txt` file.
+* New: A new filter, "mla_mapping_new_text", has been added to simplify changing values for mapping rules. An examples of the new filter has been added to the `/examples/mla-mapping-hooks-example.php.txt` file.
+* New: The '"bulk edit" area initially open' option allows the "Bulk Edit on Upload" area to be automatically opened as soon as the Media/Add New screen appears.
+* Fix: WHen WPML or Polylang is active, PHP Notice messages are no longer generated when media items are updated from the Media/Edit Media screen.
+* Fix: IPTC/EXIF taxonomy term mapping rules are only displayed and processed for taxonomies that are marked for MLA support on the Settings/Media Library Assistant General tab.
+* Fix: For WordPress 4.3 and higher, the "Bulk Edit on Upload" button once again appears when the "bulk edit area on top" option is selected.
+* Fix: When WPML or Polylang is active, taxonomy terms added by IPTC/EXIF Taxonomy term mapping rules in the default language are not assigned to items in other languages.
 * Fix: When WPML is active, attachment metadata is copied to and mapping rules are run on all duplicate items created by "make new media available in all languages" option.
 * Fix: When WPML is active, IPTC/EXIF and Custom Field mapping rules are run against all items, regardless of the current language setting.
 * Fix: When WPML is active, updates from the Bulk Edit on Upload form are copied to the duplicate items created by "make new media available in all languages" option.

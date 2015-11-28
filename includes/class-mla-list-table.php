@@ -383,7 +383,7 @@ class MLA_List_Table extends WP_List_Table {
 			'singular' => 'attachment', //singular name of the listed records
 			'plural' => 'attachments', //plural name of the listed records
 			'ajax' => true, //does this table support ajax?
-			'screen' => 'media_page_' . MLA::ADMIN_PAGE_SLUG
+			'screen' => 'media_page_' . MLACore::ADMIN_PAGE_SLUG
 		), self::$default_columns );
 
 		$this->currently_hidden = self::get_hidden_columns();
@@ -443,7 +443,7 @@ class MLA_List_Table extends WP_List_Table {
 				foreach ( $terms as $term ) {
 					$term_name = esc_html( sanitize_term_field( 'name', $term->name, $term->term_id, $taxonomy, 'display' ) );
 					$list[] = sprintf( '<a href="%1$s" title="' . __( 'Filter by', 'media-library-assistant' ) . ' &#8220;%2$s&#8221;">%3$s</a>', esc_url( add_query_arg( array_merge( array(
-						'page' => MLA::ADMIN_PAGE_SLUG,
+						'page' => MLACore::ADMIN_PAGE_SLUG,
 						'mla-tax' => $taxonomy,
 						'mla-term' => $term->slug,
 						'heading_suffix' => urlencode( $tax_object->label . ': ' . $term->name ) 
@@ -476,7 +476,7 @@ class MLA_List_Table extends WP_List_Table {
 					$list[] = 'array( ' . @implode( ', ', $value ) . ' )';
 				} else {
 					$list[] = sprintf( '<a href="%1$s" title="' . __( 'Filter by', 'media-library-assistant' ) . ' &#8220;%2$s&#8221;">%3$s</a>', esc_url( add_query_arg( array_merge( array(
-						'page' => MLA::ADMIN_PAGE_SLUG,
+						'page' => MLACore::ADMIN_PAGE_SLUG,
 						'mla-metakey' => urlencode( self::$default_columns[ $column_name ] ),
 						'mla-metavalue' => urlencode( $value ),
 						'heading_suffix' => urlencode( self::$default_columns[ $column_name ] . ': ' . $value ) 
@@ -649,7 +649,7 @@ class MLA_List_Table extends WP_List_Table {
 			/*
 			 * Build rollover actions
 			 */
-			$view_args = array_merge( array( 'page' => MLA::ADMIN_PAGE_SLUG, 'mla_item_ID' => $item->ID ),
+			$view_args = array_merge( array( 'page' => MLACore::ADMIN_PAGE_SLUG, 'mla_item_ID' => $item->ID ),
 				self::mla_submenu_arguments() );
 
 			if ( isset( $_REQUEST['paged'] ) ) {
@@ -658,7 +658,7 @@ class MLA_List_Table extends WP_List_Table {
 
 			if ( current_user_can( 'edit_post', $item->ID ) ) {
 				if ( $this->is_trash ) {
-					$actions['restore'] = '<a class="submitdelete" href="' . add_query_arg( $view_args, wp_nonce_url( '?mla_admin_action=' . MLA::MLA_ADMIN_SINGLE_RESTORE, MLA::MLA_ADMIN_NONCE_ACTION, MLA::MLA_ADMIN_NONCE_NAME ) ) . '" title="' . __( 'Restore this item from the Trash', 'media-library-assistant' ) . '">' . __( 'Restore', 'media-library-assistant' ) . '</a>';
+					$actions['restore'] = '<a class="submitdelete" href="' . add_query_arg( $view_args, wp_nonce_url( '?mla_admin_action=' . MLACore::MLA_ADMIN_SINGLE_RESTORE, MLACore::MLA_ADMIN_NONCE_ACTION, MLACore::MLA_ADMIN_NONCE_NAME ) ) . '" title="' . __( 'Restore this item from the Trash', 'media-library-assistant' ) . '">' . __( 'Restore', 'media-library-assistant' ) . '</a>';
 				} else {
 					/*
 					 * Use the WordPress Edit Media screen
@@ -676,20 +676,20 @@ class MLA_List_Table extends WP_List_Table {
 
 			if ( current_user_can( 'delete_post', $item->ID ) ) {
 				if ( !$this->is_trash && EMPTY_TRASH_DAYS && MEDIA_TRASH ) {
-					$actions['trash'] = '<a class="submitdelete" href="' . add_query_arg( $view_args, wp_nonce_url( '?mla_admin_action=' . MLA::MLA_ADMIN_SINGLE_TRASH, MLA::MLA_ADMIN_NONCE_ACTION, MLA::MLA_ADMIN_NONCE_NAME ) ) . '" title="' . __( 'Move this item to the Trash', 'media-library-assistant' ) . '">' . __( 'Move to Trash', 'media-library-assistant' ) . '</a>';
+					$actions['trash'] = '<a class="submitdelete" href="' . add_query_arg( $view_args, wp_nonce_url( '?mla_admin_action=' . MLACore::MLA_ADMIN_SINGLE_TRASH, MLACore::MLA_ADMIN_NONCE_ACTION, MLACore::MLA_ADMIN_NONCE_NAME ) ) . '" title="' . __( 'Move this item to the Trash', 'media-library-assistant' ) . '">' . __( 'Move to Trash', 'media-library-assistant' ) . '</a>';
 				} else {
 					// If using trash for posts and pages but not for attachments, warn before permanently deleting 
 					$delete_ays = EMPTY_TRASH_DAYS && !MEDIA_TRASH ? ' onclick="return showNotice.warn();"' : '';
 
-					$actions['delete'] = '<a class="submitdelete"' . $delete_ays . ' href="' . add_query_arg( $view_args, wp_nonce_url( '?mla_admin_action=' . MLA::MLA_ADMIN_SINGLE_DELETE, MLA::MLA_ADMIN_NONCE_ACTION, MLA::MLA_ADMIN_NONCE_NAME ) ) . '" title="' . __( 'Delete this item Permanently', 'media-library-assistant' ) . '">' . __( 'Delete Permanently', 'media-library-assistant' ) . '</a>';
+					$actions['delete'] = '<a class="submitdelete"' . $delete_ays . ' href="' . add_query_arg( $view_args, wp_nonce_url( '?mla_admin_action=' . MLACore::MLA_ADMIN_SINGLE_DELETE, MLACore::MLA_ADMIN_NONCE_ACTION, MLACore::MLA_ADMIN_NONCE_NAME ) ) . '" title="' . __( 'Delete this item Permanently', 'media-library-assistant' ) . '">' . __( 'Delete Permanently', 'media-library-assistant' ) . '</a>';
 				}
 			} // delete_post
 
 			if ( current_user_can( 'upload_files' ) ) {
 				$file = get_attached_file( $item->ID );
-				$download_args = array( 'page' => MLA::ADMIN_PAGE_SLUG, 'mla_download_file' => urlencode( $file ), 'mla_download_type' => $item->post_mime_type );
+				$download_args = array( 'page' => MLACore::ADMIN_PAGE_SLUG, 'mla_download_file' => urlencode( $file ), 'mla_download_type' => $item->post_mime_type );
 
-				$actions['download'] = '<a href="' . add_query_arg( $download_args, wp_nonce_url( 'upload.php', MLA::MLA_ADMIN_NONCE_ACTION, MLA::MLA_ADMIN_NONCE_NAME ) ) . '" title="' . __( 'Download', 'media-library-assistant' ) . ' &#8220;' . $att_title . '&#8221;">' . __( 'Download', 'media-library-assistant' ) . '</a>';
+				$actions['download'] = '<a href="' . add_query_arg( $download_args, wp_nonce_url( 'upload.php', MLACore::MLA_ADMIN_NONCE_ACTION, MLACore::MLA_ADMIN_NONCE_NAME ) ) . '" title="' . __( 'Download', 'media-library-assistant' ) . ' &#8220;' . $att_title . '&#8221;">' . __( 'Download', 'media-library-assistant' ) . '</a>';
 			}
 
 			if ( ! $this->is_trash ) {
@@ -910,7 +910,7 @@ class MLA_List_Table extends WP_List_Table {
 			}
 
 			$parent = sprintf( '<a href="%1$s" title="' . __( 'Filter by', 'media-library-assistant' ) . ' ' . __( 'Parent ID', 'media-library-assistant' ) . '">(' . __( 'Parent', 'media-library-assistant' ) . ':%2$s)</a>', esc_url( add_query_arg( array_merge( array(
-					'page' => MLA::ADMIN_PAGE_SLUG,
+					'page' => MLACore::ADMIN_PAGE_SLUG,
 					'parent' => $item->post_parent,
 					'heading_suffix' => urlencode( __( 'Parent', 'media-library-assistant' ) . ': ' .  $parent_title ) 
 				), self::mla_submenu_arguments( false ) ), 'upload.php' ) ), (string) $item->post_parent );
@@ -981,7 +981,7 @@ class MLA_List_Table extends WP_List_Table {
 			}
 
 			return sprintf( '<a href="%1$s" title="' . __( 'Filter by', 'media-library-assistant' ) . ' ' . __( 'Parent ID', 'media-library-assistant' ) . '">%2$s</a>', esc_url( add_query_arg( array_merge( array(
-				'page' => MLA::ADMIN_PAGE_SLUG,
+				'page' => MLACore::ADMIN_PAGE_SLUG,
 				'parent' => $item->post_parent,
 				'heading_suffix' => urlencode( __( 'Parent', 'media-library-assistant' ) . ': ' .  $parent_title ) 
 			), self::mla_submenu_arguments( false ) ), 'upload.php' ) ), (string) $item->post_parent );
@@ -1204,7 +1204,7 @@ class MLA_List_Table extends WP_List_Table {
 			}
 
 			return sprintf( '<a href="%1$s" title="' . __( 'Filter by', 'media-library-assistant' ) . ' &#8220;%2$s&#8221;">%3$s</a>', esc_url( add_query_arg( array_merge( array(
-				'page' => MLA::ADMIN_PAGE_SLUG,
+				'page' => MLACore::ADMIN_PAGE_SLUG,
 				'mla-metakey' => '_wp_attachment_image_alt',
 				'mla-metavalue' => urlencode( $alt_text ),
 				'heading_suffix' => urlencode( __( 'ALT Text', 'media-library-assistant' ) . ': ' . $alt_text ) 
@@ -1248,7 +1248,7 @@ class MLA_List_Table extends WP_List_Table {
 	 */
 	function column_post_mime_type( $item ) {
 		return sprintf( '<a href="%1$s" title="' . __( 'Filter by', 'media-library-assistant' ) . ' &#8220;%2$s&#8221;">%2$s</a>', esc_url( add_query_arg( array_merge( array(
-			'page' => MLA::ADMIN_PAGE_SLUG,
+			'page' => MLACore::ADMIN_PAGE_SLUG,
 			'post_mime_type' => urlencode( $item->post_mime_type ),
 			'heading_suffix' => urlencode( __( 'MIME Type', 'media-library-assistant' ) . ': ' . $item->post_mime_type ) 
 		), self::mla_submenu_arguments( false ) ), 'upload.php' ) ), esc_html( $item->post_mime_type ), esc_html( $item->post_mime_type ) );
@@ -1280,7 +1280,7 @@ class MLA_List_Table extends WP_List_Table {
 		$base_file = isset( $item->mla_wp_attached_file ) ? $item->mla_wp_attached_file : '';
 
 		return sprintf( '<a href="%1$s" title="' . __( 'Filter by', 'media-library-assistant' ) . ' &#8220;%2$s&#8221;">%2$s</a>', esc_url( add_query_arg( array_merge( array(
-			'page' => MLA::ADMIN_PAGE_SLUG,
+			'page' => MLACore::ADMIN_PAGE_SLUG,
 			'mla-metakey' => urlencode( '_wp_attached_file' ),
 			'mla-metavalue' => urlencode( $base_file ),
 			'heading_suffix' => urlencode( __( 'Base File', 'media-library-assistant' ) . ': ' . $base_file ) 
@@ -1364,7 +1364,7 @@ class MLA_List_Table extends WP_List_Table {
 
 		if ( isset( $user->data->display_name ) ) {
 			return sprintf( '<a href="%s" title="' . __( 'Filter by', 'media-library-assistant' ) . ' ' . __( 'Author', 'media-library-assistant' ) . '">%s</a>', esc_url( add_query_arg( array_merge( array(
-				 'page' => MLA::ADMIN_PAGE_SLUG,
+				 'page' => MLACore::ADMIN_PAGE_SLUG,
 				'author' => $item->post_author,
 				'heading_suffix' => urlencode( __( 'Author', 'media-library-assistant' ) . ': ' . $user->data->display_name ) 
 			), self::mla_submenu_arguments( false ) ), 'upload.php' ) ), esc_html( $user->data->display_name ) );
@@ -1444,7 +1444,7 @@ class MLA_List_Table extends WP_List_Table {
 	 * @return	array	Column information,e.g., array(0 => 'ID_parent, 1 => 'title_name')
 	 */
 	function get_hidden_columns( ) {
-		$columns = get_user_option( 'managemedia_page_' . MLA::ADMIN_PAGE_SLUG . 'columnshidden' );
+		$columns = get_user_option( 'managemedia_page_' . MLACore::ADMIN_PAGE_SLUG . 'columnshidden' );
 
 		if ( is_array( $columns ) ) {
 			foreach ( $columns as $index => $value ){
@@ -1544,7 +1544,7 @@ class MLA_List_Table extends WP_List_Table {
 		}
 
 		$class = ( $view_slug == $current_view ) ? ' class="current"' : '';
-		$base_url = 'upload.php?page=' . MLA::ADMIN_PAGE_SLUG;
+		$base_url = 'upload.php?page=' . MLACore::ADMIN_PAGE_SLUG;
 
 		/*
 		 * Handle the special cases: all, detached, attached and trash
@@ -1839,6 +1839,6 @@ class MLA_List_Table extends WP_List_Table {
  */
 add_action( 'admin_init', 'MLA_List_Table::mla_admin_init_action' );
  
-add_filter( 'get_user_option_managemedia_page_' . MLA::ADMIN_PAGE_SLUG . 'columnshidden', 'MLA_List_Table::mla_manage_hidden_columns_filter', 10, 3 );
-add_filter( 'manage_media_page_' . MLA::ADMIN_PAGE_SLUG . '_columns', 'MLA_List_Table::mla_manage_columns_filter', 10, 0 );
+add_filter( 'get_user_option_managemedia_page_' . MLACore::ADMIN_PAGE_SLUG . 'columnshidden', 'MLA_List_Table::mla_manage_hidden_columns_filter', 10, 3 );
+add_filter( 'manage_media_page_' . MLACore::ADMIN_PAGE_SLUG . '_columns', 'MLA_List_Table::mla_manage_columns_filter', 10, 0 );
 ?>

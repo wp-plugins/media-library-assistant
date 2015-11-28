@@ -231,7 +231,7 @@ class MLAModal {
 
 		$default_types = MLACore::mla_get_option( MLACore::MLA_POST_MIME_TYPES, true );
 		self::$mla_media_modal_settings['comma'] = _x( ',', 'tag_delimiter', 'media-library-assistant' );
-		self::$mla_media_modal_settings['ajaxNonce'] = wp_create_nonce( MLA::MLA_ADMIN_NONCE_ACTION, MLA::MLA_ADMIN_NONCE_NAME );
+		self::$mla_media_modal_settings['ajaxNonce'] = wp_create_nonce( MLACore::MLA_ADMIN_NONCE_ACTION, MLACore::MLA_ADMIN_NONCE_NAME );
 		self::$mla_media_modal_settings['allMimeTypes'] = MLAMime::mla_pluck_table_views();
 		self::$mla_media_modal_settings['allMimeTypes']['detached'] = $default_types['detached']['plural'];
 		self::$mla_media_modal_settings['allMimeTypes']['attached'] = $default_types['attached']['plural'];
@@ -502,7 +502,7 @@ class MLAModal {
 
 			wp_enqueue_style( MLA::STYLESHEET_SLUG . '-terms-search' );
 
-			wp_enqueue_script( MLA::JAVASCRIPT_INLINE_EDIT_SLUG . '-terms-search', MLA_PLUGIN_URL . "js/mla-terms-search-scripts{$suffix}.js", 
+			wp_enqueue_script( MLACore::JAVASCRIPT_INLINE_EDIT_SLUG . '-terms-search', MLA_PLUGIN_URL . "js/mla-terms-search-scripts{$suffix}.js", 
 				array( 'jquery' ), MLA::CURRENT_MLA_VERSION, false );
 
 			$script_variables = array(
@@ -518,7 +518,7 @@ class MLAModal {
 				$script_variables['useSpinnerClass'] = true;
 			}
 
-			wp_localize_script( MLA::JAVASCRIPT_INLINE_EDIT_SLUG . '-terms-search', self::JAVASCRIPT_TERMS_SEARCH_OBJECT, $script_variables );
+			wp_localize_script( MLACore::JAVASCRIPT_INLINE_EDIT_SLUG . '-terms-search', self::JAVASCRIPT_TERMS_SEARCH_OBJECT, $script_variables );
 
 			/*
 			 * Insert the hidden form for the Search Terms popup window
@@ -615,9 +615,9 @@ class MLAModal {
 		}
 
 		$page_values = array(
-			'mla_terms_search_url' =>  esc_url( add_query_arg( array_merge( MLA_List_Table::mla_submenu_arguments( false ), array( 'page' => MLA::ADMIN_PAGE_SLUG ) ), admin_url( 'upload.php' ) ) ),
+			'mla_terms_search_url' =>  esc_url( add_query_arg( array_merge( MLA_List_Table::mla_submenu_arguments( false ), array( 'page' => MLACore::ADMIN_PAGE_SLUG ) ), admin_url( 'upload.php' ) ) ),
 			'mla_terms_search_action' => MLA::MLA_ADMIN_TERMS_SEARCH,
-			'wpnonce' => wp_nonce_field( MLA::MLA_ADMIN_NONCE_ACTION, MLA::MLA_ADMIN_NONCE_NAME, true, false ),
+			'wpnonce' => wp_nonce_field( MLACore::MLA_ADMIN_NONCE_ACTION, MLACore::MLA_ADMIN_NONCE_NAME, true, false ),
 			'mla_terms_search_div' => $terms_search_tpl,
 		);
 		$terms_search_tpl = MLAData::mla_parse_template( $page_template_array['mla-terms-search-form'], $page_values );

@@ -931,7 +931,7 @@ class MLAShortcodes {
 			}
 
 			if ( 0 < $attachment->post_parent ) {
-				$parent_info = MLAData::mla_fetch_attachment_parent_data( $attachment->post_parent );
+				$parent_info = MLAQuery::mla_fetch_attachment_parent_data( $attachment->post_parent );
 				if ( isset( $parent_info['parent_name'] ) ) {
 					$item_values['parent_name'] = $parent_info['parent_name'];
 				}
@@ -1258,7 +1258,7 @@ class MLAShortcodes {
 						$icon_url = wp_mime_type_icon( $attachment->ID );
 						$upload_dir = wp_upload_dir();
 						$args = array(
-							'page' => MLA::ADMIN_PAGE_SLUG,
+							'page' => MLACore::ADMIN_PAGE_SLUG,
 							'mla_stream_file' => urlencode( $upload_dir['basedir'] . '/' . $item_values['base_file'] ),
 						);
 
@@ -1330,7 +1330,7 @@ class MLAShortcodes {
 								/*
 								 * For efficiency, image streaming is done outside WordPress
 								 */
-								$icon_url = add_query_arg( $args, wp_nonce_url( MLA_PLUGIN_URL . 'includes/mla-stream-image.php', MLA::MLA_ADMIN_NONCE_ACTION, MLA::MLA_ADMIN_NONCE_NAME ) );
+								$icon_url = add_query_arg( $args, wp_nonce_url( MLA_PLUGIN_URL . 'includes/mla-stream-image.php', MLACore::MLA_ADMIN_NONCE_ACTION, MLACore::MLA_ADMIN_NONCE_NAME ) );
 							}
 						}
 
@@ -2971,7 +2971,7 @@ class MLAShortcodes {
 		/*
 		 * Parameters passed to the posts_search filter function in MLAData
 		 */
-		MLAData::$search_parameters = array( 'debug' => 'none' );
+		MLAQuery::$search_parameters = array( 'debug' => 'none' );
 
 		/*
 		 * Make sure $attr is an array, even if it's empty
@@ -3019,15 +3019,6 @@ class MLAShortcodes {
 				$arguments[ $mla_page_parameter ] = NULL;
 			}
 		}
-
-		/*
-		 * 'RAND' is not documented in the codex, but is present in the code.
-		 * CODE REMOVED in WordPress 4.1
-		 * /
-		if ( 'RAND' == strtoupper( $arguments['order'] ) ) {
-			$arguments['orderby'] = 'none';
-			unset( $arguments['order'] );
-		} // */
 
 		if ( !empty( $arguments['ids'] ) ) {
 			// 'ids' is explicitly ordered, unless you specify otherwise.
@@ -3311,9 +3302,9 @@ class MLAShortcodes {
 			case 'sentence':
 			case 'exact':
 				if ( ! empty( $value ) && ( 'true' == strtolower( $value ) ) ) {
-					MLAData::$search_parameters[ $key ] = true;
+					MLAQuery::$search_parameters[ $key ] = true;
 				} else {
-					MLAData::$search_parameters[ $key ] = false;
+					MLAQuery::$search_parameters[ $key ] = false;
 				}
 
 				unset( $arguments[ $key ] );
@@ -3322,9 +3313,9 @@ class MLAShortcodes {
 			case 'mla_phrase_connector':
 			case 'mla_term_connector':
 				if ( ! empty( $value ) && ( 'OR' == strtoupper( $value ) ) ) {
-					MLAData::$search_parameters[ $key ] = 'OR';
+					MLAQuery::$search_parameters[ $key ] = 'OR';
 				} else {
-					MLAData::$search_parameters[ $key ] = 'AND';
+					MLAQuery::$search_parameters[ $key ] = 'AND';
 				}
 
 				unset( $arguments[ $key ] );
@@ -3335,7 +3326,7 @@ class MLAShortcodes {
 			case 'mla_terms_taxonomies':
 			case 'mla_search_fields':
 				if ( ! empty( $value ) ) {
-					MLAData::$search_parameters[ $key ] = $value;
+					MLAQuery::$search_parameters[ $key ] = $value;
 
 					if ( ! $children_ok ) {
 						$use_children = false;
@@ -3345,7 +3336,7 @@ class MLAShortcodes {
 				unset( $arguments[ $key ] );
 				break;
 			case 's':
-				MLAData::$search_parameters['s'] = $value;
+				MLAQuery::$search_parameters['s'] = $value;
 				// fallthru
 			case 'author_name':
 			case 'category_name':
@@ -3539,80 +3530,80 @@ class MLAShortcodes {
 		 * One or both of 'mla_terms_phrases' and 's' must be present to
 		 * trigger the search.
 		 */
-		if ( empty( MLAData::$search_parameters['mla_terms_phrases'] ) && empty( MLAData::$search_parameters['s'] ) ) {
-			MLAData::$search_parameters = array( 'debug' => 'none' );
+		if ( empty( MLAQuery::$search_parameters['mla_terms_phrases'] ) && empty( MLAQuery::$search_parameters['s'] ) ) {
+			MLAQuery::$search_parameters = array( 'debug' => 'none' );
 		} else {
 			/*
 			 * Convert Terms Search parameters to the filter's requirements.
 			 * mla_terms_taxonomies is shared with keyword search.
 			 */
-			if ( empty( MLAData::$search_parameters['mla_terms_taxonomies'] ) ) {
-				MLAData::$search_parameters['mla_terms_search']['taxonomies'] = MLACore::mla_supported_taxonomies( 'term-search' );
+			if ( empty( MLAQuery::$search_parameters['mla_terms_taxonomies'] ) ) {
+				MLAQuery::$search_parameters['mla_terms_search']['taxonomies'] = MLACore::mla_supported_taxonomies( 'term-search' );
 			} else {
-				MLAData::$search_parameters['mla_terms_search']['taxonomies'] = array_filter( array_map( 'trim', explode( ',', MLAData::$search_parameters['mla_terms_taxonomies'] ) ) );
+				MLAQuery::$search_parameters['mla_terms_search']['taxonomies'] = array_filter( array_map( 'trim', explode( ',', MLAQuery::$search_parameters['mla_terms_taxonomies'] ) ) );
 			}
 
-			if ( ! empty( MLAData::$search_parameters['mla_terms_phrases'] ) ) {
-				MLAData::$search_parameters['mla_terms_search']['phrases'] = MLAData::$search_parameters['mla_terms_phrases'];
+			if ( ! empty( MLAQuery::$search_parameters['mla_terms_phrases'] ) ) {
+				MLAQuery::$search_parameters['mla_terms_search']['phrases'] = MLAQuery::$search_parameters['mla_terms_phrases'];
 
-				if ( empty( MLAData::$search_parameters['mla_phrase_connector'] ) ) {
-					MLAData::$search_parameters['mla_terms_search']['radio_phrases'] = 'AND';
+				if ( empty( MLAQuery::$search_parameters['mla_phrase_connector'] ) ) {
+					MLAQuery::$search_parameters['mla_terms_search']['radio_phrases'] = 'AND';
 				} else {
-					MLAData::$search_parameters['mla_terms_search']['radio_phrases'] = MLAData::$search_parameters['mla_phrase_connector'];
+					MLAQuery::$search_parameters['mla_terms_search']['radio_phrases'] = MLAQuery::$search_parameters['mla_phrase_connector'];
 				}
 
-				if ( empty( MLAData::$search_parameters['mla_term_connector'] ) ) {
-					MLAData::$search_parameters['mla_terms_search']['radio_terms'] = 'OR';
+				if ( empty( MLAQuery::$search_parameters['mla_term_connector'] ) ) {
+					MLAQuery::$search_parameters['mla_terms_search']['radio_terms'] = 'OR';
 				} else {
-					MLAData::$search_parameters['mla_terms_search']['radio_terms'] = MLAData::$search_parameters['mla_phrase_connector'];
+					MLAQuery::$search_parameters['mla_terms_search']['radio_terms'] = MLAQuery::$search_parameters['mla_phrase_connector'];
 				}
 			}
 
-			unset( MLAData::$search_parameters['mla_terms_phrases'] );
-			unset( MLAData::$search_parameters['mla_terms_taxonomies'] );
-			unset( MLAData::$search_parameters['mla_phrase_connector'] );
-			unset( MLAData::$search_parameters['mla_term_connector'] );
+			unset( MLAQuery::$search_parameters['mla_terms_phrases'] );
+			unset( MLAQuery::$search_parameters['mla_terms_taxonomies'] );
+			unset( MLAQuery::$search_parameters['mla_phrase_connector'] );
+			unset( MLAQuery::$search_parameters['mla_term_connector'] );
 
-			if ( empty( MLAData::$search_parameters['mla_search_fields'] ) ) {
-				MLAData::$search_parameters['mla_search_fields'] = array( 'title', 'content' );
+			if ( empty( MLAQuery::$search_parameters['mla_search_fields'] ) ) {
+				MLAQuery::$search_parameters['mla_search_fields'] = array( 'title', 'content' );
 			} else {
-				MLAData::$search_parameters['mla_search_fields'] = array_filter( array_map( 'trim', explode( ',', MLAData::$search_parameters['mla_search_fields'] ) ) );
-				MLAData::$search_parameters['mla_search_fields'] = array_intersect( array( 'title', 'content', 'excerpt', 'name', 'terms' ), MLAData::$search_parameters['mla_search_fields'] );
+				MLAQuery::$search_parameters['mla_search_fields'] = array_filter( array_map( 'trim', explode( ',', MLAQuery::$search_parameters['mla_search_fields'] ) ) );
+				MLAQuery::$search_parameters['mla_search_fields'] = array_intersect( array( 'title', 'content', 'excerpt', 'name', 'terms' ), MLAQuery::$search_parameters['mla_search_fields'] );
 
 				/*
 				 * Look for keyword search including 'terms' 
 				 */
-				foreach ( MLAData::$search_parameters['mla_search_fields'] as $index => $field ) {
+				foreach ( MLAQuery::$search_parameters['mla_search_fields'] as $index => $field ) {
 					if ( 'terms' == $field ) {
-						if ( isset( MLAData::$search_parameters['mla_terms_search']['phrases'] ) ) {
+						if ( isset( MLAQuery::$search_parameters['mla_terms_search']['phrases'] ) ) {
 							/*
 							 * The Terms Search overrides any terms-based keyword search for now; too complicated.
 							 */
-							unset ( MLAData::$search_parameters['mla_search_fields'][ $index ] );
+							unset ( MLAQuery::$search_parameters['mla_search_fields'][ $index ] );
 						} else {
-							MLAData::$search_parameters['mla_search_taxonomies'] = MLAData::$search_parameters['mla_terms_search']['taxonomies'];
-							unset( MLAData::$search_parameters['mla_terms_search']['taxonomies'] );
+							MLAQuery::$search_parameters['mla_search_taxonomies'] = MLAQuery::$search_parameters['mla_terms_search']['taxonomies'];
+							unset( MLAQuery::$search_parameters['mla_terms_search']['taxonomies'] );
 						}
 					} // terms in search fields
 				}
 			} // mla_search_fields present
 
-			if ( empty( MLAData::$search_parameters['mla_search_connector'] ) ) {
-				MLAData::$search_parameters['mla_search_connector'] = 'AND';
+			if ( empty( MLAQuery::$search_parameters['mla_search_connector'] ) ) {
+				MLAQuery::$search_parameters['mla_search_connector'] = 'AND';
 			}
 
-			if ( empty( MLAData::$search_parameters['sentence'] ) ) {
-				MLAData::$search_parameters['sentence'] = false;
+			if ( empty( MLAQuery::$search_parameters['sentence'] ) ) {
+				MLAQuery::$search_parameters['sentence'] = false;
 			}
 
-			if ( empty( MLAData::$search_parameters['exact'] ) ) {
-				MLAData::$search_parameters['exact'] = false;
+			if ( empty( MLAQuery::$search_parameters['exact'] ) ) {
+				MLAQuery::$search_parameters['exact'] = false;
 			}
 
-			MLAData::$search_parameters['debug'] = self::$mla_debug ? 'shortcode' : 'none';
+			MLAQuery::$search_parameters['debug'] = self::$mla_debug ? 'shortcode' : 'none';
 
-			add_filter( 'posts_search', 'MLAData::mla_query_posts_search_filter', 10, 2 );
-			add_filter( 'posts_groupby', 'MLAData::mla_query_posts_groupby_filter' );
+			add_filter( 'posts_search', 'MLAQuery::mla_query_posts_search_filter', 10, 2 );
+			add_filter( 'posts_groupby', 'MLAQuery::mla_query_posts_groupby_filter' );
 		}
 
 		if ( self::$mla_debug ) {
@@ -3644,8 +3635,12 @@ class MLAShortcodes {
 			add_filter( 'relevanssi_admin_search_ok', 'MLAData::mla_query_relevanssi_admin_search_ok_filter' );
 		}
 
+		if ( class_exists( 'MLA_Polylang' ) ) {
+			$query_arguments = apply_filters( 'mla_get_shortcode_attachments_final_terms', $query_arguments, $return_found_rows );
+		}
+		
 		self::$mla_gallery_wp_query_object = new WP_Query;
-		$attachments = self::$mla_gallery_wp_query_object->query($query_arguments);
+		$attachments = self::$mla_gallery_wp_query_object->query( $query_arguments );
 
 		/*
 		 * $return_found_rows is used to indicate that the call comes from gallery_shortcode(),
@@ -3661,8 +3656,9 @@ class MLAShortcodes {
 			$attachments['found_rows'] = self::$mla_gallery_wp_query_object->found_posts;
 		}
 
-		if ( ! empty( MLAData::$search_parameters ) ) {
-			remove_filter( 'posts_search', 'MLAData::mla_query_posts_search_filter' );
+		if ( ! empty( MLAQuery::$search_parameters ) ) {
+			remove_filter( 'posts_groupby', 'MLAQuery::mla_query_posts_groupby_filter' );
+			remove_filter( 'posts_search', 'MLAQuery::mla_query_posts_search_filter' );
 		}
 
 		if ( function_exists( 'relevanssi_prevent_default_request' ) ) {
@@ -3713,11 +3709,11 @@ class MLAShortcodes {
 		/*
 		 * These joins support the 'terms' search_field
 		 */
-		if ( isset( MLAData::$search_parameters['tax_terms_count'] ) ) {
+		if ( isset( MLAQuery::$search_parameters['tax_terms_count'] ) ) {
 			$tax_index = 0;
 			$tax_clause = '';
 
-			while ( $tax_index < MLAData::$search_parameters['tax_terms_count'] ) {
+			while ( $tax_index < MLAQuery::$search_parameters['tax_terms_count'] ) {
 				$prefix = 'mlatt' . $tax_index++;
 				$tax_clause .= sprintf( ' INNER JOIN %1$s AS %2$s ON (%3$s.ID = %2$s.object_id)', $wpdb->term_relationships, $prefix, $wpdb->posts );
 			}

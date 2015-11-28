@@ -33,6 +33,69 @@ class MLACore {
 	public static $original_php_reporting = '?';
 
 	/**
+	 * Slug for adding plugin submenu
+	 *
+	 * @since 0.1
+	 *
+	 * @var	string
+	 */
+	const ADMIN_PAGE_SLUG = 'mla-menu';
+
+	/**
+	 * mla_admin_action value for permanently deleting a single item
+	 *
+	 * @since 0.1
+	 *
+	 * @var	string
+	 */
+	const MLA_ADMIN_SINGLE_DELETE = 'single_item_delete';
+
+	/**
+	 * mla_admin_action value for moving a single item to the trash
+	 *
+	 * @since 0.1
+	 *
+	 * @var	string
+	 */
+	const MLA_ADMIN_SINGLE_TRASH = 'single_item_trash';
+
+	/**
+	 * mla_admin_action value for restoring a single item from the trash
+	 *
+	 * @since 0.1
+	 *
+	 * @var	string
+	 */
+	const MLA_ADMIN_SINGLE_RESTORE = 'single_item_restore';
+
+	/**
+	 * Action name; gives a context for the nonce
+	 *
+	 * @since 0.1
+	 *
+	 * @var	string
+	 */
+	const MLA_ADMIN_NONCE_ACTION = 'mla_admin_nonce_action';
+
+	/**
+	 * Nonce name; uniquely identifies the nonce
+	 *
+	 * @since 2.13
+	 *
+	 * @var	string
+	 */
+	const MLA_ADMIN_NONCE_NAME = 'mla_admin_nonce';
+
+	/**
+	 * Slug for localizing and enqueueing JavaScript - MLA List Table
+	 *
+	 * @since 0.20
+	 *
+	 * @var	string
+	 */
+	const JAVASCRIPT_INLINE_EDIT_SLUG = 'mla-inline-edit-scripts';
+
+	/**
 	 * Slug for the "query attachments" action - Add Media and related dialogs
 	 *
 	 * @since 1.80
@@ -207,6 +270,11 @@ class MLACore {
 	 * Provides a unique name for the Media/Add New bulk edit "on top" option
 	 */
 	const MLA_ADD_NEW_BULK_EDIT_ON_TOP = 'add_new_bulk_edit_on_top';
+
+	/**
+	 * Provides a unique name for the Media/Add New bulk edit "Open Automatically" option
+	 */
+	const MLA_ADD_NEW_BULK_EDIT_AUTO_OPEN = 'add_new_bulk_edit_auto_open';
 
 	/**
 	 * Provides a unique name for the Media Grid toolbar option, which
@@ -737,6 +805,13 @@ class MLACore {
 					'type' => 'checkbox',
 					'std' => '',
 					'help' => __( 'Check this option to move the "Bulk Edit area" to the top of the Media/Add New screen.', 'media-library-assistant' )),
+
+			self::MLA_ADD_NEW_BULK_EDIT_AUTO_OPEN =>
+				array('tab' => 'general',
+					'name' => __( '&quot;bulk edit&quot; area initially open', 'media-library-assistant' ),
+					'type' => 'checkbox',
+					'std' => '',
+					'help' => __( 'Check this option to automatically open the "Bulk Edit area" when the Media/Add New screen is displayed.', 'media-library-assistant' )),
 
 			'media_modal_header' =>
 				array('tab' => 'general',

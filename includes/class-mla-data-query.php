@@ -1419,7 +1419,7 @@ class MLAQuery {
 		/*
 		 * Process the keyword search argument, if present.
 		 */
-		if ( isset( self::$search_parameters['s'] ) ) {
+		if ( ! empty( self::$search_parameters['s'] ) ) {
 
 			// WordPress v3.7 says: there are no line breaks in <input /> fields
 			$keyword_string = stripslashes( str_replace( array( "\r", "\n" ), '', self::$search_parameters['s'] ) );
